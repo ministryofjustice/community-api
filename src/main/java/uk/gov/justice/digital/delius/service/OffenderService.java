@@ -26,7 +26,7 @@ public class OffenderService {
         this.offenderRepository = offenderRepository;
     }
 
-    public Optional<OffenderDetail> getOffender(Long offenderId) {
+    public Optional<OffenderDetail> getOffender(Long offenderId, String s) {
         Optional<Offender> maybeOffender = offenderRepository.findByOffenderId(offenderId);
 
         return maybeOffender.map(offender -> OffenderDetail.builder()

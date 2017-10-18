@@ -1,12 +1,9 @@
 package uk.gov.justice.digital.delius;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ser.FilterProvider;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
-import io.restassured.mapper.factory.Jackson2ObjectMapperFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,10 +17,14 @@ import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.jpa.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.repository.OffenderRepository;
+import uk.gov.justice.digital.delius.jwt.Jwt;
+import uk.gov.justice.digital.delius.user.UserData;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 
+import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -42,6 +43,9 @@ public class DeliusOffenderAPITest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private Jwt jwt;
+
     @Before
     public void setup() {
         RestAssured.port = port;
@@ -50,11 +54,15 @@ public class DeliusOffenderAPITest {
                 (aClass, s) -> objectMapper
         ));
         Mockito.when(offenderRepository.findByOffenderId(any(Long.class))).thenReturn(Optional.empty());
+
+
     }
 
     @Test
     public void lookupUnknownOffenderGivesNotFound() {
-        when()
+        given()
+                .header("Authorization", aToken())
+                .when()
                 .get("/offenders/987654321")
                 .then()
                 .statusCode(404);
@@ -72,7 +80,7 @@ public class DeliusOffenderAPITest {
                 .currentHighestRiskColour("AMBER")
                 .currentRemandStatus("ON_REMAND")
                 .currentRestriction(3L)
-                .dateOfBirthDate(LocalDate.of(1970,1,1))
+                .dateOfBirthDate(LocalDate.of(1970, 1, 1))
                 .emailAddress("bill@sykes.com")
                 .establishment('A')
                 .ethnicity(StandardReference.builder().codeDescription("IC1").build())
@@ -102,7 +110,7 @@ public class DeliusOffenderAPITest {
                 .title(StandardReference.builder().codeDescription("Mr").build())
                 .secondNationality(StandardReference.builder().codeDescription("EIRE").build())
                 .sexualOrientation(StandardReference.builder().codeDescription("STR").build())
-                .previousConvictionDate(LocalDate.of(2016,1,1))
+                .previousConvictionDate(LocalDate.of(2016, 1, 1))
                 .prevConvictionDocumentName("CONV1234")
                 .build();
 
@@ -110,15 +118,54 @@ public class DeliusOffenderAPITest {
                 offender
         ));
 
-        OffenderDetail offenderDetail = when()
-                .get("/offenders/1")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(OffenderDetail.class);
+        OffenderDetail offenderDetail =
+                given()
+                        .header("Authorization", aToken())
+                        .when()
+                        .get("/offenders/1")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .as(OffenderDetail.class);
 
         assertThat(offenderDetail.getSurname().equals("Sykes"));
+    }
+
+    @Test
+    public void cannotGetOffenderWithoutJwtAuthorizationHeader() {
+        when()
+                .get("/offenders/1")
+                .then()
+                .statusCode(401);
+    }
+
+    @Test
+    public void cannotGetOffenderWithSomeoneElsesJwtAuthorizationHeader() {
+        given()
+                .header("Authorization", someoneElsesToken())
+                .when()
+                .get("/offenders/1")
+                .then()
+                .statusCode(401);
+    }
+
+    @Test
+    public void cannotGetOffenderWithJunkJwtAuthorizationHeader() {
+        given()
+                .header("Authorization", UUID.randomUUID().toString())
+                .when()
+                .get("/offenders/1")
+                .then()
+                .statusCode(401);
+    }
+
+    private String someoneElsesToken() {
+        return "Bearer " + new Jwt("Someone elses secret", 1).buildToken(UserData.builder().distinguishedName(UUID.randomUUID().toString()).build());
+    }
+
+    private String aToken() {
+        return "Bearer " + jwt.buildToken(UserData.builder().distinguishedName(UUID.randomUUID().toString()).build());
     }
 
 }
