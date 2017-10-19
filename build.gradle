@@ -11,12 +11,12 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.7.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.8.RELEASE")
     }
 }
 
 plugins {
-    id 'org.springframework.boot' version '1.5.7.RELEASE'
+    id 'org.springframework.boot' version '1.5.8.RELEASE'
 }
 
 // Apply the java plugin to add support for Java
@@ -46,9 +46,11 @@ configurations {
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-    compile 'org.springframework.boot:spring-boot-starter-web:1.5.7.RELEASE'
-    compile 'org.springframework.boot:spring-boot-starter-jetty:1.5.7.RELEASE'
-    compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.5.7.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-web:1.5.8.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-jetty:1.5.8.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.5.8.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-data-ldap:1.5.8.RELEASE'
+    compile 'com.unboundid:unboundid-ldapsdk:4.0.1'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-joda:2.9.1'
     compile 'io.springfox:springfox-swagger2:2.7.0'
     compile 'org.flywaydb:flyway-core:4.2.0'

@@ -43,14 +43,14 @@ public class OffenderController {
     @JwtValidation
     public ResponseEntity<OffenderDetail> getOffender(final @RequestHeader HttpHeaders httpHeaders,
                                                       final @PathVariable("offenderId") Long offenderId) {
-        return offenderService.getOffender(offenderId, distinguishedNameFrom(httpHeaders)).map(
+        return offenderService.getOffender(offenderId, oracleUserFrom(httpHeaders)).map(
                 offenderDetail -> new ResponseEntity<>(offenderDetail, OK)
         ).orElse(notFound());
     }
 
-    private String distinguishedNameFrom(HttpHeaders httpHeaders) {
+    private String oracleUserFrom(HttpHeaders httpHeaders) {
         Claims jwtClaims = jwt.parseAuthorizationHeader(httpHeaders.get("Authorization").get(0)).get();
-        return jwtClaims.getSubject();
+        return (String) jwtClaims.get("oracleUser");
     }
 
     private ResponseEntity<OffenderDetail> notFound() {

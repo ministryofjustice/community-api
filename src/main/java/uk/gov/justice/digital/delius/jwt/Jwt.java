@@ -18,7 +18,7 @@ public class Jwt {
     private final int lifetimeSeconds;
 
     public Jwt(@Value("${jwt.secret}") String secret,
-               @Value("${jwt.lifetimeSeconds:3}") int lifetimeSeconds) {
+               @Value("${jwt.lifetimeSeconds:300}") int lifetimeSeconds) {
         this.secret = secret;
         this.lifetimeSeconds = lifetimeSeconds;
     }
@@ -39,8 +39,7 @@ public class Jwt {
     public String buildToken(UserData userData) {
 
         Claims claims = Jwts.claims().setSubject(userData.getDistinguishedName());
-//        claims.put("userId", u.getId() + "");
-//        claims.put("role", u.getRole());
+        claims.put("oracleUser", userData.getOracleUser());
 
         return Jwts.builder()
                 .setClaims(claims)

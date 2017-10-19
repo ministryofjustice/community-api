@@ -1,0 +1,63 @@
+dn: dc=memorynotfound,dc=com
+objectclass: top
+objectclass: domain
+objectclass: extensibleObject
+dc: memorynotfound
+
+# Organizational Units
+dn: ou=groups,dc=memorynotfound,dc=com
+objectclass: top
+objectclass: organizationalUnit
+ou: groups
+
+dn: ou=people,dc=memorynotfound,dc=com
+objectclass: top
+objectclass: organizationalUnit
+ou: people
+
+# Create People
+dn: uid=john,ou=people,dc=memorynotfound,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: John Doe
+sn: John
+uid: john
+oracleUser: Johndoe1
+
+dn: uid=jihn,ou=people,dc=memorynotfound,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: Jihn Die
+sn: Jihn
+uid: jihn
+oracleUser: Jihndie1
+
+dn: uid=jahn,ou=people,dc=memorynotfound,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: Jahn Dae
+sn: Jahn
+uid: jahn
+oracleUser: Jahndae1
+
+# Create Groups
+dn: cn=developers,ou=groups,dc=memorynotfound,dc=com
+objectclass: top
+objectclass: groupOfUniqueNames
+cn: developers
+ou: developer
+uniqueMember: uid=john,ou=people,dc=memorynotfound,dc=com
+uniqueMember: uid=jihn,ou=people,dc=memorynotfound,dc=com
+
+dn: cn=managers,ou=groups,dc=memorynotfound,dc=com
+objectclass: top
+objectclass: groupOfUniqueNames
+cn: managers
+ou: manager
+uniqueMember: uid=jahn,ou=people,dc=memorynotfound,dc=com
