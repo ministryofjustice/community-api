@@ -1,12 +1,17 @@
 package uk.gov.justice.digital.delius.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import org.junit.Test;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 import uk.gov.justice.digital.delius.user.UserData;
 
+import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -90,5 +95,38 @@ public class JwtTest {
         assertThat(claims.isPresent()).isTrue();
         assertThat(claims.get().getSubject()).isEqualTo(distinguishedName);
 
+    }
+
+    @Test(expected = SignatureException.class)
+    public void cannotModifyClaimsAndStillHaveValidToken() throws IOException {
+        Jwt jwt = new Jwt("a secret", 1);
+
+        String distinguishedName = UUID.randomUUID().toString();
+        String oracleUser = UUID.randomUUID().toString();
+
+        String originalToken = jwt.buildToken(UserData.builder()
+                .distinguishedName(distinguishedName)
+                .oracleUser(oracleUser)
+                .build());
+
+        String[] tokenParts = originalToken.split("\\.");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        Map<String,String> payloadMap = objectMapper.readValue(new BASE64Decoder().decodeBuffer(tokenParts[1]), Map.class);
+
+        payloadMap.put("extra","naughty_claim");
+
+        String serializedClaims = objectMapper.writeValueAsString(payloadMap);
+
+        String modifiedPart2 = new BASE64Encoder().encode(serializedClaims.getBytes());
+
+        tokenParts[1] = modifiedPart2;
+
+        String tinkeredToken = String.join(".", tokenParts);
+
+        jwt.parseToken(tinkeredToken);
+
+        fail("Should have rejected modified content with invalid signature.");
     }
 }
