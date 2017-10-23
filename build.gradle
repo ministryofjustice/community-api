@@ -63,7 +63,7 @@ dependencies {
 
     testRuntime 'com.h2database:h2:1.4.196'
     runtime 'com.h2database:h2:1.4.196'
-    runtime 'com.oracle:ojdbc8:12.2.0.1'
+//    runtime 'com.oracle:ojdbc8:12.2.0.1'
 
     testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
     testCompile 'org.springframework.boot:spring-boot-starter-test'
