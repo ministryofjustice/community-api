@@ -6,11 +6,10 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import org.junit.Test;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 import uk.gov.justice.digital.delius.user.UserData;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -102,24 +101,24 @@ public class JwtTest {
         Jwt jwt = new Jwt("a secret", 1);
 
         String distinguishedName = UUID.randomUUID().toString();
-        String oracleUser = UUID.randomUUID().toString();
+        String deliusDistinguishedName = UUID.randomUUID().toString();
 
         String originalToken = jwt.buildToken(UserData.builder()
                 .distinguishedName(distinguishedName)
-                .oracleUser(oracleUser)
+                .deliusDistinguishedName(deliusDistinguishedName)
                 .build());
 
         String[] tokenParts = originalToken.split("\\.");
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        Map<String,String> payloadMap = objectMapper.readValue(new BASE64Decoder().decodeBuffer(tokenParts[1]), Map.class);
+        Map<String, String> payloadMap = objectMapper.readValue(Base64.getDecoder().decode(tokenParts[1]), Map.class);
 
-        payloadMap.put("extra","naughty_claim");
+        payloadMap.put("extra", "naughty_claim");
 
         String serializedClaims = objectMapper.writeValueAsString(payloadMap);
 
-        String modifiedPart2 = new BASE64Encoder().encode(serializedClaims.getBytes());
+        String modifiedPart2 = new String(Base64.getEncoder().encode(serializedClaims.getBytes()));
 
         tokenParts[1] = modifiedPart2;
 

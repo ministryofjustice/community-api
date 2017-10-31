@@ -16,15 +16,15 @@ objectclass: organizationalUnit
 ou: people
 
 # Create People
-dn: uid=john,ou=people,dc=memorynotfound,dc=com
+dn: uid=oliverc,ou=people,dc=memorynotfound,dc=com
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
 objectclass: inetOrgPerson
-cn: John Doe
-sn: John
-uid: john
-oracleUser: Johndoe1
+cn: Oliver Connolly
+sn: Oliver
+uid: oliverc
+deliusDistinguishedName: oliver.connolly
 
 dn: uid=jihn,ou=people,dc=memorynotfound,dc=com
 objectclass: top
@@ -34,7 +34,7 @@ objectclass: inetOrgPerson
 cn: Jihn Die
 sn: Jihn
 uid: jihn
-oracleUser: Jihndie1
+deliusDistinguishedName: Jihndie1
 
 dn: uid=jahn,ou=people,dc=memorynotfound,dc=com
 objectclass: top
@@ -44,7 +44,7 @@ objectclass: inetOrgPerson
 cn: Jahn Dae
 sn: Jahn
 uid: jahn
-oracleUser: Jahndae1
+deliusDistinguishedName: Jahndae1
 
 # Create Groups
 dn: cn=developers,ou=groups,dc=memorynotfound,dc=com

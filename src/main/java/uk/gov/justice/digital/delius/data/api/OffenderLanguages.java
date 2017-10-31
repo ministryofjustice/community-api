@@ -4,13 +4,14 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Data
 @Builder(toBuilder = true)
 public class OffenderLanguages {
-    private String primaryLanguage;
+    private Optional<String> primaryLanguage;
     private List<String> otherLanguages;
-    private String languageConcerns;
+    private Optional<String> languageConcerns;
     private boolean requiresInterpreter;
 }

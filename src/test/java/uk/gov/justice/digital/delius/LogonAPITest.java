@@ -84,6 +84,6 @@ public class LogonAPITest {
                 .statusCode(200)
                 .extract().body().asString();
 
-        assertThat(jwt.parseToken(token).get().get("oracleUser")).isEqualTo("Jihndie1");
+        assertThat(jwt.parseToken(token).get().get("deliusDistinguishedName")).isEqualTo("Jihndie1");
     }
 }

@@ -3,7 +3,6 @@ package uk.gov.justice.digital.delius.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.user.UserData;
@@ -39,11 +38,11 @@ public class Jwt {
     public String buildToken(UserData userData) {
 
         Claims claims = Jwts.claims().setSubject(userData.getDistinguishedName());
-        claims.put("oracleUser", userData.getOracleUser());
+        claims.put("deliusDistinguishedName", userData.getDeliusDistinguishedName());
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setExpiration(DateTime.now().plusSeconds(lifetimeSeconds).toDate())
+                .setExpiration(Date.from(java.time.ZonedDateTime.now().plusSeconds(lifetimeSeconds).toInstant()))
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
     }

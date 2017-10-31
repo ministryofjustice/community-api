@@ -5,10 +5,11 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.Optional;
 
 @Data
 @Builder(toBuilder = true)
 public class Conviction {
-    private LocalDate convictionDate;
-    private Map<String,Object> detail;
+    private Optional<LocalDate> convictionDate;
+    private Map<String, String> detail;
 }

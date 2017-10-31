@@ -71,7 +71,7 @@ public class Offender {
     private LocalDate deceasedDate;
 
     @Column(name = "INTERPRETER_REQUIRED")
-    private Character interpreterRequired;
+    private String interpreterRequired;
 
     @Column(name = "IMMIGRATION_NUMBER")
     private String immigrationNumber;

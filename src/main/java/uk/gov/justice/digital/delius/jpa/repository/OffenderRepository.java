@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface OffenderRepository extends JpaRepository<Offender, Long> {
     Optional<Offender> findByOffenderId(Long offenderId);
+
+//    long countByOffenderId();
 }

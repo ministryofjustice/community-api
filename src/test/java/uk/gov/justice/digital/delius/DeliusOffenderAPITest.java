@@ -61,7 +61,7 @@ public class DeliusOffenderAPITest {
     @Test
     public void lookupUnknownOffenderGivesNotFound() {
         given()
-                .header("Authorization", aToken())
+                .header("Authorization", aValidToken())
                 .when()
                 .get("/offenders/987654321")
                 .then()
@@ -90,7 +90,7 @@ public class DeliusOffenderAPITest {
                 .immigrationNumber("IM123")
                 .immigrationStatus(StandardReference.builder().codeDescription("N/A").build())
                 .institutionId(4L)
-                .interpreterRequired('N')
+                .interpreterRequired("N")
                 .language(StandardReference.builder().codeDescription("ENGLISH").build())
                 .languageConcerns("None")
                 .mobileNumber("0718118055")
@@ -120,7 +120,7 @@ public class DeliusOffenderAPITest {
 
         OffenderDetail offenderDetail =
                 given()
-                        .header("Authorization", aToken())
+                        .header("Authorization", aValidToken())
                         .when()
                         .get("/offenders/1")
                         .then()
@@ -164,7 +164,7 @@ public class DeliusOffenderAPITest {
         return "Bearer " + new Jwt("Someone elses secret", 1).buildToken(UserData.builder().distinguishedName(UUID.randomUUID().toString()).build());
     }
 
-    private String aToken() {
+    private String aValidToken() {
         return "Bearer " + jwt.buildToken(UserData.builder().distinguishedName(UUID.randomUUID().toString()).build());
     }
 

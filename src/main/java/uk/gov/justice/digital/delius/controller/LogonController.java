@@ -37,12 +37,12 @@ public class LogonController {
     @RequestMapping(method = RequestMethod.POST, consumes = "text/plain")
     public ResponseEntity<String> getToken(final @RequestBody String distinguishedName) {
 
-        Optional<String> maybeOracleUser = userRepository.getOracleUser(distinguishedName);
+        Optional<String> maybeDeliusDistinguishedName = userRepository.getDeliusUserDistinguishedName(distinguishedName);
 
-        return maybeOracleUser.map(oracleUser ->
+        return maybeDeliusDistinguishedName.map(oracleUser ->
                 new ResponseEntity<>(jwt.buildToken(UserData.builder()
                         .distinguishedName(distinguishedName)
-                        .oracleUser(oracleUser)
+                        .deliusDistinguishedName(oracleUser)
                         .build()), HttpStatus.OK)).orElse(notFound());
     }
 

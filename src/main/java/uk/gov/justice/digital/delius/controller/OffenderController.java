@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.controller;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
@@ -20,6 +19,8 @@ import uk.gov.justice.digital.delius.exception.JwtTokenMissingException;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
 import uk.gov.justice.digital.delius.service.OffenderService;
+
+import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
@@ -43,15 +44,16 @@ public class OffenderController {
     @JwtValidation
     public ResponseEntity<OffenderDetail> getOffender(final @RequestHeader HttpHeaders httpHeaders,
                                                       final @PathVariable("offenderId") Long offenderId) {
-        return offenderService.getOffender(offenderId, oracleUserFrom(httpHeaders)).map(
+        Optional<OffenderDetail> offender = offenderService.getOffender(offenderId);
+        return offender.map(
                 offenderDetail -> new ResponseEntity<>(offenderDetail, OK)
         ).orElse(notFound());
     }
 
-    private String oracleUserFrom(HttpHeaders httpHeaders) {
-        Claims jwtClaims = jwt.parseAuthorizationHeader(httpHeaders.get("Authorization").get(0)).get();
-        return (String) jwtClaims.get("oracleUser");
-    }
+//    private String oracleUserFrom(HttpHeaders httpHeaders) {
+//        Claims jwtClaims = jwt.parseAuthorizationHeader(httpHeaders.get("Authorization").get(0)).get();
+//        return (String) jwtClaims.get("deliusDistinguishedName");
+//    }
 
     private ResponseEntity<OffenderDetail> notFound() {
         return new ResponseEntity<>(NOT_FOUND);

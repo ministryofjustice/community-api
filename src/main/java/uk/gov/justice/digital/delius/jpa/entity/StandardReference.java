@@ -15,7 +15,7 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "R_STANDARD_REFERENCE")
+@Table(name = "R_STANDARD_REFERENCE_LIST")
 public class StandardReference {
     @Id
     @Column(name = "STANDARD_REFERENCE_LIST_ID")
