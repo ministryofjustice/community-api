@@ -13,5 +13,5 @@ public class OffenderLanguages {
     private Optional<String> primaryLanguage;
     private List<String> otherLanguages;
     private Optional<String> languageConcerns;
-    private boolean requiresInterpreter;
+    private Optional<Boolean> requiresInterpreter;
 }

@@ -44,40 +44,60 @@ public class OffenderService {
                 .middleNames(Optional.ofNullable(offender.getSecondName()))
                 .surname(offender.getSurname())
                 .title(Optional.ofNullable(offender.getTitle()).map(StandardReference::getCodeDescription))
-                .contactDetails(ContactDetails.builder()
-                        .allowSMS("Y".equals(offender.getAllowSMS()))
-                        .emailAddresses(
-                                Optional.ofNullable(offender.getEmailAddress()).map(Arrays::asList).orElse(Collections.emptyList()))
-                        .phoneNumbers(buildPhoneNumbers(offender))
-                        .build())
-                .ids(IDs.builder()
-                        .CRN(offender.getCrn())
-                        .CRONumber(Optional.ofNullable(offender.getCroNumber()))
-                        .immigrationNumber(Optional.ofNullable(offender.getImmigrationNumber()))
-                        .NINumber(Optional.ofNullable(offender.getNiNumber()))
-                        .NOMSNumber(Optional.ofNullable(offender.getNomsNumber()))
-                        .PNCNumber(Optional.ofNullable(offender.getPncNumber()))
-                        .mostRecentPrisonerNumber(Optional.ofNullable(offender.getMostRecentPrisonerNumber()))
-                        .build())
-                .offenderProfile(OffenderProfile.builder()
-                        .ethnicity(Optional.ofNullable(offender.getEthnicity()).map(StandardReference::getCodeDescription))
-                        .immigrationStatus(Optional.ofNullable(offender.getImmigrationStatus()).map(StandardReference::getCodeDescription))
-                        .nationality(Optional.ofNullable(offender.getNationality()).map(StandardReference::getCodeDescription))
-                        .offenderLanguages(OffenderLanguages.builder()
-                                .primaryLanguage(Optional.ofNullable(offender.getLanguage()).map(StandardReference::getCodeDescription))
-                                .languageConcerns(Optional.ofNullable(offender.getLanguageConcerns()))
-                                .requiresInterpreter("Y".equals(offender.getInterpreterRequired()))
-                                .build())
-                        .previousConviction(Conviction.builder()
-                                .convictionDate(Optional.ofNullable(offender.getPreviousConvictionDate()))
-                                .detail(Optional.ofNullable(offender.getPrevConvictionDocumentName()).map(doc -> ImmutableMap.of("documentName", doc)).orElse(null))
-                                .build())
-                        .religion(Optional.ofNullable(offender.getReligion()).map(StandardReference::getCodeDescription))
-                        .remandStatus(Optional.ofNullable(offender.getCurrentRemandStatus()))
-                        .secondaryNationality(Optional.ofNullable(offender.getSecondNationality()).map(StandardReference::getCodeDescription))
-                        .sexualOrientation(Optional.ofNullable(offender.getSexualOrientation()).map(StandardReference::getCodeDescription))
-                        .build())
+                .contactDetails(buildContactDetails(offender))
+                .ids(buildIDs(offender))
+                .offenderProfile(buildOffenderProfile(offender))
                 .build());
+    }
+
+    private ContactDetails buildContactDetails(Offender offender) {
+        return ContactDetails.builder()
+                .allowSMS(Optional.ofNullable(offender.getAllowSMS()).map(allowSms -> "Y".equals(allowSms)))
+                .emailAddresses(
+                        Optional.ofNullable(offender.getEmailAddress()).map(Arrays::asList).orElse(Collections.emptyList()))
+                .phoneNumbers(buildPhoneNumbers(offender))
+                .build();
+    }
+
+    private IDs buildIDs(Offender offender) {
+        return IDs.builder()
+                .CRN(offender.getCrn())
+                .CRONumber(Optional.ofNullable(offender.getCroNumber()))
+                .immigrationNumber(Optional.ofNullable(offender.getImmigrationNumber()))
+                .NINumber(Optional.ofNullable(offender.getNiNumber()))
+                .NOMSNumber(Optional.ofNullable(offender.getNomsNumber()))
+                .PNCNumber(Optional.ofNullable(offender.getPncNumber()))
+                .mostRecentPrisonerNumber(Optional.ofNullable(offender.getMostRecentPrisonerNumber()))
+                .build();
+    }
+
+    private OffenderProfile buildOffenderProfile(Offender offender) {
+        return OffenderProfile.builder()
+                .ethnicity(Optional.ofNullable(offender.getEthnicity()).map(StandardReference::getCodeDescription))
+                .immigrationStatus(Optional.ofNullable(offender.getImmigrationStatus()).map(StandardReference::getCodeDescription))
+                .nationality(Optional.ofNullable(offender.getNationality()).map(StandardReference::getCodeDescription))
+                .offenderLanguages(buildLanguages(offender))
+                .previousConviction(buildPreviousConviction(offender))
+                .religion(Optional.ofNullable(offender.getReligion()).map(StandardReference::getCodeDescription))
+                .remandStatus(Optional.ofNullable(offender.getCurrentRemandStatus()))
+                .secondaryNationality(Optional.ofNullable(offender.getSecondNationality()).map(StandardReference::getCodeDescription))
+                .sexualOrientation(Optional.ofNullable(offender.getSexualOrientation()).map(StandardReference::getCodeDescription))
+                .build();
+    }
+
+    private Conviction buildPreviousConviction(Offender offender) {
+        return Conviction.builder()
+                .convictionDate(Optional.ofNullable(offender.getPreviousConvictionDate()))
+                .detail(Optional.ofNullable(offender.getPrevConvictionDocumentName()).map(doc -> ImmutableMap.of("documentName", doc)).orElse(null))
+                .build();
+    }
+
+    private OffenderLanguages buildLanguages(Offender offender) {
+        return OffenderLanguages.builder()
+                .primaryLanguage(Optional.ofNullable(offender.getLanguage()).map(StandardReference::getCodeDescription))
+                .languageConcerns(Optional.ofNullable(offender.getLanguageConcerns()))
+                .requiresInterpreter(Optional.ofNullable(offender.getInterpreterRequired()).map(intReq -> "Y".equals(intReq)))
+                .build();
     }
 
     private List<PhoneNumber> buildPhoneNumbers(Offender offender) {
