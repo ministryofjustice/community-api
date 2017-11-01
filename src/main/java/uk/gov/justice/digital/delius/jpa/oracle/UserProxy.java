@@ -2,11 +2,13 @@ package uk.gov.justice.digital.delius.jpa.oracle;
 
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
+import org.springframework.aop.Advisor;
+import org.springframework.aop.framework.ProxyFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -22,36 +24,33 @@ import java.util.Optional;
 public class UserProxy {
 
     public static ThreadLocal<Claims> threadLocalClaims = new ThreadLocal<>();
+    public final Advisor closeConnectionAdvisor;
 
-    @Before("execution (* java.sql.Connection.close(..))")
-    public void closeOracleProxyThing(JoinPoint joinPoint) throws SQLException {
-        final Connection thisConnection = (Connection) joinPoint.getThis();
-        log.info("Closing oracle vpd thing.");
-
-        final PreparedStatement stmt = thisConnection.prepareStatement("call PKG_VPD_CTX.CLEAR_CLIENT_IDENTIFIER()");
-        stmt.execute();
-        stmt.close();
+    @Autowired
+    public UserProxy(@Qualifier("bclOracleCloseConnectionAdvice") Advisor closeConectionAdvisor) {
+        this.closeConnectionAdvisor = closeConectionAdvisor;
     }
 
     @Around("execution (* javax.sql.DataSource.getConnection(..))")
     public Connection doOracleProxyThing(ProceedingJoinPoint joinPoint) throws Throwable {
-        final Connection connection = (Connection) joinPoint.proceed();
-
+        Connection connection = (Connection) joinPoint.proceed(joinPoint.getArgs());
         Optional<Claims> maybeClaims = Optional.ofNullable(threadLocalClaims.get());
 
         return maybeClaims.map(claims -> {
 
             log.info("Doing oracle vpd thing for user " + claims.getSubject());
+            ProxyFactory proxyFactory = new ProxyFactory(connection);
+            proxyFactory.addAdvisor(closeConnectionAdvisor);
 
-            final PreparedStatement stmt;
-            try {
-                stmt = connection.prepareStatement("call PKG_VPD_CTX.SET_CLIENT_IDENTIFIER('" + claims.get("deliusDistinguishedName") + "')");
+            Connection proxiedConnection = (Connection) proxyFactory.getProxy();
+
+            try (PreparedStatement stmt = proxiedConnection.prepareStatement("call PKG_VPD_CTX.SET_CLIENT_IDENTIFIER('" + claims.get("deliusDistinguishedName") + "')");){
                 stmt.execute();
-                stmt.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
-            return connection;
+
+            return proxiedConnection;
         }).orElse(connection);
     }
 }

@@ -32,12 +32,9 @@ public class OffenderController {
 
     private final OffenderService offenderService;
 
-    private final Jwt jwt;
-
     @Autowired
-    public OffenderController(OffenderService offenderService, Jwt jwt) {
+    public OffenderController(OffenderService offenderService) {
         this.offenderService = offenderService;
-        this.jwt = jwt;
     }
 
     @RequestMapping(value = "/offenders/{offenderId}", method = RequestMethod.GET)
@@ -49,11 +46,6 @@ public class OffenderController {
                 offenderDetail -> new ResponseEntity<>(offenderDetail, OK)
         ).orElse(notFound());
     }
-
-//    private String oracleUserFrom(HttpHeaders httpHeaders) {
-//        Claims jwtClaims = jwt.parseAuthorizationHeader(httpHeaders.get("Authorization").get(0)).get();
-//        return (String) jwtClaims.get("deliusDistinguishedName");
-//    }
 
     private ResponseEntity<OffenderDetail> notFound() {
         return new ResponseEntity<>(NOT_FOUND);
