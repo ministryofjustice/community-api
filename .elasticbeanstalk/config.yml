@@ -1,0 +1,8 @@
+branch-defaults:
+  master:
+    environment: deliusapi-dev
+global:
+  application_name: deliusapi-dev
+  default_region: eu-west-2
+deploy:
+  artifact: Dockerrun.aws.json
