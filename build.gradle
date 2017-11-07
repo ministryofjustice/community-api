@@ -17,7 +17,9 @@ buildscript {
 
 plugins {
     id 'org.springframework.boot' version '1.5.8.RELEASE'
+    id "com.gorylenko.gradle-git-properties" version "1.4.16"
 }
+
 
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
@@ -55,6 +57,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-jetty:1.5.8.RELEASE'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.5.8.RELEASE'
     compile 'org.springframework.boot:spring-boot-starter-data-ldap:1.5.8.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-actuator:1.5.8.RELEASE'
     compile 'com.unboundid:unboundid-ldapsdk:4.0.1'
     compile 'io.springfox:springfox-swagger2:2.7.0'
     compile 'org.flywaydb:flyway-core:4.2.0'
