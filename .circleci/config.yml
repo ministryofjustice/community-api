@@ -59,7 +59,7 @@ jobs:
           name: Push to Docker Hub
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              ./scripts/publishDockerImage.sh deliusapi $BUILD_VERSION $CIRCLE_BUILD_NUM $CIRCLE_BUILD_URL $CIRCLE_SHA1 $DOCKER_EMAIL $DOCKER_USERNAME $DOCKER_PASSWORD
+              ./scripts/publishDockerImage.sh . deliusapi $BUILD_VERSION $CIRCLE_BUILD_NUM $CIRCLE_BUILD_URL $CIRCLE_SHA1 $DOCKER_EMAIL $DOCKER_USERNAME $DOCKER_PASSWORD
             fi
 
       - deploy:
