@@ -23,6 +23,6 @@ docker build $PATH \
   --label "build.url=$CIRCLE_BUILD_URL" \
   --label "build.gitref=$CIRCLE_SHA1"
 
-docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
 docker push $IMAGE_TAG
