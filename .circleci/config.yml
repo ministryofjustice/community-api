@@ -22,6 +22,11 @@ jobs:
       TERM: dumb
 
     steps:
+      - run:
+          name: Generate Build version
+          command: |
+            echo "export BUILD_VERSION=$(date +%Y%m%d%H%M)-$CIRCLE_BUILD_NUM" >> $BASH_ENV
+
       - checkout
 
       # Download and cache dependencies
@@ -59,7 +64,7 @@ jobs:
           name: Push to Docker Hub
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              ./scripts/publishDockerImage.sh deliusapi $BUILD_VERSION $CIRCLE_BUILD_NUM $CIRCLE_BUILD_URL $CIRCLE_SHA1 $DOCKER_EMAIL $DOCKER_USERNAME $DOCKER_PASSWORD
+              ./scripts/publishDockerImage.sh deliusapi "${BUILD_VERSION}" "${CIRCLE_BUILD_NUM}" "${CIRCLE_BUILD_URL}" "${CIRCLE_SHA1}" "${DOCKER_EMAIL}" "${DOCKER_USERNAME}" "${DOCKER_PASSWORD}"
             fi
 
       - deploy:
@@ -73,5 +78,5 @@ jobs:
           name: Deploy to Elastic Beanstalk Staging
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              ./scripts/deployElasticBeanstalk.sh $BUILD_VERSION
+              ./scripts/deployElasticBeanstalk.sh "${BUILD_VERSION}"
             fi
