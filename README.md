@@ -13,12 +13,27 @@ https://circleci.com/gh/noms-digital-studio/delius-offender-api
 ./gradlew build
 ```
 
-### Start the application
+### Assessmble the app
 ```
-./gradlew run
+./gradlew assemble
 ```
 
-Start the application on port '8080'.
+This makes the JAR executable by including a manifest. 
+
+### Start the application default profile
+Without additional configuration this mode uses an in memory H2 (empty) database and an in memory LDAP service which 
+references a file resource in the JAR (schema.ldif).
+
+```
+java -jar build/libs/delius-offender-api.jar
+```
+
+### Start the application Oracle profile
+```
+SPRING_DATASOURCE_URL=jdbc:oracle:thin:@<VM Oracle IP address>:1521:DNDA SPRING_PROFILES_ACTIVE=oracle java -jar build/libs/delius-offender-api.jar
+```
+
+Starts the application on port '8080'.
 
 ## Documentation
 http://localhost:8080/swagger-ui.html
