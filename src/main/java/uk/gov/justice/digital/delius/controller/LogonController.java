@@ -21,7 +21,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
-@RequestMapping("${base.url:/logon}")
+@RequestMapping("/logon")
 @Log
 public class LogonController {
 
