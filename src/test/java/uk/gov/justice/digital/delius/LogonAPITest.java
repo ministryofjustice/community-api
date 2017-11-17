@@ -37,7 +37,7 @@ public class LogonAPITest {
     @Before
     public void setup() {
         RestAssured.port = port;
-        RestAssured.basePath = "/";
+        RestAssured.basePath = "/api";
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig().jackson2ObjectMapperFactory(
                 (aClass, s) -> objectMapper
         ));

@@ -32,4 +32,6 @@ spring:
 jwt:
   secret: 'ChangeMe!'
 
+server:
+  context-path: ${contextpath:/api}
 

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.config;
 
+import com.google.common.base.Predicates;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -22,8 +23,11 @@ public class SwaggerConfig {
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
                 .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("uk.gov.justice.digital.delius.controller"))
-                .paths(regex("/*.*"))
+                .apis(RequestHandlerSelectors.any())
+                .paths(Predicates.or(regex("(\\/info.*)"),
+                                     regex("(\\/health.*)"),
+                                     regex("(\\/logon.*)"),
+                                     regex("(\\/offenders.*)")))
                 .build();
 
         docket.genericModelSubstitutes(Optional.class);

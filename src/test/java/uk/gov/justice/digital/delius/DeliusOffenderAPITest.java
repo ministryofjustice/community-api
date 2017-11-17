@@ -49,7 +49,7 @@ public class DeliusOffenderAPITest {
     @Before
     public void setup() {
         RestAssured.port = port;
-        RestAssured.basePath = "/delius";
+        RestAssured.basePath = "/api";
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig().jackson2ObjectMapperFactory(
                 (aClass, s) -> objectMapper
         ));
