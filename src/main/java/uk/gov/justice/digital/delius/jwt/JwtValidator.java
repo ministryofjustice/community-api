@@ -17,8 +17,11 @@ import java.util.Optional;
 @Component
 public class JwtValidator {
 
-    @Autowired
     private Jwt jwt;
+
+    public JwtValidator(@Autowired Jwt jwt) {
+        this.jwt = jwt;
+    }
 
     @Before("execution(@uk.gov.justice.digital.delius.jwt.JwtValidation * *(..))")
     public void validateJwt(JoinPoint joinPoint) {
