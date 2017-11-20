@@ -35,3 +35,8 @@ jwt:
 server:
   context-path: ${contextpath:/api}
 
+# Disable security locally so that the health end point shows full
+# details and all Spring Boot Actuator end points are visible
+management:
+  security:
+    enabled: false
