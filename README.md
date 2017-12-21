@@ -33,6 +33,16 @@ java -jar build/libs/delius-offender-api.jar
 SPRING_DATASOURCE_URL=jdbc:oracle:thin:@<VM Oracle IP address>:1521:DNDA SPRING_PROFILES_ACTIVE=oracle java -jar build/libs/delius-offender-api.jar
 ```
 
+### Additional configuration
+To override the default data source and ldap server, use the Spring conventional parameters.
+
+An example for connecting to a remote Ldap service is described in application.yml. 
+
+The Spring documentation can be found here:
+
+https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+
+
 Starts the application on port '8080'.
 
 ## Documentation
