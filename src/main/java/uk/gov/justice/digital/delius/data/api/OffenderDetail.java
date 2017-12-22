@@ -10,6 +10,7 @@ import java.util.Optional;
 @Data
 @Builder(toBuilder = true)
 public class OffenderDetail {
+    private Long offenderId;
     private Optional<String> title;
     private String firstName;
     private Optional<String> middleNames;
@@ -20,4 +21,5 @@ public class OffenderDetail {
     private IDs ids;
     private ContactDetails contactDetails;
     private OffenderProfile offenderProfile;
+    private List<OffenderAlias> offenderAliases;
 }

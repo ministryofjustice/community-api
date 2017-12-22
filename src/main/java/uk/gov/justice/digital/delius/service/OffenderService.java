@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.justice.digital.delius.data.api.Address;
 import uk.gov.justice.digital.delius.data.api.ContactDetails;
 import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.IDs;
@@ -13,6 +14,7 @@ import uk.gov.justice.digital.delius.data.api.OffenderLanguages;
 import uk.gov.justice.digital.delius.data.api.OffenderProfile;
 import uk.gov.justice.digital.delius.data.api.PhoneNumber;
 import uk.gov.justice.digital.delius.jpa.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.entity.OffenderAlias;
 import uk.gov.justice.digital.delius.jpa.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.repository.OffenderRepository;
 
@@ -38,6 +40,7 @@ public class OffenderService {
         Optional<Offender> maybeOffender = offenderRepository.findByOffenderId(offenderId);
 
         return maybeOffender.map(offender -> OffenderDetail.builder()
+                .offenderId(offender.getOffenderId())
                 .dateOfBirth(offender.getDateOfBirthDate())
                 .firstName(offender.getFirstName())
                 .gender(offender.getGender().getCodeDescription())
@@ -47,7 +50,21 @@ public class OffenderService {
                 .contactDetails(buildContactDetails(offender))
                 .ids(buildIDs(offender))
                 .offenderProfile(buildOffenderProfile(offender))
+                .offenderAliases(buildOffenderAliases(offender.getOffenderAliases()))
                 .build());
+    }
+
+    private List<uk.gov.justice.digital.delius.data.api.OffenderAlias> buildOffenderAliases(List<OffenderAlias> offenderAliases) {
+        return offenderAliases.stream().map(
+                alias -> uk.gov.justice.digital.delius.data.api.OffenderAlias.builder()
+                        .dateOfBirth(Optional.ofNullable(alias.getDateOfBirth()))
+                        .firstName(Optional.ofNullable(alias.getFirstName()))
+                        .secondName(Optional.ofNullable(alias.getSecondName()))
+                        .thirdName(Optional.ofNullable(alias.getThirdName()))
+                        .surname(Optional.ofNullable(alias.getSurname()))
+//                        .gender(Optional.of(alias.getGender()).map(gender -> gender.getCodeDescription()).orElse(""))
+                        .build()).collect(Collectors.toList());
+
     }
 
     private ContactDetails buildContactDetails(Offender offender) {
@@ -56,6 +73,22 @@ public class OffenderService {
                 .emailAddresses(
                         Optional.ofNullable(offender.getEmailAddress()).map(Arrays::asList).orElse(Collections.emptyList()))
                 .phoneNumbers(buildPhoneNumbers(offender))
+                .addresses(offender.getOffenderAddresses().stream().map(
+                        address -> Address.builder()
+                                .addressNumber(Optional.ofNullable(address.getAddressNumber()))
+                                .buildingName(Optional.ofNullable(address.getBuildingName()))
+                                .streetName(Optional.ofNullable(address.getStreetName()))
+                                .district(Optional.ofNullable(address.getDistrict()))
+                                .town(Optional.ofNullable(address.getTownCity()))
+                                .county(Optional.ofNullable(address.getCounty()))
+                                .postcode(Optional.ofNullable(address.getPostcode()))
+                                .telephoneNumber(Optional.ofNullable(address.getTelephoneNumber()))
+                                .notes(Optional.ofNullable(address.getNotes()))
+                                .noFixedAbode(address.getNoFixedAbode().equalsIgnoreCase("Y"))
+                                .from(address.getStartDate())
+                                .to(Optional.ofNullable(address.getEndDate()))
+                                .build()).collect(Collectors.toList())
+                )
                 .build();
     }
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
+import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -112,6 +113,8 @@ public class DeliusOffenderAPITest {
                 .sexualOrientation(StandardReference.builder().codeDescription("STR").build())
                 .previousConvictionDate(LocalDate.of(2016, 1, 1))
                 .prevConvictionDocumentName("CONV1234")
+                .offenderAliases(Lists.emptyList())
+                .offenderAddresses(Lists.emptyList())
                 .build();
 
         Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(

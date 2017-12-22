@@ -12,4 +12,5 @@ public class ContactDetails {
     private List<PhoneNumber> phoneNumbers;
     private List<String> emailAddresses;
     private Optional<Boolean> allowSMS;
+    private List<Address> addresses;
 }

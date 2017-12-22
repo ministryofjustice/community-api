@@ -10,11 +10,13 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -137,6 +139,14 @@ public class Offender {
     @ManyToOne
     @JoinColumn(name = "SECOND_NATIONALITY_ID")
     private StandardReference secondNationality;
+
+    @OneToMany
+    @JoinColumn(name = "OFFENDER_ID")
+    private List<OffenderAddress> offenderAddresses;
+
+    @OneToMany
+    @JoinColumn(name = "OFFENDER_ID")
+    private List<OffenderAlias> offenderAliases;
 
     @ManyToOne
     @JoinColumn(name = "SEXUAL_ORIENTATION_ID")
