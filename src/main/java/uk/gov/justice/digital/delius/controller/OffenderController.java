@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.data.api.views.Views;
 import uk.gov.justice.digital.delius.exception.JwtTokenMissingException;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
 import uk.gov.justice.digital.delius.service.OffenderService;
@@ -32,8 +34,21 @@ public class OffenderController {
 
     @RequestMapping(value = "/offenders/{offenderId}", method = RequestMethod.GET)
     @JwtValidation
+    @JsonView(Views.OffenderOnly.class)
     public ResponseEntity<OffenderDetail> getOffender(final @RequestHeader HttpHeaders httpHeaders,
                                                       final @PathVariable("offenderId") Long offenderId) {
+        return offenderResponseOf(offenderId);
+    }
+
+    @RequestMapping(value = "/offenders/{offenderId}/detail", method = RequestMethod.GET)
+    @JwtValidation
+    @JsonView(Views.FullFat.class)
+    public ResponseEntity<OffenderDetail> getFullFatOffender(final @RequestHeader HttpHeaders httpHeaders,
+                                                      final @PathVariable("offenderId") Long offenderId) {
+        return offenderResponseOf(offenderId);
+    }
+
+    private ResponseEntity<OffenderDetail> offenderResponseOf(@PathVariable("offenderId") Long offenderId) {
         Optional<OffenderDetail> offender = offenderService.getOffender(offenderId);
         return offender.map(
                 offenderDetail -> new ResponseEntity<>(offenderDetail, OK)

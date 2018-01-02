@@ -52,9 +52,6 @@ public class OffenderAlias {
     @Column(name = "GENDER_ID")
     private Long genderID;
 
-    @Column(name = "PARTITION_AREA_ID")
-    private Long partitionAreaID = 0L;
-
     @Column(name = "FIRST_NAME_SOUNDEX", nullable = false)
     private String firstnameSoundex;
 

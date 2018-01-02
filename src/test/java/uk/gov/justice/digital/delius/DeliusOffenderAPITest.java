@@ -16,6 +16,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.jpa.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.entity.OffenderAddress;
+import uk.gov.justice.digital.delius.jpa.entity.OffenderAlias;
 import uk.gov.justice.digital.delius.jpa.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jwt.Jwt;
@@ -70,9 +72,51 @@ public class DeliusOffenderAPITest {
     }
 
     @Test
-    public void lookupKnownOffenderGivesDetail() {
+    public void lookupKnownOffenderGivesBasicOffender() {
 
-        Offender offender = Offender.builder()
+        Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(anOffender()));
+
+        OffenderDetail offenderDetail =
+                given()
+                        .header("Authorization", aValidToken())
+                        .when()
+                        .get("/offenders/1")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .as(OffenderDetail.class);
+
+        assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
+        assertThat(offenderDetail.getOffenderAliases()).isEqualTo(Optional.empty());
+        assertThat(offenderDetail.getContactDetails().getAddresses()).isEqualTo(Optional.empty());
+    }
+
+    @Test
+    public void lookupKnownOffenderDetailGivesFullFatOffender() {
+
+        Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(anOffender()));
+
+        OffenderDetail offenderDetail =
+                given()
+                        .header("Authorization", aValidToken())
+                        .when()
+                        .get("/offenders/1/detail")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .as(OffenderDetail.class);
+
+        assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
+        assertThat(offenderDetail.getOffenderAliases().isPresent()).isTrue();
+        assertThat(offenderDetail.getOffenderAliases().get()).isNotEmpty();
+        assertThat(offenderDetail.getContactDetails().getAddresses().isPresent()).isTrue();
+        assertThat(offenderDetail.getContactDetails().getAddresses().get()).isNotEmpty();
+    }
+
+    private Offender anOffender() {
+        return Offender.builder()
                 .allowSMS("Y")
                 .crn("crn123")
                 .croNumber("cro123")
@@ -113,26 +157,9 @@ public class DeliusOffenderAPITest {
                 .sexualOrientation(StandardReference.builder().codeDescription("STR").build())
                 .previousConvictionDate(LocalDate.of(2016, 1, 1))
                 .prevConvictionDocumentName("CONV1234")
-                .offenderAliases(Lists.emptyList())
-                .offenderAddresses(Lists.emptyList())
+                .offenderAliases(Lists.newArrayList(OffenderAlias.builder().build()))
+                .offenderAddresses(Lists.newArrayList(OffenderAddress.builder().build()))
                 .build();
-
-        Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(
-                offender
-        ));
-
-        OffenderDetail offenderDetail =
-                given()
-                        .header("Authorization", aValidToken())
-                        .when()
-                        .get("/offenders/1")
-                        .then()
-                        .statusCode(200)
-                        .extract()
-                        .body()
-                        .as(OffenderDetail.class);
-
-        assertThat(offenderDetail.getSurname().equals("Sykes"));
     }
 
     @Test

@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.delius.data.api;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.justice.digital.delius.data.api.views.Views;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,5 +23,6 @@ public class OffenderDetail {
     private IDs ids;
     private ContactDetails contactDetails;
     private OffenderProfile offenderProfile;
-    private List<OffenderAlias> offenderAliases;
+    @JsonView(Views.FullFat.class)
+    private Optional<List<OffenderAlias>> offenderAliases;
 }

@@ -12,7 +12,7 @@ public class Address {
 
     private LocalDate from;
     private Optional<LocalDate> to;
-    private Boolean noFixedAbode;
+    private Optional<Boolean> noFixedAbode;
     private Optional<String> notes;
     private Optional<String> addressNumber;
     private Optional<String> buildingName;
