@@ -9,7 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.views.Views;
 import uk.gov.justice.digital.delius.exception.JwtTokenMissingException;
@@ -40,23 +45,22 @@ public class OffenderController {
         return offenderResponseOf(offenderId);
     }
 
-    @RequestMapping(value = "/offenders/{offenderId}/detail", method = RequestMethod.GET)
+    @RequestMapping(value = "/offenders/{offenderId}/all", method = RequestMethod.GET)
     @JwtValidation
     @JsonView(Views.FullFat.class)
     public ResponseEntity<OffenderDetail> getFullFatOffender(final @RequestHeader HttpHeaders httpHeaders,
-                                                      final @PathVariable("offenderId") Long offenderId) {
+                                                             final @PathVariable("offenderId") Long offenderId) {
         return offenderResponseOf(offenderId);
     }
 
     private ResponseEntity<OffenderDetail> offenderResponseOf(@PathVariable("offenderId") Long offenderId) {
         Optional<OffenderDetail> offender = offenderService.getOffender(offenderId);
         return offender.map(
-                offenderDetail -> new ResponseEntity<>(offenderDetail, OK)
-        ).orElse(notFound());
+                offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(notFound());
     }
 
     private ResponseEntity<OffenderDetail> notFound() {
-        return new ResponseEntity<>(NOT_FOUND);
+        return new ResponseEntity<>(OffenderDetail.builder().build(), NOT_FOUND);
     }
 
     @ExceptionHandler(JwtTokenMissingException.class)

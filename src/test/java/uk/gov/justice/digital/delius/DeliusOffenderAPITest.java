@@ -101,7 +101,7 @@ public class DeliusOffenderAPITest {
                 given()
                         .header("Authorization", aValidToken())
                         .when()
-                        .get("/offenders/1/detail")
+                        .get("/offenders/1/all")
                         .then()
                         .statusCode(200)
                         .extract()
