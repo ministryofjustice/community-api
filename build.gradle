@@ -23,6 +23,11 @@ plugins {
 
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
+version = "0.0.1"
+
+springBoot  {
+    buildInfo()
+}
 
 sourceCompatibility = 1.8
 
