@@ -46,17 +46,28 @@ https://docs.spring.io/spring-boot/docs/current/reference/html/common-applicatio
 Starts the application on port '8080'.
 
 ## Documentation
-http://localhost:8080/swagger-ui.html
+http://localhost:8080/api/swagger-ui.html
 
 ## Endpoints curl examples
 
 ### Logon
 ```
-curl -X POST http://localhost:8080/logon -H 'Content-Type: text/plain' -d 'uid=jihn,ou=people,dc=memorynotfound,dc=com'
+curl -X POST http://localhost:8080/api/logon -H 'Content-Type: text/plain' -d 'uid=jihn,ou=people,dc=memorynotfound,dc=com'
 ```
 
 ### Get offender details
 ```
-curl -X GET http://localhost:8080/offenders/12344568 -H 'Authorization: <token>'
+curl -X GET http://localhost:8080/api/offenders/12344568 -H 'Authorization: <token>'
 ```
+
+### Application info
+```
+curl -X GET http://localhost:8080/api/info
+```
+
+### Application health
+```
+curl -X GET http://localhost:8080/api/health
+```
+
 
