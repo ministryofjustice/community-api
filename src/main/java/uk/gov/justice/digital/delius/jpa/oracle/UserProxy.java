@@ -23,12 +23,12 @@ import java.util.Optional;
 @Slf4j
 public class UserProxy {
 
-    public static ThreadLocal<Claims> threadLocalClaims = new ThreadLocal<>();
-    public final Advisor closeConnectionAdvisor;
+    public static final ThreadLocal<Claims> threadLocalClaims = new ThreadLocal<>();
+    private final Advisor closeConnectionAdvisor;
 
     @Autowired
-    public UserProxy(@Qualifier("bclOracleCloseConnectionAdvice") Advisor closeConectionAdvisor) {
-        this.closeConnectionAdvisor = closeConectionAdvisor;
+    public UserProxy(@Qualifier("bclOracleCloseConnectionAdvice") Advisor closeConnectionAdvisor) {
+        this.closeConnectionAdvisor = closeConnectionAdvisor;
     }
 
     @Around("execution (* javax.sql.DataSource.getConnection(..))")
@@ -44,7 +44,7 @@ public class UserProxy {
 
             Connection proxiedConnection = (Connection) proxyFactory.getProxy();
 
-            try (PreparedStatement stmt = proxiedConnection.prepareStatement("call PKG_VPD_CTX.SET_CLIENT_IDENTIFIER('" + claims.get("deliusDistinguishedName") + "')");){
+            try (PreparedStatement stmt = proxiedConnection.prepareStatement("call PKG_VPD_CTX.SET_CLIENT_IDENTIFIER('" + claims.get("deliusDistinguishedName") + "')")) {
                 stmt.execute();
             } catch (SQLException e) {
                 throw new RuntimeException(e);

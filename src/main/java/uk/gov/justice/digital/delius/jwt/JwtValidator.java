@@ -17,7 +17,7 @@ import java.util.Optional;
 @Component
 public class JwtValidator {
 
-    private Jwt jwt;
+    private final Jwt jwt;
 
     public JwtValidator(@Autowired Jwt jwt) {
         this.jwt = jwt;
@@ -35,9 +35,7 @@ public class JwtValidator {
                 .map(authorization -> jwt.parseAuthorizationHeader(authorization))
                 .orElseThrow(() -> new JwtTokenMissingException("No Authorization Bearer token found in headers."));
 
-        if (maybeClaims.isPresent()) {
-            UserProxy.threadLocalClaims.set(maybeClaims.get());
-        }
+        maybeClaims.ifPresent(claims -> UserProxy.threadLocalClaims.set(claims));
     }
 
 }
