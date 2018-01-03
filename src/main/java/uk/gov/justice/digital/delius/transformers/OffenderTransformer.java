@@ -36,7 +36,7 @@ public class OffenderTransformer {
         return OffenderLanguages.builder()
                 .primaryLanguage(Optional.ofNullable(offender.getLanguage()).map(StandardReference::getCodeDescription))
                 .languageConcerns(Optional.ofNullable(offender.getLanguageConcerns()))
-                .requiresInterpreter(Optional.ofNullable(offender.getInterpreterRequired()).map(intReq -> "Y".equals(intReq)))
+                .requiresInterpreter(Optional.ofNullable(offender.getInterpreterRequired()).map("Y"::equals))
                 .build();
     }
 
@@ -84,7 +84,7 @@ public class OffenderTransformer {
                 .postcode(Optional.ofNullable(address.getPostcode()))
                 .telephoneNumber(Optional.ofNullable(address.getTelephoneNumber()))
                 .notes(Optional.ofNullable(address.getNotes()))
-                .noFixedAbode(Optional.ofNullable(address.getNoFixedAbode()).map(nfa -> nfa.equalsIgnoreCase("Y")))
+                .noFixedAbode(Optional.ofNullable(address.getNoFixedAbode()).map("Y"::equalsIgnoreCase))
                 .from(address.getStartDate())
                 .to(Optional.ofNullable(address.getEndDate()))
                 .build();
@@ -92,7 +92,7 @@ public class OffenderTransformer {
 
     private ContactDetails contactDetailsOf(Offender offender) {
         return ContactDetails.builder()
-                .allowSMS(Optional.ofNullable(offender.getAllowSMS()).map(allowSms -> "Y".equals(allowSms)))
+                .allowSMS(Optional.ofNullable(offender.getAllowSMS()).map("Y"::equals))
                 .emailAddresses(emailAddressesOf(offender))
                 .phoneNumbers(phoneNumbersOf(offender))
                 .addresses(Optional.of(addressesOf(offender)))
@@ -105,7 +105,7 @@ public class OffenderTransformer {
 
     private List<Address> addressesOf(Offender offender) {
         return offender.getOffenderAddresses().stream().map(
-                address -> addressOf(address)).collect(Collectors.toList());
+                this::addressOf).collect(Collectors.toList());
     }
 
     private uk.gov.justice.digital.delius.data.api.OffenderAlias aliasOf(OffenderAlias alias) {
