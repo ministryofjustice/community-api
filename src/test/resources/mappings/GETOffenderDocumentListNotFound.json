@@ -1,0 +1,27 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPattern": "/alfresco/s/noms-spg/search/D002385"
+  },
+  "response": {
+    "jsonBody": {
+      "status": "404",
+      "message": "00040161 CRN with ID D002385 does not exist"
+    },
+    "status": 404,
+    "headers": {
+      "Cache-Control": "no-cache",
+      "Content-Type": "application/json;charset=UTF-8",
+      "Date": "Wed, 03 Jan 2018 15:46:45 GMT",
+      "Expires": "Thu, 01 Jan 1970 00:00:00 GMT",
+      "Pragma": "no-cache",
+      "Server": "Apache-Coyote/1.1",
+      "Transfer-Encoding": "chunked"
+    },
+    "delayDistribution": {
+      "type": "uniform",
+      "lower": 1000,
+      "upper": 3000
+    }
+  }
+}

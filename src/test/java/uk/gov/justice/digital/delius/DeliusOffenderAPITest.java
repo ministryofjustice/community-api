@@ -1,11 +1,14 @@
 package uk.gov.justice.digital.delius;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.WireMockServer;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import org.assertj.core.util.Lists;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -14,6 +17,7 @@ import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.gov.justice.digital.delius.data.api.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.jpa.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.entity.OffenderAddress;
@@ -24,6 +28,8 @@ import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.user.UserData;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,6 +55,8 @@ public class DeliusOffenderAPITest {
     @Autowired
     private Jwt jwt;
 
+    private WireMockServer wiremockServer;
+
     @Before
     public void setup() {
         RestAssured.port = port;
@@ -57,22 +65,27 @@ public class DeliusOffenderAPITest {
                 (aClass, s) -> objectMapper
         ));
         Mockito.when(offenderRepository.findByOffenderId(any(Long.class))).thenReturn(Optional.empty());
+        wiremockServer = new WireMockServer(8088);
+        wiremockServer.start();
+    }
 
-
+    @After
+    public void teardown() {
+        wiremockServer.stop();
     }
 
     @Test
-    public void lookupUnknownOffenderGivesNotFound() {
+    public void lookupUnknownOffenderIdGivesNotFound() {
         given()
                 .header("Authorization", aValidToken())
                 .when()
-                .get("/offenders/987654321")
+                .get("/offenders/offenderId/987654321")
                 .then()
                 .statusCode(404);
     }
 
     @Test
-    public void lookupKnownOffenderGivesBasicOffender() {
+    public void lookupKnownOffenderIdGivesBasicOffender() {
 
         Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(anOffender()));
 
@@ -80,7 +93,7 @@ public class DeliusOffenderAPITest {
                 given()
                         .header("Authorization", aValidToken())
                         .when()
-                        .get("/offenders/1")
+                        .get("/offenders/offenderId/1")
                         .then()
                         .statusCode(200)
                         .extract()
@@ -93,7 +106,7 @@ public class DeliusOffenderAPITest {
     }
 
     @Test
-    public void lookupKnownOffenderDetailGivesFullFatOffender() {
+    public void lookupKnownOffenderIdDetailGivesFullFatOffender() {
 
         Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(anOffender()));
 
@@ -101,7 +114,7 @@ public class DeliusOffenderAPITest {
                 given()
                         .header("Authorization", aValidToken())
                         .when()
-                        .get("/offenders/1/all")
+                        .get("/offenders/offenderId/1/all")
                         .then()
                         .statusCode(200)
                         .extract()
@@ -163,29 +176,29 @@ public class DeliusOffenderAPITest {
     }
 
     @Test
-    public void cannotGetOffenderWithoutJwtAuthorizationHeader() {
+    public void cannotGetOffenderByOffenderIdWithoutJwtAuthorizationHeader() {
         when()
-                .get("/offenders/1")
+                .get("/offenders/offenderId/1")
                 .then()
                 .statusCode(401);
     }
 
     @Test
-    public void cannotGetOffenderWithSomeoneElsesJwtAuthorizationHeader() {
+    public void cannotGetOffenderByOffenderIdWithSomeoneElsesJwtAuthorizationHeader() {
         given()
                 .header("Authorization", someoneElsesToken())
                 .when()
-                .get("/offenders/1")
+                .get("/offenders/offenderId/1")
                 .then()
                 .statusCode(401);
     }
 
     @Test
-    public void cannotGetOffenderWithJunkJwtAuthorizationHeader() {
+    public void cannotGetOffenderByOffenderIdWithJunkJwtAuthorizationHeader() {
         given()
                 .header("Authorization", UUID.randomUUID().toString())
                 .when()
-                .get("/offenders/1")
+                .get("/offenders/offenderId/1")
                 .then()
                 .statusCode(401);
     }
@@ -197,5 +210,121 @@ public class DeliusOffenderAPITest {
     private String aValidToken() {
         return "Bearer " + jwt.buildToken(UserData.builder().distinguishedName(UUID.randomUUID().toString()).build());
     }
+
+    @Test
+    public void canListOffenderDocumentsByOffenderCRN() {
+        DocumentMeta[] documentList = given()
+                .header("Authorization", aValidToken())
+                .when()
+                .get("/offenders/crn/D002384/documents")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(DocumentMeta[].class);
+
+        DocumentMeta expectedDoc = DocumentMeta.builder()
+                .docType("DOCUMENT")
+                .entityType("CONTACT")
+                .createdAt(OffsetDateTime.parse("2018-01-03T13:20:35Z"))
+                .lastModifiedAt(OffsetDateTime.parse("2018-01-03T13:20:35Z"))
+                .id("fa63c379-8b31-4e36-a152-2a57dfe251c4")
+                .documentName("TS2 Trg Template Letter_03012018_132035_Pickett_K_D002384.DOC")
+                .build();
+
+        assertThat(Arrays.asList(documentList)).containsOnly(expectedDoc);
+    }
+
+    @Test
+    public void listOffenderDocumentsForUnknownOffenderCRNGives404() {
+        given()
+                .header("Authorization", aValidToken())
+                .when()
+                .get("/offenders/crn/D002385/documents")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void canGetOffenderDocumentDetailsByOffenderCrnAndDocumentId() {
+        DocumentMeta documentMeta = given()
+                .header("Authorization", aValidToken())
+                .when()
+                .get("/offenders/crn/D002384/documents/fa63c379-8b31-4e36-a152-2a57dfe251c4/detail")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(DocumentMeta.class);
+
+        DocumentMeta expectedDoc = DocumentMeta.builder()
+                .docType("DOCUMENT")
+                .entityType("CONTACT")
+                .createdAt(OffsetDateTime.parse("2018-01-03T13:20:35Z"))
+                .lastModifiedAt(OffsetDateTime.parse("2018-01-03T13:20:35Z"))
+                .id("fa63c379-8b31-4e36-a152-2a57dfe251c4")
+                .documentName("TS2 Trg Template Letter_03012018_132035_Pickett_K_D002384.DOC")
+                .build();
+
+        assertThat(documentMeta).isEqualTo(expectedDoc);
+    }
+
+    @Test
+    public void getOffenderDocumentDetailsForUnknownOffenderGives404() {
+        given()
+                .header("Authorization", aValidToken())
+                .when()
+                .get("/offenders/crn/D002385/documents/fa63c379-8b31-4e36-a152-2a57dfe251c4/detail")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void getOffenderDocumentDetailsForKnownOffenderButUnknownDocumentGives404() {
+        given()
+                .header("Authorization", aValidToken())
+                .when()
+                .get("/offenders/crn/D002384/documents/" + UUID.randomUUID().toString() + "/detail")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    @Ignore("Can't get Restassured to handle binary response")
+    public void canRetrieveOffenderDocument() {
+
+        Byte[] docBytes = given()
+                .header("Authorization", aValidToken())
+                .when()
+                .get("/offenders/crn/D002384/documents/fa63c379-8b31-4e36-a152-2a57dfe251c4")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(Byte[].class);
+
+        assertThat(docBytes).isNotNull();
+    }
+
+    @Test
+    public void retrieveDocumentForUnknownOffenderGives404() {
+        given()
+                .header("Authorization", aValidToken())
+                .when()
+                .get("/offenders/crn/D002385/documents/fa63c379-8b31-4e36-a152-2a57dfe251c4")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void retrieveDocumentForKnownOffenderButUnknownDocumentGives404() {
+        given()
+                .header("Authorization", aValidToken())
+                .when()
+                .get("/offenders/crn/D002384/documents/" + UUID.randomUUID().toString())
+                .then()
+                .statusCode(404);
+    }
+
 
 }

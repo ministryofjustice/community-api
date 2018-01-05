@@ -44,3 +44,10 @@ server:
 management:
   security:
     enabled: false
+
+alfresco:
+  baseUrl: 'http://localhost:8088/alfresco/s/noms-spg'
+  X-DocRepository-Remote-User: 'N00'
+  X-DocRepository-Real-Remote-User: 'Smith,John'
+
+logging.level.uk.gov: INFO
