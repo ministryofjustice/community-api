@@ -23,11 +23,35 @@ public class OffenderService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<OffenderDetail> getOffender(Long offenderId) {
+    public Optional<OffenderDetail> getOffenderByOffenderId(Long offenderId) {
 
         Optional<Offender> maybeOffender = offenderRepository.findByOffenderId(offenderId);
 
         return maybeOffender.map(offenderTransformer::offenderOf);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<OffenderDetail> getOffenderByCrn(String crn) {
+
+        Optional<Offender> maybeOffender = offenderRepository.findByCrn(crn);
+
+        return maybeOffender.map(offenderTransformer::offenderOf);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<OffenderDetail> getOffenderByNomsNumber(String nomsNumber) {
+
+        Optional<Offender> maybeOffender = offenderRepository.findByNomsNumber(nomsNumber);
+
+        return maybeOffender.map(offenderTransformer::offenderOf);
+    }
+
+    public Optional<String> crnOf(Long offenderId) {
+        return offenderRepository.findByOffenderId(offenderId).map(offender -> offender.getCrn());
+    }
+
+    public Optional<String> crnOf(String nomsNumber) {
+        return offenderRepository.findByNomsNumber(nomsNumber).map(offender -> offender.getCrn());
     }
 
 }
