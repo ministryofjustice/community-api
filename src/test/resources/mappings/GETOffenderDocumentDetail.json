@@ -1,0 +1,41 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPattern": "/alfresco/s/noms-spg/details/fa63c379-8b31-4e36-a152-2a57dfe251c4"
+  },
+  "response": {
+    "jsonBody": {
+      "ID": "fa63c379-8b31-4e36-a152-2a57dfe251c4",
+      "crn": "D002384",
+      "name": "TS2 Trg Template Letter_03012018_132035_Pickett_K_D002384.DOC",
+      "entityId": 2500927038,
+      "entityType": "CONTACT",
+      "docType": "DOCUMENT",
+      "author": "NDelius02,NDelius02",
+      "lockOwner": "",
+      "locked": false,
+      "reserved": false,
+      "reservationOwner": "",
+      "lastModifiedDate": "2018-01-03T13:20:35Z",
+      "modifier": "N00",
+      "creationDate": "2018-01-03T13:20:35Z",
+      "url": "/noms-spg/fetch/fa63c379-8b31-4e36-a152-2a57dfe251c4"
+    },
+    "status": 200,
+    "headers": {
+      "Cache-Control": "no-cache",
+      "Content-Type": "application/json;charset=UTF-8",
+      "Date": "Wed, 03 Jan 2018 15:46:45 GMT",
+      "Expires": "Thu, 01 Jan 1970 00:00:00 GMT",
+      "Pragma": "no-cache",
+      "Server": "Apache-Coyote/1.1",
+      "Transfer-Encoding": "chunked"
+    },
+    "delayDistribution": {
+      "type": "uniform",
+      "lower": 1000,
+      "upper": 3000
+    }
+  }
+}
+

@@ -20,12 +20,11 @@ plugins {
     id "com.gorylenko.gradle-git-properties" version "1.4.16"
 }
 
-
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
 version = "0.0.1"
 
-springBoot  {
+springBoot {
     buildInfo()
 }
 
@@ -68,6 +67,8 @@ dependencies {
     compile 'org.flywaydb:flyway-core:4.2.0'
     compile 'io.springfox:springfox-swagger-ui:2.7.0'
     compile 'com.zaxxer:HikariCP:2.7.2'
+    compile 'commons-io:commons-io:2.6'
+
 
     compileOnly 'org.projectlombok:lombok:1.16.18'
 
@@ -78,5 +79,6 @@ dependencies {
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'junit:junit:4.12'
     testCompile 'io.rest-assured:rest-assured:3.0.3'
+    testCompile "com.github.tomakehurst:wiremock:2.13.0"
 
 }
