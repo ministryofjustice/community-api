@@ -8,7 +8,6 @@ import io.restassured.config.RestAssuredConfig;
 import org.assertj.core.util.Lists;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -444,20 +443,15 @@ public class DeliusOffenderAPITest {
     }
 
     @Test
-    @Ignore("Can't get Restassured to handle binary response")
     public void canRetrieveOffenderDocument() {
 
-        Byte[] docBytes = given()
+        given()
                 .header("Authorization", aValidToken())
                 .when()
-                .get("/offenders/crn/D002384/documents/fa63c379-8b31-4e36-a152-2a57dfe251c4")
+                .get("/offenders/crn/crn123/documents/fa63c379-8b31-4e36-a152-2a57dfe251c4")
                 .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(Byte[].class);
-
-        assertThat(docBytes).isNotNull();
+                .header("Content-Disposition", "attachment; filename=\"TS2 Trg Template Letter_03012018_132035_Pickett_K_D002384.DOC\"")
+                .statusCode(200);
     }
 
     @Test

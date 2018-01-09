@@ -8,7 +8,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -17,16 +16,12 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.justice.digital.delius.data.api.alfresco.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.alfresco.SearchResult;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service
 @Log
 public class AlfrescoService {
     private final RestTemplate restTemplate;
-    private final String alfresecoRemoteUser;
-    private final String alfrescoRealRemoteUser;
     private final MultiValueMap<String, String> headers;
 
     @Autowired
@@ -34,8 +29,6 @@ public class AlfrescoService {
                            @Value("${alfresco.X-DocRepository-Remote-User}") String alftresecoRemoteUser,
                            @Value("${alfresco.X-DocRepository-Real-Remote-User}") String alfrescoRealRemoteUser) {
         this.restTemplate = restTemplate;
-        this.alfresecoRemoteUser = alftresecoRemoteUser;
-        this.alfrescoRealRemoteUser = alfrescoRealRemoteUser;
         headers = new LinkedMultiValueMap<>();
         headers.add("X-DocRepository-Remote-User", alftresecoRemoteUser);
         headers.add("X-DocRepository-Real-Remote-User", alfrescoRealRemoteUser);
@@ -74,10 +67,27 @@ public class AlfrescoService {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
+        // Extract filename
+        String documentName = searchResult.getDocuments().stream().filter(doc -> doc.getId().equals(documentId))
+                .findFirst()
+                .map(docMeta -> docMeta.getName()).get();
+
         ResponseEntity<Resource> forEntity = restTemplate.exchange("/fetch/" + documentId, HttpMethod.GET, new HttpEntity<>(headers),
                 Resource.class);
 
-        return forEntity;
+        HttpHeaders responseHeaders = forEntity.getHeaders();
+        HttpHeaders newHeaders = new HttpHeaders();
+        newHeaders.add(HttpHeaders.ACCEPT_RANGES, responseHeaders.getFirst(HttpHeaders.ACCEPT_RANGES));
+        newHeaders.add(HttpHeaders.CONTENT_LENGTH, responseHeaders.getFirst(HttpHeaders.CONTENT_LENGTH));
+        newHeaders.add(HttpHeaders.CONTENT_TYPE, responseHeaders.getFirst(HttpHeaders.CONTENT_TYPE));
+        newHeaders.add(HttpHeaders.ETAG, responseHeaders.getFirst(HttpHeaders.ETAG));
+        newHeaders.add(HttpHeaders.LAST_MODIFIED, responseHeaders.getFirst(HttpHeaders.LAST_MODIFIED));
+        newHeaders.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + documentName + "\"");
+
+
+        ResponseEntity<Resource> response = new ResponseEntity<>(forEntity.getBody(), newHeaders, forEntity.getStatusCode());
+
+        return response;
     }
 
 }
