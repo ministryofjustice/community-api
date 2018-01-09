@@ -1,12 +1,16 @@
 {
   "request": {
     "method": "GET",
-    "urlPattern": "/alfresco/s/noms-spg/details/fa63c379-8b31-4e36-a152-2a57dfe251c4"
+    "urlPattern": "/alfresco/s/noms-spg/details/fa63c379-8b31-4e36-a152-2a57dfe251c4",
+    "headers": {
+      "X-DocRepository-Remote-User": { "equalTo": "N00" },
+      "X-DocRepository-Real-Remote-User": { "equalTo": "Smith,John"}
+    }
   },
   "response": {
     "jsonBody": {
       "ID": "fa63c379-8b31-4e36-a152-2a57dfe251c4",
-      "crn": "D002384",
+      "crn": "crn123",
       "name": "TS2 Trg Template Letter_03012018_132035_Pickett_K_D002384.DOC",
       "entityId": 2500927038,
       "entityType": "CONTACT",
@@ -30,11 +34,6 @@
       "Pragma": "no-cache",
       "Server": "Apache-Coyote/1.1",
       "Transfer-Encoding": "chunked"
-    },
-    "delayDistribution": {
-      "type": "uniform",
-      "lower": 1000,
-      "upper": 3000
     }
   }
 }

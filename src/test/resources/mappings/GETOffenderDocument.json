@@ -1,7 +1,11 @@
 {
   "request": {
     "method": "GET",
-    "urlPattern": "/alfresco/s/noms-spg/fetch/fa63c379-8b31-4e36-a152-2a57dfe251c4"
+    "urlPattern": "/alfresco/s/noms-spg/fetch/fa63c379-8b31-4e36-a152-2a57dfe251c4",
+    "headers": {
+      "X-DocRepository-Remote-User": { "equalTo": "N00" },
+      "X-DocRepository-Real-Remote-User": { "equalTo": "Smith,John"}
+    }
   },
   "response": {
     "bodyFileName": "sample_word_doc.doc",
@@ -15,11 +19,6 @@
       "Last-Modified": "Wed, 03 Jan 2018 13:20:35 GMT",
       "Server": "Apache-Coyote/1.1"
     },
-    "status": 200,
-    "delayDistribution": {
-      "type": "uniform",
-      "lower": 1000,
-      "upper": 3000
-    }
+    "status": 200
   }
 }

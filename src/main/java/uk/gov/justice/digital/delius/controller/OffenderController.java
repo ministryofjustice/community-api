@@ -167,7 +167,7 @@ public class OffenderController {
         return documentMetaResponseEntityOf(crn, documentId);
     }
 
-    private ResponseEntity<DocumentMeta> documentMetaResponseEntityOf(@PathVariable("crn") String crn, @PathVariable("documentId") String documentId) {
+    private ResponseEntity<DocumentMeta> documentMetaResponseEntityOf(String crn, String documentId) {
         return alfrescoService.getDocumentDetail(documentId, crn).map(detail -> new ResponseEntity<>(DocumentMeta.builder()
                 .createdAt(detail.getCreationDate())
                 .lastModifiedAt(detail.getLastModifiedDate())
@@ -181,7 +181,7 @@ public class OffenderController {
     @RequestMapping(value = "/offenders/offenderId/{offenderId}/documents/{documentId}/detail", method = RequestMethod.GET)
     @JwtValidation
     public ResponseEntity<DocumentMeta> getOffenderDocumentDetailByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
-                                                                              final @PathVariable("offenderId") String offenderId,
+                                                                              final @PathVariable("offenderId") Long offenderId,
                                                                               final @PathVariable("documentId") String documentId) {
 
         return documentMetaResponseEntityOf(documentId, offenderService.crnOf(offenderId))
@@ -198,7 +198,7 @@ public class OffenderController {
                 .orElse(new ResponseEntity<>(NOT_FOUND));
     }
 
-    private Optional<ResponseEntity<DocumentMeta>> documentMetaResponseEntityOf(@PathVariable("documentId") String documentId, Optional<String> maybeCrn) {
+    private Optional<ResponseEntity<DocumentMeta>> documentMetaResponseEntityOf(String documentId, Optional<String> maybeCrn) {
         return maybeCrn.map(crn -> documentMetaResponseEntityOf(crn, documentId));
     }
 

@@ -85,6 +85,44 @@ public class DeliusOffenderAPITest {
     }
 
     @Test
+    public void lookupKnownOffenderNomsNumberGivesBasicOffender() {
+
+        Mockito.when(offenderRepository.findByNomsNumber(eq("A12345"))).thenReturn(Optional.of(anOffender()));
+
+        OffenderDetail offenderDetail =
+                given()
+                        .header("Authorization", aValidToken())
+                        .when()
+                        .get("/offenders/nomsNumber/A12345")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .as(OffenderDetail.class);
+
+        assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
+    }
+
+    @Test
+    public void lookupKnownOffenderCrnGivesBasicOffender() {
+
+        Mockito.when(offenderRepository.findByCrn(eq("CRN123"))).thenReturn(Optional.of(anOffender()));
+
+        OffenderDetail offenderDetail =
+                given()
+                        .header("Authorization", aValidToken())
+                        .when()
+                        .get("/offenders/crn/CRN123")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .as(OffenderDetail.class);
+
+        assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
+    }
+
+    @Test
     public void lookupKnownOffenderIdGivesBasicOffender() {
 
         Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(anOffender()));
@@ -126,6 +164,46 @@ public class DeliusOffenderAPITest {
         assertThat(offenderDetail.getOffenderAliases().get()).isNotEmpty();
         assertThat(offenderDetail.getContactDetails().getAddresses().isPresent()).isTrue();
         assertThat(offenderDetail.getContactDetails().getAddresses().get()).isNotEmpty();
+    }
+
+    @Test
+    public void lookupKnownOffenderNomsNumberDetailGivesFullFatOffender() {
+
+        Mockito.when(offenderRepository.findByNomsNumber(eq("A12345"))).thenReturn(Optional.of(anOffender()));
+
+        OffenderDetail offenderDetail =
+                given()
+                        .header("Authorization", aValidToken())
+                        .when()
+                        .get("/offenders/nomsNumber/A12345/all")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .as(OffenderDetail.class);
+
+        assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
+        assertThat(offenderDetail.getContactDetails().getAddresses().isPresent()).isTrue();
+    }
+
+    @Test
+    public void lookupKnownOffenderCRNDetailGivesFullFatOffender() {
+
+        Mockito.when(offenderRepository.findByCrn(eq("CRN123"))).thenReturn(Optional.of(anOffender()));
+
+        OffenderDetail offenderDetail =
+                given()
+                        .header("Authorization", aValidToken())
+                        .when()
+                        .get("/offenders/crn/CRN123/all")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .as(OffenderDetail.class);
+
+        assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
+        assertThat(offenderDetail.getContactDetails().getAddresses().isPresent()).isTrue();
     }
 
     private Offender anOffender() {
@@ -216,14 +294,59 @@ public class DeliusOffenderAPITest {
         DocumentMeta[] documentList = given()
                 .header("Authorization", aValidToken())
                 .when()
-                .get("/offenders/crn/D002384/documents")
+                .get("/offenders/crn/crn123/documents")
                 .then()
                 .statusCode(200)
                 .extract()
                 .body()
                 .as(DocumentMeta[].class);
 
-        DocumentMeta expectedDoc = DocumentMeta.builder()
+        DocumentMeta expectedDoc = aDocumentMeta();
+
+        assertThat(Arrays.asList(documentList)).containsOnly(expectedDoc);
+    }
+
+    @Test
+    public void canListOffenderDocumentsByOffenderId() {
+        Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(anOffender()));
+
+
+        DocumentMeta[] documentList = given()
+                .header("Authorization", aValidToken())
+                .when()
+                .get("/offenders/offenderId/1/documents")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(DocumentMeta[].class);
+
+        DocumentMeta expectedDoc = aDocumentMeta();
+
+        assertThat(Arrays.asList(documentList)).containsOnly(expectedDoc);
+    }
+
+    @Test
+    public void canListOffenderDocumentsByNomsNumber() {
+        Mockito.when(offenderRepository.findByNomsNumber(eq("A12345"))).thenReturn(Optional.of(anOffender()));
+
+        DocumentMeta[] documentList = given()
+                .header("Authorization", aValidToken())
+                .when()
+                .get("/offenders/nomsNumber/A12345/documents")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(DocumentMeta[].class);
+
+        DocumentMeta expectedDoc = aDocumentMeta();
+
+        assertThat(Arrays.asList(documentList)).containsOnly(expectedDoc);
+    }
+
+    private DocumentMeta aDocumentMeta() {
+        return DocumentMeta.builder()
                 .docType("DOCUMENT")
                 .entityType("CONTACT")
                 .createdAt(OffsetDateTime.parse("2018-01-03T13:20:35Z"))
@@ -231,8 +354,6 @@ public class DeliusOffenderAPITest {
                 .id("fa63c379-8b31-4e36-a152-2a57dfe251c4")
                 .documentName("TS2 Trg Template Letter_03012018_132035_Pickett_K_D002384.DOC")
                 .build();
-
-        assertThat(Arrays.asList(documentList)).containsOnly(expectedDoc);
     }
 
     @Test
@@ -250,27 +371,60 @@ public class DeliusOffenderAPITest {
         DocumentMeta documentMeta = given()
                 .header("Authorization", aValidToken())
                 .when()
-                .get("/offenders/crn/D002384/documents/fa63c379-8b31-4e36-a152-2a57dfe251c4/detail")
+                .get("/offenders/crn/crn123/documents/fa63c379-8b31-4e36-a152-2a57dfe251c4/detail")
                 .then()
                 .statusCode(200)
                 .extract()
                 .body()
                 .as(DocumentMeta.class);
 
-        DocumentMeta expectedDoc = DocumentMeta.builder()
-                .docType("DOCUMENT")
-                .entityType("CONTACT")
-                .createdAt(OffsetDateTime.parse("2018-01-03T13:20:35Z"))
-                .lastModifiedAt(OffsetDateTime.parse("2018-01-03T13:20:35Z"))
-                .id("fa63c379-8b31-4e36-a152-2a57dfe251c4")
-                .documentName("TS2 Trg Template Letter_03012018_132035_Pickett_K_D002384.DOC")
-                .build();
+        DocumentMeta expectedDoc = aDocumentMeta();
 
         assertThat(documentMeta).isEqualTo(expectedDoc);
     }
 
     @Test
-    public void getOffenderDocumentDetailsForUnknownOffenderGives404() {
+    public void canGetOffenderDocumentDetailsByOffenderIdAndDocumentId() {
+        Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(anOffender()));
+
+
+        DocumentMeta documentMeta = given()
+                .header("Authorization", aValidToken())
+                .when()
+                .get("/offenders/offenderId/1/documents/fa63c379-8b31-4e36-a152-2a57dfe251c4/detail")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(DocumentMeta.class);
+
+        DocumentMeta expectedDoc = aDocumentMeta();
+
+        assertThat(documentMeta).isEqualTo(expectedDoc);
+    }
+
+    @Test
+    public void canGetOffenderDocumentDetailsByOffenderNomsNumberAndDocumentId() {
+        Mockito.when(offenderRepository.findByNomsNumber(eq("A12345"))).thenReturn(Optional.of(anOffender()));
+
+
+        DocumentMeta documentMeta = given()
+                .header("Authorization", aValidToken())
+                .when()
+                .get("/offenders/nomsNumber/A12345/documents/fa63c379-8b31-4e36-a152-2a57dfe251c4/detail")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(DocumentMeta.class);
+
+        DocumentMeta expectedDoc = aDocumentMeta();
+
+        assertThat(documentMeta).isEqualTo(expectedDoc);
+    }
+
+    @Test
+    public void getOffenderDocumentDetailsForUnknownOffenderCRNGives404() {
         given()
                 .header("Authorization", aValidToken())
                 .when()
@@ -280,7 +434,7 @@ public class DeliusOffenderAPITest {
     }
 
     @Test
-    public void getOffenderDocumentDetailsForKnownOffenderButUnknownDocumentGives404() {
+    public void getOffenderDocumentDetailsForKnownOffenderCRNButUnknownDocumentGives404() {
         given()
                 .header("Authorization", aValidToken())
                 .when()
@@ -307,7 +461,7 @@ public class DeliusOffenderAPITest {
     }
 
     @Test
-    public void retrieveDocumentForUnknownOffenderGives404() {
+    public void retrieveDocumentForUnknownOffenderCRNGives404() {
         given()
                 .header("Authorization", aValidToken())
                 .when()

@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import com.google.common.collect.ImmutableMap;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.justice.digital.delius.data.api.alfresco.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.alfresco.SearchResult;
@@ -24,32 +25,37 @@ import java.util.Optional;
 @Log
 public class AlfrescoService {
     private final RestTemplate restTemplate;
-    private final String alftresecoRemoteUser;
+    private final String alfresecoRemoteUser;
     private final String alfrescoRealRemoteUser;
+    private final MultiValueMap<String, String> headers;
 
     @Autowired
     public AlfrescoService(RestTemplate restTemplate,
                            @Value("${alfresco.X-DocRepository-Remote-User}") String alftresecoRemoteUser,
                            @Value("${alfresco.X-DocRepository-Real-Remote-User}") String alfrescoRealRemoteUser) {
         this.restTemplate = restTemplate;
-        this.alftresecoRemoteUser = alftresecoRemoteUser;
+        this.alfresecoRemoteUser = alftresecoRemoteUser;
         this.alfrescoRealRemoteUser = alfrescoRealRemoteUser;
+        headers = new LinkedMultiValueMap<>();
+        headers.add("X-DocRepository-Remote-User", alftresecoRemoteUser);
+        headers.add("X-DocRepository-Real-Remote-User", alfrescoRealRemoteUser);
     }
 
+
     public SearchResult listDocuments(String crn) {
-        ResponseEntity<SearchResult> forEntity = restTemplate.exchange("/search/" + crn, HttpMethod.GET, new HttpEntity<>(ImmutableMap.of(
-                "X-DocRepository-Remote-User", alftresecoRemoteUser,
-                "X-DocRepository-Real-Remote-User", alfrescoRealRemoteUser
-                )),
+
+
+        ResponseEntity<SearchResult> forEntity = restTemplate.exchange("/search/" + crn,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
                 SearchResult.class);
         return forEntity.getBody();
     }
 
     public Optional<DocumentMeta> getDocumentDetail(String documentId, String crn) {
-        ResponseEntity<DocumentMeta> forEntity = restTemplate.exchange("/details/" + documentId, HttpMethod.GET, new HttpEntity<>(ImmutableMap.of(
-                "X-DocRepository-Remote-User", alftresecoRemoteUser,
-                "X-DocRepository-Real-Remote-User", alfrescoRealRemoteUser
-                )),
+        ResponseEntity<DocumentMeta> forEntity = restTemplate.exchange("/details/" + documentId,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
                 DocumentMeta.class);
 
         if (forEntity.getBody().getCrn().equals(crn)) {
@@ -67,14 +73,6 @@ public class AlfrescoService {
         if (!searchResult.hasDocumentId(documentId)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
-        List<MediaType> acceptableMediaTypes = new ArrayList<>();
-        acceptableMediaTypes.add(MediaType.ALL);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(acceptableMediaTypes);
-        headers.add("X-DocRepository-Remote-User", alftresecoRemoteUser);
-        headers.add("X-DocRepository-Real-Remote-User", alfrescoRealRemoteUser);
 
         ResponseEntity<Resource> forEntity = restTemplate.exchange("/fetch/" + documentId, HttpMethod.GET, new HttpEntity<>(headers),
                 Resource.class);

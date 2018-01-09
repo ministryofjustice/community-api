@@ -1,7 +1,11 @@
 {
   "request": {
     "method": "GET",
-    "urlPattern": "/alfresco/s/noms-spg/details/fa63c379-8b31-4e36-a152-2a57dfe251c5"
+    "urlPattern": "/alfresco/s/noms-spg/details/fa63c379-8b31-4e36-a152-2a57dfe251c5",
+    "headers": {
+      "X-DocRepository-Remote-User": { "equalTo": "N00" },
+      "X-DocRepository-Real-Remote-User": { "equalTo": "Smith,John"}
+    }
   },
   "response": {
     "jsonBody": {
@@ -17,11 +21,6 @@
       "Pragma": "no-cache",
       "Server": "Apache-Coyote/1.1",
       "Transfer-Encoding": "chunked"
-    },
-    "delayDistribution": {
-      "type": "uniform",
-      "lower": 1000,
-      "upper": 3000
     }
   }
 }
