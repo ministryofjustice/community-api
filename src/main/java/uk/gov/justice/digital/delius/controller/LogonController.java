@@ -37,12 +37,12 @@ public class LogonController {
     @RequestMapping(method = RequestMethod.POST, consumes = "text/plain")
     public ResponseEntity<String> getToken(final @RequestBody String distinguishedName) {
 
-        Optional<String> maybeDeliusDistinguishedName = userRepository.getDeliusUserDistinguishedName(distinguishedName);
+        Optional<String> maybeUid = userRepository.getDeliusUid(distinguishedName);
 
-        return maybeDeliusDistinguishedName.map(oracleUser ->
+        return maybeUid.map(uid ->
                 new ResponseEntity<>(jwt.buildToken(UserData.builder()
                         .distinguishedName(distinguishedName)
-                        .deliusDistinguishedName(oracleUser)
+                        .uid(uid)
                         .build()), HttpStatus.OK)).orElse(notFound());
     }
 
@@ -59,6 +59,4 @@ public class LogonController {
     public ResponseEntity<String> noSuchDistinguishedName(Exception e) {
         return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
     }
-
-
 }

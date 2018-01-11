@@ -101,11 +101,11 @@ public class JwtTest {
         Jwt jwt = new Jwt("a secret", 1);
 
         String distinguishedName = UUID.randomUUID().toString();
-        String deliusDistinguishedName = UUID.randomUUID().toString();
+        String uid = UUID.randomUUID().toString();
 
         String originalToken = jwt.buildToken(UserData.builder()
                 .distinguishedName(distinguishedName)
-                .deliusDistinguishedName(deliusDistinguishedName)
+                .uid(uid)
                 .build());
 
         String[] tokenParts = originalToken.split("\\.");

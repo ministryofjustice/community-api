@@ -38,7 +38,7 @@ public class Jwt {
     public String buildToken(UserData userData) {
 
         Claims claims = Jwts.claims().setSubject(userData.getDistinguishedName());
-        claims.put("deliusDistinguishedName", userData.getDeliusDistinguishedName());
+        claims.put("deliusDistinguishedName", userData.getUid());
 
         return Jwts.builder()
                 .setClaims(claims)

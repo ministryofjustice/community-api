@@ -7,5 +7,5 @@ import lombok.Data;
 @Builder
 public class UserData {
     private String distinguishedName;
-    private String deliusDistinguishedName;
+    private String uid;
 }

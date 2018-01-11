@@ -23,8 +23,7 @@ objectclass: organizationalPerson
 objectclass: inetOrgPerson
 cn: Oliver Connolly
 sn: Oliver
-uid: oliverc
-deliusDistinguishedName: oliver.connolly
+uid: oliver.connolly
 
 dn: uid=jihn,ou=people,dc=memorynotfound,dc=com
 objectclass: top
@@ -33,8 +32,7 @@ objectclass: organizationalPerson
 objectclass: inetOrgPerson
 cn: Jihn Die
 sn: Jihn
-uid: jihn
-deliusDistinguishedName: Jihndie1
+uid: Jihndie1
 
 dn: uid=jahn,ou=people,dc=memorynotfound,dc=com
 objectclass: top
@@ -44,7 +42,6 @@ objectclass: inetOrgPerson
 cn: Jahn Dae
 sn: Jahn
 uid: jahn
-deliusDistinguishedName: Jahndae1
 
 # Create Groups
 dn: cn=developers,ou=groups,dc=memorynotfound,dc=com

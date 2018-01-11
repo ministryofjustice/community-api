@@ -17,11 +17,9 @@ public class UserRepository {
         this.ldapTemplate = ldapTemplate;
     }
 
-    public Optional<String> getDeliusUserDistinguishedName(String distinguishedName) {
+    public Optional<String> getDeliusUid(String distinguishedName) {
         return Optional.ofNullable(ldapTemplate.lookup(distinguishedName,
-                (AttributesMapper<String>) attrs -> (String) attrs.get("deliusDistinguishedName").get()));
+                (AttributesMapper<String>) attrs -> (String) attrs.get("uid").get()));
 
     }
-
-
 }
