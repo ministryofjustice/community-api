@@ -28,9 +28,11 @@ references a file resource in the JAR (schema.ldif).
 java -jar build/libs/delius-offender-api.jar
 ```
 
-### Start the application with Oracle db
+### Start the application with Delius Oracle db
+
+set SPRING_PROFILES_ACTIVE=oracle
 ```
-SPRING_DATASOURCE_URL=jdbc:oracle:thin:@<VM Oracle IP address>:1521:DNDA java -jar build/libs/delius-offender-api.jar
+SPRING_DATASOURCE_URL=jdbc:oracle:thin:@<VM Oracle IP address>:1521:DNDA SPRING_PROFILES_ACTIVE=oracle java -jar build/libs/delius-offender-api.jar
 ```
 
 ### Start the application with real LDAP
@@ -39,7 +41,7 @@ SPRING_LDAP_URLS=ldap://<ldap_addr>:<ldap_port> SPRING_LDAP_USERNAME=cn=orcladmi
 ```
 
 ### Additional configuration
-The application is convigured with conventional Spring parameters.
+The application is conigured with conventional Spring parameters.
 The Spring documentation can be found here:
 
 https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
