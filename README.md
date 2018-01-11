@@ -28,22 +28,25 @@ references a file resource in the JAR (schema.ldif).
 java -jar build/libs/delius-offender-api.jar
 ```
 
-### Start the application Oracle profile
+### Start the application with Oracle db
 ```
-SPRING_DATASOURCE_URL=jdbc:oracle:thin:@<VM Oracle IP address>:1521:DNDA SPRING_PROFILES_ACTIVE=oracle java -jar build/libs/delius-offender-api.jar
+SPRING_DATASOURCE_URL=jdbc:oracle:thin:@<VM Oracle IP address>:1521:DNDA java -jar build/libs/delius-offender-api.jar
+```
+
+### Start the application with real LDAP
+```
+SPRING_LDAP_URLS=ldap://<ldap_addr>:<ldap_port> SPRING_LDAP_USERNAME=cn=orcladmin SPRING_LDAP_PASSWORD=<secret> java -jar build/libs/delius-offender-api.jar
 ```
 
 ### Additional configuration
-To override the default data source and ldap server, use the Spring conventional parameters.
-
-An example for connecting to a remote Ldap service is described in application.yml. 
-
+The application is convigured with conventional Spring parameters.
 The Spring documentation can be found here:
 
 https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 
-
+### Default port
 Starts the application on port '8080'.
+To override, set server.port (eg SERVER_PORT=8099 java -jar etc etc)
 
 ## Documentation
 http://localhost:8080/api/swagger-ui.html
@@ -51,6 +54,10 @@ http://localhost:8080/api/swagger-ui.html
 ## Endpoints curl examples
 
 ### Logon
+The logon body must be a fully qualified LDAP distinguished name:
+
+cn=nick.redshaw,cn=Users,dc=moj,dc=com
+
 ```
 curl -X POST http://localhost:8080/api/logon -H 'Content-Type: text/plain' -d 'uid=jihn,ou=people,dc=memorynotfound,dc=com'
 ```
