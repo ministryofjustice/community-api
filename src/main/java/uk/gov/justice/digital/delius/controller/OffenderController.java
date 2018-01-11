@@ -68,7 +68,7 @@ public class OffenderController {
         return getOffenderByCrn(crn);
     }
 
-    private ResponseEntity<OffenderDetail> getOffenderByCrn(@PathVariable("crn") String crn) {
+    private ResponseEntity<OffenderDetail> getOffenderByCrn(String crn) {
         Optional<OffenderDetail> offender = offenderService.getOffenderByCrn(crn);
         return offender.map(
                 offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(notFound());
@@ -82,7 +82,7 @@ public class OffenderController {
         return getOffenderByNomsNumber(nomsNumber);
     }
 
-    private ResponseEntity<OffenderDetail> getOffenderByNomsNumber(@PathVariable("nomsNumber") String nomsNumber) {
+    private ResponseEntity<OffenderDetail> getOffenderByNomsNumber(String nomsNumber) {
         Optional<OffenderDetail> offender = offenderService.getOffenderByNomsNumber(nomsNumber);
         return offender.map(
                 offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(notFound());
