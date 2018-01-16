@@ -138,7 +138,7 @@ public class OffenderTransformer {
                 .otherIds(idsOf(offender))
                 .offenderProfile(offenderProfileOf(offender))
                 .offenderAliases(Optional.of(offenderAliasesOf(offender.getOffenderAliases())))
-                .softDeleted(offender.isSoftDeleted())
+                .softDeleted(offender.getSoftDeleted())
                 .currentDisposal(Optional.ofNullable(offender.getCurrentDisposal().toString()))
                 .partitionArea(Optional.ofNullable(offender.getPartitionArea().getArea()))
                 .build();
