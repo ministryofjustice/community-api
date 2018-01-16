@@ -25,6 +25,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Log
 public class LogonController {
 
+    public static final String NATIONAL_USER = "NationalUser";
     private final Jwt jwt;
     private final UserRepository userRepository;
 
@@ -37,7 +38,7 @@ public class LogonController {
     @RequestMapping(method = RequestMethod.POST, consumes = "text/plain")
     public ResponseEntity<String> getToken(final @RequestBody String distinguishedName) {
 
-        Optional<String> maybeUid = userRepository.getDeliusUid(distinguishedName);
+        Optional<String> maybeUid = NATIONAL_USER.equals(distinguishedName) ? Optional.of("NationalUser") : userRepository.getDeliusUid(distinguishedName);
 
         return maybeUid.map(uid ->
                 new ResponseEntity<>(jwt.buildToken(UserData.builder()

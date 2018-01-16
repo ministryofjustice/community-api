@@ -86,4 +86,18 @@ public class LogonAPITest {
 
         assertThat(jwt.parseToken(token).get().get("deliusDistinguishedName")).isEqualTo("Jihndie1");
     }
+
+    @Test
+    public void logonWithNationalUserDistinguishedNameGivesTokenContainingNationalUser() {
+        String token = given()
+                .body("NationalUser")
+                .when()
+                .post("/logon")
+                .then()
+                .statusCode(200)
+                .extract().body().asString();
+
+        assertThat(jwt.parseToken(token).get().get("deliusDistinguishedName")).isEqualTo("NationalUser");
+    }
+
 }
