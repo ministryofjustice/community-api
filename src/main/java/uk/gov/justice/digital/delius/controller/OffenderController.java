@@ -234,7 +234,7 @@ public class OffenderController {
                 .orElse(new ResponseEntity<>(NOT_FOUND));
     }
 
-    @RequestMapping(value = "/offenders")
+    @RequestMapping(value = "/offenders/offenderIds")
     @JwtValidation
     public ResponseEntity<List<BigDecimal>> getOffenderIds(final @RequestHeader HttpHeaders httpHeaders) {
         return new ResponseEntity<>(offenderService.allOffenderIds(), OK);

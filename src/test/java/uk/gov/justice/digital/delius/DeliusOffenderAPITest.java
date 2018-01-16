@@ -488,7 +488,7 @@ public class DeliusOffenderAPITest {
         BigDecimal[] ids = given()
                 .header("Authorization", aValidToken())
                 .when()
-                .get("/offenders")
+                .get("/offenders/offenderIds")
                 .then()
                 .statusCode(200)
                 .extract().body().as(BigDecimal[].class);
