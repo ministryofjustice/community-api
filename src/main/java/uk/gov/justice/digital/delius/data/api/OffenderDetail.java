@@ -15,14 +15,17 @@ public class OffenderDetail {
     private Long offenderId;
     private Optional<String> title;
     private String firstName;
-    private Optional<String> middleNames;
+    private List<String> middleNames;
     private String surname;
     private List<String> previousSurnames;
     private LocalDate dateOfBirth;
     private String gender;
-    private IDs ids;
+    private IDs otherIds;
     private ContactDetails contactDetails;
     private OffenderProfile offenderProfile;
     @JsonView(Views.FullFat.class)
     private Optional<List<OffenderAlias>> offenderAliases;
+    private boolean softDeleted;
+    private Optional<String> currentDisposal;
+    private Optional<String> partitionArea;
 }

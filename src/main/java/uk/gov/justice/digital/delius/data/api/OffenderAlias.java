@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Data
@@ -12,9 +13,8 @@ public class OffenderAlias {
 
     private Optional<LocalDate> dateOfBirth;
     private Optional<String> firstName;
-    private Optional<String> secondName;
+    private List<String> middleNames;
     private Optional<String> surname;
-    private Optional<String> thirdName;
     private Optional<String> gender;
 
 }

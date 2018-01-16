@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.google.common.collect.ImmutableList;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -21,11 +22,13 @@ import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.jpa.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.entity.OffenderAddress;
 import uk.gov.justice.digital.delius.jpa.entity.OffenderAlias;
+import uk.gov.justice.digital.delius.jpa.entity.PartitionArea;
 import uk.gov.justice.digital.delius.jpa.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.user.UserData;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
@@ -64,6 +67,7 @@ public class DeliusOffenderAPITest {
                 (aClass, s) -> objectMapper
         ));
         Mockito.when(offenderRepository.findByOffenderId(any(Long.class))).thenReturn(Optional.empty());
+        Mockito.when(offenderRepository.listOffenderIds()).thenReturn(ImmutableList.of(BigDecimal.ONE, BigDecimal.TEN));
         wiremockServer = new WireMockServer(8088);
         wiremockServer.start();
     }
@@ -249,6 +253,10 @@ public class DeliusOffenderAPITest {
                 .prevConvictionDocumentName("CONV1234")
                 .offenderAliases(Lists.newArrayList(OffenderAlias.builder().build()))
                 .offenderAddresses(Lists.newArrayList(OffenderAddress.builder().build()))
+                .partitionArea(PartitionArea.builder().area("Fulchester").build())
+                .softDeleted(false)
+                .currentHighestRiskColour("FUSCHIA")
+                .currentDisposal(0l)
                 .build();
     }
 
@@ -472,6 +480,20 @@ public class DeliusOffenderAPITest {
                 .get("/offenders/crn/D002384/documents/" + UUID.randomUUID().toString())
                 .then()
                 .statusCode(404);
+    }
+
+    @Test
+    public void canRetrieveOffenderIds() {
+
+        BigDecimal[] ids = given()
+                .header("Authorization", aValidToken())
+                .when()
+                .get("/offenders")
+                .then()
+                .statusCode(200)
+                .extract().body().as(BigDecimal[].class);
+
+        assertThat(ids).containsExactly(BigDecimal.ONE,BigDecimal.TEN);
     }
 
 

@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.sql.Blob;
 import java.sql.Clob;
@@ -187,5 +188,9 @@ public class Offender {
 
     @Column(name = "CURRENT_REMAND_STATUS")
     private String currentRemandStatus;
+
+    @ManyToOne
+    @JoinColumn(name = "PARTITION_AREA_ID")
+    private PartitionArea partitionArea;
 
 }

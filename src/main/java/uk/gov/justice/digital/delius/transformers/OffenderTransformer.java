@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class OffenderTransformer {
@@ -58,17 +59,18 @@ public class OffenderTransformer {
                 .remandStatus(Optional.ofNullable(offender.getCurrentRemandStatus()))
                 .secondaryNationality(Optional.ofNullable(offender.getSecondNationality()).map(StandardReference::getCodeDescription))
                 .sexualOrientation(Optional.ofNullable(offender.getSexualOrientation()).map(StandardReference::getCodeDescription))
+                .riskColour(Optional.ofNullable(offender.getCurrentHighestRiskColour()))
                 .build();
     }
 
     private IDs idsOf(Offender offender) {
         return IDs.builder()
-                .CRN(offender.getCrn())
-                .CRONumber(Optional.ofNullable(offender.getCroNumber()))
+                .crn(offender.getCrn())
+                .croNumber(Optional.ofNullable(offender.getCroNumber()))
                 .immigrationNumber(Optional.ofNullable(offender.getImmigrationNumber()))
-                .NINumber(Optional.ofNullable(offender.getNiNumber()))
-                .NOMSNumber(Optional.ofNullable(offender.getNomsNumber()))
-                .PNCNumber(Optional.ofNullable(offender.getPncNumber()))
+                .niNumber(Optional.ofNullable(offender.getNiNumber()))
+                .nomsNumber(Optional.ofNullable(offender.getNomsNumber()))
+                .pncNumber(Optional.ofNullable(offender.getPncNumber()))
                 .mostRecentPrisonerNumber(Optional.ofNullable(offender.getMostRecentPrisonerNumber()))
                 .build();
     }
@@ -112,8 +114,7 @@ public class OffenderTransformer {
         return uk.gov.justice.digital.delius.data.api.OffenderAlias.builder()
                 .dateOfBirth(Optional.ofNullable(alias.getDateOfBirth()))
                 .firstName(Optional.ofNullable(alias.getFirstName()))
-                .secondName(Optional.ofNullable(alias.getSecondName()))
-                .thirdName(Optional.ofNullable(alias.getThirdName()))
+                .middleNames(combinedMiddleNamesOf(alias.getSecondName(), alias.getThirdName()))
                 .surname(Optional.ofNullable(alias.getSurname()))
                 .gender(Optional.ofNullable(Optional.ofNullable(alias.getGender()).map(StandardReference::getCodeDescription).orElse(null)))
                 .build();
@@ -130,13 +131,26 @@ public class OffenderTransformer {
                 .dateOfBirth(offender.getDateOfBirthDate())
                 .firstName(offender.getFirstName())
                 .gender(offender.getGender().getCodeDescription())
-                .middleNames(Optional.ofNullable(offender.getSecondName()))
+                .middleNames(combinedMiddleNamesOf(offender.getSecondName(), offender.getThirdName()))
                 .surname(offender.getSurname())
                 .title(Optional.ofNullable(offender.getTitle()).map(StandardReference::getCodeDescription))
                 .contactDetails(contactDetailsOf(offender))
-                .ids(idsOf(offender))
+                .otherIds(idsOf(offender))
                 .offenderProfile(offenderProfileOf(offender))
                 .offenderAliases(Optional.of(offenderAliasesOf(offender.getOffenderAliases())))
+                .softDeleted(offender.isSoftDeleted())
+                .currentDisposal(Optional.ofNullable(offender.getCurrentDisposal().toString()))
+                .partitionArea(Optional.ofNullable(offender.getPartitionArea().getArea()))
                 .build();
+    }
+
+    private List<String> combinedMiddleNamesOf(String secondName, String thirdName) {
+        Optional<String> maybeSecondName = Optional.ofNullable(secondName);
+        Optional<String> maybeThirdName = Optional.ofNullable(thirdName);
+
+        return ImmutableList.of(maybeSecondName, maybeThirdName)
+                .stream()
+                .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty))
+                .collect(Collectors.toList());
     }
 }

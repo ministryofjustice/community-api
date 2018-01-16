@@ -26,6 +26,7 @@ import uk.gov.justice.digital.delius.jwt.JwtValidation;
 import uk.gov.justice.digital.delius.service.AlfrescoService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -231,6 +232,12 @@ public class OffenderController {
         return offenderService.crnOf(nomsNumber)
                 .map(crn -> alfrescoService.getDocument(documentId, crn))
                 .orElse(new ResponseEntity<>(NOT_FOUND));
+    }
+
+    @RequestMapping(value = "/offenders")
+    @JwtValidation
+    public ResponseEntity<List<BigDecimal>> getOffenderIds(final @RequestHeader HttpHeaders httpHeaders) {
+        return new ResponseEntity<>(offenderService.allOffenderIds(), OK);
     }
 
     private ResponseEntity<OffenderDetail> notFound() {

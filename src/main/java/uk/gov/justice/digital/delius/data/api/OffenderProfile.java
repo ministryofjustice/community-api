@@ -20,6 +20,5 @@ public class OffenderProfile {
     private Map<String, String> offenderDetails;
     private Optional<String> remandStatus;
     private Conviction previousConviction;
-
-
+    private Optional<String> riskColour;
 }

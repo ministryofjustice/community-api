@@ -8,6 +8,8 @@ import uk.gov.justice.digital.delius.jpa.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -52,6 +54,10 @@ public class OffenderService {
 
     public Optional<String> crnOf(String nomsNumber) {
         return offenderRepository.findByNomsNumber(nomsNumber).map(offender -> offender.getCrn());
+    }
+
+    public List<BigDecimal> allOffenderIds() {
+        return offenderRepository.listOffenderIds();
     }
 
 }
