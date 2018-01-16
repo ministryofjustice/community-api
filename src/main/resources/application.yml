@@ -19,6 +19,9 @@ jwt:
 
 server:
   context-path: ${contextpath:/api}
+  compression:
+    enabled: true
+    mime-types: application/json
 
 # Disable security locally so that the health end point shows full
 # details and all Spring Boot Actuator end points are visible
