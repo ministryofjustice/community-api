@@ -243,7 +243,7 @@ public class OffenderController {
                 .orElse(new ResponseEntity<>(NOT_FOUND));
     }
 
-    @RequestMapping(value = "/offenders/offenderIds")
+    @RequestMapping(value = "/offenders/offenderIds", method = RequestMethod.GET)
     @JwtValidation
     public ResponseEntity<org.springframework.hateoas.Resource<OffenderIdsResource>> getOffenderIds(final @RequestHeader HttpHeaders httpHeaders,
                                                                                     final @RequestParam(defaultValue = "${offender.ids.pagesize:1000}") int pageSize,
@@ -262,7 +262,7 @@ public class OffenderController {
                         nextLink), OK);
     }
 
-    @RequestMapping(value = "/offenders/count")
+    @RequestMapping(value = "/offenders/count", method = RequestMethod.GET)
     @JwtValidation
     public JsonNode offenderCount(final @RequestHeader HttpHeaders httpHeaders)  {
         return new LongNode(offenderService.getOffenderCount());
