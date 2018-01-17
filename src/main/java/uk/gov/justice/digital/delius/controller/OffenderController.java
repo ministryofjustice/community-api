@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import uk.gov.justice.digital.delius.data.api.Count;
 import uk.gov.justice.digital.delius.data.api.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderIdsResource;
@@ -264,8 +265,8 @@ public class OffenderController {
 
     @RequestMapping(value = "/offenders/count", method = RequestMethod.GET)
     @JwtValidation
-    public JsonNode offenderCount(final @RequestHeader HttpHeaders httpHeaders)  {
-        return new LongNode(offenderService.getOffenderCount());
+    public ResponseEntity<Count> offenderCount(final @RequestHeader HttpHeaders httpHeaders)  {
+        return new ResponseEntity<>(Count.builder().value(offenderService.getOffenderCount()).build(), OK);
     }
 
     private ResponseEntity<OffenderDetail> notFound() {
