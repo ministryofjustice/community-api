@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.google.common.collect.ImmutableList;
@@ -19,6 +20,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.data.api.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.data.api.OffenderIdsResource;
 import uk.gov.justice.digital.delius.jpa.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.entity.OffenderAddress;
 import uk.gov.justice.digital.delius.jpa.entity.OffenderAlias;
@@ -32,8 +34,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
@@ -41,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"offender.ids.pagesize=5"})
 @RunWith(SpringJUnit4ClassRunner.class)
 public class DeliusOffenderAPITest {
 
@@ -67,7 +74,9 @@ public class DeliusOffenderAPITest {
                 (aClass, s) -> objectMapper
         ));
         Mockito.when(offenderRepository.findByOffenderId(any(Long.class))).thenReturn(Optional.empty());
-        Mockito.when(offenderRepository.listOffenderIds()).thenReturn(ImmutableList.of(BigDecimal.ONE, BigDecimal.TEN));
+        Mockito.when(offenderRepository.listOffenderIds(eq(1), eq(5))).thenReturn(LongStream.rangeClosed(1,5).mapToObj(BigDecimal::valueOf).collect(Collectors.toList()));
+        Mockito.when(offenderRepository.listOffenderIds(eq(6), eq(10))).thenReturn(LongStream.rangeClosed(6,10).mapToObj(BigDecimal::valueOf).collect(Collectors.toList()));
+        Mockito.when(offenderRepository.count()).thenReturn(666l);
         wiremockServer = new WireMockServer(8088);
         wiremockServer.start();
     }
@@ -483,18 +492,67 @@ public class DeliusOffenderAPITest {
     }
 
     @Test
-    public void canRetrieveOffenderIds() {
+    public void canRetrieveOffenderIdsWithDefaultPageSizeAndPage() {
 
-        BigDecimal[] ids = given()
+        Map<String, Object> ids = given()
                 .header("Authorization", aValidToken())
                 .when()
                 .get("/offenders/offenderIds")
                 .then()
                 .statusCode(200)
-                .extract().body().as(BigDecimal[].class);
+                .extract().body().as(Map.class);
 
-        assertThat(ids).containsExactly(BigDecimal.ONE,BigDecimal.TEN);
+        List<Integer> offenderIds = (List<Integer>) ids.get("offenderIds");
+
+        assertThat(offenderIds).containsExactly(
+                Integer.valueOf(1), Integer.valueOf(2),Integer.valueOf(3),Integer.valueOf(4),Integer.valueOf(5));
     }
 
+    @Test
+    public void canRetrieveOffenderIdsWithExplicitPageSizeAndPage() {
+
+        Map<String, Object> ids = given()
+                .header("Authorization", aValidToken())
+                .when()
+                .queryParams("pageSize",5,"page", 2)
+                .get("/offenders/offenderIds")
+                .then()
+                .statusCode(200)
+                .extract().body().as(Map.class);
+
+        List<Integer> offenderIds = (List<Integer>) ids.get("offenderIds");
+
+        assertThat(offenderIds).containsExactly(
+                Integer.valueOf(6), Integer.valueOf(7),Integer.valueOf(8),Integer.valueOf(9),Integer.valueOf(10));
+    }
+
+    @Test
+    public void getOffenderIdsProvidesLinkToNextPage() {
+
+        JsonNode ids = given()
+                .header("Authorization", aValidToken())
+                .when()
+                .queryParams("pageSize", 5, "page", 1)
+                .get("/offenders/offenderIds")
+                .then()
+                .statusCode(200)
+                .extract().body().as(JsonNode.class);
+
+        assertThat(ids.findPath("_links").findPath("next").findPath("href").asText()).endsWith("/api/offenders/offenderIds?pageSize=5&page=2");
+    }
+
+    @Test
+    public void offenderCountProvidesCount() {
+        Long count = given()
+                .header("Authorization", aValidToken())
+                .when()
+                .get("/offenders/count")
+                .then()
+                .statusCode(200)
+                .extract().body().as(Long.class);
+
+        assertThat(count).isEqualTo(666l);
+
+    }
 
 }

@@ -1,12 +1,16 @@
 package uk.gov.justice.digital.delius.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.LongNode;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.hateoas.EntityLinks;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,22 +19,27 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import uk.gov.justice.digital.delius.data.api.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.data.api.OffenderIdsResource;
 import uk.gov.justice.digital.delius.data.api.views.Views;
 import uk.gov.justice.digital.delius.exception.JwtTokenMissingException;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
 import uk.gov.justice.digital.delius.service.AlfrescoService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -236,8 +245,27 @@ public class OffenderController {
 
     @RequestMapping(value = "/offenders/offenderIds")
     @JwtValidation
-    public ResponseEntity<List<BigDecimal>> getOffenderIds(final @RequestHeader HttpHeaders httpHeaders) {
-        return new ResponseEntity<>(offenderService.allOffenderIds(), OK);
+    public ResponseEntity<org.springframework.hateoas.Resource<OffenderIdsResource>> getOffenderIds(final @RequestHeader HttpHeaders httpHeaders,
+                                                                                    final @RequestParam(defaultValue = "${offender.ids.pagesize:1000}") int pageSize,
+                                                                                    final @RequestParam(defaultValue = "1") int page) {
+
+        Link nextLink = linkTo(methodOn(OffenderController.class).getOffenderIds(httpHeaders,pageSize,page+1)).withRel("next");
+
+        List<BigDecimal> offenderIds = offenderService.allOffenderIds(pageSize, page);
+        if (offenderIds.isEmpty()) {
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(
+                new org.springframework.hateoas.Resource<>(
+                        OffenderIdsResource.builder().offenderIds(offenderIds).build(),
+                        nextLink), OK);
+    }
+
+    @RequestMapping(value = "/offenders/count")
+    @JwtValidation
+    public JsonNode offenderCount(final @RequestHeader HttpHeaders httpHeaders)  {
+        return new LongNode(offenderService.getOffenderCount());
     }
 
     private ResponseEntity<OffenderDetail> notFound() {

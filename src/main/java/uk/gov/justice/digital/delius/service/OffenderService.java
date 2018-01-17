@@ -56,8 +56,15 @@ public class OffenderService {
         return offenderRepository.findByNomsNumber(nomsNumber).map(offender -> offender.getCrn());
     }
 
-    public List<BigDecimal> allOffenderIds() {
-        return offenderRepository.listOffenderIds();
+    public List<BigDecimal> allOffenderIds(int pageSize, int page) {
+
+        int lower = (page * pageSize) - pageSize + 1;
+        int upper = page * pageSize;
+
+        return offenderRepository.listOffenderIds(lower, upper);
     }
 
+    public Long getOffenderCount() {
+        return offenderRepository.count();
+    }
 }
