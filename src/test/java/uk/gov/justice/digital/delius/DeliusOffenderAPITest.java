@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.gov.justice.digital.delius.data.api.Count;
 import uk.gov.justice.digital.delius.data.api.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.jpa.entity.Offender;
@@ -543,15 +544,15 @@ public class DeliusOffenderAPITest {
 
     @Test
     public void offenderCountProvidesCount() {
-        Long count = given()
+        Count count = given()
                 .header("Authorization", aValidToken())
                 .when()
                 .get("/offenders/count")
                 .then()
                 .statusCode(200)
-                .extract().body().as(Long.class);
+                .extract().body().as(Count.class);
 
-        assertThat(count).isEqualTo(666l);
+        assertThat(count.getValue()).isEqualTo(666l);
 
     }
 
