@@ -3,7 +3,6 @@ package uk.gov.justice.digital.delius;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.google.common.collect.ImmutableList;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -17,10 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.data.api.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
-import uk.gov.justice.digital.delius.data.api.OffenderIdsResource;
 import uk.gov.justice.digital.delius.jpa.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.entity.OffenderAddress;
 import uk.gov.justice.digital.delius.jpa.entity.OffenderAlias;
@@ -39,7 +38,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
 import static io.restassured.RestAssured.given;
@@ -50,6 +48,7 @@ import static org.mockito.Matchers.eq;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"offender.ids.pagesize=5"})
 @RunWith(SpringJUnit4ClassRunner.class)
+@DirtiesContext
 public class DeliusOffenderAPITest {
 
     @LocalServerPort
@@ -74,8 +73,8 @@ public class DeliusOffenderAPITest {
                 (aClass, s) -> objectMapper
         ));
         Mockito.when(offenderRepository.findByOffenderId(any(Long.class))).thenReturn(Optional.empty());
-        Mockito.when(offenderRepository.listOffenderIds(eq(1), eq(5))).thenReturn(LongStream.rangeClosed(1,5).mapToObj(BigDecimal::valueOf).collect(Collectors.toList()));
-        Mockito.when(offenderRepository.listOffenderIds(eq(6), eq(10))).thenReturn(LongStream.rangeClosed(6,10).mapToObj(BigDecimal::valueOf).collect(Collectors.toList()));
+        Mockito.when(offenderRepository.listOffenderIds(eq(1), eq(5))).thenReturn(LongStream.rangeClosed(1, 5).mapToObj(BigDecimal::valueOf).collect(Collectors.toList()));
+        Mockito.when(offenderRepository.listOffenderIds(eq(6), eq(10))).thenReturn(LongStream.rangeClosed(6, 10).mapToObj(BigDecimal::valueOf).collect(Collectors.toList()));
         Mockito.when(offenderRepository.count()).thenReturn(666l);
         wiremockServer = new WireMockServer(8088);
         wiremockServer.start();
@@ -83,6 +82,7 @@ public class DeliusOffenderAPITest {
 
     @After
     public void teardown() {
+
         wiremockServer.stop();
     }
 
@@ -505,7 +505,7 @@ public class DeliusOffenderAPITest {
         List<Integer> offenderIds = (List<Integer>) ids.get("offenderIds");
 
         assertThat(offenderIds).containsExactly(
-                Integer.valueOf(1), Integer.valueOf(2),Integer.valueOf(3),Integer.valueOf(4),Integer.valueOf(5));
+                Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3), Integer.valueOf(4), Integer.valueOf(5));
     }
 
     @Test
@@ -514,7 +514,7 @@ public class DeliusOffenderAPITest {
         Map<String, Object> ids = given()
                 .header("Authorization", aValidToken())
                 .when()
-                .queryParams("pageSize",5,"page", 2)
+                .queryParams("pageSize", 5, "page", 2)
                 .get("/offenders/offenderIds")
                 .then()
                 .statusCode(200)
@@ -523,7 +523,7 @@ public class DeliusOffenderAPITest {
         List<Integer> offenderIds = (List<Integer>) ids.get("offenderIds");
 
         assertThat(offenderIds).containsExactly(
-                Integer.valueOf(6), Integer.valueOf(7),Integer.valueOf(8),Integer.valueOf(9),Integer.valueOf(10));
+                Integer.valueOf(6), Integer.valueOf(7), Integer.valueOf(8), Integer.valueOf(9), Integer.valueOf(10));
     }
 
     @Test
