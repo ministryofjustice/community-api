@@ -24,15 +24,16 @@ public class SwaggerConfig {
     @Bean
     public Docket offenderApi() {
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
-            .useDefaultResponseMessages(false)
-            .apiInfo(apiInfo())
-            .select()
-            .apis(RequestHandlerSelectors.any())
-            .paths(Predicates.or(regex("(\\/info.*)"),
-                regex("(\\/health.*)"),
-                regex("(\\/logon.*)"),
-                regex("(\\/offenders.*)")))
-            .build();
+                .useDefaultResponseMessages(false)
+                .apiInfo(apiInfo())
+                .select()
+                .apis(RequestHandlerSelectors.any())
+                .paths(Predicates.or(regex("(\\/info.*)"),
+                        regex("(\\/health.*)"),
+                        regex("(\\/logon.*)"),
+                        regex("(\\/offenders.*)"),
+                        regex("(\\/offenderDeltaIds.*)")))
+                .build();
 
         docket.genericModelSubstitutes(Optional.class);
         docket.directModelSubstitute(ZonedDateTime.class, java.util.Date.class);
@@ -43,16 +44,16 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfo(
-            "Delius API Documentation",
-            "REST service for accessing the Delius Oracle database.",
-            "0.0.1", "", contactInfo(), "", "",
-            Collections.emptyList());
+                "Delius API Documentation",
+                "REST service for accessing the Delius Oracle database.",
+                "0.0.1", "", contactInfo(), "", "",
+                Collections.emptyList());
     }
 
     private Contact contactInfo() {
         return new Contact(
-            "API Accelerator Team",
-            "",
-            "api-accelerator-gro*up@digital.justice.gov.uk");
+                "API Accelerator Team",
+                "",
+                "api-accelerator-gro*up@digital.justice.gov.uk");
     }
 }
