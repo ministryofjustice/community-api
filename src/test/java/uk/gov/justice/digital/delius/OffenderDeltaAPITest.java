@@ -21,6 +21,7 @@ import uk.gov.justice.digital.delius.service.OffenderDeltaService;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -112,8 +113,13 @@ public class OffenderDeltaAPITest {
                 .then()
                 .statusCode(200);
 
-        assertThat(offenderDeltaService.findAll()).containsOnly(deltas.get(1));
 
+        assertThat(offenderDeltaService.findAll()).isEqualTo(deltasLaterThanOrEqualTo(now, deltas));
+    }
+
+    private List<OffenderDelta> deltasLaterThanOrEqualTo(LocalDateTime now, List<OffenderDelta> deltas) {
+        return deltas.stream().filter(delta -> delta.getDateChanged().compareTo(now) >= 0)
+                .collect(Collectors.toList());
     }
 
     @Test
