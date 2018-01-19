@@ -21,6 +21,8 @@ import uk.gov.justice.digital.delius.service.OffenderDeltaService;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.given;
@@ -98,6 +100,7 @@ public class OffenderDeltaAPITest {
         );
     }
 
+
     @Test
     public void canDeleteOffenderDeltasOlderThan() {
         LocalDateTime now = LocalDateTime.now();
@@ -113,13 +116,9 @@ public class OffenderDeltaAPITest {
                 .then()
                 .statusCode(200);
 
-
-        assertThat(offenderDeltaService.findAll()).isEqualTo(deltasLaterThanOrEqualTo(now, deltas));
-    }
-
-    private List<OffenderDelta> deltasLaterThanOrEqualTo(LocalDateTime now, List<OffenderDelta> deltas) {
-        return deltas.stream().filter(delta -> delta.getDateChanged().compareTo(now) >= 0)
-                .collect(Collectors.toList());
+        Function<LocalDateTime, Predicate<OffenderDelta>> laterOrEqualTo = dateTime -> delta -> delta.getDateChanged().compareTo(dateTime) >= 0;
+        assertThat(offenderDeltaService.findAll()).isEqualTo(
+                deltas.stream().filter(laterOrEqualTo.apply(now)).collect(Collectors.toList()));
     }
 
     @Test
