@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.delius;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,7 +62,7 @@ public class OffenderDeltaAPITest {
 
         LocalDateTime now = LocalDateTime.now();
 
-        List<OffenderDelta> deltas = someDeltas(now);
+        List<OffenderDelta> deltas = someDeltas(now, 20l);
         insert(deltas);
 
         OffenderDelta[] offenderDeltas = given()
@@ -86,18 +86,12 @@ public class OffenderDeltaAPITest {
         );
     }
 
-    private List<OffenderDelta> someDeltas(LocalDateTime now) {
-        return ImmutableList.of(
-                OffenderDelta.builder()
-                        .offenderId(1L)
-                        .dateChanged(now.minusDays(1L))
-                        .build(),
+    private List<OffenderDelta> someDeltas(LocalDateTime now, Long howMany) {
 
-                OffenderDelta.builder()
-                        .offenderId(2L)
-                        .dateChanged(now)
-                        .build()
-        );
+        return LongStream.rangeClosed(1, howMany).mapToObj(l -> OffenderDelta.builder()
+                .offenderId(l)
+                .dateChanged(now.minusDays(howMany / 2).plusDays(l))
+                .build()).collect(Collectors.toList());
     }
 
 
@@ -105,7 +99,7 @@ public class OffenderDeltaAPITest {
     public void canDeleteOffenderDeltasOlderThan() {
         LocalDateTime now = LocalDateTime.now();
 
-        List<OffenderDelta> deltas = someDeltas(now);
+        List<OffenderDelta> deltas = someDeltas(now, 20l);
         insert(deltas);
 
         given()
