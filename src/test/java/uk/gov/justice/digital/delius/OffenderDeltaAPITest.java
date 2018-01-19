@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.jpa.dao.OffenderDelta;
 import uk.gov.justice.digital.delius.service.OffenderDeltaService;
@@ -26,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"offender.ids.pagesize=5"})
 @RunWith(SpringJUnit4ClassRunner.class)
+@DirtiesContext
 public class OffenderDeltaAPITest {
 
     @LocalServerPort
