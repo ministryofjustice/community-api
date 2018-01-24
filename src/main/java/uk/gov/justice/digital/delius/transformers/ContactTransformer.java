@@ -3,6 +3,7 @@ package uk.gov.justice.digital.delius.transformers;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
+import uk.gov.justice.digital.delius.jpa.entity.AdRequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.jpa.entity.ContactOutcomeType;
 import uk.gov.justice.digital.delius.jpa.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.entity.Explanation;
@@ -48,6 +49,7 @@ public class ContactTransformer {
     private Optional<uk.gov.justice.digital.delius.data.api.Requirement> requirementOf(Requirement requirement) {
         return Optional.ofNullable(requirement).map(req -> uk.gov.justice.digital.delius.data.api.Requirement.builder()
                 .active(req.getActiveFlag() == 1)
+                .adRequirementTypeMainCategory(adRequirementMainCategoryOf(req.getAdRequirementTypeMainCategory()))
                 .adRequirementTypeSubCategory(adRequirementSubCategoryOf(req.getAdRequirementTypeSubCategory()))
                 .commencementDate(Optional.ofNullable(req.getCommencementDate()))
                 .expectedEndDate(Optional.ofNullable(req.getExpectedEndDate()))
@@ -55,10 +57,19 @@ public class ContactTransformer {
                 .requirementId(req.getRequirementId())
                 .requirementNotes(Optional.ofNullable(req.getRequirementNotes()))
                 .requirementTypeMainCategory(requirementTypeMainCategoryOf(req.getRequirementTypeMainCategory()))
-                .requiremntTypeSubCategory(requirementTypeSubCategoryOf(req.getRequiremntTypeSubCategory()))
+                .requirementTypeSubCategory(requirementTypeSubCategoryOf(req.getRequiremntTypeSubCategory()))
                 .startDate(Optional.ofNullable(req.getStartDate()))
                 .terminationDate(Optional.ofNullable(req.getTerminationDate()))
                 .build());
+    }
+
+    private Optional<KeyValue> adRequirementMainCategoryOf(AdRequirementTypeMainCategory adRequirementTypeMainCategory) {
+        return Optional.ofNullable(adRequirementTypeMainCategory).map(mainCat ->
+                KeyValue.builder()
+                        .code(mainCat.getCode())
+                        .description(mainCat.getDescription())
+                        .build());
+
     }
 
     private Optional<KeyValue> requirementTypeSubCategoryOf(StandardReference requirementTypeSubCategory) {

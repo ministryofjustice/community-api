@@ -25,7 +25,7 @@ public class Requirement {
     @Column(name = "RQMNT_ID")
     private Long requirementId;
 
-    @Column(name = "REQUIREMENT_NOTES")
+    @Column(name = "RQMNT_NOTES")
     private String requirementNotes;
 
     @Column(name = "COMMENCEMENT_DATE")
@@ -50,15 +50,17 @@ public class Requirement {
     @OneToOne
     private StandardReference requiremntTypeSubCategory;
 
+    @JoinColumn(name = "AD_RQMNT_TYPE_MAIN_CATEGORY_ID")
+    @OneToOne
+    private AdRequirementTypeMainCategory adRequirementTypeMainCategory;
+
     @JoinColumn(name = "AD_RQMNT_TYPE_SUB_CATEGORY_ID")
     @OneToOne
     private StandardReference adRequirementTypeSubCategory;
 
-    @JoinColumn(name = "R_RQMNT_TYPE_MAIN_CATEGORY_ID")
+    @JoinColumn(name = "RQMNT_TYPE_MAIN_CATEGORY_ID")
     @OneToOne
     private RequirementTypeMainCategory requirementTypeMainCategory;
-
-
 
 
 }

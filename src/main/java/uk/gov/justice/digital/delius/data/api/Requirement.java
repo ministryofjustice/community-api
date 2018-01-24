@@ -17,8 +17,9 @@ public class Requirement {
     private Optional<LocalDate> expectedStartDate;
     private Optional<LocalDate> expectedEndDate;
     private boolean active;
-    private Optional<KeyValue> requiremntTypeSubCategory;
-    private Optional<KeyValue> adRequirementTypeSubCategory;
+    private Optional<KeyValue> requirementTypeSubCategory;
     private Optional<KeyValue> requirementTypeMainCategory;
+    private Optional<KeyValue> adRequirementTypeMainCategory;
+    private Optional<KeyValue> adRequirementTypeSubCategory;
 
 }

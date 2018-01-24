@@ -38,7 +38,7 @@ public class Nsi {
     @OneToOne
     private StandardReference nsiSubType;
 
-    @JoinColumn(name = "RQMT_ID_NUMBER")
+    @JoinColumn(name = "RQMNT_ID")
     @OneToOne
     private Requirement rqmnt;
 
