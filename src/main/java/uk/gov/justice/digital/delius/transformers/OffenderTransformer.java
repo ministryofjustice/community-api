@@ -141,6 +141,8 @@ public class OffenderTransformer {
                 .softDeleted(offender.getSoftDeleted())
                 .currentDisposal(Optional.ofNullable(offender.getCurrentDisposal().toString()))
                 .partitionArea(Optional.ofNullable(offender.getPartitionArea().getArea()))
+                .currentExclusion(offender.getCurrentExclusion() == 1)
+                .currentRestriction(offender.getCurrentRestriction() == 1)
                 .build();
     }
 

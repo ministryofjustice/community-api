@@ -154,6 +154,8 @@ public class DeliusOffenderAPITest {
         assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
         assertThat(offenderDetail.getOffenderAliases()).isEqualTo(Optional.empty());
         assertThat(offenderDetail.getContactDetails().getAddresses()).isEqualTo(Optional.empty());
+        assertThat(offenderDetail.getCurrentExclusion()).isTrue();
+        assertThat(offenderDetail.getCurrentRestriction()).isTrue();
     }
 
     @Test
@@ -267,6 +269,8 @@ public class DeliusOffenderAPITest {
                 .softDeleted(false)
                 .currentHighestRiskColour("FUSCHIA")
                 .currentDisposal(0l)
+                .currentRestriction(1L)
+                .currentExclusion(1L)
                 .build();
     }
 
