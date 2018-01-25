@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import uk.gov.justice.digital.delius.jwt.Jwt;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,7 +45,7 @@ public class UserProxy {
 
             Connection proxiedConnection = (Connection) proxyFactory.getProxy();
 
-            try (PreparedStatement stmt = proxiedConnection.prepareStatement("call PKG_VPD_CTX.SET_CLIENT_IDENTIFIER('" + claims.get("deliusDistinguishedName") + "')")) {
+            try (PreparedStatement stmt = proxiedConnection.prepareStatement("call PKG_VPD_CTX.SET_CLIENT_IDENTIFIER('" + claims.get(Jwt.UID) + "')")) {
                 stmt.execute();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
