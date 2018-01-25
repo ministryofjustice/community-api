@@ -16,7 +16,7 @@ objectclass: organizationalUnit
 ou: people
 
 # Create People
-dn: uid=oliverc,ou=people,dc=memorynotfound,dc=com
+dn: uid=oliver.connolly,ou=people,dc=memorynotfound,dc=com
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson

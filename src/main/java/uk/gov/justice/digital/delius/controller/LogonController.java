@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.jwt.Jwt;
-import uk.gov.justice.digital.delius.ldap.repository.UserRepository;
+import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
 import uk.gov.justice.digital.delius.user.UserData;
 
 import javax.naming.InvalidNameException;
@@ -27,18 +27,18 @@ public class LogonController {
 
     public static final String NATIONAL_USER = "NationalUser";
     private final Jwt jwt;
-    private final UserRepository userRepository;
+    private final LdapRepository ldapRepository;
 
     @Autowired
-    public LogonController(Jwt jwt, UserRepository userRepository) {
+    public LogonController(Jwt jwt, LdapRepository ldapRepository) {
         this.jwt = jwt;
-        this.userRepository = userRepository;
+        this.ldapRepository = ldapRepository;
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = "text/plain")
     public ResponseEntity<String> getToken(final @RequestBody String distinguishedName) {
 
-        Optional<String> maybeUid = NATIONAL_USER.equals(distinguishedName) ? Optional.of("NationalUser") : userRepository.getDeliusUid(distinguishedName);
+        Optional<String> maybeUid = NATIONAL_USER.equals(distinguishedName) ? Optional.of("NationalUser") : ldapRepository.getDeliusUid(distinguishedName);
 
         return maybeUid.map(uid ->
                 new ResponseEntity<>(jwt.buildToken(UserData.builder()

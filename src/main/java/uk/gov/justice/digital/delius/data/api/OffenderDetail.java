@@ -28,4 +28,6 @@ public class OffenderDetail {
     private Boolean softDeleted;
     private Optional<String> currentDisposal;
     private Optional<String> partitionArea;
+    private Boolean currentRestriction;
+    private Boolean currentExclusion;
 }

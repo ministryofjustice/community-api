@@ -16,17 +16,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.gov.justice.digital.delius.data.api.AccessLimitation;
 import uk.gov.justice.digital.delius.data.api.Count;
 import uk.gov.justice.digital.delius.data.api.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.jpa.entity.Exclusion;
 import uk.gov.justice.digital.delius.jpa.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.entity.OffenderAddress;
 import uk.gov.justice.digital.delius.jpa.entity.OffenderAlias;
 import uk.gov.justice.digital.delius.jpa.entity.PartitionArea;
+import uk.gov.justice.digital.delius.jpa.entity.Restriction;
 import uk.gov.justice.digital.delius.jpa.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.entity.User;
 import uk.gov.justice.digital.delius.jpa.repository.OffenderRepository;
+import uk.gov.justice.digital.delius.jpa.repository.UserRepository;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.user.UserData;
 
@@ -57,6 +63,9 @@ public class DeliusOffenderAPITest {
 
     @MockBean
     private OffenderRepository offenderRepository;
+
+    @MockBean
+    private UserRepository userRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -138,7 +147,8 @@ public class DeliusOffenderAPITest {
     @Test
     public void lookupKnownOffenderIdGivesBasicOffender() {
 
-        Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(anOffender()));
+        Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(
+                anOffender().toBuilder().currentExclusion(1L).currentRestriction(1L).build()));
 
         OffenderDetail offenderDetail =
                 given()
@@ -154,6 +164,8 @@ public class DeliusOffenderAPITest {
         assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
         assertThat(offenderDetail.getOffenderAliases()).isEqualTo(Optional.empty());
         assertThat(offenderDetail.getContactDetails().getAddresses()).isEqualTo(Optional.empty());
+        assertThat(offenderDetail.getCurrentExclusion()).isTrue();
+        assertThat(offenderDetail.getCurrentRestriction()).isTrue();
     }
 
     @Test
@@ -225,10 +237,8 @@ public class DeliusOffenderAPITest {
                 .crn("crn123")
                 .croNumber("cro123")
                 .currentDisposal(1L)
-                .currentExclusion(2L)
                 .currentHighestRiskColour("AMBER")
                 .currentRemandStatus("ON_REMAND")
-                .currentRestriction(3L)
                 .dateOfBirthDate(LocalDate.of(1970, 1, 1))
                 .emailAddress("bill@sykes.com")
                 .establishment('A')
@@ -267,6 +277,8 @@ public class DeliusOffenderAPITest {
                 .softDeleted(false)
                 .currentHighestRiskColour("FUSCHIA")
                 .currentDisposal(0l)
+                .currentRestriction(0L)
+                .currentExclusion(0L)
                 .build();
     }
 
@@ -303,8 +315,15 @@ public class DeliusOffenderAPITest {
     }
 
     private String aValidToken() {
-        return "Bearer " + jwt.buildToken(UserData.builder().distinguishedName(UUID.randomUUID().toString()).build());
+        return aValidTokenFor(UUID.randomUUID().toString());
     }
+
+    private String aValidTokenFor(String distinguishedName) {
+        return "Bearer " + jwt.buildToken(UserData.builder()
+                .distinguishedName(distinguishedName)
+                .uid("bobby.davro").build());
+    }
+
 
     @Test
     public void canListOffenderDocumentsByOffenderCRN() {
@@ -555,5 +574,154 @@ public class DeliusOffenderAPITest {
         assertThat(count.getValue()).isEqualTo(666l);
 
     }
+
+    @Test
+    public void userAccessForOffenderIdWithNoAccessLimitationsReturnsAppropriate() {
+        Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(anOffender()));
+
+        AccessLimitation accessLimitation = given()
+                .header("Authorization", aValidToken())
+                .when()
+                .get("/offenders/offenderId/1/userAccess")
+                .then()
+                .statusCode(200)
+                .extract().body().as(AccessLimitation.class);
+
+        assertThat(accessLimitation.isUserExcluded()).isFalse();
+        assertThat(accessLimitation.isUserRestricted()).isFalse();
+    }
+
+    @Test
+    public void userAccessForOffenderCrnWithNoAccessLimitationsReturnsAppropriate() {
+        Mockito.when(offenderRepository.findByCrn(eq("123"))).thenReturn(Optional.of(anOffender()));
+
+        AccessLimitation accessLimitation = given()
+                .header("Authorization", aValidToken())
+                .when()
+                .get("/offenders/crn/123/userAccess")
+                .then()
+                .statusCode(200)
+                .extract().body().as(AccessLimitation.class);
+
+        assertThat(accessLimitation.isUserExcluded()).isFalse();
+        assertThat(accessLimitation.isUserRestricted()).isFalse();
+    }
+
+    @Test
+    public void userAccessForOffenderNomsNumberWithNoAccessLimitationsReturnsAppropriate() {
+        Mockito.when(offenderRepository.findByNomsNumber(eq("NOMS123"))).thenReturn(Optional.of(anOffender()));
+
+        AccessLimitation accessLimitation = given()
+                .header("Authorization", aValidToken())
+                .when()
+                .get("/offenders/nomsNumber/NOMS123/userAccess")
+                .then()
+                .statusCode(200)
+                .extract().body().as(AccessLimitation.class);
+
+        assertThat(accessLimitation.isUserExcluded()).isFalse();
+        assertThat(accessLimitation.isUserRestricted()).isFalse();
+    }
+
+    @Test
+    public void userAccessForOffenderIdWithExclusionForUserReturnsAppropriate() {
+        Offender offender = anOffender().toBuilder().currentExclusion(1L).build();
+        Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(offender));
+        String distinguishedName = UUID.randomUUID().toString();
+
+        Mockito.when(userRepository.findByDistinguishedName("bobby.davro")).thenReturn(
+                Optional.of(User.builder()
+                        .exclusions(
+                                Lists.newArrayList(Exclusion.builder().offenderId(offender.getOffenderId()).build())
+                        )
+                        .restrictions(Lists.emptyList())
+                        .build()));
+
+        AccessLimitation accessLimitation = given()
+                .header("Authorization", aValidTokenFor(distinguishedName))
+                .when()
+                .get("/offenders/offenderId/1/userAccess")
+                .then()
+                .statusCode(HttpStatus.FORBIDDEN.value())
+                .extract().body().as(AccessLimitation.class);
+
+        assertThat(accessLimitation.isUserExcluded()).isTrue();
+        assertThat(accessLimitation.isUserRestricted()).isFalse();
+    }
+
+    @Test
+    public void userAccessForOffenderIdWithExclusionForSomeOtherUserReturnsAppropriate() {
+        Offender offender = anOffender().toBuilder().currentExclusion(1L).build();
+        Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(offender));
+        String distinguishedName = UUID.randomUUID().toString();
+
+        Mockito.when(userRepository.findByDistinguishedName("bobby.davro")).thenReturn(
+                Optional.of(User.builder()
+                        .restrictions(Lists.emptyList())
+                        .exclusions(Lists.emptyList())
+                        .build()));
+
+        AccessLimitation accessLimitation = given()
+                .header("Authorization", aValidTokenFor(distinguishedName))
+                .when()
+                .get("/offenders/offenderId/1/userAccess")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract().body().as(AccessLimitation.class);
+
+        assertThat(accessLimitation.isUserExcluded()).isFalse();
+        assertThat(accessLimitation.isUserRestricted()).isFalse();
+    }
+
+    @Test
+    public void userAccessForOffenderIdWithRestrictionIncludingUserReturnsAppropriate() {
+        Offender offender = anOffender().toBuilder().currentRestriction(1L).build();
+        Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(offender));
+        String distinguishedName = UUID.randomUUID().toString();
+
+        Mockito.when(userRepository.findByDistinguishedName("bobby.davro")).thenReturn(
+                Optional.of(User.builder()
+                        .restrictions(
+                                Lists.newArrayList(Restriction.builder().offenderId(offender.getOffenderId()).build())
+                        )
+                        .exclusions(Lists.emptyList())
+                        .build()));
+
+        AccessLimitation accessLimitation = given()
+                .header("Authorization", aValidTokenFor(distinguishedName))
+                .when()
+                .get("/offenders/offenderId/1/userAccess")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract().body().as(AccessLimitation.class);
+
+        assertThat(accessLimitation.isUserExcluded()).isFalse();
+        assertThat(accessLimitation.isUserRestricted()).isFalse();
+    }
+
+    @Test
+    public void userAccessForOffenderIdWithRestrictionExcludingUserReturnsAppropriate() {
+        Offender offender = anOffender().toBuilder().currentRestriction(1L).build();
+        Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(offender));
+        String distinguishedName = UUID.randomUUID().toString();
+
+        Mockito.when(userRepository.findByDistinguishedName("bobby.davro")).thenReturn(
+                Optional.of(User.builder()
+                        .restrictions(Lists.emptyList())
+                        .exclusions(Lists.emptyList())
+                        .build()));
+
+        AccessLimitation accessLimitation = given()
+                .header("Authorization", aValidTokenFor(distinguishedName))
+                .when()
+                .get("/offenders/offenderId/1/userAccess")
+                .then()
+                .statusCode(HttpStatus.FORBIDDEN.value())
+                .extract().body().as(AccessLimitation.class);
+
+        assertThat(accessLimitation.isUserExcluded()).isFalse();
+        assertThat(accessLimitation.isUserRestricted()).isTrue();
+    }
+
 
 }

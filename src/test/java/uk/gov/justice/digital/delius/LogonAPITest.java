@@ -10,10 +10,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.justice.digital.delius.jpa.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 
 import static io.restassured.RestAssured.given;
@@ -26,9 +24,6 @@ public class LogonAPITest {
 
     @LocalServerPort
     int port;
-
-    @MockBean
-    private OffenderRepository offenderRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -86,7 +81,7 @@ public class LogonAPITest {
                 .statusCode(200)
                 .extract().body().asString();
 
-        assertThat(jwt.parseToken(token).get().get("deliusDistinguishedName")).isEqualTo("Jihndie1");
+        assertThat(jwt.parseToken(token).get().get(Jwt.UID)).isEqualTo("Jihndie1");
     }
 
     @Test
@@ -99,7 +94,7 @@ public class LogonAPITest {
                 .statusCode(200)
                 .extract().body().asString();
 
-        assertThat(jwt.parseToken(token).get().get("deliusDistinguishedName")).isEqualTo("NationalUser");
+        assertThat(jwt.parseToken(token).get().get(Jwt.UID)).isEqualTo("NationalUser");
     }
 
 }

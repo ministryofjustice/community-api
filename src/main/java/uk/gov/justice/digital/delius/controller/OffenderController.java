@@ -1,15 +1,13 @@
 package uk.gov.justice.digital.delius.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.LongNode;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,17 +21,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import uk.gov.justice.digital.delius.data.api.AccessLimitation;
 import uk.gov.justice.digital.delius.data.api.Count;
 import uk.gov.justice.digital.delius.data.api.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderIdsResource;
 import uk.gov.justice.digital.delius.data.api.views.Views;
 import uk.gov.justice.digital.delius.exception.JwtTokenMissingException;
+import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
 import uk.gov.justice.digital.delius.service.AlfrescoService;
+import uk.gov.justice.digital.delius.service.NoSuchUserException;
 import uk.gov.justice.digital.delius.service.OffenderService;
+import uk.gov.justice.digital.delius.service.UserService;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -41,8 +42,10 @@ import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @RestController
 @Log
@@ -50,11 +53,21 @@ public class OffenderController {
 
     private final OffenderService offenderService;
     private final AlfrescoService alfrescoService;
+    private final UserService userService;
+    private final Jwt jwt;
 
     @Autowired
-    public OffenderController(OffenderService offenderService, AlfrescoService alfrescoService) {
+    public OffenderController(OffenderService offenderService, AlfrescoService alfrescoService, UserService userService, Jwt jwt) {
         this.offenderService = offenderService;
         this.alfrescoService = alfrescoService;
+        this.userService = userService;
+        this.jwt = jwt;
+    }
+
+    private ResponseEntity<OffenderDetail> getOffenderByOffenderId(@PathVariable("offenderId") Long offenderId) {
+        Optional<OffenderDetail> offender = offenderService.getOffenderByOffenderId(offenderId);
+        return offender.map(
+                offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(notFound());
     }
 
     @RequestMapping(value = "/offenders/offenderId/{offenderId}", method = RequestMethod.GET)
@@ -63,12 +76,6 @@ public class OffenderController {
     public ResponseEntity<OffenderDetail> getOffenderByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
                                                                   final @PathVariable("offenderId") Long offenderId) {
         return getOffenderByOffenderId(offenderId);
-    }
-
-    private ResponseEntity<OffenderDetail> getOffenderByOffenderId(@PathVariable("offenderId") Long offenderId) {
-        Optional<OffenderDetail> offender = offenderService.getOffenderByOffenderId(offenderId);
-        return offender.map(
-                offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(notFound());
     }
 
     @RequestMapping(value = "/offenders/crn/{crn}", method = RequestMethod.GET)
@@ -247,10 +254,10 @@ public class OffenderController {
     @RequestMapping(value = "/offenders/offenderIds", method = RequestMethod.GET)
     @JwtValidation
     public ResponseEntity<org.springframework.hateoas.Resource<OffenderIdsResource>> getOffenderIds(final @RequestHeader HttpHeaders httpHeaders,
-                                                                                    final @RequestParam(defaultValue = "${offender.ids.pagesize:1000}") int pageSize,
-                                                                                    final @RequestParam(defaultValue = "1") int page) {
+                                                                                                    final @RequestParam(defaultValue = "${offender.ids.pagesize:1000}") int pageSize,
+                                                                                                    final @RequestParam(defaultValue = "1") int page) {
 
-        Link nextLink = linkTo(methodOn(OffenderController.class).getOffenderIds(httpHeaders,pageSize,page+1)).withRel("next");
+        Link nextLink = linkTo(methodOn(OffenderController.class).getOffenderIds(httpHeaders, pageSize, page + 1)).withRel("next");
 
         List<BigDecimal> offenderIds = offenderService.allOffenderIds(pageSize, page);
         if (offenderIds.isEmpty()) {
@@ -265,13 +272,62 @@ public class OffenderController {
 
     @RequestMapping(value = "/offenders/count", method = RequestMethod.GET)
     @JwtValidation
-    public ResponseEntity<Count> offenderCount(final @RequestHeader HttpHeaders httpHeaders)  {
+    public ResponseEntity<Count> offenderCount(final @RequestHeader HttpHeaders httpHeaders) {
         return new ResponseEntity<>(Count.builder().value(offenderService.getOffenderCount()).build(), OK);
+    }
+
+    @RequestMapping(value = "/offenders/offenderId/{offenderId}/userAccess", method = RequestMethod.GET)
+    @JwtValidation
+    public ResponseEntity<AccessLimitation> checkUserAccessByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
+                                                                        final @PathVariable("offenderId") Long offenderId) {
+        Optional<OffenderDetail> maybeOffender = offenderService.getOffenderByOffenderId(offenderId);
+
+        return accessLimitationResponseEntityOf(httpHeaders, maybeOffender);
+    }
+
+    private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(@RequestHeader HttpHeaders httpHeaders, Optional<OffenderDetail> maybeOffender) {
+        if (!maybeOffender.isPresent()) {
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+
+        OffenderDetail offenderDetail = maybeOffender.get();
+
+        Claims claims = jwt.parseAuthorizationHeader(httpHeaders.getFirst(HttpHeaders.AUTHORIZATION)).get();
+
+        AccessLimitation accessLimitation = userService.accessLimitationOf((String) claims.get(Jwt.UID), offenderDetail);
+
+        return new ResponseEntity<>(accessLimitation, responseCodeOf(accessLimitation));
+    }
+
+    private HttpStatus responseCodeOf(AccessLimitation accessLimitation) {
+        if (accessLimitation.isUserExcluded() || accessLimitation.isUserRestricted()) {
+            return FORBIDDEN;
+        }
+        return OK;
+    }
+
+    @RequestMapping(value = "/offenders/crn/{crn}/userAccess", method = RequestMethod.GET)
+    @JwtValidation
+    public ResponseEntity<AccessLimitation> checkUserAccessByCrn(final @RequestHeader HttpHeaders httpHeaders,
+                                                                 final @PathVariable("crn") String crn) {
+        Optional<OffenderDetail> maybeOffender = offenderService.getOffenderByCrn(crn);
+
+        return accessLimitationResponseEntityOf(httpHeaders, maybeOffender);
+    }
+
+    @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/userAccess", method = RequestMethod.GET)
+    @JwtValidation
+    public ResponseEntity<AccessLimitation> checkUserAccessByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
+                                                                        final @PathVariable("nomsNumber") String nomsNumber) {
+        Optional<OffenderDetail> maybeOffender = offenderService.getOffenderByNomsNumber(nomsNumber);
+
+        return accessLimitationResponseEntityOf(httpHeaders, maybeOffender);
     }
 
     private ResponseEntity<OffenderDetail> notFound() {
         return new ResponseEntity<>(OffenderDetail.builder().build(), NOT_FOUND);
     }
+
 
     @ExceptionHandler(JwtTokenMissingException.class)
     public ResponseEntity<String> missingJwt(JwtTokenMissingException e) {
@@ -301,6 +357,11 @@ public class OffenderController {
     @ExceptionHandler(HttpServerErrorException.class)
     public ResponseEntity<String> restServerError(HttpServerErrorException e) {
         return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
+    }
+
+    @ExceptionHandler(NoSuchUserException.class)
+    public ResponseEntity<String> noSuchUser(NoSuchUserException e) {
+        return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
     }
 
 }
