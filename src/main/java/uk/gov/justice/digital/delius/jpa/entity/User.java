@@ -9,10 +9,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -43,5 +41,13 @@ public class User {
     @JoinColumn(name = "USER_ID")
     @OneToMany
     private List<Restriction> restrictions;
+
+    public boolean isExcludedFrom(Long offenderId) {
+        return exclusions.stream().anyMatch(exclusion -> exclusion.getOffenderId().equals(offenderId) && exclusion.isActive());
+    }
+
+    public boolean isRestrictedUserFor(Long offenderId) {
+        return restrictions.stream().anyMatch(restriction -> restriction.getOffenderId().equals(offenderId) && restriction.isActive());
+    }
 
 }

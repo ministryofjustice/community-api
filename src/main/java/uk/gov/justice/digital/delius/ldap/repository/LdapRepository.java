@@ -8,12 +8,12 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public class UserRepository {
+public class LdapRepository {
 
     private final LdapTemplate ldapTemplate;
 
     @Autowired
-    public UserRepository(LdapTemplate ldapTemplate) {
+    public LdapRepository(LdapTemplate ldapTemplate) {
         this.ldapTemplate = ldapTemplate;
     }
 
