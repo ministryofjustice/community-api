@@ -319,7 +319,9 @@ public class DeliusOffenderAPITest {
     }
 
     private String aValidTokenFor(String distinguishedName) {
-        return "Bearer " + jwt.buildToken(UserData.builder().distinguishedName(distinguishedName).build());
+        return "Bearer " + jwt.buildToken(UserData.builder()
+                .distinguishedName(distinguishedName)
+                .uid("bobby.davro").build());
     }
 
 
@@ -627,7 +629,7 @@ public class DeliusOffenderAPITest {
         Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(offender));
         String distinguishedName = UUID.randomUUID().toString();
 
-        Mockito.when(userRepository.findByDistinguishedName(distinguishedName)).thenReturn(
+        Mockito.when(userRepository.findByDistinguishedName("bobby.davro")).thenReturn(
                 Optional.of(User.builder()
                         .exclusions(
                                 Lists.newArrayList(Exclusion.builder().offenderId(offender.getOffenderId()).build())
@@ -653,7 +655,7 @@ public class DeliusOffenderAPITest {
         Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(offender));
         String distinguishedName = UUID.randomUUID().toString();
 
-        Mockito.when(userRepository.findByDistinguishedName(distinguishedName)).thenReturn(
+        Mockito.when(userRepository.findByDistinguishedName("bobby.davro")).thenReturn(
                 Optional.of(User.builder()
                         .restrictions(Lists.emptyList())
                         .exclusions(Lists.emptyList())
@@ -677,7 +679,7 @@ public class DeliusOffenderAPITest {
         Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(offender));
         String distinguishedName = UUID.randomUUID().toString();
 
-        Mockito.when(userRepository.findByDistinguishedName(distinguishedName)).thenReturn(
+        Mockito.when(userRepository.findByDistinguishedName("bobby.davro")).thenReturn(
                 Optional.of(User.builder()
                         .restrictions(
                                 Lists.newArrayList(Restriction.builder().offenderId(offender.getOffenderId()).build())
@@ -703,7 +705,7 @@ public class DeliusOffenderAPITest {
         Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(offender));
         String distinguishedName = UUID.randomUUID().toString();
 
-        Mockito.when(userRepository.findByDistinguishedName(distinguishedName)).thenReturn(
+        Mockito.when(userRepository.findByDistinguishedName("bobby.davro")).thenReturn(
                 Optional.of(User.builder()
                         .restrictions(Lists.emptyList())
                         .exclusions(Lists.emptyList())

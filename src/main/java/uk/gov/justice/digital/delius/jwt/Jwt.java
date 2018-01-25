@@ -13,6 +13,7 @@ import java.util.Optional;
 @Component
 public class Jwt {
 
+    public static final String UID = "uid";
     private final String secret;
     private final int lifetimeSeconds;
 
@@ -38,7 +39,7 @@ public class Jwt {
     public String buildToken(UserData userData) {
 
         Claims claims = Jwts.claims().setSubject(userData.getDistinguishedName());
-        claims.put("deliusDistinguishedName", userData.getUid());
+        claims.put(UID, userData.getUid());
 
         return Jwts.builder()
                 .setClaims(claims)

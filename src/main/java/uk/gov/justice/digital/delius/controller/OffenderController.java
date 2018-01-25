@@ -293,7 +293,7 @@ public class OffenderController {
 
         Claims claims = jwt.parseAuthorizationHeader(httpHeaders.getFirst(HttpHeaders.AUTHORIZATION)).get();
 
-        AccessLimitation accessLimitation = userService.accessLimitationOf((String)claims.get("deliusDistinguishedName"), offenderDetail);
+        AccessLimitation accessLimitation = userService.accessLimitationOf((String) claims.get(Jwt.UID), offenderDetail);
 
         return new ResponseEntity<>(accessLimitation, responseCodeOf(accessLimitation));
     }
