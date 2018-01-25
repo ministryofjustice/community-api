@@ -49,6 +49,3 @@ CREATE TABLE RESTRICTION
   TRAINING_SESSION_ID        NUMBER
 );
 
-
->>>>>>> master
-
