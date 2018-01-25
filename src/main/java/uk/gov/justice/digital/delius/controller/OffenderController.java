@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
@@ -300,7 +301,7 @@ public class OffenderController {
 
     private HttpStatus responseCodeOf(AccessLimitation accessLimitation) {
         if (accessLimitation.isUserExcluded() || accessLimitation.isUserRestricted()) {
-            return UNAUTHORIZED;
+            return FORBIDDEN;
         }
         return OK;
     }

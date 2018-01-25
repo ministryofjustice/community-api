@@ -642,7 +642,7 @@ public class DeliusOffenderAPITest {
                 .when()
                 .get("/offenders/offenderId/1/userAccess")
                 .then()
-                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .statusCode(HttpStatus.FORBIDDEN.value())
                 .extract().body().as(AccessLimitation.class);
 
         assertThat(accessLimitation.isUserExcluded()).isTrue();
@@ -716,7 +716,7 @@ public class DeliusOffenderAPITest {
                 .when()
                 .get("/offenders/offenderId/1/userAccess")
                 .then()
-                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .statusCode(HttpStatus.FORBIDDEN.value())
                 .extract().body().as(AccessLimitation.class);
 
         assertThat(accessLimitation.isUserExcluded()).isFalse();
