@@ -77,9 +77,33 @@ public class Contact {
     @OneToOne
     private ContactOutcomeType contactOutcomeType;
 
-//    @JoinColumn(name = "CONTACT_ID")
-//    @OneToOne
-//    private ContactUploadDocument contactUploadDocument;
+    @JoinColumn(name = "PROVIDER_LOCATION_ID")
+    @OneToOne
+    private ProviderLocation providerLocation;
+
+    @JoinColumn(name = "PROVIDER_EMPLOYEE_ID")
+    @OneToOne
+    private ProviderEmployee providerEmployee;
+
+    @JoinColumn(name = "PROVIDER_TEAM_ID")
+    @OneToOne
+    private ProviderTeam providerTeam;
+
+    @JoinColumn(name = "STAFF_ID")
+    @OneToOne
+    private Staff staff;
+
+    @JoinColumn(name = "TEAM_ID")
+    @OneToOne
+    private Team team;
+
+    @JoinColumn(name = "PROBATION_AREA_ID")
+    @OneToOne
+    private ProbationArea probationArea;
+
+    @JoinColumn(name = "PARTITION_AREA_ID")
+    @OneToOne
+    private PartitionArea partitionArea;
 
     @JoinColumn(name = "EVENT_ID")
     @ManyToOne

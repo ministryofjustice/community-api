@@ -9,6 +9,7 @@ import java.util.Optional;
 @Data
 @Builder
 public class Event {
+    private Long eventId;
     private Optional<String> notes;
     private boolean active;
     private boolean inBreach;

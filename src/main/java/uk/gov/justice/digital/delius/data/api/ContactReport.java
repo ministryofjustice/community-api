@@ -11,5 +11,5 @@ public class ContactReport {
 
     private List<Event> events;
     private List<Contact> eventlessContacts;
-
+    private List<Contact> linkedContacts;
 }

@@ -25,5 +25,13 @@ public class Contact {
     private LocalDateTime createdDateTime;
     private LocalDateTime lastUpdatedDateTime;
     private Optional<KeyValue> contactOutcomeType;
+    private Optional<String> partitionArea;
+    private Optional<KeyValue> probationArea;
+    private Optional<KeyValue> providerLocation;
+    private Optional<KeyValue> providerTeam;
+    private Optional<KeyValue> team;
+    private Optional<Human> staff;
+    private Optional<Human> providerEmployee;
+
 
 }

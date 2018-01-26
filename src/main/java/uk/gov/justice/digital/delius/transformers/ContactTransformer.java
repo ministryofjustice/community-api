@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.delius.transformers;
 
+import com.google.common.collect.ImmutableList;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.Contact;
+import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.entity.AdRequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.jpa.entity.ContactOutcomeType;
@@ -11,19 +13,31 @@ import uk.gov.justice.digital.delius.jpa.entity.LicenceCondition;
 import uk.gov.justice.digital.delius.jpa.entity.LicenceConditionTypeMainCat;
 import uk.gov.justice.digital.delius.jpa.entity.Nsi;
 import uk.gov.justice.digital.delius.jpa.entity.NsiType;
+import uk.gov.justice.digital.delius.jpa.entity.PartitionArea;
+import uk.gov.justice.digital.delius.jpa.entity.ProbationArea;
+import uk.gov.justice.digital.delius.jpa.entity.ProviderEmployee;
+import uk.gov.justice.digital.delius.jpa.entity.ProviderLocation;
+import uk.gov.justice.digital.delius.jpa.entity.ProviderTeam;
 import uk.gov.justice.digital.delius.jpa.entity.Requirement;
 import uk.gov.justice.digital.delius.jpa.entity.RequirementTypeMainCategory;
+import uk.gov.justice.digital.delius.jpa.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.entity.Team;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class ContactTransformer {
 
     public List<Contact> contactsOf(List<uk.gov.justice.digital.delius.jpa.entity.Contact> contacts) {
-        return contacts.stream().map(this::contactOf).collect(Collectors.toList());
+        return contacts.stream()
+                .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.entity.Contact::getCreatedDateTime))
+                .map(this::contactOf)
+                .collect(Collectors.toList());
     }
 
     public uk.gov.justice.digital.delius.data.api.Contact contactOf(uk.gov.justice.digital.delius.jpa.entity.Contact contact) {
@@ -43,7 +57,65 @@ public class ContactTransformer {
                 .nsi(nsiOf(contact.getNsi()))
                 .requirement(requirementOf(contact.getRequirement()))
                 .softDeleted(contact.getSoftDeleted())
+                .probationArea(probationAreaOf(contact.getProbationArea()))
+                .partitionArea(partitionAreaOf(contact.getPartitionArea()))
+                .providerEmployee(providerEmployeeOf(contact.getProviderEmployee()))
+                .providerLocation(providerLocationOf(contact.getProviderLocation()))
+                .providerTeam(providerTeamOf(contact.getProviderTeam()))
+                .staff(staffOf(contact.getStaff()))
+                .team(teamOf(contact.getTeam()))
                 .build();
+    }
+
+    private Optional<KeyValue> teamOf(Team team) {
+        return Optional.ofNullable(team).map(t -> KeyValue.builder().code(t.getCode()).description(t.getDescription()).build());
+    }
+
+    private Optional<Human> staffOf(Staff staff) {
+        return Optional.ofNullable(staff).map(s -> Human
+                .builder()
+                .forenames(combinedForenamesOf(s.getForename(), s.getForname2()))
+                .surname(s.getSurname())
+                .build());
+    }
+
+    private Optional<KeyValue> providerTeamOf(ProviderTeam providerTeam) {
+        return Optional.ofNullable(providerTeam).map(pt -> KeyValue.builder().code(pt.getCode()).description(pt.getName()).build());
+    }
+
+    private Optional<KeyValue> providerLocationOf(ProviderLocation providerLocation) {
+        return Optional.ofNullable(providerLocation).map(
+                pl -> KeyValue.builder().code(providerLocation.getCode()).description(providerLocation.getDescription()).build()
+        );
+    }
+
+    private Optional<Human> providerEmployeeOf(ProviderEmployee providerEmployee) {
+        return Optional.ofNullable(providerEmployee)
+                .map(pe -> Human
+                        .builder()
+                        .forenames(combinedForenamesOf(pe.getForename(), pe.getForname2()))
+                        .surname(pe.getSurname())
+                        .build());
+    }
+
+    private String combinedForenamesOf(String name1, String name2) {
+        Optional<String> maybeSecondName = Optional.ofNullable(name1);
+        Optional<String> maybeThirdName = Optional.ofNullable(name2);
+
+        return ImmutableList.of(maybeSecondName, maybeThirdName)
+                .stream()
+                .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty))
+                .collect(Collectors.joining(" "));
+    }
+
+    private Optional<String> partitionAreaOf(PartitionArea partitionArea) {
+        return Optional.ofNullable(partitionArea).map(PartitionArea::getArea);
+    }
+
+    private Optional<KeyValue> probationAreaOf(ProbationArea probationArea) {
+        return Optional.ofNullable(probationArea).map(
+                pa -> KeyValue.builder().code(pa.getCode()).description(pa.getDescription()).build()
+        );
     }
 
     private Optional<uk.gov.justice.digital.delius.data.api.Requirement> requirementOf(Requirement requirement) {
