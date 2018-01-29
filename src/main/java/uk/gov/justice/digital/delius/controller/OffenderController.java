@@ -282,7 +282,8 @@ public class OffenderController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "User has unrestricted access to offender"),
             @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
-            @ApiResponse(code = 403, message = "User is restricted from access to offender")
+            @ApiResponse(code = 403, message = "User is restricted from access to offender", response = AccessLimitation.class),
+            @ApiResponse(code = 404, message = "No such offender, or no such User (see body for detail)")
     })
     @JwtValidation
     public ResponseEntity<AccessLimitation> checkUserAccessByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
@@ -318,7 +319,8 @@ public class OffenderController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "User has unrestricted access to offender"),
             @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
-            @ApiResponse(code = 403, message = "User is restricted from access to offender")
+            @ApiResponse(code = 403, message = "User is restricted from access to offender", response = AccessLimitation.class),
+            @ApiResponse(code = 404, message = "No such offender, or no such User (see body for detail)")
     })
     public ResponseEntity<AccessLimitation> checkUserAccessByCrn(final @RequestHeader HttpHeaders httpHeaders,
                                                                  final @PathVariable("crn") String crn) {
@@ -332,7 +334,8 @@ public class OffenderController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "User has unrestricted access to offender"),
             @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
-            @ApiResponse(code = 403, message = "User is restricted from access to offender")
+            @ApiResponse(code = 403, message = "User is restricted from access to offender", response = AccessLimitation.class),
+            @ApiResponse(code = 404, message = "No such offender, or no such User (see body for detail)")
     })
     public ResponseEntity<AccessLimitation> checkUserAccessByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
                                                                         final @PathVariable("nomsNumber") String nomsNumber) {
