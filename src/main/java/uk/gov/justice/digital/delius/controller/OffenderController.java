@@ -5,6 +5,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -277,6 +279,11 @@ public class OffenderController {
     }
 
     @RequestMapping(value = "/offenders/offenderId/{offenderId}/userAccess", method = RequestMethod.GET)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User has unrestricted access to offender"),
+            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "User is restricted from access to offender")
+    })
     @JwtValidation
     public ResponseEntity<AccessLimitation> checkUserAccessByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
                                                                         final @PathVariable("offenderId") Long offenderId) {
@@ -308,6 +315,11 @@ public class OffenderController {
 
     @RequestMapping(value = "/offenders/crn/{crn}/userAccess", method = RequestMethod.GET)
     @JwtValidation
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User has unrestricted access to offender"),
+            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "User is restricted from access to offender")
+    })
     public ResponseEntity<AccessLimitation> checkUserAccessByCrn(final @RequestHeader HttpHeaders httpHeaders,
                                                                  final @PathVariable("crn") String crn) {
         Optional<OffenderDetail> maybeOffender = offenderService.getOffenderByCrn(crn);
@@ -317,6 +329,11 @@ public class OffenderController {
 
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/userAccess", method = RequestMethod.GET)
     @JwtValidation
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User has unrestricted access to offender"),
+            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "User is restricted from access to offender")
+    })
     public ResponseEntity<AccessLimitation> checkUserAccessByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
                                                                         final @PathVariable("nomsNumber") String nomsNumber) {
         Optional<OffenderDetail> maybeOffender = offenderService.getOffenderByNomsNumber(nomsNumber);
@@ -336,17 +353,17 @@ public class OffenderController {
 
     @ExceptionHandler(MalformedJwtException.class)
     public ResponseEntity<String> badJwt(MalformedJwtException e) {
-        return new ResponseEntity<>("Bad Token.", HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>("Bad Token.", HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<String> expiredJwt(ExpiredJwtException e) {
-        return new ResponseEntity<>("Expired Token.", HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>("Expired Token.", HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(SignatureException.class)
     public ResponseEntity<String> notMine(SignatureException e) {
-        return new ResponseEntity<>("Invalid signature.", HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>("Invalid signature.", HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(HttpClientErrorException.class)

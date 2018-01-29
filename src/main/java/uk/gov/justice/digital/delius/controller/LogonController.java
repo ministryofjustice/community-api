@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.delius.controller;
 
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,7 +37,14 @@ public class LogonController {
         this.ldapRepository = ldapRepository;
     }
 
+    private ResponseEntity<String> notFound() {
+        return new ResponseEntity<>(NOT_FOUND);
+    }
+
     @RequestMapping(method = RequestMethod.POST, consumes = "text/plain")
+    @ApiResponses(value = {
+            @ApiResponse(code = 404, message = "User lookup: not found")
+    })
     public ResponseEntity<String> getToken(final @RequestBody String distinguishedName) {
 
         log.info("Received call to getToken with body {}", distinguishedName);
@@ -47,10 +56,6 @@ public class LogonController {
                         .distinguishedName(distinguishedName)
                         .uid(uid)
                         .build()), HttpStatus.OK)).orElse(notFound());
-    }
-
-    private ResponseEntity<String> notFound() {
-        return new ResponseEntity<>(NOT_FOUND);
     }
 
     @ExceptionHandler(InvalidNameException.class)
