@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.delius.jwt;
 
+import com.google.common.collect.Lists;
 import io.jsonwebtoken.Claims;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -10,11 +12,13 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.exception.JwtTokenMissingException;
 import uk.gov.justice.digital.delius.jpa.oracle.UserProxy;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Aspect
 @Component
+@Slf4j
 public class JwtValidator {
 
     private final Jwt jwt;
@@ -26,9 +30,11 @@ public class JwtValidator {
     @Before("execution(@uk.gov.justice.digital.delius.jwt.JwtValidation * *(..))")
     public void validateJwt(JoinPoint joinPoint) {
 
-        Object[] args = joinPoint.getArgs();
+        ArrayList<Object> argsList = Lists.newArrayList(joinPoint.getArgs());
 
-        Optional<Claims> maybeClaims = Arrays.stream(args)
+        log.info("Received call to {} with arguments {}", joinPoint.getSignature().getName(), argsList.stream().map(Object::toString).collect(Collectors.joining(", ")));
+
+        Optional<Claims> maybeClaims = argsList.stream()
                 .filter(arg -> arg instanceof HttpHeaders)
                 .findFirst()
                 .map(headers -> ((HttpHeaders) headers).getFirst("Authorization"))

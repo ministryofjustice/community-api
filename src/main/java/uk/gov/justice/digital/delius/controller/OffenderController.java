@@ -5,7 +5,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
-import lombok.extern.java.Log;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.hateoas.Link;
@@ -45,10 +47,9 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @RestController
-@Log
+@Slf4j
 public class OffenderController {
 
     private final OffenderService offenderService;
@@ -259,6 +260,7 @@ public class OffenderController {
 
         Link nextLink = linkTo(methodOn(OffenderController.class).getOffenderIds(httpHeaders, pageSize, page + 1)).withRel("next");
 
+
         List<BigDecimal> offenderIds = offenderService.allOffenderIds(pageSize, page);
         if (offenderIds.isEmpty()) {
             return new ResponseEntity<>(NOT_FOUND);
@@ -277,6 +279,12 @@ public class OffenderController {
     }
 
     @RequestMapping(value = "/offenders/offenderId/{offenderId}/userAccess", method = RequestMethod.GET)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User has unrestricted access to offender"),
+            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "User is restricted from access to offender", response = AccessLimitation.class),
+            @ApiResponse(code = 404, message = "No such offender, or no such User (see body for detail)")
+    })
     @JwtValidation
     public ResponseEntity<AccessLimitation> checkUserAccessByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
                                                                         final @PathVariable("offenderId") Long offenderId) {
@@ -308,6 +316,12 @@ public class OffenderController {
 
     @RequestMapping(value = "/offenders/crn/{crn}/userAccess", method = RequestMethod.GET)
     @JwtValidation
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User has unrestricted access to offender"),
+            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "User is restricted from access to offender", response = AccessLimitation.class),
+            @ApiResponse(code = 404, message = "No such offender, or no such User (see body for detail)")
+    })
     public ResponseEntity<AccessLimitation> checkUserAccessByCrn(final @RequestHeader HttpHeaders httpHeaders,
                                                                  final @PathVariable("crn") String crn) {
         Optional<OffenderDetail> maybeOffender = offenderService.getOffenderByCrn(crn);
@@ -317,6 +331,12 @@ public class OffenderController {
 
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/userAccess", method = RequestMethod.GET)
     @JwtValidation
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User has unrestricted access to offender"),
+            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "User is restricted from access to offender", response = AccessLimitation.class),
+            @ApiResponse(code = 404, message = "No such offender, or no such User (see body for detail)")
+    })
     public ResponseEntity<AccessLimitation> checkUserAccessByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
                                                                         final @PathVariable("nomsNumber") String nomsNumber) {
         Optional<OffenderDetail> maybeOffender = offenderService.getOffenderByNomsNumber(nomsNumber);
@@ -336,17 +356,17 @@ public class OffenderController {
 
     @ExceptionHandler(MalformedJwtException.class)
     public ResponseEntity<String> badJwt(MalformedJwtException e) {
-        return new ResponseEntity<>("Bad Token.", HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>("Bad Token.", HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<String> expiredJwt(ExpiredJwtException e) {
-        return new ResponseEntity<>("Expired Token.", HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>("Expired Token.", HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(SignatureException.class)
     public ResponseEntity<String> notMine(SignatureException e) {
-        return new ResponseEntity<>("Invalid signature.", HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>("Invalid signature.", HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(HttpClientErrorException.class)
