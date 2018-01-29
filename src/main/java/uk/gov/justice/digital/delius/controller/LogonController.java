@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.controller;
 
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
 @RequestMapping("/logon")
-@Log
+@Slf4j
 public class LogonController {
 
     public static final String NATIONAL_USER = "NationalUser";
@@ -37,6 +37,8 @@ public class LogonController {
 
     @RequestMapping(method = RequestMethod.POST, consumes = "text/plain")
     public ResponseEntity<String> getToken(final @RequestBody String distinguishedName) {
+
+        log.info("Received call to getToken with body {}", distinguishedName);
 
         Optional<String> maybeUid = NATIONAL_USER.equals(distinguishedName) ? Optional.of("NationalUser") : ldapRepository.getDeliusUid(distinguishedName);
 

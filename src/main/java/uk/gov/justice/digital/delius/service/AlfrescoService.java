@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -19,7 +18,6 @@ import uk.gov.justice.digital.delius.data.api.alfresco.SearchResult;
 import java.util.Optional;
 
 @Service
-@Log
 public class AlfrescoService {
     private final RestTemplate restTemplate;
     private final MultiValueMap<String, String> headers;

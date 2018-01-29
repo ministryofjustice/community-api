@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.controller;
 
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@Log
+@Slf4j
 public class OffenderDeltaController {
 
     private final OffenderDeltaService offenderDeltaService;
@@ -30,7 +30,7 @@ public class OffenderDeltaController {
 
     @RequestMapping(value = "/offenderDeltaIds", method = RequestMethod.GET)
     public ResponseEntity<List<OffenderDelta>> getOffenderDeltas() {
-
+        log.info("Call to getOffenderDeltas");
         return new ResponseEntity<>(offenderDeltaService.findAll(), HttpStatus.OK);
     }
 

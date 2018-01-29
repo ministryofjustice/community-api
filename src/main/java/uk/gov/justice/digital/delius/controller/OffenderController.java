@@ -5,7 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.hateoas.Link;
@@ -45,10 +45,9 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @RestController
-@Log
+@Slf4j
 public class OffenderController {
 
     private final OffenderService offenderService;
@@ -258,6 +257,7 @@ public class OffenderController {
                                                                                                     final @RequestParam(defaultValue = "1") int page) {
 
         Link nextLink = linkTo(methodOn(OffenderController.class).getOffenderIds(httpHeaders, pageSize, page + 1)).withRel("next");
+
 
         List<BigDecimal> offenderIds = offenderService.allOffenderIds(pageSize, page);
         if (offenderIds.isEmpty()) {

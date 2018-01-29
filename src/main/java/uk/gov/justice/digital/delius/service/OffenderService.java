@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class OffenderService {
 
     private final OffenderRepository offenderRepository;
@@ -62,7 +64,17 @@ public class OffenderService {
         int lower = (page * pageSize) - pageSize + 1;
         int upper = page * pageSize;
 
-        return offenderRepository.listOffenderIds(lower, upper);
+        List<BigDecimal> offenderIds = offenderRepository.listOffenderIds(lower, upper);
+
+        if (offenderIds == null) {
+            log.error("Call to offenderRepository.listOffenderIds {}, {} returned a null list", pageSize, page);
+        }
+
+        if (offenderIds.contains(null)) {
+            log.error("Call to offenderRepository.listOffenderIds {}, {} returned a list containing null", pageSize, page);
+        }
+
+        return offenderIds;
     }
 
     public Long getOffenderCount() {
