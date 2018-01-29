@@ -287,7 +287,7 @@ public class DeliusOffenderAPITest {
         when()
                 .get("/offenders/offenderId/1")
                 .then()
-                .statusCode(401);
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
     }
 
     @Test
@@ -297,7 +297,7 @@ public class DeliusOffenderAPITest {
                 .when()
                 .get("/offenders/offenderId/1")
                 .then()
-                .statusCode(401);
+                .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
@@ -307,7 +307,7 @@ public class DeliusOffenderAPITest {
                 .when()
                 .get("/offenders/offenderId/1")
                 .then()
-                .statusCode(401);
+                .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
     private String someoneElsesToken() {
