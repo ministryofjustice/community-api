@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.info;
 
 import com.google.common.collect.ImmutableMap;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.stereotype.Component;
@@ -12,19 +13,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
+@Slf4j
 public class ServerInfo implements InfoContributor {
 
     @Override
     public void contribute(Info.Builder builder) {
         Map<String, Object> serverDetails = new HashMap<>();
 
-        InetAddress localHost = null;
-        InetAddress loopbackAddress = null;
+        InetAddress localHost;
+        InetAddress loopbackAddress;
         try {
             localHost = InetAddress.getLocalHost();
             loopbackAddress = InetAddress.getLoopbackAddress();
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
+            return;
         }
 
 
