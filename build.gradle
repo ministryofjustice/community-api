@@ -22,7 +22,7 @@ plugins {
 
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
-version = "0.0.13"
+version = "0.1.0"
 
 springBoot {
     buildInfo()
@@ -57,17 +57,18 @@ dependencies {
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.8.0'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.0'
     compile 'io.jsonwebtoken:jjwt:0.9.0'
-    compile 'org.springframework.boot:spring-boot-starter-web:1.5.8.RELEASE'
-    compile 'org.springframework.boot:spring-boot-starter-jetty:1.5.8.RELEASE'
-    compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.5.8.RELEASE'
-    compile 'org.springframework.boot:spring-boot-starter-data-ldap:1.5.8.RELEASE'
-    compile 'org.springframework.boot:spring-boot-starter-actuator:1.5.8.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-web:1.5.10.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-jetty:1.5.10.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.5.10.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-data-ldap:1.5.10.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-actuator:1.5.10.RELEASE'
+    compile 'org.hibernate:hibernate-java8:5.1.12.Final'
     compile 'org.springframework.hateoas:spring-hateoas:0.24.0.RELEASE'
-    compile 'com.unboundid:unboundid-ldapsdk:4.0.1'
-    compile 'io.springfox:springfox-swagger2:2.7.0'
-    compile 'org.flywaydb:flyway-core:4.2.0'
-    compile 'io.springfox:springfox-swagger-ui:2.7.0'
-    compile 'com.zaxxer:HikariCP:2.7.2'
+    compile 'com.unboundid:unboundid-ldapsdk:4.0.4'
+    compile 'io.springfox:springfox-swagger2:2.8.0'
+    compile 'org.flywaydb:flyway-core:5.0.7'
+    compile 'io.springfox:springfox-swagger-ui:2.8.0'
+    compile 'com.zaxxer:HikariCP:2.7.6'
     compile 'commons-io:commons-io:2.6'
 
 
