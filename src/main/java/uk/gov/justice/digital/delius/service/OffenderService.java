@@ -4,10 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.justice.digital.delius.data.api.AccessLimitation;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
-import uk.gov.justice.digital.delius.jpa.entity.Offender;
-import uk.gov.justice.digital.delius.jpa.repository.OffenderRepository;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 
 import java.math.BigDecimal;
@@ -81,7 +80,4 @@ public class OffenderService {
         return offenderRepository.count();
     }
 
-    public AccessLimitation accessLimitationOf(String userDistinguishedName, Long offenderId) {
-        return null;
-    }
 }

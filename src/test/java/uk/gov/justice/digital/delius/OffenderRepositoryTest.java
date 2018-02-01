@@ -8,8 +8,8 @@ import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.justice.digital.delius.jpa.entity.Offender;
-import uk.gov.justice.digital.delius.jpa.repository.OffenderRepository;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 
 import java.util.Optional;
 
