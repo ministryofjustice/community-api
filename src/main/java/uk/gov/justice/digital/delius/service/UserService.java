@@ -8,6 +8,10 @@ import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.service.wrapper.UserRepositoryWrapper;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class UserService {
     private final UserRepositoryWrapper userRepositoryWrapper;
@@ -36,4 +40,27 @@ public class UserService {
 
         return accessLimitationBuilder.build();
     }
+
+    @Transactional
+    public List<uk.gov.justice.digital.delius.data.api.User> getUsersList(String surname, Optional<String> forename) {
+
+        List<uk.gov.justice.digital.delius.data.api.User> users = forename.map(f -> userRepositoryWrapper.findBySurnameIgnoreCaseAndForenameIgnoreCase(surname, f))
+                .orElse(userRepositoryWrapper.findBySurnameIgnoreCase(surname))
+                .stream()
+                .map(user -> uk.gov.justice.digital.delius.data.api.User.builder()
+                        .distinguishedName(user.getDistinguishedName())
+                        .endDate(user.getEndDate())
+                        .externalProviderEmployeeFlag(user.getExternalProviderEmployeeFlag())
+                        .externalProviderId(user.getExternalProviderId())
+                        .forename(user.getForename())
+                        .forename2(user.getForename2())
+                        .surname(user.getSurname())
+                        .organisationId(user.getOrganisationId())
+                        .privateFlag(user.getPrivateFlag())
+                        .scProviderId(user.getScProviderId())
+                        .staffId(user.getStaffId())
+                        .build()).collect(Collectors.toList());
+        return users;
+    }
+
 }

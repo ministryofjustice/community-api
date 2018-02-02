@@ -7,6 +7,8 @@ import uk.gov.justice.digital.delius.jpa.national.repository.UserRepository;
 import uk.gov.justice.digital.delius.jpa.oracle.annotations.NationalUserOverride;
 import uk.gov.justice.digital.delius.service.NoSuchUserException;
 
+import java.util.List;
+
 @Component
 public class UserRepositoryWrapper {
 
@@ -20,6 +22,16 @@ public class UserRepositoryWrapper {
     @NationalUserOverride
     public User getUser(String userDistinguishedName) {
         return userRepository.findByDistinguishedName(userDistinguishedName).orElseThrow(() -> new NoSuchUserException("Can't resolve user: " + userDistinguishedName));
+    }
+
+    @NationalUserOverride
+    public List<User> findBySurnameIgnoreCaseAndForenameIgnoreCase(String surname, String forename) {
+        return userRepository.findBySurnameIgnoreCaseAndForenameIgnoreCase(surname, forename);
+    }
+
+    @NationalUserOverride
+    public List<User> findBySurnameIgnoreCase(String surname) {
+        return userRepository.findBySurnameIgnoreCase(surname);
     }
 
 }

@@ -1,24 +1,23 @@
 package uk.gov.justice.digital.delius.controller;
 
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.justice.digital.delius.data.api.User;
-import uk.gov.justice.digital.delius.jpa.national.repository.UserRepository;
+import uk.gov.justice.digital.delius.data.api.UsersAndLdap;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
+import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
+import uk.gov.justice.digital.delius.service.UserService;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -26,43 +25,31 @@ import static org.springframework.http.HttpStatus.OK;
 @Slf4j
 public class UserController {
 
+    private final UserService userService;
+    private final LdapRepository ldapRepository;
     private final Jwt jwt;
-    private final UserRepository userRepository;
 
     @Autowired
-    public UserController(Jwt jwt, UserRepository userRepository) {
+    public UserController(UserService userService, LdapRepository ldapRepository, Jwt jwt) {
+        this.userService = userService;
+        this.ldapRepository = ldapRepository;
         this.jwt = jwt;
-        this.userRepository = userRepository;
     }
+
 
     @RequestMapping(value = "/users", method = RequestMethod.GET)
     @JwtValidation
-    public ResponseEntity<List<User>> getOffenderByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
-                                                              final @RequestParam("surname") @NotNull String surname,
-                                                              final @RequestParam("forename") Optional<String> forename) {
-        return getUsersList(surname, forename);
-    }
+    public ResponseEntity<UsersAndLdap> getOffenderByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
+                                                                final @RequestParam("surname") @NotNull String surname,
+                                                                final @RequestParam("forename") Optional<String> forename) {
 
-    @Transactional
-    public ResponseEntity<List<User>> getUsersList(String surname, Optional<String> forename) {
+        Claims claims = jwt.parseAuthorizationHeader(httpHeaders.getFirst(HttpHeaders.AUTHORIZATION)).get();
 
-        List<uk.gov.justice.digital.delius.data.api.User> users = forename.map(f -> userRepository.findBySurnameIgnoreCaseAndForenameIgnoreCase(surname, f))
-                .orElse(userRepository.findBySurnameIgnoreCase(surname))
-                .stream()
-                .map(user -> uk.gov.justice.digital.delius.data.api.User.builder()
-                        .distinguishedName(user.getDistinguishedName())
-                        .endDate(user.getEndDate())
-                        .externalProviderEmployeeFlag(user.getExternalProviderEmployeeFlag())
-                        .externalProviderId(user.getExternalProviderId())
-                        .forename(user.getForename())
-                        .forename2(user.getForename2())
-                        .surname(user.getSurname())
-                        .organisationId(user.getOrganisationId())
-                        .privateFlag(user.getPrivateFlag())
-                        .scProviderId(user.getScProviderId())
-                        .staffId(user.getStaffId())
-                        .build()).collect(Collectors.toList());
-        return new ResponseEntity<>(users, OK);
+        return new ResponseEntity<>(
+                UsersAndLdap.builder()
+                        .users(userService.getUsersList(surname, forename))
+                        .ldapEntryFromProvidedJwt(ldapRepository.getAll(claims.getSubject()))
+                        .build(), OK);
     }
 
 }
