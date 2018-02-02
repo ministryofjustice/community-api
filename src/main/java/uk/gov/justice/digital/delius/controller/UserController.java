@@ -17,6 +17,8 @@ import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
 import uk.gov.justice.digital.delius.service.UserService;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.OK;
@@ -50,6 +52,15 @@ public class UserController {
                         .users(userService.getUsersList(surname, forename))
                         .ldapEntryFromProvidedJwt(ldapRepository.getAll(claims.getSubject()))
                         .build(), OK);
+    }
+
+    @RequestMapping(value = "/ldap", method = RequestMethod.GET)
+    @JwtValidation
+    public ResponseEntity<List<Map<String, String>>> getOffenderByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
+                                                                             final @RequestParam("field") @NotNull String field,
+                                                                             final @RequestParam("value") @NotNull String value) {
+
+        return new ResponseEntity<>(ldapRepository.searchByFieldAndValue(field, value), OK);
     }
 
 }

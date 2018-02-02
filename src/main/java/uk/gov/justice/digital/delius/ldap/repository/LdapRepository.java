@@ -8,8 +8,11 @@ import org.springframework.stereotype.Repository;
 import javax.naming.NamingEnumeration;
 import javax.naming.directory.Attribute;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
 @Repository
 public class LdapRepository {
@@ -28,7 +31,11 @@ public class LdapRepository {
     }
 
     public Map<String, String> getAll(String distinguishedName) {
-        return ldapTemplate.lookup(distinguishedName, (AttributesMapper<Map<String, String>>) attrs -> {
+        return ldapTemplate.lookup(distinguishedName, getMapAttributesMapper());
+    }
+
+    private AttributesMapper<Map<String, String>> getMapAttributesMapper() {
+        return (AttributesMapper<Map<String, String>>) attrs -> {
 
             Map<String, String> attrsMap = new HashMap<>();
             NamingEnumeration<? extends Attribute> all = attrs.getAll();
@@ -37,6 +44,11 @@ public class LdapRepository {
                 attrsMap.put(attr.getID(), attr.get().toString());
             }
             return attrsMap;
-        });
+        };
+    }
+
+    public List<Map<String, String>> searchByFieldAndValue(String field, String value) {
+        return ldapTemplate.search(
+                query().where(field).is(value), getMapAttributesMapper());
     }
 }
