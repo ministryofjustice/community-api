@@ -35,8 +35,7 @@ public class LdapRepository {
     }
 
     private AttributesMapper<Map<String, String>> getMapAttributesMapper() {
-        return (AttributesMapper<Map<String, String>>) attrs -> {
-
+        return attrs -> {
             Map<String, String> attrsMap = new HashMap<>();
             NamingEnumeration<? extends Attribute> all = attrs.getAll();
             while (all.hasMore()) {
