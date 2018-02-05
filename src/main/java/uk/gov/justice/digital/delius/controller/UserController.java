@@ -56,7 +56,7 @@ public class UserController {
 
     @RequestMapping(value = "/ldap", method = RequestMethod.GET)
     @JwtValidation
-    public ResponseEntity<List<Map<String, String>>> getOffenderByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
+    public ResponseEntity<List<Map<String, String>>> ldapSearch(final @RequestHeader HttpHeaders httpHeaders,
                                                                              final @RequestParam("field") @NotNull String field,
                                                                              final @RequestParam("value") @NotNull String value) {
 
