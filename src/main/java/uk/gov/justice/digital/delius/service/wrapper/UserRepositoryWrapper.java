@@ -21,7 +21,7 @@ public class UserRepositoryWrapper {
 
     @NationalUserOverride
     public User getUser(String userDistinguishedName) {
-        return userRepository.findByDistinguishedName(userDistinguishedName).orElseThrow(() -> new NoSuchUserException("Can't resolve user: " + userDistinguishedName));
+        return userRepository.findByDistinguishedNameIgnoreCase(userDistinguishedName).orElseThrow(() -> new NoSuchUserException("Can't resolve user: " + userDistinguishedName));
     }
 
     @NationalUserOverride
