@@ -10,4 +10,5 @@ import java.time.LocalDateTime;
 public class OffenderDelta {
     private Long offenderId;
     private LocalDateTime dateChanged;
+    private String action;
 }

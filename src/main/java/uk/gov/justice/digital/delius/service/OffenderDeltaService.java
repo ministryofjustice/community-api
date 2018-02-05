@@ -25,6 +25,7 @@ public class OffenderDeltaService {
                 OffenderDelta.builder()
                         .offenderId(resultSet.getLong("OFFENDER_ID"))
                         .dateChanged(resultSet.getTimestamp("DATE_CHANGED").toLocalDateTime())
+                        .action(resultSet.getString("ACTION"))
                         .build());
     }
 
