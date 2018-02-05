@@ -23,7 +23,7 @@ objectclass: organizationalPerson
 objectclass: inetOrgPerson
 cn: Oliver Connolly
 sn: Oliver
-uid: oliver.connolly
+uid: OlIvEr.cOnNoLlY
 
 dn: uid=jihn,ou=people,dc=memorynotfound,dc=com
 objectclass: top
