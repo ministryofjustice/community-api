@@ -48,6 +48,7 @@ public class UserService {
                 .orElse(userRepositoryWrapper.findBySurnameIgnoreCase(surname))
                 .stream()
                 .map(user -> uk.gov.justice.digital.delius.data.api.User.builder()
+                        .userId(user.getUserId())
                         .distinguishedName(user.getDistinguishedName())
                         .endDate(user.getEndDate())
                         .externalProviderEmployeeFlag(user.getExternalProviderEmployeeFlag())
