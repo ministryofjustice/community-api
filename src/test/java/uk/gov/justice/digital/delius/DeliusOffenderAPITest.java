@@ -23,16 +23,16 @@ import uk.gov.justice.digital.delius.data.api.AccessLimitation;
 import uk.gov.justice.digital.delius.data.api.Count;
 import uk.gov.justice.digital.delius.data.api.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
-import uk.gov.justice.digital.delius.jpa.entity.Exclusion;
-import uk.gov.justice.digital.delius.jpa.entity.Offender;
-import uk.gov.justice.digital.delius.jpa.entity.OffenderAddress;
-import uk.gov.justice.digital.delius.jpa.entity.OffenderAlias;
-import uk.gov.justice.digital.delius.jpa.entity.PartitionArea;
-import uk.gov.justice.digital.delius.jpa.entity.Restriction;
-import uk.gov.justice.digital.delius.jpa.entity.StandardReference;
-import uk.gov.justice.digital.delius.jpa.entity.User;
-import uk.gov.justice.digital.delius.jpa.repository.OffenderRepository;
-import uk.gov.justice.digital.delius.jpa.repository.UserRepository;
+import uk.gov.justice.digital.delius.jpa.national.entity.Exclusion;
+import uk.gov.justice.digital.delius.jpa.national.entity.Restriction;
+import uk.gov.justice.digital.delius.jpa.national.entity.User;
+import uk.gov.justice.digital.delius.jpa.national.repository.UserRepository;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAddress;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PartitionArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.user.UserData;
 
@@ -629,7 +629,7 @@ public class DeliusOffenderAPITest {
         Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(offender));
         String distinguishedName = UUID.randomUUID().toString();
 
-        Mockito.when(userRepository.findByDistinguishedName("bobby.davro")).thenReturn(
+        Mockito.when(userRepository.findByDistinguishedNameIgnoreCase("bobby.davro")).thenReturn(
                 Optional.of(User.builder()
                         .exclusions(
                                 Lists.newArrayList(Exclusion.builder().offenderId(offender.getOffenderId()).build())
@@ -655,7 +655,7 @@ public class DeliusOffenderAPITest {
         Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(offender));
         String distinguishedName = UUID.randomUUID().toString();
 
-        Mockito.when(userRepository.findByDistinguishedName("bobby.davro")).thenReturn(
+        Mockito.when(userRepository.findByDistinguishedNameIgnoreCase("bobby.davro")).thenReturn(
                 Optional.of(User.builder()
                         .restrictions(Lists.emptyList())
                         .exclusions(Lists.emptyList())
@@ -679,7 +679,7 @@ public class DeliusOffenderAPITest {
         Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(offender));
         String distinguishedName = UUID.randomUUID().toString();
 
-        Mockito.when(userRepository.findByDistinguishedName("bobby.davro")).thenReturn(
+        Mockito.when(userRepository.findByDistinguishedNameIgnoreCase("bobby.davro")).thenReturn(
                 Optional.of(User.builder()
                         .restrictions(
                                 Lists.newArrayList(Restriction.builder().offenderId(offender.getOffenderId()).build())
@@ -705,7 +705,7 @@ public class DeliusOffenderAPITest {
         Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(offender));
         String distinguishedName = UUID.randomUUID().toString();
 
-        Mockito.when(userRepository.findByDistinguishedName("bobby.davro")).thenReturn(
+        Mockito.when(userRepository.findByDistinguishedNameIgnoreCase("bobby.davro")).thenReturn(
                 Optional.of(User.builder()
                         .restrictions(Lists.emptyList())
                         .exclusions(Lists.emptyList())

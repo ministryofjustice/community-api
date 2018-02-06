@@ -11,10 +11,10 @@ import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderLanguages;
 import uk.gov.justice.digital.delius.data.api.OffenderProfile;
 import uk.gov.justice.digital.delius.data.api.PhoneNumber;
-import uk.gov.justice.digital.delius.jpa.entity.Offender;
-import uk.gov.justice.digital.delius.jpa.entity.OffenderAddress;
-import uk.gov.justice.digital.delius.jpa.entity.OffenderAlias;
-import uk.gov.justice.digital.delius.jpa.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAddress;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
 import java.util.Arrays;
 import java.util.Collections;

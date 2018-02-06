@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.delius.jpa.entity;
+package uk.gov.justice.digital.delius.jpa.national.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
