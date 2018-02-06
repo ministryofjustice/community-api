@@ -3,9 +3,9 @@ package uk.gov.justice.digital.delius.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.data.api.ContactReport;
-import uk.gov.justice.digital.delius.jpa.entity.Contact;
-import uk.gov.justice.digital.delius.jpa.entity.Event;
-import uk.gov.justice.digital.delius.jpa.repository.ContactRepository;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.transformers.ContactTransformer;
 
 import java.util.List;

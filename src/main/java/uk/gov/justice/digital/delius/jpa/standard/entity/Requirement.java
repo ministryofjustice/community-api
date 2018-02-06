@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.delius.jpa.entity;
+package uk.gov.justice.digital.delius.jpa.standard.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,7 +48,7 @@ public class Requirement {
 
     @JoinColumn(name = "RQMNT_TYPE_SUB_CATEGORY_ID")
     @OneToOne
-    private StandardReference requiremntTypeSubCategory;
+    private StandardReference requirementTypeSubCategory;
 
     @JoinColumn(name = "AD_RQMNT_TYPE_MAIN_CATEGORY_ID")
     @OneToOne

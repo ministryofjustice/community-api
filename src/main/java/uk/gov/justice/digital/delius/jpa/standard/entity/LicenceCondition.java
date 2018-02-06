@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.delius.jpa.entity;
+package uk.gov.justice.digital.delius.jpa.standard.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDate;
@@ -54,7 +53,6 @@ public class LicenceCondition {
     @JoinColumn(name = "LIC_COND_TYPE_MAIN_CAT_ID")
     @OneToOne
     private LicenceConditionTypeMainCat licenceConditionTypeMainCat;
-
 
 
 }

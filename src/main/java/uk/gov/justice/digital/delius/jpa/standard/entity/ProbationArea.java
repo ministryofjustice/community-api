@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.delius.jpa.entity;
+package uk.gov.justice.digital.delius.jpa.standard.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,16 +15,17 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "R_CONTACT_OUTCOME_TYPE")
-public class ContactOutcomeType {
+@Table(name = "PROBATION_AREA")
+public class ProbationArea {
 
     @Id
-    @Column(name = "CONTACT_OUTCOME_TYPE_ID")
-    private long contactOutcomeTypeId;
+    @Column(name = "PROBATION_AREA_ID")
+    private Long probationAreaId;
 
     @Column(name = "CODE")
     private String code;
 
     @Column(name = "DESCRIPTION")
     private String description;
+
 }

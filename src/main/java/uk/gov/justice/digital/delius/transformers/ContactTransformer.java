@@ -5,24 +5,24 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
-import uk.gov.justice.digital.delius.jpa.entity.AdRequirementTypeMainCategory;
-import uk.gov.justice.digital.delius.jpa.entity.ContactOutcomeType;
-import uk.gov.justice.digital.delius.jpa.entity.ContactType;
-import uk.gov.justice.digital.delius.jpa.entity.Explanation;
-import uk.gov.justice.digital.delius.jpa.entity.LicenceCondition;
-import uk.gov.justice.digital.delius.jpa.entity.LicenceConditionTypeMainCat;
-import uk.gov.justice.digital.delius.jpa.entity.Nsi;
-import uk.gov.justice.digital.delius.jpa.entity.NsiType;
-import uk.gov.justice.digital.delius.jpa.entity.PartitionArea;
-import uk.gov.justice.digital.delius.jpa.entity.ProbationArea;
-import uk.gov.justice.digital.delius.jpa.entity.ProviderEmployee;
-import uk.gov.justice.digital.delius.jpa.entity.ProviderLocation;
-import uk.gov.justice.digital.delius.jpa.entity.ProviderTeam;
-import uk.gov.justice.digital.delius.jpa.entity.Requirement;
-import uk.gov.justice.digital.delius.jpa.entity.RequirementTypeMainCategory;
-import uk.gov.justice.digital.delius.jpa.entity.Staff;
-import uk.gov.justice.digital.delius.jpa.entity.StandardReference;
-import uk.gov.justice.digital.delius.jpa.entity.Team;
+import uk.gov.justice.digital.delius.jpa.standard.entity.AdRequirementTypeMainCategory;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ContactOutcomeType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Explanation;
+import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceCondition;
+import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceConditionTypeMainCat;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Nsi;
+import uk.gov.justice.digital.delius.jpa.standard.entity.NsiType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PartitionArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderEmployee;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderLocation;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderTeam;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
+import uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 
 import java.util.Comparator;
 import java.util.List;
@@ -33,14 +33,14 @@ import java.util.stream.Stream;
 @Component
 public class ContactTransformer {
 
-    public List<Contact> contactsOf(List<uk.gov.justice.digital.delius.jpa.entity.Contact> contacts) {
+    public List<Contact> contactsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.Contact> contacts) {
         return contacts.stream()
-                .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.entity.Contact::getCreatedDateTime))
+                .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Contact::getCreatedDateTime))
                 .map(this::contactOf)
                 .collect(Collectors.toList());
     }
 
-    public uk.gov.justice.digital.delius.data.api.Contact contactOf(uk.gov.justice.digital.delius.jpa.entity.Contact contact) {
+    public uk.gov.justice.digital.delius.data.api.Contact contactOf(uk.gov.justice.digital.delius.jpa.standard.entity.Contact contact) {
         return uk.gov.justice.digital.delius.data.api.Contact.builder()
                 .alertActive("Y".equals(contact.getAlertActive()))
                 .contactEndTime(Optional.ofNullable(contact.getContactEndTime()))
@@ -129,7 +129,7 @@ public class ContactTransformer {
                 .requirementId(req.getRequirementId())
                 .requirementNotes(Optional.ofNullable(req.getRequirementNotes()))
                 .requirementTypeMainCategory(requirementTypeMainCategoryOf(req.getRequirementTypeMainCategory()))
-                .requirementTypeSubCategory(requirementTypeSubCategoryOf(req.getRequiremntTypeSubCategory()))
+                .requirementTypeSubCategory(requirementTypeSubCategoryOf(req.getRequirementTypeSubCategory()))
                 .startDate(Optional.ofNullable(req.getStartDate()))
                 .terminationDate(Optional.ofNullable(req.getTerminationDate()))
                 .build());

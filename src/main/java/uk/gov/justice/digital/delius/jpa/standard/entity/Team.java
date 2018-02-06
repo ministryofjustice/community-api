@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.delius.jpa.entity;
+package uk.gov.justice.digital.delius.jpa.standard.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,15 +15,17 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "R_RQMNT_TYPE_MAIN_CATEGORY")
-public class RequirementTypeMainCategory {
+@Table(name = "TEAM")
+public class Team {
+
     @Id
-    @Column(name = "RQMNT_TYPE_MAIN_CATEGORY_ID")
-    private Long requirementTypeMainCategoryId;
+    @Column(name = "TEAM_ID")
+    private Long teamId;
 
     @Column(name = "CODE")
     private String code;
 
     @Column(name = "DESCRIPTION")
     private String description;
+
 }
