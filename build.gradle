@@ -67,7 +67,7 @@ dependencies {
     compile 'com.unboundid:unboundid-ldapsdk:4.0.4'
     compile 'io.springfox:springfox-swagger2:2.8.0'
     compile 'org.flywaydb:flyway-core:5.0.7'
-    compile 'io.springfox:springfox-swagger-ui:2.8.0'
+    compile 'io.springfox:springfox-swagger-ui:2.7.0'
     compile 'com.zaxxer:HikariCP:2.7.6'
     compile 'commons-io:commons-io:2.6'
 
