@@ -17,7 +17,7 @@ public class OffenderDetail {
     private String firstName;
     private List<String> middleNames;
     private String surname;
-    private List<String> previousSurnames;
+    private Optional<String> previousSurname;
     private LocalDate dateOfBirth;
     private String gender;
     private IDs otherIds;

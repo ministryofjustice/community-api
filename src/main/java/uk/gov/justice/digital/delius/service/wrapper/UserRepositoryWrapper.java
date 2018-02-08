@@ -29,4 +29,14 @@ public class UserRepositoryWrapper {
         return maybeUser.orElseThrow(() -> new NoSuchUserException("Can't resolve user: " + userDistinguishedName));
     }
 
+    @NationalUserOverride
+    public List<User> findBySurnameIgnoreCaseAndForenameIgnoreCase(String surname, String forename) {
+        return userRepository.findBySurnameIgnoreCaseAndForenameIgnoreCase(surname, forename);
+    }
+
+    @NationalUserOverride
+    public List<User> findBySurnameIgnoreCase(String surname) {
+        return userRepository.findBySurnameIgnoreCase(surname);
+    }
+
 }

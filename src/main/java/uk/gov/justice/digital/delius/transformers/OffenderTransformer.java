@@ -133,6 +133,7 @@ public class OffenderTransformer {
                 .gender(offender.getGender().getCodeDescription())
                 .middleNames(combinedMiddleNamesOf(offender.getSecondName(), offender.getThirdName()))
                 .surname(offender.getSurname())
+                .previousSurname(Optional.ofNullable(offender.getPreviousSurname()))
                 .title(Optional.ofNullable(offender.getTitle()).map(StandardReference::getCodeDescription))
                 .contactDetails(contactDetailsOf(offender))
                 .otherIds(idsOf(offender))
