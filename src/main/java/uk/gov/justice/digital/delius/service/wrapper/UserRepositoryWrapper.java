@@ -8,6 +8,7 @@ import uk.gov.justice.digital.delius.jpa.national.repository.UserRepository;
 import uk.gov.justice.digital.delius.jpa.oracle.annotations.NationalUserOverride;
 import uk.gov.justice.digital.delius.service.NoSuchUserException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
