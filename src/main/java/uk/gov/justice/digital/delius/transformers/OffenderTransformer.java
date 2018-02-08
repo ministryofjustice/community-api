@@ -133,6 +133,7 @@ public class OffenderTransformer {
                 .gender(offender.getGender().getCodeDescription())
                 .middleNames(combinedMiddleNamesOf(offender.getSecondName(), offender.getThirdName()))
                 .surname(offender.getSurname())
+                .previousSurnames(previousSurnamesOf(offender))
                 .title(Optional.ofNullable(offender.getTitle()).map(StandardReference::getCodeDescription))
                 .contactDetails(contactDetailsOf(offender))
                 .otherIds(idsOf(offender))
@@ -144,6 +145,10 @@ public class OffenderTransformer {
                 .currentExclusion(offender.getCurrentExclusion() == 1)
                 .currentRestriction(offender.getCurrentRestriction() == 1)
                 .build();
+    }
+
+    private List<String> previousSurnamesOf(Offender offender) {
+        return Optional.ofNullable(offender.getPreviousSurname()).map(s -> ImmutableList.of(s)).orElse(ImmutableList.of());
     }
 
     private List<String> combinedMiddleNamesOf(String secondName, String thirdName) {
