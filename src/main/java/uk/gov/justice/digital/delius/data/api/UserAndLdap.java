@@ -8,8 +8,8 @@ import java.util.Map;
 
 @Data
 @Builder
-public class UsersAndLdap {
-    private List<User> users;
-    private Map<String, String> ldapEntryFromProvidedJwt;
+public class UserAndLdap {
+    private User user;
+    private List<Map<String, String>> ldapMatches;
 
 }

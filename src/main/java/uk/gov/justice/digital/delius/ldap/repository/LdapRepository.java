@@ -48,6 +48,6 @@ public class LdapRepository {
 
     public List<Map<String, String>> searchByFieldAndValue(String field, String value) {
         return ldapTemplate.search(
-                query().where(field).is(value), getMapAttributesMapper());
+                query().where(field).like(value), getMapAttributesMapper());
     }
 }

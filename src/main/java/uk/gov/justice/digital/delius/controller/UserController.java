@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.controller;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.justice.digital.delius.data.api.UsersAndLdap;
+import uk.gov.justice.digital.delius.data.api.UserAndLdap;
 import uk.gov.justice.digital.delius.exception.JwtTokenMissingException;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
@@ -27,6 +26,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -49,24 +49,25 @@ public class UserController {
 
     @RequestMapping(value = "/users", method = RequestMethod.GET)
     @JwtValidation
-    public ResponseEntity<UsersAndLdap> userSearch(final @RequestHeader HttpHeaders httpHeaders,
-                                                                final @RequestParam("surname") @NotNull String surname,
-                                                                final @RequestParam("forename") Optional<String> forename) {
-
-        Claims claims = jwt.parseAuthorizationHeader(httpHeaders.getFirst(HttpHeaders.AUTHORIZATION)).get();
+    public ResponseEntity<List<UserAndLdap>> userSearch(final @RequestHeader HttpHeaders httpHeaders,
+                                                        final @RequestParam("surname") @NotNull String surname,
+                                                        final @RequestParam("forename") Optional<String> forename) {
 
         return new ResponseEntity<>(
-                UsersAndLdap.builder()
-                        .users(userService.getUsersList(surname, forename))
-                        .ldapEntryFromProvidedJwt(ldapRepository.getAll(claims.getSubject()))
-                        .build(), OK);
+                userService.getUsersList(surname, forename)
+                        .stream()
+                        .map(user -> UserAndLdap.builder()
+                                .user(user)
+                                .ldapMatches(ldapRepository.searchByFieldAndValue("uid", user.getDistinguishedName()))
+                                .build())
+                        .collect(Collectors.toList()), OK);
     }
 
     @RequestMapping(value = "/ldap", method = RequestMethod.GET)
     @JwtValidation
     public ResponseEntity<List<Map<String, String>>> ldapSearch(final @RequestHeader HttpHeaders httpHeaders,
-                                                                             final @RequestParam("field") @NotNull String field,
-                                                                             final @RequestParam("value") @NotNull String value) {
+                                                                final @RequestParam("field") @NotNull String field,
+                                                                final @RequestParam("value") @NotNull String value) {
 
         return new ResponseEntity<>(ldapRepository.searchByFieldAndValue(field, value), OK);
     }
