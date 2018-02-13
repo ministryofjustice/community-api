@@ -82,7 +82,7 @@ public class OffenderDeltaAPITest {
 
     public void insert(List<OffenderDelta> deltas) {
         deltas.stream().forEach(
-                delta -> jdbcTemplate.update("INSERT INTO OFFENDER_DELTA(OFFENDER_ID, DATE_CHANGED) VALUES (?, ?)", delta.getOffenderId(), delta.getDateChanged())
+                delta -> jdbcTemplate.update("INSERT INTO OFFENDER_DELTA(OFFENDER_ID, DATE_CHANGED, ACTION) VALUES (?, ?, ?)", delta.getOffenderId(), delta.getDateChanged(), delta.getAction())
         );
     }
 
@@ -91,6 +91,7 @@ public class OffenderDeltaAPITest {
         return LongStream.rangeClosed(1, howMany).mapToObj(l -> OffenderDelta.builder()
                 .offenderId(l)
                 .dateChanged(now.minusDays(howMany / 2).plusDays(l))
+                .action("UPSERT")
                 .build()).collect(Collectors.toList());
     }
 

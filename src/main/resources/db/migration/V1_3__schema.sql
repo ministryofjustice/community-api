@@ -354,9 +354,3 @@ CREATE TABLE CONTACT
   RAR_ACTIVITY                 CHAR,
   NOMIS_CASE_NOTE_ID           NUMBER
 );
-
-
-
-
-
-

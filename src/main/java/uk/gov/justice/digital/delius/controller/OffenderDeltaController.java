@@ -40,6 +40,7 @@ public class OffenderDeltaController {
                                      @NotNull
                                      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                              LocalDateTime dateTime) {
+        log.info("Call to deleteOffenderDeltas before {}", dateTime.toString());
         offenderDeltaService.deleteBefore(dateTime);
     }
 
