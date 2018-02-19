@@ -42,4 +42,12 @@ public class Nsi {
     @OneToOne
     private Requirement rqmnt;
 
+    @JoinColumn(name = "NSI_OUTCOME_ID")
+    @OneToOne
+    private StandardReference nsiOutcome;
+
+    @JoinColumn(name = "NSI_STATUS_ID")
+    @OneToOne
+    private NsiStatus nsiStatus;
+
 }

@@ -8,10 +8,12 @@ import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AdRequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactOutcomeType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Explanation;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceCondition;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceConditionTypeMainCat;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Nsi;
+import uk.gov.justice.digital.delius.jpa.standard.entity.NsiStatus;
 import uk.gov.justice.digital.delius.jpa.standard.entity.NsiType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PartitionArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
@@ -42,6 +44,7 @@ public class ContactTransformer {
 
     public uk.gov.justice.digital.delius.data.api.Contact contactOf(uk.gov.justice.digital.delius.jpa.standard.entity.Contact contact) {
         return uk.gov.justice.digital.delius.data.api.Contact.builder()
+                .eventId(eventIdOf(contact.getEvent()))
                 .alertActive("Y".equals(contact.getAlertActive()))
                 .contactEndTime(Optional.ofNullable(contact.getContactEndTime()))
                 .contactId(contact.getContactId())
@@ -64,7 +67,21 @@ public class ContactTransformer {
                 .providerTeam(providerTeamOf(contact.getProviderTeam()))
                 .staff(staffOf(contact.getStaff()))
                 .team(teamOf(contact.getTeam()))
+                .hoursCredited(Optional.ofNullable(contact.getHoursCredited()))
+                .visorContact(maybeBooleanOf(contact.getVisorContact()))
+                .attended(maybeBooleanOf(contact.getAttended()))
+                .complied(maybeBooleanOf(contact.getComplied()))
+                .uploadLinked(maybeBooleanOf(contact.getUploadLinked()))
+                .documentLinked(maybeBooleanOf(contact.getDocumentLinked()))
                 .build();
+    }
+
+    private Optional<Long> eventIdOf(Event event) {
+        return Optional.ofNullable(event).map(e -> e.getEventId());
+    }
+
+    private Optional<Boolean> maybeBooleanOf(String yn) {
+        return Optional.ofNullable(yn).map("Y"::equals);
     }
 
     private Optional<KeyValue> teamOf(Team team) {
@@ -174,6 +191,14 @@ public class ContactTransformer {
                         .requirement(requirementOf(n.getRqmnt()))
                         .nsiType(nsiTypeOf(n.getNsiType()))
                         .nsiSubType(nsiSubtypeOf(n.getNsiSubType()))
+                        .nsiStatus(nsiStatusOf(n.getNsiStatus()))
+                        .build());
+    }
+
+    private Optional<KeyValue> nsiStatusOf(NsiStatus nsiStatus) {
+        return Optional.ofNullable(nsiStatus).map(nsis ->
+                KeyValue.builder().code(nsis.getCode())
+                        .description(nsis.getDescription())
                         .build());
     }
 

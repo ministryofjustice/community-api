@@ -12,6 +12,7 @@ public class Contact {
 
     protected Optional<Long> linkedContactId;
     private Long contactId;
+    private Optional<Long> eventId;
     private ContactType contactType;
     private Optional<Requirement> requirement;
     private Optional<KeyValue> explanation;
@@ -32,6 +33,11 @@ public class Contact {
     private Optional<KeyValue> team;
     private Optional<Human> staff;
     private Optional<Human> providerEmployee;
-
+    private Optional<Double> hoursCredited;
+    private Optional<Boolean> visorContact;
+    private Optional<Boolean> attended;
+    private Optional<Boolean> complied;
+    private Optional<Boolean> documentLinked;
+    private Optional<Boolean> uploadLinked;
 
 }

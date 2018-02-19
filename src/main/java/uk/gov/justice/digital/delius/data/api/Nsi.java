@@ -12,5 +12,6 @@ public class Nsi {
     private Optional<KeyValue> nsiType;
     private Optional<KeyValue> nsiSubType;
     private Optional<Requirement> requirement;
+    private Optional<KeyValue> nsiStatus;
 
 }

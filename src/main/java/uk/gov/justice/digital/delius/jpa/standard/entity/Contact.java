@@ -109,5 +109,23 @@ public class Contact {
     @ManyToOne
     private Event event;
 
+    @Column(name = "HOURS_CREDITED")
+    private Double hoursCredited;
+
+    @Column(name = "VISOR_CONTACT")
+    private String visorContact;
+
+    @Column(name = "ATTENDED")
+    private String attended;
+
+    @Column(name = "COMPLIED")
+    private String complied;
+
+    @Column(name = "DOCUMENT_LINKED")
+    private String documentLinked;
+
+    @Column(name = "UPLOAD_LINKED")
+    private String uploadLinked;
+
 
 }
