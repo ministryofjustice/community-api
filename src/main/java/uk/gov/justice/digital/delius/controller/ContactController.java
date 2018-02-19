@@ -105,25 +105,4 @@ public class ContactController {
                 .orElseGet(this::notFound);
     }
 
-    @ExceptionHandler(JwtTokenMissingException.class)
-    public ResponseEntity<String> missingJwt(JwtTokenMissingException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(MalformedJwtException.class)
-    public ResponseEntity<String> badJwt(MalformedJwtException e) {
-        return new ResponseEntity<>("Bad Token.", HttpStatus.FORBIDDEN);
-    }
-
-    @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<String> expiredJwt(ExpiredJwtException e) {
-        return new ResponseEntity<>("Expired Token.", HttpStatus.FORBIDDEN);
-    }
-
-    @ExceptionHandler(SignatureException.class)
-    public ResponseEntity<String> notMine(SignatureException e) {
-        return new ResponseEntity<>("Invalid signature.", HttpStatus.FORBIDDEN);
-    }
-
-
 }
