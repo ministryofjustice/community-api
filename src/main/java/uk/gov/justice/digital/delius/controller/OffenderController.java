@@ -2,9 +2,6 @@ package uk.gov.justice.digital.delius.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureException;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +26,6 @@ import uk.gov.justice.digital.delius.data.api.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderIdsResource;
 import uk.gov.justice.digital.delius.data.api.views.Views;
-import uk.gov.justice.digital.delius.exception.JwtTokenMissingException;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
 import uk.gov.justice.digital.delius.service.AlfrescoService;

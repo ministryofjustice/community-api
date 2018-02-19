@@ -17,6 +17,6 @@ public interface OffenderRepository extends JpaRepository<Offender, Long> {
 
     Optional<Offender> findByNomsNumber(String nomsNumber);
 
-    @Query(value = "select OFFENDER_ID FROM (SELECT QRY_PAG.*, ROWNUM rnum FROM (select OFFENDER_ID from OFFENDER) QRY_PAG WHERE ROWNUM <= ?2) WHERE rnum >= ?1", nativeQuery = true)
+    @Query(value = "SELECT OFFENDER_ID FROM (SELECT QRY_PAG.*, ROWNUM rnum FROM (SELECT OFFENDER_ID FROM OFFENDER) QRY_PAG WHERE ROWNUM <= ?2) WHERE rnum >= ?1", nativeQuery = true)
     List<BigDecimal> listOffenderIds(int lower, int upper);
 }
