@@ -2,6 +2,8 @@ package uk.gov.justice.digital.delius.ldap.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.AttributesMapper;
+import org.springframework.ldap.core.ContextMapper;
+import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -18,10 +20,12 @@ import static org.springframework.ldap.query.LdapQueryBuilder.query;
 public class LdapRepository {
 
     private final LdapTemplate ldapTemplate;
+    private final ContextMapper<Map<String, String>> contextMapper;
 
     @Autowired
     public LdapRepository(LdapTemplate ldapTemplate) {
         this.ldapTemplate = ldapTemplate;
+        contextMapper = getContextMapper();
     }
 
     public Optional<String> getDeliusUid(String distinguishedName) {
@@ -30,24 +34,25 @@ public class LdapRepository {
 
     }
 
-    public Map<String, String> getAll(String distinguishedName) {
-        return ldapTemplate.lookup(distinguishedName, getMapAttributesMapper());
-    }
+    private ContextMapper<Map<String, String>> getContextMapper() {
 
-    private AttributesMapper<Map<String, String>> getMapAttributesMapper() {
-        return attrs -> {
+        return ctx -> {
+            DirContextAdapter context = (DirContextAdapter) ctx;
+
             Map<String, String> attrsMap = new HashMap<>();
-            NamingEnumeration<? extends Attribute> all = attrs.getAll();
+            NamingEnumeration<? extends Attribute> all = context.getAttributes().getAll();
             while (all.hasMore()) {
                 Attribute attr = all.next();
                 attrsMap.put(attr.getID(), attr.get().toString());
             }
+
+            attrsMap.put("dn", context.getDn().toString());
+
             return attrsMap;
         };
     }
 
     public List<Map<String, String>> searchByFieldAndValue(String field, String value) {
-        return ldapTemplate.search(
-                query().where(field).is(value), getMapAttributesMapper());
+        return ldapTemplate.search(query().where(field).is(value), contextMapper);
     }
 }
