@@ -1,6 +1,10 @@
 package uk.gov.justice.digital.delius.config;
 
 import com.google.common.base.Predicates;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.BuildProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -14,12 +18,16 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Properties;
 
 import static springfox.documentation.builders.PathSelectors.regex;
 
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Bean
     public Docket offenderApi() {
@@ -43,10 +51,20 @@ public class SwaggerConfig {
     }
 
     private ApiInfo apiInfo() {
+
+        BuildProperties buildProperties;
+        try {
+            buildProperties = (BuildProperties) applicationContext.getBean("buildProperties");
+        } catch (BeansException be) {
+            Properties properties = new Properties();
+            properties.put("version", "?");
+            buildProperties = new BuildProperties(properties);
+        }
+
         return new ApiInfo(
-                "Delius API Documentation",
-                "REST service for accessing the Delius Oracle database.",
-                "0.0.1", "", contactInfo(), "", "",
+                "New Nomis API Documentation",
+                "REST service for accessing the Nomis Oracle database.",
+                buildProperties.getVersion(), "", contactInfo(), "", "",
                 Collections.emptyList());
     }
 
