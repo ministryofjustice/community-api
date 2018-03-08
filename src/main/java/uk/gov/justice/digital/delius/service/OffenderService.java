@@ -58,6 +58,14 @@ public class OffenderService {
         return offenderRepository.findByNomsNumber(nomsNumber).map(offender -> offender.getCrn());
     }
 
+    public Optional<Long> offenderIdOfCrn(String crn) {
+        return offenderRepository.findByCrn(crn).map(offender -> offender.getOffenderId());
+    }
+
+    public Optional<Long> offenderIdOfNomsNumber(String nomsNumber) {
+        return offenderRepository.findByNomsNumber(nomsNumber).map(offender -> offender.getOffenderId());
+    }
+
     public List<BigDecimal> allOffenderIds(int pageSize, int page) {
 
         int lower = (page * pageSize) - pageSize + 1;

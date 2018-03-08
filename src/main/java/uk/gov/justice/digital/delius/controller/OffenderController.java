@@ -2,9 +2,6 @@ package uk.gov.justice.digital.delius.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureException;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +26,6 @@ import uk.gov.justice.digital.delius.data.api.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderIdsResource;
 import uk.gov.justice.digital.delius.data.api.views.Views;
-import uk.gov.justice.digital.delius.exception.JwtTokenMissingException;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
 import uk.gov.justice.digital.delius.service.AlfrescoService;
@@ -348,26 +344,6 @@ public class OffenderController {
         return new ResponseEntity<>(OffenderDetail.builder().build(), NOT_FOUND);
     }
 
-
-    @ExceptionHandler(JwtTokenMissingException.class)
-    public ResponseEntity<String> missingJwt(JwtTokenMissingException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(MalformedJwtException.class)
-    public ResponseEntity<String> badJwt(MalformedJwtException e) {
-        return new ResponseEntity<>("Bad Token.", HttpStatus.FORBIDDEN);
-    }
-
-    @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<String> expiredJwt(ExpiredJwtException e) {
-        return new ResponseEntity<>("Expired Token.", HttpStatus.FORBIDDEN);
-    }
-
-    @ExceptionHandler(SignatureException.class)
-    public ResponseEntity<String> notMine(SignatureException e) {
-        return new ResponseEntity<>("Invalid signature.", HttpStatus.FORBIDDEN);
-    }
 
     @ExceptionHandler(HttpClientErrorException.class)
     public ResponseEntity<String> restClientError(HttpClientErrorException e) {
