@@ -196,6 +196,9 @@ public class OffenderTransformer {
                                         .code(offenderManager.getProbationArea().getCode())
                                         .description(offenderManager.getProbationArea().getDescription())
                                         .build())
+                                .active(Integer.valueOf(1).equals(offenderManager.getActiveFlag()))
+                                .fromDate(Optional.ofNullable(offenderManager.getAllocationDate()).map(t -> t.toLocalDateTime().toLocalDate()).orElse(null))
+                                .toDate(Optional.ofNullable(offenderManager.getEndDate()).map(t -> t.toLocalDateTime().toLocalDate()).orElse(null))
                                 .build()).collect(Collectors.toList());
     }
 
