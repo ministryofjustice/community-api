@@ -6,14 +6,19 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.Address;
 import uk.gov.justice.digital.delius.data.api.ContactDetails;
 import uk.gov.justice.digital.delius.data.api.Conviction;
+import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.IDs;
+import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderLanguages;
+import uk.gov.justice.digital.delius.data.api.OffenderManager;
 import uk.gov.justice.digital.delius.data.api.OffenderProfile;
 import uk.gov.justice.digital.delius.data.api.PhoneNumber;
+import uk.gov.justice.digital.delius.data.api.Team;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAddress;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PartitionArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
 import java.util.Arrays;
@@ -140,10 +145,11 @@ public class OffenderTransformer {
                 .offenderProfile(offenderProfileOf(offender))
                 .offenderAliases(Optional.of(offenderAliasesOf(offender.getOffenderAliases())))
                 .softDeleted(offender.getSoftDeleted())
-                .currentDisposal(Optional.ofNullable(offender.getCurrentDisposal().toString()))
+                .currentDisposal(Optional.ofNullable(offender.getCurrentDisposal()).map(Object::toString))
                 .partitionArea(Optional.ofNullable(offender.getPartitionArea().getArea()))
                 .currentExclusion(offender.getCurrentExclusion() == 1)
                 .currentRestriction(offender.getCurrentRestriction() == 1)
+                .offenderManagers(offenderManagersOf(offender.getOffenderManagers()))
                 .build();
     }
 
@@ -155,5 +161,48 @@ public class OffenderTransformer {
                 .stream()
                 .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty))
                 .collect(Collectors.toList());
+    }
+
+    public List<OffenderManager> offenderManagersOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager> offenderManagers) {
+        return offenderManagers.stream().map(
+                offenderManager ->
+                        OffenderManager.builder()
+                                .partitionArea(Optional.ofNullable(offenderManager.getPartitionArea())
+                                        .map(PartitionArea::getArea)
+                                        .orElse(null))
+                                .softDeleted(Integer.valueOf(1).equals(offenderManager.getSoftDeleted()))
+                                .trustOfficer(Optional.ofNullable(offenderManager.getOfficer())
+                                        .map(o -> humanOf(o.getSurname(), o.getForename(), o.getForename2()))
+                                        .orElse(null))
+                                .team(Optional.ofNullable(offenderManager.getTrustProviderTeam())
+                                        .map(tpt -> Team.builder()
+                                                .description(tpt.getDescription())
+                                                .telephone(tpt.getTelephone())
+                                                .district(Optional.ofNullable(tpt.getDistrict()).map(
+                                                        d -> KeyValue.builder()
+                                                                .code(d.getCode())
+                                                                .description(d.getDescription()).build())
+                                                        .orElse(null))
+                                                .borough(Optional.ofNullable(tpt.getDistrict()).flatMap(
+                                                        d -> Optional.ofNullable(d.getBorough())
+                                                                .map(b -> KeyValue.builder()
+                                                                        .code(b.getCode())
+                                                                        .description(b.getDescription())
+                                                                        .build()))
+                                                        .orElse(null))
+                                                .build())
+                                        .orElse(null))
+                                .probationArea(KeyValue.builder()
+                                        .code(offenderManager.getProbationArea().getCode())
+                                        .description(offenderManager.getProbationArea().getDescription())
+                                        .build())
+                                .build()).collect(Collectors.toList());
+    }
+
+    private Human humanOf(String forname, String forename2, String surname) {
+        return Human.builder()
+                .surname(surname)
+                .forenames(combinedMiddleNamesOf(forname, forename2).stream().collect(Collectors.joining(" ")))
+                .build();
     }
 }

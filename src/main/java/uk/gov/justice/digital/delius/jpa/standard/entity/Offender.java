@@ -192,4 +192,8 @@ public class Offender {
     @JoinColumn(name = "PARTITION_AREA_ID")
     private PartitionArea partitionArea;
 
+    @JoinColumn(name = "OFFENDER_ID")
+    @OneToMany
+    private List<OffenderManager> offenderManagers;
+
 }
