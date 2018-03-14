@@ -341,32 +341,30 @@ public class OffenderController {
         return accessLimitationResponseEntityOf(httpHeaders, maybeOffender);
     }
 
-    @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/offenderManager", method = RequestMethod.GET)
+    @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/offenderManagers", method = RequestMethod.GET)
     @JwtValidation
-    public ResponseEntity<OffenderManager> getOffenderManagerByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                          final @PathVariable("nomsNumber") String nomsNumber) {
+    public ResponseEntity<List<OffenderManager>> getOffenderManagerByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
+                                                                                final @PathVariable("nomsNumber") String nomsNumber) {
 
-        return offenderService.offenderIdOfNomsNumber(nomsNumber).flatMap(
-                offenderService::getOffenderManagersForOffenderId)
+        return offenderService.getOffenderManagersForNomsNumber(nomsNumber)
                 .map(offenderManager -> new ResponseEntity<>(offenderManager, OK))
                 .orElse(new ResponseEntity<>(NOT_FOUND));
     }
 
-    @RequestMapping(value = "/offenders/crn/{crn}/offenderManager", method = RequestMethod.GET)
+    @RequestMapping(value = "/offenders/crn/{crn}/offenderManagers", method = RequestMethod.GET)
     @JwtValidation
-    public ResponseEntity<OffenderManager> getOffenderManagerByCrn(final @RequestHeader HttpHeaders httpHeaders,
-                                                                   final @PathVariable("crn") String crn) {
-        return offenderService.offenderIdOfCrn(crn).flatMap(
-                offenderService::getOffenderManagersForOffenderId)
+    public ResponseEntity<List<OffenderManager>> getOffenderManagerByCrn(final @RequestHeader HttpHeaders httpHeaders,
+                                                                         final @PathVariable("crn") String crn) {
+        return offenderService.getOffenderManagersForCrn(crn)
                 .map(offenderManager -> new ResponseEntity<>(offenderManager, OK))
                 .orElse(new ResponseEntity<>(NOT_FOUND));
 
     }
 
-    @RequestMapping(value = "/offenders/offenderId/{offenderId}/offenderManager", method = RequestMethod.GET)
+    @RequestMapping(value = "/offenders/offenderId/{offenderId}/offenderManagers", method = RequestMethod.GET)
     @JwtValidation
-    public ResponseEntity<OffenderManager> getOffenderManagerByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
-                                                                          final @PathVariable("offenderId") Long offenderId) {
+    public ResponseEntity<List<OffenderManager>> getOffenderManagerByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
+                                                                                final @PathVariable("offenderId") Long offenderId) {
         return offenderService.getOffenderManagersForOffenderId(offenderId)
                 .map(offenderManager -> new ResponseEntity<>(offenderManager, OK))
                 .orElse(new ResponseEntity<>(NOT_FOUND));

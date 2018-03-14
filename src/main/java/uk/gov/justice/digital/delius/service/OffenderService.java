@@ -96,4 +96,18 @@ public class OffenderService {
 
     }
 
+    @Transactional(readOnly = true)
+    public Optional<List<OffenderManager>> getOffenderManagersForNomsNumber(String nomsNumber) {
+        return offenderRepository.findByNomsNumber(nomsNumber).map(
+                offender -> offenderTransformer.offenderManagersOf(offender.getOffenderManagers()));
+
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<List<OffenderManager>> getOffenderManagersForCrn(String crn) {
+        return offenderRepository.findByCrn(crn).map(
+                offender -> offenderTransformer.offenderManagersOf(offender.getOffenderManagers()));
+
+    }
+
 }

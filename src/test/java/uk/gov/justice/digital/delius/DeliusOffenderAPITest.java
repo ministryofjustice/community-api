@@ -30,16 +30,21 @@ import uk.gov.justice.digital.delius.jpa.national.repository.UserRepository;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAddress;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Officer;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PartitionArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.user.UserData;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -279,6 +284,12 @@ public class DeliusOffenderAPITest {
                 .currentDisposal(0l)
                 .currentRestriction(0L)
                 .currentExclusion(0L)
+                .offenderManagers(Lists.newArrayList(OffenderManager.builder()
+                        .activeFlag(1)
+                        .allocationDate(Timestamp.from(Calendar.getInstance().toInstant()))
+                        .officer(Officer.builder().surname("Jones").build())
+                        .probationArea(ProbationArea.builder().code("A").description("B").build())
+                        .build()))
                 .build();
     }
 
@@ -723,5 +734,58 @@ public class DeliusOffenderAPITest {
         assertThat(accessLimitation.isUserRestricted()).isTrue();
     }
 
+    @Test
+    public void canGetOffenderManagersByOffenderNomsNumber() {
+        Mockito.when(offenderRepository.findByNomsNumber(eq("A12345"))).thenReturn(Optional.of(anOffender()));
+
+
+        uk.gov.justice.digital.delius.data.api.OffenderManager[] offenderManagers = given()
+                .header("Authorization", aValidToken())
+                .when()
+                .get("/offenders/nomsNumber/A12345/offenderManagers")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(uk.gov.justice.digital.delius.data.api.OffenderManager[].class);
+
+        assertThat(offenderManagers).hasSize(1);
+    }
+
+    @Test
+    public void canGetOffenderManagersByOffenderId() {
+        Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(anOffender()));
+
+
+        uk.gov.justice.digital.delius.data.api.OffenderManager[] offenderManagers = given()
+                .header("Authorization", aValidToken())
+                .when()
+                .get("/offenders/offenderId/1/offenderManagers")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(uk.gov.justice.digital.delius.data.api.OffenderManager[].class);
+
+        assertThat(offenderManagers).hasSize(1);
+    }
+
+    @Test
+    public void canGetOffenderManagersByOffenderCrn() {
+        Mockito.when(offenderRepository.findByCrn(eq("A123"))).thenReturn(Optional.of(anOffender()));
+
+
+        uk.gov.justice.digital.delius.data.api.OffenderManager[] offenderManagers = given()
+                .header("Authorization", aValidToken())
+                .when()
+                .get("/offenders/crn/A123/offenderManagers")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(uk.gov.justice.digital.delius.data.api.OffenderManager[].class);
+
+        assertThat(offenderManagers).hasSize(1);
+    }
 
 }

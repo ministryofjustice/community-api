@@ -23,6 +23,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -164,7 +165,10 @@ public class OffenderTransformer {
     }
 
     public List<OffenderManager> offenderManagersOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager> offenderManagers) {
-        return offenderManagers.stream().map(this::offenderManagerOf).collect(Collectors.toList());
+        return offenderManagers.stream()
+                .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager::getAllocationDate)
+                        .reversed())
+                .map(this::offenderManagerOf).collect(Collectors.toList());
     }
 
     private OffenderManager offenderManagerOf(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager offenderManager) {
