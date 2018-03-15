@@ -19,8 +19,11 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAddress;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PartitionArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -173,45 +176,61 @@ public class OffenderTransformer {
 
     private OffenderManager offenderManagerOf(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager offenderManager) {
         return OffenderManager.builder()
-                .partitionArea(Optional.ofNullable(offenderManager.getPartitionArea())
-                        .map(PartitionArea::getArea)
-                        .orElse(null))
+                .partitionArea(partitionAreaOf(offenderManager))
                 .softDeleted(Integer.valueOf(1).equals(offenderManager.getSoftDeleted()))
                 .trustOfficer(Optional.ofNullable(offenderManager.getOfficer())
-                        .map(o -> humanOf(o.getSurname(), o.getForename(), o.getForename2()))
+                        .map(o -> humanOf(o.getForename(), o.getForename2(), o.getSurname()))
                         .orElse(null))
-                .team(Optional.ofNullable(offenderManager.getTrustProviderTeam())
-                        .map(tpt -> Team.builder()
-                                .description(tpt.getDescription())
-                                .telephone(tpt.getTelephone())
-                                .district(Optional.ofNullable(tpt.getDistrict()).map(
-                                        d -> KeyValue.builder()
-                                                .code(d.getCode())
-                                                .description(d.getDescription()).build())
-                                        .orElse(null))
-                                .borough(Optional.ofNullable(tpt.getDistrict()).flatMap(
-                                        d -> Optional.ofNullable(d.getBorough())
-                                                .map(b -> KeyValue.builder()
-                                                        .code(b.getCode())
-                                                        .description(b.getDescription())
-                                                        .build()))
-                                        .orElse(null))
-                                .build())
-                        .orElse(null))
-                .probationArea(KeyValue.builder()
-                        .code(offenderManager.getProbationArea().getCode())
-                        .description(offenderManager.getProbationArea().getDescription())
-                        .build())
+                .team(teamOf(offenderManager))
+                .probationArea(probationAreaOf(offenderManager.getProbationArea()))
                 .active(Integer.valueOf(1).equals(offenderManager.getActiveFlag()))
-                .fromDate(Optional.ofNullable(offenderManager.getAllocationDate()).map(t -> t.toLocalDateTime().toLocalDate()).orElse(null))
-                .toDate(Optional.ofNullable(offenderManager.getEndDate()).map(t -> t.toLocalDateTime().toLocalDate()).orElse(null))
+                .fromDate(localDateOf(offenderManager.getAllocationDate()))
+                .toDate(localDateOf(offenderManager.getEndDate()))
                 .build();
     }
 
-    private Human humanOf(String forname, String forename2, String surname) {
+    private LocalDate localDateOf(Timestamp timestamp) {
+        return Optional.ofNullable(timestamp).map(t -> t.toLocalDateTime().toLocalDate()).orElse(null);
+    }
+
+    private KeyValue probationAreaOf(ProbationArea probationArea) {
+        return KeyValue.builder()
+                .code(probationArea.getCode())
+                .description(probationArea.getDescription())
+                .build();
+    }
+
+    private Team teamOf(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager offenderManager) {
+        return Optional.ofNullable(offenderManager.getTrustProviderTeam())
+                .map(tpt -> Team.builder()
+                        .description(tpt.getDescription())
+                        .telephone(tpt.getTelephone())
+                        .district(Optional.ofNullable(tpt.getDistrict()).map(
+                                d -> KeyValue.builder()
+                                        .code(d.getCode())
+                                        .description(d.getDescription()).build())
+                                .orElse(null))
+                        .borough(Optional.ofNullable(tpt.getDistrict()).flatMap(
+                                d -> Optional.ofNullable(d.getBorough())
+                                        .map(b -> KeyValue.builder()
+                                                .code(b.getCode())
+                                                .description(b.getDescription())
+                                                .build()))
+                                .orElse(null))
+                        .build())
+                .orElse(null);
+    }
+
+    private String partitionAreaOf(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager offenderManager) {
+        return Optional.ofNullable(offenderManager.getPartitionArea())
+                .map(PartitionArea::getArea)
+                .orElse(null);
+    }
+
+    private Human humanOf(String forename, String forename2, String surname) {
         return Human.builder()
                 .surname(surname)
-                .forenames(combinedMiddleNamesOf(forname, forename2).stream().collect(Collectors.joining(" ")))
+                .forenames(combinedMiddleNamesOf(forename, forename2).stream().collect(Collectors.joining(" ")))
                 .build();
     }
 }
