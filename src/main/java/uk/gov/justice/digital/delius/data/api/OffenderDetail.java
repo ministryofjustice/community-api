@@ -25,6 +25,8 @@ public class OffenderDetail {
     private OffenderProfile offenderProfile;
     @JsonView(Views.FullFat.class)
     private Optional<List<OffenderAlias>> offenderAliases;
+    @JsonView(Views.FullFat.class)
+    private List<OffenderManager> offenderManagers;
     private Boolean softDeleted;
     private Optional<String> currentDisposal;
     private Optional<String> partitionArea;

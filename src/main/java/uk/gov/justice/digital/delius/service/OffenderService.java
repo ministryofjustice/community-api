@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.data.api.OffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
@@ -51,19 +52,19 @@ public class OffenderService {
     }
 
     public Optional<String> crnOf(Long offenderId) {
-        return offenderRepository.findByOffenderId(offenderId).map(offender -> offender.getCrn());
+        return offenderRepository.findByOffenderId(offenderId).map(Offender::getCrn);
     }
 
     public Optional<String> crnOf(String nomsNumber) {
-        return offenderRepository.findByNomsNumber(nomsNumber).map(offender -> offender.getCrn());
+        return offenderRepository.findByNomsNumber(nomsNumber).map(Offender::getCrn);
     }
 
     public Optional<Long> offenderIdOfCrn(String crn) {
-        return offenderRepository.findByCrn(crn).map(offender -> offender.getOffenderId());
+        return offenderRepository.findByCrn(crn).map(Offender::getOffenderId);
     }
 
     public Optional<Long> offenderIdOfNomsNumber(String nomsNumber) {
-        return offenderRepository.findByNomsNumber(nomsNumber).map(offender -> offender.getOffenderId());
+        return offenderRepository.findByNomsNumber(nomsNumber).map(Offender::getOffenderId);
     }
 
     public List<BigDecimal> allOffenderIds(int pageSize, int page) {
@@ -86,6 +87,27 @@ public class OffenderService {
 
     public Long getOffenderCount() {
         return offenderRepository.count();
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<List<OffenderManager>> getOffenderManagersForOffenderId(Long offenderId) {
+        return offenderRepository.findByOffenderId(offenderId).map(
+                offender -> offenderTransformer.offenderManagersOf(offender.getOffenderManagers()));
+
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<List<OffenderManager>> getOffenderManagersForNomsNumber(String nomsNumber) {
+        return offenderRepository.findByNomsNumber(nomsNumber).map(
+                offender -> offenderTransformer.offenderManagersOf(offender.getOffenderManagers()));
+
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<List<OffenderManager>> getOffenderManagersForCrn(String crn) {
+        return offenderRepository.findByCrn(crn).map(
+                offender -> offenderTransformer.offenderManagersOf(offender.getOffenderManagers()));
+
     }
 
 }

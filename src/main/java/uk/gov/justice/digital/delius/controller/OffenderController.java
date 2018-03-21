@@ -25,6 +25,7 @@ import uk.gov.justice.digital.delius.data.api.Count;
 import uk.gov.justice.digital.delius.data.api.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderIdsResource;
+import uk.gov.justice.digital.delius.data.api.OffenderManager;
 import uk.gov.justice.digital.delius.data.api.views.Views;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
@@ -339,6 +340,36 @@ public class OffenderController {
 
         return accessLimitationResponseEntityOf(httpHeaders, maybeOffender);
     }
+
+    @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/offenderManagers", method = RequestMethod.GET)
+    @JwtValidation
+    public ResponseEntity<List<OffenderManager>> getOffenderManagerByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
+                                                                                final @PathVariable("nomsNumber") String nomsNumber) {
+
+        return offenderService.getOffenderManagersForNomsNumber(nomsNumber)
+                .map(offenderManager -> new ResponseEntity<>(offenderManager, OK))
+                .orElse(new ResponseEntity<>(NOT_FOUND));
+    }
+
+    @RequestMapping(value = "/offenders/crn/{crn}/offenderManagers", method = RequestMethod.GET)
+    @JwtValidation
+    public ResponseEntity<List<OffenderManager>> getOffenderManagerByCrn(final @RequestHeader HttpHeaders httpHeaders,
+                                                                         final @PathVariable("crn") String crn) {
+        return offenderService.getOffenderManagersForCrn(crn)
+                .map(offenderManager -> new ResponseEntity<>(offenderManager, OK))
+                .orElse(new ResponseEntity<>(NOT_FOUND));
+
+    }
+
+    @RequestMapping(value = "/offenders/offenderId/{offenderId}/offenderManagers", method = RequestMethod.GET)
+    @JwtValidation
+    public ResponseEntity<List<OffenderManager>> getOffenderManagerByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
+                                                                                final @PathVariable("offenderId") Long offenderId) {
+        return offenderService.getOffenderManagersForOffenderId(offenderId)
+                .map(offenderManager -> new ResponseEntity<>(offenderManager, OK))
+                .orElse(new ResponseEntity<>(NOT_FOUND));
+    }
+
 
     private ResponseEntity<OffenderDetail> notFound() {
         return new ResponseEntity<>(OffenderDetail.builder().build(), NOT_FOUND);

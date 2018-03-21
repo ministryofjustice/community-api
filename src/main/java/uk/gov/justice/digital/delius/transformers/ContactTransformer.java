@@ -88,7 +88,7 @@ public class ContactTransformer {
         return Optional.ofNullable(team).map(t -> KeyValue.builder().code(t.getCode()).description(t.getDescription()).build());
     }
 
-    private Optional<Human> staffOf(Staff staff) {
+    public Optional<Human> staffOf(Staff staff) {
         return Optional.ofNullable(staff).map(s -> Human
                 .builder()
                 .forenames(combinedForenamesOf(s.getForename(), s.getForname2()))
@@ -106,7 +106,7 @@ public class ContactTransformer {
         );
     }
 
-    private Optional<Human> providerEmployeeOf(ProviderEmployee providerEmployee) {
+    public Optional<Human> providerEmployeeOf(ProviderEmployee providerEmployee) {
         return Optional.ofNullable(providerEmployee)
                 .map(pe -> Human
                         .builder()
