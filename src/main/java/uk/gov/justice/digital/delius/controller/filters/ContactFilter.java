@@ -35,17 +35,11 @@ public class ContactFilter implements Specification<Contact> {
 
         predicateBuilder.add(cb.equal(root.get("offenderId"), offenderId));
 
-        if (contactTypes.isPresent()) {
-            predicateBuilder.add(root.get("contactType").get("code").in(contactTypes.get()));
-        }
+        contactTypes.ifPresent(strings -> predicateBuilder.add(root.get("contactType").get("code").in(strings)));
 
-        if (from.isPresent()) {
-            predicateBuilder.add(cb.greaterThanOrEqualTo(root.get("createdDateTime"), from.get()));
-        }
+        from.ifPresent(localDateTime -> predicateBuilder.add(cb.greaterThanOrEqualTo(root.get("createdDateTime"), localDateTime)));
 
-        if (to.isPresent()) {
-            predicateBuilder.add(cb.lessThanOrEqualTo(root.get("createdDateTime"), to.get()));
-        }
+        to.ifPresent(localDateTime -> predicateBuilder.add(cb.lessThanOrEqualTo(root.get("createdDateTime"), localDateTime)));
 
         ImmutableList<Predicate> predicates = predicateBuilder.build();
 
