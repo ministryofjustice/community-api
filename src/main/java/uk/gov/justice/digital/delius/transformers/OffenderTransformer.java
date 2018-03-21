@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius.transformers;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.Address;
 import uk.gov.justice.digital.delius.data.api.ContactDetails;
@@ -34,6 +35,13 @@ import java.util.stream.Stream;
 
 @Component
 public class OffenderTransformer {
+
+    private final ContactTransformer contactTransformer;
+
+    @Autowired
+    public OffenderTransformer(ContactTransformer contactTransformer) {
+        this.contactTransformer = contactTransformer;
+    }
 
     private List<PhoneNumber> phoneNumbersOf(Offender offender) {
         return ImmutableList.of(
@@ -181,6 +189,8 @@ public class OffenderTransformer {
                 .trustOfficer(Optional.ofNullable(offenderManager.getOfficer())
                         .map(o -> humanOf(o.getForename(), o.getForename2(), o.getSurname()))
                         .orElse(null))
+                .staff(contactTransformer.staffOf(offenderManager.getStaff()).orElse(null))
+                .providerEmployee(contactTransformer.providerEmployeeOf(offenderManager.getProviderEmployee()).orElse(null))
                 .team(teamOf(offenderManager))
                 .probationArea(probationAreaOf(offenderManager.getProbationArea()))
                 .active(Integer.valueOf(1).equals(offenderManager.getActiveFlag()))
