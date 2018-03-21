@@ -62,7 +62,7 @@ public class OffenderController {
         this.jwt = jwt;
     }
 
-    private ResponseEntity<OffenderDetail> getOffenderByOffenderId(@PathVariable("offenderId") Long offenderId) {
+    private ResponseEntity<OffenderDetail> getOffenderByOffenderId(Long offenderId) {
         Optional<OffenderDetail> offender = offenderService.getOffenderByOffenderId(offenderId);
         return offender.map(
                 offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(notFound());
