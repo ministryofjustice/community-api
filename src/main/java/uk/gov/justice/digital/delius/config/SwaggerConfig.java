@@ -62,8 +62,8 @@ public class SwaggerConfig {
         }
 
         return new ApiInfo(
-                "New Nomis API Documentation",
-                "REST service for accessing the Nomis Oracle database.",
+                "Delius Offender API Documentation",
+                "REST service for accessing the Delius Oracle database.",
                 buildProperties.getVersion(), "", contactInfo(), "", "",
                 Collections.emptyList());
     }
