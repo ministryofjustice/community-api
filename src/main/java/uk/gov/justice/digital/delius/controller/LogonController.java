@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.controller;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RestController
 @RequestMapping("/logon")
 @Slf4j
+@Api( description = "Obtain JWT token", tags = "Logon as user")
 public class LogonController {
 
     public static final String NATIONAL_USER = "NationalUser";

@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import io.jsonwebtoken.Claims;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +48,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @Slf4j
+@Api( description = "Offender resources", tags = "Offenders")
 public class OffenderController {
 
     private final OffenderService offenderService;

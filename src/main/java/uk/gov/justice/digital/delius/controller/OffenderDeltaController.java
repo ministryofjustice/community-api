@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.controller;
 
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
+@Api( description = "Low level API for propagating significant events", tags = "Offender deltas")
 public class OffenderDeltaController {
 
     private final OffenderDeltaService offenderDeltaService;

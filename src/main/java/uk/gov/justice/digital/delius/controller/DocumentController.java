@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.controller;
 
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import uk.gov.justice.digital.delius.service.DocumentService;
 
 @RestController
 @Slf4j
+@Api( description = "Offender document resources", tags = "Offender Documents")
 public class DocumentController {
 
     private final DocumentService documentService;
