@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.config;
 
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.health.HealthCheckRegistry;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,7 +52,12 @@ public class ApplicationConfig {
     }
 
     @Bean
-    BeanPostProcessor hikariMetrics(MetricRegistry metricRegistry ) {
+    public HealthCheckRegistry healthCheckRegistry() {
+        return new HealthCheckRegistry();
+    }
+
+    @Bean
+    BeanPostProcessor hikariMetrics(MetricRegistry metricRegistry, HealthCheckRegistry healthCheckRegistry) {
         return new BeanPostProcessor() {
             @Override
             public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -61,7 +67,8 @@ public class ApplicationConfig {
             @Override
             public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
                 if (bean instanceof HikariDataSource) {
-                    ((HikariDataSource)bean).setMetricRegistry(metricRegistry);
+                    ((HikariDataSource) bean).setMetricRegistry(metricRegistry);
+                    ((HikariDataSource) bean).setHealthCheckRegistry(healthCheckRegistry);
                 }
                 return bean;
             }
