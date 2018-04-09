@@ -2,6 +2,8 @@ spring:
   datasource:
     url: 'jdbc:h2:mem:testdb;Mode=Oracle'
     type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      leak-detection-threshold: 20000
 
   jpa:
     hibernate:
