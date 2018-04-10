@@ -14,6 +14,8 @@ import java.util.Optional;
 public class Jwt {
 
     public static final String UID = "uid";
+    public static final String PROBATION_AREA_CODES = "probationAreaCodes";
+
     private final String secret;
     private final int lifetimeSeconds;
 
@@ -40,6 +42,7 @@ public class Jwt {
 
         Claims claims = Jwts.claims().setSubject(userData.getDistinguishedName());
         claims.put(UID, userData.getUid());
+        claims.put(PROBATION_AREA_CODES, userData.getProbationAreaCodes());
 
         return Jwts.builder()
                 .setClaims(claims)

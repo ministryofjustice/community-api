@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.sql.Clob;
@@ -70,6 +71,12 @@ public class User {
     @JoinColumn(name = "USER_ID")
     @OneToMany
     private List<Restriction> restrictions;
+
+    @JoinTable(name = "PROBATION_AREA_USER",
+            joinColumns = {@JoinColumn(name = "USER_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "PROBATION_AREA_ID")})
+    @OneToMany
+    private List<ProbationArea> probationAreas;
 
     public boolean isExcludedFrom(Long offenderId) {
         return exclusions.stream().anyMatch(exclusion -> exclusion.getOffenderId().equals(offenderId) && exclusion.isActive());

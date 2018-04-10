@@ -10,12 +10,17 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jwt.Jwt;
+import uk.gov.justice.digital.delius.service.wrapper.UserRepositoryWrapper;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -31,6 +36,9 @@ public class LogonAPITest {
     @Autowired
     private Jwt jwt;
 
+    @MockBean
+    private UserRepositoryWrapper userRepositoryWrapper;
+
     @Before
     public void setup() {
         RestAssured.port = port;
@@ -39,6 +47,11 @@ public class LogonAPITest {
                 (aClass, s) -> objectMapper
         ));
 
+        when(userRepositoryWrapper.getUser(anyString())).thenReturn(aUser());
+    }
+
+    private User aUser() {
+        return User.builder().userId(1l).distinguishedName("oliver.connolly").build();
     }
 
     @Test
