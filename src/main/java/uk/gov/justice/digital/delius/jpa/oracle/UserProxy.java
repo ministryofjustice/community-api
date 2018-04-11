@@ -59,7 +59,8 @@ public class UserProxy {
 
         Connection proxiedConnection = (Connection) proxyFactory.getProxy();
 
-        try (PreparedStatement stmt = proxiedConnection.prepareStatement("call PKG_VPD_CTX.SET_CLIENT_IDENTIFIER('" + uid + "')")) {
+        try (PreparedStatement stmt = proxiedConnection.prepareStatement("call PKG_VPD_CTX.SET_CLIENT_IDENTIFIER(?)")) {
+            stmt.setString(1, uid);
             stmt.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);

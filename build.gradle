@@ -22,7 +22,7 @@ plugins {
 
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
-version = "0.3.4"
+version = "0.3.4.1"
 
 springBoot {
     buildInfo()
