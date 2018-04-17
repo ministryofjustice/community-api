@@ -8,7 +8,13 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -27,5 +33,26 @@ public class ProbationArea {
 
     @Column(name = "DESCRIPTION")
     private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "ORGANISATION_ID")
+    private Organisation organisation;
+
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "INSTITUTION_ID"),
+            @JoinColumn(name = "ESTABLISHMENT")})
+    private RInstitution institution;
+
+    @OneToMany
+    @JoinColumn(name = "PROBATION_AREA_ID")
+    private List<Team> teams;
+
+    @OneToMany
+    @JoinColumn(name = "PROBATION_AREA_ID", referencedColumnName = "PROBATION_AREA_ID")
+    private List<ProviderTeam> providerTeams;
+
+    @Column(name = "END_DATE")
+    private LocalDate endDate;
 
 }
