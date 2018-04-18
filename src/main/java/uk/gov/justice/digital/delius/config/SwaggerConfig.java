@@ -40,6 +40,9 @@ public class SwaggerConfig {
                         regex("(\\/health.*)"),
                         regex("(\\/logon.*)"),
                         regex("(\\/offenders.*)"),
+                        regex("(\\/contacts.*)"),
+                        regex("(\\/offenders.*)"),
+                        regex("(\\/probationAreas.*)"),
                         regex("(\\/offenderDeltaIds.*)")))
                 .build();
 
