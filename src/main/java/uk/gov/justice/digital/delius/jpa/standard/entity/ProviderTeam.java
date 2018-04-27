@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Data
@@ -27,4 +29,12 @@ public class ProviderTeam {
 
     @Column(name = "NAME")
     private String name;
+
+    @Column(name = "PROBATION_AREA_ID")
+    private Long probationAreaId;
+
+    @OneToOne
+    @JoinColumn(name = "EXTERNAL_PROVIDER_ID")
+    private ExternalProvider externalProvider;
+
 }

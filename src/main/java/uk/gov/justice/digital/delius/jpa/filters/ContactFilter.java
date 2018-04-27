@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.delius.controller.filters;
+package uk.gov.justice.digital.delius.jpa.filters;
 
 import com.google.common.collect.ImmutableList;
 import lombok.Builder;

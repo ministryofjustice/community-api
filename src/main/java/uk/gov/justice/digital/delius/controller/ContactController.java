@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.justice.digital.delius.controller.filters.ContactFilter;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
 import uk.gov.justice.digital.delius.service.ContactService;
 import uk.gov.justice.digital.delius.service.OffenderService;
@@ -26,7 +26,7 @@ import java.util.Optional;
 
 @RestController
 @Slf4j
-@Api( description = "Offender contact resources", tags = "Offender Contacts")
+@Api(description = "Offender contact resources", tags = "Offender Contacts")
 public class ContactController {
 
     private final OffenderService offenderService;

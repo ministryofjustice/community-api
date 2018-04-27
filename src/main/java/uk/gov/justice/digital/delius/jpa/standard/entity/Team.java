@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Data
@@ -28,4 +30,21 @@ public class Team {
     @Column(name = "DESCRIPTION")
     private String description;
 
+    @OneToOne
+    @JoinColumn(name = "DISTRICT_ID")
+    private District district;
+
+    @OneToOne
+    @JoinColumn(name = "LOCAL_DELIVERY_UNIT_ID")
+    private LocalDeliveryUnit localDeliveryUnit;
+
+    @Column(name = "PROBATION_AREA_ID")
+    private Long probationAreaId;
+
+    @OneToOne
+    @JoinColumn(name = "SC_PROVIDER_ID")
+    private ScProvider scProvider;
+
+    @Column(name = "PRIVATE")
+    private Long privateFlag;
 }
