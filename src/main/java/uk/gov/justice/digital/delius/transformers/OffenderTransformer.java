@@ -60,7 +60,7 @@ public class OffenderTransformer {
 
     private Conviction previousConvictionOf(Offender offender) {
         return Conviction.builder()
-                .convictionDate(Optional.ofNullable(offender.getPreviousConvictionDate()))
+                .convictionDate(offender.getPreviousConvictionDate())
                 .detail(Optional.ofNullable(offender.getPrevConvictionDocumentName()).map(doc -> ImmutableMap.of("documentName", doc)).orElse(null))
                 .build();
     }
@@ -105,7 +105,7 @@ public class OffenderTransformer {
                 .notes(Optional.ofNullable(address.getNotes()))
                 .noFixedAbode(Optional.ofNullable(address.getNoFixedAbode()).map("Y"::equalsIgnoreCase))
                 .from(address.getStartDate())
-                .to(Optional.ofNullable(address.getEndDate()))
+                .to(address.getEndDate())
                 .build();
     }
 
@@ -129,7 +129,7 @@ public class OffenderTransformer {
 
     private uk.gov.justice.digital.delius.data.api.OffenderAlias aliasOf(OffenderAlias alias) {
         return uk.gov.justice.digital.delius.data.api.OffenderAlias.builder()
-                .dateOfBirth(Optional.ofNullable(alias.getDateOfBirth()))
+                .dateOfBirth(alias.getDateOfBirth())
                 .firstName(Optional.ofNullable(alias.getFirstName()))
                 .middleNames(combinedMiddleNamesOf(alias.getSecondName(), alias.getThirdName()))
                 .surname(Optional.ofNullable(alias.getSurname()))

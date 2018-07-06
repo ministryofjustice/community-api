@@ -10,8 +10,7 @@ import java.util.Optional;
 @Data
 @Builder
 public class OffenderAlias {
-
-    private Optional<LocalDate> dateOfBirth;
+    private LocalDate dateOfBirth;
     private Optional<String> firstName;
     private List<String> middleNames;
     private Optional<String> surname;

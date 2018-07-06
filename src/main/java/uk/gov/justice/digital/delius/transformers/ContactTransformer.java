@@ -46,7 +46,7 @@ public class ContactTransformer {
         return uk.gov.justice.digital.delius.data.api.Contact.builder()
                 .eventId(eventIdOf(contact.getEvent()))
                 .alertActive("Y".equals(contact.getAlertActive()))
-                .contactEndTime(Optional.ofNullable(contact.getContactEndTime()))
+                .contactEndTime(contact.getContactEndTime())
                 .contactId(contact.getContactId())
                 .contactOutcomeType(contactOutcomeTypeOf(contact.getContactOutcomeType()))
                 .contactStartTime(contact.getContactStartTime())
@@ -140,15 +140,15 @@ public class ContactTransformer {
                 .active(req.getActiveFlag() == 1)
                 .adRequirementTypeMainCategory(adRequirementMainCategoryOf(req.getAdRequirementTypeMainCategory()))
                 .adRequirementTypeSubCategory(adRequirementSubCategoryOf(req.getAdRequirementTypeSubCategory()))
-                .commencementDate(Optional.ofNullable(req.getCommencementDate()))
-                .expectedEndDate(Optional.ofNullable(req.getExpectedEndDate()))
-                .expectedStartDate(Optional.ofNullable(req.getExpectedStartDate()))
+                .commencementDate(req.getCommencementDate())
+                .expectedEndDate(req.getExpectedEndDate())
+                .expectedStartDate(req.getExpectedStartDate())
                 .requirementId(req.getRequirementId())
                 .requirementNotes(Optional.ofNullable(req.getRequirementNotes()))
                 .requirementTypeMainCategory(requirementTypeMainCategoryOf(req.getRequirementTypeMainCategory()))
                 .requirementTypeSubCategory(requirementTypeSubCategoryOf(req.getRequirementTypeSubCategory()))
-                .startDate(Optional.ofNullable(req.getStartDate()))
-                .terminationDate(Optional.ofNullable(req.getTerminationDate()))
+                .startDate(req.getStartDate())
+                .terminationDate(req.getTerminationDate())
                 .build());
     }
 
@@ -220,13 +220,13 @@ public class ContactTransformer {
     private Optional<uk.gov.justice.digital.delius.data.api.LicenceCondition> licenceConditionOf(LicenceCondition licenceCondition) {
         return Optional.ofNullable(licenceCondition).map(lc -> uk.gov.justice.digital.delius.data.api.LicenceCondition.builder()
                 .active(lc.getActiveFlag() == 1)
-                .commencementDate(Optional.ofNullable(lc.getCommencementDate()))
+                .commencementDate(lc.getCommencementDate())
                 .commencementNotes(Optional.ofNullable(lc.getCommencementNotes()))
-                .createdDateTime(Optional.ofNullable(lc.getCreatedDateTime()))
+                .createdDateTime(lc.getCreatedDateTime())
                 .licenceConditionNotes(Optional.ofNullable(lc.getLicenceConditionNotes()))
                 .licenceConditionTypeMainCat(licenceConditionTypeMainCatOf(lc.getLicenceConditionTypeMainCat()))
-                .startDate(Optional.ofNullable(lc.getStartDate()))
-                .terminationDate(Optional.ofNullable(lc.getTerminationDate()))
+                .startDate(lc.getStartDate())
+                .terminationDate(lc.getTerminationDate())
                 .terminationNotes(Optional.ofNullable(lc.getTerminationNotes()))
                 .build());
     }

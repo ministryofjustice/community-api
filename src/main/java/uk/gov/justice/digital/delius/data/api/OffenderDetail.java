@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.data.api;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.justice.digital.delius.data.api.views.Views;
@@ -12,6 +13,7 @@ import java.util.Optional;
 @Data
 @Builder(toBuilder = true)
 public class OffenderDetail {
+    @ApiModelProperty(required = true)
     private Long offenderId;
     private Optional<String> title;
     private String firstName;

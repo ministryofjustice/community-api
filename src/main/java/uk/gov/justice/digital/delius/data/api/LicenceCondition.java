@@ -10,14 +10,13 @@ import java.util.Optional;
 @Data
 @Builder
 public class LicenceCondition {
-
     private Optional<String> licenceConditionNotes;
-    private Optional<LocalDate> startDate;
-    private Optional<LocalDate> commencementDate;
+    private LocalDate startDate;
+    private LocalDate commencementDate;
     private Optional<String> commencementNotes;
-    private Optional<LocalDate> terminationDate;
+    private LocalDate terminationDate;
     private Optional<String> terminationNotes;
-    private Optional<LocalDateTime> createdDateTime;
+    private LocalDateTime createdDateTime;
     private boolean active;
     private Optional<KeyValue> licenceConditionTypeMainCat;
 

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,10 +10,11 @@ import java.util.Optional;
 @Data
 @Builder
 public class Contact {
-
     protected Optional<Long> linkedContactId;
+    @ApiModelProperty(required = true)
     private Long contactId;
     private Optional<Long> eventId;
+    @ApiModelProperty(required = true)
     private ContactType contactType;
     private Optional<Requirement> requirement;
     private Optional<KeyValue> explanation;
@@ -20,7 +22,7 @@ public class Contact {
     private Optional<Nsi> nsi;
     private Optional<String> notes;
     private LocalDateTime contactStartTime;
-    private Optional<LocalDateTime> contactEndTime;
+    private LocalDateTime contactEndTime;
     private boolean softDeleted;
     private boolean alertActive;
     private LocalDateTime createdDateTime;

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,9 +10,9 @@ import java.util.Optional;
 @Data
 @Builder
 public class Address {
-
+    @ApiModelProperty(required = true)
     private LocalDate from;
-    private Optional<LocalDate> to;
+    private LocalDate to;
     private Optional<Boolean> noFixedAbode;
     private Optional<String> notes;
     private Optional<String> addressNumber;
