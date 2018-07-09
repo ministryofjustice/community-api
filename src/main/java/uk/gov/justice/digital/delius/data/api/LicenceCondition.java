@@ -5,19 +5,18 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Data
 @Builder
 public class LicenceCondition {
-    private Optional<String> licenceConditionNotes;
+    private String licenceConditionNotes;
     private LocalDate startDate;
     private LocalDate commencementDate;
-    private Optional<String> commencementNotes;
+    private String commencementNotes;
     private LocalDate terminationDate;
-    private Optional<String> terminationNotes;
+    private String terminationNotes;
     private LocalDateTime createdDateTime;
     private boolean active;
-    private Optional<KeyValue> licenceConditionTypeMainCat;
+    private KeyValue licenceConditionTypeMainCat;
 
 }

@@ -167,8 +167,8 @@ public class DeliusOffenderAPITest {
                         .as(OffenderDetail.class);
 
         assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
-        assertThat(offenderDetail.getOffenderAliases()).isEqualTo(Optional.empty());
-        assertThat(offenderDetail.getContactDetails().getAddresses()).isEqualTo(Optional.empty());
+        assertThat(offenderDetail.getOffenderAliases()).isNull();
+        assertThat(offenderDetail.getContactDetails().getAddresses()).isNull();
         assertThat(offenderDetail.getCurrentExclusion()).isTrue();
         assertThat(offenderDetail.getCurrentRestriction()).isTrue();
     }
@@ -190,10 +190,8 @@ public class DeliusOffenderAPITest {
                         .as(OffenderDetail.class);
 
         assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
-        assertThat(offenderDetail.getOffenderAliases().isPresent()).isTrue();
-        assertThat(offenderDetail.getOffenderAliases().get()).isNotEmpty();
-        assertThat(offenderDetail.getContactDetails().getAddresses().isPresent()).isTrue();
-        assertThat(offenderDetail.getContactDetails().getAddresses().get()).isNotEmpty();
+        assertThat(offenderDetail.getOffenderAliases()).isNotEmpty();
+        assertThat(offenderDetail.getContactDetails().getAddresses()).isNotEmpty();
     }
 
     @Test
@@ -213,7 +211,7 @@ public class DeliusOffenderAPITest {
                         .as(OffenderDetail.class);
 
         assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
-        assertThat(offenderDetail.getContactDetails().getAddresses().isPresent()).isTrue();
+        assertThat(offenderDetail.getContactDetails().getAddresses()).isNotEmpty();
     }
 
     @Test
@@ -233,7 +231,7 @@ public class DeliusOffenderAPITest {
                         .as(OffenderDetail.class);
 
         assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
-        assertThat(offenderDetail.getContactDetails().getAddresses().isPresent()).isTrue();
+        assertThat(offenderDetail.getContactDetails().getAddresses()).isNotEmpty();
     }
 
     private Offender anOffender() {

@@ -42,7 +42,7 @@ public class ContactTransformer {
                 .collect(Collectors.toList());
     }
 
-    public uk.gov.justice.digital.delius.data.api.Contact contactOf(uk.gov.justice.digital.delius.jpa.standard.entity.Contact contact) {
+    private uk.gov.justice.digital.delius.data.api.Contact contactOf(uk.gov.justice.digital.delius.jpa.standard.entity.Contact contact) {
         return uk.gov.justice.digital.delius.data.api.Contact.builder()
                 .eventId(eventIdOf(contact.getEvent()))
                 .alertActive("Y".equals(contact.getAlertActive()))
@@ -55,8 +55,8 @@ public class ContactTransformer {
                 .explanation(explanationOf(contact.getExplanation()))
                 .lastUpdatedDateTime(contact.getLastUpdatedDateTime())
                 .licenceCondition(licenceConditionOf(contact.getLicenceCondition()))
-                .linkedContactId(Optional.ofNullable(contact.getLinkedContactId()))
-                .notes(Optional.ofNullable(contact.getNotes()))
+                .linkedContactId(contact.getLinkedContactId())
+                .notes(contact.getNotes())
                 .nsi(nsiOf(contact.getNsi()))
                 .requirement(requirementOf(contact.getRequirement()))
                 .softDeleted(contact.getSoftDeleted())
@@ -67,52 +67,52 @@ public class ContactTransformer {
                 .providerTeam(providerTeamOf(contact.getProviderTeam()))
                 .staff(staffOf(contact.getStaff()))
                 .team(teamOf(contact.getTeam()))
-                .hoursCredited(Optional.ofNullable(contact.getHoursCredited()))
-                .visorContact(maybeBooleanOf(contact.getVisorContact()))
-                .attended(maybeBooleanOf(contact.getAttended()))
-                .complied(maybeBooleanOf(contact.getComplied()))
-                .uploadLinked(maybeBooleanOf(contact.getUploadLinked()))
-                .documentLinked(maybeBooleanOf(contact.getDocumentLinked()))
+                .hoursCredited(contact.getHoursCredited())
+                .visorContact(ynToBoolean(contact.getVisorContact()))
+                .attended(ynToBoolean(contact.getAttended()))
+                .complied(ynToBoolean(contact.getComplied()))
+                .uploadLinked(ynToBoolean(contact.getUploadLinked()))
+                .documentLinked(ynToBoolean(contact.getDocumentLinked()))
                 .build();
     }
 
-    private Optional<Long> eventIdOf(Event event) {
-        return Optional.ofNullable(event).map(e -> e.getEventId());
+    private Long eventIdOf(Event event) {
+        return Optional.ofNullable(event).map(Event::getEventId).orElse(null);
     }
 
-    private Optional<Boolean> maybeBooleanOf(String yn) {
-        return Optional.ofNullable(yn).map("Y"::equals);
+    private Boolean ynToBoolean(String yn) {
+        return Optional.ofNullable(yn).map("Y"::equals).orElse(null);
     }
 
-    private Optional<KeyValue> teamOf(Team team) {
-        return Optional.ofNullable(team).map(t -> KeyValue.builder().code(t.getCode()).description(t.getDescription()).build());
+    private KeyValue teamOf(Team team) {
+        return Optional.ofNullable(team).map(t -> KeyValue.builder().code(t.getCode()).description(t.getDescription()).build()).orElse(null);
     }
 
-    public Optional<Human> staffOf(Staff staff) {
+    public Human staffOf(Staff staff) {
         return Optional.ofNullable(staff).map(s -> Human
                 .builder()
                 .forenames(combinedForenamesOf(s.getForename(), s.getForname2()))
                 .surname(s.getSurname())
-                .build());
+                .build()).orElse(null);
     }
 
-    private Optional<KeyValue> providerTeamOf(ProviderTeam providerTeam) {
-        return Optional.ofNullable(providerTeam).map(pt -> KeyValue.builder().code(pt.getCode()).description(pt.getName()).build());
+    private KeyValue providerTeamOf(ProviderTeam providerTeam) {
+        return Optional.ofNullable(providerTeam).map(pt -> KeyValue.builder().code(pt.getCode()).description(pt.getName()).build()).orElse(null);
     }
 
-    private Optional<KeyValue> providerLocationOf(ProviderLocation providerLocation) {
+    private KeyValue providerLocationOf(ProviderLocation providerLocation) {
         return Optional.ofNullable(providerLocation).map(
                 pl -> KeyValue.builder().code(providerLocation.getCode()).description(providerLocation.getDescription()).build()
-        );
+        ).orElse(null);
     }
 
-    public Optional<Human> providerEmployeeOf(ProviderEmployee providerEmployee) {
+    public Human providerEmployeeOf(ProviderEmployee providerEmployee) {
         return Optional.ofNullable(providerEmployee)
                 .map(pe -> Human
                         .builder()
                         .forenames(combinedForenamesOf(pe.getForename(), pe.getForname2()))
                         .surname(pe.getSurname())
-                        .build());
+                        .build()).orElse(null);
     }
 
     private String combinedForenamesOf(String name1, String name2) {
@@ -125,17 +125,17 @@ public class ContactTransformer {
                 .collect(Collectors.joining(" "));
     }
 
-    private Optional<String> partitionAreaOf(PartitionArea partitionArea) {
-        return Optional.ofNullable(partitionArea).map(PartitionArea::getArea);
+    private String partitionAreaOf(PartitionArea partitionArea) {
+        return Optional.ofNullable(partitionArea).map(PartitionArea::getArea).orElse(null);
     }
 
-    private Optional<KeyValue> probationAreaOf(ProbationArea probationArea) {
+    private KeyValue probationAreaOf(ProbationArea probationArea) {
         return Optional.ofNullable(probationArea).map(
                 pa -> KeyValue.builder().code(pa.getCode()).description(pa.getDescription()).build()
-        );
+        ).orElse(null);
     }
 
-    private Optional<uk.gov.justice.digital.delius.data.api.Requirement> requirementOf(Requirement requirement) {
+    private uk.gov.justice.digital.delius.data.api.Requirement requirementOf(Requirement requirement) {
         return Optional.ofNullable(requirement).map(req -> uk.gov.justice.digital.delius.data.api.Requirement.builder()
                 .active(req.getActiveFlag() == 1)
                 .adRequirementTypeMainCategory(adRequirementMainCategoryOf(req.getAdRequirementTypeMainCategory()))
@@ -144,123 +144,123 @@ public class ContactTransformer {
                 .expectedEndDate(req.getExpectedEndDate())
                 .expectedStartDate(req.getExpectedStartDate())
                 .requirementId(req.getRequirementId())
-                .requirementNotes(Optional.ofNullable(req.getRequirementNotes()))
+                .requirementNotes(req.getRequirementNotes())
                 .requirementTypeMainCategory(requirementTypeMainCategoryOf(req.getRequirementTypeMainCategory()))
                 .requirementTypeSubCategory(requirementTypeSubCategoryOf(req.getRequirementTypeSubCategory()))
                 .startDate(req.getStartDate())
                 .terminationDate(req.getTerminationDate())
-                .build());
+                .build()).orElse(null);
     }
 
-    private Optional<KeyValue> adRequirementMainCategoryOf(AdRequirementTypeMainCategory adRequirementTypeMainCategory) {
+    private KeyValue adRequirementMainCategoryOf(AdRequirementTypeMainCategory adRequirementTypeMainCategory) {
         return Optional.ofNullable(adRequirementTypeMainCategory).map(mainCat ->
                 KeyValue.builder()
                         .code(mainCat.getCode())
                         .description(mainCat.getDescription())
-                        .build());
+                        .build()).orElse(null);
 
     }
 
-    private Optional<KeyValue> requirementTypeSubCategoryOf(StandardReference requirementTypeSubCategory) {
+    private KeyValue requirementTypeSubCategoryOf(StandardReference requirementTypeSubCategory) {
         return Optional.ofNullable(requirementTypeSubCategory).map(subCat ->
                 KeyValue.builder()
                         .code(subCat.getCodeValue())
                         .description(subCat.getCodeDescription())
-                        .build());
+                        .build()).orElse(null);
     }
 
-    private Optional<KeyValue> requirementTypeMainCategoryOf(RequirementTypeMainCategory requirementTypeMainCategory) {
+    private KeyValue requirementTypeMainCategoryOf(RequirementTypeMainCategory requirementTypeMainCategory) {
         return Optional.ofNullable(requirementTypeMainCategory).map(mainCat ->
                 KeyValue.builder()
                         .code(mainCat.getCode())
                         .description(mainCat.getDescription())
-                        .build());
+                        .build()).orElse(null);
     }
 
-    private Optional<KeyValue> adRequirementSubCategoryOf(StandardReference adRequirementTypeSubCategory) {
+    private KeyValue adRequirementSubCategoryOf(StandardReference adRequirementTypeSubCategory) {
         return Optional.ofNullable(adRequirementTypeSubCategory).map(adSubCat ->
                 KeyValue.builder()
                         .code(adSubCat.getCodeValue())
                         .description(adSubCat.getCodeDescription())
-                        .build());
+                        .build()).orElse(null);
     }
 
-    private Optional<uk.gov.justice.digital.delius.data.api.Nsi> nsiOf(Nsi nsi) {
+    private uk.gov.justice.digital.delius.data.api.Nsi nsiOf(Nsi nsi) {
         return Optional.ofNullable(nsi).map(n ->
                 uk.gov.justice.digital.delius.data.api.Nsi.builder()
                         .requirement(requirementOf(n.getRqmnt()))
                         .nsiType(nsiTypeOf(n.getNsiType()))
                         .nsiSubType(nsiSubtypeOf(n.getNsiSubType()))
                         .nsiStatus(nsiStatusOf(n.getNsiStatus()))
-                        .build());
+                        .build()).orElse(null);
     }
 
-    private Optional<KeyValue> nsiStatusOf(NsiStatus nsiStatus) {
+    private KeyValue nsiStatusOf(NsiStatus nsiStatus) {
         return Optional.ofNullable(nsiStatus).map(nsis ->
                 KeyValue.builder().code(nsis.getCode())
                         .description(nsis.getDescription())
-                        .build());
+                        .build()).orElse(null);
     }
 
-    private Optional<KeyValue> nsiSubtypeOf(StandardReference nsiSubType) {
+    private KeyValue nsiSubtypeOf(StandardReference nsiSubType) {
         return Optional.ofNullable(nsiSubType).map(nsist ->
                 KeyValue.builder()
                         .code(nsist.getCodeValue())
                         .description(nsist.getCodeDescription())
-                        .build());
+                        .build()).orElse(null);
     }
 
-    private Optional<KeyValue> nsiTypeOf(NsiType nsiType) {
+    private KeyValue nsiTypeOf(NsiType nsiType) {
         return Optional.ofNullable(nsiType).map(nsit -> KeyValue.builder()
                 .code(nsit.getCode())
                 .description(nsit.getDescription())
-                .build());
+                .build()).orElse(null);
     }
 
-    private Optional<uk.gov.justice.digital.delius.data.api.LicenceCondition> licenceConditionOf(LicenceCondition licenceCondition) {
+    private uk.gov.justice.digital.delius.data.api.LicenceCondition licenceConditionOf(LicenceCondition licenceCondition) {
         return Optional.ofNullable(licenceCondition).map(lc -> uk.gov.justice.digital.delius.data.api.LicenceCondition.builder()
                 .active(lc.getActiveFlag() == 1)
                 .commencementDate(lc.getCommencementDate())
-                .commencementNotes(Optional.ofNullable(lc.getCommencementNotes()))
+                .commencementNotes(lc.getCommencementNotes())
                 .createdDateTime(lc.getCreatedDateTime())
-                .licenceConditionNotes(Optional.ofNullable(lc.getLicenceConditionNotes()))
+                .licenceConditionNotes(lc.getLicenceConditionNotes())
                 .licenceConditionTypeMainCat(licenceConditionTypeMainCatOf(lc.getLicenceConditionTypeMainCat()))
                 .startDate(lc.getStartDate())
                 .terminationDate(lc.getTerminationDate())
-                .terminationNotes(Optional.ofNullable(lc.getTerminationNotes()))
-                .build());
+                .terminationNotes(lc.getTerminationNotes())
+                .build()).orElse(null);
     }
 
-    private Optional<KeyValue> licenceConditionTypeMainCatOf(LicenceConditionTypeMainCat licenceConditionTypeMainCat) {
+    private KeyValue licenceConditionTypeMainCatOf(LicenceConditionTypeMainCat licenceConditionTypeMainCat) {
         return Optional.ofNullable(licenceConditionTypeMainCat).map(lctmc ->
                 KeyValue.builder()
                         .code(lctmc.getCode())
                         .description(lctmc.getDescription())
-                        .build());
+                        .build()).orElse(null);
     }
 
-    private Optional<KeyValue> explanationOf(Explanation explanation) {
+    private KeyValue explanationOf(Explanation explanation) {
         return Optional.ofNullable(explanation).map(e ->
                 KeyValue.builder()
                         .code(e.getCode())
                         .description(e.getDescription())
-                        .build());
+                        .build()).orElse(null);
     }
 
     private uk.gov.justice.digital.delius.data.api.ContactType contactTypeOf(ContactType contactType) {
         return uk.gov.justice.digital.delius.data.api.ContactType.builder()
                 .code(contactType.getCode())
                 .description(contactType.getDescription())
-                .shortDescription(Optional.ofNullable(contactType.getShortDescription()))
+                .shortDescription(Optional.ofNullable(contactType.getShortDescription()).orElse(null))
                 .build();
     }
 
-    private Optional<KeyValue> contactOutcomeTypeOf(ContactOutcomeType contactOutcomeType) {
+    private KeyValue contactOutcomeTypeOf(ContactOutcomeType contactOutcomeType) {
         return Optional.ofNullable(contactOutcomeType).map(cot ->
                 KeyValue.builder()
                         .code(cot.getCode())
                         .description(cot.getDescription())
-                        .build());
+                        .build()).orElse(null);
     }
 
 

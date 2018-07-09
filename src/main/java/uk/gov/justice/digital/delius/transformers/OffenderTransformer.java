@@ -52,9 +52,9 @@ public class OffenderTransformer {
 
     private OffenderLanguages languagesOf(Offender offender) {
         return OffenderLanguages.builder()
-                .primaryLanguage(Optional.ofNullable(offender.getLanguage()).map(StandardReference::getCodeDescription))
-                .languageConcerns(Optional.ofNullable(offender.getLanguageConcerns()))
-                .requiresInterpreter(Optional.ofNullable(offender.getInterpreterRequired()).map("Y"::equals))
+                .primaryLanguage(Optional.ofNullable(offender.getLanguage()).map(StandardReference::getCodeDescription).orElse(null))
+                .languageConcerns(Optional.ofNullable(offender.getLanguageConcerns()).orElse(null))
+                .requiresInterpreter(Optional.ofNullable(offender.getInterpreterRequired()).map("Y"::equals).orElse(null))
                 .build();
     }
 
@@ -67,43 +67,43 @@ public class OffenderTransformer {
 
     private OffenderProfile offenderProfileOf(Offender offender) {
         return OffenderProfile.builder()
-                .ethnicity(Optional.ofNullable(offender.getEthnicity()).map(StandardReference::getCodeDescription))
-                .immigrationStatus(Optional.ofNullable(offender.getImmigrationStatus()).map(StandardReference::getCodeDescription))
-                .nationality(Optional.ofNullable(offender.getNationality()).map(StandardReference::getCodeDescription))
+                .ethnicity(Optional.ofNullable(offender.getEthnicity()).map(StandardReference::getCodeDescription).orElse(null))
+                .immigrationStatus(Optional.ofNullable(offender.getImmigrationStatus()).map(StandardReference::getCodeDescription).orElse(null))
+                .nationality(Optional.ofNullable(offender.getNationality()).map(StandardReference::getCodeDescription).orElse(null))
                 .offenderLanguages(languagesOf(offender))
                 .previousConviction(previousConvictionOf(offender))
-                .religion(Optional.ofNullable(offender.getReligion()).map(StandardReference::getCodeDescription))
-                .remandStatus(Optional.ofNullable(offender.getCurrentRemandStatus()))
-                .secondaryNationality(Optional.ofNullable(offender.getSecondNationality()).map(StandardReference::getCodeDescription))
-                .sexualOrientation(Optional.ofNullable(offender.getSexualOrientation()).map(StandardReference::getCodeDescription))
-                .riskColour(Optional.ofNullable(offender.getCurrentHighestRiskColour()))
+                .religion(Optional.ofNullable(offender.getReligion()).map(StandardReference::getCodeDescription).orElse(null))
+                .remandStatus(Optional.ofNullable(offender.getCurrentRemandStatus()).orElse(null))
+                .secondaryNationality(Optional.ofNullable(offender.getSecondNationality()).map(StandardReference::getCodeDescription).orElse(null))
+                .sexualOrientation(Optional.ofNullable(offender.getSexualOrientation()).map(StandardReference::getCodeDescription).orElse(null))
+                .riskColour(Optional.ofNullable(offender.getCurrentHighestRiskColour()).orElse(null))
                 .build();
     }
 
     private IDs idsOf(Offender offender) {
         return IDs.builder()
                 .crn(offender.getCrn())
-                .croNumber(Optional.ofNullable(offender.getCroNumber()))
-                .immigrationNumber(Optional.ofNullable(offender.getImmigrationNumber()))
-                .niNumber(Optional.ofNullable(offender.getNiNumber()))
-                .nomsNumber(Optional.ofNullable(offender.getNomsNumber()))
-                .pncNumber(Optional.ofNullable(offender.getPncNumber()))
-                .mostRecentPrisonerNumber(Optional.ofNullable(offender.getMostRecentPrisonerNumber()))
+                .croNumber(offender.getCroNumber())
+                .immigrationNumber(offender.getImmigrationNumber())
+                .niNumber(offender.getNiNumber())
+                .nomsNumber(offender.getNomsNumber())
+                .pncNumber(offender.getPncNumber())
+                .mostRecentPrisonerNumber(offender.getMostRecentPrisonerNumber())
                 .build();
     }
 
     private Address addressOf(OffenderAddress address) {
         return Address.builder()
-                .addressNumber(Optional.ofNullable(address.getAddressNumber()))
-                .buildingName(Optional.ofNullable(address.getBuildingName()))
-                .streetName(Optional.ofNullable(address.getStreetName()))
-                .district(Optional.ofNullable(address.getDistrict()))
-                .town(Optional.ofNullable(address.getTownCity()))
-                .county(Optional.ofNullable(address.getCounty()))
-                .postcode(Optional.ofNullable(address.getPostcode()))
-                .telephoneNumber(Optional.ofNullable(address.getTelephoneNumber()))
-                .notes(Optional.ofNullable(address.getNotes()))
-                .noFixedAbode(Optional.ofNullable(address.getNoFixedAbode()).map("Y"::equalsIgnoreCase))
+                .addressNumber(address.getAddressNumber())
+                .buildingName(address.getBuildingName())
+                .streetName(address.getStreetName())
+                .district(address.getDistrict())
+                .town(address.getTownCity())
+                .county(address.getCounty())
+                .postcode(address.getPostcode())
+                .telephoneNumber(address.getTelephoneNumber())
+                .notes(address.getNotes())
+                .noFixedAbode(Optional.ofNullable(address.getNoFixedAbode()).map("Y"::equalsIgnoreCase).orElse(null))
                 .from(address.getStartDate())
                 .to(address.getEndDate())
                 .build();
@@ -111,10 +111,10 @@ public class OffenderTransformer {
 
     private ContactDetails contactDetailsOf(Offender offender) {
         return ContactDetails.builder()
-                .allowSMS(Optional.ofNullable(offender.getAllowSMS()).map("Y"::equals))
+                .allowSMS(Optional.ofNullable(offender.getAllowSMS()).map("Y"::equals).orElse(null))
                 .emailAddresses(emailAddressesOf(offender))
                 .phoneNumbers(phoneNumbersOf(offender))
-                .addresses(Optional.of(addressesOf(offender)))
+                .addresses(addressesOf(offender))
                 .build();
     }
 
@@ -130,10 +130,10 @@ public class OffenderTransformer {
     private uk.gov.justice.digital.delius.data.api.OffenderAlias aliasOf(OffenderAlias alias) {
         return uk.gov.justice.digital.delius.data.api.OffenderAlias.builder()
                 .dateOfBirth(alias.getDateOfBirth())
-                .firstName(Optional.ofNullable(alias.getFirstName()))
+                .firstName(alias.getFirstName())
                 .middleNames(combinedMiddleNamesOf(alias.getSecondName(), alias.getThirdName()))
-                .surname(Optional.ofNullable(alias.getSurname()))
-                .gender(Optional.ofNullable(Optional.ofNullable(alias.getGender()).map(StandardReference::getCodeDescription).orElse(null)))
+                .surname(alias.getSurname())
+                .gender(Optional.ofNullable(alias.getGender()).map(StandardReference::getCodeDescription).orElse(null))
                 .build();
     }
 
@@ -150,15 +150,15 @@ public class OffenderTransformer {
                 .gender(offender.getGender().getCodeDescription())
                 .middleNames(combinedMiddleNamesOf(offender.getSecondName(), offender.getThirdName()))
                 .surname(offender.getSurname())
-                .previousSurname(Optional.ofNullable(offender.getPreviousSurname()))
-                .title(Optional.ofNullable(offender.getTitle()).map(StandardReference::getCodeDescription))
+                .previousSurname(offender.getPreviousSurname())
+                .title(Optional.ofNullable(offender.getTitle()).map(StandardReference::getCodeDescription).orElse(null))
                 .contactDetails(contactDetailsOf(offender))
                 .otherIds(idsOf(offender))
                 .offenderProfile(offenderProfileOf(offender))
-                .offenderAliases(Optional.of(offenderAliasesOf(offender.getOffenderAliases())))
+                .offenderAliases(offenderAliasesOf(offender.getOffenderAliases()))
                 .softDeleted(offender.getSoftDeleted())
-                .currentDisposal(Optional.ofNullable(offender.getCurrentDisposal()).map(Object::toString))
-                .partitionArea(Optional.ofNullable(offender.getPartitionArea().getArea()))
+                .currentDisposal(Optional.ofNullable(offender.getCurrentDisposal()).map(Object::toString).orElse(null))
+                .partitionArea(Optional.ofNullable(offender.getPartitionArea()).map(PartitionArea::getArea).orElse(null))
                 .currentExclusion(offender.getCurrentExclusion() == 1)
                 .currentRestriction(offender.getCurrentRestriction() == 1)
                 .offenderManagers(offenderManagersOf(offender.getOffenderManagers()))
@@ -189,8 +189,8 @@ public class OffenderTransformer {
                 .trustOfficer(Optional.ofNullable(offenderManager.getOfficer())
                         .map(o -> humanOf(o.getForename(), o.getForename2(), o.getSurname()))
                         .orElse(null))
-                .staff(contactTransformer.staffOf(offenderManager.getStaff()).orElse(null))
-                .providerEmployee(contactTransformer.providerEmployeeOf(offenderManager.getProviderEmployee()).orElse(null))
+                .staff(contactTransformer.staffOf(offenderManager.getStaff()))
+                .providerEmployee(contactTransformer.providerEmployeeOf(offenderManager.getProviderEmployee()))
                 .team(teamOf(offenderManager))
                 .probationArea(probationAreaOf(offenderManager.getProbationArea()))
                 .active(Integer.valueOf(1).equals(offenderManager.getActiveFlag()))

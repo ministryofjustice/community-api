@@ -5,14 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Optional;
 
 @Data
 @Builder
 public class Event {
     @ApiModelProperty(required = true)
     private Long eventId;
-    private Optional<String> notes;
+    private String notes;
     @ApiModelProperty(required = true)
     private boolean active;
     @ApiModelProperty(required = true)
