@@ -107,10 +107,12 @@ public class OffenderTransformer {
                 .notes(address.getNotes())
                 .noFixedAbode(Optional.ofNullable(address.getNoFixedAbode()).map("Y"::equalsIgnoreCase).orElse(null))
                 .from(address.getStartDate())
-                .to(Optional.ofNullable(address.getEndDate()))
-                .status(Optional.of(KeyValue.builder()
-                            .code(address.getAddressStatus().getCodeValue())
-                            .description(address.getAddressStatus().getCodeDescription()).build()))
+                .to(address.getEndDate())
+                .status(Optional.ofNullable(address.getAddressStatus()).map(status ->
+                            KeyValue.builder()
+                                .code(status.getCodeValue())
+                                .description(status.getCodeDescription()).build())
+                        .orElse(null))
                 .build();
     }
 

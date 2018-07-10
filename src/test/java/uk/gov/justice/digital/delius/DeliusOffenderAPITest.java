@@ -234,6 +234,35 @@ public class DeliusOffenderAPITest {
         assertThat(address.getStatus().getDescription()).isEqualTo("Main address");
     }
 
+    @Test
+    public void lookupKnownOffenderCRNDetailGivesFullFatOffender_noAddressStatusResultsInNullStatus() {
+
+        OffenderAddress mainAddress = OffenderAddress.builder()
+            .streetName("Foo Street")
+            .build();
+        Offender offender = anOffender();
+        offender.setOffenderAddresses(asList(mainAddress));
+        Mockito.when(offenderRepository.findByCrn(eq("CRN123"))).thenReturn(Optional.of(offender));
+
+        OffenderDetail offenderDetail =
+                given()
+                        .header("Authorization", aValidToken())
+                        .when()
+                        .get("/offenders/crn/CRN123/all")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .as(OffenderDetail.class);
+
+        assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
+        assertThat(offenderDetail.getContactDetails().getAddresses()).isNotEmpty();
+
+        Address address = offenderDetail.getContactDetails().getAddresses().get(0);
+        assertThat(address.getStreetName()).isEqualTo("Foo Street");
+        assertThat(address.getStatus()).isNull();
+    }
+
     private Offender anOffender() {
         return Offender.builder()
                 .allowSMS("Y")
