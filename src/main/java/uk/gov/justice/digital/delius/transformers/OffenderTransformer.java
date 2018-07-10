@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.Address;
 import uk.gov.justice.digital.delius.data.api.ContactDetails;
+import uk.gov.justice.digital.delius.data.api.ContactDetailsSummary;
 import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.IDs;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderLanguages;
 import uk.gov.justice.digital.delius.data.api.OffenderManager;
 import uk.gov.justice.digital.delius.data.api.OffenderProfile;
@@ -118,6 +120,14 @@ public class OffenderTransformer {
                 .build();
     }
 
+    private ContactDetailsSummary contactDetailsSummaryOf(Offender offender) {
+        return ContactDetailsSummary.builder()
+                .allowSMS(Optional.ofNullable(offender.getAllowSMS()).map("Y"::equals).orElse(null))
+                .emailAddresses(emailAddressesOf(offender))
+                .phoneNumbers(phoneNumbersOf(offender))
+                .build();
+    }
+
     private List<String> emailAddressesOf(Offender offender) {
         return Optional.ofNullable(offender.getEmailAddress()).map(Arrays::asList).orElse(Collections.emptyList());
     }
@@ -142,7 +152,7 @@ public class OffenderTransformer {
 
     }
 
-    public OffenderDetail offenderOf(Offender offender) {
+    public OffenderDetail fullOffenderOf(Offender offender) {
         return OffenderDetail.builder()
                 .offenderId(offender.getOffenderId())
                 .dateOfBirth(offender.getDateOfBirthDate())
@@ -162,6 +172,27 @@ public class OffenderTransformer {
                 .currentExclusion(offender.getCurrentExclusion() == 1)
                 .currentRestriction(offender.getCurrentRestriction() == 1)
                 .offenderManagers(offenderManagersOf(offender.getOffenderManagers()))
+                .build();
+    }
+
+    public OffenderDetailSummary offenderSummaryOf(Offender offender) {
+        return OffenderDetailSummary.builder()
+                .offenderId(offender.getOffenderId())
+                .dateOfBirth(offender.getDateOfBirthDate())
+                .firstName(offender.getFirstName())
+                .gender(offender.getGender().getCodeDescription())
+                .middleNames(combinedMiddleNamesOf(offender.getSecondName(), offender.getThirdName()))
+                .surname(offender.getSurname())
+                .previousSurname(offender.getPreviousSurname())
+                .title(Optional.ofNullable(offender.getTitle()).map(StandardReference::getCodeDescription).orElse(null))
+                .contactDetails(contactDetailsSummaryOf(offender))
+                .otherIds(idsOf(offender))
+                .offenderProfile(offenderProfileOf(offender))
+                .softDeleted(offender.getSoftDeleted())
+                .currentDisposal(Optional.ofNullable(offender.getCurrentDisposal()).map(Object::toString).orElse(null))
+                .partitionArea(Optional.ofNullable(offender.getPartitionArea()).map(PartitionArea::getArea).orElse(null))
+                .currentExclusion(offender.getCurrentExclusion() == 1)
+                .currentRestriction(offender.getCurrentRestriction() == 1)
                 .build();
     }
 

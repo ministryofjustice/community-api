@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.controller;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import io.jsonwebtoken.Claims;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
@@ -25,9 +24,9 @@ import uk.gov.justice.digital.delius.data.api.AccessLimitation;
 import uk.gov.justice.digital.delius.data.api.Count;
 import uk.gov.justice.digital.delius.data.api.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderIdsResource;
 import uk.gov.justice.digital.delius.data.api.OffenderManager;
-import uk.gov.justice.digital.delius.data.api.views.Views;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
 import uk.gov.justice.digital.delius.service.AlfrescoService;
@@ -48,7 +47,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @Slf4j
-@Api( description = "Offender resources", tags = "Offenders")
+@Api(description = "Offender resources", tags = "Offenders")
 public class OffenderController {
 
     private final OffenderService offenderService;
@@ -64,70 +63,60 @@ public class OffenderController {
         this.jwt = jwt;
     }
 
-    private ResponseEntity<OffenderDetail> getOffenderByOffenderId(Long offenderId) {
-        Optional<OffenderDetail> offender = offenderService.getOffenderByOffenderId(offenderId);
-        return offender.map(
-                offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(notFound());
-    }
-
     @RequestMapping(value = "/offenders/offenderId/{offenderId}", method = RequestMethod.GET)
     @JwtValidation
-    @JsonView(Views.OffenderOnly.class)
-    public ResponseEntity<OffenderDetail> getOffenderByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
-                                                                  final @PathVariable("offenderId") Long offenderId) {
-        return getOffenderByOffenderId(offenderId);
+    public ResponseEntity<OffenderDetailSummary> getOffenderByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
+                                                                         final @PathVariable("offenderId") Long offenderId) {
+        Optional<OffenderDetailSummary> offender = offenderService.getOffenderSummaryByOffenderId(offenderId);
+        return offender.map(
+                offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(offenderDetailSummaryNotFound());
     }
 
     @RequestMapping(value = "/offenders/crn/{crn}", method = RequestMethod.GET)
     @JwtValidation
-    @JsonView(Views.OffenderOnly.class)
-    public ResponseEntity<OffenderDetail> getOffenderByCrn(final @RequestHeader HttpHeaders httpHeaders,
-                                                           final @PathVariable("crn") String crn) {
-        return getOffenderByCrn(crn);
-    }
-
-    private ResponseEntity<OffenderDetail> getOffenderByCrn(String crn) {
-        Optional<OffenderDetail> offender = offenderService.getOffenderByCrn(crn);
+    public ResponseEntity<OffenderDetailSummary> getOffenderSumaryByCrn(final @RequestHeader HttpHeaders httpHeaders,
+                                                                        final @PathVariable("crn") String crn) {
+        Optional<OffenderDetailSummary> offender = offenderService.getOffenderSummaryByCrn(crn);
         return offender.map(
-                offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(notFound());
+                offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(offenderDetailSummaryNotFound());
     }
 
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}", method = RequestMethod.GET)
     @JwtValidation
-    @JsonView(Views.OffenderOnly.class)
-    public ResponseEntity<OffenderDetail> getOffenderByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                  final @PathVariable("nomsNumber") String nomsNumber) {
-        return getOffenderByNomsNumber(nomsNumber);
-    }
-
-    private ResponseEntity<OffenderDetail> getOffenderByNomsNumber(String nomsNumber) {
-        Optional<OffenderDetail> offender = offenderService.getOffenderByNomsNumber(nomsNumber);
+    public ResponseEntity<OffenderDetailSummary> getOffenderSummaryByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
+                                                                                final @PathVariable("nomsNumber") String nomsNumber) {
+        Optional<OffenderDetailSummary> offender = offenderService.getOffenderSummaryByNomsNumber(nomsNumber);
         return offender.map(
-                offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(notFound());
+                offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(offenderDetailSummaryNotFound());
     }
 
     @RequestMapping(value = "/offenders/offenderId/{offenderId}/all", method = RequestMethod.GET)
     @JwtValidation
-    @JsonView(Views.FullFat.class)
     public ResponseEntity<OffenderDetail> getFullFatOffenderByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
                                                                          final @PathVariable("offenderId") Long offenderId) {
-        return getOffenderByOffenderId(offenderId);
+        Optional<OffenderDetail> offender = offenderService.getOffenderByOffenderId(offenderId);
+        return offender.map(
+                offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(offenderDetailNotFound());
     }
 
     @RequestMapping(value = "/offenders/crn/{crn}/all", method = RequestMethod.GET)
     @JwtValidation
-    @JsonView(Views.FullFat.class)
     public ResponseEntity<OffenderDetail> getFullFatOffenderByCrn(final @RequestHeader HttpHeaders httpHeaders,
                                                                   final @PathVariable("crn") String crn) {
-        return getOffenderByCrn(crn);
+        Optional<OffenderDetail> offender = offenderService.getOffenderByCrn(crn);
+        return offender.map(
+                offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(offenderDetailNotFound());
+
     }
 
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/all", method = RequestMethod.GET)
     @JwtValidation
-    @JsonView(Views.FullFat.class)
     public ResponseEntity<OffenderDetail> getFullFatOffenderByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
                                                                          final @PathVariable("nomsNumber") String nomsNumber) {
-        return getOffenderByNomsNumber(nomsNumber);
+        Optional<OffenderDetail> offender = offenderService.getOffenderByNomsNumber(nomsNumber);
+        return offender.map(
+                offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(offenderDetailNotFound());
+
     }
 
     @RequestMapping(value = "/offenders/crn/{crn}/documents", method = RequestMethod.GET)
@@ -373,8 +362,12 @@ public class OffenderController {
     }
 
 
-    private ResponseEntity<OffenderDetail> notFound() {
+    private ResponseEntity<OffenderDetail> offenderDetailNotFound() {
         return new ResponseEntity<>(OffenderDetail.builder().build(), NOT_FOUND);
+    }
+
+    private ResponseEntity<OffenderDetailSummary> offenderDetailSummaryNotFound() {
+        return new ResponseEntity<>(OffenderDetailSummary.builder().build(), NOT_FOUND);
     }
 
 

@@ -23,6 +23,7 @@ import uk.gov.justice.digital.delius.data.api.AccessLimitation;
 import uk.gov.justice.digital.delius.data.api.Count;
 import uk.gov.justice.digital.delius.data.api.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.jpa.national.entity.Exclusion;
 import uk.gov.justice.digital.delius.jpa.national.entity.Restriction;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
@@ -90,7 +91,7 @@ public class DeliusOffenderAPITest {
         Mockito.when(offenderRepository.findByOffenderId(any(Long.class))).thenReturn(Optional.empty());
         Mockito.when(offenderRepository.listOffenderIds(eq(1), eq(5))).thenReturn(LongStream.rangeClosed(1, 5).mapToObj(BigDecimal::valueOf).collect(Collectors.toList()));
         Mockito.when(offenderRepository.listOffenderIds(eq(6), eq(10))).thenReturn(LongStream.rangeClosed(6, 10).mapToObj(BigDecimal::valueOf).collect(Collectors.toList()));
-        Mockito.when(offenderRepository.count()).thenReturn(666l);
+        Mockito.when(offenderRepository.count()).thenReturn(666L);
         wiremockServer = new WireMockServer(8088);
         wiremockServer.start();
     }
@@ -116,7 +117,7 @@ public class DeliusOffenderAPITest {
 
         Mockito.when(offenderRepository.findByNomsNumber(eq("A12345"))).thenReturn(Optional.of(anOffender()));
 
-        OffenderDetail offenderDetail =
+        OffenderDetailSummary offenderDetail =
                 given()
                         .header("Authorization", aValidToken())
                         .when()
@@ -125,7 +126,7 @@ public class DeliusOffenderAPITest {
                         .statusCode(200)
                         .extract()
                         .body()
-                        .as(OffenderDetail.class);
+                        .as(OffenderDetailSummary.class);
 
         assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
     }
@@ -135,7 +136,7 @@ public class DeliusOffenderAPITest {
 
         Mockito.when(offenderRepository.findByCrn(eq("CRN123"))).thenReturn(Optional.of(anOffender()));
 
-        OffenderDetail offenderDetail =
+        OffenderDetailSummary offenderDetail =
                 given()
                         .header("Authorization", aValidToken())
                         .when()
@@ -144,7 +145,7 @@ public class DeliusOffenderAPITest {
                         .statusCode(200)
                         .extract()
                         .body()
-                        .as(OffenderDetail.class);
+                        .as(OffenderDetailSummary.class);
 
         assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
     }
@@ -155,7 +156,7 @@ public class DeliusOffenderAPITest {
         Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(
                 anOffender().toBuilder().currentExclusion(1L).currentRestriction(1L).build()));
 
-        OffenderDetail offenderDetail =
+        OffenderDetailSummary offenderDetail =
                 given()
                         .header("Authorization", aValidToken())
                         .when()
@@ -164,11 +165,9 @@ public class DeliusOffenderAPITest {
                         .statusCode(200)
                         .extract()
                         .body()
-                        .as(OffenderDetail.class);
+                        .as(OffenderDetailSummary.class);
 
         assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
-        assertThat(offenderDetail.getOffenderAliases()).isNull();
-        assertThat(offenderDetail.getContactDetails().getAddresses()).isNull();
         assertThat(offenderDetail.getCurrentExclusion()).isTrue();
         assertThat(offenderDetail.getCurrentRestriction()).isTrue();
     }
@@ -279,7 +278,7 @@ public class DeliusOffenderAPITest {
                 .partitionArea(PartitionArea.builder().area("Fulchester").build())
                 .softDeleted(false)
                 .currentHighestRiskColour("FUSCHIA")
-                .currentDisposal(0l)
+                .currentDisposal(0L)
                 .currentRestriction(0L)
                 .currentExclusion(0L)
                 .offenderManagers(Lists.newArrayList(OffenderManager.builder()
