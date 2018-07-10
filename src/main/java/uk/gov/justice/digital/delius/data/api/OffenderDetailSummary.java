@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @Builder(toBuilder = true)
-public class OffenderDetail {
+public class OffenderDetailSummary {
     @ApiModelProperty(required = true)
     private Long offenderId;
     private String title;
@@ -20,10 +20,8 @@ public class OffenderDetail {
     private LocalDate dateOfBirth;
     private String gender;
     private IDs otherIds;
-    private ContactDetails contactDetails;
+    private ContactDetailsSummary contactDetails;
     private OffenderProfile offenderProfile;
-    private List<OffenderAlias> offenderAliases;
-    private List<OffenderManager> offenderManagers;
     private Boolean softDeleted;
     private String currentDisposal;
     private String partitionArea;

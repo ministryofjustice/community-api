@@ -7,9 +7,8 @@ import java.util.List;
 
 @Data
 @Builder
-public class ContactDetails {
+public class ContactDetailsSummary {
     private List<PhoneNumber> phoneNumbers;
     private List<String> emailAddresses;
     private Boolean allowSMS;
-    private List<Address> addresses;
 }

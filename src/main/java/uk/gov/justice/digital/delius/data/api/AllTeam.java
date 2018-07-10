@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 
@@ -7,7 +8,9 @@ import lombok.Data;
 @Builder
 /* Convenience DTO to encompass ProviderTeam and Team entities and their FK deps */
 public class AllTeam {
+    @ApiModelProperty(required = true)
     private Long providerTeamId;
+    @ApiModelProperty(required = true)
     private Long teamId;
     private String code;
     private String description;
