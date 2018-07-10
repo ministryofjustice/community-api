@@ -39,11 +39,8 @@ public class OffenderAddress {
     private boolean softDeleted;
 
     @ManyToOne
-    @JoinColumn(name = "ADDRESS_STATUS_ID", insertable = false, updatable = false)
+    @JoinColumn(name = "ADDRESS_STATUS_ID")
     private StandardReference addressStatus;
-
-    @Column(name = "ADDRESS_STATUS_ID")
-    private Long addressStatusID;
 
     @Column(name = "NO_FIXED_ABODE")
     private String noFixedAbode;

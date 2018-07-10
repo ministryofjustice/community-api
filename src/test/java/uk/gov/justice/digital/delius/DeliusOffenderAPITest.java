@@ -19,23 +19,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.justice.digital.delius.data.api.AccessLimitation;
-import uk.gov.justice.digital.delius.data.api.Count;
-import uk.gov.justice.digital.delius.data.api.DocumentMeta;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
-import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
+import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.jpa.national.entity.Exclusion;
 import uk.gov.justice.digital.delius.jpa.national.entity.Restriction;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.national.repository.UserRepository;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
-import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAddress;
+import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Officer;
-import uk.gov.justice.digital.delius.jpa.standard.entity.PartitionArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
-import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.user.UserData;
@@ -44,17 +36,13 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -216,7 +204,15 @@ public class DeliusOffenderAPITest {
     @Test
     public void lookupKnownOffenderCRNDetailGivesFullFatOffender() {
 
-        Mockito.when(offenderRepository.findByCrn(eq("CRN123"))).thenReturn(Optional.of(anOffender()));
+        OffenderAddress mainAddress = OffenderAddress.builder()
+            .streetName("Foo Street")
+            .addressStatus(StandardReference.builder()
+                            .codeValue("M")
+                            .codeDescription("Main address").build())
+            .build();
+        Offender offender = anOffender();
+        offender.setOffenderAddresses(asList(mainAddress));
+        Mockito.when(offenderRepository.findByCrn(eq("CRN123"))).thenReturn(Optional.of(offender));
 
         OffenderDetail offenderDetail =
                 given()
@@ -231,6 +227,11 @@ public class DeliusOffenderAPITest {
 
         assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
         assertThat(offenderDetail.getContactDetails().getAddresses()).isNotEmpty();
+
+        Address address = offenderDetail.getContactDetails().getAddresses().get(0);
+        assertThat(address.getStreetName()).isEqualTo("Foo Street");
+        assertThat(address.getStatus().getCode()).isEqualTo("M");
+        assertThat(address.getStatus().getDescription()).isEqualTo("Main address");
     }
 
     private Offender anOffender() {

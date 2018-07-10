@@ -41,7 +41,7 @@ SPRING_LDAP_URLS=ldap://<ldap_addr>:<ldap_port> SPRING_LDAP_USERNAME=cn=orcladmi
 ```
 
 ### Additional configuration
-The application is conigured with conventional Spring parameters.
+The application is configured with conventional Spring parameters.
 The Spring documentation can be found here:
 
 https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
