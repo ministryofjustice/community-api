@@ -19,15 +19,24 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.justice.digital.delius.data.api.*;
+import uk.gov.justice.digital.delius.data.api.AccessLimitation;
+import uk.gov.justice.digital.delius.data.api.Address;
+import uk.gov.justice.digital.delius.data.api.Count;
+import uk.gov.justice.digital.delius.data.api.DocumentMeta;
+import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.jpa.national.entity.Exclusion;
 import uk.gov.justice.digital.delius.jpa.national.entity.Restriction;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.national.repository.UserRepository;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAddress;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Officer;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PartitionArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.user.UserData;
@@ -36,7 +45,12 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
@@ -210,8 +224,8 @@ public class DeliusOffenderAPITest {
                             .codeValue("M")
                             .codeDescription("Main address").build())
             .build();
-        Offender offender = anOffender();
-        offender.setOffenderAddresses(asList(mainAddress));
+        Offender offender = anOffender().toBuilder()
+            .offenderAddresses(asList(mainAddress)).build();
         Mockito.when(offenderRepository.findByCrn(eq("CRN123"))).thenReturn(Optional.of(offender));
 
         OffenderDetail offenderDetail =
@@ -240,8 +254,8 @@ public class DeliusOffenderAPITest {
         OffenderAddress mainAddress = OffenderAddress.builder()
             .streetName("Foo Street")
             .build();
-        Offender offender = anOffender();
-        offender.setOffenderAddresses(asList(mainAddress));
+        Offender offender = anOffender().toBuilder()
+            .offenderAddresses(asList(mainAddress)).build();
         Mockito.when(offenderRepository.findByCrn(eq("CRN123"))).thenReturn(Optional.of(offender));
 
         OffenderDetail offenderDetail =
