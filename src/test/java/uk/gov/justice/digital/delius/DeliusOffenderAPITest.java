@@ -235,7 +235,7 @@ public class DeliusOffenderAPITest {
     }
 
     @Test
-    public void lookupKnownOffenderCRNDetailGivesFullFatOffender_noAddressStatusResultsInNullStatus() {
+    public void lookupKnownOffenderCRNDetailGivesFullFatOffenderWithANullAddressStatus() {
 
         OffenderAddress mainAddress = OffenderAddress.builder()
             .streetName("Foo Street")
