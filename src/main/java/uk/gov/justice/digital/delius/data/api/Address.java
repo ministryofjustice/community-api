@@ -22,4 +22,5 @@ public class Address {
     private String county;
     private String postcode;
     private String telephoneNumber;
+    private KeyValue status;
 }

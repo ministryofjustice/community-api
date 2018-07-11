@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.data.api.AccessLimitation;
+import uk.gov.justice.digital.delius.data.api.Address;
 import uk.gov.justice.digital.delius.data.api.Count;
 import uk.gov.justice.digital.delius.data.api.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
@@ -55,6 +56,7 @@ import java.util.stream.LongStream;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -216,7 +218,15 @@ public class DeliusOffenderAPITest {
     @Test
     public void lookupKnownOffenderCRNDetailGivesFullFatOffender() {
 
-        Mockito.when(offenderRepository.findByCrn(eq("CRN123"))).thenReturn(Optional.of(anOffender()));
+        OffenderAddress mainAddress = OffenderAddress.builder()
+            .streetName("Foo Street")
+            .addressStatus(StandardReference.builder()
+                            .codeValue("M")
+                            .codeDescription("Main address").build())
+            .build();
+        Offender offender = anOffender().toBuilder()
+            .offenderAddresses(asList(mainAddress)).build();
+        Mockito.when(offenderRepository.findByCrn(eq("CRN123"))).thenReturn(Optional.of(offender));
 
         OffenderDetail offenderDetail =
                 given()
@@ -231,6 +241,40 @@ public class DeliusOffenderAPITest {
 
         assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
         assertThat(offenderDetail.getContactDetails().getAddresses()).isNotEmpty();
+
+        Address address = offenderDetail.getContactDetails().getAddresses().get(0);
+        assertThat(address.getStreetName()).isEqualTo("Foo Street");
+        assertThat(address.getStatus().getCode()).isEqualTo("M");
+        assertThat(address.getStatus().getDescription()).isEqualTo("Main address");
+    }
+
+    @Test
+    public void lookupKnownOffenderCRNDetailGivesFullFatOffenderWithANullAddressStatus() {
+
+        OffenderAddress mainAddress = OffenderAddress.builder()
+            .streetName("Foo Street")
+            .build();
+        Offender offender = anOffender().toBuilder()
+            .offenderAddresses(asList(mainAddress)).build();
+        Mockito.when(offenderRepository.findByCrn(eq("CRN123"))).thenReturn(Optional.of(offender));
+
+        OffenderDetail offenderDetail =
+                given()
+                        .header("Authorization", aValidToken())
+                        .when()
+                        .get("/offenders/crn/CRN123/all")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .as(OffenderDetail.class);
+
+        assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
+        assertThat(offenderDetail.getContactDetails().getAddresses()).isNotEmpty();
+
+        Address address = offenderDetail.getContactDetails().getAddresses().get(0);
+        assertThat(address.getStreetName()).isEqualTo("Foo Street");
+        assertThat(address.getStatus()).isNull();
     }
 
     private Offender anOffender() {
