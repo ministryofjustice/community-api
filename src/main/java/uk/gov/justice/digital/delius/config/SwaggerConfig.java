@@ -73,8 +73,8 @@ public class SwaggerConfig {
 
     private Contact contactInfo() {
         return new Contact(
-                "API Accelerator Team",
+                "Benezet IT Ltd",
                 "",
-                "api-accelerator-gro*up@digital.justice.gov.uk");
+                "hmpps.enquiries@benezet.co.uk");
     }
 }
