@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @RestController
 @Slf4j
-@Api(description = "Offender court resources", tags = "Offender Court")
+@Api(description = "Court resources", tags = "Court")
 public class CourtController {
 
     private final OffenderService offenderService;
@@ -33,7 +33,7 @@ public class CourtController {
         this.courtAppearanceService = courtAppearanceService;
     }
 
-    @RequestMapping(value = "offender/crn/{crn}/courtAppearances", method = RequestMethod.GET)
+    @RequestMapping(value = "offenders/crn/{crn}/courtAppearances", method = RequestMethod.GET)
     @JwtValidation
     public ResponseEntity<List<CourtAppearance>> getOffenderCourtAppearances(final @RequestHeader HttpHeaders httpHeaders,
                                                                              final @PathVariable("crn") String crn) {
