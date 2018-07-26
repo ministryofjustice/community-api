@@ -275,7 +275,7 @@ public class ContactAPITest {
     }
 
     @Test
-    public void contactsByOffenderIdMustHaveVaidJwt() {
+    public void contactsByOffenderIdMustHaveValidJwt() {
         given()
                 .when()
                 .queryParam("to", now.toString())
@@ -286,7 +286,7 @@ public class ContactAPITest {
     }
 
     @Test
-    public void contactsByCrnMustHaveVaidJwt() {
+    public void contactsByCrnMustHaveValidJwt() {
         given()
                 .when()
                 .queryParam("to", now.toString())

@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    data: 'classpath:DEV_DATA.sql'
+
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+
+  h2:
+    console:
+      enabled: true
