@@ -9,8 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.sql.Time;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -29,22 +28,22 @@ public class CourtReport {
     private CourtAppearance courtAppearance;
 
     @Column(name = "DATE_REQUESTED")
-    private Time dateRequested;
+    private LocalDateTime dateRequested;
 
     @Column(name = "DATE_REQUIRED")
-    private Time dateRequired;
+    private LocalDateTime dateRequired;
 
     @Column(name = "ALLOCATION_DATE")
-    private Time allocationDate;
+    private LocalDateTime allocationDate;
 
     @Column(name = "COMPLETED_DATE")
-    private Time completedDate;
+    private LocalDateTime completedDate;
 
     @Column(name = "SENT_TO_COURT_DATE")
-    private Time sentToCourtDate;
+    private LocalDateTime sentToCourtDate;
 
     @Column(name = "RECEIVED_BY_COURT_DATE")
-    private Time receivedByCourtDate;
+    private LocalDateTime receivedByCourtDate;
 
     @Column(name = "VIDEO_LINK")
     private String videoLink;
@@ -89,10 +88,10 @@ public class CourtReport {
     private String section178;
 
     @Column(name = "CREATED_DATETIME")
-    private LocalDate createdDatetime;
+    private LocalDateTime createdDatetime;
 
     @Column(name = "LAST_UPDATED_DATETIME")
-    private LocalDate lastUpdatedDatetime;
+    private LocalDateTime lastUpdatedDatetime;
 
     @Column(name = "COURT_REPORT_TYPE_ID")
     private Long courtReportTypeId;

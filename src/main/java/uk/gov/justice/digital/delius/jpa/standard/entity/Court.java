@@ -6,7 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.sql.Time;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -59,13 +59,13 @@ public class Court {
     private Long courtTypeId;
 
     @Column(name = "CREATED_DATETIME")
-    private Time createdDatetime;
+    private LocalDateTime createdDatetime;
 
     @Column(name = "CREATED_BY_USER_ID")
     private Long createdByUserId;
 
     @Column(name = "LAST_UPDATED_DATETIME")
-    private Time lastUpdatedDatetime;
+    private LocalDateTime lastUpdatedDatetime;
 
     @Column(name = "LAST_UPDATED_USER_ID")
     private Long lastUpdatedUserId;

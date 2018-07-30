@@ -125,7 +125,7 @@ public class ProbationAreaTransformer {
                 .orElse(null);
     }
 
-    public Boolean ynToBoolean(String yn) {
+    public static Boolean ynToBoolean(String yn) {
         return Optional.ofNullable(yn).map("Y"::equalsIgnoreCase).orElse(null);
     }
 

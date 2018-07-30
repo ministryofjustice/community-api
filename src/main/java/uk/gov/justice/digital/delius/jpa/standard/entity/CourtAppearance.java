@@ -9,8 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.sql.Time;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -23,7 +22,7 @@ public class CourtAppearance {
     private Long courtAppearanceId;
 
     @Column(name = "APPEARANCE_DATE")
-    private LocalDate appearanceDate;
+    private LocalDateTime appearanceDate;
 
     @Column(name = "CROWN_COURT_CALENDAR_NUMBER")
     private String crownCourtCalendarNumber;
@@ -72,13 +71,13 @@ public class CourtAppearance {
     private Long createdByUserId;
 
     @Column(name = "CREATED_DATETIME")
-    private Time createdDatetime;
+    private LocalDateTime createdDatetime;
 
     @Column(name = "LAST_UPDATED_USER_ID")
     private Long lastUpdatedUserId;
 
     @Column(name = "LAST_UPDATED_DATETIME")
-    private Time lastUpdatedDatetime;
+    private LocalDateTime lastUpdatedDatetime;
 
     @Column(name = "TRAINING_SESSION_ID")
     private Long trainingSessionId;
