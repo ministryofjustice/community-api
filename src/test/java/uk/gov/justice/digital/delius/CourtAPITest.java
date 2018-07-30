@@ -59,6 +59,10 @@ public class CourtAPITest {
         ));
 
         when(offenderService.offenderIdOfCrn("crn1")).thenReturn(Optional.of(1L));
+        when(offenderService.offenderIdOfNomsNumber("noms1")).thenReturn(Optional.of(1L));
+        when(offenderService.getOffenderByOffenderId(1L))
+            .thenReturn(Optional.of(OffenderDetail.builder().offenderId(1L).build()));
+
         when(offenderService.getOffenderByOffenderId(1L))
             .thenReturn(Optional.of(OffenderDetail.builder().offenderId(1L).build()));
 
@@ -73,6 +77,46 @@ public class CourtAPITest {
             .header("Authorization", aValidToken())
             .when()
             .get("offenders/crn/crn1/courtAppearances")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(uk.gov.justice.digital.delius.data.api.CourtAppearance[].class);
+
+        assertThat(courtAppearances).hasSize(2);
+        assertThat(courtAppearances[0].getCourt()).isNotNull();
+        assertThat(courtAppearances[1].getCourt()).isNotNull();
+        assertThat(courtAppearances[0].getCourtReports()).isNotNull();
+        assertThat(courtAppearances[1].getCourtReports()).isNotNull();
+    }
+
+    @Test
+    public void canGetCourtAppearancesByNoms() {
+
+        uk.gov.justice.digital.delius.data.api.CourtAppearance[] courtAppearances = given()
+            .header("Authorization", aValidToken())
+            .when()
+            .get("offenders/nomsNumber/noms1/courtAppearances")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(uk.gov.justice.digital.delius.data.api.CourtAppearance[].class);
+
+        assertThat(courtAppearances).hasSize(2);
+        assertThat(courtAppearances[0].getCourt()).isNotNull();
+        assertThat(courtAppearances[1].getCourt()).isNotNull();
+        assertThat(courtAppearances[0].getCourtReports()).isNotNull();
+        assertThat(courtAppearances[1].getCourtReports()).isNotNull();
+    }
+
+    @Test
+    public void canGetCourtAppearancesByOffenderId() {
+
+        uk.gov.justice.digital.delius.data.api.CourtAppearance[] courtAppearances = given()
+            .header("Authorization", aValidToken())
+            .when()
+            .get("offenders/offenderId/1/courtAppearances")
             .then()
             .statusCode(200)
             .extract()
