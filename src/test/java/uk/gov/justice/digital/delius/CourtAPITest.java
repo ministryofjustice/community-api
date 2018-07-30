@@ -16,6 +16,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.data.api.Court;
 import uk.gov.justice.digital.delius.data.api.CourtAppearance;
+import uk.gov.justice.digital.delius.data.api.CourtReport;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.service.CourtAppearanceService;
@@ -71,7 +72,7 @@ public class CourtAPITest {
         uk.gov.justice.digital.delius.data.api.CourtAppearance[] courtAppearances = given()
             .header("Authorization", aValidToken())
             .when()
-            .get("offender/crn/crn1/courtAppearances")
+            .get("offenders/crn/crn1/courtAppearances")
             .then()
             .statusCode(200)
             .extract()
@@ -81,7 +82,8 @@ public class CourtAPITest {
         assertThat(courtAppearances).hasSize(2);
         assertThat(courtAppearances[0].getCourt()).isNotNull();
         assertThat(courtAppearances[1].getCourt()).isNotNull();
-        // TODO court reports hanging off courtAppearances??
+        assertThat(courtAppearances[0].getCourtReports()).isNotNull();
+        assertThat(courtAppearances[1].getCourtReports()).isNotNull();
     }
 
     @Test
@@ -91,7 +93,7 @@ public class CourtAPITest {
         given()
             .header("Authorization", aValidToken())
             .when()
-            .get("offender/crn/notFoundCrn/courtAppearances")
+            .get("offenders/crn/notFoundCrn/courtAppearances")
             .then()
             .statusCode(404);
     }
@@ -100,7 +102,7 @@ public class CourtAPITest {
     public void courtAppearancesByCrnMustHaveValidJwt() {
         given()
             .when()
-            .get("offender/crn/crn1/courtAppearances")
+            .get("offenders/crn/crn1/courtAppearances")
             .then()
             .statusCode(401);
     }
@@ -109,6 +111,7 @@ public class CourtAPITest {
         return CourtAppearance.builder()
             .courtAppearanceId(id)
             .court(Court.builder().build())
+            .courtReports(ImmutableList.of(CourtReport.builder().build()))
             .build();
     }
 

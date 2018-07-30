@@ -7,9 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Entity
@@ -83,4 +85,7 @@ public class CourtAppearance {
 
     @Column(name = "OFFENDER_ID")
     private Long offenderId;
+
+    @OneToMany(mappedBy = "courtAppearance")
+    private List<CourtReport> courtReports;
 }

@@ -3,6 +3,7 @@ package uk.gov.justice.digital.delius.transformers;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.Court;
 import uk.gov.justice.digital.delius.data.api.CourtAppearance;
+import uk.gov.justice.digital.delius.data.api.CourtReport;
 
 import java.util.Comparator;
 import java.util.List;
@@ -23,7 +24,15 @@ public class CourtAppearanceTransformer {
             .courtAppearanceId(courtAppearance.getCourtAppearanceId())
             .appearanceDate(courtAppearance.getAppearanceDate())
             .court(courtOf(courtAppearance.getCourt()))
+            .courtReports(courtReportsOf(courtAppearance.getCourtReports()))
             .build();
+    }
+
+    private List<CourtReport> courtReportsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport> courtReports) {
+        return courtReports.stream()
+            .map(report -> CourtReport.builder()
+                .courtReportId(report.getCourtReportId()).build())
+            .collect(Collectors.toList());
     }
 
     private Court courtOf(uk.gov.justice.digital.delius.jpa.standard.entity.Court court) {
