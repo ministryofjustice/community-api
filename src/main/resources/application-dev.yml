@@ -1,6 +1,4 @@
 spring:
-  datasource:
-    data: 'classpath:DEV_DATA.sql'
 
   jpa:
     properties:
