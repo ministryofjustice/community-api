@@ -62,7 +62,7 @@ public class Contact {
     private LocalDateTime contactEndTime;
 
     @Column(name = "SOFT_DELETED")
-    private Boolean softDeleted;
+    private Long softDeleted;
 
     @Column(name = "ALERT_ACTIVE")
     private String alertActive;

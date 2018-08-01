@@ -22,8 +22,8 @@ public class Contact {
     private String notes;
     private LocalDateTime contactStartTime;
     private LocalDateTime contactEndTime;
-    private boolean softDeleted;
-    private boolean alertActive;
+    private Boolean softDeleted;
+    private Boolean alertActive;
     private LocalDateTime createdDateTime;
     private LocalDateTime lastUpdatedDateTime;
     private KeyValue contactOutcomeType;

@@ -26,18 +26,21 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.Comparator.comparing;
+import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
+import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
 
 @Component
 public class ContactTransformer {
 
     public List<Contact> contactsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.Contact> contacts) {
         return contacts.stream()
-                .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Contact::getCreatedDateTime))
+                .sorted(comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Contact::getCreatedDateTime))
                 .map(this::contactOf)
                 .collect(Collectors.toList());
     }
@@ -45,7 +48,7 @@ public class ContactTransformer {
     private uk.gov.justice.digital.delius.data.api.Contact contactOf(uk.gov.justice.digital.delius.jpa.standard.entity.Contact contact) {
         return uk.gov.justice.digital.delius.data.api.Contact.builder()
                 .eventId(eventIdOf(contact.getEvent()))
-                .alertActive("Y".equals(contact.getAlertActive()))
+                .alertActive(ynToBoolean(contact.getAlertActive()))
                 .contactEndTime(contact.getContactEndTime())
                 .contactId(contact.getContactId())
                 .contactOutcomeType(contactOutcomeTypeOf(contact.getContactOutcomeType()))
@@ -59,7 +62,7 @@ public class ContactTransformer {
                 .notes(contact.getNotes())
                 .nsi(nsiOf(contact.getNsi()))
                 .requirement(requirementOf(contact.getRequirement()))
-                .softDeleted(contact.getSoftDeleted())
+                .softDeleted(zeroOneToBoolean(contact.getSoftDeleted()))
                 .probationArea(probationAreaOf(contact.getProbationArea()))
                 .partitionArea(partitionAreaOf(contact.getPartitionArea()))
                 .providerEmployee(providerEmployeeOf(contact.getProviderEmployee()))
@@ -78,10 +81,6 @@ public class ContactTransformer {
 
     private Long eventIdOf(Event event) {
         return Optional.ofNullable(event).map(Event::getEventId).orElse(null);
-    }
-
-    private Boolean ynToBoolean(String yn) {
-        return Optional.ofNullable(yn).map("Y"::equals).orElse(null);
     }
 
     private KeyValue teamOf(Team team) {
@@ -137,7 +136,7 @@ public class ContactTransformer {
 
     private uk.gov.justice.digital.delius.data.api.Requirement requirementOf(Requirement requirement) {
         return Optional.ofNullable(requirement).map(req -> uk.gov.justice.digital.delius.data.api.Requirement.builder()
-                .active(req.getActiveFlag() == 1)
+                .active(zeroOneToBoolean(req.getActiveFlag()))
                 .adRequirementTypeMainCategory(adRequirementMainCategoryOf(req.getAdRequirementTypeMainCategory()))
                 .adRequirementTypeSubCategory(adRequirementSubCategoryOf(req.getAdRequirementTypeSubCategory()))
                 .commencementDate(req.getCommencementDate())
@@ -219,7 +218,7 @@ public class ContactTransformer {
 
     private uk.gov.justice.digital.delius.data.api.LicenceCondition licenceConditionOf(LicenceCondition licenceCondition) {
         return Optional.ofNullable(licenceCondition).map(lc -> uk.gov.justice.digital.delius.data.api.LicenceCondition.builder()
-                .active(lc.getActiveFlag() == 1)
+                .active(zeroOneToBoolean(lc.getActiveFlag()))
                 .commencementDate(lc.getCommencementDate())
                 .commencementNotes(lc.getCommencementNotes())
                 .createdDateTime(lc.getCreatedDateTime())

@@ -16,7 +16,7 @@ public class LicenceCondition {
     private LocalDate terminationDate;
     private String terminationNotes;
     private LocalDateTime createdDateTime;
-    private boolean active;
+    private Boolean active;
     private KeyValue licenceConditionTypeMainCat;
 
 }

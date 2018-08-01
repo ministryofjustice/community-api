@@ -13,8 +13,8 @@ public class Event {
     private Long eventId;
     private String notes;
     @ApiModelProperty(required = true)
-    private boolean active;
+    private Boolean active;
     @ApiModelProperty(required = true)
-    private boolean inBreach;
+    private Boolean inBreach;
     private List<Contact> contacts;
 }

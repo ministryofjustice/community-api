@@ -42,7 +42,7 @@ public class OffenderManager {
     private Long offenderId;
 
     @Column(name = "SOFT_DELETED")
-    private Integer softDeleted;
+    private Long softDeleted;
 
     @JoinColumn(name = "PROVIDER_EMPLOYEE_ID")
     @OneToOne
@@ -71,7 +71,7 @@ public class OffenderManager {
     private AllTeam trustProviderTeam;
 
     @Column(name = "ACTIVE_FLAG")
-    private Integer activeFlag;
+    private Long activeFlag;
 
     @Column(name = "ALLOCATION_DATE")
     private Timestamp allocationDate;

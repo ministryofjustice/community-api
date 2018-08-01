@@ -74,8 +74,8 @@ public class OffenderController {
 
     @RequestMapping(value = "/offenders/crn/{crn}", method = RequestMethod.GET)
     @JwtValidation
-    public ResponseEntity<OffenderDetailSummary> getOffenderSumaryByCrn(final @RequestHeader HttpHeaders httpHeaders,
-                                                                        final @PathVariable("crn") String crn) {
+    public ResponseEntity<OffenderDetailSummary> getOffenderSummaryByCrn(final @RequestHeader HttpHeaders httpHeaders,
+                                                                         final @PathVariable("crn") String crn) {
         Optional<OffenderDetailSummary> offender = offenderService.getOffenderSummaryByCrn(crn);
         return offender.map(
                 offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(offenderDetailSummaryNotFound());

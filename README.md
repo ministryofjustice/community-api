@@ -13,7 +13,7 @@ https://circleci.com/gh/noms-digital-studio/delius-offender-api
 ./gradlew build
 ```
 
-### Assessmble the app
+### Assemble the app
 ```
 ./gradlew assemble
 ```
@@ -39,6 +39,15 @@ SPRING_DATASOURCE_URL=jdbc:oracle:thin:@<VM Oracle IP address>:1521:DNDA SPRING_
 ```
 SPRING_LDAP_URLS=ldap://<ldap_addr>:<ldap_port> SPRING_LDAP_USERNAME=cn=orcladmin SPRING_LDAP_PASSWORD=<secret> java -jar build/libs/delius-offender-api.jar
 ```
+
+### Start the app with the DEV profile. In this mode the H2 database contains a small data set
+```
+SPRING_PROFILES_ACTIVE=dev ./gradlew bootRun
+```
+
+H2 Web console - <http://localhost:8080/api/h2-console>
+
+JDBC URL: ```jdbc:h2:mem:testdb``` 
 
 ### Additional configuration
 The application is configured with conventional Spring parameters.

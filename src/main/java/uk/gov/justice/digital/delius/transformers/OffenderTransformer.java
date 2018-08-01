@@ -35,6 +35,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
+import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
+
 @Component
 public class OffenderTransformer {
 
@@ -56,7 +59,7 @@ public class OffenderTransformer {
         return OffenderLanguages.builder()
                 .primaryLanguage(Optional.ofNullable(offender.getLanguage()).map(StandardReference::getCodeDescription).orElse(null))
                 .languageConcerns(Optional.ofNullable(offender.getLanguageConcerns()).orElse(null))
-                .requiresInterpreter(Optional.ofNullable(offender.getInterpreterRequired()).map("Y"::equals).orElse(null))
+                .requiresInterpreter(ynToBoolean(offender.getInterpreterRequired()))
                 .build();
     }
 
@@ -105,7 +108,7 @@ public class OffenderTransformer {
                 .postcode(address.getPostcode())
                 .telephoneNumber(address.getTelephoneNumber())
                 .notes(address.getNotes())
-                .noFixedAbode(Optional.ofNullable(address.getNoFixedAbode()).map("Y"::equalsIgnoreCase).orElse(null))
+                .noFixedAbode(ynToBoolean(address.getNoFixedAbode()))
                 .from(address.getStartDate())
                 .to(address.getEndDate())
                 .status(Optional.ofNullable(address.getAddressStatus()).map(status ->
@@ -118,7 +121,7 @@ public class OffenderTransformer {
 
     private ContactDetails contactDetailsOf(Offender offender) {
         return ContactDetails.builder()
-                .allowSMS(Optional.ofNullable(offender.getAllowSMS()).map("Y"::equals).orElse(null))
+                .allowSMS(ynToBoolean(offender.getAllowSMS()))
                 .emailAddresses(emailAddressesOf(offender))
                 .phoneNumbers(phoneNumbersOf(offender))
                 .addresses(addressesOf(offender))
@@ -127,7 +130,7 @@ public class OffenderTransformer {
 
     private ContactDetailsSummary contactDetailsSummaryOf(Offender offender) {
         return ContactDetailsSummary.builder()
-                .allowSMS(Optional.ofNullable(offender.getAllowSMS()).map("Y"::equals).orElse(null))
+                .allowSMS(ynToBoolean(offender.getAllowSMS()))
                 .emailAddresses(emailAddressesOf(offender))
                 .phoneNumbers(phoneNumbersOf(offender))
                 .build();
@@ -171,11 +174,11 @@ public class OffenderTransformer {
                 .otherIds(idsOf(offender))
                 .offenderProfile(offenderProfileOf(offender))
                 .offenderAliases(offenderAliasesOf(offender.getOffenderAliases()))
-                .softDeleted(offender.getSoftDeleted())
+                .softDeleted(zeroOneToBoolean(offender.getSoftDeleted()))
                 .currentDisposal(Optional.ofNullable(offender.getCurrentDisposal()).map(Object::toString).orElse(null))
                 .partitionArea(Optional.ofNullable(offender.getPartitionArea()).map(PartitionArea::getArea).orElse(null))
-                .currentExclusion(offender.getCurrentExclusion() == 1)
-                .currentRestriction(offender.getCurrentRestriction() == 1)
+                .currentExclusion(zeroOneToBoolean(offender.getCurrentExclusion()))
+                .currentRestriction(zeroOneToBoolean(offender.getCurrentRestriction()))
                 .offenderManagers(offenderManagersOf(offender.getOffenderManagers()))
                 .build();
     }
@@ -193,11 +196,11 @@ public class OffenderTransformer {
                 .contactDetails(contactDetailsSummaryOf(offender))
                 .otherIds(idsOf(offender))
                 .offenderProfile(offenderProfileOf(offender))
-                .softDeleted(offender.getSoftDeleted())
+                .softDeleted(zeroOneToBoolean(offender.getSoftDeleted()))
                 .currentDisposal(Optional.ofNullable(offender.getCurrentDisposal()).map(Object::toString).orElse(null))
                 .partitionArea(Optional.ofNullable(offender.getPartitionArea()).map(PartitionArea::getArea).orElse(null))
-                .currentExclusion(offender.getCurrentExclusion() == 1)
-                .currentRestriction(offender.getCurrentRestriction() == 1)
+                .currentExclusion(zeroOneToBoolean(offender.getCurrentExclusion()))
+                .currentRestriction(zeroOneToBoolean(offender.getCurrentRestriction()))
                 .build();
     }
 
@@ -221,7 +224,7 @@ public class OffenderTransformer {
     private OffenderManager offenderManagerOf(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager offenderManager) {
         return OffenderManager.builder()
                 .partitionArea(partitionAreaOf(offenderManager))
-                .softDeleted(Integer.valueOf(1).equals(offenderManager.getSoftDeleted()))
+                .softDeleted(zeroOneToBoolean(offenderManager.getSoftDeleted()))
                 .trustOfficer(Optional.ofNullable(offenderManager.getOfficer())
                         .map(o -> humanOf(o.getForename(), o.getForename2(), o.getSurname()))
                         .orElse(null))
@@ -229,7 +232,7 @@ public class OffenderTransformer {
                 .providerEmployee(contactTransformer.providerEmployeeOf(offenderManager.getProviderEmployee()))
                 .team(teamOf(offenderManager))
                 .probationArea(probationAreaOf(offenderManager.getProbationArea()))
-                .active(Integer.valueOf(1).equals(offenderManager.getActiveFlag()))
+                .active(zeroOneToBoolean(offenderManager.getActiveFlag()))
                 .fromDate(localDateOf(offenderManager.getAllocationDate()))
                 .toDate(localDateOf(offenderManager.getEndDate()))
                 .build();
