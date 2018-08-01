@@ -19,6 +19,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
+import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
+
 @Component
 public class ProbationAreaTransformer {
 
@@ -44,7 +47,7 @@ public class ProbationAreaTransformer {
                 .district(districtOf(team.getDistrict()))
                 .borough(boroughOf(team.getDistrict()))
                 .localDeliveryUnit(localDeliveryUnitOf(team.getLocalDeliveryUnit()))
-                .isPrivate(team.getPrivateFlag().equals(1L))
+                .isPrivate(zeroOneToBoolean(team.getPrivateFlag()))
                 .scProvider(scProviderOf(team))
                 .teamId(team.getTeamId())
                 .build()).collect(Collectors.toList());
@@ -113,7 +116,7 @@ public class ProbationAreaTransformer {
                 .establishmentType(establishmentTypeOf(inst.getEstablishmentType()))
                 .institutionId(inst.getInstitutionId())
                 .institutionName(inst.getInstitutionName())
-                .isPrivate(Optional.ofNullable(inst.getPrivateFlag()).map(pf -> pf.equals(1L)).orElse(null))
+                .isPrivate(zeroOneToBoolean(inst.getPrivateFlag()))
                 .build()).orElse(null);
     }
 
@@ -123,10 +126,6 @@ public class ProbationAreaTransformer {
                 .description(et.getCodeDescription())
                 .build())
                 .orElse(null);
-    }
-
-    public static Boolean ynToBoolean(String yn) {
-        return Optional.ofNullable(yn).map("Y"::equalsIgnoreCase).orElse(null);
     }
 
     private KeyValue organisationOf(Organisation organisation) {

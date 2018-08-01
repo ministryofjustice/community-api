@@ -17,7 +17,7 @@ public class CourtAppearance {
     private Long eventId;
     private Long teamId;
     private Long staffId;
-    private Long softDeleted;
+    private Boolean softDeleted;
     private Court court;
     private Long appearanceTypeId;
     private Long pleaId;

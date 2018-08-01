@@ -36,7 +36,7 @@ public class OffenderAddress {
     private LocalDate endDate;
 
     @Column(name = "SOFT_DELETED")
-    private boolean softDeleted;
+    private Long softDeleted;
 
     @ManyToOne
     @JoinColumn(name = "ADDRESS_STATUS_ID")

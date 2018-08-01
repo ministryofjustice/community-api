@@ -17,7 +17,7 @@ public class Requirement {
     private LocalDate terminationDate;
     private LocalDate expectedStartDate;
     private LocalDate expectedEndDate;
-    private boolean active;
+    private Boolean active;
     private KeyValue requirementTypeSubCategory;
     private KeyValue requirementTypeMainCategory;
     private KeyValue adRequirementTypeMainCategory;

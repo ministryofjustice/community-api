@@ -38,7 +38,7 @@ public class OffenderAlias {
     private String secondName;
 
     @Column(name = "SOFT_DELETED")
-    private boolean softDeleted;
+    private Long softDeleted;
 
     private String surname;
 

@@ -9,7 +9,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static uk.gov.justice.digital.delius.transformers.ProbationAreaTransformer.ynToBoolean;
+import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
+import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
 
 @Component
 public class CourtAppearanceTransformer {
@@ -31,7 +32,7 @@ public class CourtAppearanceTransformer {
             .eventId(courtAppearance.getEventId())
             .teamId(courtAppearance.getTeamId())
             .staffId(courtAppearance.getStaffId())
-            .softDeleted(courtAppearance.getSoftDeleted())
+            .softDeleted(zeroOneToBoolean(courtAppearance.getSoftDeleted()))
             .court(courtOf(courtAppearance.getCourt()))
             .appearanceTypeId(courtAppearance.getAppearanceTypeId())
             .pleaId(courtAppearance.getPleaId())
@@ -62,7 +63,7 @@ public class CourtAppearanceTransformer {
                 .publicProtection(ynToBoolean(report.getPublicProtection()))
                 .reparation(ynToBoolean(report.getReparation()))
                 .recommendationsNotStated(ynToBoolean(report.getRecommendationsNotStated()))
-                .softDeleted(report.getSoftDeleted())
+                .softDeleted(zeroOneToBoolean(report.getSoftDeleted()))
                 .levelOfSeriousnessId(report.getLevelOfSeriousnessId())
                 .deliveredReportReasonId(report.getDeliveredReportReasonId())
                 .section178(ynToBoolean(report.getSection178()))
@@ -72,7 +73,7 @@ public class CourtAppearanceTransformer {
                 .deliveredCourtReportTypeId(report.getDeliveredCourtReportTypeId())
                 .offenderId(report.getOffenderId())
                 .requiredByCourtId(report.getRequiredByCourtId())
-                .pendingTransfer(report.getPendingTransfer())
+                .pendingTransfer(zeroOneToBoolean(report.getPendingTransfer()))
                 .build())
             .collect(Collectors.toList());
     }

@@ -20,11 +20,8 @@ public class CourtReport {
     @Column(name = "COURT_REPORT_ID")
     private Long courtReportId;
 
-    @Column(name = "COURT_APPEARANCE_ID")
-    private Long courtAppearanceId;
-
     @ManyToOne
-    @JoinColumn(name = "COURT_APPEARANCE_ID", referencedColumnName="COURT_APPEARANCE_ID", insertable = false, updatable = false)
+    @JoinColumn(name = "COURT_APPEARANCE_ID", referencedColumnName="COURT_APPEARANCE_ID")
     private CourtAppearance courtAppearance;
 
     @Column(name = "DATE_REQUESTED")

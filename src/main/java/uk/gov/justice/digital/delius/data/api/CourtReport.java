@@ -23,7 +23,7 @@ public class CourtReport {
     private Boolean publicProtection;
     private Boolean reparation;
     private Boolean recommendationsNotStated;
-    private Long softDeleted;
+    private Boolean softDeleted;
     private Long levelOfSeriousnessId;
     private Long deliveredReportReasonId;
     private Boolean section178;
@@ -33,5 +33,5 @@ public class CourtReport {
     private Long deliveredCourtReportTypeId;
     private Long offenderId;
     private Long requiredByCourtId;
-    private Long pendingTransfer;
+    private Boolean pendingTransfer;
 }
