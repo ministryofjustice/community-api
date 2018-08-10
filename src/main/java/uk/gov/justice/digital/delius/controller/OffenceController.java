@@ -1,0 +1,74 @@
+package uk.gov.justice.digital.delius.controller;
+
+import io.swagger.annotations.Api;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import uk.gov.justice.digital.delius.data.api.Offence;
+import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.jwt.JwtValidation;
+import uk.gov.justice.digital.delius.service.OffenceService;
+import uk.gov.justice.digital.delius.service.OffenderService;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@Slf4j
+@Api(description = "Offender offence resources", tags = "Offender offences")
+public class OffenceController {
+    private final OffenderService offenderService;
+    private final OffenceService offenceService;
+
+    @Autowired
+    public OffenceController(OffenderService offenderService, OffenceService offenceService) {
+        this.offenderService = offenderService;
+        this.offenceService = offenceService;
+    }
+
+    @RequestMapping(value = "offenders/offenderId/{offenderId}/offences", method = RequestMethod.GET)
+    @JwtValidation
+    public ResponseEntity<List<Offence>> getOffenderOffencesByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
+                                                                         final @PathVariable("offenderId") Long offenderId) {
+
+        log.info("Call to getOffenderOffencesByOffenderId");
+        Optional<OffenderDetail> maybeOffender = offenderService.getOffenderByOffenderId(offenderId);
+        return offencesResponseEntityOf(maybeOffender.map(OffenderDetail::getOffenderId));
+    }
+
+    @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/offences", method = RequestMethod.GET)
+    @JwtValidation
+    public ResponseEntity<List<Offence>> getOffenderOffencesByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
+                                                                         final @PathVariable("nomsNumber") String nomsNumber) {
+
+        log.info("Call to getOffenderOffencesByNomsNumber");
+        return offencesResponseEntityOf(offenderService.offenderIdOfNomsNumber(nomsNumber));
+    }
+
+    @RequestMapping(value = "offenders/crn/{crn}/offences", method = RequestMethod.GET)
+    @JwtValidation
+    public ResponseEntity<List<Offence>> getOffenderOffencesByCrn(final @RequestHeader HttpHeaders httpHeaders,
+                                                                  final @PathVariable("crn") String crn) {
+
+        log.info("Call to getOffenderOffencesByCrn");
+        return offencesResponseEntityOf(offenderService.offenderIdOfCrn(crn));
+    }
+
+    private ResponseEntity<List<Offence>> offencesResponseEntityOf(Optional<Long> maybeOffenderId) {
+        return maybeOffenderId
+            .map(offenderId -> new ResponseEntity<>(offenceService.offencesFor(offenderId), HttpStatus.OK))
+            .orElseGet(this::notFound);
+    }
+
+    private ResponseEntity<List<Offence>> notFound() {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+}
