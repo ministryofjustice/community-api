@@ -80,8 +80,8 @@ public class OffencesAPITest {
             .as(Offence[].class);
 
         assertThat(offences).hasSize(2);
-        assertThat(offences[0].getId()).isEqualTo(1L);
-        assertThat(offences[1].getId()).isEqualTo(2L);
+        assertThat(offences[0].getOffenceId()).isEqualTo("1");
+        assertThat(offences[1].getOffenceId()).isEqualTo("2");
         assertThat(offences[0].getDetail().getDescription()).isEqualTo("Fraud");
         assertThat(offences[1].getDetail().getDescription()).isEqualTo("Perjury");
     }
@@ -100,8 +100,8 @@ public class OffencesAPITest {
             .as(Offence[].class);
 
         assertThat(offences).hasSize(2);
-        assertThat(offences[0].getId()).isEqualTo(1L);
-        assertThat(offences[1].getId()).isEqualTo(2L);
+        assertThat(offences[0].getOffenceId()).isEqualTo("1");
+        assertThat(offences[1].getOffenceId()).isEqualTo("2");
         assertThat(offences[0].getDetail().getDescription()).isEqualTo("Fraud");
         assertThat(offences[1].getDetail().getDescription()).isEqualTo("Perjury");
     }
@@ -120,8 +120,8 @@ public class OffencesAPITest {
             .as(Offence[].class);
 
         assertThat(offences).hasSize(2);
-        assertThat(offences[0].getId()).isEqualTo(1L);
-        assertThat(offences[1].getId()).isEqualTo(2L);
+        assertThat(offences[0].getOffenceId()).isEqualTo("1");
+        assertThat(offences[1].getOffenceId()).isEqualTo("2");
         assertThat(offences[0].getDetail().getDescription()).isEqualTo("Fraud");
         assertThat(offences[1].getDetail().getDescription()).isEqualTo("Perjury");
     }
@@ -179,7 +179,7 @@ public class OffencesAPITest {
 
     private Offence anOffence(Long id, String description) {
         return Offence.builder()
-            .id(id)
+            .offenceId(id.toString())
             .detail(OffenceDetail.builder().code("001").description(description).build())
             .build();
     }

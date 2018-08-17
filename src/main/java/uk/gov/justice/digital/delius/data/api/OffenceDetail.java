@@ -1,12 +1,13 @@
 package uk.gov.justice.digital.delius.data.api;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
+@JsonPropertyOrder({"code", "description"})
 public class OffenceDetail {
-    private Long id;
     private String code;
     private String description;
     private String abbreviation;

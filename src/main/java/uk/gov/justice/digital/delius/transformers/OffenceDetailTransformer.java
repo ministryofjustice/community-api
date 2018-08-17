@@ -10,7 +10,6 @@ public class OffenceDetailTransformer {
             .abbreviation(offence.getAbbreviation())
             .cjitCode(offence.getCjitCode())
             .form20Code(offence.getForm20Code())
-            .id(offence.getOffenceId())
             .mainCategoryDescription(offence.getMainCategoryDescription())
             .mainCategoryAbbreviation(offence.getMainCategoryAbbreviation())
             .mainCategoryCode(offence.getMainCategoryCode())

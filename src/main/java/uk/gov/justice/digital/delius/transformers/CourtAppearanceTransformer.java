@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
 
@@ -17,6 +18,7 @@ public class CourtAppearanceTransformer {
 
     public List<CourtAppearance> courtAppearancesOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance> courtAppearances) {
         return courtAppearances.stream()
+            .filter(appearance -> !convertToBoolean(appearance.getSoftDeleted()))
             .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance::getAppearanceDate).reversed())
             .map(this::courtAppearanceOf)
             .collect(Collectors.toList());
@@ -32,7 +34,6 @@ public class CourtAppearanceTransformer {
             .eventId(courtAppearance.getEventId())
             .teamId(courtAppearance.getTeamId())
             .staffId(courtAppearance.getStaffId())
-            .softDeleted(zeroOneToBoolean(courtAppearance.getSoftDeleted()))
             .court(courtOf(courtAppearance.getCourt()))
             .appearanceTypeId(courtAppearance.getAppearanceTypeId())
             .pleaId(courtAppearance.getPleaId())
@@ -47,6 +48,7 @@ public class CourtAppearanceTransformer {
 
     private List<CourtReport> courtReportsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport> courtReports) {
         return courtReports.stream()
+            .filter(report -> !convertToBoolean(report.getSoftDeleted()))
             .map(report -> CourtReport.builder()
                 .courtReportId(report.getCourtReportId())
                 .dateRequested(report.getDateRequested())
@@ -63,7 +65,6 @@ public class CourtAppearanceTransformer {
                 .publicProtection(ynToBoolean(report.getPublicProtection()))
                 .reparation(ynToBoolean(report.getReparation()))
                 .recommendationsNotStated(ynToBoolean(report.getRecommendationsNotStated()))
-                .softDeleted(zeroOneToBoolean(report.getSoftDeleted()))
                 .levelOfSeriousnessId(report.getLevelOfSeriousnessId())
                 .deliveredReportReasonId(report.getDeliveredReportReasonId())
                 .section178(ynToBoolean(report.getSection178()))

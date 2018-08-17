@@ -16,10 +16,9 @@ public class MainOffenceTransformer {
         return mainOffences.stream()
             .map(mainOffence ->
                 Offence.builder()
-                    .id(mainOffence.getMainOffenceId())
+                    .offenceId(String.format("%s%d", "M", mainOffence.getMainOffenceId()))
                     .detail(detailOf(mainOffence.getOffence()))
                     .createdDatetime(mainOffence.getCreatedDatetime())
-                    .eventId(mainOffence.getEventId())
                     .lastUpdatedDatetime(mainOffence.getLastUpdatedDatetime())
                     .mainOffence(true)
                     .offenceCount(mainOffence.getOffenceCount())

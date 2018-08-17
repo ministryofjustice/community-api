@@ -10,4 +10,8 @@ class TypesTransformer {
     static Boolean zeroOneToBoolean(Long zeroOrOne) {
         return Optional.ofNullable(zeroOrOne).map(value -> value == 1).orElse(null);
     }
+
+    static boolean convertToBoolean(Long zeroOrNot) {
+        return Optional.ofNullable(zeroOrNot).map(value -> value != 0).orElse(false);
+    }
 }
