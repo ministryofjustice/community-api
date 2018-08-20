@@ -17,7 +17,6 @@ public class Offence {
     private Long offenceCount;
     private Long tics;
     private String verdict;
-    private Boolean softDeleted;
     private Long offenderId;
     private LocalDateTime createdDatetime;
     private LocalDateTime lastUpdatedDatetime;

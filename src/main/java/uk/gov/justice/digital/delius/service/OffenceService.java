@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.data.api.Offence;
+import uk.gov.justice.digital.delius.jpa.standard.entity.MainOffence;
 import uk.gov.justice.digital.delius.jpa.standard.repository.AdditionalOffenceRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.MainOffenceRepository;
 import uk.gov.justice.digital.delius.transformers.AdditionalOffenceTransformer;
@@ -11,6 +12,8 @@ import uk.gov.justice.digital.delius.transformers.MainOffenceTransformer;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
 
 @Service
 public class OffenceService {
@@ -30,12 +33,14 @@ public class OffenceService {
     }
 
     public List<Offence> offencesFor(Long offenderId) {
-        List<Offence> mainOffences = mainOffenceTransformer.offencesOf(mainOffenceRepository.findByOffenderId(offenderId));
+        List<MainOffence> mainOffences = mainOffenceRepository.findByOffenderId(offenderId);
         return mainOffences.stream()
+            .filter(mainOffence -> !convertToBoolean(mainOffence.getSoftDeleted()))
             .map(mainOffence -> {
-                List<Offence> additionalOffences = additionalOffenceTransformer.offencesOf(additionalOffenceRepository.findByEventId(offenderId));
+                List<Offence> additionalOffences =
+                    additionalOffenceTransformer.offencesOf(additionalOffenceRepository.findByEventId(mainOffence.getEventId()));
                 return ImmutableList.<Offence>builder()
-                    .add(mainOffence)
+                    .add(mainOffenceTransformer.offenceOf(mainOffence))
                     .addAll(additionalOffences)
                     .build();
             })

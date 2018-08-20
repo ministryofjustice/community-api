@@ -1,6 +1,9 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +16,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@Builder
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "COURT_APPEARANCE")
 public class CourtAppearance {
 

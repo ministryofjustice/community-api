@@ -2,7 +2,7 @@ package uk.gov.justice.digital.delius.transformers;
 
 import java.util.Optional;
 
-class TypesTransformer {
+public class TypesTransformer {
     static Boolean ynToBoolean(String yn) {
         return Optional.ofNullable(yn).map("Y"::equalsIgnoreCase).orElse(null);
     }
@@ -11,7 +11,7 @@ class TypesTransformer {
         return Optional.ofNullable(zeroOrOne).map(value -> value == 1).orElse(null);
     }
 
-    static boolean convertToBoolean(Long zeroOrNot) {
+    public static boolean convertToBoolean(Long zeroOrNot) {
         return Optional.ofNullable(zeroOrNot).map(value -> value != 0).orElse(false);
     }
 }
