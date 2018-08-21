@@ -5,10 +5,9 @@ import uk.gov.justice.digital.delius.data.api.Court;
 import uk.gov.justice.digital.delius.data.api.CourtAppearance;
 import uk.gov.justice.digital.delius.data.api.CourtReport;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
@@ -16,15 +15,7 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOn
 @Component
 public class CourtAppearanceTransformer {
 
-    public List<CourtAppearance> courtAppearancesOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance> courtAppearances) {
-        return courtAppearances.stream()
-            .filter(appearance -> !convertToBoolean(appearance.getSoftDeleted()))
-            .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance::getAppearanceDate).reversed())
-            .map(this::courtAppearanceOf)
-            .collect(Collectors.toList());
-    }
-
-    private CourtAppearance courtAppearanceOf(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance courtAppearance) {
+    public CourtAppearance courtAppearanceOf(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance courtAppearance) {
         return CourtAppearance.builder()
             .courtAppearanceId(courtAppearance.getCourtAppearanceId())
             .appearanceDate(courtAppearance.getAppearanceDate())
@@ -76,7 +67,7 @@ public class CourtAppearanceTransformer {
                 .requiredByCourtId(report.getRequiredByCourtId())
                 .pendingTransfer(zeroOneToBoolean(report.getPendingTransfer()))
                 .build())
-            .collect(Collectors.toList());
+            .collect(toList());
     }
 
     private Court courtOf(uk.gov.justice.digital.delius.jpa.standard.entity.Court court) {

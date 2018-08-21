@@ -67,8 +67,7 @@ public class AdditionalOffenceTransformerTest {
                 .build()
         );
 
-        assertThat(additionalOffenceTransformer.offencesOf(additionalOffences).get(0).getMainOffence())
-            .isFalse();
+        assertThat(additionalOffenceTransformer.offencesOf(additionalOffences).get(0).getMainOffence()).isFalse();
     }
 
 }

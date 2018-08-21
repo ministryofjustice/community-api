@@ -11,8 +11,8 @@ import uk.gov.justice.digital.delius.transformers.AdditionalOffenceTransformer;
 import uk.gov.justice.digital.delius.transformers.MainOffenceTransformer;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
 
 @Service
@@ -45,6 +45,6 @@ public class OffenceService {
                     .build();
             })
             .flatMap(List::stream)
-            .collect(Collectors.toList());
+            .collect(toList());
     }
 }

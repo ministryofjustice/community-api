@@ -5,12 +5,11 @@ import uk.gov.justice.digital.delius.data.api.Offence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalOffence;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.transformers.OffenceDetailTransformer.detailOf;
+import static uk.gov.justice.digital.delius.transformers.OffenceIdTransformer.additionalOffenceIdOf;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
-import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
 
 @Component
 public class AdditionalOffenceTransformer {
@@ -20,7 +19,7 @@ public class AdditionalOffenceTransformer {
             .filter(offence -> !convertToBoolean(offence.getSoftDeleted()))
             .map(additionalOffence ->
                 Offence.builder()
-                    .offenceId(String.format("%s%d", "A", additionalOffence.getAdditionalOffenceId()))
+                    .offenceId(additionalOffenceIdOf(additionalOffence.getAdditionalOffenceId()))
                     .detail(detailOf(additionalOffence.getOffence()))
                     .createdDatetime(additionalOffence.getCreatedDatetime())
                     .lastUpdatedDatetime(additionalOffence.getLastUpdatedDatetime())
@@ -29,7 +28,7 @@ public class AdditionalOffenceTransformer {
                     .offenceDate(additionalOffence.getOffenceDate())
                     .build()
             )
-            .collect(Collectors.toList());
+            .collect(toList());
     }
 
 }

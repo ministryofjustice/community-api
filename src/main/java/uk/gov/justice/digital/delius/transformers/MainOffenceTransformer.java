@@ -10,17 +10,17 @@ import static uk.gov.justice.digital.delius.transformers.OffenceDetailTransforme
 public class MainOffenceTransformer {
     public Offence offenceOf(MainOffence mainOffence) {
         return Offence.builder()
-                    .offenceId(String.format("%s%d", "M", mainOffence.getMainOffenceId()))
-                    .detail(detailOf(mainOffence.getOffence()))
-                    .createdDatetime(mainOffence.getCreatedDatetime())
-                    .lastUpdatedDatetime(mainOffence.getLastUpdatedDatetime())
-                    .mainOffence(true)
-                    .offenceCount(mainOffence.getOffenceCount())
-                    .offenceDate(mainOffence.getOffenceDate())
-                    .offenderId(mainOffence.getOffenderId())
-                    .tics(mainOffence.getTics())
-                    .verdict(mainOffence.getVerdict())
-                    .build();
+            .offenceId(OffenceIdTransformer.mainOffenceIdOf(mainOffence.getMainOffenceId()))
+            .detail(detailOf(mainOffence.getOffence()))
+            .createdDatetime(mainOffence.getCreatedDatetime())
+            .lastUpdatedDatetime(mainOffence.getLastUpdatedDatetime())
+            .mainOffence(true)
+            .offenceCount(mainOffence.getOffenceCount())
+            .offenceDate(mainOffence.getOffenceDate())
+            .offenderId(mainOffence.getOffenderId())
+            .tics(mainOffence.getTics())
+            .verdict(mainOffence.getVerdict())
+            .build();
     }
 
 }
