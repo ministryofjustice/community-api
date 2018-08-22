@@ -70,7 +70,7 @@ public class CourtAppearanceServiceTest {
                 )
             );
 
-        Mockito.when(mainOffenceRepository.listOffenceIdsForOffender(1L))
+        Mockito.when(mainOffenceRepository.listOffenceIdsForEvent(50L))
             .thenReturn(
                 ImmutableList.of(BigDecimal.valueOf(100))
             );

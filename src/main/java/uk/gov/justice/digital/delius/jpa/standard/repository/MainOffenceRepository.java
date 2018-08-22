@@ -10,7 +10,7 @@ import java.util.List;
 public interface MainOffenceRepository extends JpaRepository<MainOffence, Long> {
     List<MainOffence> findByOffenderId(Long offenderId);
 
-    @Query(value = "SELECT MAIN_OFFENCE_ID FROM MAIN_OFFENCE where OFFENDER_ID = ?1", nativeQuery = true)
-    List<BigDecimal> listOffenceIdsForOffender(Long offenderId);
+    @Query(value = "SELECT MAIN_OFFENCE_ID FROM MAIN_OFFENCE where EVENT_ID = ?1", nativeQuery = true)
+    List<BigDecimal> listOffenceIdsForEvent(Long eventId);
 
 }

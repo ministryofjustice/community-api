@@ -47,15 +47,15 @@ public class CourtAppearanceService {
             .map(courtAppearance -> courtAppearanceTransformer.courtAppearanceOf(courtAppearance).toBuilder()
                 .offenceIds(
                     ImmutableList.<String>builder()
-                    .addAll(mainOffenceIds(offenderId))
+                    .addAll(mainOffenceIds(courtAppearance))
                     .addAll(additionalOffenceIds(courtAppearance))
                     .build()
                 ).build())
             .collect(toList());
     }
 
-    private List<String> mainOffenceIds(Long offenderId) {
-        return mainOffenceRepository.listOffenceIdsForOffender(offenderId).stream()
+    private List<String> mainOffenceIds(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance courtAppearance) {
+        return mainOffenceRepository.listOffenceIdsForEvent(courtAppearance.getEventId()).stream()
             .filter(id -> !isNull(id))
             .map(id -> mainOffenceIdOf(id.longValue()))
             .collect(toList());
