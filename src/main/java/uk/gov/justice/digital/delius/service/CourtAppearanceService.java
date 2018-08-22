@@ -11,9 +11,10 @@ import uk.gov.justice.digital.delius.transformers.CourtAppearanceTransformer;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
-import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
+import static uk.gov.justice.digital.delius.helpers.FluentHelper.not;
 import static uk.gov.justice.digital.delius.transformers.OffenceIdTransformer.additionalOffenceIdOf;
 import static uk.gov.justice.digital.delius.transformers.OffenceIdTransformer.mainOffenceIdOf;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
@@ -56,14 +57,14 @@ public class CourtAppearanceService {
 
     private List<String> mainOffenceIds(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance courtAppearance) {
         return mainOffenceRepository.listOffenceIdsForEvent(courtAppearance.getEventId()).stream()
-            .filter(id -> !isNull(id))
+            .filter(not(Objects::isNull))
             .map(id -> mainOffenceIdOf(id.longValue()))
             .collect(toList());
     }
 
     private List<String> additionalOffenceIds(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance courtAppearance) {
         return additionalOffenceRepository.listOffenceIdsForEvent(courtAppearance.getEventId()).stream()
-            .filter(id -> !isNull(id))
+            .filter(not(Objects::isNull))
             .map(id -> additionalOffenceIdOf(id.longValue()))
             .collect(toList());
     }
