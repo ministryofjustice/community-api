@@ -5,24 +5,17 @@ import uk.gov.justice.digital.delius.data.api.Court;
 import uk.gov.justice.digital.delius.data.api.CourtAppearance;
 import uk.gov.justice.digital.delius.data.api.CourtReport;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
 
 @Component
 public class CourtAppearanceTransformer {
 
-    public List<CourtAppearance> courtAppearancesOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance> courtAppearances) {
-        return courtAppearances.stream()
-            .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance::getAppearanceDate).reversed())
-            .map(this::courtAppearanceOf)
-            .collect(Collectors.toList());
-    }
-
-    private CourtAppearance courtAppearanceOf(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance courtAppearance) {
+    public CourtAppearance courtAppearanceOf(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance courtAppearance) {
         return CourtAppearance.builder()
             .courtAppearanceId(courtAppearance.getCourtAppearanceId())
             .appearanceDate(courtAppearance.getAppearanceDate())
@@ -32,7 +25,6 @@ public class CourtAppearanceTransformer {
             .eventId(courtAppearance.getEventId())
             .teamId(courtAppearance.getTeamId())
             .staffId(courtAppearance.getStaffId())
-            .softDeleted(zeroOneToBoolean(courtAppearance.getSoftDeleted()))
             .court(courtOf(courtAppearance.getCourt()))
             .appearanceTypeId(courtAppearance.getAppearanceTypeId())
             .pleaId(courtAppearance.getPleaId())
@@ -47,6 +39,7 @@ public class CourtAppearanceTransformer {
 
     private List<CourtReport> courtReportsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport> courtReports) {
         return courtReports.stream()
+            .filter(report -> !convertToBoolean(report.getSoftDeleted()))
             .map(report -> CourtReport.builder()
                 .courtReportId(report.getCourtReportId())
                 .dateRequested(report.getDateRequested())
@@ -63,7 +56,6 @@ public class CourtAppearanceTransformer {
                 .publicProtection(ynToBoolean(report.getPublicProtection()))
                 .reparation(ynToBoolean(report.getReparation()))
                 .recommendationsNotStated(ynToBoolean(report.getRecommendationsNotStated()))
-                .softDeleted(zeroOneToBoolean(report.getSoftDeleted()))
                 .levelOfSeriousnessId(report.getLevelOfSeriousnessId())
                 .deliveredReportReasonId(report.getDeliveredReportReasonId())
                 .section178(ynToBoolean(report.getSection178()))
@@ -75,7 +67,7 @@ public class CourtAppearanceTransformer {
                 .requiredByCourtId(report.getRequiredByCourtId())
                 .pendingTransfer(zeroOneToBoolean(report.getPendingTransfer()))
                 .build())
-            .collect(Collectors.toList());
+            .collect(toList());
     }
 
     private Court courtOf(uk.gov.justice.digital.delius.jpa.standard.entity.Court court) {

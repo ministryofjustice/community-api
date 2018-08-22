@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class CourtAppearance {
     private Long courtAppearanceId;
     private LocalDateTime appearanceDate;
@@ -17,7 +17,6 @@ public class CourtAppearance {
     private Long eventId;
     private Long teamId;
     private Long staffId;
-    private Boolean softDeleted;
     private Court court;
     private Long appearanceTypeId;
     private Long pleaId;
@@ -27,4 +26,5 @@ public class CourtAppearance {
     private LocalDateTime lastUpdatedDatetime;
     private Long offenderId;
     private List<CourtReport> courtReports;
+    private List<String> offenceIds;
 }

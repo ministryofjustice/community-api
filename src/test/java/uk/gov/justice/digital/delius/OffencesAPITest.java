@@ -14,12 +14,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.justice.digital.delius.data.api.Court;
-import uk.gov.justice.digital.delius.data.api.CourtAppearance;
-import uk.gov.justice.digital.delius.data.api.CourtReport;
+import uk.gov.justice.digital.delius.data.api.Offence;
+import uk.gov.justice.digital.delius.data.api.OffenceDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.jwt.Jwt;
-import uk.gov.justice.digital.delius.service.CourtAppearanceService;
+import uk.gov.justice.digital.delius.service.OffenceService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.user.UserData;
 
@@ -34,7 +33,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
-public class CourtAPITest {
+public class OffencesAPITest {
 
     @LocalServerPort
     int port;
@@ -43,7 +42,7 @@ public class CourtAPITest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private CourtAppearanceService courtAppearanceService;
+    private OffenceService offenceService;
 
     @MockBean
     private OffenderService offenderService;
@@ -63,78 +62,78 @@ public class CourtAPITest {
         when(offenderService.offenderIdOfNomsNumber("noms1")).thenReturn(Optional.of(1L));
         when(offenderService.getOffenderByOffenderId(1L))
             .thenReturn(Optional.of(OffenderDetail.builder().offenderId(1L).build()));
-        when(courtAppearanceService.courtAppearancesFor(1L))
-            .thenReturn(ImmutableList.of(aCourtAppearance(1L), aCourtAppearance(2L)));
+        when(offenceService.offencesFor(1L))
+            .thenReturn(ImmutableList.of(anOffence(1L, "Fraud"), anOffence(2L, "Perjury")));
     }
 
     @Test
-    public void canGetCourtAppearancesByCrn() {
+    public void canGetOffencesByCrn() {
 
-        uk.gov.justice.digital.delius.data.api.CourtAppearance[] courtAppearances = given()
+        Offence[] offences = given()
             .header("Authorization", aValidToken())
             .when()
-            .get("offenders/crn/crn1/courtAppearances")
+            .get("offenders/crn/crn1/offences")
             .then()
             .statusCode(200)
             .extract()
             .body()
-            .as(uk.gov.justice.digital.delius.data.api.CourtAppearance[].class);
+            .as(Offence[].class);
 
-        assertThat(courtAppearances).hasSize(2);
-        assertThat(courtAppearances[0].getCourt()).isNotNull();
-        assertThat(courtAppearances[1].getCourt()).isNotNull();
-        assertThat(courtAppearances[0].getCourtReports()).isNotNull();
-        assertThat(courtAppearances[1].getCourtReports()).isNotNull();
+        assertThat(offences).hasSize(2);
+        assertThat(offences[0].getOffenceId()).isEqualTo("1");
+        assertThat(offences[1].getOffenceId()).isEqualTo("2");
+        assertThat(offences[0].getDetail().getDescription()).isEqualTo("Fraud");
+        assertThat(offences[1].getDetail().getDescription()).isEqualTo("Perjury");
     }
 
     @Test
-    public void canGetCourtAppearancesByNoms() {
+    public void canGetOffencesByNoms() {
 
-        uk.gov.justice.digital.delius.data.api.CourtAppearance[] courtAppearances = given()
+        Offence[] offences = given()
             .header("Authorization", aValidToken())
             .when()
-            .get("offenders/nomsNumber/noms1/courtAppearances")
+            .get("offenders/nomsNumber/noms1/offences")
             .then()
             .statusCode(200)
             .extract()
             .body()
-            .as(uk.gov.justice.digital.delius.data.api.CourtAppearance[].class);
+            .as(Offence[].class);
 
-        assertThat(courtAppearances).hasSize(2);
-        assertThat(courtAppearances[0].getCourt()).isNotNull();
-        assertThat(courtAppearances[1].getCourt()).isNotNull();
-        assertThat(courtAppearances[0].getCourtReports()).isNotNull();
-        assertThat(courtAppearances[1].getCourtReports()).isNotNull();
+        assertThat(offences).hasSize(2);
+        assertThat(offences[0].getOffenceId()).isEqualTo("1");
+        assertThat(offences[1].getOffenceId()).isEqualTo("2");
+        assertThat(offences[0].getDetail().getDescription()).isEqualTo("Fraud");
+        assertThat(offences[1].getDetail().getDescription()).isEqualTo("Perjury");
     }
 
     @Test
-    public void canGetCourtAppearancesByOffenderId() {
+    public void canGetOffencesByOffenderId() {
 
-        uk.gov.justice.digital.delius.data.api.CourtAppearance[] courtAppearances = given()
+        Offence[] offences = given()
             .header("Authorization", aValidToken())
             .when()
-            .get("offenders/offenderId/1/courtAppearances")
+            .get("offenders/offenderId/1/offences")
             .then()
             .statusCode(200)
             .extract()
             .body()
-            .as(uk.gov.justice.digital.delius.data.api.CourtAppearance[].class);
+            .as(Offence[].class);
 
-        assertThat(courtAppearances).hasSize(2);
-        assertThat(courtAppearances[0].getCourt()).isNotNull();
-        assertThat(courtAppearances[1].getCourt()).isNotNull();
-        assertThat(courtAppearances[0].getCourtReports()).isNotNull();
-        assertThat(courtAppearances[1].getCourtReports()).isNotNull();
+        assertThat(offences).hasSize(2);
+        assertThat(offences[0].getOffenceId()).isEqualTo("1");
+        assertThat(offences[1].getOffenceId()).isEqualTo("2");
+        assertThat(offences[0].getDetail().getDescription()).isEqualTo("Fraud");
+        assertThat(offences[1].getDetail().getDescription()).isEqualTo("Perjury");
     }
 
     @Test
-    public void getCourtAppearancesForUnknownCrnReturnsNotFound() {
+    public void getOffencesForUnknownCrnReturnsNotFound() {
         when(offenderService.offenderIdOfCrn("notFoundCrn")).thenReturn(Optional.empty());
 
         given()
             .header("Authorization", aValidToken())
             .when()
-            .get("offenders/crn/notFoundCrn/courtAppearances")
+            .get("offenders/crn/notFoundCrn/offences")
             .then()
             .statusCode(404);
 
@@ -142,13 +141,13 @@ public class CourtAPITest {
     }
 
     @Test
-    public void getCourtAppearancesForUnknownNomsNumberReturnsNotFound() {
+    public void getOffencesForUnknownNomsNumberReturnsNotFound() {
         when(offenderService.offenderIdOfNomsNumber("notFoundNomsNumber")).thenReturn(Optional.empty());
 
         given()
             .header("Authorization", aValidToken())
             .when()
-            .get("offenders/nomsNumber/notFoundNomsNumber/courtAppearances")
+            .get("offenders/nomsNumber/notFoundNomsNumber/offences")
             .then()
             .statusCode(404);
 
@@ -156,13 +155,13 @@ public class CourtAPITest {
     }
 
     @Test
-    public void getCourtAppearancesForUnknownOffenderIdReturnsNotFound() {
+    public void getOffencesForUnknownOffenderIdReturnsNotFound() {
         when(offenderService.getOffenderByOffenderId(99L)).thenReturn(Optional.empty());
 
         given()
             .header("Authorization", aValidToken())
             .when()
-            .get("offenders/offenderId/99/courtAppearances")
+            .get("offenders/offenderId/99/offences")
             .then()
             .statusCode(404);
 
@@ -170,19 +169,18 @@ public class CourtAPITest {
     }
 
     @Test
-    public void courtAppearancesByCrnMustHaveValidJwt() {
+    public void offencesByCrnMustHaveValidJwt() {
         given()
             .when()
-            .get("offenders/crn/crn1/courtAppearances")
+            .get("offenders/crn/crn1/offences")
             .then()
             .statusCode(401);
     }
 
-    private CourtAppearance aCourtAppearance(Long id) {
-        return CourtAppearance.builder()
-            .courtAppearanceId(id)
-            .court(Court.builder().build())
-            .courtReports(ImmutableList.of(CourtReport.builder().build()))
+    private Offence anOffence(Long id, String description) {
+        return Offence.builder()
+            .offenceId(id.toString())
+            .detail(OffenceDetail.builder().code("001").description(description).build())
             .build();
     }
 
