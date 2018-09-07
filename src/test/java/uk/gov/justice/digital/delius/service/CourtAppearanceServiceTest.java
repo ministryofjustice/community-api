@@ -10,13 +10,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.justice.digital.delius.data.api.CourtAppearance;
+import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalOffence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Court;
+import uk.gov.justice.digital.delius.jpa.standard.entity.MainOffence;
 import uk.gov.justice.digital.delius.jpa.standard.repository.AdditionalOffenceRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CourtAppearanceRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.MainOffenceRepository;
 import uk.gov.justice.digital.delius.transformers.CourtAppearanceTransformer;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -70,14 +71,25 @@ public class CourtAppearanceServiceTest {
                 )
             );
 
-        Mockito.when(mainOffenceRepository.listOffenceIdsForEvent(50L))
+        Mockito.when(mainOffenceRepository.findByEventId(50L))
             .thenReturn(
-                ImmutableList.of(BigDecimal.valueOf(100))
+                ImmutableList.of(
+                    MainOffence.builder()
+                        .mainOffenceId(100L)
+                        .build()
+                )
             );
 
-        Mockito.when(additionalOffenceRepository.listOffenceIdsForEvent(50L))
+        Mockito.when(additionalOffenceRepository.findByEventId(50L))
             .thenReturn(
-                ImmutableList.of(BigDecimal.valueOf(200), BigDecimal.valueOf(201))
+                ImmutableList.of(
+                    AdditionalOffence.builder()
+                        .additionalOffenceId(200L)
+                        .build(),
+                    AdditionalOffence.builder()
+                        .additionalOffenceId(201L)
+                        .build()
+                )
             );
     }
 
