@@ -34,7 +34,8 @@ public class OffenceService {
 
     public List<Offence> offencesFor(Long offenderId) {
         List<MainOffence> mainOffences = mainOffenceRepository.findByOffenderId(offenderId);
-        return mainOffences.stream()
+        return mainOffences
+            .stream()
             .filter(mainOffence -> !convertToBoolean(mainOffence.getSoftDeleted()))
             .map(mainOffence -> {
                 List<Offence> additionalOffences =

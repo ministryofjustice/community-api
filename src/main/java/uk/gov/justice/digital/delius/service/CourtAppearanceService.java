@@ -11,10 +11,8 @@ import uk.gov.justice.digital.delius.transformers.CourtAppearanceTransformer;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
-import static uk.gov.justice.digital.delius.helpers.FluentHelper.not;
 import static uk.gov.justice.digital.delius.transformers.OffenceIdTransformer.additionalOffenceIdOf;
 import static uk.gov.justice.digital.delius.transformers.OffenceIdTransformer.mainOffenceIdOf;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
@@ -42,7 +40,8 @@ public class CourtAppearanceService {
     public List<CourtAppearance> courtAppearancesFor(Long offenderId) {
 
         List<uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance> courtAppearances = courtAppearanceRepository.findByOffenderId(offenderId);
-        return courtAppearances.stream()
+        return courtAppearances
+            .stream()
             .filter(courtAppearance -> !convertToBoolean(courtAppearance.getSoftDeleted()))
             .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance::getAppearanceDate).reversed())
             .map(courtAppearance -> courtAppearanceTransformer.courtAppearanceOf(courtAppearance).toBuilder()
@@ -56,16 +55,16 @@ public class CourtAppearanceService {
     }
 
     private List<String> mainOffenceIds(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance courtAppearance) {
-        return mainOffenceRepository.listOffenceIdsForEvent(courtAppearance.getEventId()).stream()
-            .filter(not(Objects::isNull))
-            .map(id -> mainOffenceIdOf(id.longValue()))
+        return mainOffenceRepository.findByEventId(courtAppearance.getEventId())
+            .stream()
+            .map(mainOffence -> mainOffenceIdOf(mainOffence.getMainOffenceId()))
             .collect(toList());
     }
 
     private List<String> additionalOffenceIds(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance courtAppearance) {
-        return additionalOffenceRepository.listOffenceIdsForEvent(courtAppearance.getEventId()).stream()
-            .filter(not(Objects::isNull))
-            .map(id -> additionalOffenceIdOf(id.longValue()))
+        return additionalOffenceRepository.findByEventId(courtAppearance.getEventId())
+            .stream()
+            .map(additionalOffence -> additionalOffenceIdOf(additionalOffence.getAdditionalOffenceId()))
             .collect(toList());
     }
 
