@@ -74,23 +74,29 @@ public class CourtAppearanceServiceTest {
         Mockito.when(mainOffenceRepository.findByEventId(50L))
             .thenReturn(
                 ImmutableList.of(
-                    MainOffence.builder()
-                        .mainOffenceId(100L)
-                        .build()
+                    aMainOffence(100L)
                 )
             );
 
         Mockito.when(additionalOffenceRepository.findByEventId(50L))
             .thenReturn(
                 ImmutableList.of(
-                    AdditionalOffence.builder()
-                        .additionalOffenceId(200L)
-                        .build(),
-                    AdditionalOffence.builder()
-                        .additionalOffenceId(201L)
-                        .build()
+                    anAdditionalOffence(200L),
+                    anAdditionalOffence(201L)
                 )
             );
+    }
+
+    private AdditionalOffence anAdditionalOffence(long id) {
+        return AdditionalOffence.builder()
+            .additionalOffenceId(id)
+            .build();
+    }
+
+    private MainOffence aMainOffence(long id) {
+        return MainOffence.builder()
+            .mainOffenceId(id)
+            .build();
     }
 
     @Test
