@@ -13,7 +13,6 @@ pipeline {
 
         stage('Setup') {
             steps {
-                git url: 'git@github.com:noms-digital-studio/delius-offender-api.git', branch: 'master', credentialsId: 'f44bc5f1-30bd-4ab9-ad61-cc32caf1562a'
                 prepare_env()
             }
         }
