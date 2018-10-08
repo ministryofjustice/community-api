@@ -6,6 +6,7 @@ import uk.gov.justice.digital.delius.data.api.CourtAppearance;
 import uk.gov.justice.digital.delius.data.api.CourtReport;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
@@ -64,7 +65,7 @@ public class CourtAppearanceTransformer {
                 .courtReportTypeId(report.getCourtReportTypeId())
                 .deliveredCourtReportTypeId(report.getDeliveredCourtReportTypeId())
                 .offenderId(report.getOffenderId())
-                .requiredByCourtId(report.getRequiredByCourtId())
+                .requiredByCourt(Optional.ofNullable(report.getRequiredByCourt()).map(this::courtOf).orElse(null))
                 .pendingTransfer(zeroOneToBoolean(report.getPendingTransfer()))
                 .build())
             .collect(toList());
