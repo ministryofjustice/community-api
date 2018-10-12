@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CourtAppearanceTransformerTest {
 
-    private CourtAppearanceTransformer courtAppearanceTransformer = new CourtAppearanceTransformer();
+    private CourtAppearanceTransformer courtAppearanceTransformer = new CourtAppearanceTransformer(new CourtReportTransformer(new CourtTransformer()), new CourtTransformer());
 
     @Test
     public void itFiltersOutSoftDeletedEntries() {

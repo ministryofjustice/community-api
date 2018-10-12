@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
@@ -114,8 +115,9 @@ public class CourtReport {
     @Column(name = "OFFENDER_ID")
     private Long offenderId;
 
-    @Column(name = "REQUIRED_BY_COURT_ID")
-    private Long requiredByCourtId;
+    @JoinColumn(name = "REQUIRED_BY_COURT_ID", referencedColumnName = "COURT_ID")
+    @OneToOne
+    private Court requiredByCourt;
 
     @Column(name = "PENDING_TRANSFER")
     private Long pendingTransfer;

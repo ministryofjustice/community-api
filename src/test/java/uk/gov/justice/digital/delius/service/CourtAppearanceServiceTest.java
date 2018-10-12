@@ -17,6 +17,8 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.AdditionalOffenceRe
 import uk.gov.justice.digital.delius.jpa.standard.repository.CourtAppearanceRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.MainOffenceRepository;
 import uk.gov.justice.digital.delius.transformers.CourtAppearanceTransformer;
+import uk.gov.justice.digital.delius.transformers.CourtReportTransformer;
+import uk.gov.justice.digital.delius.transformers.CourtTransformer;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +26,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@Import({CourtAppearanceService.class, CourtAppearanceTransformer.class})
+@Import({CourtAppearanceService.class, CourtAppearanceTransformer.class, CourtReportTransformer.class, CourtTransformer.class})
 public class CourtAppearanceServiceTest {
 
     @Autowired

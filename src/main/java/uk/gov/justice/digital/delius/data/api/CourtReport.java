@@ -31,6 +31,6 @@ public class CourtReport {
     private Long courtReportTypeId;
     private Long deliveredCourtReportTypeId;
     private Long offenderId;
-    private Long requiredByCourtId;
+    private Court requiredByCourt;
     private Boolean pendingTransfer;
 }
