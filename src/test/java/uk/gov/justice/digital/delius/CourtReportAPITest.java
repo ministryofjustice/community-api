@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.data.api.CourtReport;
@@ -260,6 +261,56 @@ public class CourtReportAPITest {
                 .then()
                 .statusCode(404);
     }
+
+    @Test
+    public void cannotGetReportForOffenderByOffenderIdAndReportIdWithoutJwtAuthorizationHeader() {
+        RestAssured.when()
+                .get("offenders/offenderId/1/courtReports/4")
+                .then()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    public void cannotGetReportsForOffenderByOffenderIdWithoutJwtAuthorizationHeader() {
+        RestAssured.when()
+                .get("offenders/offenderId/1/courtReports")
+                .then()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    public void cannotGetReportForOffenderByCrnAndReportIdWithoutJwtAuthorizationHeader() {
+        RestAssured.when()
+                .get("offenders/crn/CRN1/courtReports/4")
+                .then()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    public void cannotGetReportsForOffenderByCrnWithoutJwtAuthorizationHeader() {
+        RestAssured.when()
+                .get("offenders/crn/CRN1/courtReports")
+                .then()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
+
+
+    @Test
+    public void cannotGetReportForOffenderByNomsNumberAndReportIdWithoutJwtAuthorizationHeader() {
+        RestAssured.when()
+                .get("offenders/nomsNumber/NOMS1/courtReports/4")
+                .then()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    public void cannotGetReportsForOffenderByNomsNumberWithoutJwtAuthorizationHeader() {
+        RestAssured.when()
+                .get("offenders/nomsNumber/NOMS1/courtReports")
+                .then()
+                .statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
+
 
 
 
