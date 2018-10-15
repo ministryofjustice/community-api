@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
@@ -36,6 +37,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.user.UserData;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
@@ -212,13 +214,13 @@ public class DeliusOffenderAPITest {
     public void lookupKnownOffenderCRNDetailGivesFullFatOffender() {
 
         OffenderAddress mainAddress = OffenderAddress.builder()
-            .streetName("Foo Street")
-            .addressStatus(StandardReference.builder()
-                            .codeValue("M")
-                            .codeDescription("Main address").build())
-            .build();
+                .streetName("Foo Street")
+                .addressStatus(StandardReference.builder()
+                        .codeValue("M")
+                        .codeDescription("Main address").build())
+                .build();
         Offender offender = anOffender().toBuilder()
-            .offenderAddresses(asList(mainAddress)).build();
+                .offenderAddresses(asList(mainAddress)).build();
         Mockito.when(offenderRepository.findByCrn(eq("CRN123"))).thenReturn(Optional.of(offender));
 
         OffenderDetail offenderDetail =
@@ -245,10 +247,10 @@ public class DeliusOffenderAPITest {
     public void lookupKnownOffenderCRNDetailGivesFullFatOffenderWithANullAddressStatus() {
 
         OffenderAddress mainAddress = OffenderAddress.builder()
-            .streetName("Foo Street")
-            .build();
+                .streetName("Foo Street")
+                .build();
         Offender offender = anOffender().toBuilder()
-            .offenderAddresses(asList(mainAddress)).build();
+                .offenderAddresses(asList(mainAddress)).build();
         Mockito.when(offenderRepository.findByCrn(eq("CRN123"))).thenReturn(Optional.of(offender));
 
         OffenderDetail offenderDetail =
@@ -314,7 +316,7 @@ public class DeliusOffenderAPITest {
 
 
     @Test
-    public void canListOffenderDocumentsByOffenderCRN() {
+    public void canListOffenderDocumentsByOffenderCRN() throws IOException {
         DocumentMeta[] documentList = given()
                 .header("Authorization", aValidToken())
                 .when()
@@ -331,7 +333,7 @@ public class DeliusOffenderAPITest {
     }
 
     @Test
-    public void canListOffenderDocumentsByOffenderId() {
+    public void canListOffenderDocumentsByOffenderId() throws IOException {
         Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(anOffender()));
 
 
@@ -351,7 +353,7 @@ public class DeliusOffenderAPITest {
     }
 
     @Test
-    public void canListOffenderDocumentsByNomsNumber() {
+    public void canListOffenderDocumentsByNomsNumber() throws IOException {
         Mockito.when(offenderRepository.findByNomsNumber(eq("A12345"))).thenReturn(Optional.of(anOffender()));
 
         DocumentMeta[] documentList = given()
@@ -369,7 +371,7 @@ public class DeliusOffenderAPITest {
         assertThat(Arrays.asList(documentList)).containsOnly(expectedDoc);
     }
 
-    private DocumentMeta aDocumentMeta() {
+    private DocumentMeta aDocumentMeta() throws IOException {
         return DocumentMeta.builder()
                 .docType("DOCUMENT")
                 .entityType("CONTACT")
@@ -377,6 +379,8 @@ public class DeliusOffenderAPITest {
                 .lastModifiedAt(OffsetDateTime.parse("2018-01-03T13:20:35Z"))
                 .id("fa63c379-8b31-4e36-a152-2a57dfe251c4")
                 .documentName("TS2 Trg Template Letter_03012018_132035_Pickett_K_D002384.DOC")
+                .author("NDelius02,NDelius02")
+                .userData(objectMapper.readValue("{\"templateName\":\"shortFormatPreSentenceReport\",\"values\":{\"issueBehaviourDetails\":\"\",\"oasysAssessmentsInformationSource\":false,\"issueFinanceDetails\":\"\",\"pageNumber\":2,\"issueSubstanceMisuse\":false,\"office\":\"\",\"riskOfSeriousHarm\":\"\",\"counterSignature\":\"\",\"feedback\":\"Really great service. Saves me so much time\",\"jumpNumber\":2,\"issueOther\":false,\"reportAuthor\":\"\",\"reportDate\":\"08/12/2017\",\"additionalPreviousSupervision\":\"\",\"likelihoodOfReOffending\":\"\",\"otherOffences\":\"\",\"issueEmploymentDetails\":\"\",\"cpsSummaryInformationSource\":false,\"proposal\":\"\",\"watermark\":\"DRAFT\",\"pnc\":\"\",\"childrenServicesInformationSource\":false,\"court\":\"Mansfield  Magistrates Court\",\"issueSubstanceMisuseDetails\":\"\",\"mainOffence\":\"\",\"offenceSummary\":\"\",\"issueAccommodationDetails\":\"\",\"name\":\"Johnny PDF\",\"issueBehaviour\":false,\"interviewInformationSource\":false,\"startDate\":\"08/12/2017\",\"issueAccommodation\":false,\"issueRelationshipsDetails\":\"\",\"onBehalfOfUser\":\"andy.marke,andy.marke\",\"courtOfficePhoneNumber\":\"\",\"pncSupplied\":false,\"sentencingGuidelinesInformationSource\":false,\"otherInformationDetails\":\"\",\"issueFinance\":false,\"policeInformationSource\":false,\"otherInformationSource\":false,\"previousSupervisionResponse\":\"\",\"dateOfHearing\":\"27/07/2017\",\"previousConvictionsInformationSource\":false,\"crn\":\"X087946\",\"issueRelationships\":false,\"address\":\"123\\nFake St\\n\",\"issueEmployment\":false,\"localJusticeArea\":\"\",\"dateOfBirth\":\"26/07/1977\",\"entityId\":2500032066,\"serviceRecordsInformationSource\":false,\"visitedPages\":\"[1,2,10]\",\"addressSupplied\":true,\"patternOfOffending\":\"\",\"issueHealth\":false,\"offenceAnalysis\":\"\",\"issueHealthDetails\":\"\",\"issueOtherDetails\":\"\",\"documentId\":\"bc4796ce-09d6-4f04-b715-a3bc8173ac35\",\"age\":40,\"victimStatementInformationSource\":false}}", ObjectNode.class))
                 .build();
     }
 
@@ -391,7 +395,7 @@ public class DeliusOffenderAPITest {
     }
 
     @Test
-    public void canGetOffenderDocumentDetailsByOffenderCrnAndDocumentId() {
+    public void canGetOffenderDocumentDetailsByOffenderCrnAndDocumentId() throws IOException {
         DocumentMeta documentMeta = given()
                 .header("Authorization", aValidToken())
                 .when()
@@ -408,7 +412,7 @@ public class DeliusOffenderAPITest {
     }
 
     @Test
-    public void canGetOffenderDocumentDetailsByOffenderIdAndDocumentId() {
+    public void canGetOffenderDocumentDetailsByOffenderIdAndDocumentId() throws IOException {
         Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(anOffender()));
 
 
@@ -428,7 +432,7 @@ public class DeliusOffenderAPITest {
     }
 
     @Test
-    public void canGetOffenderDocumentDetailsByOffenderNomsNumberAndDocumentId() {
+    public void canGetOffenderDocumentDetailsByOffenderNomsNumberAndDocumentId() throws IOException {
         Mockito.when(offenderRepository.findByNomsNumber(eq("A12345"))).thenReturn(Optional.of(anOffender()));
 
 

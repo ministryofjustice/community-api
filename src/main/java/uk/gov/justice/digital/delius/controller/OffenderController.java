@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.delius.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.jsonwebtoken.Claims;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
@@ -34,6 +36,7 @@ import uk.gov.justice.digital.delius.service.NoSuchUserException;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.UserService;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -54,13 +57,15 @@ public class OffenderController {
     private final AlfrescoService alfrescoService;
     private final UserService userService;
     private final Jwt jwt;
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    public OffenderController(OffenderService offenderService, AlfrescoService alfrescoService, UserService userService, Jwt jwt) {
+    public OffenderController(OffenderService offenderService, AlfrescoService alfrescoService, UserService userService, Jwt jwt, ObjectMapper objectMapper) {
         this.offenderService = offenderService;
         this.alfrescoService = alfrescoService;
         this.userService = userService;
         this.jwt = jwt;
+        this.objectMapper = objectMapper;
     }
 
     @RequestMapping(value = "/offenders/offenderId/{offenderId}", method = RequestMethod.GET)
@@ -123,14 +128,7 @@ public class OffenderController {
     @JwtValidation
     public ResponseEntity<List<DocumentMeta>> getOffenderDocumentListByCrn(final @RequestHeader HttpHeaders httpHeaders,
                                                                            final @PathVariable("crn") String crn) {
-        List<DocumentMeta> documentMetas = alfrescoService.listDocuments(crn).getDocuments().stream().map(doc -> DocumentMeta.builder()
-                .id(doc.getId())
-                .createdAt(doc.getCreationDate())
-                .docType(doc.getDocType())
-                .documentName(doc.getName())
-                .entityType(doc.getEntityType())
-                .lastModifiedAt(doc.getLastModifiedDate())
-                .build()).collect(Collectors.toList());
+        List<DocumentMeta> documentMetas = alfrescoService.listDocuments(crn).getDocuments().stream().map(this::documentMetaOf).collect(Collectors.toList());
 
         return new ResponseEntity<>(documentMetas, OK);
     }
@@ -146,14 +144,27 @@ public class OffenderController {
     }
 
     private Optional<List<DocumentMeta>> maybeDocumentMetasOf(Optional<String> maybeCrn) {
-        return maybeCrn.map(crn -> alfrescoService.listDocuments(crn).getDocuments().stream().map(doc -> DocumentMeta.builder()
+        return maybeCrn.map(crn -> alfrescoService.listDocuments(crn).getDocuments().stream().map(this::documentMetaOf).collect(Collectors.toList()));
+    }
+
+    private DocumentMeta documentMetaOf(uk.gov.justice.digital.delius.data.api.alfresco.DocumentMeta doc) {
+        return DocumentMeta.builder()
                 .id(doc.getId())
                 .createdAt(doc.getCreationDate())
                 .docType(doc.getDocType())
                 .documentName(doc.getName())
                 .entityType(doc.getEntityType())
                 .lastModifiedAt(doc.getLastModifiedDate())
-                .build()).collect(Collectors.toList()));
+                .userData(Optional.ofNullable(doc.getUserData()).flatMap(userData -> {
+                    try {
+                        return Optional.ofNullable(objectMapper.readValue(userData, ObjectNode.class));
+                    } catch (IOException e) {
+                        log.error(e.getMessage());
+                        return Optional.empty();
+                    }
+                }).orElse(null))
+                .author(doc.getAuthor())
+                .build();
     }
 
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/documents", method = RequestMethod.GET)
@@ -175,14 +186,7 @@ public class OffenderController {
     }
 
     private ResponseEntity<DocumentMeta> documentMetaResponseEntityOf(String crn, String documentId) {
-        return alfrescoService.getDocumentDetail(documentId, crn).map(detail -> new ResponseEntity<>(DocumentMeta.builder()
-                .createdAt(detail.getCreationDate())
-                .lastModifiedAt(detail.getLastModifiedDate())
-                .docType(detail.getDocType())
-                .documentName(detail.getName())
-                .id(detail.getId())
-                .entityType(detail.getEntityType())
-                .build(), OK)).orElse(new ResponseEntity<>(NOT_FOUND));
+        return alfrescoService.getDocumentDetail(documentId, crn).map(detail -> new ResponseEntity<>(documentMetaOf(detail), OK)).orElse(new ResponseEntity<>(NOT_FOUND));
     }
 
     @RequestMapping(value = "/offenders/offenderId/{offenderId}/documents/{documentId}/detail", method = RequestMethod.GET)
@@ -213,8 +217,7 @@ public class OffenderController {
     @JwtValidation
     public ResponseEntity<Resource> getOffenderDocumentByCrn(final @RequestHeader HttpHeaders httpHeaders,
                                                              final @PathVariable("crn") String crn,
-                                                             final @PathVariable("documentId") String documentId
-    ) {
+                                                             final @PathVariable("documentId") String documentId) {
         return alfrescoService.getDocument(documentId, crn);
     }
 
