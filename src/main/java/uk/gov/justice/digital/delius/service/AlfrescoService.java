@@ -6,7 +6,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -57,18 +56,18 @@ public class AlfrescoService {
 
     public ResponseEntity<Resource> getDocument(String documentId, String crn) {
 
-        // Check crn exists
-        SearchResult searchResult = listDocuments(crn);
-
-        // Check documentId belongs to crn
-        if (!searchResult.hasDocumentId(documentId)) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        // Extract filename
-        String documentName = searchResult.getDocuments().stream().filter(doc -> doc.getId().equals(documentId))
-                .findFirst()
-                .map(docMeta -> docMeta.getName()).get();
+//        // Check crn exists
+//        SearchResult searchResult = listDocuments(crn);
+//
+//        // Check documentId belongs to crn
+//        if (!searchResult.hasDocumentId(documentId)) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//
+//        // Extract filename
+//        String documentName = searchResult.getDocuments().stream().filter(doc -> doc.getId().equals(documentId))
+//                .findFirst()
+//                .map(docMeta -> docMeta.getName()).get();
 
         ResponseEntity<Resource> forEntity = restTemplate.exchange("/fetch/" + documentId, HttpMethod.GET, new HttpEntity<>(headers),
                 Resource.class);
@@ -80,7 +79,7 @@ public class AlfrescoService {
         newHeaders.add(HttpHeaders.CONTENT_TYPE, responseHeaders.getFirst(HttpHeaders.CONTENT_TYPE));
         newHeaders.add(HttpHeaders.ETAG, responseHeaders.getFirst(HttpHeaders.ETAG));
         newHeaders.add(HttpHeaders.LAST_MODIFIED, responseHeaders.getFirst(HttpHeaders.LAST_MODIFIED));
-        newHeaders.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + documentName + "\"");
+        newHeaders.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + documentId + "\"");
 
 
         ResponseEntity<Resource> response = new ResponseEntity<>(forEntity.getBody(), newHeaders, forEntity.getStatusCode());
