@@ -43,7 +43,7 @@ public class PersonalCircumstanceTransformerTest {
                 aPersonalCircumstance()
                         .toBuilder()
                         .circumstanceType(CircumstanceType.builder().codeValue("X").codeDescription("Description").build())
-                        .build()).getType())
+                        .build()).getPersonalCircumstanceType())
                 .isNotNull()
                 .hasFieldOrPropertyWithValue("code", "X")
                 .hasFieldOrPropertyWithValue("description", "Description");
@@ -56,7 +56,7 @@ public class PersonalCircumstanceTransformerTest {
                 aPersonalCircumstance()
                         .toBuilder()
                         .circumstanceSubType(CircumstanceSubType.builder().codeValue("X").codeDescription("Description").build())
-                        .build()).getType())
+                        .build()).getPersonalCircumstanceSubType())
                 .isNotNull()
                 .hasFieldOrPropertyWithValue("code", "X")
                 .hasFieldOrPropertyWithValue("description", "Description");

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -20,9 +21,9 @@ public class PersonalCircumstance {
     @Column(name = "OFFENDER_ID")
     private Long offenderId;
     @Column(name = "START_DATE")
-    private LocalDateTime startDate;
+    private LocalDate startDate;
     @Column(name = "END_DATE")
-    private LocalDateTime endDate;
+    private LocalDate endDate;
     @Column(name = "SOFT_DELETED")
     private Long softDeleted;
     @Column(name = "ROW_VERSION")

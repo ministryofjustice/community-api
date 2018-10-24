@@ -80,10 +80,10 @@ public class PersonalCircumstancesAPITest {
             .as(PersonalCircumstance[].class);
 
         assertThat(personalCircumstances).hasSize(2);
-        assertThat(personalCircumstances[0].getType().getDescription()).isEqualTo("Benefit");
-        assertThat(personalCircumstances[0].getSubType().getDescription()).isEqualTo("Universal Benefit");
-        assertThat(personalCircumstances[1].getType().getDescription()).isEqualTo("Accommodation");
-        assertThat(personalCircumstances[1].getSubType().getDescription()).isEqualTo("Approved Premises");
+        assertThat(personalCircumstances[0].getPersonalCircumstanceType().getDescription()).isEqualTo("Benefit");
+        assertThat(personalCircumstances[0].getPersonalCircumstanceSubType().getDescription()).isEqualTo("Universal Benefit");
+        assertThat(personalCircumstances[1].getPersonalCircumstanceType().getDescription()).isEqualTo("Accommodation");
+        assertThat(personalCircumstances[1].getPersonalCircumstanceSubType().getDescription()).isEqualTo("Approved Premises");
     }
 
     @Test
@@ -100,10 +100,10 @@ public class PersonalCircumstancesAPITest {
             .as(PersonalCircumstance[].class);
 
         assertThat(personalCircumstances).hasSize(2);
-        assertThat(personalCircumstances[0].getType().getDescription()).isEqualTo("Benefit");
-        assertThat(personalCircumstances[0].getSubType().getDescription()).isEqualTo("Universal Benefit");
-        assertThat(personalCircumstances[1].getType().getDescription()).isEqualTo("Accommodation");
-        assertThat(personalCircumstances[1].getSubType().getDescription()).isEqualTo("Approved Premises");
+        assertThat(personalCircumstances[0].getPersonalCircumstanceType().getDescription()).isEqualTo("Benefit");
+        assertThat(personalCircumstances[0].getPersonalCircumstanceSubType().getDescription()).isEqualTo("Universal Benefit");
+        assertThat(personalCircumstances[1].getPersonalCircumstanceType().getDescription()).isEqualTo("Accommodation");
+        assertThat(personalCircumstances[1].getPersonalCircumstanceSubType().getDescription()).isEqualTo("Approved Premises");
     }
 
     @Test
@@ -120,10 +120,10 @@ public class PersonalCircumstancesAPITest {
             .as(PersonalCircumstance[].class);
 
         assertThat(personalCircumstances).hasSize(2);
-        assertThat(personalCircumstances[0].getType().getDescription()).isEqualTo("Benefit");
-        assertThat(personalCircumstances[0].getSubType().getDescription()).isEqualTo("Universal Benefit");
-        assertThat(personalCircumstances[1].getType().getDescription()).isEqualTo("Accommodation");
-        assertThat(personalCircumstances[1].getSubType().getDescription()).isEqualTo("Approved Premises");
+        assertThat(personalCircumstances[0].getPersonalCircumstanceType().getDescription()).isEqualTo("Benefit");
+        assertThat(personalCircumstances[0].getPersonalCircumstanceSubType().getDescription()).isEqualTo("Universal Benefit");
+        assertThat(personalCircumstances[1].getPersonalCircumstanceType().getDescription()).isEqualTo("Accommodation");
+        assertThat(personalCircumstances[1].getPersonalCircumstanceSubType().getDescription()).isEqualTo("Approved Premises");
     }
 
     @Test
@@ -180,8 +180,8 @@ public class PersonalCircumstancesAPITest {
     private PersonalCircumstance aPersonalCircumstance(Long id, String typeDescription, String subTypeDescription) {
         return PersonalCircumstance.builder()
             .personalCircumstanceId(id)
-            .type(KeyValue.builder().code("X").description(typeDescription).build())
-            .subType(KeyValue.builder().code("X").description(subTypeDescription).build())
+            .personalCircumstanceType(KeyValue.builder().code("X").description(typeDescription).build())
+            .personalCircumstanceSubType(KeyValue.builder().code("X").description(subTypeDescription).build())
             .build();
     }
 

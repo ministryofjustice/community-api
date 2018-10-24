@@ -15,8 +15,8 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBo
 public class PersonalCircumstanceTransformer {
     public PersonalCircumstance personalCircumstanceOf(uk.gov.justice.digital.delius.jpa.standard.entity.PersonalCircumstance personalCircumstance) {
         return PersonalCircumstance.builder()
-                .type(circumstanceTypeOf(personalCircumstance.getCircumstanceType()))
-                .subType(circumstanceSubTypeOf(personalCircumstance.getCircumstanceSubType()))
+                .personalCircumstanceType(circumstanceTypeOf(personalCircumstance.getCircumstanceType()))
+                .personalCircumstanceSubType(circumstanceSubTypeOf(personalCircumstance.getCircumstanceSubType()))
                 .personalCircumstanceId(personalCircumstance.getPersonalCircumstanceId())
                 .probationArea(Optional.ofNullable(personalCircumstance.getProbationArea()).map(this::probationAreaOf).orElse(null))
                 .endDate(personalCircumstance.getEndDate())
