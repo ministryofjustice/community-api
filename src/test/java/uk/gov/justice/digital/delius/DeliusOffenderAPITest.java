@@ -10,7 +10,6 @@ import io.restassured.config.RestAssuredConfig;
 import org.assertj.core.util.Lists;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -60,7 +59,6 @@ import static uk.gov.justice.digital.delius.util.OffenderHelper.anOffender;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"offender.ids.pagesize=5"})
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
-@Ignore
 public class DeliusOffenderAPITest {
 
     @LocalServerPort
@@ -97,7 +95,6 @@ public class DeliusOffenderAPITest {
 
     @After
     public void teardown() {
-
         wiremockServer.stop();
     }
 
