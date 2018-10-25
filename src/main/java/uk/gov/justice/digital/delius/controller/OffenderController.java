@@ -364,6 +364,14 @@ public class OffenderController {
                 .orElse(new ResponseEntity<>(NOT_FOUND));
     }
 
+    @RequestMapping(value = "/documents/{documentId}", method = RequestMethod.GET)
+    @JwtValidation
+    public ResponseEntity<Resource> getDocumentById(final @RequestHeader HttpHeaders httpHeaders,
+                                                    final @PathVariable("documentId") String documentId
+    ) {
+        return alfrescoService.getDocument(documentId);
+    }
+
 
     private ResponseEntity<OffenderDetail> offenderDetailNotFound() {
         return new ResponseEntity<>(OffenderDetail.builder().build(), NOT_FOUND);

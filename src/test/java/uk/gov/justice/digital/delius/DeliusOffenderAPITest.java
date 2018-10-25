@@ -95,7 +95,6 @@ public class DeliusOffenderAPITest {
 
     @After
     public void teardown() {
-
         wiremockServer.stop();
     }
 
