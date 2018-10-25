@@ -36,7 +36,7 @@ public class PersonalCircumstanceController {
 
         log.info("Call to getOffenderPersonalCircumstancesByOffenderId");
         Optional<OffenderDetail> maybeOffender = offenderService.getOffenderByOffenderId(offenderId);
-        return PersonalCircumstancesResponseEntityOf(maybeOffender.map(OffenderDetail::getOffenderId));
+        return personalCircumstancesResponseEntityOf(maybeOffender.map(OffenderDetail::getOffenderId));
     }
 
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/personalCircumstances", method = RequestMethod.GET)
@@ -45,7 +45,7 @@ public class PersonalCircumstanceController {
                                                                          final @PathVariable("nomsNumber") String nomsNumber) {
 
         log.info("Call to getOffenderPersonalCircumstancesByNomsNumber");
-        return PersonalCircumstancesResponseEntityOf(offenderService.offenderIdOfNomsNumber(nomsNumber));
+        return personalCircumstancesResponseEntityOf(offenderService.offenderIdOfNomsNumber(nomsNumber));
     }
 
     @RequestMapping(value = "offenders/crn/{crn}/personalCircumstances", method = RequestMethod.GET)
@@ -54,10 +54,10 @@ public class PersonalCircumstanceController {
                                                                   final @PathVariable("crn") String crn) {
 
         log.info("Call to getOffenderPersonalCircumstancesByCrn");
-        return PersonalCircumstancesResponseEntityOf(offenderService.offenderIdOfCrn(crn));
+        return personalCircumstancesResponseEntityOf(offenderService.offenderIdOfCrn(crn));
     }
 
-    private ResponseEntity<List<PersonalCircumstance>> PersonalCircumstancesResponseEntityOf(Optional<Long> maybeOffenderId) {
+    private ResponseEntity<List<PersonalCircumstance>> personalCircumstancesResponseEntityOf(Optional<Long> maybeOffenderId) {
         return maybeOffenderId
             .map(offenderId -> new ResponseEntity<>(personalCircumstanceService.personalCircumstancesFor(offenderId), HttpStatus.OK))
             .orElseGet(this::notFound);

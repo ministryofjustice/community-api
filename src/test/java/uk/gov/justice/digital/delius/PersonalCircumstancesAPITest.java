@@ -51,7 +51,7 @@ public class PersonalCircumstancesAPITest {
     private Jwt jwt;
 
     @Before
-    public void setup() {
+    public void setUp() {
         RestAssured.port = port;
         RestAssured.basePath = "/api";
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig().jackson2ObjectMapperFactory(
