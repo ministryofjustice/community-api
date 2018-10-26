@@ -3,8 +3,11 @@ package uk.gov.justice.digital.delius.transformers;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.CourtAppearance;
 import uk.gov.justice.digital.delius.data.api.CourtReport;
+import uk.gov.justice.digital.delius.data.api.KeyValue;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
@@ -32,7 +35,7 @@ public class CourtAppearanceTransformer {
             .court(courtTransformer.courtOf(courtAppearance.getCourt()))
             .appearanceTypeId(courtAppearance.getAppearanceTypeId())
             .pleaId(courtAppearance.getPleaId())
-            .outcomeId(courtAppearance.getOutcomeId())
+            .outcome(outComeOf(courtAppearance.getOutcome()))
             .remandStatusId(courtAppearance.getRemandStatusId())
             .createdDatetime(courtAppearance.getCreatedDatetime())
             .lastUpdatedDatetime(courtAppearance.getLastUpdatedDatetime())
@@ -41,12 +44,20 @@ public class CourtAppearanceTransformer {
             .build();
     }
 
+    private KeyValue outComeOf(StandardReference standardReference) {
+        return Optional.ofNullable(standardReference)
+            .map(standardReference1 -> KeyValue.builder()
+                                        .code(standardReference.getCodeValue())
+                                        .description(standardReference.getCodeDescription())
+                                        .build())
+            .orElse(null);
+    }
+
     private List<CourtReport> courtReportsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport> courtReports) {
         return courtReports.stream()
             .filter(report -> !convertToBoolean(report.getSoftDeleted()))
             .map(courtReportTransformer::courtReportOf)
             .collect(toList());
     }
-
 
 }

@@ -20,7 +20,7 @@ public class CourtAppearance {
     private Court court;
     private Long appearanceTypeId;
     private Long pleaId;
-    private Long outcomeId;
+    private KeyValue outcome;
     private Long remandStatusId;
     private LocalDateTime createdDatetime;
     private LocalDateTime lastUpdatedDatetime;

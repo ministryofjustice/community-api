@@ -75,7 +75,7 @@ curl -X POST http://localhost:8080/api/logon -H 'Content-Type: text/plain' -d 'u
 
 ### Get offender details
 ```
-curl -X GET http://localhost:8080/api/offenders/12344568 -H 'Authorization: <token>'
+curl -X GET http://localhost:8080/api/offenders/12344568 -H 'Authorization: bearer <token>'
 ```
 
 ### Application info
