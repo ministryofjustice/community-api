@@ -67,8 +67,9 @@ public class CourtAppearance {
     @Column(name = "PLEA_ID")
     private Long pleaId;
 
-    @Column(name = "OUTCOME_ID")
-    private Long outcomeId;
+    @ManyToOne
+    @JoinColumn(name = "OUTCOME_ID")
+    private StandardReference outcome;
 
     @Column(name = "REMAND_STATUS_ID")
     private Long remandStatusId;
