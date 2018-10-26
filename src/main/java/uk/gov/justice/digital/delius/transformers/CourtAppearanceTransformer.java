@@ -35,7 +35,7 @@ public class CourtAppearanceTransformer {
             .court(courtTransformer.courtOf(courtAppearance.getCourt()))
             .appearanceTypeId(courtAppearance.getAppearanceTypeId())
             .pleaId(courtAppearance.getPleaId())
-            .outcome(outComeOf(courtAppearance.getOutcome()))
+            .outcome(outcomeOf(courtAppearance.getOutcome()))
             .remandStatusId(courtAppearance.getRemandStatusId())
             .createdDatetime(courtAppearance.getCreatedDatetime())
             .lastUpdatedDatetime(courtAppearance.getLastUpdatedDatetime())
@@ -44,7 +44,7 @@ public class CourtAppearanceTransformer {
             .build();
     }
 
-    private KeyValue outComeOf(StandardReference standardReference) {
+    private KeyValue outcomeOf(StandardReference standardReference) {
         return Optional.ofNullable(standardReference)
             .map(standardReference1 -> KeyValue.builder()
                                         .code(standardReference.getCodeValue())
