@@ -4,11 +4,11 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 @Data
-@Builder
-public class Conviction {
-    private Long convictionId;
-    private Boolean active;
+@Builder(toBuilder = true)
+public class PreviousConviction {
     private LocalDate convictionDate;
+    private Map<String, String> detail;
 }
