@@ -18,7 +18,7 @@ jobs:
 
     environment:
       # Customize the JVM maximum heap limit
-      GRADLE_OPTS: -Xmx3028m
+#      GRADLE_OPTS: -Xmx3028m
       TERM: dumb
 
     steps:
@@ -44,7 +44,11 @@ jobs:
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
       # run tests!
-      - run: gradle --no-daemon test
+      - run:
+          command: gradle test
+          environment:
+            # Customize the JVM maximum heap limit
+            GRADLE_OPTS: -Xmx3028m
 
       - store_test_results:
           path: build/test-results
