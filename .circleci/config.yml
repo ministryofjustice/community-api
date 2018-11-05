@@ -48,7 +48,7 @@ jobs:
           command: gradle test
           environment:
             # Customize the JVM maximum heap limit
-            GRADLE_OPTS: -Xmx3028m
+            GRADLE_OPTS: -Xmx4096
 
       - store_test_results:
           path: build/test-results
