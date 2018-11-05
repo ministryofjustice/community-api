@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.Address;
 import uk.gov.justice.digital.delius.data.api.ContactDetails;
 import uk.gov.justice.digital.delius.data.api.ContactDetailsSummary;
-import uk.gov.justice.digital.delius.data.api.Conviction;
+import uk.gov.justice.digital.delius.data.api.PreviousConviction;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.IDs;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
@@ -63,8 +63,8 @@ public class OffenderTransformer {
                 .build();
     }
 
-    private Conviction previousConvictionOf(Offender offender) {
-        return Conviction.builder()
+    private PreviousConviction previousConvictionOf(Offender offender) {
+        return PreviousConviction.builder()
                 .convictionDate(offender.getPreviousConvictionDate())
                 .detail(Optional.ofNullable(offender.getPrevConvictionDocumentName()).map(doc -> ImmutableMap.of("documentName", doc)).orElse(null))
                 .build();

@@ -8,33 +8,29 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import java.time.LocalDate;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Entity
-@Table(name = "EVENT")
-public class Event {
-
+@Table(name = "INSTITUTIONAL_REPORT")
+public class InstitutionalReport {
     @Id
-    @Column(name = "EVENT_ID")
-    private Long eventId;
+    @Column(name = "INSTITUTIONAL_REPORT_ID")
+    private Long institutionalReportId;
 
-    @Column(name = "IN_BREACH")
-    private Long inBreach;
-
-    @Column(name = "NOTES")
-    private String notes;
-
-    @Column(name = "ACTIVE_FLAG")
-    private Long activeFlag;
-
-    @Column(name = "CONVICTION_DATE")
-    private LocalDate convictionDate;
+    @JoinColumn(name = "CUSTODY_ID", referencedColumnName = "CUSTODY_ID")
+    @OneToOne
+    private Custody custody;
 
     @Column(name = "SOFT_DELETED")
     private Long softDeleted;
+
+    @Column(name = "OFFENDER_ID")
+    private Long offenderId;
+
 }

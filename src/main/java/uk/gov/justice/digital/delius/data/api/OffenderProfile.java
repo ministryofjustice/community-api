@@ -18,6 +18,6 @@ public class OffenderProfile {
     private String sexualOrientation;
     private Map<String, String> offenderDetails;
     private String remandStatus;
-    private Conviction previousConviction;
+    private PreviousConviction previousConviction;
     private String riskColour;
 }
