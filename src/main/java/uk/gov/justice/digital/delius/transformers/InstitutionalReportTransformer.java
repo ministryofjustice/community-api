@@ -14,9 +14,6 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOn
 @Component
 public class InstitutionalReportTransformer {
 
-    public InstitutionalReportTransformer() {
-    }
-
     public InstitutionalReport institutionalReportOf(uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReport report) {
         return InstitutionalReport.builder()
             .institutionalReportId(report.getInstitutionalReportId())
