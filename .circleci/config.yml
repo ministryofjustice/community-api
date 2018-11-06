@@ -44,7 +44,7 @@ jobs:
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
       # run tests!
-      - run: gradle test
+      - run: gradle test --tests uk.gov.justice.digital.delius.service.*
 
       - store_test_results:
           path: build/test-results
