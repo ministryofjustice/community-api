@@ -18,7 +18,7 @@ jobs:
 
     environment:
       # Customize the JVM maximum heap limit
-      JVM_OPTS: -Xmx4096m
+      JVM_OPTS: -Xmx1024m
       TERM: dumb
 
     steps:
@@ -44,7 +44,7 @@ jobs:
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
       # run tests!
-      - run: gradle test --tests uk.gov.justice.digital.delius.service.*
+      - run: gradle test
 
       - store_test_results:
           path: build/test-results
