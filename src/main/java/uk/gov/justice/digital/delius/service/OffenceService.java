@@ -42,7 +42,7 @@ public class OffenceService {
             .collect(toList());
     }
 
-    ImmutableList<Offence> offences(Long eventId) {
+    ImmutableList<Offence> eventOffencesFor(Long eventId) {
         return combineMainAndAdditionalOffences(mainOffenceFor(eventId));
     }
 

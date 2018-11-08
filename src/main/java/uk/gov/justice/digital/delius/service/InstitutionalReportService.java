@@ -61,7 +61,7 @@ public class InstitutionalReportService {
             .map(ignored -> institutionalReport.toBuilder()
                 .conviction(
                     institutionalReport.getConviction().toBuilder()
-                        .offences(offenceService.offences(institutionalReport.getConviction().getConvictionId()))
+                        .offences(offenceService.eventOffencesFor(institutionalReport.getConviction().getConvictionId()))
                         .build())
                 .build())
             .orElseGet(() -> institutionalReport);
