@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Builder(toBuilder = true)
@@ -11,5 +12,5 @@ public class Conviction {
     private Long convictionId;
     private Boolean active;
     private LocalDate convictionDate;
-    private Offence mainOffence;
+    private List<Offence> offences;
 }

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalOffence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
@@ -15,8 +16,10 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReport;
 import uk.gov.justice.digital.delius.jpa.standard.entity.MainOffence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.repository.AdditionalOffenceRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionalReportRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.MainOffenceRepository;
+import uk.gov.justice.digital.delius.transformers.AdditionalOffenceTransformer;
 import uk.gov.justice.digital.delius.transformers.InstitutionalReportTransformer;
 import uk.gov.justice.digital.delius.transformers.MainOffenceTransformer;
 
@@ -26,7 +29,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-@Import({InstitutionalReportService.class, InstitutionalReportTransformer.class, MainOffenceTransformer.class})
+@Import({InstitutionalReportService.class, InstitutionalReportTransformer.class,
+    MainOffenceTransformer.class, AdditionalOffenceTransformer.class, OffenceService.class})
 public class InstitutionalReportServiceTest {
 
     @Autowired
@@ -37,6 +41,9 @@ public class InstitutionalReportServiceTest {
 
     @MockBean
     private MainOffenceRepository mainOffenceRepository;
+
+    @MockBean
+    private AdditionalOffenceRepository additionalOffenceRepository;
 
     @Before
     public void setup() {
@@ -80,6 +87,25 @@ public class InstitutionalReportServiceTest {
                     .ogrsOffenceCategory(StandardReference.builder().build())
                     .build())
                 .build()));
+
+        when(additionalOffenceRepository.findByEventId(42L))
+            .thenReturn(ImmutableList.of(
+                AdditionalOffence.builder()
+                    .additionalOffenceId(32L)
+                    .softDeleted(0L)
+                    .eventId(42L)
+                    .offence(Offence.builder()
+                        .ogrsOffenceCategory(StandardReference.builder().build())
+                        .build())
+                    .build(),
+                AdditionalOffence.builder()
+                    .additionalOffenceId(33L)
+                    .softDeleted(0L)
+                    .eventId(42L)
+                    .offence(Offence.builder()
+                        .ogrsOffenceCategory(StandardReference.builder().build())
+                        .build())
+                    .build()));
     }
 
     @Test
@@ -95,7 +121,13 @@ public class InstitutionalReportServiceTest {
 
     @Test
     public void convictionIsEmbellishedWithMainOffence() {
-        assertThat(institutionalReportService.institutionalReportFor(2L, 2L)
-            .get().getConviction().getMainOffence().getOffenceId()).isEqualTo("M22");
+
+        uk.gov.justice.digital.delius.data.api.InstitutionalReport institutionalReport =
+            institutionalReportService.institutionalReportFor(2L, 2L).get();
+
+        assertThat(institutionalReport.getConviction().getOffences()).hasSize(3);
+        assertThat(institutionalReport.getConviction().getOffences().get(0).getOffenceId()).isEqualTo("M22");
+        assertThat(institutionalReport.getConviction().getOffences().get(1).getOffenceId()).isEqualTo("A32");
+        assertThat(institutionalReport.getConviction().getOffences().get(2).getOffenceId()).isEqualTo("A33");
     }
 }
