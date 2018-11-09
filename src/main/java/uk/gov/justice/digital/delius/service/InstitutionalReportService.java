@@ -24,7 +24,7 @@ public class InstitutionalReportService {
     @Autowired
     public InstitutionalReportService(InstitutionalReportRepository institutionalReportRepository,
                                       InstitutionalReportTransformer institutionalAppearanceTransformer,
-                                      MainOffenceRepository mainOffenceRepository, MainOffenceTransformer mainOffenceTransformer, OffenceService offenceService) {
+                                      OffenceService offenceService) {
 
         this.institutionalReportRepository = institutionalReportRepository;
         this.institutionalReportTransformer = institutionalAppearanceTransformer;
@@ -40,7 +40,7 @@ public class InstitutionalReportService {
             .stream()
             .filter(this::notDeleted)
             .map(institutionalReportTransformer::institutionalReportOf)
-            .map(this::updateConvictionWithMainOffence)
+            .map(this::updateConvictionWithOffences)
             .collect(toList());
     }
 
@@ -52,10 +52,10 @@ public class InstitutionalReportService {
         return maybeInstitutionalReport
                 .filter(this::notDeleted)
             .map(institutionalReportTransformer::institutionalReportOf)
-            .map(this::updateConvictionWithMainOffence);
+            .map(this::updateConvictionWithOffences);
     }
 
-    private InstitutionalReport updateConvictionWithMainOffence(InstitutionalReport institutionalReport) {
+    private InstitutionalReport updateConvictionWithOffences(InstitutionalReport institutionalReport) {
 
         return Optional.ofNullable(institutionalReport.getConviction())
             .map(ignored -> institutionalReport.toBuilder()
