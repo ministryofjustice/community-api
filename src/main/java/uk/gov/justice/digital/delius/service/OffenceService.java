@@ -37,15 +37,29 @@ public class OffenceService {
         return mainOffences
             .stream()
             .filter(mainOffence -> !convertToBoolean(mainOffence.getSoftDeleted()))
-            .map(mainOffence -> {
-                List<Offence> additionalOffences =
-                    additionalOffenceTransformer.offencesOf(additionalOffenceRepository.findByEventId(mainOffence.getEventId()));
-                return ImmutableList.<Offence>builder()
-                    .add(mainOffenceTransformer.offenceOf(mainOffence))
-                    .addAll(additionalOffences)
-                    .build();
-            })
+            .map(this::combineMainAndAdditionalOffences)
             .flatMap(List::stream)
             .collect(toList());
     }
+
+    ImmutableList<Offence> eventOffencesFor(Long eventId) {
+        return combineMainAndAdditionalOffences(mainOffenceFor(eventId));
+    }
+
+    private ImmutableList<Offence> combineMainAndAdditionalOffences(MainOffence mainOffence) {
+        List<Offence> additionalOffences =
+            additionalOffenceTransformer.offencesOf(additionalOffenceRepository.findByEventId(mainOffence.getEventId()));
+        return ImmutableList.<Offence>builder()
+            .add(mainOffenceTransformer.offenceOf(mainOffence))
+            .addAll(additionalOffences)
+            .build();
+    }
+
+    private MainOffence mainOffenceFor(Long eventId) {
+        return mainOffenceRepository.findByEventId(eventId)
+            .stream()
+            .findFirst()
+            .orElse(null);
+    }
+
 }
