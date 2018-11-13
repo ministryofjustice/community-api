@@ -13,7 +13,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.sql.Blob;
-import java.sql.Clob;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -174,7 +173,7 @@ public class Offender {
     private Long pendingTransfer;
 
     @Column(name = "OFFENDER_DETAILS")
-    private Clob offenderDetails;
+    private String offenderDetails;
 
     @Column(name = "PREVIOUS_CONVICTION_DATE")
     private LocalDate previousConvictionDate;

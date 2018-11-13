@@ -82,6 +82,7 @@ public class OffenderTransformer {
                 .secondaryNationality(Optional.ofNullable(offender.getSecondNationality()).map(StandardReference::getCodeDescription).orElse(null))
                 .sexualOrientation(Optional.ofNullable(offender.getSexualOrientation()).map(StandardReference::getCodeDescription).orElse(null))
                 .riskColour(Optional.ofNullable(offender.getCurrentHighestRiskColour()).orElse(null))
+                .offenderDetails(offender.getOffenderDetails())
                 .build();
     }
 
