@@ -44,7 +44,7 @@ jobs:
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
       # run tests!
-      - run: gradle --debug test
+      - run: gradle -Dorg.gradle.daemon=false test
 
       - store_test_results:
           path: build/test-results
