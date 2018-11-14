@@ -44,16 +44,16 @@ jobs:
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
       # run tests!
-      #- run: gradle test
+      - run: gradle test
 
-      #- store_test_results:
-      #    path: build/test-results
+      - store_test_results:
+          path: build/test-results
 
-      #- store_artifacts:
-      #    path: build/reports/tests
+      - store_artifacts:
+          path: build/reports/tests
 
       # Assemble
-      - run: gradle -Dskip.tests assemble
+      - run: gradle assemble
 
       - store_artifacts:
           path: build/libs
