@@ -13,4 +13,5 @@ public class Conviction {
     private Boolean active;
     private LocalDate convictionDate;
     private List<Offence> offences;
+    private Sentence sentence;
 }

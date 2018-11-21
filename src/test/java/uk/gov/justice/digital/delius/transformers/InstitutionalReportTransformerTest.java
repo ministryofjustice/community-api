@@ -109,6 +109,13 @@ public class InstitutionalReportTransformerTest {
             .event(anEvent())
             .offenderId(1L)
             .softDeleted(0L)
+            .effectiveLength(1L)
+            .entryLength(2L)
+//            .entryLength2Units(StandardReference.builder().codeDescription("years").build())
+//            .entryLengthUnits(StandardReference.builder().codeDescription("months").build())
+            .length(3L)
+            .length2(4L)
+            .lengthInDays(5L)
             .build();
     }
 
@@ -133,7 +140,7 @@ public class InstitutionalReportTransformerTest {
     private Event anEvent() {
         return Event.builder()
             .activeFlag(1L)
-            .convictionDate(LocalDate.of(2018, 11, 02))
+            .convictionDate(LocalDate.of(2018, 11, 2))
             .eventId(1L)
             .softDeleted(0L)
             .build();
@@ -142,7 +149,7 @@ public class InstitutionalReportTransformerTest {
     private Event aSoftDeletedEvent() {
         return Event.builder()
             .activeFlag(1L)
-            .convictionDate(LocalDate.of(2018, 11, 02))
+            .convictionDate(LocalDate.of(2018, 11, 2))
             .eventId(1L)
             .softDeleted(1L)
             .build();
