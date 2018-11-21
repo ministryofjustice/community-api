@@ -86,3 +86,7 @@ dependencies {
     testCompile "com.github.tomakehurst:wiremock:2.13.0"
 
 }
+
+tasks.withType(Test) {
+    forkEvery = 20
+}
