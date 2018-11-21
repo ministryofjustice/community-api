@@ -86,7 +86,3 @@ dependencies {
     testCompile "com.github.tomakehurst:wiremock:2.13.0"
 
 }
-
-tasks.withType(JavaCompile) {
-    options.fork = true
-}
