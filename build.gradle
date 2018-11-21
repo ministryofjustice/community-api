@@ -87,6 +87,6 @@ dependencies {
 
 }
 
-tasks.withType(Test) {
-    forkEvery = 20
+tasks.withType(JavaCompile) {
+    options.fork = true
 }
