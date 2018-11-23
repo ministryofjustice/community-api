@@ -109,13 +109,6 @@ public class InstitutionalReportTransformerTest {
             .event(anEvent())
             .offenderId(1L)
             .softDeleted(0L)
-            .effectiveLength(1L)
-            .entryLength(2L)
-//            .entryLength2Units(StandardReference.builder().codeDescription("years").build())
-//            .entryLengthUnits(StandardReference.builder().codeDescription("months").build())
-            .length(3L)
-            .length2(4L)
-            .lengthInDays(5L)
             .build();
     }
 
