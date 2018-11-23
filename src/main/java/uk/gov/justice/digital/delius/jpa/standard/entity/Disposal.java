@@ -54,4 +54,8 @@ public class Disposal {
     @ManyToOne
     @JoinColumn(name = "ENTRY_LENGTH_2_UNITS_ID")
     private StandardReference entryLength2Units;
+
+    @ManyToOne
+    @JoinColumn(name = "DISPOSAL_TYPE_ID")
+    private DisposalType disposalType;
 }

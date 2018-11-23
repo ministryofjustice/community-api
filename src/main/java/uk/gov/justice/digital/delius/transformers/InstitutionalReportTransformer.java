@@ -42,6 +42,7 @@ public class InstitutionalReportTransformer {
                 .secondLengthUnits(Optional.ofNullable(disposal.getEntryLength2Units())
                                     .map(StandardReference::getCodeDescription)
                                     .orElse(null))
+                .description(disposal.getDisposalType().getDescription())
                 .build())
             .orElse(null);
     }

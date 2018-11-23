@@ -9,23 +9,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalOffence;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Court;
-import uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
+import uk.gov.justice.digital.delius.jpa.standard.entity.DisposalType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReport;
 import uk.gov.justice.digital.delius.jpa.standard.entity.MainOffence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.AdditionalOffenceRepository;
-import uk.gov.justice.digital.delius.jpa.standard.repository.CourtAppearanceRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionalReportRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.MainOffenceRepository;
 import uk.gov.justice.digital.delius.transformers.AdditionalOffenceTransformer;
-import uk.gov.justice.digital.delius.transformers.CourtAppearanceTransformer;
-import uk.gov.justice.digital.delius.transformers.CourtReportTransformer;
-import uk.gov.justice.digital.delius.transformers.CourtTransformer;
 import uk.gov.justice.digital.delius.transformers.InstitutionalReportTransformer;
 import uk.gov.justice.digital.delius.transformers.MainOffenceTransformer;
 
@@ -37,8 +32,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @Import({InstitutionalReportService.class, InstitutionalReportTransformer.class,
-    MainOffenceTransformer.class, AdditionalOffenceTransformer.class, OffenceService.class,
-    CourtAppearanceService.class, CourtAppearanceTransformer.class, CourtReportTransformer.class, CourtTransformer.class})
+    MainOffenceTransformer.class, AdditionalOffenceTransformer.class, OffenceService.class})
 public class InstitutionalReportServiceTest {
 
     @Autowired
@@ -53,9 +47,6 @@ public class InstitutionalReportServiceTest {
     @MockBean
     private AdditionalOffenceRepository additionalOffenceRepository;
 
-    @MockBean
-    private CourtAppearanceRepository courtAppearanceRepository;
-
     @Before
     public void setup() {
         when(institutionalReportRepository.findByOffenderIdAndInstitutionalReportId(1L, 1L)).
@@ -64,23 +55,14 @@ public class InstitutionalReportServiceTest {
                 .build()));
 
         when(institutionalReportRepository.findByOffenderIdAndInstitutionalReportId(2L, 2L)).
-            thenReturn(Optional.of(anInstitutionalReportLinkedToAnEvent()));
-
-        when(courtAppearanceRepository.findByEventId(42L)).
-            thenReturn(Optional.of(CourtAppearance.builder()
-                .outcome(StandardReference.builder()
-                    .codeDescription("Some sentence text")
-                    .build())
-                .court(Court.builder().build())
-                .courtReports(ImmutableList.of())
-                .build()));
+            thenReturn(Optional.of(anInstitutionalReport()));
 
         when(institutionalReportRepository.findByOffenderId(3L)).
             thenReturn(ImmutableList.of(
                 InstitutionalReport.builder()
                     .softDeleted(1L)
                     .build(),
-                anInstitutionalReportLinkedToAnEvent(),
+                anInstitutionalReport(),
                 InstitutionalReport.builder()
                     .softDeleted(0L)
                     .build())
@@ -116,11 +98,14 @@ public class InstitutionalReportServiceTest {
                     .build()));
     }
 
-    private InstitutionalReport anInstitutionalReportLinkedToAnEvent() {
+    private InstitutionalReport anInstitutionalReport() {
         return InstitutionalReport.builder()
             .institutionalReportId(2L)
             .custody(Custody.builder()
                 .disposal(Disposal.builder()
+                    .disposalType(DisposalType.builder()
+                        .description("Some sentence text")
+                        .build())
                     .event(Event.builder()
                         .eventId(42L)
                         .build())

@@ -18,18 +18,15 @@ public class InstitutionalReportService {
     private final InstitutionalReportRepository institutionalReportRepository;
     private final InstitutionalReportTransformer institutionalReportTransformer;
     private final OffenceService offenceService;
-    private final CourtAppearanceService courtAppearanceService;
 
     @Autowired
     public InstitutionalReportService(InstitutionalReportRepository institutionalReportRepository,
                                       InstitutionalReportTransformer institutionalAppearanceTransformer,
-                                      OffenceService offenceService,
-                                      CourtAppearanceService courtAppearanceService) {
+                                      OffenceService offenceService) {
 
         this.institutionalReportRepository = institutionalReportRepository;
         this.institutionalReportTransformer = institutionalAppearanceTransformer;
         this.offenceService = offenceService;
-        this.courtAppearanceService = courtAppearanceService;
     }
 
     public List<InstitutionalReport> institutionalReportsFor(Long offenderId) {
@@ -42,7 +39,6 @@ public class InstitutionalReportService {
             .filter(this::notDeleted)
             .map(institutionalReportTransformer::institutionalReportOf)
             .map(this::updateConvictionWithOffences)
-            .map(this::updateSentenceWithOutcomeDescription)
             .collect(toList());
     }
 
@@ -54,20 +50,7 @@ public class InstitutionalReportService {
         return maybeInstitutionalReport
                 .filter(this::notDeleted)
             .map(institutionalReportTransformer::institutionalReportOf)
-            .map(this::updateConvictionWithOffences)
-            .map(this::updateSentenceWithOutcomeDescription);
-    }
-
-    private InstitutionalReport updateSentenceWithOutcomeDescription(InstitutionalReport institutionalReport) {
-        return Optional.ofNullable(institutionalReport.getSentence())
-            .map(ignored -> institutionalReport.toBuilder()
-                .sentence(institutionalReport.getSentence().toBuilder()
-                    .description(courtAppearanceService.findCourtAppearanceByEventId(institutionalReport.getConviction().getConvictionId())
-                        .map(courtAppearance -> courtAppearance.getOutcome().getDescription())
-                        .orElse("")
-                    ).build())
-                .build())
-            .orElseGet(() -> institutionalReport);
+            .map(this::updateConvictionWithOffences);
     }
 
     private InstitutionalReport updateConvictionWithOffences(InstitutionalReport institutionalReport) {
