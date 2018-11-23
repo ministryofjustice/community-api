@@ -3,6 +3,7 @@ package uk.gov.justice.digital.delius.transformers;
 import org.junit.Test;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
+import uk.gov.justice.digital.delius.jpa.standard.entity.DisposalType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReport;
 
@@ -109,6 +110,9 @@ public class InstitutionalReportTransformerTest {
             .event(anEvent())
             .offenderId(1L)
             .softDeleted(0L)
+            .disposalType(DisposalType.builder()
+                .description("Some sentence text")
+                .build())
             .build();
     }
 
@@ -126,6 +130,10 @@ public class InstitutionalReportTransformerTest {
             .disposalId(999L)
             .event(aSoftDeletedEvent())
             .offenderId(999L)
+            .disposalType(DisposalType.builder()
+                .description("Some sentence text")
+                .build())
+
             .softDeleted(0L)
             .build();
     }
