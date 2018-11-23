@@ -6,6 +6,7 @@ import uk.gov.justice.digital.delius.data.api.InstitutionalReport;
 import uk.gov.justice.digital.delius.data.api.Sentence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
+import uk.gov.justice.digital.delius.jpa.standard.entity.DisposalType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
 import java.util.Optional;
@@ -42,7 +43,9 @@ public class InstitutionalReportTransformer {
                 .secondLengthUnits(Optional.ofNullable(disposal.getEntryLength2Units())
                                     .map(StandardReference::getCodeDescription)
                                     .orElse(null))
-                .description(disposal.getDisposalType().getDescription())
+                .description(Optional.ofNullable(disposal.getDisposalType())
+                                .map(DisposalType::getDescription)
+                                .orElse(""))
                 .build())
             .orElse(null);
     }

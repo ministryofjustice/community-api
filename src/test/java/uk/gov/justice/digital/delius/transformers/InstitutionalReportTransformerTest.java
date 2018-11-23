@@ -130,10 +130,6 @@ public class InstitutionalReportTransformerTest {
             .disposalId(999L)
             .event(aSoftDeletedEvent())
             .offenderId(999L)
-            .disposalType(DisposalType.builder()
-                .description("Some sentence text")
-                .build())
-
             .softDeleted(0L)
             .build();
     }
