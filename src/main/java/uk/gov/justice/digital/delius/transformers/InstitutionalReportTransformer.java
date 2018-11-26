@@ -45,7 +45,7 @@ public class InstitutionalReportTransformer {
                                     .orElse(null))
                 .description(Optional.ofNullable(disposal.getDisposalType())
                                 .map(DisposalType::getDescription)
-                                .orElse(""))
+                                .orElse(null))
                 .build())
             .orElse(null);
     }

@@ -49,8 +49,8 @@ public class InstitutionalReportService {
 
         return maybeInstitutionalReport
                 .filter(this::notDeleted)
-            .map(institutionalReportTransformer::institutionalReportOf)
-            .map(this::updateConvictionWithOffences);
+                .map(institutionalReportTransformer::institutionalReportOf)
+                .map(this::updateConvictionWithOffences);
     }
 
     private InstitutionalReport updateConvictionWithOffences(InstitutionalReport institutionalReport) {
