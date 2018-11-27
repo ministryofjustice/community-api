@@ -30,34 +30,21 @@ jobs:
       - checkout
 
       # Download and cache dependencies
-#      - restore_cache:
-#          keys:
-#          - v1-dependencies-{{ checksum "build.gradle" }}
-#          # fallback to using the latest cache if no exact match is found
-#          - v1-dependencies-
-
-#      - run: gradle dependencies
-#
-#      - save_cache:
-#          paths:
-#            - ~/.m2
-#          key: v1-dependencies-{{ checksum "build.gradle" }}
-
       - restore_cache:
-            keys:
-            # when lock file changes, use increasingly general patterns to restore cache
-            - gradle-repo-v1-{{ .Branch }}-{{ checksum "dependencies.lockfile" }}
-            - gradle-repo-v1-{{ .Branch }}-
-            - gradle-repo-v1-
-      - save_cache:
-            paths:
-            - ~/.gradle
-            key: gradle-repo-v1-{{ .Branch }}-{{ checksum "dependencies.lockfile" }}
+          keys:
+          - v1-dependencies-{{ checksum "build.gradle" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
 
-      - run: gradle compileJava
+      - run: gradle dependencies
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "build.gradle" }}
 
       # run tests!
-      - run: gradle test
+#      - run: gradle test
 
       - store_test_results:
           path: build/test-results
