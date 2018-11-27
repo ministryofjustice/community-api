@@ -29,7 +29,11 @@ jobs:
 
       - checkout
 
-      # Download and cache dependencies
+      -   run: gradle --version
+
+      -   run: ./gradlew --version
+
+    # Download and cache dependencies
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "build.gradle" }}
