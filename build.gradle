@@ -74,6 +74,7 @@ dependencies {
     compile 'io.dropwizard.metrics:metrics-healthchecks:4.0.2'
 
 
+    annotationProcessor "org.projectlombok:lombok:1.16.18"
     compileOnly 'org.projectlombok:lombok:1.16.18'
 
     testRuntime 'com.h2database:h2:1.4.196'
