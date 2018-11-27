@@ -43,10 +43,8 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
-      - run: gradle clean compile
-
       # run tests!
-      - run: gradle clean test
+      - run: ./gradlew clean test
 
       - store_test_results:
           path: build/test-results
