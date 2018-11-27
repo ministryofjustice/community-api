@@ -43,6 +43,17 @@ jobs:
 #            - ~/.m2
 #          key: v1-dependencies-{{ checksum "build.gradle" }}
 
+  - restore_cache:
+        keys:
+        # when lock file changes, use increasingly general patterns to restore cache
+        - gradle-repo-v1-{{ .Branch }}-{{ checksum "dependencies.lockfile" }}
+        - gradle-repo-v1-{{ .Branch }}-
+        - gradle-repo-v1-
+  - save_cache:
+        paths:
+        - ~/.gradle
+        key: gradle-repo-v1-{{ .Branch }}-{{ checksum "dependencies.lockfile" }}
+
       - run: gradle compileJava
 
       # run tests!
