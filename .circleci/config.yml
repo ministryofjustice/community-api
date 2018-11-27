@@ -36,7 +36,7 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-      - run: gradle dependencies
+#      - run: gradle dependencies
 
       - save_cache:
           paths:
@@ -44,7 +44,7 @@ jobs:
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
       # run tests!
-      - run: ./gradlew clean test
+#      - run: ./gradlew -Dorg.gradle.daemon=false clean test
 
       - store_test_results:
           path: build/test-results
@@ -53,7 +53,7 @@ jobs:
           path: build/reports/tests
 
       # Assemble
-      - run: gradle assemble
+      - run: ./gradlew -Dorg.gradle.daemon=false assemble
 
       - store_artifacts:
           path: build/libs
