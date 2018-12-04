@@ -3,8 +3,6 @@ package uk.gov.justice.digital.delius.data.api;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Map;
-
 @Data
 @Builder
 public class OffenderProfile {
@@ -16,7 +14,7 @@ public class OffenderProfile {
     private OffenderLanguages offenderLanguages;
     private String religion;
     private String sexualOrientation;
-    private Map<String, String> offenderDetails;
+    private String offenderDetails;
     private String remandStatus;
     private PreviousConviction previousConviction;
     private String riskColour;
