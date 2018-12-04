@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 @Data
@@ -30,4 +31,31 @@ public class Disposal {
 
     @Column(name = "OFFENDER_ID")
     private Long offenderId;
+
+    @Column(name = "LENGTH")
+    private Long length;
+
+    @Column(name = "EFFECTIVE_LENGTH")
+    private Long effectiveLength;
+
+    @Column(name = "LENGTH_IN_DAYS")
+    private Long lengthInDays;
+
+    @Column(name = "ENTRY_LENGTH")
+    private Long entryLength;
+
+    @ManyToOne
+    @JoinColumn(name = "ENTRY_LENGTH_UNITS_ID")
+    private StandardReference entryLengthUnits;
+
+    @Column(name = "LENGTH_2")
+    private Long length2;
+
+    @ManyToOne
+    @JoinColumn(name = "ENTRY_LENGTH_2_UNITS_ID")
+    private StandardReference entryLength2Units;
+
+    @ManyToOne
+    @JoinColumn(name = "DISPOSAL_TYPE_ID")
+    private DisposalType disposalType;
 }

@@ -8,3 +8,4 @@ import java.util.List;
 public interface CourtAppearanceRepository extends JpaRepository<CourtAppearance, Long>  {
     List<CourtAppearance> findByOffenderId(Long offenderId);
 }
+

@@ -67,5 +67,4 @@ public class CourtAppearanceService {
             .map(additionalOffence -> additionalOffenceIdOf(additionalOffence.getAdditionalOffenceId()))
             .collect(toList());
     }
-
 }

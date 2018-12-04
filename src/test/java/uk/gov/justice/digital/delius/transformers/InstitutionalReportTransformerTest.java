@@ -133,7 +133,7 @@ public class InstitutionalReportTransformerTest {
     private Event anEvent() {
         return Event.builder()
             .activeFlag(1L)
-            .convictionDate(LocalDate.of(2018, 11, 02))
+            .convictionDate(LocalDate.of(2018, 11, 2))
             .eventId(1L)
             .softDeleted(0L)
             .build();
@@ -142,7 +142,7 @@ public class InstitutionalReportTransformerTest {
     private Event aSoftDeletedEvent() {
         return Event.builder()
             .activeFlag(1L)
-            .convictionDate(LocalDate.of(2018, 11, 02))
+            .convictionDate(LocalDate.of(2018, 11, 2))
             .eventId(1L)
             .softDeleted(1L)
             .build();

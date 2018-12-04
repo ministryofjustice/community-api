@@ -4,9 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.data.api.InstitutionalReport;
 import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionalReportRepository;
-import uk.gov.justice.digital.delius.jpa.standard.repository.MainOffenceRepository;
 import uk.gov.justice.digital.delius.transformers.InstitutionalReportTransformer;
-import uk.gov.justice.digital.delius.transformers.MainOffenceTransformer;
 
 import java.util.List;
 import java.util.Optional;
@@ -51,8 +49,8 @@ public class InstitutionalReportService {
 
         return maybeInstitutionalReport
                 .filter(this::notDeleted)
-            .map(institutionalReportTransformer::institutionalReportOf)
-            .map(this::updateConvictionWithOffences);
+                .map(institutionalReportTransformer::institutionalReportOf)
+                .map(this::updateConvictionWithOffences);
     }
 
     private InstitutionalReport updateConvictionWithOffences(InstitutionalReport institutionalReport) {

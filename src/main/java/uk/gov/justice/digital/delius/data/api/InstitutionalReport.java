@@ -9,4 +9,5 @@ public class InstitutionalReport {
     private Long institutionalReportId;
     private Long offenderId;
     private Conviction conviction;
+    private Sentence sentence;
 }
