@@ -15,7 +15,7 @@ import javax.persistence.Table;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @Entity
 @Table(name = "TEAM")
 public class Team {
@@ -38,8 +38,9 @@ public class Team {
     @JoinColumn(name = "LOCAL_DELIVERY_UNIT_ID")
     private LocalDeliveryUnit localDeliveryUnit;
 
-    @Column(name = "PROBATION_AREA_ID")
-    private Long probationAreaId;
+    @JoinColumn(name = "PROBATION_AREA_ID")
+    @OneToOne
+    private ProbationArea probationArea;
 
     @OneToOne
     @JoinColumn(name = "SC_PROVIDER_ID")
