@@ -18,12 +18,7 @@ import uk.gov.justice.digital.delius.data.api.OffenderManager;
 import uk.gov.justice.digital.delius.data.api.OffenderProfile;
 import uk.gov.justice.digital.delius.data.api.PhoneNumber;
 import uk.gov.justice.digital.delius.data.api.Team;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
-import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAddress;
-import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
-import uk.gov.justice.digital.delius.jpa.standard.entity.PartitionArea;
-import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
-import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -236,7 +231,20 @@ public class OffenderTransformer {
                 .active(zeroOneToBoolean(offenderManager.getActiveFlag()))
                 .fromDate(localDateOf(offenderManager.getAllocationDate()))
                 .toDate(localDateOf(offenderManager.getEndDate()))
+                .allocationReason(Optional.ofNullable(offenderManager.getOffenderTransfer())
+                        .map(this::allocationReasonOf)
+                        .orElse(null))
                 .build();
+    }
+
+    private KeyValue allocationReasonOf(OffenderTransfer offenderTransfer) {
+        return Optional.ofNullable(offenderTransfer.getAllocationReason())
+                .map(standardReference -> KeyValue
+                        .builder()
+                        .code(standardReference.getCodeValue())
+                        .description(standardReference.getCodeDescription())
+                        .build())
+                .orElse(null);
     }
 
     private LocalDate localDateOf(Timestamp timestamp) {

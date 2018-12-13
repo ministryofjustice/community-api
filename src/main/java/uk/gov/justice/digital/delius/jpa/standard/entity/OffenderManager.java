@@ -17,7 +17,7 @@ import java.sql.Timestamp;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @Entity
 @Table(name = "OFFENDER_MANAGER")
 public class OffenderManager {
@@ -78,5 +78,9 @@ public class OffenderManager {
 
     @Column(name = "END_DATE")
     private Timestamp endDate;
+
+    @JoinColumn(name = "OFFENDER_TRANSFER_ID")
+    @OneToOne
+    private OffenderTransfer offenderTransfer;
 
 }
