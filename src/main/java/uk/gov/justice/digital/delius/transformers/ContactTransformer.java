@@ -83,7 +83,7 @@ public class ContactTransformer {
         return Optional.ofNullable(event).map(Event::getEventId).orElse(null);
     }
 
-    private KeyValue teamOf(Team team) {
+    public KeyValue teamOf(Team team) {
         return Optional.ofNullable(team).map(t -> KeyValue.builder().code(t.getCode()).description(t.getDescription()).build()).orElse(null);
     }
 
