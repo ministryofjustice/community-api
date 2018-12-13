@@ -18,5 +18,6 @@ public class OffenderManager {
     private LocalDate fromDate;
     private LocalDate toDate;
     private Boolean active;
+    private KeyValue allocationReason;
 
 }
