@@ -5,19 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @Entity
 @Table(name = "CONTACT")
 public class Contact {
@@ -56,10 +52,13 @@ public class Contact {
     private String notes;
 
     @Column(name = "CONTACT_START_TIME")
-    private LocalDateTime contactStartTime;
+    private LocalTime contactStartTime;
+
+    @Column(name = "CONTACT_DATE")
+    private LocalDate contactDate;
 
     @Column(name = "CONTACT_END_TIME")
-    private LocalDateTime contactEndTime;
+    private LocalTime contactEndTime;
 
     @Column(name = "SOFT_DELETED")
     private Long softDeleted;
@@ -80,6 +79,10 @@ public class Contact {
     @JoinColumn(name = "PROVIDER_LOCATION_ID")
     @OneToOne
     private ProviderLocation providerLocation;
+
+    @JoinColumn(name = "OFFICE_LOCATION_ID")
+    @OneToOne
+    private OfficeLocation officeLocation;
 
     @JoinColumn(name = "PROVIDER_EMPLOYEE_ID")
     @OneToOne

@@ -30,4 +30,7 @@ public class ContactType {
     @Column(name = "SHORT_DESCRIPTION")
     private String shortDescription;
 
+    @Column(name = "ATTENDANCE_CONTACT")
+    private String attendanceContact;
+
 }

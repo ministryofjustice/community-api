@@ -4,42 +4,49 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Data
 @Builder
-public class Contact {
+public class Appointment {
     protected Long linkedContactId;
     @ApiModelProperty(required = true)
-    private Long contactId;
+    private Long appointmentId;
     private Long eventId;
     @ApiModelProperty(required = true)
-    private ContactType contactType;
+    private KeyValue appointmentType;
     private Requirement requirement;
     private KeyValue explanation;
     private LicenceCondition licenceCondition;
     private Nsi nsi;
     private String notes;
-    private LocalTime contactStartTime;
-    private LocalTime contactEndTime;
-    private Boolean softDeleted;
+    private LocalDate appointmentDate;
+    private LocalTime appointmentStartTime;
+    private LocalTime appointmentEndTime;
     private Boolean alertActive;
     private LocalDateTime createdDateTime;
     private LocalDateTime lastUpdatedDateTime;
-    private KeyValue contactOutcomeType;
-    private String partitionArea;
-    private KeyValue probationArea;
-    private KeyValue providerLocation;
-    private KeyValue providerTeam;
-    private KeyValue team;
+    private KeyValue appointmentOutcomeType;
     private Human staff;
+    private KeyValue team;
+    private KeyValue officeLocation;
+    private KeyValue probationArea;
+    private KeyValue providerTeam;
+    private KeyValue providerLocation;
     private Human providerEmployee;
     private Double hoursCredited;
     private Boolean visorContact;
-    private Boolean attended;
+    private Attended attended;
     private Boolean complied;
     private Boolean documentLinked;
     private Boolean uploadLinked;
+
+    public enum Attended {
+        ATTENDED,
+        UNATTENDED,
+        NOT_RECORDED
+    }
 
 }

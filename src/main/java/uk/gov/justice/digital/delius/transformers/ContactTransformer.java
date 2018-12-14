@@ -79,7 +79,7 @@ public class ContactTransformer {
                 .build();
     }
 
-    private Long eventIdOf(Event event) {
+    protected Long eventIdOf(Event event) {
         return Optional.ofNullable(event).map(Event::getEventId).orElse(null);
     }
 
@@ -95,11 +95,11 @@ public class ContactTransformer {
                 .build()).orElse(null);
     }
 
-    private KeyValue providerTeamOf(ProviderTeam providerTeam) {
+    protected KeyValue providerTeamOf(ProviderTeam providerTeam) {
         return Optional.ofNullable(providerTeam).map(pt -> KeyValue.builder().code(pt.getCode()).description(pt.getName()).build()).orElse(null);
     }
 
-    private KeyValue providerLocationOf(ProviderLocation providerLocation) {
+    protected KeyValue providerLocationOf(ProviderLocation providerLocation) {
         return Optional.ofNullable(providerLocation).map(
                 pl -> KeyValue.builder().code(providerLocation.getCode()).description(providerLocation.getDescription()).build()
         ).orElse(null);
@@ -124,17 +124,17 @@ public class ContactTransformer {
                 .collect(Collectors.joining(" "));
     }
 
-    private String partitionAreaOf(PartitionArea partitionArea) {
+    protected String partitionAreaOf(PartitionArea partitionArea) {
         return Optional.ofNullable(partitionArea).map(PartitionArea::getArea).orElse(null);
     }
 
-    private KeyValue probationAreaOf(ProbationArea probationArea) {
+    protected KeyValue probationAreaOf(ProbationArea probationArea) {
         return Optional.ofNullable(probationArea).map(
                 pa -> KeyValue.builder().code(pa.getCode()).description(pa.getDescription()).build()
         ).orElse(null);
     }
 
-    private uk.gov.justice.digital.delius.data.api.Requirement requirementOf(Requirement requirement) {
+    protected uk.gov.justice.digital.delius.data.api.Requirement requirementOf(Requirement requirement) {
         return Optional.ofNullable(requirement).map(req -> uk.gov.justice.digital.delius.data.api.Requirement.builder()
                 .active(zeroOneToBoolean(req.getActiveFlag()))
                 .adRequirementTypeMainCategory(adRequirementMainCategoryOf(req.getAdRequirementTypeMainCategory()))
@@ -184,7 +184,7 @@ public class ContactTransformer {
                         .build()).orElse(null);
     }
 
-    private uk.gov.justice.digital.delius.data.api.Nsi nsiOf(Nsi nsi) {
+    protected uk.gov.justice.digital.delius.data.api.Nsi nsiOf(Nsi nsi) {
         return Optional.ofNullable(nsi).map(n ->
                 uk.gov.justice.digital.delius.data.api.Nsi.builder()
                         .requirement(requirementOf(n.getRqmnt()))
@@ -216,7 +216,7 @@ public class ContactTransformer {
                 .build()).orElse(null);
     }
 
-    private uk.gov.justice.digital.delius.data.api.LicenceCondition licenceConditionOf(LicenceCondition licenceCondition) {
+    protected uk.gov.justice.digital.delius.data.api.LicenceCondition licenceConditionOf(LicenceCondition licenceCondition) {
         return Optional.ofNullable(licenceCondition).map(lc -> uk.gov.justice.digital.delius.data.api.LicenceCondition.builder()
                 .active(zeroOneToBoolean(lc.getActiveFlag()))
                 .commencementDate(lc.getCommencementDate())
@@ -238,7 +238,7 @@ public class ContactTransformer {
                         .build()).orElse(null);
     }
 
-    private KeyValue explanationOf(Explanation explanation) {
+    protected KeyValue explanationOf(Explanation explanation) {
         return Optional.ofNullable(explanation).map(e ->
                 KeyValue.builder()
                         .code(e.getCode())
