@@ -11,10 +11,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.justice.digital.delius.data.api.CourtAppearance;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalOffence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Court;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.MainOffence;
-import uk.gov.justice.digital.delius.jpa.standard.repository.AdditionalOffenceRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CourtAppearanceRepository;
-import uk.gov.justice.digital.delius.jpa.standard.repository.MainOffenceRepository;
 import uk.gov.justice.digital.delius.transformers.CourtAppearanceTransformer;
 import uk.gov.justice.digital.delius.transformers.CourtReportTransformer;
 import uk.gov.justice.digital.delius.transformers.CourtTransformer;
@@ -35,13 +34,6 @@ public class CourtAppearanceServiceTest {
     @MockBean
     private CourtAppearanceRepository courtAppearanceRepository;
 
-    @MockBean
-    private MainOffenceRepository mainOffenceRepository;
-
-    @MockBean
-    private AdditionalOffenceRepository additionalOffenceRepository;
-
-
     @Before
     public void setUp() {
         when(courtAppearanceRepository.findByOffenderId(1L))
@@ -52,7 +44,11 @@ public class CourtAppearanceServiceTest {
                         .softDeleted(1L)
                         .appearanceDate(LocalDateTime.now())
                         .offenderId(1L)
-                        .eventId(50L)
+                        .event(Event
+                                .builder()
+                                .eventId(50L)
+                                .mainOffence(aMainOffence(1L))
+                                .build())
                         .court(aCourt())
                         .courtReports(ImmutableList.of(
                             uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport.builder()
@@ -63,8 +59,13 @@ public class CourtAppearanceServiceTest {
                         .courtAppearanceId(2L)
                         .appearanceDate(LocalDateTime.now())
                         .offenderId(1L)
-                        .eventId(50L)
-                        .court(aCourt())
+                            .event(Event
+                                    .builder()
+                                    .eventId(50L)
+                                    .mainOffence(aMainOffence(100L))
+                                    .additionalOffences(ImmutableList.of(anAdditionalOffence(200L), anAdditionalOffence(201L)))
+                                    .build())
+                            .court(aCourt())
                         .courtReports(ImmutableList.of(
                             uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport.builder()
                                 .courtReportId(1L)
@@ -73,20 +74,6 @@ public class CourtAppearanceServiceTest {
                 )
             );
 
-        when(mainOffenceRepository.findByEventId(50L))
-            .thenReturn(
-                ImmutableList.of(
-                    aMainOffence(100L)
-                )
-            );
-
-        when(additionalOffenceRepository.findByEventId(50L))
-            .thenReturn(
-                ImmutableList.of(
-                    anAdditionalOffence(200L),
-                    anAdditionalOffence(201L)
-                )
-            );
     }
 
     private AdditionalOffence anAdditionalOffence(long id) {

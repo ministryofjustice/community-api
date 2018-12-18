@@ -9,11 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalOffence;
-import uk.gov.justice.digital.delius.jpa.standard.entity.MainOffence;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Offence;
-import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
-import uk.gov.justice.digital.delius.jpa.standard.repository.AdditionalOffenceRepository;
+import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 import uk.gov.justice.digital.delius.jpa.standard.repository.MainOffenceRepository;
 import uk.gov.justice.digital.delius.transformers.AdditionalOffenceTransformer;
 import uk.gov.justice.digital.delius.transformers.MainOffenceTransformer;
@@ -32,9 +28,6 @@ public class OffenceServiceTest {
     @MockBean
     private MainOffenceRepository mainOffenceRepository;
 
-    @MockBean
-    private AdditionalOffenceRepository additionalOffenceRepository;
-
     @Before
     public void setUp() {
 
@@ -42,7 +35,25 @@ public class OffenceServiceTest {
             .thenReturn(ImmutableList.of(
                 MainOffence.builder()
                     .mainOffenceId(1L)
-                    .eventId(42L)
+                    .event(Event
+                            .builder()
+                            .eventId(42L)
+                            .additionalOffences(ImmutableList.of(
+                                    AdditionalOffence.builder()
+                                            .additionalOffenceId(101L)
+                                            .softDeleted(1L)
+                                            .offence(Offence.builder()
+                                                    .ogrsOffenceCategory(StandardReference.builder().build())
+                                                    .build())
+                                            .build(),
+                                    AdditionalOffence.builder()
+                                            .additionalOffenceId(102L)
+                                            .offence(Offence.builder()
+                                                    .ogrsOffenceCategory(StandardReference.builder().build())
+                                                    .build())
+                                            .build()
+                            ))
+                            .build())
                     .offence(Offence.builder()
                         .ogrsOffenceCategory(StandardReference.builder().build())
                         .build())
@@ -50,14 +61,36 @@ public class OffenceServiceTest {
                 MainOffence.builder()
                     .mainOffenceId(2L)
                     .softDeleted(1L)
-                    .eventId(43L)
+                    .event(Event
+                            .builder()
+                            .eventId(43L)
+                            .additionalOffences(ImmutableList.of(
+                                    AdditionalOffence.builder()
+                                            .additionalOffenceId(103L)
+                                            .offence(Offence.builder()
+                                                    .ogrsOffenceCategory(StandardReference.builder().build())
+                                                    .build())
+                                            .build()
+                            ))
+                            .build())
                     .offence(Offence.builder()
                         .ogrsOffenceCategory(StandardReference.builder().build())
                         .build())
                     .build(),
                 MainOffence.builder()
                     .mainOffenceId(3L)
-                    .eventId(44L)
+                    .event(Event
+                            .builder()
+                            .eventId(44L)
+                            .additionalOffences(ImmutableList.of(
+                                    AdditionalOffence.builder()
+                                            .additionalOffenceId(104L)
+                                            .offence(Offence.builder()
+                                                    .ogrsOffenceCategory(StandardReference.builder().build())
+                                                    .build())
+                                            .build()
+                            ))
+                            .build())
                     .offence(Offence.builder()
                         .ogrsOffenceCategory(StandardReference.builder().build())
                         .build())
@@ -65,45 +98,7 @@ public class OffenceServiceTest {
                 )
             );
 
-        Mockito.when(additionalOffenceRepository.findByEventId(42L))
-            .thenReturn(ImmutableList.of(
-                    AdditionalOffence.builder()
-                        .additionalOffenceId(101L)
-                        .softDeleted(1L)
-                        .offence(Offence.builder()
-                            .ogrsOffenceCategory(StandardReference.builder().build())
-                            .build())
-                        .build(),
-                    AdditionalOffence.builder()
-                        .additionalOffenceId(102L)
-                        .offence(Offence.builder()
-                            .ogrsOffenceCategory(StandardReference.builder().build())
-                            .build())
-                        .build()
-                )
-            );
 
-        Mockito.when(additionalOffenceRepository.findByEventId(43L))
-            .thenReturn(ImmutableList.of(
-                    AdditionalOffence.builder()
-                        .additionalOffenceId(103L)
-                        .offence(Offence.builder()
-                            .ogrsOffenceCategory(StandardReference.builder().build())
-                            .build())
-                        .build()
-                )
-            );
-
-        Mockito.when(additionalOffenceRepository.findByEventId(44L))
-            .thenReturn(ImmutableList.of(
-                    AdditionalOffence.builder()
-                        .additionalOffenceId(104L)
-                        .offence(Offence.builder()
-                            .ogrsOffenceCategory(StandardReference.builder().build())
-                            .build())
-                        .build()
-                )
-            );
     }
 
     @Test

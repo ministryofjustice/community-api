@@ -7,6 +7,4 @@ import java.util.List;
 
 public interface MainOffenceRepository extends JpaRepository<MainOffence, Long> {
     List<MainOffence> findByOffenderId(Long offenderId);
-
-    List<MainOffence> findByEventId(Long eventId);
 }

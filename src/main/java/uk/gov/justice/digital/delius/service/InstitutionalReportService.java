@@ -17,16 +17,13 @@ public class InstitutionalReportService {
 
     private final InstitutionalReportRepository institutionalReportRepository;
     private final InstitutionalReportTransformer institutionalReportTransformer;
-    private final OffenceService offenceService;
 
     @Autowired
     public InstitutionalReportService(InstitutionalReportRepository institutionalReportRepository,
-                                      InstitutionalReportTransformer institutionalAppearanceTransformer,
-                                      OffenceService offenceService) {
+                                      InstitutionalReportTransformer institutionalAppearanceTransformer) {
 
         this.institutionalReportRepository = institutionalReportRepository;
         this.institutionalReportTransformer = institutionalAppearanceTransformer;
-        this.offenceService = offenceService;
     }
 
     public List<InstitutionalReport> institutionalReportsFor(Long offenderId) {
@@ -38,7 +35,6 @@ public class InstitutionalReportService {
             .stream()
             .filter(this::notDeleted)
             .map(institutionalReportTransformer::institutionalReportOf)
-            .map(this::updateConvictionWithOffences)
             .collect(toList());
     }
 
@@ -49,20 +45,7 @@ public class InstitutionalReportService {
 
         return maybeInstitutionalReport
                 .filter(this::notDeleted)
-                .map(institutionalReportTransformer::institutionalReportOf)
-                .map(this::updateConvictionWithOffences);
-    }
-
-    private InstitutionalReport updateConvictionWithOffences(InstitutionalReport institutionalReport) {
-
-        return Optional.ofNullable(institutionalReport.getConviction())
-            .map(ignored -> institutionalReport.toBuilder()
-                .conviction(
-                    institutionalReport.getConviction().toBuilder()
-                        .offences(offenceService.eventOffencesFor(institutionalReport.getConviction().getConvictionId()))
-                        .build())
-                .build())
-            .orElseGet(() -> institutionalReport);
+                .map(institutionalReportTransformer::institutionalReportOf);
     }
 
     private boolean notDeleted(uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReport institutionalReport) {

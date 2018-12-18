@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.data.api.Offence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.MainOffence;
-import uk.gov.justice.digital.delius.jpa.standard.repository.AdditionalOffenceRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.MainOffenceRepository;
 import uk.gov.justice.digital.delius.transformers.AdditionalOffenceTransformer;
 import uk.gov.justice.digital.delius.transformers.MainOffenceTransformer;
@@ -19,15 +18,13 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.conver
 public class OffenceService {
 
     private final MainOffenceRepository mainOffenceRepository;
-    private final AdditionalOffenceRepository additionalOffenceRepository;
     private final MainOffenceTransformer mainOffenceTransformer;
     private final AdditionalOffenceTransformer additionalOffenceTransformer;
 
     @Autowired
-    public OffenceService(MainOffenceRepository mainOffenceRepository, AdditionalOffenceRepository additionalOffenceRepository,
+    public OffenceService(MainOffenceRepository mainOffenceRepository,
                           MainOffenceTransformer mainOffenceTransformer, AdditionalOffenceTransformer additionalOffenceTransformer) {
         this.mainOffenceRepository = mainOffenceRepository;
-        this.additionalOffenceRepository = additionalOffenceRepository;
         this.mainOffenceTransformer = mainOffenceTransformer;
         this.additionalOffenceTransformer = additionalOffenceTransformer;
     }
@@ -42,24 +39,13 @@ public class OffenceService {
             .collect(toList());
     }
 
-    ImmutableList<Offence> eventOffencesFor(Long eventId) {
-        return combineMainAndAdditionalOffences(mainOffenceFor(eventId));
-    }
-
     private ImmutableList<Offence> combineMainAndAdditionalOffences(MainOffence mainOffence) {
         List<Offence> additionalOffences =
-            additionalOffenceTransformer.offencesOf(additionalOffenceRepository.findByEventId(mainOffence.getEventId()));
+            additionalOffenceTransformer.offencesOf(mainOffence.getEvent().getAdditionalOffences());
         return ImmutableList.<Offence>builder()
             .add(mainOffenceTransformer.offenceOf(mainOffence))
             .addAll(additionalOffences)
             .build();
-    }
-
-    private MainOffence mainOffenceFor(Long eventId) {
-        return mainOffenceRepository.findByEventId(eventId)
-            .stream()
-            .findFirst()
-            .orElse(null);
     }
 
 }

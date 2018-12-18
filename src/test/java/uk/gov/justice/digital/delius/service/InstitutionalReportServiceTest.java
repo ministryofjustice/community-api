@@ -7,19 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalOffence;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
-import uk.gov.justice.digital.delius.jpa.standard.entity.DisposalType;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
-import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReport;
-import uk.gov.justice.digital.delius.jpa.standard.entity.MainOffence;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Offence;
-import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
-import uk.gov.justice.digital.delius.jpa.standard.repository.AdditionalOffenceRepository;
+import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionalReportRepository;
-import uk.gov.justice.digital.delius.jpa.standard.repository.MainOffenceRepository;
 import uk.gov.justice.digital.delius.transformers.AdditionalOffenceTransformer;
+import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
 import uk.gov.justice.digital.delius.transformers.InstitutionalReportTransformer;
 import uk.gov.justice.digital.delius.transformers.MainOffenceTransformer;
 
@@ -31,7 +22,7 @@ import static org.mockito.BDDMockito.given;
 
 @RunWith(SpringRunner.class)
 @Import({InstitutionalReportService.class, InstitutionalReportTransformer.class,
-    MainOffenceTransformer.class, AdditionalOffenceTransformer.class, OffenceService.class})
+    MainOffenceTransformer.class, AdditionalOffenceTransformer.class, ConvictionTransformer.class})
 public class InstitutionalReportServiceTest {
 
     public static final long EVENT_ID = 42L;
@@ -40,12 +31,6 @@ public class InstitutionalReportServiceTest {
 
     @MockBean
     private InstitutionalReportRepository institutionalReportRepository;
-
-    @MockBean
-    private MainOffenceRepository mainOffenceRepository;
-
-    @MockBean
-    private AdditionalOffenceRepository additionalOffenceRepository;
 
     @Test
     public void singleReportFilteredOutWhenSoftDeleted() {
@@ -69,35 +54,33 @@ public class InstitutionalReportServiceTest {
 
     @Test
     public void convictionIsEmbellishedWithMainOffence() {
-        given(mainOffenceRepository.findByEventId(EVENT_ID))
-            .willReturn(ImmutableList.of(MainOffence.builder()
-                .mainOffenceId(22L)
-                .eventId(EVENT_ID)
-                .offence(Offence.builder()
-                    .ogrsOffenceCategory(StandardReference.builder().build())
-                    .build())
-                .build()));
-
-
-        given(additionalOffenceRepository.findByEventId(EVENT_ID))
-            .willReturn(ImmutableList.of(
-                AdditionalOffence.builder()
-                    .additionalOffenceId(32L)
-                    .eventId(EVENT_ID)
-                    .offence(Offence.builder()
-                        .ogrsOffenceCategory(StandardReference.builder().build())
-                        .build())
-                    .build(),
-                AdditionalOffence.builder()
-                    .additionalOffenceId(33L)
-                    .eventId(EVENT_ID)
-                    .offence(Offence.builder()
-                        .ogrsOffenceCategory(StandardReference.builder().build())
-                        .build())
-                    .build()));
 
         given(institutionalReportRepository.findByOffenderIdAndInstitutionalReportId(1L, 2L)).
-            willReturn(Optional.of(anInstitutionalReport()));
+            willReturn(Optional.of(anInstitutionalReport(Event
+                    .builder()
+                    .eventId(EVENT_ID)
+                    .mainOffence(MainOffence.builder()
+                            .mainOffenceId(22L)
+                            .offence(Offence.builder()
+                                    .ogrsOffenceCategory(StandardReference.builder().build())
+                                    .build())
+                            .build())
+                    .additionalOffences(ImmutableList.of(
+                            AdditionalOffence.builder()
+                                    .additionalOffenceId(32L)
+                                    .event(Event.builder().eventId(EVENT_ID).build())
+                                    .offence(Offence.builder()
+                                            .ogrsOffenceCategory(StandardReference.builder().build())
+                                            .build())
+                                    .build(),
+                            AdditionalOffence.builder()
+                                    .additionalOffenceId(33L)
+                                    .event(Event.builder().eventId(EVENT_ID).build())
+                                    .offence(Offence.builder()
+                                            .ogrsOffenceCategory(StandardReference.builder().build())
+                                            .build())
+                                    .build()))
+                    .build())));
 
         uk.gov.justice.digital.delius.data.api.InstitutionalReport institutionalReport =
             institutionalReportService.institutionalReportFor(1L, 2L).get();
@@ -132,28 +115,34 @@ public class InstitutionalReportServiceTest {
         assertThat(institutionalReports.get(0).getSentence().getDescription()).isEqualTo("Some other sentence text");
     }
 
-    private InstitutionalReport anInstitutionalReport() {
+    private InstitutionalReport anInstitutionalReport(Event event) {
         return InstitutionalReport.builder()
             .institutionalReportId(1L)
             .custody(Custody.builder()
                 .disposal(Disposal.builder()
-                    .event(Event.builder()
-                        .eventId(EVENT_ID)
-                        .build())
+                    .event(event)
                     .build())
                 .build())
             .build();
     }
 
     private InstitutionalReport anInstitutionalReportWithSentenceDescription(String sentenceDescription) {
+        final Disposal disposal = Disposal.builder()
+                .disposalType(DisposalType.builder()
+                        .description(sentenceDescription)
+                        .build())
+                .event(Event
+                        .builder()
+                        .additionalOffences(ImmutableList.of())
+                        .build())
+                .build();
+
+        final Event event = disposal.getEvent().toBuilder().disposal(disposal).build();
+
         return InstitutionalReport.builder()
             .institutionalReportId(2L)
             .custody(Custody.builder()
-                .disposal(Disposal.builder()
-                    .disposalType(DisposalType.builder()
-                        .description(sentenceDescription)
-                        .build())
-                    .build())
+                .disposal(disposal.toBuilder().event(event).build()) // simulate back reference
                 .build())
             .build();
     }

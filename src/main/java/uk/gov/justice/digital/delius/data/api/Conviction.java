@@ -10,7 +10,12 @@ import java.util.List;
 @Builder(toBuilder = true)
 public class Conviction {
     private Long convictionId;
+    private Long index;
     private Boolean active;
+    private Boolean inBreach;
     private LocalDate convictionDate;
+    private LocalDate referralDate;
     private List<Offence> offences;
+    private Sentence sentence;
+    private KeyValue latestCourtAppearanceOutcome;
 }
