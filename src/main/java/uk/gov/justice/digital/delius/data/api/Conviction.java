@@ -10,7 +10,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 public class Conviction {
     private Long convictionId;
-    private Long index;
+    private String index;
     private Boolean active;
     private Boolean inBreach;
     private LocalDate convictionDate;

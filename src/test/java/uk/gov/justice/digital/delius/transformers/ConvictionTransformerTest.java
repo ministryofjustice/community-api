@@ -80,11 +80,7 @@ public class ConvictionTransformerTest {
 
     @Test
     public void indexMappedFromEventNumberString() {
-        assertThat((transformer.convictionOf(anEvent().toBuilder().eventNumber("5").build()).getIndex())).isEqualTo(5L);
-        assertThat((transformer.convictionOf(anEvent().toBuilder().eventNumber("55").build()).getIndex())).isEqualTo(55L);
-        assertThat((transformer.convictionOf(anEvent().toBuilder().eventNumber(null).build()).getIndex())).isNull();
-        assertThat((transformer.convictionOf(anEvent().toBuilder().eventNumber("").build()).getIndex())).isNull();
-        assertThat((transformer.convictionOf(anEvent().toBuilder().eventNumber("chickens").build()).getIndex())).isNull();
+        assertThat((transformer.convictionOf(anEvent().toBuilder().eventNumber("5").build()).getIndex())).isEqualTo("5");
     }
 
     private CourtAppearance aCourtAppearance(String outcomeDescription, String outcomeCode, LocalDateTime appearanceDate) {

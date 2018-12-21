@@ -2,8 +2,6 @@ package uk.gov.justice.digital.delius.transformers;
 
 import com.google.common.collect.ImmutableList;
 import org.springframework.stereotype.Component;
-import org.springframework.util.NumberUtils;
-import org.springframework.util.StringUtils;
 import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Offence;
@@ -32,25 +30,12 @@ public class ConvictionTransformer {
                 .convictionDate(event.getConvictionDate())
                 .referralDate(event.getReferralDate())
                 .convictionId(event.getEventId())
-                .index(indexOf(event.getEventNumber()))
+                .index(event.getEventNumber())
                 .offences(offencesOf(event))
                 .sentence(Optional.ofNullable(event.getDisposal()).map(this::sentenceOf).orElse(null))
                 .inBreach(zeroOneToBoolean(event.getInBreach()))
                 .latestCourtAppearanceOutcome(Optional.ofNullable(event.getCourtAppearances()).map(this::outcomeOf).orElse(null))
                 .build();
-    }
-
-    private Long indexOf(String eventNumber) {
-        // no DB constraint so protected ourselves
-        return Optional.ofNullable(eventNumber)
-                .filter(StringUtils::hasText)
-                .filter(this::isNumber)
-                .map(text -> NumberUtils.parseNumber(text, Long.class))
-                .orElse(null);
-    }
-
-    private boolean isNumber(String text) {
-        return text.matches("\\d*");
     }
 
     private KeyValue outcomeOf(List<CourtAppearance> courtAppearances) {
