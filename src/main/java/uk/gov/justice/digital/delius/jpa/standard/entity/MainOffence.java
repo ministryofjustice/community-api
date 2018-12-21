@@ -31,8 +31,9 @@ public class MainOffence {
     @Column(name = "OFFENCE_COUNT")
     private Long offenceCount;
 
-    @Column(name = "EVENT_ID")
-    private Long eventId;
+    @JoinColumn(name = "EVENT_ID")
+    @OneToOne
+    private Event event;
 
     @Column(name = "TICS")
     private Long tics;

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.transformers;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
@@ -12,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class InstitutionalReportTransformerTest {
 
-    private InstitutionalReportTransformer institutionalReportTransformer = new InstitutionalReportTransformer();
+    private InstitutionalReportTransformer institutionalReportTransformer = new InstitutionalReportTransformer(new ConvictionTransformer(new MainOffenceTransformer(), new AdditionalOffenceTransformer()));
 
     @Test
     public void itTransformsOKWhenNothingIsSoftDeleted() {
@@ -134,6 +135,7 @@ public class InstitutionalReportTransformerTest {
         return Event.builder()
             .activeFlag(1L)
             .convictionDate(LocalDate.of(2018, 11, 2))
+            .additionalOffences(ImmutableList.of())
             .eventId(1L)
             .softDeleted(0L)
             .build();

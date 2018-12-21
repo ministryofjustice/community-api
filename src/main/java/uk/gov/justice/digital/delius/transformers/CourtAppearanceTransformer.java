@@ -29,7 +29,7 @@ public class CourtAppearanceTransformer {
             .crownCourtCalendarNumber(courtAppearance.getCrownCourtCalendarNumber())
             .bailConditions(courtAppearance.getBailConditions())
             .courtNotes(courtAppearance.getCourtNotes())
-            .eventId(courtAppearance.getEventId())
+            .eventId(courtAppearance.getEvent().getEventId())
             .teamId(courtAppearance.getTeamId())
             .staffId(courtAppearance.getStaffId())
             .court(courtTransformer.courtOf(courtAppearance.getCourt()))

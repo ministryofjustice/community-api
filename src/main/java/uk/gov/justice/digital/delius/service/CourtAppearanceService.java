@@ -4,13 +4,12 @@ import com.google.common.collect.ImmutableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.data.api.CourtAppearance;
-import uk.gov.justice.digital.delius.jpa.standard.repository.AdditionalOffenceRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CourtAppearanceRepository;
-import uk.gov.justice.digital.delius.jpa.standard.repository.MainOffenceRepository;
 import uk.gov.justice.digital.delius.transformers.CourtAppearanceTransformer;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.transformers.OffenceIdTransformer.additionalOffenceIdOf;
@@ -22,19 +21,13 @@ public class CourtAppearanceService {
 
     private final CourtAppearanceRepository courtAppearanceRepository;
     private final CourtAppearanceTransformer courtAppearanceTransformer;
-    private final MainOffenceRepository mainOffenceRepository;
-    private final AdditionalOffenceRepository additionalOffenceRepository;
 
     @Autowired
     public CourtAppearanceService(CourtAppearanceRepository courtAppearanceRepository,
-                                  CourtAppearanceTransformer courtAppearanceTransformer,
-                                  MainOffenceRepository mainOffenceRepository,
-                                  AdditionalOffenceRepository additionalOffenceRepository) {
+                                  CourtAppearanceTransformer courtAppearanceTransformer) {
 
         this.courtAppearanceRepository = courtAppearanceRepository;
         this.courtAppearanceTransformer = courtAppearanceTransformer;
-        this.mainOffenceRepository = mainOffenceRepository;
-        this.additionalOffenceRepository = additionalOffenceRepository;
     }
 
     public List<CourtAppearance> courtAppearancesFor(Long offenderId) {
@@ -55,14 +48,13 @@ public class CourtAppearanceService {
     }
 
     private List<String> mainOffenceIds(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance courtAppearance) {
-        return mainOffenceRepository.findByEventId(courtAppearance.getEventId())
-            .stream()
-            .map(mainOffence -> mainOffenceIdOf(mainOffence.getMainOffenceId()))
-            .collect(toList());
+        return Optional.ofNullable(courtAppearance.getEvent().getMainOffence())
+            .map(mainOffence -> ImmutableList.of(mainOffenceIdOf(mainOffence.getMainOffenceId())))
+            .orElse(ImmutableList.of());
     }
 
     private List<String> additionalOffenceIds(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance courtAppearance) {
-        return additionalOffenceRepository.findByEventId(courtAppearance.getEventId())
+        return courtAppearance.getEvent().getAdditionalOffences()
             .stream()
             .map(additionalOffence -> additionalOffenceIdOf(additionalOffence.getAdditionalOffenceId()))
             .collect(toList());
