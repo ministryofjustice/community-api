@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
-import lombok.val;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.justice.digital.delius.data.api.AccessLimitation;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.jpa.national.entity.Exclusion;
 import uk.gov.justice.digital.delius.jpa.national.entity.Restriction;
@@ -43,7 +43,7 @@ public class UserServiceTest {
 
     @Test
     public void exclusionUnsetWhenNotExcludedForAnyone() {
-        val accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final AccessLimitation accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(false)
@@ -56,7 +56,7 @@ public class UserServiceTest {
 
     @Test
     public void excludedMessageUnsetWhenNotExcludedForAnyone() {
-        val accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final AccessLimitation accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(false)
@@ -97,7 +97,7 @@ public class UserServiceTest {
                         .offenderId(2L)
                         .build()))
                 .build());
-       val  accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final AccessLimitation  accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
                 .builder()
                 .currentExclusion(true)
                 .currentRestriction(false)
@@ -118,7 +118,7 @@ public class UserServiceTest {
                         .offenderId(1L)
                         .build()))
                 .build());
-       val  accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final AccessLimitation  accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
                 .builder()
                 .currentExclusion(true)
                 .currentRestriction(false)
@@ -139,7 +139,7 @@ public class UserServiceTest {
                         .offenderId(1L)
                         .build()))
                 .build());
-       val  accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final AccessLimitation  accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
                 .builder()
                 .currentExclusion(true)
                 .currentRestriction(false)
@@ -168,7 +168,7 @@ public class UserServiceTest {
 
     @Test
     public void restrictionUnsetWhenNotRestrictedToAnyone() {
-        val accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final AccessLimitation accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(false)
@@ -181,7 +181,7 @@ public class UserServiceTest {
 
     @Test
     public void restrictedMessageUnsetWhenNotRestrictedToAnyone() {
-        val accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final AccessLimitation accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(false)
@@ -222,7 +222,7 @@ public class UserServiceTest {
                         .offenderId(1L)
                         .build()))
                 .build());
-        val  accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final AccessLimitation  accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(true)
@@ -243,7 +243,7 @@ public class UserServiceTest {
                         .offenderId(2L)
                         .build()))
                 .build());
-        val  accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final AccessLimitation  accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(true)
@@ -264,7 +264,7 @@ public class UserServiceTest {
                         .offenderId(2L)
                         .build()))
                 .build());
-        val  accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final AccessLimitation  accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(true)
