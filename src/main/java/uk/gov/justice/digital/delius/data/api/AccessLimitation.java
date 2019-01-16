@@ -9,6 +9,8 @@ import lombok.Data;
 public class AccessLimitation {
     @ApiModelProperty(required = true)
     private boolean userRestricted;
+    private String restrictionMessage;
     @ApiModelProperty(required = true)
     private boolean userExcluded;
+    private String exclusionMessage;
 }

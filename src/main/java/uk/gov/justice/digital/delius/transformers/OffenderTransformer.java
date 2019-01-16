@@ -174,7 +174,9 @@ public class OffenderTransformer {
                 .currentDisposal(Optional.ofNullable(offender.getCurrentDisposal()).map(Object::toString).orElse(null))
                 .partitionArea(Optional.ofNullable(offender.getPartitionArea()).map(PartitionArea::getArea).orElse(null))
                 .currentExclusion(zeroOneToBoolean(offender.getCurrentExclusion()))
+                .exclusionMessage(offender.getExclusionMessage())
                 .currentRestriction(zeroOneToBoolean(offender.getCurrentRestriction()))
+                .restrictionMessage(offender.getRestrictionMessage())
                 .offenderManagers(offenderManagersOf(offender.getOffenderManagers()))
                 .build();
     }
