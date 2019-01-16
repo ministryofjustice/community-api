@@ -3,7 +3,6 @@ package uk.gov.justice.digital.delius.transformers;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
-import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderTransfer;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
@@ -27,25 +26,7 @@ public class OffenderTransformerTest {
                 ImmutableList.of(
                         aOffenderManager()
                                 .toBuilder()
-                                .offenderTransfer(null)
-                                .build()))
-                .get(0).getAllocationReason())
-                .isNull();
-
-    }
-
-    @Test
-    public void offenderManagerAllocationReasonNullWhenOffenderTransferHasAbsentAllocationReason() {
-        assertThat(offenderTransformer.offenderManagersOf(
-                ImmutableList.of(
-                        aOffenderManager()
-                                .toBuilder()
-                                .offenderTransfer(
-                                        aOffenderManager()
-                                                .getOffenderTransfer()
-                                                .toBuilder()
-                                                .allocationReason(null)
-                                                .build())
+                                .allocationReason(null)
                                 .build()))
                 .get(0).getAllocationReason())
                 .isNull();
@@ -55,16 +36,11 @@ public class OffenderTransformerTest {
     private OffenderManager aOffenderManager() {
         return OffenderManager
                 .builder()
-                .offenderTransfer(
-                        OffenderTransfer
+                .allocationReason(
+                        StandardReference
                                 .builder()
-                                .allocationReason(
-                                        StandardReference
-                                                .builder()
-                                                .codeDescription("Reallocation - Inactive Offender")
-                                                .codeValue("1984")
-                                                .build()
-                                )
+                                .codeDescription("Reallocation - Inactive Offender")
+                                .codeValue("1984")
                                 .build()
                 )
                 .probationArea(ProbationArea.builder().build())
