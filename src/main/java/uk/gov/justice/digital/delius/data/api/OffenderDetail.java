@@ -28,5 +28,7 @@ public class OffenderDetail {
     private String currentDisposal;
     private String partitionArea;
     private Boolean currentRestriction;
+    private String restrictionMessage;
     private Boolean currentExclusion;
+    private String exclusionMessage;
 }

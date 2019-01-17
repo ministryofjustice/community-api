@@ -174,7 +174,9 @@ public class OffenderTransformer {
                 .currentDisposal(Optional.ofNullable(offender.getCurrentDisposal()).map(Object::toString).orElse(null))
                 .partitionArea(Optional.ofNullable(offender.getPartitionArea()).map(PartitionArea::getArea).orElse(null))
                 .currentExclusion(zeroOneToBoolean(offender.getCurrentExclusion()))
+                .exclusionMessage(offender.getExclusionMessage())
                 .currentRestriction(zeroOneToBoolean(offender.getCurrentRestriction()))
+                .restrictionMessage(offender.getRestrictionMessage())
                 .offenderManagers(offenderManagersOf(offender.getOffenderManagers()))
                 .build();
     }
@@ -231,20 +233,18 @@ public class OffenderTransformer {
                 .active(zeroOneToBoolean(offenderManager.getActiveFlag()))
                 .fromDate(localDateOf(offenderManager.getAllocationDate()))
                 .toDate(localDateOf(offenderManager.getEndDate()))
-                .allocationReason(Optional.ofNullable(offenderManager.getOffenderTransfer())
+                .allocationReason(Optional.ofNullable(offenderManager.getAllocationReason())
                         .map(this::allocationReasonOf)
                         .orElse(null))
                 .build();
     }
 
-    private KeyValue allocationReasonOf(OffenderTransfer offenderTransfer) {
-        return Optional.ofNullable(offenderTransfer.getAllocationReason())
-                .map(standardReference -> KeyValue
-                        .builder()
-                        .code(standardReference.getCodeValue())
-                        .description(standardReference.getCodeDescription())
-                        .build())
-                .orElse(null);
+    private KeyValue allocationReasonOf(StandardReference allocationReason) {
+        return KeyValue
+                .builder()
+                .code(allocationReason.getCodeValue())
+                .description(allocationReason.getCodeDescription())
+                .build();
     }
 
     private LocalDate localDateOf(Timestamp timestamp) {

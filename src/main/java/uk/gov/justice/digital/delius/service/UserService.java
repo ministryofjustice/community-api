@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,11 +33,19 @@ public class UserService {
             User user = userRepositoryWrapper.getUser(subject);
 
             if (offenderDetail.getCurrentExclusion()) {
-                accessLimitationBuilder.userExcluded(user.isExcludedFrom(offenderDetail.getOffenderId()));
+                val userExcluded = user.isExcludedFrom(offenderDetail.getOffenderId());
+                accessLimitationBuilder.userExcluded(userExcluded);
+                if (userExcluded) {
+                    accessLimitationBuilder.exclusionMessage(offenderDetail.getExclusionMessage());
+                }
             }
 
             if (offenderDetail.getCurrentRestriction()) {
-                accessLimitationBuilder.userRestricted(!user.isRestrictedUserFor(offenderDetail.getOffenderId()));
+                val userRestricted = !user.isRestrictedUserFor(offenderDetail.getOffenderId());
+                accessLimitationBuilder.userRestricted(userRestricted);
+                if (userRestricted) {
+                    accessLimitationBuilder.restrictionMessage(offenderDetail.getRestrictionMessage());
+                }
             }
         }
 

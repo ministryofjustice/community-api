@@ -79,8 +79,8 @@ public class OffenderManager {
     @Column(name = "END_DATE")
     private Timestamp endDate;
 
-    @JoinColumn(name = "OFFENDER_TRANSFER_ID")
+    @JoinColumn(name = "ALLOCATION_REASON_ID")
     @OneToOne
-    private OffenderTransfer offenderTransfer;
+    private StandardReference allocationReason;
 
 }
