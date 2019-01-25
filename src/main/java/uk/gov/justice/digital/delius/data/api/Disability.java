@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Builder
 public class Disability {
     private Long disabilityId;
-    private KeyValue type;
+    private KeyValue disabilityType;
     private LocalDate startDate;
     private LocalDate endDate;
     private String notes;

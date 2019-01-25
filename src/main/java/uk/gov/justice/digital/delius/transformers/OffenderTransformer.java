@@ -308,7 +308,7 @@ public class OffenderTransformer {
                 .endDate(disability.getFinishDate())
                 .notes(disability.getNotes())
                 .startDate(disability.getStartDate())
-                .type(KeyValue
+                .disabilityType(KeyValue
                         .builder()
                         .code(disability.getDisabilityType().getCodeValue())
                         .description(disability.getDisabilityType().getCodeDescription()).build())
