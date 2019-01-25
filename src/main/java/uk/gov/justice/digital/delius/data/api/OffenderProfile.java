@@ -3,6 +3,8 @@ package uk.gov.justice.digital.delius.data.api;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Builder
 public class OffenderProfile {
@@ -18,4 +20,5 @@ public class OffenderProfile {
     private String remandStatus;
     private PreviousConviction previousConviction;
     private String riskColour;
+    private List<Disability> disabilities;
 }

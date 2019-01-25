@@ -147,6 +147,10 @@ public class Offender {
     @JoinColumn(name = "OFFENDER_ID")
     private List<OffenderAlias> offenderAliases;
 
+    @OneToMany
+    @JoinColumn(name = "OFFENDER_ID")
+    private List<Disability> disabilities;
+
     @ManyToOne
     @JoinColumn(name = "SEXUAL_ORIENTATION_ID")
     private StandardReference sexualOrientation;
