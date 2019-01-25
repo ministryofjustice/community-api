@@ -2,15 +2,12 @@ package uk.gov.justice.digital.delius.transformers;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
-import uk.gov.justice.digital.delius.data.api.Disability;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.digital.delius.util.OffenderHelper.anOffender;
@@ -42,7 +39,7 @@ public class OffenderTransformerTest {
 
     @Test
     public void disabilitiesCopiedWithLatestFirst() {
-        assertThat(idsOf(offenderTransformer.fullOffenderOf(anOffender()
+        assertThat(offenderTransformer.fullOffenderOf(anOffender()
                 .toBuilder()
                 .disabilities(ImmutableList.of(
                         uk.gov.justice.digital.delius.jpa.standard.entity.Disability
@@ -81,13 +78,14 @@ public class OffenderTransformerTest {
                 ))
                 .build())
                 .getOffenderProfile()
-                .getDisabilities()))
+                .getDisabilities())
+                .extracting("disabilityId")
                 .containsExactly(2L, 3L, 1L);
 
     }
     @Test
     public void deletedDisabilitiesNotCopied() {
-        assertThat(idsOf(offenderTransformer.fullOffenderOf(anOffender()
+        assertThat(offenderTransformer.fullOffenderOf(anOffender()
                 .toBuilder()
                 .disabilities(ImmutableList.of(
                         uk.gov.justice.digital.delius.jpa.standard.entity.Disability
@@ -115,13 +113,10 @@ public class OffenderTransformerTest {
                 ))
                 .build())
                 .getOffenderProfile()
-                .getDisabilities()))
+                .getDisabilities())
+                .extracting("disabilityId")
                 .containsExactly(1L);
 
-    }
-
-    private List<Long> idsOf(List<Disability> disabilities) {
-        return disabilities.stream().map(Disability::getDisabilityId).collect(Collectors.toList());
     }
 
     private OffenderManager aOffenderManager() {
