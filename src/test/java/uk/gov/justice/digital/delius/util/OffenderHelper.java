@@ -1,14 +1,7 @@
 package uk.gov.justice.digital.delius.util;
 
 import org.assertj.core.util.Lists;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
-import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAddress;
-import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
-import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Officer;
-import uk.gov.justice.digital.delius.jpa.standard.entity.PartitionArea;
-import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
-import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -68,6 +61,13 @@ public interface OffenderHelper {
                         .allocationDate(Timestamp.from(Calendar.getInstance().toInstant()))
                         .officer(Officer.builder().surname("Jones").build())
                         .probationArea(ProbationArea.builder().code("A").description("B").build())
+                        .build()))
+                .disabilities(Lists.newArrayList(Disability
+                        .builder()
+                        .softDeleted(0L)
+                        .disabilityId(1L)
+                        .startDate(LocalDate.now())
+                        .disabilityType(StandardReference.builder().codeValue("SI").codeDescription("Speech Impairment").build())
                         .build()))
                 .build();
     }

@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 public class Disability {
     @Id@Column(name = "DISABILITY_ID")
     private Long disabilityId;
+    @Column(name = "OFFENDER_ID")
+    private Long offenderID;
     @JoinColumn(name = "DISABILITY_TYPE_ID")
     @OneToOne
     private StandardReference disabilityType;
@@ -30,8 +32,6 @@ public class Disability {
     private Long softDeleted;
     @Column(name = "ROW_VERSION")
     private Long rowVersion;
-    @Column(name = "ORGANISATIONS")
-    private Object organisations;
     @Column(name = "CREATED_BY_USER_ID")
     private Long createdByUserId;
     @Column(name = "LAST_UPDATED_USER_ID")

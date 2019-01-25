@@ -78,6 +78,7 @@ public class OffenderTransformer {
                 .sexualOrientation(Optional.ofNullable(offender.getSexualOrientation()).map(StandardReference::getCodeDescription).orElse(null))
                 .riskColour(Optional.ofNullable(offender.getCurrentHighestRiskColour()).orElse(null))
                 .offenderDetails(offender.getOffenderDetails())
+                .disabilities(disabilitiesOf(offender.getDisabilities()))
                 .build();
     }
 
@@ -291,4 +292,28 @@ public class OffenderTransformer {
                 .forenames(combinedMiddleNamesOf(forename, forename2).stream().collect(Collectors.joining(" ")))
                 .build();
     }
+
+    private List<uk.gov.justice.digital.delius.data.api.Disability> disabilitiesOf(List<Disability> disabilities) {
+        return disabilities.stream()
+                .filter(disability -> disability.getSoftDeleted() == 0)
+                .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Disability::getStartDate)
+                        .reversed())
+                .map(this::disabilityOf).collect(Collectors.toList());
+    }
+
+    private uk.gov.justice.digital.delius.data.api.Disability disabilityOf(Disability disability) {
+        return uk.gov.justice.digital.delius.data.api.Disability
+                .builder()
+                .disabilityId(disability.getDisabilityId())
+                .endDate(disability.getFinishDate())
+                .notes(disability.getNotes())
+                .startDate(disability.getStartDate())
+                .type(KeyValue
+                        .builder()
+                        .code(disability.getDisabilityType().getCodeValue())
+                        .description(disability.getDisabilityType().getCodeDescription()).build())
+                .build();
+    }
+
+
 }
