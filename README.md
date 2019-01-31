@@ -88,4 +88,3 @@ curl -X GET http://localhost:8080/api/info
 curl -X GET http://localhost:8080/api/health
 ```
 
-
