@@ -9,6 +9,8 @@ import uk.gov.justice.digital.delius.jpa.dao.OffenderDelta;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 public class OffenderDeltaService {
 
@@ -20,13 +22,15 @@ public class OffenderDeltaService {
     }
 
     public List<OffenderDelta> findAll() {
-
-        return jdbcTemplate.query("SELECT * FROM OFFENDER_DELTA FETCH FIRST 1000 ROWS ONLY", (resultSet, rowNum) ->
+        return jdbcTemplate.query("SELECT * FROM OFFENDER_DELTA", (resultSet, rowNum) ->
                 OffenderDelta.builder()
                         .offenderId(resultSet.getLong("OFFENDER_ID"))
                         .dateChanged(resultSet.getTimestamp("DATE_CHANGED").toLocalDateTime())
                         .action(resultSet.getString("ACTION"))
-                        .build());
+                        .build())
+                        .stream()
+                        .limit(1000) // limit to 1000 without using database specific syntax specific technology
+                        .collect(toList());
     }
 
     @Transactional
