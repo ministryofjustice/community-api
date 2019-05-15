@@ -21,7 +21,7 @@ public class OffenderDeltaService {
 
     public List<OffenderDelta> findAll() {
 
-        return jdbcTemplate.query("SELECT * FROM OFFENDER_DELTA", (resultSet, rowNum) ->
+        return jdbcTemplate.query("SELECT * FROM OFFENDER_DELTA FETCH FIRST 1000 ROWS ONLY", (resultSet, rowNum) ->
                 OffenderDelta.builder()
                         .offenderId(resultSet.getLong("OFFENDER_ID"))
                         .dateChanged(resultSet.getTimestamp("DATE_CHANGED").toLocalDateTime())
