@@ -80,6 +80,29 @@ public class OffenderDeltaAPITest {
         assertThat(offenderDeltaList).isEqualTo(deltas);
     }
 
+    @Test
+    public void limitsOffenderDeltasTo1000() {
+
+        LocalDateTime now = LocalDateTime.now();
+
+        List<OffenderDelta> deltas = someDeltas(now, 2000l);
+        insert(deltas);
+
+        OffenderDelta[] offenderDeltas = given()
+
+                .when()
+                .get("/offenderDeltaIds")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(OffenderDelta[].class);
+
+        List<OffenderDelta> offenderDeltaList = Arrays.asList(offenderDeltas);
+
+        assertThat(offenderDeltaList).hasSize(1000);
+    }
+
     public void insert(List<OffenderDelta> deltas) {
         deltas.stream().forEach(
                 delta -> jdbcTemplate.update("INSERT INTO OFFENDER_DELTA(OFFENDER_ID, DATE_CHANGED, ACTION) VALUES (?, ?, ?)", delta.getOffenderId(), delta.getDateChanged(), delta.getAction())
