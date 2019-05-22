@@ -5,9 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -19,7 +21,7 @@ public class ResponsibleOfficer {
 
     @Id
     @Column(name = "RESPONSIBLE_OFFICER_ID")
-    private Long probationAreaId;
+    private Long responsibleOfficerId;
 
     /*
      Currently - the responsible officer can be either the OM or the POM.

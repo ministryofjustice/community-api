@@ -10,29 +10,33 @@ import java.time.LocalDate;
 @Builder
 public class ResponsibleOfficer {
 
-    @ApiModelProperty(required = true)
+    @ApiModelProperty(required=true)
+    private String nomsNumber;
+    @ApiModelProperty
     private Long responsibleOfficerId;
-    @ApiModelProperty(required = true)
+    @ApiModelProperty
     private Long offenderManagerId;
+    @ApiModelProperty
+    private Long prisonOffenderManagerId;
     @ApiModelProperty(required = true)
     private String staffCode;
-    private String forenames;
     @ApiModelProperty(required = true)
     private String surname;
+    private String forenames;
     private String providerTeamCode;
-    private String providerTeamDesc;
-    private String LduCode;
-    private String LduDesc;
+    private String providerTeamDescription;
+    private String lduCode;
+    private String lduDescription;
     private String probationAreaCode;
-    private String probationAreaDesc;
+    private String probationAreaDescription;
     @ApiModelProperty(required = true)
-    private boolean active;
+    private boolean isCurrentRo;
     @ApiModelProperty(required = true)
-    private LocalDate startDate;
+    private boolean isCurrentOm;
     @ApiModelProperty(required = true)
-    private LocalDate endDate;
+    private boolean isCurrentPom;
     @ApiModelProperty(required = true)
-    private boolean isPom;
+    private LocalDate omStartDate;
     @ApiModelProperty(required = true)
-    private boolean isOm;
+    private LocalDate omEndDate;
 }

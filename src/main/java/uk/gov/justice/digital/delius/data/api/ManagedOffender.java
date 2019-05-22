@@ -10,23 +10,23 @@ import java.time.LocalDate;
 @Builder
 public class ManagedOffender {
     @ApiModelProperty(required = true)
+    private String staffCode;
+    @ApiModelProperty(required = true)
     private Long offenderId;
     @ApiModelProperty(required = true)
     private String nomsNumber;
     @ApiModelProperty(required = true)
     private String crnNumber;
     @ApiModelProperty(required = true)
-    private String surname;
+    private String offenderSurname;
     @ApiModelProperty(required = true)
-    private boolean responsibleOfficer;
+    private boolean isCurrentRo;
     @ApiModelProperty(required = true)
-    private boolean offenderManager;
+    private boolean isCurrentOm;
     @ApiModelProperty(required = true)
-    private boolean prisonOffenderManager;
+    private boolean isCurrentPom;
     @ApiModelProperty(required = true)
-    private boolean current;
+    private LocalDate omStartDate;
     @ApiModelProperty(required = true)
-    private LocalDate startDate;
-    @ApiModelProperty(required = true)
-    private LocalDate endDate;
+    private LocalDate omEndDate;
 }
