@@ -22,13 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import uk.gov.justice.digital.delius.data.api.AccessLimitation;
-import uk.gov.justice.digital.delius.data.api.Count;
-import uk.gov.justice.digital.delius.data.api.DocumentMeta;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
-import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
-import uk.gov.justice.digital.delius.data.api.OffenderIdsResource;
-import uk.gov.justice.digital.delius.data.api.OffenderManager;
+import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
 import uk.gov.justice.digital.delius.service.AlfrescoService;
@@ -372,6 +366,22 @@ public class OffenderController {
         return alfrescoService.getDocument(documentId);
     }
 
+    @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/responsibleOfficers", method = RequestMethod.GET)
+    @ApiResponses(value = {
+                      @ApiResponse(code = 200, message = "A list of responsible officers for an offender", response = ResponsibleOfficer.class, responseContainer = "List"),
+                      @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+                      @ApiResponse(code = 403, message = "The requesting user was restricted from access", response = AccessLimitation.class),
+                      @ApiResponse(code = 404, message = "The requested offender was not found.")
+            })
+    @JwtValidation
+    public ResponseEntity<List<ResponsibleOfficer>> getResponsibleOfficersByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
+                                                                                       final @PathVariable("nomsNumber") String nomsNumber,
+                                                                                       final @RequestParam(name="current", required=false, defaultValue="false") String current) {
+
+        return offenderService.getResponsibleOfficersForNomsNumber(nomsNumber, current)
+                   .map(responsibleOfficer -> new ResponseEntity<>(responsibleOfficer ,OK))
+                  .orElse(new ResponseEntity<>(NOT_FOUND));
+    }
 
     private ResponseEntity<OffenderDetail> offenderDetailNotFound() {
         return new ResponseEntity<>(OffenderDetail.builder().build(), NOT_FOUND);

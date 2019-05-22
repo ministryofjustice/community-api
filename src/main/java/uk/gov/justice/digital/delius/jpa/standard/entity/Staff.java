@@ -5,10 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -31,4 +29,14 @@ public class Staff {
     @Column(name = "FORENAME2")
     private String forname2;
 
+    @Column(name = "OFFICER_CODE")
+    private String officerCode;
+
+    @OneToMany
+    @JoinColumn(name = "ALLOCATION_STAFF_ID")
+    List<OffenderManager> offenderManagers;
+
+    @OneToMany
+    @JoinColumn(name = "ALLOCATION_STAFF_ID")
+    List<PrisonOffenderManager> prisonOffenderManagers;
 }

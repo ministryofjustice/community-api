@@ -199,4 +199,8 @@ public class Offender {
     @OneToMany
     private List<OffenderManager> offenderManagers;
 
+    @JoinColumn(name = "OFFENDER_ID")
+    @OneToMany
+    private List<PrisonOffenderManager> prisonOffenderManagers;
+
 }

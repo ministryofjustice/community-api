@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderManager;
+import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
@@ -135,4 +136,10 @@ public class OffenderService {
 
     }
 
+    @Transactional(readOnly = true)
+    public Optional<List<ResponsibleOfficer>> getResponsibleOfficersForNomsNumber(String nomsNumber, String current) {
+        return offenderRepository.findByNomsNumber(nomsNumber).map(
+                offender -> offenderTransformer.responsibleOfficersOf(offender, Boolean.getBoolean(current)));
+
+    }
 }

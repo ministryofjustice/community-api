@@ -4,29 +4,18 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.justice.digital.delius.data.api.Address;
-import uk.gov.justice.digital.delius.data.api.ContactDetails;
-import uk.gov.justice.digital.delius.data.api.ContactDetailsSummary;
-import uk.gov.justice.digital.delius.data.api.PreviousConviction;
-import uk.gov.justice.digital.delius.data.api.Human;
-import uk.gov.justice.digital.delius.data.api.IDs;
-import uk.gov.justice.digital.delius.data.api.KeyValue;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
-import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
-import uk.gov.justice.digital.delius.data.api.OffenderLanguages;
 import uk.gov.justice.digital.delius.data.api.OffenderManager;
-import uk.gov.justice.digital.delius.data.api.OffenderProfile;
-import uk.gov.justice.digital.delius.data.api.PhoneNumber;
+import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.data.api.Team;
+import uk.gov.justice.digital.delius.data.api.*;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Disability;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -316,4 +305,97 @@ public class OffenderTransformer {
     }
 
 
+    public List<uk.gov.justice.digital.delius.data.api.ResponsibleOfficer> responsibleOfficersOf(Offender offender, boolean current) {
+
+        ArrayList<ResponsibleOfficer> list = new ArrayList<>();
+        // TODO - convert an offender to the List<api.ResponsibleOfficer>
+        // Read through the list of Offender managers - find the ones where the responsibleOficer is not null
+        // Get the staff, team, LDU, probation area details for these
+        // Get the PrisonOffenderManagers and do the same
+
+        // Set OM or POM flags based on which list the RO came from
+
+        if (current) {
+            // Filter the list to only those offenderManagers and ROs who are current
+            // - activeFlag = 1
+            // - (endDate == nul || endDate > now)
+            // - (allocationDate != null && allocationDate > now)
+            // - softDeleted != 1
+        }
+
+        return list;
+    }
+
+
+    public List<uk.gov.justice.digital.delius.data.api.ManagedOffender> managedOffenderOf(Staff staff, boolean current) {
+
+         ArrayList<ManagedOffender> managedOffenders = new ArrayList<>();
+
+        if (staff.getOffenderManagers() != null && !staff.getOffenderManagers().isEmpty()) {
+            for (uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager om : staff.getOffenderManagers()) {
+
+                boolean isAnRoForOffender = (om.getResponsibleOfficer()  != null);
+                boolean isCurrentRo = (isAnRoForOffender && om.getResponsibleOfficer().getEndDate() == null);
+
+                LocalDate startDate = null;
+                LocalDate endDate = null;
+
+                if (isAnRoForOffender) {
+                    startDate = om.getResponsibleOfficer().getStartDate();
+                    endDate = om.getResponsibleOfficer().getEndDate();
+                }
+
+                managedOffenders.add(
+                        uk.gov.justice.digital.delius.data.api.ManagedOffender.builder()
+                                .crnNumber(om.getManagedOffender().getCroNumber())
+                                .nomsNumber(om.getManagedOffender().getNomsNumber())
+                                .offenderId(om.getManagedOffender().getOffenderId())
+                                .surname(om.getManagedOffender().getSurname())
+                                .offenderManager(true)
+                                .prisonOffenderManager(false)
+                                .responsibleOfficer(isAnRoForOffender)
+                                .current(isCurrentRo)
+                                .startDate(startDate)
+                                .endDate(endDate)
+                                .build());
+            }
+        }
+
+        if (staff.getPrisonOffenderManagers() != null & !staff.getPrisonOffenderManagers().isEmpty()) {
+            for (uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager pom : staff.getPrisonOffenderManagers()) {
+
+                boolean isAnRoForOffender = (pom.getResponsibleOfficer()  != null);
+                boolean isCurrentRo = (isAnRoForOffender && pom.getResponsibleOfficer().getEndDate() == null);
+
+                LocalDate startDate = null;
+                LocalDate endDate = null;
+
+                if (isAnRoForOffender) {
+                    startDate = pom.getResponsibleOfficer().getStartDate();
+                    endDate = pom.getResponsibleOfficer().getEndDate();
+                }
+
+                managedOffenders.add(
+                        uk.gov.justice.digital.delius.data.api.ManagedOffender.builder()
+                                .crnNumber(pom.getManagedOffender().getCroNumber())
+                                .nomsNumber(pom.getManagedOffender().getNomsNumber())
+                                .offenderId(pom.getManagedOffender().getOffenderId())
+                                .surname(pom.getManagedOffender().getSurname())
+                                .offenderManager(false)
+                                .prisonOffenderManager(true)
+                                .responsibleOfficer(isAnRoForOffender)
+                                .current(isCurrentRo)
+                                .startDate(startDate)
+                                .endDate(endDate)
+                                .build());
+            }
+        }
+
+
+        if (current) {
+            // Filter the list of managed offenders to only those which are current - no historical view
+        }
+
+        return managedOffenders;
+    }
 }

@@ -9,22 +9,6 @@ https://circleci.com/gh/noms-digital-studio/delius-offender-api
 ## Gradle commands
 
 ### Build and run tests
-
-Due to its hosting in an external environment operated by Tolomy, the project needs to be built using
-JDK version 8. Here are the instructions for setting this up on Ubuntu, but will be similar for other
-development environments.
-
-`$ sudo apt-install java-opendk-8-jdk`
-
-`$ sudo update-alternatives --config java  (and select the jdk8 option)`
-
-`$ exportJAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd54  (or set this in your ~/.bashrc file)`
-
-* Restart IntelliJ 
-* In File -> Project Structure -> select this JDK for the project
-* In Settings -> Java Compiler check the bytecode version is set to 8
-* In Settings -> Build Tools -> Gradle check the Gradle JVM also uses the JDK8 version
-
 ```
 ./gradlew build
 ```
