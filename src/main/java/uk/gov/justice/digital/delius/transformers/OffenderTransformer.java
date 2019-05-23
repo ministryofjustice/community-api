@@ -414,7 +414,7 @@ public class OffenderTransformer {
             }
         }
 
-        if (staff.getPrisonOffenderManagers() != null & !staff.getPrisonOffenderManagers().isEmpty()) {
+        if (staff.getPrisonOffenderManagers() != null && !staff.getPrisonOffenderManagers().isEmpty()) {
 
             for (uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager pom : staff.getPrisonOffenderManagers()) {
 
