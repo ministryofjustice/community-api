@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.data.api.ManagedOffender;
-import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 
@@ -16,14 +15,12 @@ import java.util.Optional;
 @Slf4j
 public class StaffService {
 
-    private final OffenderRepository offenderRepository;
     private final StaffRepository staffRepository;
     private final OffenderTransformer offenderTransformer;
 
     @Autowired
-    public StaffService(OffenderRepository offenderRepository, StaffRepository staffRepository,
+    public StaffService(StaffRepository staffRepository,
                         OffenderTransformer offenderTransformer) {
-        this.offenderRepository = offenderRepository;
         this.offenderTransformer = offenderTransformer;
         this.staffRepository = staffRepository;
     }
