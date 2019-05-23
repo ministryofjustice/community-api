@@ -1,0 +1,15126 @@
+-- we don't know how to generate schema DELIUS_APP_SCHEMA (class Schema) :(
+create sequence COURT_REPORT_TRANSFER_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence REGISTRATION_CATEGORY_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence REGISTRATION_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence REGISTRATION_LEVEL_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence REGISTRATION_REVIEW_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence RELEASE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence REPORT_MANAGER_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence RESTRICTION_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence RISK_ASSESSMENT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence RQMNT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence RQMNT_MANAGER_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence RQMNT_TERMIN_REASON_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence RQMNT_TRANSFER_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence RQMNT_TYPE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence RQMNT_TYPE_MAIN_CATEGORY_IDSEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence SAR_CONTACT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence SC_PROVIDER_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence STAFF_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence STANDARD_REFERENCE_LIST_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence SUBJECT_ACCESS_REPORT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence TEAM_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence TRAINING_SESSION_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence TRAINING_SESSION_PASSWORDIDSEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence TRANSFER_REASON_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence TRIGGER_OFFENCE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence UPW_ADJUSTMENT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence UPW_ADJUSTMENT_TYPE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence UPW_ALLOCATION_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence UPW_APPOINTMENT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence UPW_COMMISSIONING_SOURCE_IDSEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence UPW_DAY_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence UPW_DETAILS_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence UPW_PROJECT_AVAILABILITY_IDSEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence UPW_PROJECT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence UPW_PROVIDER_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence USER_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence AD_RQMNT_TYPE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence AD_RQMNT_TYPE_MAIN_CAT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence ADDITIONAL_IDENTIFIER_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence ADDITIONAL_OFFENCE_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence ADDITIONAL_SENTENCE_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence ADDRESS_ASSESSMENT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence ADDRESS_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence ALIAS_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence AP_AUDIT_REGISTER_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence AP_REFERRAL_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence AP_RESIDENCE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence APPROVED_PREMISES_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence ASSESSMENT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence ASSESSMENT_OUTCOME_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence AUDITED_INTERACTION_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence BOROUGH_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence BUSINESS_INTERACTION_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence CIRCUMSTANCE_SUB_TYPE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence CIRCUMSTANCE_TYPE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence CJALICENCE_COND_TYPE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence CJALICENCE_CONDITIONTYPEID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence CONDITION_MAIN_CATEGORY_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence CONDITIONTYPESUBCATEGORY_D_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence CONTACT_ALERT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence CONTACT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence CONTACT_OUTCOME_TYPE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence CONTACT_SUSPENSION_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence CONTACT_TYPE_ICON_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence CONTACT_TYPE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence COURT_APPEARANCE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence COURT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence COURT_REPORT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence COURT_REPORT_TYPE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence CUSTODIAL_ESTABLISHMENT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence CUSTODY_CONTACT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence CUSTODY_CONTACT_TYPE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence CUSTODY_HISTORY_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence CUSTODY_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence DEREGISTRATION_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence DISABILITY_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence DISPOSAL_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence TRAINING_PROVIDER_USER_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence TRAINING_TABLE_ROWS_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence COHORT_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence INSTITUTIONAL_REP_TRANS_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence PSS_RQMNT_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence COHORT_HISTORY_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence PSS_RQMNT_MANAGER_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence PSS_RQMNT_TRANSFER_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence PSS_RQMNT_TYPE_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence PSS_RQMNT_TYPE_MAIN_CAT_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence PSS_RQMNT_TYPE_SUB_CAT_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence MERGE_HISTORY_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence MERGE_OFFENDER_VALUES_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence MOVE_ON_CATEGORY_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence ND_PARAMETER_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence NSI_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence NSI_MANAGER_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence NSI_STATUS_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence NSI_TRANSFER_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence NSI_TYPE_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence NSI_TYPE_STATUS_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence OASYS_ASSESSMENT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence OASYS_SENTENCE_PLAN_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence OBJECT_TYPE_DOC_TEMP_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence OFFENCE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence OFFENDER_ADDRESS_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence OFFENDER_CRN_SEQ
+	minvalue 1000
+	maxvalue 900000000000000000
+/
+
+create sequence OFFENDER_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence OFFENDER_ID_TYPE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence OFFENDER_MANAGER_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence OFFENDER_TRANSFER_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence OFFICE_LOCATION_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence OFFLOC_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence OGRS_ASSESSMENT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence ORDER_MANAGER_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence ORDER_TRANSFER_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence ORGANISATION_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence PARTITION_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence PERSONAL_CIRCUMSTANCE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence PERSONAL_CONTACT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence PNC_NUMBER_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence POST_CJA_LIC_COND_TYPE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence PROBATION_AREA_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence PROPOSAL_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence PROPOSED_RQMNT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence PROVIDER_EMPLOYEE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence PROVIDER_LOCATION_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence PROVIDER_TEAM_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence PROVISION_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence RECALL_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence RECALL_REASON_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence REFERENCE_DATA_MASTER_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence REFERRAL_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence REFERRAL_OUTCOME_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence REFERRAL_SOURCE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence REFERRAL_TYPE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence REGISTER_TYPE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence DISPOSAL_TERMIN_REASON_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence DISPOSAL_TYPE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence DISTRICT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence DOCUMENT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence DOCUMENT_TEMPLATE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence DOCUMENT_TYPE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence DPA_REPORT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence DRUG_TEST_PROFILE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence DRUG_TEST_RESULT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence DRUG_TYPE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence DRUG_USAGE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence DRUGS_TEST_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence ENFORCEMENT_ACTION_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence ENFORCEMENT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence EVENT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence EXCLUSION_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence EXPLANATION_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence EXTERNAL_PROVIDER_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence FORM_20_30_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence IAPS_MESSAGE_LOG_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence INSTITUTION_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence INSTITUTIONAL_REPORT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence INTERACTION_ID_TYPE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence LIC_COND_TYPE_MAIN_CAT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence LIC_CONDITION_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence LIC_CONDITION_MANAGER_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence LIC_CONDITION_TRANSFER_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence LIC_CONDITION_TYPE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence LIC_TERMIN_REASON_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence LOCAL_DELIVERY_UNIT_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence LOST_BEDS_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence MAIN_OFFENCE_ID_SEQ
+	minvalue 2500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence MERGE_DUPLICATES_ID_SEQ
+	maxvalue 900000000000000000
+/
+
+create sequence SPG_NOTIFICATION_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence SPG_INBOUND_INDEX_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence KEY_DATE_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence CASE_ALLOCATION_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence CASE_ALLOCATION_QUEST_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence MASTER_TRANSFER_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence OFFENDER_CRC_EXPORT_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence SPG_SEARCH_OFFENDER_ID_SEQ
+/
+
+create sequence DSS_SEARCH_OFFENDER_ID_SEQ
+/
+
+create sequence PROVIDER_LAO_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence SPG_SEARCH_REQUEST_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence DSS_SEARCH_REQUEST_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence SPG_EXCEPTION_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence SPG_ERROR_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence SPG_ERROR_ELEMENT_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence SPG_ERROR_DETAIL_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence REGISTER_GROUP_ID_SEQ
+	minvalue 1500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence REGISTER_TYPE_DUP_GRP_SEQ
+	minvalue 1500000000
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence REJECTED_TRANSFER_DIARY_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence HOST_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence HOST_AT_RELEASE_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence TIER_ALLOCATION_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence TIER_ALLOCATION_QUEST_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence PRISON_OFFENDER_MANAGER_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence RESPONSIBLE_OFFICER_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence PRECON_HISTORY_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence PRECON_TRANSACTION_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence TIER_ALLOC_QUESTION_TIER_IDSEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence NOMIS_TYPE_NSI_TYPE_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence CONTACT_ALERT_CLEAR_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence SPG_DOCUMENT_REQUEST_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence NOMIS_CASE_NOTE_ERROR_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence SPG_ERROR_CLEAR_REQUEST_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence CRC_INACTIVE_OFFENDER_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create sequence DATA_SCRIPT_MESSAGE_ID_SEQ
+	maxvalue 900000000000000000
+	cache 500
+/
+
+create TYPE                     "T_ARR_ORGANISATIONS"                                          AS VARRAY(512) OF VARCHAR2(30);
+/
+
+create TYPE                     "T_TAB_ORGANISATIONS"                                          AS TABLE OF VARCHAR2(30);
+/
+
+create type T_ARR_ORGANISATIONS is varray(512) of VARCHAR2(30)
+/
+
+create type T_TAB_ORGANISATIONS as table of VARCHAR2(30)
+/
+
+create type SYS_PLSQL_746078_36_1 as table of SYS_PLSQL_746078_9_1
+/
+
+create type SYS_PLSQL_746090_24_1 as table of SYS_PLSQL_746090_9_1
+/
+
+create type SYS_PLSQL_746090_85_1 as table of SYS_PLSQL_746090_51_1
+/
+
+create type SYS_PLSQL_808149_201_1 as table of SYS_PLSQL_808149_9_1
+/
+
+create type SYS_PLSQL_100892_1013_1 as table of SYS_PLSQL_100892_815_1
+/
+
+create type SYS_PLSQL_808149_764_1 as table of SYS_PLSQL_808149_474_1
+/
+
+create type SYS_PLSQL_746090_442_1 as table of SYS_PLSQL_746090_162_1
+/
+
+create table IAPS_EVENT
+(
+	EVENT_ID NUMBER not null
+		constraint XPKIAPS_EVENT
+			primary key,
+	IAPS_FLAG NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+)
+/
+
+create table IAPS_LIC_CONDITION
+(
+	LIC_CONDITION_ID NUMBER not null
+		constraint XPKIAPS_LIC_CONDITION
+			primary key,
+	IAPS_FLAG NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+)
+/
+
+create table TRAINING_SESSION
+(
+	TRAINING_SESSION_ID NUMBER not null
+		constraint XPKTRAINING_SESSION
+			primary key,
+	NAME VARCHAR2(50) not null,
+	SESSION_PASSWORD VARCHAR2(50) not null,
+	constraint XAK1TRAINING_SESSION
+		unique (NAME, TRAINING_SESSION_ID)
+)
+/
+
+create table UPW_DAY
+(
+	UPW_DAY_ID NUMBER not null
+		constraint XPKUPW_DAY
+			primary key,
+	WEEK_DAY VARCHAR2(20) not null,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION
+)
+/
+
+create table R_CIRCUMSTANCE_SUB_TYPE
+(
+	CIRCUMSTANCE_SUB_TYPE_ID NUMBER not null
+		constraint XPKR_CIRCUMSTANCE_SUB_TYPE
+			primary key,
+	CODE_VALUE VARCHAR2(100) not null,
+	CODE_DESCRIPTION VARCHAR2(500) not null,
+	SELECTABLE CHAR not null,
+	ACTIVE_DUPLICATES CHAR not null
+		constraint YES_OR_NO_ONLY36
+			check (ACTIVE_DUPLICATES IN ('Y','N')),
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	QUALIFICATION_1_ID NUMBER,
+	QUALIFICATION_2_ID NUMBER,
+	QUALIFICATION_3_ID NUMBER,
+	constraint XAK1R_CIRCUMSTANCE_SUB_TYPE
+		unique (CODE_VALUE, TRAINING_SESSION_ID, CIRCUMSTANCE_SUB_TYPE_ID)
+)
+/
+
+create table DISTRICT
+(
+	DISTRICT_ID NUMBER not null
+		constraint XPKDISTRICT
+			primary key,
+	CODE VARCHAR2(20) not null,
+	DESCRIPTION VARCHAR2(30) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO3
+			check (SELECTABLE IN ('N','Y')),
+	BOROUGH_ID NUMBER not null,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XAK1DISTRICT
+		unique (CODE, TRAINING_SESSION_ID, DISTRICT_ID)
+)
+/
+
+create table TRAINING_SESSION_PASSWORD
+(
+	TRAINING_SESSION_PASSWORD_ID NUMBER not null
+		constraint XPKTRAINING_SESSION_PASSWORD
+			primary key,
+	WEEK_IDENTIFIER VARCHAR2(50) not null,
+	START_DATE DATE,
+	END_DATE DATE,
+	WEEK_SESSION_PASSWORD VARCHAR2(50) not null,
+	TRAINING_SESSION_ID NUMBER not null
+		references TRAINING_SESSION
+)
+/
+
+create table TEAM
+(
+	TEAM_ID NUMBER not null
+		constraint XPKTEAM
+			primary key,
+	CODE CHAR(6) not null,
+	DESCRIPTION VARCHAR2(50) not null,
+	DISTRICT_ID NUMBER not null
+		references DISTRICT,
+	LOCAL_DELIVERY_UNIT_ID NUMBER not null,
+	TELEPHONE VARCHAR2(35),
+	UNPAID_WORK_TEAM CHAR not null
+		constraint YES_OR_NO_OR_UNKNOWN8
+			check (UNPAID_WORK_TEAM IN ('N','Y','U')),
+	ROW_VERSION NUMBER default 0 not null,
+	FAX_NUMBER VARCHAR2(35),
+	CONTACT_NAME VARCHAR2(200),
+	START_DATE DATE not null,
+	END_DATE DATE,
+	CREATED_DATETIME DATE not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	PROBATION_AREA_ID NUMBER not null,
+	PRIVATE NUMBER not null
+		constraint TRUE_OR_FALSE_924858398
+			check (PRIVATE IN (0, 1)),
+	SC_PROVIDER_ID NUMBER,
+	DESIGNATED_TRANSFER_TEAM NUMBER default 0
+		constraint TRUE_OR_FALSE_871680176
+			check (DESIGNATED_TRANSFER_TEAM IN (0, 1)),
+	constraint XAK2TEAM
+		unique (CODE, TRAINING_SESSION_ID, TEAM_ID),
+	constraint PROVIDER_LOCATION_DATE_VALID8
+		check ( (
+(START_DATE <= END_DATE) OR (END_DATE IS NULL)
+))
+)
+/
+
+create table BUSINESS_INTERACTION
+(
+	BUSINESS_INTERACTION_ID NUMBER not null
+		constraint XPKBUSINESS_INTERACTION
+			primary key,
+	BUSINESS_INTERACTION_CODE VARCHAR2(20) not null,
+	DESCRIPTION VARCHAR2(500) not null,
+	ENABLED_DATE DATE,
+	AUDIT_INTERACTION_PARAMETER DATE,
+	ROW_VERSION NUMBER default 0 not null
+)
+/
+
+create table AUDITED_INTERACTION
+(
+	DATE_TIME DATE not null,
+	OUTCOME CHAR not null,
+	INTERACTION_PARAMETERS VARCHAR2(4000),
+	USER_ID NUMBER not null,
+	BUSINESS_INTERACTION_ID NUMBER not null,
+	SPG_USERNAME VARCHAR2(80)
+)
+/
+
+create table IAPS_CONTACT
+(
+	CONTACT_ID NUMBER not null
+		constraint XPKIAPS_CONTACT
+			primary key,
+	IAPS_FLAG NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+)
+/
+
+create table ND_PARAMETER
+(
+	ND_PARAMETER_ID NUMBER not null
+		constraint XPKND_PARAMETER
+			primary key,
+	ND_PARAMETER VARCHAR2(500) not null,
+	ND_VALUE NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	ND_VALUE_STRING VARCHAR2(400),
+	constraint XAK1ND_PARAMETER
+		unique (ND_PARAMETER, ND_PARAMETER_ID)
+)
+/
+
+create table R_DRUG_TYPE
+(
+	DRUG_TYPE_ID NUMBER not null
+		constraint XPKR_DRUG_TYPE
+			primary key,
+	CODE VARCHAR2(10) not null,
+	DESCRIPTION VARCHAR2(50) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO4
+			check (SELECTABLE IN ('N','Y')),
+	CAN_BE_INJECTED CHAR not null
+		constraint YES_OR_NO_OR_UNKNOWN6
+			check (CAN_BE_INJECTED IN ('N','Y','U')),
+	QUANTITY_LABEL VARCHAR2(100) not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	constraint XAK1R_DRUG_TYPE
+		unique (CODE, TRAINING_SESSION_ID, DRUG_TYPE_ID)
+)
+/
+
+create table R_TRANSFER_REASON
+(
+	TRANSFER_REASON_ID NUMBER not null
+		constraint XPKR_TRANSFER_REASON
+			primary key,
+	CODE VARCHAR2(100) not null,
+	DESCRIPTION VARCHAR2(500) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO26
+			check (SELECTABLE IN ('N','Y')),
+	TYPE VARCHAR2(20) not null,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XAK1R_TRANSFER_REASON
+		unique (CODE, TRAINING_SESSION_ID, TRANSFER_REASON_ID)
+)
+/
+
+create table R_PSS_RQMNT_TYPE_SUB_CATEGORY
+(
+	PSS_RQMNT_TYPE_SUB_CAT_ID NUMBER(22) not null
+		constraint XPKR_PSS_RQMNT_TYPE_SUB_CATEGO
+			primary key,
+	CODE VARCHAR2(20) not null,
+	DESCRIPTION VARCHAR2(200) not null,
+	SELECTABLE CHAR not null
+		constraint SELECTABLE_1265392886
+			check (SELECTABLE IN ('N','Y')),
+	EXPECTED_SECTOR VARCHAR2(10),
+	ALLOW_DUPLICATES CHAR
+		constraint YES_OR_NO_ONLY_1406907081
+			check (ALLOW_DUPLICATES IN ('Y','N')),
+	INACTIVE_DUPLICATES CHAR
+		constraint YES_OR_NO_ONLY_1716387023
+			check (INACTIVE_DUPLICATES IN ('Y','N')),
+	ROW_VERSION NUMBER(22) default 0 not null,
+	CREATED_BY_USER_ID NUMBER(22) not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER(22) not null,
+	LAST_UPDATED_DATETIME DATE not null
+)
+/
+
+create table R_CONTACT_OUTCOME_TYPE
+(
+	CONTACT_OUTCOME_TYPE_ID NUMBER not null
+		constraint XPKR_CONTACT_OUTCOME_TYPE
+			primary key,
+	CODE VARCHAR2(10) not null,
+	DESCRIPTION VARCHAR2(50) not null,
+	OUTCOME_ATTENDANCE CHAR,
+	SELECTABLE CHAR not null,
+	OUTCOME_COMPLIANT_ACCEPTABLE CHAR
+		constraint YES_OR_NO_427
+			check (OUTCOME_COMPLIANT_ACCEPTABLE IN ('Y','N')),
+	ENFORCEABLE CHAR
+		constraint YES_OR_NO_428
+			check (ENFORCEABLE IN ('Y','N')),
+	CREATED_DATETIME DATE not null,
+	ACTION_REQUIRED CHAR not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION
+)
+/
+
+create table R_EXPLANATION
+(
+	EXPLANATION_ID NUMBER not null
+		constraint XPKR_EXPLANATION
+			primary key,
+	CODE VARCHAR2(10) not null,
+	DESCRIPTION VARCHAR2(100) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO20
+			check (SELECTABLE IN ('N','Y')),
+	ACCEPTABLE CHAR not null
+		constraint YES_OR_NO_ONLY37
+			check (ACCEPTABLE IN ('Y','N')),
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XAK1R_EXPLANATION
+		unique (CODE, TRAINING_SESSION_ID, EXPLANATION_ID)
+)
+/
+
+create table PARTITION_AREA
+(
+	PARTITION_AREA_ID NUMBER not null
+		constraint XPKPARTITION_AREA
+			primary key,
+	AREA VARCHAR2(30) not null,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION
+)
+/
+
+create table ADDRESS
+(
+	ADDRESS_ID NUMBER not null
+		constraint XPKADDRESS
+			primary key,
+	BUILDING_NAME VARCHAR2(35),
+	ADDRESS_NUMBER VARCHAR2(35),
+	STREET_NAME VARCHAR2(35),
+	DISTRICT VARCHAR2(35),
+	TOWN_CITY VARCHAR2(35),
+	POSTCODE VARCHAR2(8),
+	COUNTY VARCHAR2(35),
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE39
+			check (SOFT_DELETED IN (0, 1)),
+	TELEPHONE_NUMBER VARCHAR2(35),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION
+)
+/
+
+create table R_ASSESSMENT_OUTCOME
+(
+	ASSESSMENT_OUTCOME_ID NUMBER not null
+		constraint XPKR_ASSESSMENT_OUTCOME
+			primary key,
+	CODE VARCHAR2(10) not null,
+	DESCRIPTION VARCHAR2(50) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO17
+			check (SELECTABLE IN ('N','Y')),
+	ASSESSMENT_OPEN_TO_EDIT CHAR not null
+		constraint YES_OR_NO_ONLY34
+			check (ASSESSMENT_OPEN_TO_EDIT IN ('Y','N')),
+	CREATED_BY_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	SPG_OVERRIDE NUMBER
+		constraint TRUE_OR_FALSE_1531610057
+			check (SPG_OVERRIDE IN (0, 1)),
+	constraint XAK1R_ASSESSMENT_OUTCOME
+		unique (CODE, TRAINING_SESSION_ID, ASSESSMENT_OUTCOME_ID)
+)
+/
+
+create table R_CIRCUMSTANCE_TYPE
+(
+	CIRCUMSTANCE_TYPE_ID NUMBER not null
+		constraint XPKR_CIRCUMSTANCE_TYPE
+			primary key,
+	CODE_VALUE VARCHAR2(100) not null,
+	CODE_DESCRIPTION VARCHAR2(500) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO8
+			check (SELECTABLE IN ('N','Y')),
+	ACTIVE_DUPLICATES CHAR not null
+		constraint YES_OR_NO_ONLY28
+			check (ACTIVE_DUPLICATES IN ('Y','N')),
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	ENQUIRY NUMBER(22)
+		constraint TRUE_OR_FALSE_1423364334
+			check (ENQUIRY IN (0, 1)),
+	SPG_INTEREST NUMBER
+		constraint TRUE_OR_FALSE_1534029671
+			check (SPG_INTEREST IN (0, 1)),
+	constraint XAK1R_CIRCUMSTANCE_TYPE
+		unique (CODE_VALUE, TRAINING_SESSION_ID, CIRCUMSTANCE_TYPE_ID)
+)
+/
+
+create table R_COURT_REPORT_TYPE
+(
+	COURT_REPORT_TYPE_ID NUMBER not null
+		constraint XPKR_COURT_REPORT_TYPE
+			primary key,
+	CODE VARCHAR2(20) not null,
+	DESCRIPTION VARCHAR2(50) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO1
+			check (SELECTABLE IN ('N','Y')),
+	DELIVERED CHAR
+		constraint YES_OR_NO_ONLY17
+			check (DELIVERED IN ('Y','N')),
+	ROW_VERSION NUMBER default 0 not null,
+	REQUESTED CHAR
+		constraint YES_OR_NO_ONLY18
+			check (REQUESTED IN ('Y','N')),
+	FORM_30_CODE VARCHAR2(20),
+	PSR CHAR
+		constraint YES_OR_NO_ONLY19
+			check (PSR IN ('Y','N')),
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	PRIVATE_TRANSFER CHAR not null
+		constraint YES_OR_NO_ONLY_1294020556
+			check (PRIVATE_TRANSFER IN ('Y','N')),
+	constraint XAK1R_COURT_REPORT_TYPE
+		unique (CODE, TRAINING_SESSION_ID, COURT_REPORT_TYPE_ID),
+	constraint XAK2R_COURT_REPORT_TYPE
+		unique (FORM_30_CODE, TRAINING_SESSION_ID, COURT_REPORT_TYPE_ID)
+)
+/
+
+create table R_MOVE_ON_CATEGORY
+(
+	MOVE_ON_CATEGORY_ID NUMBER not null
+		constraint XPKR_MOVE_ON_CATEGORY
+			primary key,
+	CODE VARCHAR2(20) not null,
+	DESCRIPTION VARCHAR2(50) not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO21
+			check (SELECTABLE IN ('N','Y')),
+	DESTINATION_DETAILS_FLAG CHAR not null
+		constraint YES_OR_NO_ONLY38
+			check (DESTINATION_DETAILS_FLAG IN ('Y','N')),
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	constraint XAK1R_MOVE_ON_CATEGORY
+		unique (CODE, TRAINING_SESSION_ID, MOVE_ON_CATEGORY_ID)
+)
+/
+
+create table R_CIRCUMSTANCE_TYPE_SUBTYPE
+(
+	CIRCUMSTANCE_TYPE_ID NUMBER not null
+		references R_CIRCUMSTANCE_TYPE,
+	CIRCUMSTANCE_SUB_TYPE_ID NUMBER not null
+		references R_CIRCUMSTANCE_SUB_TYPE,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_CIRCUMSTANCE_TYPE_SUBTYPE
+		primary key (CIRCUMSTANCE_TYPE_ID, CIRCUMSTANCE_SUB_TYPE_ID)
+)
+/
+
+create table ORGANISATION
+(
+	ORGANISATION_ID NUMBER not null
+		constraint XPKORGANISATION
+			primary key,
+	CODE VARCHAR2(20) not null,
+	DESCRIPTION VARCHAR2(200) not null,
+	CONTACT_NAME VARCHAR2(200),
+	ADDRESS_ID NUMBER not null
+		constraint R_886
+			references ADDRESS,
+	PRIVATE NUMBER not null
+		constraint TRUE_OR_FALSE_1719627878
+			check (PRIVATE IN (0, 1)),
+	START_DATE DATE not null,
+	END_DATE DATE,
+	ACTIVE_FLAG NUMBER not null,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		constraint R_887
+			references TRAINING_SESSION,
+	constraint ACTIVE_FLAG_END_DAT_1597930852
+		check ( (ACTIVE_FLAG = 0 AND END_DATE IS NOT NULL)
+OR
+(ACTIVE_FLAG = 1 AND END_DATE IS NULL)
+)
+)
+/
+
+create table IAPS_RQMNT
+(
+	RQMNT_ID NUMBER not null
+		constraint XPKIAPS_RQMNT
+			primary key,
+	IAPS_FLAG NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+)
+/
+
+create table IAPS_OFFENDER
+(
+	OFFENDER_ID NUMBER not null
+		constraint XPKIAPS_OFFENDER
+			primary key,
+	IAPS_FLAG NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+)
+/
+
+create table EXTERNAL_PROVIDER
+(
+	EXTERNAL_PROVIDER_ID NUMBER not null
+		constraint XPKEXTERNAL_PROVIDER
+			primary key,
+	CODE VARCHAR2(20) not null,
+	DESCRIPTION VARCHAR2(50) not null,
+	CONTACT_NAME VARCHAR2(200),
+	FAX_NUMBER VARCHAR2(35),
+	ROW_VERSION NUMBER default 0 not null,
+	ADDRESS_ID NUMBER
+		references ADDRESS,
+	START_DATE DATE not null,
+	END_DATE DATE,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XAK1EXTERNAL_PROVIDER
+		unique (CODE, TRAINING_SESSION_ID, EXTERNAL_PROVIDER_ID),
+	constraint PROVIDER_LOCATION_DATE_VALID5
+		check ( (
+(START_DATE <= END_DATE) OR (END_DATE IS NULL)
+))
+)
+/
+
+create table R_REFERENCE_DATA_MASTER
+(
+	REFERENCE_DATA_MASTER_ID NUMBER not null
+		constraint XPKR_REFERENCE_DATA_MASTER
+			primary key,
+	CODE_SET_NAME VARCHAR2(100) not null,
+	DESCRIPTION VARCHAR2(500) not null,
+	LIST_SEQUENCE CHAR not null,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XAK1R_REFERENCE_DATA_MASTER
+		unique (CODE_SET_NAME, TRAINING_SESSION_ID, REFERENCE_DATA_MASTER_ID)
+)
+/
+
+create table R_STANDARD_REFERENCE_LIST
+(
+	STANDARD_REFERENCE_LIST_ID NUMBER not null
+		constraint XPKR_STANDARD_REFERENCE_LIST
+			primary key,
+	CODE_VALUE VARCHAR2(100) not null,
+	CODE_DESCRIPTION VARCHAR2(500) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO27
+			check (SELECTABLE IN ('N','Y')),
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	REFERENCE_DATA_MASTER_ID NUMBER not null
+		references R_REFERENCE_DATA_MASTER,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	SPG_INTEREST NUMBER
+		constraint TRUE_OR_FALSE_1883892480
+			check (SPG_INTEREST IN (0, 1)),
+	SPG_OVERRIDE NUMBER
+		constraint TRUE_OR_FALSE_1684532474
+			check (SPG_OVERRIDE IN (0, 1)),
+	constraint XAK1R_STANDARD_REFERENCE_LIST
+		unique (CODE_VALUE, REFERENCE_DATA_MASTER_ID, STANDARD_REFERENCE_LIST_ID)
+)
+/
+
+create table R_COURT_REJECTION_REASON
+(
+	COURT_REPORT_TYPE_ID NUMBER not null
+		constraint R_1037
+			references R_COURT_REPORT_TYPE,
+	REJECTION_REASON_ID NUMBER not null
+		constraint R_1038
+			references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER default 0 not null,
+	constraint XPKR_COURT_REJECTION_REASON
+		primary key (COURT_REPORT_TYPE_ID, REJECTION_REASON_ID)
+)
+/
+
+create table R_COURT_TRANSFER_REASON
+(
+	COURT_REPORT_TYPE_ID NUMBER not null
+		constraint R_1035
+			references R_COURT_REPORT_TYPE,
+	TRANSFER_REASON_ID NUMBER not null
+		constraint R_1036
+			references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER default 0 not null,
+	constraint XPKR_COURT_TRANSFER_REASON
+		primary key (COURT_REPORT_TYPE_ID, TRANSFER_REASON_ID)
+)
+/
+
+create table R_PSS_RQMNT_TYPE_MAIN_CATEGORY
+(
+	PSS_RQMNT_TYPE_MAIN_CAT_ID NUMBER(22) not null
+		constraint XPKR_PSS_RQMNT_TYPE_MAIN_CATEG
+			primary key,
+	CODE VARCHAR2(20) not null,
+	DESCRIPTION VARCHAR2(200) not null,
+	SELECTABLE CHAR not null
+		constraint SELECTABLE_2088104937
+			check (SELECTABLE IN ('N','Y')),
+	UNITS_ID NUMBER(22)
+		constraint R_937
+			references R_STANDARD_REFERENCE_LIST,
+	AUTO_START CHAR not null
+		constraint YES_OR_NO_ONLY_136087698
+			check (AUTO_START IN ('Y','N')),
+	ALLOW_DUPLICATES CHAR
+		constraint YES_OR_NO_ONLY_1125613121
+			check (ALLOW_DUPLICATES IN ('Y','N')),
+	INACTIVE_DUPLICATES CHAR
+		constraint YES_OR_NO_ONLY_1877274624
+			check (INACTIVE_DUPLICATES IN ('Y','N')),
+	MINIMUM_LENGTH NUMBER(22),
+	MAXIMUM_LENGTH NUMBER(22),
+	EXPECTED_SECTOR VARCHAR2(10),
+	ROW_VERSION NUMBER(22) default 0 not null,
+	CREATED_BY_USER_ID NUMBER(22) not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER(22) not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TERM_COUNT CHAR
+		constraint TERM_COUNT_D_S_367500932
+			check (TERM_COUNT IN ('D','S'))
+)
+/
+
+create table R_PSS_RQMNT_TRANSFER_REASON
+(
+	PSS_RQMNT_TYPE_MAIN_CAT_ID NUMBER(22) not null
+		constraint R_989
+			references R_PSS_RQMNT_TYPE_MAIN_CATEGORY,
+	TRANSFER_REASON_ID NUMBER(22) not null
+		constraint R_1010
+			references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER(22) default 0 not null,
+	constraint XPKR_PSS_RQMNT_TRANSFER_REASON
+		primary key (PSS_RQMNT_TYPE_MAIN_CAT_ID, TRANSFER_REASON_ID)
+)
+/
+
+create table R_INSTITUTION
+(
+	INSTITUTION_ID NUMBER not null,
+	ESTABLISHMENT CHAR not null
+		constraint YES_OR_NO_ONLY30
+			check (ESTABLISHMENT IN ('Y','N')),
+	CODE CHAR(6) not null,
+	DESCRIPTION VARCHAR2(100) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO10
+			check (SELECTABLE IN ('N','Y')),
+	INSTITUTION_NAME VARCHAR2(100),
+	FAX_NUMBER VARCHAR2(35),
+	ADDRESS_ID NUMBER
+		references ADDRESS,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_DATETIME DATE not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	ESTABLISHMENT_TYPE_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	IMMIGRATION_REMOVAL_CENTRE CHAR
+		constraint YES_OR_NO_ONLY_567802777
+			check (IMMIGRATION_REMOVAL_CENTRE IN ('Y','N')),
+	NOMIS_CDE_CODE VARCHAR2(50),
+	PRIVATE NUMBER
+		constraint TRUE_OR_FALSE_2088138974
+			check (PRIVATE IN (0, 1)),
+	constraint XPKR_INSTITUTION
+		primary key (INSTITUTION_ID, ESTABLISHMENT),
+	constraint XAK1R_INSTITUTION
+		unique (CODE, TRAINING_SESSION_ID, INSTITUTION_ID, ESTABLISHMENT)
+)
+/
+
+create table R_PSS_RQMNT_TYPE
+(
+	PSS_RQMNT_TYPE_ID NUMBER(22) not null
+		constraint XPKR_PSS_RQMNT_TYPE
+			primary key,
+	PSS_RQMNT_TYPE_SUB_CAT_ID NUMBER(22) not null
+		constraint R_963
+			references R_PSS_RQMNT_TYPE_SUB_CATEGORY,
+	PSS_RQMNT_TYPE_MAIN_CAT_ID NUMBER(22) not null
+		constraint R_964
+			references R_PSS_RQMNT_TYPE_MAIN_CATEGORY,
+	ROW_VERSION NUMBER(22) default 0 not null
+)
+/
+
+create table PROPOSAL_TYPE_COURTREPORT_TYPE
+(
+	PROPOSAL_TYPE_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	COURT_REPORT_TYPE_ID NUMBER not null
+		references R_COURT_REPORT_TYPE,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_DATETIME DATE not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKPROPOSAL_TYPE_COURTREPORT_T
+		primary key (PROPOSAL_TYPE_ID, COURT_REPORT_TYPE_ID)
+)
+/
+
+create table OFFICER
+(
+	TRUST_PROVIDER_FLAG NUMBER not null
+		constraint TRUE_OR_FALSE69
+			check (TRUST_PROVIDER_FLAG IN (0, 1)),
+	STAFF_EMPLOYEE_ID NUMBER not null,
+	SURNAME VARCHAR2(35) not null,
+	FORENAME VARCHAR2(35) not null,
+	FORENAME2 VARCHAR2(35),
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	STAFF_GRADE_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	START_DATE DATE not null,
+	END_DATE DATE not null,
+	constraint XPKOFFICER
+		primary key (TRUST_PROVIDER_FLAG, STAFF_EMPLOYEE_ID)
+)
+/
+
+create table R_RQMNT_TYPE_MAIN_CATEGORY
+(
+	RQMNT_TYPE_MAIN_CATEGORY_ID NUMBER not null
+		constraint XPKR_RQMNT_TYPE_MAIN_CATEGORY
+			primary key,
+	CODE VARCHAR2(20) not null,
+	DESCRIPTION VARCHAR2(200) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO25
+			check (SELECTABLE IN ('N','Y')),
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	UNITS_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	AUTO_START CHAR not null
+		constraint YES_OR_NO_ONLY39
+			check (AUTO_START IN ('Y','N')),
+	ALLOW_DUPLICATES CHAR
+		constraint YES_OR_NO_432
+			check (ALLOW_DUPLICATES IN ('Y','N')),
+	MINIMUM_LENGTH NUMBER,
+	MAXIMUM_LENGTH NUMBER,
+	FORM_20_CODE VARCHAR2(50),
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TERM_COUNT CHAR
+		constraint TERM_COUNT_D_S_980137180
+			check (TERM_COUNT IN ('D','S')),
+	SUB_TYPE_CHANGE CHAR default 'N'
+		constraint YES_OR_NO_ONLY_191134824
+			check (SUB_TYPE_CHANGE IN ('Y','N')),
+	constraint XAK1R_RQMNT_TYPE_MAIN_CATEGORY
+		unique (CODE, TRAINING_SESSION_ID, RQMNT_TYPE_MAIN_CATEGORY_ID)
+)
+/
+
+create table R_RQMNT_TYPE_TERMINATION
+(
+	RQMNT_TERMINATION_REASON_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	RQMNT_TYPE_MAIN_CATEGORY_ID NUMBER not null
+		references R_RQMNT_TYPE_MAIN_CATEGORY,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_RQMNT_TYPE_TERMINATION
+		primary key (RQMNT_TERMINATION_REASON_ID, RQMNT_TYPE_MAIN_CATEGORY_ID)
+)
+/
+
+create table R_RQMNT_REJECTION_REASON
+(
+	RQMNT_TYPE_MAIN_CATEGORY_ID NUMBER(22) not null
+		constraint R_993
+			references R_RQMNT_TYPE_MAIN_CATEGORY,
+	REJECTION_REASON_ID NUMBER(22) not null
+		constraint R_994
+			references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER(22) default 0 not null,
+	constraint XPKR_RQMNT_REJECTION_REASON
+		primary key (RQMNT_TYPE_MAIN_CATEGORY_ID, REJECTION_REASON_ID)
+)
+/
+
+create table DISABILITY_PROVISION_TYPE
+(
+	DISABILITY_TYPE_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	PROVISION_TYPE_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKDISABILITY_PROVISION_TYPE
+		primary key (DISABILITY_TYPE_ID, PROVISION_TYPE_ID)
+)
+/
+
+create table R_RQMNT_TRANSFER_REASON
+(
+	RQMNT_TYPE_MAIN_CATEGORY_ID NUMBER(22) not null
+		constraint R_985
+			references R_RQMNT_TYPE_MAIN_CATEGORY,
+	TRANSFER_REASON_ID NUMBER(22) not null
+		constraint R_1007
+			references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER(22) default 0 not null,
+	constraint XPKR_RQMNT_TRANSFER_REASON
+		primary key (RQMNT_TYPE_MAIN_CATEGORY_ID, TRANSFER_REASON_ID)
+)
+/
+
+create table R_PSS_RQMNT_TYPE_TERMINATION
+(
+	PSS_RQMNT_TERM_REASON_ID NUMBER(22) not null
+		constraint R_966
+			references R_STANDARD_REFERENCE_LIST,
+	PSS_RQMNT_TYPE_MAIN_CAT_ID NUMBER(22) not null
+		constraint R_967
+			references R_PSS_RQMNT_TYPE_MAIN_CATEGORY,
+	ROW_VERSION NUMBER(22) default 0 not null,
+	constraint XPKR_PSS_RQMNT_TYPE_TERMINATIO
+		primary key (PSS_RQMNT_TERM_REASON_ID, PSS_RQMNT_TYPE_MAIN_CAT_ID)
+)
+/
+
+create table R_PSS_RQMNT_REJECTION_REASON
+(
+	PSS_RQMNT_TYPE_MAIN_CAT_ID NUMBER(22) not null
+		constraint R_997
+			references R_PSS_RQMNT_TYPE_MAIN_CATEGORY,
+	REJECTION_REASON_ID NUMBER(22) not null
+		constraint R_998
+			references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER(22) default 0 not null,
+	constraint XPKR_PSS_RQMNT_REJECTION_REASO
+		primary key (PSS_RQMNT_TYPE_MAIN_CAT_ID, REJECTION_REASON_ID)
+)
+/
+
+create table R_OFFENCE
+(
+	OFFENCE_ID NUMBER not null
+		constraint XPKR_OFFENCE
+			primary key,
+	CODE CHAR(5) not null,
+	DESCRIPTION VARCHAR2(300) not null,
+	ABBREVIATION VARCHAR2(50),
+	MAIN_CATEGORY_CODE CHAR(3) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO12
+			check (SELECTABLE IN ('N','Y')),
+	MAIN_CATEGORY_DESCRIPTION VARCHAR2(200) not null,
+	ROW_VERSION NUMBER default 0 not null,
+	MAIN_CATEGORY_ABBREVIATION VARCHAR2(50) not null,
+	OGRS_OFFENCE_CATEGORY_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	SUB_CATEGORY_CODE CHAR(2) not null,
+	SUB_CATEGORY_DESCRIPTION VARCHAR2(200) not null,
+	FORM_20_CODE VARCHAR2(50),
+	SUB_CATEGORY_ABBREVIATION VARCHAR2(50),
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	CJIT_CODE VARCHAR2(6),
+	CREATED_BY_USER_ID NUMBER(22) not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER(22) not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	constraint XAK1R_OFFENCE
+		unique (CODE, TRAINING_SESSION_ID, OFFENCE_ID)
+)
+/
+
+create table R_RECALL_REASON
+(
+	RECALL_REASON_ID NUMBER not null
+		constraint XPKR_RECALL_REASON
+			primary key,
+	CODE VARCHAR2(10) not null,
+	DESCRIPTION VARCHAR2(50) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO23
+			check (SELECTABLE IN ('N','Y')),
+	TERMINATION_REASON_OPTION CHAR
+		constraint YES_OR_NO_431
+			check (TERMINATION_REASON_OPTION IN ('Y','N')),
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TERMINATION_REASON_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	constraint XAK1R_RECALL_REASON
+		unique (CODE, TRAINING_SESSION_ID, RECALL_REASON_ID)
+)
+/
+
+create table R_AD_RQMNT_TYPE_MAIN_CATEGORY
+(
+	AD_RQMNT_TYPE_MAIN_CATEGORY_ID NUMBER not null
+		constraint XPKR_AD_RQMNT_TYPE_MAIN_CATEGO
+			primary key,
+	CODE VARCHAR2(20) not null,
+	DESCRIPTION VARCHAR2(200) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO16
+			check (SELECTABLE IN ('N','Y')),
+	UNITS_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	ALLOW_DUPLICATES CHAR
+		constraint YES_OR_NO_423
+			check (ALLOW_DUPLICATES IN ('Y','N')),
+	CREATED_BY_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TERM_COUNT CHAR
+		constraint TERM_COUNT_D_S_617954679
+			check (TERM_COUNT IN ('D','S')),
+	constraint XAK1R_AD_RQMNT_TYPE_MAIN_CATEG
+		unique (CODE, TRAINING_SESSION_ID, AD_RQMNT_TYPE_MAIN_CATEGORY_ID)
+)
+/
+
+create table R_AD_RQMNT_TYPE_TERMINATION
+(
+	RQMNT_TERMINATION_REASON_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	AD_RQMNT_TYPE_MAIN_CATEGORY_ID NUMBER not null
+		references R_AD_RQMNT_TYPE_MAIN_CATEGORY,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_AD_RQMNT_TYPE_TERMINATION
+		primary key (RQMNT_TERMINATION_REASON_ID, AD_RQMNT_TYPE_MAIN_CATEGORY_ID)
+)
+/
+
+create table R_RQMNT_TYPE
+(
+	RQMNT_TYPE_ID NUMBER not null
+		constraint XPKR_RQMNT_TYPE
+			primary key,
+	ROW_VERSION NUMBER default 0 not null,
+	RQMNT_TYPE_SUB_CATEGORY_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	RQMNT_TYPE_MAIN_CATEGORY_ID NUMBER not null
+		references R_RQMNT_TYPE_MAIN_CATEGORY,
+	constraint XAK1R_RQMNT_TYPE
+		unique (TRAINING_SESSION_ID, RQMNT_TYPE_MAIN_CATEGORY_ID, RQMNT_TYPE_SUB_CATEGORY_ID, RQMNT_TYPE_ID)
+)
+/
+
+create table R_REFERRAL_SOURCE
+(
+	REFERRAL_SOURCE_ID NUMBER not null
+		constraint XPKR_REFERRAL_SOURCE
+			primary key,
+	CODE VARCHAR2(10) not null,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	DESCRIPTION VARCHAR2(50) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO14
+			check (SELECTABLE IN ('N','Y')),
+	SOURCE_TYPE_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	constraint XAK1R_REFERRAL_SOURCE
+		unique (CODE, TRAINING_SESSION_ID, REFERRAL_SOURCE_ID)
+)
+/
+
+create table R_AD_RQMNT_TYPE
+(
+	AD_RQMNT_TYPE_ID NUMBER not null
+		constraint XPKR_AD_RQMNT_TYPE
+			primary key,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	AD_RQMNT_TYPE_SUB_CATEGORY_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	AD_RQMNT_TYPE_MAIN_CATEGORY_ID NUMBER not null
+		references R_AD_RQMNT_TYPE_MAIN_CATEGORY,
+	constraint XAK1R_AD_RQMNT_TYPE
+		unique (TRAINING_SESSION_ID, AD_RQMNT_TYPE_MAIN_CATEGORY_ID, AD_RQMNT_TYPE_SUB_CATEGORY_ID, AD_RQMNT_TYPE_ID)
+)
+/
+
+create table R_NSI_TYPE
+(
+	NSI_TYPE_ID NUMBER not null
+		constraint XPKR_NSI_TYPE
+			primary key,
+	CODE VARCHAR2(20) not null,
+	DESCRIPTION VARCHAR2(200) not null,
+	OFFENDER_LEVEL NUMBER not null
+		constraint TRUE_OR_FALSE_723990533
+			check (OFFENDER_LEVEL IN (0, 1)),
+	EVENT_LEVEL NUMBER not null
+		constraint TRUE_OR_FALSE_1973141974
+			check (EVENT_LEVEL IN (0, 1)),
+	ALLOW_ACTIVE_DUPLICATES NUMBER not null
+		constraint TRUE_OR_FALSE_1919464364
+			check (ALLOW_ACTIVE_DUPLICATES IN (0, 1)),
+	ALLOW_INACTIVE_DUPLICATES NUMBER not null
+		constraint TRUE_OR_FALSE_1196312911
+			check (ALLOW_INACTIVE_DUPLICATES IN (0, 1)),
+	MINIMUM_LENGTH NUMBER,
+	MAXIMUM_LENGTH NUMBER,
+	UNITS_ID NUMBER
+		constraint R_804
+			references R_STANDARD_REFERENCE_LIST,
+	ENFORCEMENT_TYPE NUMBER default 0 not null,
+	SELECTABLE CHAR not null
+		constraint SELECTABLE_320035946
+			check (SELECTABLE IN ('N','Y')),
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		constraint R_805
+			references TRAINING_SESSION,
+	TERM_COUNT CHAR
+		constraint TERM_COUNT_D_S_1519325482
+			check (TERM_COUNT IN ('D','S')),
+	RATE_CARD_FLAG CHAR default 'N' not null
+		constraint YES_OR_NO_ONLY_606860233
+			check (RATE_CARD_FLAG IN ('Y','N')),
+	CRC_WORK_REQUESTS_DIARY_FLAG CHAR default 'N' not null
+		constraint YES_OR_NO_ONLY_79687373
+			check (CRC_WORK_REQUESTS_DIARY_FLAG IN ('Y','N')),
+	NSI_PURPOSE_ID NUMBER default NULL not null
+		constraint R_1232
+			references R_STANDARD_REFERENCE_LIST,
+	NSI_TRANSFER_TYPE_ID NUMBER
+		constraint R_1235
+			references R_STANDARD_REFERENCE_LIST,
+	ADDITIONAL_IDENTIFIER_TYPE1_ID NUMBER
+		constraint R_1250
+			references R_STANDARD_REFERENCE_LIST,
+	ADDITIONAL_IDENTIFIER_TYPE2_ID NUMBER
+		constraint R_1251
+			references R_STANDARD_REFERENCE_LIST
+)
+/
+
+create table R_RQMNT_NSI_TYPE
+(
+	RQMNT_TYPE_MAIN_CATEGORY_ID NUMBER not null
+		constraint R_1040
+			references R_RQMNT_TYPE_MAIN_CATEGORY,
+	NSI_TYPE_ID NUMBER not null
+		constraint R_1041
+			references R_NSI_TYPE,
+	ROW_VERSION NUMBER default 0 not null,
+	constraint XPKR_RQMNT_NSI_TYPE
+		primary key (RQMNT_TYPE_MAIN_CATEGORY_ID, NSI_TYPE_ID)
+)
+/
+
+create table R_NSI_TYPE_SUB_TYPE
+(
+	NSI_TYPE_ID NUMBER not null
+		constraint R_808
+			references R_NSI_TYPE,
+	NSI_SUB_TYPE_ID NUMBER not null
+		constraint R_809
+			references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		constraint R_810
+			references TRAINING_SESSION,
+	constraint XPKR_NSI_TYPE_SUB_TYPE
+		primary key (NSI_TYPE_ID, NSI_SUB_TYPE_ID)
+)
+/
+
+create table R_NSI_TRANSFER_REASON
+(
+	NSI_TYPE_ID NUMBER(22) not null
+		constraint R_991
+			references R_NSI_TYPE,
+	TRANSFER_REASON_ID NUMBER(22) not null
+		constraint R_1009
+			references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER(22) default 0 not null,
+	constraint XPKR_NSI_TRANSFER_REASON
+		primary key (NSI_TYPE_ID, TRANSFER_REASON_ID)
+)
+/
+
+create table R_NSI_REJECTION_REASON
+(
+	NSI_TYPE_ID NUMBER(22) not null
+		constraint R_999
+			references R_NSI_TYPE,
+	REJECTION_REASON_ID NUMBER(22) not null
+		constraint R_1000
+			references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER(22) default 0 not null,
+	constraint XPKR_NSI_REJECTION_REASON
+		primary key (NSI_TYPE_ID, REJECTION_REASON_ID)
+)
+/
+
+create table R_NSI_TYPE_OUTCOME
+(
+	NSI_TYPE_ID NUMBER not null
+		constraint R_811
+			references R_NSI_TYPE,
+	NSI_OUTCOME_ID NUMBER not null
+		constraint R_812
+			references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		constraint R_813
+			references TRAINING_SESSION,
+	constraint XPKR_NSI_TYPE_OUTCOME
+		primary key (NSI_TYPE_ID, NSI_OUTCOME_ID)
+)
+/
+
+create table R_LINKED_LIST
+(
+	STANDARD_REFERENCE_DATA1 NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	STANDARD_REFERENCE_DATA2 NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_LINKED_LIST
+		primary key (STANDARD_REFERENCE_DATA1, STANDARD_REFERENCE_DATA2)
+)
+/
+
+create table R_LIC_COND_TYPE_MAIN_CAT
+(
+	LIC_COND_TYPE_MAIN_CAT_ID NUMBER not null
+		constraint XPKR_LIC_COND_TYPE_MAIN_CAT
+			primary key,
+	CODE VARCHAR2(100) not null,
+	DESCRIPTION VARCHAR2(200),
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO22
+			check (SELECTABLE IN ('N','Y')),
+	UNITS_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	ALLOW_DUPLICATES CHAR
+		constraint YES_OR_NO_430
+			check (ALLOW_DUPLICATES IN ('Y','N')),
+	FORM_20_CODE VARCHAR2(50),
+	CREATED_BY_USER_ID NUMBER not null,
+	ROW_VERSION NUMBER default 0 not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TERM_COUNT CHAR
+		constraint TERM_COUNT_D_S_325336639
+			check (TERM_COUNT IN ('D','S')),
+	constraint XAK1R_LIC_COND_TYPE_MAIN_CAT
+		unique (CODE, TRAINING_SESSION_ID, LIC_COND_TYPE_MAIN_CAT_ID)
+)
+/
+
+create table R_LIC_COND_REJECTION_REASON
+(
+	LIC_COND_TYPE_MAIN_CAT_ID NUMBER(22) not null
+		constraint R_995
+			references R_LIC_COND_TYPE_MAIN_CAT,
+	REJECTION_REASON_ID NUMBER(22) not null
+		constraint R_996
+			references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION CHAR(18) default 0 not null,
+	constraint XPKR_LIC_COND_REJECTION_REASON
+		primary key (LIC_COND_TYPE_MAIN_CAT_ID, REJECTION_REASON_ID)
+)
+/
+
+create table R_POST_CJA_LIC_CONDITION_TYPE
+(
+	POST_CJA_LIC_CONDITION_TYPE_ID NUMBER not null
+		constraint XPKR_POST_CJA_LIC_CONDITION_TY
+			primary key,
+	ROW_VERSION NUMBER default 0 not null,
+	LIC_COND_TYPE_SUB_CAT_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	LIC_COND_TYPE_MAIN_CAT_ID NUMBER not null
+		references R_LIC_COND_TYPE_MAIN_CAT,
+	constraint XAK1R_POST_CJA_LIC_CONDITION_T
+		unique (TRAINING_SESSION_ID, LIC_COND_TYPE_MAIN_CAT_ID, LIC_COND_TYPE_SUB_CAT_ID, POST_CJA_LIC_CONDITION_TYPE_ID)
+)
+/
+
+create table R_LIC_COND_TRANSFER_REASON
+(
+	LIC_COND_TYPE_MAIN_CAT_ID NUMBER(22) not null
+		constraint R_987
+			references R_LIC_COND_TYPE_MAIN_CAT,
+	TRANSFER_REASON_ID NUMBER(22) not null
+		constraint R_1008
+			references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER(22) default 0 not null,
+	constraint XPKR_LIC_COND_TRANSFER_REASON
+		primary key (LIC_COND_TYPE_MAIN_CAT_ID, TRANSFER_REASON_ID)
+)
+/
+
+create table R_DISPOSAL_TYPE
+(
+	DISPOSAL_TYPE_ID NUMBER not null
+		constraint XPKR_DISPOSAL_TYPE
+			primary key,
+	DISPOSAL_TYPE_CODE VARCHAR2(30) not null,
+	DESCRIPTION VARCHAR2(128) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO2
+			check (SELECTABLE IN ('N','Y')),
+	AUTO_TERMINATE CHAR not null,
+	MINIMUM_LENGTH NUMBER,
+	MAXIMUM_LENGTH NUMBER,
+	CUSTODIAL_ORDER CHAR not null
+		constraint YES_OR_NO_OR_UNKNOWN4
+			check (CUSTODIAL_ORDER IN ('N','Y','U')),
+	ROW_VERSION NUMBER default 0 not null,
+	ORDER_ABBREVIATED_DESCRIPTION VARCHAR2(200),
+	PROPOSAL CHAR
+		constraint YES_OR_NO_ONLY20
+			check (PROPOSAL IN ('Y','N')),
+	OUTCOME_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	CJA2003 CHAR
+		constraint YES_OR_NO_ONLY21
+			check (CJA2003 IN ('Y','N')),
+	PRE_CJA2003 CHAR
+		constraint YES_OR_NO_ONLY22
+			check (PRE_CJA2003 IN ('Y','N')),
+	FORM_20_CODE VARCHAR2(20),
+	SENTENCE_TYPE VARCHAR2(50),
+	REQUIRED_INFORMATION VARCHAR2(4000),
+	MINIMUM_AGE NUMBER
+		constraint GREATER_THAN_01
+			check (MINIMUM_AGE > 0),
+	MAXIMUM_AGE NUMBER
+		constraint GREATER_THAN_02
+			check (MAXIMUM_AGE > 0),
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	UNITS_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	TURNOUT_FLAG CHAR,
+	CREATED_BY_USER_ID NUMBER not null,
+	COMPLIANCE_FLAG CHAR,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	ENFORCEABLE_FLAG CHAR,
+	ACTION_FLAG CHAR,
+	FTC_LIMIT NUMBER,
+	OUTCOME_WARNING NUMBER default 0 not null,
+	OUTCOME_MESSAGE VARCHAR2(500),
+	COHORT CHAR
+		constraint COHORT_818730454
+			check (COHORT IN ('S','R','T')),
+	PSS_RQMNT CHAR
+		constraint YES_OR_NO_ONLY_404477636
+			check (PSS_RQMNT IN ('Y','N')),
+	constraint XAK1R_DISPOSAL_TYPE
+		unique (DISPOSAL_TYPE_CODE, TRAINING_SESSION_ID, DISPOSAL_TYPE_ID)
+)
+/
+
+create table DISPOSAL_TYPE_AD_RQMNT_TYPE
+(
+	DISPOSAL_TYPE_ID NUMBER not null
+		references R_DISPOSAL_TYPE,
+	AD_RQMNT_TYPE_MAIN_CATEGORY_ID NUMBER not null
+		references R_AD_RQMNT_TYPE_MAIN_CATEGORY,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKDISPOSAL_TYPE_AD_RQMNT_TYPE
+		primary key (DISPOSAL_TYPE_ID, AD_RQMNT_TYPE_MAIN_CATEGORY_ID)
+)
+/
+
+create table DISPOSAL_TYPE_LIC_COND_TYPE
+(
+	DISPOSAL_TYPE_ID NUMBER not null
+		references R_DISPOSAL_TYPE,
+	LIC_COND_TYPE_MAIN_CAT_ID NUMBER not null
+		references R_LIC_COND_TYPE_MAIN_CAT,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKDISPOSAL_TYPE_LIC_COND_TYPE
+		primary key (DISPOSAL_TYPE_ID, LIC_COND_TYPE_MAIN_CAT_ID)
+)
+/
+
+create table R_DISPOSAL_TYPE_TERMINATION
+(
+	DISPOSAL_TYPE_ID NUMBER not null
+		references R_DISPOSAL_TYPE,
+	DISPOSAL_TERMINATION_REASON_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_DISPOSAL_TYPE_TERMINATION
+		primary key (DISPOSAL_TYPE_ID, DISPOSAL_TERMINATION_REASON_ID)
+)
+/
+
+create table DISPOSAL_TYPE_AD_SENT_TYPE
+(
+	DISPOSAL_TYPE_ID NUMBER not null
+		references R_DISPOSAL_TYPE,
+	ADDITIONAL_SENTENCE_TYPE_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKDISPOSAL_TYPE_AD_SENT_TYPE
+		primary key (DISPOSAL_TYPE_ID, ADDITIONAL_SENTENCE_TYPE_ID)
+)
+/
+
+create table DISPOSAL_TYPE_RQMNT_TYPE
+(
+	DISPOSAL_TYPE_ID NUMBER not null
+		references R_DISPOSAL_TYPE,
+	RQMNT_TYPE_MAIN_CATEGORY_ID NUMBER not null
+		references R_RQMNT_TYPE_MAIN_CATEGORY,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKDISPOSAL_TYPE_RQMNT_TYPE
+		primary key (DISPOSAL_TYPE_ID, RQMNT_TYPE_MAIN_CATEGORY_ID)
+)
+/
+
+create table PROBATION_AREA
+(
+	PROBATION_AREA_ID NUMBER not null
+		constraint XPKPROBATION_AREA
+			primary key,
+	CODE CHAR(3) not null,
+	DESCRIPTION VARCHAR2(60) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO13
+			check (SELECTABLE IN ('N','Y')),
+	ROW_VERSION NUMBER default 0 not null,
+	FORM_20_CODE VARCHAR2(20),
+	MIGRATED_DATE DATE,
+	HO_AREA_CODE VARCHAR2(20),
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	TRUST_CODE CHAR(3),
+	TRUST_DIVISION_ID NUMBER,
+	TRUST_CPA_ID NUMBER,
+	PRIVATE NUMBER not null
+		constraint TRUE_OR_FALSE_1316924380
+			check (PRIVATE IN (0, 1)),
+	DIVISION_ID NUMBER,
+	ORGANISATION_ID NUMBER not null
+		constraint R_898
+			references ORGANISATION,
+	CONTACT_NAME VARCHAR2(200),
+	ADDRESS_ID NUMBER not null
+		constraint R_899
+			references ADDRESS,
+	START_DATE DATE not null,
+	END_DATE DATE,
+	SPG_ACTIVE_ID NUMBER not null
+		constraint R_1050
+			references R_STANDARD_REFERENCE_LIST,
+	INSTITUTION_ID NUMBER,
+	ESTABLISHMENT CHAR,
+	BROADCAST_REF_DATA NUMBER,
+	BROADCAST_OFFENDER_DATA NUMBER,
+	DEFAULT_TRANSFER_TEAM_ID NUMBER
+		constraint R_1221
+			references TEAM,
+	ALLOCATE_DOCUMENT_LIST NUMBER default 0 not null
+		constraint TRUE_OR_FALSE_1716605211
+			check (ALLOCATE_DOCUMENT_LIST IN (0, 1)),
+	QUEUE_SPG_TRANSFER_REQUEST NUMBER default 1 not null
+		constraint TRUE_OR_FALSE_3459496
+			check (QUEUE_SPG_TRANSFER_REQUEST IN (0, 1)),
+	TRANSITION_TRANSFER_MESSAGES NUMBER default 1 not null
+		constraint TRUE_OR_FALSE_1001946058
+			check (TRANSITION_TRANSFER_MESSAGES IN (0, 1)),
+	DEFAULT_COURT_TEAM_ID NUMBER
+		constraint R_1236
+			references TEAM,
+	DEFAULT_POSTCODE_TEAM_ID NUMBER
+		constraint R_1237
+			references TEAM,
+	constraint XAK1PROBATION_AREA
+		unique (CODE, TRAINING_SESSION_ID, PROBATION_AREA_ID),
+	constraint XAK2PROBATION_AREA
+		unique (HO_AREA_CODE, TRAINING_SESSION_ID, PROBATION_AREA_ID),
+	constraint XAK3PROBATION_AREA
+		unique (FORM_20_CODE, TRAINING_SESSION_ID, PROBATION_AREA_ID),
+	constraint R_1194
+		foreign key (INSTITUTION_ID, ESTABLISHMENT) references R_INSTITUTION,
+	constraint PRIVATE_DIVISION_ID_1805490531
+		check ( (PRIVATE = 0 AND DIVISION_ID IS NULL)
+OR
+(PRIVATE = 1 AND DIVISION_ID IS NOT NULL)
+)
+)
+/
+
+create table R_NSI_TYPE_PROBATION_AREA
+(
+	NSI_TYPE_ID NUMBER(22) not null
+		constraint R_935
+			references R_NSI_TYPE,
+	PROBATION_AREA_ID NUMBER(22) not null
+		constraint R_936
+			references PROBATION_AREA,
+	ROW_VERSION NUMBER(22) default 0 not null,
+	constraint XPKR_NSI_TYPE_PROBATION_AREA
+		primary key (NSI_TYPE_ID, PROBATION_AREA_ID)
+)
+/
+
+create table TRAINING_PROVIDER_USER
+(
+	TRAINING_PROVIDER_USER_ID NUMBER(22) not null
+		constraint XPKTRAINING_PROVIDER_USER
+			primary key,
+	PROBATION_AREA_ID NUMBER(22) not null
+		constraint R_1011
+			references PROBATION_AREA,
+	INSTRUCTOR_COUNT NUMBER(22) not null,
+	LEARNER_COUNT NUMBER(22) not null,
+	SUPERUSER_COUNT NUMBER(22) not null,
+	USER_PASSWORD VARCHAR2(10) not null
+)
+/
+
+create table PROVIDER_TEAM
+(
+	PROVIDER_TEAM_ID NUMBER not null
+		constraint XPKPROVIDER_TEAM
+			primary key,
+	CODE CHAR(6) not null,
+	NAME VARCHAR2(50) not null,
+	EXTERNAL_PROVIDER_ID NUMBER not null
+		references EXTERNAL_PROVIDER,
+	START_DATE DATE,
+	END_DATE DATE,
+	UNPAID_WORK CHAR
+		constraint YES_OR_NO_ONLY10
+			check (UNPAID_WORK IN ('Y','N')),
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_DATETIME DATE not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	PROBATION_AREA_ID NUMBER not null
+		references PROBATION_AREA,
+	constraint XAK1PROVIDER_TEAM
+		unique (CODE, TRAINING_SESSION_ID, PROVIDER_TEAM_ID),
+	constraint PROVIDER_LOCATION_DATE_VALID3
+		check ( (
+(START_DATE <= END_DATE) OR (END_DATE IS NULL)
+))
+)
+/
+
+alter table TEAM
+	add foreign key (PROBATION_AREA_ID) references PROBATION_AREA
+/
+
+create table ALL_TEAM
+(
+	TRUST_PROVIDER_FLAG NUMBER not null
+		constraint TRUE_OR_FALSE40
+			check (TRUST_PROVIDER_FLAG IN (0, 1)),
+	TRUST_PROVIDER_TEAM_ID NUMBER not null,
+	PROBATION_AREA_ID NUMBER
+		references PROBATION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	DESCRIPTION VARCHAR2(500),
+	TELEPHONE VARCHAR2(35),
+	DISTRICT_ID NUMBER
+		references DISTRICT,
+	START_DATE DATE not null,
+	END_DATE DATE not null,
+	constraint XPKALL_TEAM
+		primary key (TRUST_PROVIDER_FLAG, TRUST_PROVIDER_TEAM_ID)
+)
+/
+
+create table BOROUGH
+(
+	BOROUGH_ID NUMBER not null
+		constraint XPKBOROUGH
+			primary key,
+	CODE VARCHAR2(20) not null,
+	DESCRIPTION VARCHAR2(30) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO7
+			check (SELECTABLE IN ('N','Y')),
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_DATETIME DATE not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	PROBATION_AREA_ID NUMBER not null
+		references PROBATION_AREA,
+	constraint XAK1BOROUGH
+		unique (CODE, TRAINING_SESSION_ID, BOROUGH_ID)
+)
+/
+
+create table DPA_REPORT
+(
+	DPA_REPORT_ID NUMBER not null
+		constraint XPKDPA_REPORT
+			primary key,
+	REPORT_DATE DATE,
+	TEAM_ID NUMBER
+		references TEAM,
+	PROVIDER_TEAM_ID NUMBER
+		references PROVIDER_TEAM,
+	ROW_VERSION NUMBER default 0 not null,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	DISTRICT_ID NUMBER
+		references DISTRICT,
+	BOROUGH_ID NUMBER
+		references BOROUGH,
+	PROBATION_AREA_ID NUMBER
+		references PROBATION_AREA,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION
+)
+/
+
+alter table DISTRICT
+	add foreign key (BOROUGH_ID) references BOROUGH
+/
+
+create table FORM_20_30
+(
+	FORM_20_30_ID NUMBER not null
+		constraint XPKFORM_20_30
+			primary key,
+	ROW_VERSION NUMBER default 0 not null,
+	PROBATION_AREA_ID NUMBER not null
+		references PROBATION_AREA,
+	FORM_TYPE VARCHAR2(20) not null
+		constraint FORM_TYPE
+			check (FORM_TYPE IN ('FORM 20', 'FORM 30')),
+	START_DATE DATE not null,
+	END_DATE DATE not null,
+	SUBMITTED CHAR not null
+		constraint YES_OR_NO_ONLY29
+			check (SUBMITTED IN ('Y','N')),
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XAK1FORM_20_30
+		unique (PROBATION_AREA_ID, FORM_TYPE, START_DATE, END_DATE, SUBMITTED, FORM_20_30_ID)
+)
+/
+
+create table COURT
+(
+	COURT_ID NUMBER not null
+		constraint XPKCOURT
+			primary key,
+	CODE CHAR(6) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO
+			check (SELECTABLE IN ('N','Y')),
+	COURT_NAME VARCHAR2(80),
+	TELEPHONE_NUMBER VARCHAR2(35),
+	FAX VARCHAR2(35),
+	BUILDING_NAME VARCHAR2(35),
+	STREET VARCHAR2(35),
+	LOCALITY VARCHAR2(35),
+	TOWN VARCHAR2(35),
+	COUNTY VARCHAR2(35),
+	POSTCODE VARCHAR2(8),
+	COUNTRY VARCHAR2(16),
+	ROW_VERSION NUMBER default 0 not null,
+	COURT_TYPE_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	CREATED_DATETIME DATE not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	PROBATION_AREA_ID NUMBER not null
+		references PROBATION_AREA,
+	SECURE_EMAIL_ADDRESS VARCHAR2(255),
+	constraint XAK1COURT
+		unique (CODE, TRAINING_SESSION_ID, COURT_ID)
+)
+/
+
+create table IAPS_MESSAGE_LOG
+(
+	IAPS_MESSAGE_LOG_ID NUMBER not null
+		constraint XPKIAPS_MESSAGE_LOG
+			primary key,
+	IAPS_GENERATED_MESSAGE_ID NUMBER not null
+		constraint IAPS_MESSAGE_LOG_CONTRAINT_AK1
+			unique,
+	RECEIVED_DATETIME DATE not null,
+	SENT_DATETIME DATE,
+	RECORD_ID NUMBER,
+	CRN CHAR(7),
+	PROBATION_AREA_ID NUMBER
+		references PROBATION_AREA,
+	IAPS_BUSINES_OPERATION_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	TRAINING_SESSION_ID NUMBER
+)
+/
+
+create table LOCAL_DELIVERY_UNIT
+(
+	LOCAL_DELIVERY_UNIT_ID NUMBER not null
+		constraint XPKLOCAL_DELIVERY_UNIT
+			primary key,
+	CODE VARCHAR2(10) not null,
+	DESCRIPTION VARCHAR2(50) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO11
+			check (SELECTABLE IN ('N','Y')),
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_DATETIME DATE not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	PROBATION_AREA_ID NUMBER not null
+		references PROBATION_AREA,
+	constraint XAK1LOCAL_DELIVERY_UNIT
+		unique (CODE, TRAINING_SESSION_ID, LOCAL_DELIVERY_UNIT_ID)
+)
+/
+
+alter table TEAM
+	add foreign key (LOCAL_DELIVERY_UNIT_ID) references LOCAL_DELIVERY_UNIT
+/
+
+create table PROVIDER_EMPLOYEE
+(
+	PROVIDER_EMPLOYEE_ID NUMBER not null
+		constraint XPKPROVIDER_EMPLOYEE
+			primary key,
+	CODE CHAR(7) not null,
+	SURNAME VARCHAR2(35) not null,
+	START_DATE DATE not null,
+	FORENAME VARCHAR2(35) not null,
+	END_DATE DATE,
+	FORENAME2 VARCHAR2(35),
+	ROW_VERSION NUMBER default 0 not null,
+	EXTERNAL_PROVIDER_ID NUMBER not null
+		references EXTERNAL_PROVIDER,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	PROBATION_AREA_ID NUMBER
+		references PROBATION_AREA,
+	constraint XAK1PROVIDER_EMPLOYEE
+		unique (CODE, TRAINING_SESSION_ID, PROVIDER_EMPLOYEE_ID),
+	constraint PROVIDER_LOCATION_DATE_VALID1
+		check ( (
+(START_DATE <= END_DATE) OR (END_DATE IS NULL)
+))
+)
+/
+
+create table PROVIDER_TEAM_EMPLOYEE
+(
+	PROVIDER_TEAM_ID NUMBER not null
+		references PROVIDER_TEAM,
+	PROVIDER_EMPLOYEE_ID NUMBER not null
+		references PROVIDER_EMPLOYEE,
+	START_DATE DATE not null,
+	END_DATE DATE,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKPROVIDER_TEAM_EMPLOYEE
+		primary key (PROVIDER_TEAM_ID, PROVIDER_EMPLOYEE_ID),
+	constraint PROVIDER_LOCATION_DATE_VALID4
+		check ( (
+(START_DATE <= END_DATE) OR (END_DATE IS NULL)
+))
+)
+/
+
+create table R_CJALICENCE_COND_TERMINATION
+(
+	LIC_TERMINATION_REASON_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	LIC_COND_TYPE_MAIN_CAT_ID NUMBER not null
+		references R_LIC_COND_TYPE_MAIN_CAT,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_CJALICENCE_COND_TERMINATI
+		primary key (LIC_TERMINATION_REASON_ID, LIC_COND_TYPE_MAIN_CAT_ID)
+)
+/
+
+create table CONTACT_TYPE_ICON
+(
+	CONTACT_TYPE_ICON_ID NUMBER not null
+		constraint XPKCONTACT_TYPE_ICON
+			primary key,
+	ROW_VERSION NUMBER default 0,
+	ICON_NAME VARCHAR2(100) not null,
+	ICON_PATH VARCHAR2(4000) not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XAK1CONTACT_TYPE_ICON
+		unique (ICON_NAME, TRAINING_SESSION_ID, CONTACT_TYPE_ICON_ID)
+)
+/
+
+create table R_CONTACT_TYPE
+(
+	CONTACT_TYPE_ID NUMBER not null
+		constraint XPKR_CONTACT_TYPE
+			primary key,
+	CODE VARCHAR2(10) not null,
+	DESCRIPTION VARCHAR2(4000) not null,
+	SHORT_DESCRIPTION VARCHAR2(500),
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO9
+			check (SELECTABLE IN ('N','Y')),
+	NATIONAL_STANDARDS_CONTACT CHAR
+		constraint YES_OR_NO_409
+			check (NATIONAL_STANDARDS_CONTACT IN ('Y','N')),
+	ATTENDANCE_CONTACT CHAR
+		constraint YES_OR_NO_410
+			check (ATTENDANCE_CONTACT IN ('Y','N')),
+	RECORDED_HOURS_CREDITED CHAR
+		constraint YES_OR_NO_411
+			check (RECORDED_HOURS_CREDITED IN ('Y','N')),
+	SENSITIVE_CONTACT CHAR
+		constraint YES_OR_NO_412
+			check (SENSITIVE_CONTACT IN ('Y','N')),
+	OFFENDER_LEVEL_CONTACT CHAR
+		constraint YES_OR_NO_413
+			check (OFFENDER_LEVEL_CONTACT IN ('Y','N')),
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_DATETIME DATE not null,
+	APPEARS_IN_LIST_OF_CONTACTS CHAR,
+	SMS_MESSAGE_TEXT CHAR
+		constraint YES_OR_NO_414
+			check (SMS_MESSAGE_TEXT IN ('Y','N')),
+	OFFENDER_EVENT_0 CHAR
+		constraint YES_OR_NO_415
+			check (OFFENDER_EVENT_0 IN ('Y','N')),
+	LEGACY_ORDERS CHAR
+		constraint YES_OR_NO_416
+			check (LEGACY_ORDERS IN ('Y','N')),
+	LAST_UPDATED_DATETIME DATE not null,
+	CJA_ORDERS CHAR
+		constraint YES_OR_NO_417
+			check (CJA_ORDERS IN ('Y','N')),
+	DPA_EXCLUDE CHAR
+		constraint YES_OR_NO_418
+			check (DPA_EXCLUDE IN ('Y','N')),
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	CONTACT_OUTCOME_FLAG CHAR not null
+		constraint YES_OR_NO_OR_BOTH_ONLY
+			check (CONTACT_OUTCOME_FLAG IN ('Y', 'N', 'B')),
+	CONTACT_LOCATION_FLAG CHAR not null
+		constraint YES_OR_NO_OR_BOTH_ONLY1
+			check (CONTACT_LOCATION_FLAG IN ('Y', 'N', 'B')),
+	CREATED_BY_USER_ID NUMBER not null,
+	CONTACT_ALERT_FLAG CHAR not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	FUTURE_SCHEDULED_CONTACTS_FLAG CHAR,
+	CONTACT_TYPE_ICON_ID NUMBER
+		references CONTACT_TYPE_ICON,
+	EDITABLE CHAR,
+	DEFAULT_HEADINGS CLOB,
+	PSS_RQMNT CHAR
+		constraint YES_OR_NO_ONLY_130798902
+			check (PSS_RQMNT IN ('Y','N')),
+	RAR_ACTIVITY CHAR
+		constraint YES_OR_NO_ONLY_1112934154
+			check (RAR_ACTIVITY IN ('Y','N')),
+	SPG_OVERRIDE NUMBER
+		constraint TRUE_OR_FALSE_1089845492
+			check (SPG_OVERRIDE IN (0, 1)),
+	NOMIS_CONTACT_TYPE VARCHAR2(4000),
+	SPG_INTEREST NUMBER default 1
+		constraint TRUE_OR_FALSE_1289205498
+			check (SPG_INTEREST IN (0, 1)),
+	SGC_FLAG NUMBER default 0
+		constraint TRUE_OR_FALSE_1656616625
+			check (SGC_FLAG IN (0, 1)),
+	constraint XAK1R_CONTACT_TYPE
+		unique (CODE, TRAINING_SESSION_ID, CONTACT_TYPE_ID)
+)
+/
+
+create table R_ENFORCEMENT_ACTION
+(
+	ENFORCEMENT_ACTION_ID NUMBER not null
+		constraint XPKR_ENFORCEMENT_ACTION
+			primary key,
+	CODE VARCHAR2(10) not null,
+	DESCRIPTION VARCHAR2(50) not null,
+	SELECTABLE CHAR
+		constraint YES_OR_NO19
+			check (SELECTABLE IN ('N','Y')),
+	CONTACT_TYPE_ID NUMBER not null
+		references R_CONTACT_TYPE,
+	OUTSTANDING_CONTACT_ACTION CHAR
+		constraint YES_OR_429
+			check (OUTSTANDING_CONTACT_ACTION IN ('Y','N')),
+	CREATED_BY_USER_ID NUMBER not null,
+	ROW_VERSION NUMBER default 0 not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	RESPONSE_BY_PERIOD NUMBER,
+	SPG_OVERRIDE NUMBER
+		constraint TRUE_OR_FALSE_1999790266
+			check (SPG_OVERRIDE IN (0, 1))
+)
+/
+
+create table R_CONTACT_TYPE_OUTCOME
+(
+	CONTACT_TYPE_ID NUMBER not null
+		references R_CONTACT_TYPE,
+	CONTACT_OUTCOME_TYPE_ID NUMBER not null
+		references R_CONTACT_OUTCOME_TYPE,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_CONTACT_TYPE_OUTCOME
+		primary key (CONTACT_TYPE_ID, CONTACT_OUTCOME_TYPE_ID)
+)
+/
+
+create table R_CONTACT_TYPE_DISPOSAL_TYPE
+(
+	CONTACT_TYPE_ID NUMBER not null
+		references R_CONTACT_TYPE,
+	DISPOSAL_TYPE_ID NUMBER not null
+		references R_DISPOSAL_TYPE,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_CONTACT_TYPE_DISPOSAL_TYP
+		primary key (CONTACT_TYPE_ID, DISPOSAL_TYPE_ID)
+)
+/
+
+create table R_ENF_ACT_CONTACT_OUT_TYPE
+(
+	ENFORCEMENT_ACTION_ID NUMBER not null
+		references R_ENFORCEMENT_ACTION,
+	CONTACT_OUTCOME_TYPE_ID NUMBER not null
+		references R_CONTACT_OUTCOME_TYPE,
+	ROW_VERSION NUMBER default 0,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_ENF_ACT_CONTACT_OUT_TYPE
+		primary key (ENFORCEMENT_ACTION_ID, CONTACT_OUTCOME_TYPE_ID)
+)
+/
+
+create table R_ASSESSMENT_TYPE
+(
+	ASSESSMENT_TYPE_ID NUMBER not null
+		constraint XPKR_ASSESSMENT_TYPE
+			primary key,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	CODE VARCHAR2(10) not null,
+	DESCRIPTION VARCHAR2(50) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO18
+			check (SELECTABLE IN ('N','Y')),
+	ASSESSMENT_OUTCOME_FLAG CHAR
+		constraint YES_OR_NO_424
+			check (ASSESSMENT_OUTCOME_FLAG IN ('Y','N')),
+	DURATION_FLAG CHAR
+		constraint YES_OR_NO_425
+			check (DURATION_FLAG IN ('Y','N')),
+	SCORE_FLAG CHAR
+		constraint YES_OR_NO_426
+			check (SCORE_FLAG IN ('Y','N')),
+	OFFENDERS_AGREEMENT_FLAG CHAR not null
+		constraint YES_OR_NO_ONLY35
+			check (OFFENDERS_AGREEMENT_FLAG IN ('Y','N')),
+	CREATED_BY_USER_ID NUMBER not null,
+	CONTACT_TYPE_ID NUMBER
+		references R_CONTACT_TYPE,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	constraint XAK1R_ASSESSMENT_TYPE
+		unique (CODE, TRAINING_SESSION_ID, ASSESSMENT_TYPE_ID)
+)
+/
+
+create table R_CONTACT_TYPE_NSI_TYPE
+(
+	CONTACT_TYPE_ID NUMBER not null
+		constraint R_817
+			references R_CONTACT_TYPE,
+	NSI_TYPE_ID NUMBER not null
+		constraint R_818
+			references R_NSI_TYPE,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		constraint R_819
+			references TRAINING_SESSION,
+	constraint XPKR_CONTACT_TYPE_NSI_TYPE
+		primary key (CONTACT_TYPE_ID, NSI_TYPE_ID)
+)
+/
+
+create table R_NSI_STATUS
+(
+	NSI_STATUS_ID NUMBER not null
+		constraint XPKR_NSI_STATUS
+			primary key,
+	CODE VARCHAR2(20) not null,
+	DESCRIPTION VARCHAR2(200) not null,
+	CONTACT_TYPE_ID NUMBER not null
+		constraint R_806
+			references R_CONTACT_TYPE,
+	SELECTABLE CHAR not null
+		constraint SELECTABLE_1299801953
+			check (SELECTABLE IN ('N','Y')),
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		constraint R_807
+			references TRAINING_SESSION
+)
+/
+
+create table R_CON_TYPE_AD_REQ_TYPE_MAINCAT
+(
+	CONTACT_TYPE_ID NUMBER not null
+		references R_CONTACT_TYPE,
+	AD_RQMNT_TYPE_MAIN_CATEGORY_ID NUMBER not null
+		references R_AD_RQMNT_TYPE_MAIN_CATEGORY,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_CON_TYPE_AD_REQ_TYPE_MAIN
+		primary key (CONTACT_TYPE_ID, AD_RQMNT_TYPE_MAIN_CATEGORY_ID)
+)
+/
+
+create table R_CON_OUT_TYPE_CONTACT_TYPE
+(
+	CONTACT_OUTCOME_TYPE_ID NUMBER not null
+		references R_CONTACT_OUTCOME_TYPE,
+	CONTACT_TYPE_ID NUMBER not null
+		references R_CONTACT_TYPE,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_CON_OUT_TYPE_CONTACT_TYPE
+		primary key (CONTACT_OUTCOME_TYPE_ID, CONTACT_TYPE_ID)
+)
+/
+
+create table R_CON_TYPE_LIC_CON_TYPEMAINCAT
+(
+	CONTACT_TYPE_ID NUMBER not null
+		references R_CONTACT_TYPE,
+	LIC_COND_TYPE_MAIN_CAT_ID NUMBER not null
+		references R_LIC_COND_TYPE_MAIN_CAT,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_CON_TYPE_LIC_CON_TYPEMAIN
+		primary key (CONTACT_TYPE_ID, LIC_COND_TYPE_MAIN_CAT_ID)
+)
+/
+
+create table R_ASSMNT_TYPE_ASSMNT_OUTCOME
+(
+	ASSESSMENT_TYPE_ID NUMBER not null
+		references R_ASSESSMENT_TYPE,
+	ASSESSMENT_OUTCOME_ID NUMBER not null
+		references R_ASSESSMENT_OUTCOME,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_ASSMNT_TYPE_ASSMNT_OUTCOM
+		primary key (ASSESSMENT_TYPE_ID, ASSESSMENT_OUTCOME_ID)
+)
+/
+
+create table R_CONTACT_TYPECONTACT_CATEGORY
+(
+	CONTACT_TYPE_ID NUMBER not null
+		references R_CONTACT_TYPE,
+	STANDARD_REFERENCE_LIST_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_CONTACT_TYPECONTACT_CATEG
+		primary key (CONTACT_TYPE_ID, STANDARD_REFERENCE_LIST_ID)
+)
+/
+
+create table R_CON_TYPE_REQ_TYPE_MAINCAT
+(
+	CONTACT_TYPE_ID NUMBER not null
+		references R_CONTACT_TYPE,
+	RQMNT_TYPE_MAIN_CATEGORY_ID NUMBER not null
+		references R_RQMNT_TYPE_MAIN_CATEGORY,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_CON_TYPE_REQ_TYPE_MAINCAT
+		primary key (CONTACT_TYPE_ID, RQMNT_TYPE_MAIN_CATEGORY_ID)
+)
+/
+
+create table R_NSI_TYPE_STATUS
+(
+	NSI_TYPE_STATUS_ID NUMBER not null
+		constraint XPKR_NSI_TYPE_STATUS
+			primary key,
+	NSI_TYPE_ID NUMBER not null
+		constraint R_814
+			references R_NSI_TYPE,
+	NSI_STATUS_ID NUMBER not null
+		constraint R_815
+			references R_NSI_STATUS,
+	SEQUENCE_NO NUMBER not null,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		constraint R_816
+			references TRAINING_SESSION
+)
+/
+
+create table R_REFERRAL_TYPE
+(
+	REFERRAL_TYPE_ID NUMBER not null
+		constraint XPKR_REFERRAL_TYPE
+			primary key,
+	CODE VARCHAR2(10) not null,
+	DESCRIPTION VARCHAR2(50) not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	ROW_VERSION NUMBER default 0 not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO24
+			check (SELECTABLE IN ('N','Y')),
+	CREATED_BY_USER_ID NUMBER not null,
+	CONTACT_TYPE_ID NUMBER
+		references R_CONTACT_TYPE,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	SPG_OVERRIDE NUMBER
+		constraint TRUE_OR_FALSE_101070880
+			check (SPG_OVERRIDE IN (0, 1)),
+	constraint XAK1R_REFERRAL_TYPE
+		unique (CODE, TRAINING_SESSION_ID, REFERRAL_TYPE_ID)
+)
+/
+
+create table R_GEN_REF_OUTCOME_REF_TYPE
+(
+	GENERIC_REFERRAL_OUTCOME_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	REFERRAL_TYPE_ID NUMBER not null
+		references R_REFERRAL_TYPE,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_GEN_REF_OUTCOME_REF_TYPE
+		primary key (GENERIC_REFERRAL_OUTCOME_ID, REFERRAL_TYPE_ID)
+)
+/
+
+create table R_ASSMNT_TYPE_REFERRAL_TYPE
+(
+	ASSESSMENT_TYPE_ID NUMBER not null
+		references R_ASSESSMENT_TYPE,
+	REFERRAL_TYPE_ID NUMBER not null
+		references R_REFERRAL_TYPE,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_ASSMNT_TYPE_REFERRAL_TYPE
+		primary key (ASSESSMENT_TYPE_ID, REFERRAL_TYPE_ID)
+)
+/
+
+create table R_APPROVED_PREMISES
+(
+	APPROVED_PREMISES_ID NUMBER not null
+		constraint XPKR_APPROVED_PREMISES
+			primary key,
+	DESCRIPTION VARCHAR2(100) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO6
+			check (SELECTABLE IN ('N','Y')),
+	APPROVED_PREMISES_MANAGER VARCHAR2(200),
+	ACCEPTABILITY_CRITERIA_NOTES CLOB,
+	MAXIMUM_OCCUPANCY NUMBER not null
+		constraint GREATER_THAN_05
+			check (MAXIMUM_OCCUPANCY > 0),
+	ADDRESS_ID NUMBER
+		references ADDRESS,
+	SECTOR VARCHAR2(50),
+	PARTITION_AREA_ID NUMBER default 0 not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	APPROVED_PREMISES_TYPE_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	NATIONAL_HOSTEL_CODE NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	GENDER_SUITABILITY_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	PROBATION_AREA_ID NUMBER not null
+		references PROBATION_AREA,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null
+)
+/
+
+create table R_AP_REFERRAL_GROUP
+(
+	APPROVED_PREMISES_ID NUMBER not null
+		references R_APPROVED_PREMISES,
+	STANDARD_REFERENCE_LIST_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_AP_REFERRAL_GROUP
+		primary key (APPROVED_PREMISES_ID, STANDARD_REFERENCE_LIST_ID)
+)
+/
+
+create table R_AP_AP_PROVISION
+(
+	APPROVED_PREMISES_ID NUMBER not null
+		references R_APPROVED_PREMISES,
+	STANDARD_REFERENCE_LIST_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_AP_AP_PROVISION
+		primary key (APPROVED_PREMISES_ID, STANDARD_REFERENCE_LIST_ID)
+)
+/
+
+create table R_AP_AP_TYPE
+(
+	APPROVED_PREMISES_ID NUMBER not null
+		references R_APPROVED_PREMISES,
+	STANDARD_REFERENCE_LIST_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_AP_AP_TYPE
+		primary key (APPROVED_PREMISES_ID, STANDARD_REFERENCE_LIST_ID)
+)
+/
+
+create table LOST_BEDS
+(
+	LOST_BEDS_ID NUMBER not null
+		constraint XPKLOST_BEDS
+			primary key,
+	START_DATE DATE not null,
+	END_DATE DATE,
+	NUMBER_OF_BEDS_LOST NUMBER not null
+		constraint GREATER_THAN_06
+			check (NUMBER_OF_BEDS_LOST > 0),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	REASON_FOR_LOSS_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	APPROVED_PREMISES_ID NUMBER not null
+		references R_APPROVED_PREMISES,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION
+)
+/
+
+create table R_REGISTER_TYPE
+(
+	REGISTER_TYPE_ID NUMBER not null
+		constraint XPKR_REGISTER_TYPE
+			primary key,
+	CODE VARCHAR2(10) not null,
+	DESCRIPTION VARCHAR2(50) not null,
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO15
+			check (SELECTABLE IN ('N','Y')),
+	ROW_VERSION NUMBER default 0 not null,
+	ALERT_MESSAGE_TEXT VARCHAR2(4000),
+	RECORD_TRIGGER_OFFENCE CHAR,
+	RECORD_CATEGORY CHAR,
+	REGISTER_REVIEW_PERIOD NUMBER,
+	RECORD_LEVEL CHAR,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	START_DATE DATE not null,
+	END_DATE DATE,
+	REGISTER_TYPE_FLAG_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	ALERT_MESSAGE CHAR not null
+		constraint YES_OR_NO_ONLY33
+			check (ALERT_MESSAGE IN ('Y','N')),
+	DPA_EXCLUDE CHAR
+		constraint YES_OR_NO_421
+			check (DPA_EXCLUDE IN ('Y','N')),
+	CREATED_BY_USER_ID NUMBER not null,
+	COLOUR VARCHAR2(20),
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	DEFAULT_HEADINGS CLOB,
+	SPG_INTEREST NUMBER
+		constraint TRUE_OR_FALSE_13747429
+			check (SPG_INTEREST IN (0, 1)),
+	REGISTER_TYPE_SECTOR_ID NUMBER
+		constraint R_1103
+			references R_STANDARD_REFERENCE_LIST,
+	REGISTRATION_CONTACT_TYPE_ID NUMBER
+		constraint R_1105
+			references R_CONTACT_TYPE,
+	DEREGISTRATION_CONTACT_TYPE_ID NUMBER
+		constraint R_1106
+			references R_CONTACT_TYPE,
+	REVIEW_CONTACT_TYPE_ID NUMBER
+		constraint R_1107
+			references R_CONTACT_TYPE,
+	DELETED_CONTACT_TYPE_ID NUMBER
+		constraint R_1108
+			references R_CONTACT_TYPE,
+	SPG_OVERRIDE NUMBER
+		constraint TRUE_OR_FALSE_185612578
+			check (SPG_OVERRIDE IN (0, 1)),
+	IOM_NOMINAL_INDICATOR NUMBER,
+	SAFEGUARDING_INDICATOR NUMBER,
+	VULNERABILITY_INDICATOR NUMBER,
+	constraint XAK1R_REGISTER_TYPE
+		unique (CODE, TRAINING_SESSION_ID, REGISTER_TYPE_ID)
+)
+/
+
+create table TRIGGER_OFFENCE
+(
+	TRIGGER_OFFENCE_ID NUMBER not null
+		constraint XPKTRIGGER_OFFENCE
+			primary key,
+	ROW_VERSION NUMBER default 0 not null,
+	REGISTER_TYPE_ID NUMBER not null
+		references R_REGISTER_TYPE,
+	OFFENCE_ID NUMBER not null
+		references R_OFFENCE,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XAK1TRIGGER_OFFENCE
+		unique (REGISTER_TYPE_ID, OFFENCE_ID, TRAINING_SESSION_ID, TRIGGER_OFFENCE_ID)
+)
+/
+
+create table PROVIDER_LOCATION
+(
+	PROVIDER_LOCATION_ID NUMBER not null
+		constraint XPKPROVIDER_LOCATION
+			primary key,
+	CODE CHAR(7) not null,
+	DESCRIPTION VARCHAR2(50) not null,
+	FAX_NUMBER VARCHAR2(35),
+	EXTERNAL_PROVIDER_ID NUMBER not null
+		references EXTERNAL_PROVIDER,
+	ROW_VERSION NUMBER default 0 not null,
+	ADDRESS_ID NUMBER
+		references ADDRESS,
+	START_DATE DATE not null,
+	END_DATE DATE,
+	NOTES CLOB,
+	CONTACT_NAME VARCHAR2(107),
+	CREATED_DATETIME DATE not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	PROBATION_AREA_ID NUMBER
+		references PROBATION_AREA,
+	constraint XAK1PROVIDER_LOCATION
+		unique (CODE, TRAINING_SESSION_ID, PROVIDER_LOCATION_ID),
+	constraint PROVIDER_LOCATION_DATE_VALID2
+		check ( (
+(START_DATE <= END_DATE) OR (END_DATE IS NULL)
+))
+)
+/
+
+create table PROVIDER_TEAM_LOCATION
+(
+	PROVIDER_TEAM_ID NUMBER not null
+		references PROVIDER_TEAM,
+	PROVIDER_LOCATION_ID NUMBER not null
+		references PROVIDER_LOCATION,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKPROVIDER_TEAM_LOCATION
+		primary key (PROVIDER_TEAM_ID, PROVIDER_LOCATION_ID)
+)
+/
+
+create table UPW_PROJECT
+(
+	UPW_PROJECT_ID NUMBER not null
+		constraint XPKUPW_PROJECT
+			primary key,
+	CODE VARCHAR2(20) not null,
+	NAME VARCHAR2(200) not null,
+	BENEFICIARY VARCHAR2(50),
+	HIGH_VISIBILITY_VEST_REQUIRED CHAR
+		constraint YES_OR_NO_408
+			check (HIGH_VISIBILITY_VEST_REQUIRED IN ('Y','N')),
+	ACTUAL_START_DATE DATE,
+	COMPLETION_DATE DATE,
+	EXPECTED_END_DATE DATE,
+	BENEFICIARY_CONTACT_ADDRESS_ID NUMBER
+		references ADDRESS,
+	PLACEMENT_ADDRESS_ID NUMBER
+		references ADDRESS,
+	BENEFICIARY_ADDRESS VARCHAR2(1000),
+	BENEFICIARY_CONTACT_NAME VARCHAR2(200),
+	SELECTABLE CHAR not null
+		constraint YES_OR_NO5
+			check (SELECTABLE IN ('N','Y')),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	PROJECT_TYPE_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	TEAM_ID NUMBER
+		references TEAM,
+	PROVIDER_TEAM_ID NUMBER
+		references PROVIDER_TEAM,
+	PROBATION_AREA_ID NUMBER
+		references PROBATION_AREA,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	COMMISSIONING_SOURCE_1 NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	COMMISSIONING_SOURCE_2 NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	COMMISSIONING_SOURCE_3 NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	COMMISSIONING_SOURCE_4 NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	PLACEMENT_NOTES CLOB,
+	BENEFICIARY_NOTES CLOB,
+	PLACEMENT_CONTACT_NAME VARCHAR2(200),
+	COMMISSIONING_SOURCE_5 NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	UPW_DIVERSITY_1 NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	UPW_DIVERSITY_2 NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	CREATED_BY_USER_ID NUMBER not null,
+	UPW_DIVERSITY_3 NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	UPW_DIVERSITY_4 NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	UPW_DIVERSITY_5 NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	constraint XAK1UPW_PROJECT
+		unique (NAME, TRAINING_SESSION_ID, UPW_PROJECT_ID),
+	constraint UPW_PROJECT_TEAM_XOR
+		check ( (
+(TEAM_ID IS NOT NULL AND PROVIDER_TEAM_ID IS NULL)
+OR
+(TEAM_ID IS NULL AND PROVIDER_TEAM_ID IS NOT NULL)
+))
+)
+/
+
+create table UPW_PROJECT_AVAILABILITY
+(
+	UPW_PROJECT_AVAILABILITY_ID NUMBER not null
+		constraint XPKUPW_PROJECT_AVAILABILITY
+			primary key,
+	UPW_DAY_ID NUMBER not null
+		references UPW_DAY,
+	START_TIME DATE not null,
+	END_TIME DATE not null,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	UPW_PROJECT_ID NUMBER not null
+		references UPW_PROJECT,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION
+)
+/
+
+create table UPW_PROJECT_TIMESCALES_GROUP
+(
+	UPW_PROJECT_ID NUMBER not null
+		constraint XPKUPW_PROJECT_TIMESCALES_GROU
+			primary key
+		references UPW_PROJECT,
+	GENDER_SUITABILITY_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	MINIMUM_AGE NUMBER
+		constraint GREATER_THAN_013
+			check (MINIMUM_AGE > 0),
+	MAXIMUM_AGE NUMBER,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	MINIMUM_NUMBER NUMBER
+		constraint GREATER_THAN_014
+			check (MINIMUM_NUMBER > 0),
+	MAXIMUM_NUMBER NUMBER,
+	SMOKING_SITE CHAR
+		constraint YES_OR_NO_433
+			check (SMOKING_SITE IN ('Y','N')),
+	PROJECT_VISIBLE_TO_PUBLIC CHAR
+		constraint YES_OR_NO_434
+			check (PROJECT_VISIBLE_TO_PUBLIC IN ('Y','N')),
+	DATE_REQUESTED DATE,
+	DATE_JOB_EVALUATED DATE,
+	PLANNED_START_DATE DATE,
+	NOTES_UNSUITABLE_PROJECTS CLOB,
+	SPARSITY_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	NUMBER_OF_GROUPS NUMBER,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION
+)
+/
+
+create table OFFICE_LOCATION
+(
+	OFFICE_LOCATION_ID NUMBER not null
+		constraint XPKOFFICE_LOCATION
+			primary key,
+	CODE CHAR(7) not null,
+	DESCRIPTION VARCHAR2(50) not null,
+	DISTRICT_ID NUMBER not null
+		references DISTRICT,
+	BUILDING_NAME VARCHAR2(35),
+	BUILDING_NUMBER VARCHAR2(35),
+	STREET_NAME VARCHAR2(35),
+	TOWN_CITY VARCHAR2(35),
+	COUNTY VARCHAR2(35),
+	POSTCODE VARCHAR2(8),
+	START_DATE DATE not null,
+	END_DATE DATE,
+	FAX_NUMBER VARCHAR2(35),
+	TELEPHONE_NUMBER VARCHAR2(35),
+	ROW_VERSION NUMBER default 0 not null,
+	NOTES CLOB,
+	CONTACT_NAME VARCHAR2(200),
+	CREATED_DATETIME DATE not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	PROBATION_AREA_ID NUMBER not null
+		references PROBATION_AREA,
+	DISTRICT VARCHAR2(35),
+	constraint XAK1OFFICE_LOCATION
+		unique (CODE, TRAINING_SESSION_ID, OFFICE_LOCATION_ID),
+	constraint PROVIDER_LOCATION_DATE_VALID6
+		check ( (
+(START_DATE <= END_DATE) OR (END_DATE IS NULL)
+))
+)
+/
+
+create table TEAM_OFFICE_LOCATION
+(
+	TEAM_ID NUMBER not null
+		references TEAM,
+	OFFICE_LOCATION_ID NUMBER not null
+		references OFFICE_LOCATION,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKTEAM_OFFICE_LOCATION
+		primary key (TEAM_ID, OFFICE_LOCATION_ID)
+)
+/
+
+create table R_OFFICE_LOCATION_LINK
+(
+	LINK_FROM_OFFICE_LOCATION_ID NUMBER(22) not null
+		constraint R_968
+			references OFFICE_LOCATION,
+	LINK_TO_OFFICE_LOCATION_ID NUMBER(22) not null
+		constraint R_969
+			references OFFICE_LOCATION,
+	ROW_VERSION NUMBER(22) default 0 not null,
+	constraint XPKR_OFFICE_LOCATION_LINK
+		primary key (LINK_FROM_OFFICE_LOCATION_ID, LINK_TO_OFFICE_LOCATION_ID)
+)
+/
+
+create table UPW_WORK_NATURE_QUALIFICATIONS
+(
+	UPW_PROJECT_ID NUMBER not null
+		constraint XPKUPW_WORK_NATURE_QUALIFICATI
+			primary key
+		references UPW_PROJECT,
+	NATURE_OF_WORK_1 NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	NATURE_OF_WORK_2 NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	NATURE_OF_WORK_3 NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	NATURE_OF_WORK_4 NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	NATURE_OF_WORK_5 NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	OPPORTUNITY_1 NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	OPPORTUNITY_2 NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	OPPORTUNITY_3 NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	OPPORTUNITY_4 NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	OPPORTUNITY_5 NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	NOTES CLOB,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	CREATED_BY_USER_ID NUMBER not null,
+	ROW_VERSION NUMBER default 0 not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION
+)
+/
+
+create table OFFENDER
+(
+	OFFENDER_ID NUMBER not null
+		constraint XPKOFFENDER
+			primary key,
+	FIRST_NAME VARCHAR2(35) not null,
+	CRN CHAR(7) not null,
+	SECOND_NAME VARCHAR2(35),
+	PNC_NUMBER CHAR(13),
+	THIRD_NAME VARCHAR2(35),
+	CRO_NUMBER VARCHAR2(12),
+	SURNAME VARCHAR2(35) not null,
+	NOMS_NUMBER CHAR(7)
+		constraint XAK2OFFENDER
+			unique,
+	PREVIOUS_SURNAME VARCHAR2(35),
+	ALLOW_SMS CHAR
+		constraint YES_OR_NO_OR_UNKNOWN9
+			check (ALLOW_SMS IN ('N','Y','U')),
+	DATE_OF_BIRTH_DATE DATE not null,
+	NI_NUMBER CHAR(9),
+	NOTES CLOB,
+	LANGUAGE_CONCERNS VARCHAR2(4000),
+	DECEASED_DATE DATE,
+	INTERPRETER_REQUIRED CHAR
+		constraint YES_OR_NO_OR_UNKNOWN10
+			check (INTERPRETER_REQUIRED IN ('N','Y','U')),
+	IMMIGRATION_NUMBER VARCHAR2(20),
+	EXCLUSION_MESSAGE VARCHAR2(200),
+	RESTRICTION_MESSAGE VARCHAR2(200),
+	TELEPHONE_NUMBER VARCHAR2(35),
+	MOBILE_NUMBER VARCHAR2(35),
+	E_MAIL_ADDRESS VARCHAR2(255),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE65
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER default 0 not null,
+	TITLE_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	GENDER_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	ETHNICITY_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	NATIONALITY_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	IMMIGRATION_STATUS_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	LANGUAGE_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	RELIGION_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	SURNAME_SOUNDEX VARCHAR2(50) not null,
+	CREATED_DATETIME DATE not null,
+	MOST_RECENT_PRISONER_NUMBER VARCHAR2(10),
+	LAST_UPDATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME_DIVERSIT DATE,
+	SECOND_NATIONALITY_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	SEXUAL_ORIENTATION_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	CURRENT_EXCLUSION NUMBER default 0 not null
+		constraint CON_CURRENT_EXCLUSION
+			check (CURRENT_EXCLUSION IN (0, 1)),
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	FIRST_NAME_SOUNDEX VARCHAR2(50) not null,
+	MIDDLE_NAME_SOUNDEX VARCHAR2(50),
+	LAST_UPDATED_USER_ID_DIVERSITY NUMBER not null,
+	CURRENT_DISPOSAL NUMBER default 0 not null
+		constraint CON_CURRENT_DISPOSAL
+			check (CURRENT_DISPOSAL IN (0, 1)),
+	CURRENT_HIGHEST_RISK_COLOUR VARCHAR2(10),
+	CURRENT_RESTRICTION NUMBER default 0 not null
+		constraint CON_CURRENT_RESTRICTION
+			check (CURRENT_RESTRICTION IN (0, 1)),
+	INSTITUTION_ID NUMBER,
+	ESTABLISHMENT CHAR
+		constraint YES_OR_NO_ONLY32
+			check (ESTABLISHMENT IN ('Y','N')),
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	CURRENT_TIER NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	PENDING_TRANSFER NUMBER not null
+		constraint TRUE_OR_FALSE66
+			check (PENDING_TRANSFER IN (0, 1)),
+	OFFENDER_DETAILS CLOB,
+	PREVIOUS_CONVICTION_DATE DATE,
+	PREVIOUS_CONVICTION_DOCUMENT BLOB,
+	PREV_CONVICTION_DOCUMENT_NAME VARCHAR2(200),
+	CURRENT_REMAND_STATUS VARCHAR2(200),
+	OM_ALLOCATION_DECISION_ID NUMBER
+		constraint R_1052
+			references R_STANDARD_REFERENCE_LIST,
+	PREV_CON_LAST_UPDATED_USER_ID NUMBER,
+	PREV_CON_LAST_UPD_AUTH_PROV_ID NUMBER
+		constraint R_1093
+			references PROBATION_AREA,
+	PREV_CON_CREATED_PROVIDER_ID NUMBER
+		constraint R_1094
+			references PROBATION_AREA,
+	PREV_CON_CREATED_BY_USER_ID NUMBER,
+	PREV_CON_CREATED_DATETIME DATE,
+	PREV_CON_ALFRESCO_DOCUMENT_ID VARCHAR2(36)
+		constraint XAK1OFFENDER
+			unique,
+	TRANSGENDER_CONSENT_DISCLOSE CHAR
+		constraint YES_OR_NO_ONLY_1345657105
+			check (TRANSGENDER_CONSENT_DISCLOSE IN ('Y','N')),
+	TRANSGENDER_PROCESS_ID NUMBER
+		constraint R_1113
+			references R_STANDARD_REFERENCE_LIST,
+	IOM_NOMINAL CHAR
+		constraint YES_OR_NO_ONLY_1819182291
+			check (IOM_NOMINAL IN ('Y','N')),
+	SAFEGUARDING_ISSUE CHAR
+		constraint YES_OR_NO_ONLY_854915354
+			check (SAFEGUARDING_ISSUE IN ('Y','N')),
+	VULNERABILITY_ISSUE CHAR
+		constraint YES_OR_NO_ONLY_887952511
+			check (VULNERABILITY_ISSUE IN ('Y','N')),
+	DISABILITY CHAR
+		constraint YES_OR_NO_ONLY_2054319986
+			check (DISABILITY IN ('Y','N')),
+	LEARNING CHAR
+		constraint YES_OR_NO_ONLY_489520233
+			check (LEARNING IN ('Y','N')),
+	MENTAL_HEALTH CHAR
+		constraint YES_OR_NO_ONLY_1967808043
+			check (MENTAL_HEALTH IN ('Y','N')),
+	foreign key (INSTITUTION_ID, ESTABLISHMENT) references R_INSTITUTION
+)
+/
+
+create table OFFENDER_PRISONER
+(
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	PRISONER_NUMBER VARCHAR2(10) not null,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	PARTITION_AREA_ID NUMBER
+		references PARTITION_AREA,
+	constraint XPKOFFENDER_PRISONER
+		primary key (OFFENDER_ID, PRISONER_NUMBER)
+)
+/
+
+create table MANAGEMENT_TIER
+(
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	TIER_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	DATE_CHANGED DATE not null,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE58
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER default 0 not null,
+	TIER_CHANGE_REASON_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	IOM_NOMINAL CHAR
+		constraint YES_OR_NO_ONLY_235092497
+			check (IOM_NOMINAL IN ('Y','N')),
+	SAFEGUARDING_ISSUE CHAR
+		constraint YES_OR_NO_ONLY_1888914895
+			check (SAFEGUARDING_ISSUE IN ('Y','N')),
+	VULNERABILITY_ISSUE CHAR
+		constraint YES_OR_NO_ONLY_696137284
+			check (VULNERABILITY_ISSUE IN ('Y','N')),
+	constraint XPKMANAGEMENT_TIER
+		primary key (OFFENDER_ID, TIER_ID, DATE_CHANGED)
+)
+/
+
+create table SUBJECT_ACCESS_REPORT
+(
+	SUBJECT_ACCESS_REPORT_ID NUMBER not null
+		constraint XPKSUBJECT_ACCESS_REPORT
+			primary key,
+	REQUEST_DATE_TIME DATE not null,
+	LOCKED CHAR,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_NUMBER NUMBER default 0 not null,
+	CREATED_DATETIME DATE not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION
+)
+/
+
+create table DPA_REPORT_OFFENDER
+(
+	DPA_REPORT_ID NUMBER not null
+		references DPA_REPORT,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKDPA_REPORT_OFFENDER
+		primary key (DPA_REPORT_ID, OFFENDER_ID)
+)
+/
+
+create table ORGANISATION_OFFENDER
+(
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	PROBATION_AREA_ID NUMBER not null
+		references PROBATION_AREA,
+	PARTITION_AREA_ID NUMBER
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	EXTERNAL_PROVIDER_ID NUMBER
+		references EXTERNAL_PROVIDER
+)
+/
+
+create table MERGE_OFFENDER_VALUES
+(
+	MERGE_OFFENDER_VALUES_ID NUMBER not null
+		constraint XPKMERGE_OFFENDER_VALUES
+			primary key,
+	TARGET_OFFENDER_ID NUMBER not null
+		constraint R_798
+			references OFFENDER,
+	ORIGIN_OFFENDER_ID NUMBER not null
+		constraint R_799
+			references OFFENDER,
+	ATTRIBUTE VARCHAR2(400) not null,
+	OLD_VALUE_STRING VARCHAR2(4000),
+	NEW_VALUE_STRING VARCHAR2(4000),
+	OLD_VALUE_NUMBER NUMBER,
+	NEW_VALUE_NUMBER NUMBER,
+	OLD_VALUE_DATE DATE,
+	NEW_VALUE_DATE DATE,
+	TRAINING_SESSION_ID NUMBER
+		constraint R_800
+			references TRAINING_SESSION
+)
+/
+
+create table MERGE_HISTORY
+(
+	MERGE_HISTORY_ID NUMBER not null
+		constraint XPKMERGE_HISTORY
+			primary key,
+	TABLE_NAME VARCHAR2(150) not null,
+	UNIQUE_ID NUMBER not null,
+	TARGET_OFFENDER_ID NUMBER not null
+		constraint R_795
+			references OFFENDER,
+	ORIGIN_OFFENDER_ID NUMBER not null
+		constraint R_796
+			references OFFENDER,
+	EXTRA_DATE_ID DATE,
+	EXTRA_NUMBER_ID NUMBER,
+	EXTRA_STRING_ID VARCHAR2(400),
+	TRAINING_SESSION_ID NUMBER
+		constraint R_797
+			references TRAINING_SESSION
+)
+/
+
+create table MERGE_DUPLICATES
+(
+	MERGE_DUPLICATES_ID NUMBER not null
+		constraint XPKMERGE_DUPLICATES
+			primary key,
+	TABLE_NAME VARCHAR2(150) not null,
+	DUPLICATES NUMBER not null,
+	TYPE_TABLE VARCHAR2(150),
+	TYPE_ID NUMBER,
+	TARGET_OFFENDER_ID NUMBER not null
+		constraint R_791
+			references OFFENDER,
+	ORIGIN_OFFENDER_ID NUMBER not null
+		constraint R_792
+			references OFFENDER,
+	TRAINING_SESSION_ID NUMBER
+		constraint R_793
+			references TRAINING_SESSION
+)
+/
+
+create table DISABILITY
+(
+	DISABILITY_ID NUMBER not null
+		constraint XPKDISABILITY
+			primary key,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	START_DATE DATE not null,
+	FINISH_DATE DATE,
+	NOTES CLOB,
+	SOFT_DELETED NUMBER not null,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	DISABILITY_TYPE_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	constraint XAK1DISABILITY
+		unique (OFFENDER_ID, DISABILITY_TYPE_ID, FINISH_DATE, DISABILITY_ID)
+)
+/
+
+create table EVENT
+(
+	EVENT_ID NUMBER not null
+		constraint XPKEVENT
+			primary key,
+	CONSECUTIVE_TO_EVENT_ID NUMBER
+		constraint R_785
+			references EVENT,
+	CONCURRENT_WITH_EVENT_ID NUMBER
+		constraint R_784
+			references EVENT,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	EVENT_NUMBER VARCHAR2(10) not null,
+	REFERRAL_DATE DATE not null,
+	NOTES CLOB,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE52
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	IN_BREACH NUMBER not null
+		constraint TRUE_OR_FALSE53
+			check (IN_BREACH IN (0, 1)),
+	ACTIVE_FLAG NUMBER not null
+		constraint TRUE_OR_FALSE54
+			check (ACTIVE_FLAG IN (0, 1)),
+	BREACH_END DATE,
+	CPS_DATE DATE,
+	CPS_DOCUMENT BLOB,
+	CPS_DOCUMENT_NAME VARCHAR2(200),
+	FTC_COUNT NUMBER default 0 not null,
+	PENDING_TRANSFER NUMBER not null
+		constraint TRUE_OR_FALSE_1415501270
+			check (PENDING_TRANSFER IN (0, 1)),
+	CONVICTION_DATE DATE,
+	FIRST_RELEASE_DATE DATE,
+	PSS_RQMNT_FLAG NUMBER(22) not null
+		constraint TRUE_OR_FALSE_1988266100
+			check (PSS_RQMNT_FLAG IN (0, 1)),
+	CPS_LAST_UPDATED_USER_ID NUMBER,
+	CPS_LAST_UPDATED_AUTH_PROV_ID NUMBER
+		constraint R_1095
+			references PROBATION_AREA,
+	CPS_CREATED_PROVIDER_ID NUMBER
+		constraint R_1096
+			references PROBATION_AREA,
+	CPS_CREATED_BY_USER_ID NUMBER,
+	CPS_CREATED_DATETIME DATE,
+	CPS_ALFRESCO_DOCUMENT_ID VARCHAR2(36)
+		constraint XAK1EVENT
+			unique,
+	CPS_SOFT_DELETED NUMBER
+		constraint TRUE_OR_FALSE_1617352144
+			check (CPS_SOFT_DELETED IN (0, 1)),
+	COURT_ID NUMBER
+		constraint R_1234
+			references COURT
+)
+/
+
+create table OGRS_ASSESSMENT
+(
+	OGRS_ASSESSMENT_ID NUMBER not null
+		constraint XPKOGRS_ASSESSMENT
+			primary key,
+	ASSESSMENT_DATE DATE not null,
+	EVENT_ID NUMBER not null
+		constraint XAK1OGRS_ASSESSMENT
+			unique
+		references EVENT,
+	OGRS2_SCORE NUMBER
+		constraint GREATER_THAN_010
+			check (OGRS2_SCORE > 0),
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE70
+			check (SOFT_DELETED IN (0, 1)),
+	OGRS3_SCORE_1 NUMBER
+		constraint GREATER_THAN_011
+			check (OGRS3_SCORE_1 > 0),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	OGRS3_SCORE_2 NUMBER
+		constraint GREATER_THAN_012
+			check (OGRS3_SCORE_2 > 0),
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE default TO_DATE('01-01-1900', 'DD-MM-YYYY') not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE default TO_DATE('01-01-1900', 'DD-MM-YYYY') not null
+)
+/
+
+create table ADDITIONAL_OFFENCE
+(
+	ADDITIONAL_OFFENCE_ID NUMBER not null
+		constraint XPKADDITIONAL_OFFENCE
+			primary key,
+	OFFENCE_DATE DATE,
+	OFFENCE_COUNT NUMBER,
+	EVENT_ID NUMBER not null
+		references EVENT,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE37
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	OFFENCE_ID NUMBER not null
+		references R_OFFENCE,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XAK1ADDITIONAL_OFFENCE
+		unique (EVENT_ID, OFFENCE_ID, OFFENCE_DATE, ADDITIONAL_OFFENCE_ID)
+)
+/
+
+create table DISPOSAL
+(
+	DISPOSAL_ID NUMBER not null
+		constraint XPKDISPOSAL
+			primary key,
+	DISPOSAL_DATE DATE not null,
+	VALUE NUMBER(16,2),
+	LENGTH NUMBER,
+	PUNISHMENT CHAR
+		constraint YES_OR_NO_ONLY
+			check (PUNISHMENT IN ('Y','N')),
+	REDUCTION_OF_CRIME CHAR
+		constraint YES_OR_NO_ONLY1
+			check (REDUCTION_OF_CRIME IN ('Y','N')),
+	REFORM_AND_REHABILITION CHAR
+		constraint YES_OR_NO_ONLY2
+			check (REFORM_AND_REHABILITION IN ('Y','N')),
+	PUBLIC_PROTECTION CHAR
+		constraint YES_OR_NO_ONLY3
+			check (PUBLIC_PROTECTION IN ('Y','N')),
+	REPARATION CHAR
+		constraint YES_OR_NO_ONLY4
+			check (REPARATION IN ('Y','N')),
+	RECOMMENDATION_NOT_STATED CHAR
+		constraint YES_OR_NO_ONLY5
+			check (RECOMMENDATION_NOT_STATED IN ('Y','N')),
+	TERMINATION_DATE DATE,
+	TERMINATION_NOTES CLOB,
+	EVENT_ID NUMBER not null
+		references EVENT,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE9
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER default 0 not null,
+	LEVEL_OF_SERIOUSNESS_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	DISPOSAL_TYPE_ID NUMBER not null
+		references R_DISPOSAL_TYPE,
+	CREATED_DATETIME DATE not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	DISPOSAL_TERMINATION_REASON_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	LENGTH_2 NUMBER,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	ACTIVE_FLAG NUMBER not null,
+	UPW NUMBER not null
+		constraint TRUE_OR_FALSE10
+			check (UPW IN (0, 1)),
+	EFFECTIVE_LENGTH NUMBER,
+	LENGTH_IN_DAYS NUMBER,
+	ENTRY_LENGTH_UNITS_ID NUMBER
+		constraint R_1042
+			references R_STANDARD_REFERENCE_LIST,
+	ENTRY_LENGTH_2_UNITS_ID NUMBER
+		constraint R_1043
+			references R_STANDARD_REFERENCE_LIST,
+	NOTIONAL_END_DATE DATE,
+	ENTRY_LENGTH NUMBER,
+	USER_TERMINATION_DATE DATE,
+	ENTERED_NOTIONAL_END_DATE DATE,
+	constraint XAK1DISPOSAL
+		unique (EVENT_ID, DISPOSAL_DATE, DISPOSAL_TYPE_ID, DISPOSAL_ID),
+	constraint ACTIVE_FLAG_TERMINATION_DATE
+		check ( (ACTIVE_FLAG = 0 AND TERMINATION_DATE IS NOT NULL)
+OR
+(ACTIVE_FLAG = 1 AND TERMINATION_DATE IS NULL)
+)
+)
+/
+
+create table MAIN_OFFENCE
+(
+	MAIN_OFFENCE_ID NUMBER not null
+		constraint XPKMAIN_OFFENCE
+			primary key,
+	OFFENCE_DATE DATE not null,
+	OFFENCE_COUNT NUMBER not null
+		constraint GREATER_THAN_07
+			check (OFFENCE_COUNT > 0),
+	EVENT_ID NUMBER not null
+		references EVENT,
+	TICS NUMBER,
+	VERDICT VARCHAR2(1)
+		constraint VERDICT
+			check (VERDICT IN ('G', 'N', 'M')),
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE57
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	OFFENCE_ID NUMBER not null
+		references R_OFFENCE,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	CREATED_BY_USER_ID NUMBER(22) not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER(22) not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	constraint XAK1MAIN_OFFENCE
+		unique (EVENT_ID, OFFENCE_ID, OFFENCE_DATE, MAIN_OFFENCE_ID)
+)
+/
+
+create table RQMNT
+(
+	RQMNT_ID NUMBER not null
+		constraint XPKRQMNT
+			primary key,
+	DISPOSAL_ID NUMBER not null
+		references DISPOSAL,
+	START_DATE DATE not null,
+	LENGTH NUMBER,
+	RQMNT_NOTES CLOB,
+	COMMENCEMENT_DATE DATE,
+	TERMINATION_DATE DATE,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	EXPECTED_START_DATE DATE,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE12
+			check (SOFT_DELETED IN (0, 1)),
+	EXPECTED_END_DATE DATE,
+	ROW_VERSION NUMBER default 0 not null,
+	RQMNT_TYPE_SUB_CATEGORY_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	AD_RQMNT_TYPE_SUB_CATEGORY_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	RQMNT_TYPE_MAIN_CATEGORY_ID NUMBER
+		references R_RQMNT_TYPE_MAIN_CATEGORY,
+	AD_RQMNT_TYPE_MAIN_CATEGORY_ID NUMBER
+		references R_AD_RQMNT_TYPE_MAIN_CATEGORY,
+	CREATED_BY_USER_ID NUMBER not null,
+	RQMNT_TERMINATION_REASON_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	ACTIVE_FLAG NUMBER not null,
+	PENDING_TRANSFER NUMBER not null
+		constraint TRUE_OR_FALSE_1549722321
+			check (PENDING_TRANSFER IN (0, 1)),
+	ATTENDANCE_COUNT NUMBER(22),
+	RAR_COUNT NUMBER,
+	constraint ACTIVE_FLAG_TERMINATION_DATE2
+		check ( (ACTIVE_FLAG = 0 AND TERMINATION_DATE IS NOT NULL)
+OR
+(ACTIVE_FLAG = 1 AND TERMINATION_DATE IS NULL)
+),
+	constraint REQUIREMENT_TYPE
+		check ( (RQMNT_TYPE_MAIN_CATEGORY_ID IS NULL AND RQMNT_TYPE_SUB_CATEGORY_ID IS NULL AND AD_RQMNT_TYPE_MAIN_CATEGORY_ID IS NOT NULL)
+OR
+(AD_RQMNT_TYPE_MAIN_CATEGORY_ID IS NULL AND AD_RQMNT_TYPE_SUB_CATEGORY_ID IS NULL AND RQMNT_TYPE_MAIN_CATEGORY_ID IS NOT NULL))
+)
+/
+
+create table OFFENDER_ADDRESS
+(
+	OFFENDER_ADDRESS_ID NUMBER not null
+		constraint XPKOFFENDER_ADDRESS
+			primary key,
+	START_DATE DATE not null,
+	END_DATE DATE,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE20
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER default 0 not null,
+	ADDRESS_STATUS_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	NO_FIXED_ABODE CHAR
+		constraint YES_OR_NO_ONLY9
+			check (NO_FIXED_ABODE IN ('Y','N')),
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	NOTES CLOB,
+	ADDRESS_NUMBER VARCHAR2(35),
+	STREET_NAME VARCHAR2(35),
+	DISTRICT VARCHAR2(35),
+	TOWN_CITY VARCHAR2(35),
+	CREATED_DATETIME DATE not null,
+	COUNTY VARCHAR2(35),
+	LAST_UPDATED_DATETIME DATE not null,
+	BUILDING_NAME VARCHAR2(35),
+	POSTCODE VARCHAR2(35),
+	CREATED_BY_USER_ID NUMBER not null,
+	TELEPHONE_NUMBER VARCHAR2(35),
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	AWAITING_ASSESSMENT NUMBER default 0
+		constraint TRUE_OR_FALSE_1316444769
+			check (AWAITING_ASSESSMENT IN (0, 1)),
+	constraint OFFENDER_ADDRESS_START_LT_END
+		check ( (
+(START_DATE <= END_DATE) OR (END_DATE IS NULL)
+))
+)
+/
+
+create table ALIAS
+(
+	ALIAS_ID NUMBER not null
+		constraint XPKALIAS
+			primary key,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	SECOND_NAME VARCHAR2(35),
+	FIRST_NAME VARCHAR2(35) not null,
+	THIRD_NAME VARCHAR2(35),
+	SURNAME VARCHAR2(35) not null,
+	DATE_OF_BIRTH_DATE DATE not null,
+	FIRST_NAME_SOUNDEX VARCHAR2(50) not null,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE67
+			check (SOFT_DELETED IN (0, 1)),
+	MIDDLE_NAME_SOUNDEX VARCHAR2(50),
+	ROW_VERSION NUMBER default 0 not null,
+	GENDER_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	SURNAME_SOUNDEX VARCHAR2(50) not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null
+)
+/
+
+create table ADDITIONAL_SENTENCE
+(
+	ADDITIONAL_SENTENCE_ID NUMBER not null
+		constraint XPKADDITIONAL_SENTENCE
+			primary key,
+	LENGTH NUMBER,
+	AMOUNT NUMBER(16,2),
+	NOTES CLOB,
+	EVENT_ID NUMBER not null
+		references EVENT,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE38
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	ADDITIONAL_SENTENCE_TYPE_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER
+)
+/
+
+create table ADDITIONAL_IDENTIFIER
+(
+	ADDITIONAL_IDENTIFIER_ID NUMBER not null
+		constraint XPKADDITIONAL_IDENTIFIER
+			primary key,
+	IDENTIFIER VARCHAR2(30) not null,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE68
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	IDENTIFIER_NAME_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	CREATED_BY_USER_ID NUMBER(22) not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER(22) not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	constraint XAK1ADDITIONAL_IDENTIFIER
+		unique (IDENTIFIER, IDENTIFIER_NAME_ID, OFFENDER_ID, TRAINING_SESSION_ID, ADDITIONAL_IDENTIFIER_ID)
+)
+/
+
+create table LIC_CONDITION
+(
+	LIC_CONDITION_ID NUMBER not null
+		constraint XPKLIC_CONDITION
+			primary key,
+	DISPOSAL_ID NUMBER not null
+		references DISPOSAL,
+	START_DATE DATE not null,
+	LENGTH NUMBER,
+	LIC_CONDITION_NOTES CLOB,
+	COMMENCEMENT_DATE DATE,
+	COMMENCEMENT_NOTES CLOB,
+	TERMINATION_DATE DATE,
+	TERMINATION_NOTES CLOB,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE11
+			check (SOFT_DELETED IN (0, 1)),
+	EXPECTED_START_DATE DATE,
+	ROW_VERSION NUMBER default 0 not null,
+	EXPECTED_END_DATE DATE,
+	LIC_COND_TYPE_SUB_CAT_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	INSTITUTION_ID NUMBER,
+	ESTABLISHMENT CHAR
+		constraint YES_OR_NO_ONLY6
+			check (ESTABLISHMENT IN ('Y','N')),
+	CREATED_BY_USER_ID NUMBER not null,
+	LIC_COND_TYPE_MAIN_CAT_ID NUMBER
+		references R_LIC_COND_TYPE_MAIN_CAT,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LIC_TERMINATION_REASON_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	ACTIVE_FLAG NUMBER not null,
+	PENDING_TRANSFER NUMBER not null
+		constraint TRUE_OR_FALSE_368876692
+			check (PENDING_TRANSFER IN (0, 1)),
+	ATTENDANCE_COUNT NUMBER(22),
+	foreign key (INSTITUTION_ID, ESTABLISHMENT) references R_INSTITUTION,
+	constraint ACTIVE_FLAG_TERMINATION_DATE1
+		check ( (ACTIVE_FLAG = 0 AND TERMINATION_DATE IS NOT NULL)
+OR
+(ACTIVE_FLAG = 1 AND TERMINATION_DATE IS NULL)
+),
+	constraint LIC_CONDITION
+		check ( (
+(TERMINATION_DATE >= COMMENCEMENT_DATE) OR ( COMMENCEMENT_DATE IS NULL)
+))
+)
+/
+
+create table PERSONAL_CIRCUMSTANCE
+(
+	PERSONAL_CIRCUMSTANCE_ID NUMBER not null
+		constraint XPKPERSONAL_CIRCUMSTANCE
+			primary key,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	START_DATE DATE not null,
+	END_DATE DATE,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE71
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER default 0 not null,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	CIRCUMSTANCE_TYPE_ID NUMBER not null
+		references R_CIRCUMSTANCE_TYPE,
+	CIRCUMSTANCE_SUB_TYPE_ID NUMBER not null
+		references R_CIRCUMSTANCE_SUB_TYPE,
+	NOTES CLOB,
+	EVIDENCED CHAR
+		constraint YES_OR_NO_ONLY_1731748197
+			check (EVIDENCED IN ('Y','N')),
+	QUALIFICATION_1_ID NUMBER,
+	QUALIFICATION_2_ID NUMBER,
+	QUALIFICATION_3_ID NUMBER,
+	OFFENDER_ADDRESS_ID NUMBER default NULL
+		constraint R_1213
+			references OFFENDER_ADDRESS,
+	PROBATION_AREA_ID NUMBER
+		constraint R_1220
+			references PROBATION_AREA,
+	constraint XAK1PERSONAL_CIRCUMSTANCE
+		unique (OFFENDER_ID, START_DATE, END_DATE, PERSONAL_CIRCUMSTANCE_ID)
+)
+/
+
+create table NSI
+(
+	NSI_ID NUMBER not null
+		constraint XPKNSI
+			primary key,
+	OFFENDER_ID NUMBER not null
+		constraint R_802
+			references OFFENDER,
+	EVENT_ID NUMBER
+		constraint R_803
+			references EVENT,
+	NSI_TYPE_ID NUMBER not null
+		constraint R_820
+			references R_NSI_TYPE,
+	NSI_SUB_TYPE_ID NUMBER
+		constraint R_821
+			references R_STANDARD_REFERENCE_LIST,
+	LENGTH NUMBER,
+	REFERRAL_DATE DATE not null,
+	EXPECTED_START_DATE DATE,
+	ACTUAL_START_DATE DATE,
+	EXPECTED_END_DATE DATE,
+	ACTUAL_END_DATE DATE,
+	NSI_STATUS_ID NUMBER not null
+		constraint R_822
+			references R_NSI_STATUS,
+	NSI_STATUS_DATE DATE not null,
+	NSI_NEXT_STATUS_DATE DATE,
+	NOTES CLOB,
+	NSI_OUTCOME_ID NUMBER
+		constraint R_823
+			references R_STANDARD_REFERENCE_LIST,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE_421013047
+			check (SOFT_DELETED IN (0, 1)),
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ACTIVE_FLAG NUMBER not null,
+	ROW_VERSION NUMBER default 0 not null,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	PENDING_TRANSFER NUMBER not null
+		constraint TRUE_OR_FALSE_1566803328
+			check (PENDING_TRANSFER IN (0, 1)),
+	TRAINING_SESSION_ID NUMBER
+		constraint R_824
+			references TRAINING_SESSION,
+	ATTENDANCE_COUNT NUMBER(22),
+	RQMNT_ID NUMBER
+		constraint R_1039
+			references RQMNT,
+	RAR_COUNT NUMBER,
+	DOCUMENT_LINKED CHAR
+		constraint YES_OR_NO_ONLY_1986954636
+			check (DOCUMENT_LINKED IN ('Y','N')),
+	INTENDED_PROVIDER_ID NUMBER
+		constraint R_1090
+			references PROBATION_AREA,
+	ADDITIONAL_IDENTIFIER1_ID NUMBER
+		constraint R_1254
+			references ADDITIONAL_IDENTIFIER,
+	ADDITIONAL_IDENTIFIER2_ID NUMBER
+		constraint R_1255
+			references ADDITIONAL_IDENTIFIER,
+	constraint ACTIVE_FLAG_ACTUAL_E_385237158
+		check ( (ACTIVE_FLAG = 0 AND ACTUAL_END_DATE IS NOT NULL)
+OR
+(ACTIVE_FLAG = 1 AND ACTUAL_END_DATE IS NULL)
+)
+)
+/
+
+create table SC_PROVIDER
+(
+	SC_PROVIDER_ID NUMBER not null
+		constraint XPKSC_PROVIDER
+			primary key,
+	CODE VARCHAR2(20) not null,
+	DESCRIPTION VARCHAR2(200) not null,
+	PROVIDER_ID NUMBER not null
+		constraint R_888
+			references PROBATION_AREA,
+	CONTACT_NAME VARCHAR2(200),
+	ADDRESS_ID NUMBER not null
+		constraint R_889
+			references ADDRESS,
+	PRIVATE NUMBER not null
+		constraint TRUE_OR_FALSE_243555997
+			check (PRIVATE IN (0, 1)),
+	START_DATE DATE not null,
+	END_DATE DATE,
+	ACTIVE_FLAG NUMBER not null,
+	NOTES CLOB,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		constraint R_890
+			references TRAINING_SESSION,
+	constraint ACTIVE_FLAG_END_DATE_121858971
+		check ( (ACTIVE_FLAG = 0 AND END_DATE IS NOT NULL)
+OR
+(ACTIVE_FLAG = 1 AND END_DATE IS NULL)
+)
+)
+/
+
+create table STAFF
+(
+	STAFF_ID NUMBER not null
+		constraint XPKSTAFF
+			primary key,
+	START_DATE DATE not null,
+	SURNAME VARCHAR2(35) not null,
+	END_DATE DATE,
+	FORENAME VARCHAR2(35) not null,
+	ROW_VERSION NUMBER default 0 not null,
+	FORENAME2 VARCHAR2(35),
+	STAFF_GRADE_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	TITLE_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	OFFICER_CODE CHAR(7),
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	PRIVATE NUMBER not null
+		constraint TRUE_OR_FALSE_925119186
+			check (PRIVATE IN (0, 1)),
+	SC_PROVIDER_ID NUMBER
+		constraint R_894
+			references SC_PROVIDER,
+	PROBATION_AREA_ID NUMBER not null
+		constraint R_917
+			references PROBATION_AREA,
+	constraint XAK1STAFF
+		unique (OFFICER_CODE, TRAINING_SESSION_ID, STAFF_ID),
+	constraint PROVIDER_LOCATION_DATE_VALID7
+		check ( (
+(START_DATE <= END_DATE) OR (END_DATE IS NULL)
+))
+)
+/
+
+create table R_APPROVED_PREMISES_STAFF
+(
+	APPROVED_PREMISES_ID NUMBER not null
+		references R_APPROVED_PREMISES,
+	STAFF_ID NUMBER not null
+		references STAFF,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKR_APPROVED_PREMISES_STAFF
+		primary key (APPROVED_PREMISES_ID, STAFF_ID)
+)
+/
+
+alter table TEAM
+	add constraint R_893
+		foreign key (SC_PROVIDER_ID) references SC_PROVIDER
+/
+
+create table STAFF_TEAM
+(
+	STAFF_ID NUMBER not null
+		references STAFF,
+	TEAM_ID NUMBER not null
+		references TEAM,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKSTAFF_TEAM
+		primary key (STAFF_ID, TEAM_ID)
+)
+/
+
+create table COURT_APPEARANCE
+(
+	COURT_APPEARANCE_ID NUMBER not null
+		constraint XPKCOURT_APPEARANCE
+			primary key,
+	APPEARANCE_DATE DATE not null,
+	CROWN_COURT_CALENDAR_NUMBER VARCHAR2(20),
+	BAIL_CONDITIONS VARCHAR2(256),
+	COURT_NOTES CLOB,
+	EVENT_ID NUMBER not null
+		references EVENT,
+	TEAM_ID NUMBER
+		references TEAM,
+	STAFF_ID NUMBER
+		references STAFF,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE26
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	COURT_ID NUMBER not null
+		references COURT,
+	ROW_VERSION NUMBER default 0 not null,
+	APPEARANCE_TYPE_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	PLEA_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	OUTCOME_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	REMAND_STATUS_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS
+)
+/
+
+create table COHORT
+(
+	COHORT_ID NUMBER(22) not null
+		constraint XPKCOHORT
+			primary key,
+	EVENT_ID NUMBER(22) not null
+		constraint R_918
+			references EVENT,
+	OFFENDER_ID NUMBER(22) not null
+		constraint R_919
+			references OFFENDER,
+	COHORT_PROVIDER_ID NUMBER(22) not null
+		constraint R_920
+			references PROBATION_AREA,
+	COHORT_CODE VARCHAR2(11) not null,
+	SENTENCE_RELEASE_DATE DATE,
+	START_DATE DATE not null,
+	END_DATE DATE,
+	ALLOCATION_REASON_ID NUMBER(22)
+		constraint R_921
+			references R_STANDARD_REFERENCE_LIST,
+	ACTIVE_FLAG NUMBER(22) not null
+		constraint TRUE_OR_FALSE_252545138
+			check (ACTIVE_FLAG IN (0, 1)),
+	AUTHORISATION_PROVIDER_ID NUMBER(22)
+		constraint R_922
+			references PROBATION_AREA,
+	AUTHORISATION_TEAM_ID NUMBER(22)
+		constraint R_923
+			references TEAM,
+	AUTHORISATION_STAFF_ID NUMBER(22)
+		constraint R_924
+			references STAFF,
+	COHORT_CHANGE_REASON_ID NUMBER(22)
+		constraint R_925
+			references R_STANDARD_REFERENCE_LIST,
+	NOTES CLOB,
+	SOFT_DELETED NUMBER(22) not null
+		constraint TRUE_OR_FALSE_442138751
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER(22) default 0 not null,
+	CREATED_BY_USER_ID NUMBER(22) not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER(22) not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	RECORDED_COHORT_FLAG CHAR
+		constraint RECORDED_COHORT_FLA_2066116776
+			check (RECORDED_COHORT_FLAG IN ('S','R','T')),
+	constraint XAK1COHORT
+		unique (EVENT_ID, OFFENDER_ID)
+)
+/
+
+create table UPW_DETAILS
+(
+	UPW_DETAILS_ID NUMBER not null
+		constraint XPKUPW_DETAILS
+			primary key,
+	DISPOSAL_ID NUMBER not null
+		references DISPOSAL,
+	UPW_LENGTH_MINUTES NUMBER(10,2) not null,
+	AGREED_TRAVEL_FARE NUMBER(10,2),
+	NOTES CLOB,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE23
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	UPW_STATUS_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	WORKED_INTENSIVELY CHAR
+		constraint YES_OR_NO_404
+			check (WORKED_INTENSIVELY IN ('Y','N')),
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	TEAM_ID NUMBER
+		references TEAM,
+	PROVIDER_TEAM_ID NUMBER
+		references PROVIDER_TEAM,
+	STAFF_ID NUMBER
+		references STAFF,
+	UPW_STATUS_DATE DATE not null,
+	PROVIDER_EMPLOYEE_ID NUMBER
+		references PROVIDER_EMPLOYEE,
+	ALLOCATION_DATE DATE not null,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	MINUTES_YEAR1 NUMBER(10,2),
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	constraint OFFENDER_MANAGER_TEAM_XOR3
+		check ( (
+(TEAM_ID IS NOT NULL AND PROVIDER_TEAM_ID IS NULL)
+OR
+(TEAM_ID IS NULL AND PROVIDER_TEAM_ID IS NOT NULL)
+)),
+	constraint PROVIDER_EMPLOYEE_OR_STAFF3
+		check ( (
+(PROVIDER_EMPLOYEE_ID IS NOT NULL  AND STAFF_ID IS NULL)
+OR
+(PROVIDER_EMPLOYEE_ID IS NULL  AND STAFF_ID IS NOT NULL)
+))
+)
+/
+
+create table UPW_ALLOCATION
+(
+	UPW_ALLOCATION_ID NUMBER not null
+		constraint XPKUPW_ALLOCATION
+			primary key,
+	UPW_PROJECT_ID NUMBER not null
+		references UPW_PROJECT,
+	UPW_DETAILS_ID NUMBER not null
+		references UPW_DETAILS,
+	ALLOCATION_START_DATE DATE not null,
+	ALLOCATION_END_DATE DATE,
+	ALLOCATION_DAY_ID NUMBER
+		references UPW_DAY,
+	START_TIME DATE,
+	END_TIME DATE,
+	FUTURE_OUTCOMES_RECORDED CHAR not null
+		constraint YES_OR_NO_ONLY40
+			check (FUTURE_OUTCOMES_RECORDED IN ('Y','N')),
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE78
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION
+)
+/
+
+create table COHORT_HISTORY
+(
+	COHORT_HISTORY_ID NUMBER(22) not null
+		constraint XPKCOHORT_HISTORY
+			primary key,
+	EVENT_ID NUMBER(22) not null
+		constraint R_926
+			references EVENT,
+	OFFENDER_ID NUMBER(22) not null
+		constraint R_927
+			references OFFENDER,
+	COHORT_PROVIDER_ID NUMBER(22) not null
+		constraint R_934
+			references PROBATION_AREA,
+	COHORT_CODE VARCHAR2(11) not null,
+	SENTENCE_RELEASE_DATE DATE,
+	START_DATE DATE not null,
+	END_DATE DATE,
+	ALLOCATION_REASON_ID NUMBER(22)
+		constraint R_929
+			references R_STANDARD_REFERENCE_LIST,
+	ACTIVE_FLAG NUMBER(22) not null
+		constraint TRUE_OR_FALSE_1029364706
+			check (ACTIVE_FLAG IN (0, 1)),
+	AUTHORISATION_PROVIDER_ID NUMBER(22)
+		constraint R_928
+			references PROBATION_AREA,
+	AUTHORISATION_TEAM_ID NUMBER(22)
+		constraint R_931
+			references TEAM,
+	AUTHORISATION_STAFF_ID NUMBER(22)
+		constraint R_932
+			references STAFF,
+	COHORT_CHANGE_REASON_ID NUMBER(22)
+		constraint R_933
+			references R_STANDARD_REFERENCE_LIST,
+	NOTES CLOB,
+	SOFT_DELETED NUMBER(22) not null
+		constraint TRUE_OR_FALSE_1309266638
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER(22) default 0 not null,
+	CREATED_BY_USER_ID NUMBER(22) not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER(22) not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	RECORDED_COHORT_FLAG CHAR
+		constraint RECORDED_COHORT_FLAG_784206933
+			check (RECORDED_COHORT_FLAG IN ('S','R','T'))
+)
+/
+
+create table DRUG_TEST_PROFILE
+(
+	DRUG_TEST_PROFILE_ID NUMBER not null
+		constraint XPKDRUG_TEST_PROFILE
+			primary key,
+	ASSESSMENT_DATE DATE not null,
+	NOTES CLOB,
+	WEEKLY_COST NUMBER,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	TEAM_ID NUMBER
+		references TEAM,
+	STAFF_ID NUMBER
+		references STAFF,
+	PROVIDER_EMPLOYEE_ID NUMBER
+		references PROVIDER_EMPLOYEE,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE21
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER default 0 not null,
+	PROVIDER_TEAM_ID NUMBER
+		references PROVIDER_TEAM,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	EVENT_ID NUMBER not null
+		references EVENT,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	constraint OFFENDER_MANAGER_TEAM_XOR1
+		check ( (
+(TEAM_ID IS NOT NULL AND PROVIDER_TEAM_ID IS NULL)
+OR
+(TEAM_ID IS NULL AND PROVIDER_TEAM_ID IS NOT NULL)
+)),
+	constraint PROVIDER_EMPLOYEE_OR_STAFF1
+		check ( (
+(PROVIDER_EMPLOYEE_ID IS NOT NULL  AND STAFF_ID IS NULL)
+OR
+(PROVIDER_EMPLOYEE_ID IS NULL  AND STAFF_ID IS NOT NULL)
+))
+)
+/
+
+create table DRUG_USAGE
+(
+	DRUG_USAGE_ID NUMBER not null
+		constraint XPKDRUG_USAGE
+			primary key,
+	DRUG_TEST_PROFILE_ID NUMBER not null
+		references DRUG_TEST_PROFILE,
+	USAGE CHAR not null
+		constraint YES_OR_NO_ONLY26
+			check (USAGE IN ('Y','N')),
+	DAYS_PER_WEEK NUMBER,
+	QUANTITY_USED NUMBER,
+	INJECTED CHAR
+		constraint YES_OR_NO_OR_UNKNOWN7
+			check (INJECTED IN ('N','Y','U')),
+	AGE_FIRST_USED NUMBER
+		constraint GREATER_THAN_03
+			check (AGE_FIRST_USED > 0),
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE32
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	DRUG_TYPE_ID NUMBER not null
+		references R_DRUG_TYPE,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XAK1DRUG_USAGE
+		unique (DRUG_TEST_PROFILE_ID, DRUG_TYPE_ID, DRUG_USAGE_ID)
+)
+/
+
+create table DRUGS_TEST_PROFILE_DRUG_TYPE
+(
+	DRUG_TEST_PROFILE_ID NUMBER not null
+		references DRUG_TEST_PROFILE,
+	DRUG_TYPE_ID NUMBER not null
+		references R_DRUG_TYPE,
+	ROW_VERSION NUMBER default 0 not null,
+	MAIN_DRUG CHAR
+		constraint YES_OR_NO_419
+			check (MAIN_DRUG IN ('Y','N')),
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE50
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER
+		references PARTITION_AREA,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKDRUGS_TEST_PROFILE_DRUG_TYP
+		primary key (DRUG_TEST_PROFILE_ID, DRUG_TYPE_ID)
+)
+/
+
+create table ADDRESS_ASSESSMENT
+(
+	ADDRESS_ASSESSMENT_ID NUMBER not null
+		constraint XPKADDRESS_ASSESSMENT
+			primary key,
+	ASSESSMENT_DATE DATE not null,
+	DETAILS CLOB,
+	STAFF_ID NUMBER
+		references STAFF,
+	TEAM_ID NUMBER
+		references TEAM,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE13
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER default 0 not null,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	PROVIDER_EMPLOYEE_ID NUMBER
+		references PROVIDER_EMPLOYEE,
+	PROVIDER_TEAM_ID NUMBER
+		references PROVIDER_TEAM,
+	OFFENDER_ADDRESS_ID NUMBER not null
+		references OFFENDER_ADDRESS,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	DOCUMENT_LINKED CHAR
+		constraint YES_OR_NO_ONLY_1686425284
+			check (DOCUMENT_LINKED IN ('Y','N')),
+	constraint ADDRESS_ASSESSMENT_STAFF_XOR
+		check ( (
+(STAFF_ID IS NOT NULL AND PROVIDER_EMPLOYEE_ID IS NULL)
+OR
+(STAFF_ID IS NULL AND PROVIDER_EMPLOYEE_ID IS NOT NULL)
+)),
+	constraint ADDRESS_ASSESSMENT_TEAM_XOR
+		check ( (
+(TEAM_ID IS NOT NULL AND PROVIDER_TEAM_ID IS NULL)
+OR
+(TEAM_ID IS NULL AND PROVIDER_TEAM_ID IS NOT NULL)
+))
+)
+/
+
+create table APPROVED_PREMISES_REFERRAL
+(
+	APPROVED_PREMISES_REFERRAL_ID NUMBER not null
+		constraint XPKAPPROVED_PREMISES_REFERRAL
+			primary key,
+	REFERRAL_DATE DATE not null,
+	EXPECTED_ARRIVAL_DATE DATE,
+	EXPECTED_DEPARTURE_DATE DATE,
+	DECISION_DATE DATE,
+	REFERRAL_NOTES CLOB,
+	NON_ARRIVAL_DATE DATE,
+	ORIGINAL_AP_ADMIT_DATE DATE,
+	SELF_HARM_ISSUES VARCHAR2(4000),
+	NON_ARRIVAL_NOTES CLOB,
+	REFERRING_TEAM_ID NUMBER
+		references TEAM,
+	DECISION_BY_TEAM_ID NUMBER
+		references TEAM,
+	REFERRING_STAFF_ID NUMBER
+		references STAFF,
+	DECISION_BY_STAFF_ID NUMBER
+		references STAFF,
+	DECISION_NOTES CLOB,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE14
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	REFERRAL_CATEGORY_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	REFERRAL_DECISION_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	PENDING_STATUS_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	REJECT_REASON_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	REFERRAL_OUTCOME_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	REFERRAL_GROUP_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	NON_ARRIVAL_REASON_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	INSTITUTION_ID NUMBER,
+	APPROVED_PREMISES_ID NUMBER
+		references R_APPROVED_PREMISES,
+	TRANSFER_REASON_ID NUMBER
+		references R_TRANSFER_REASON,
+	REFERRAL_SOURCE_ID NUMBER not null
+		references R_REFERRAL_SOURCE,
+	SOURCE_TYPE_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	EXTERNAL_REFERRAL_REASON_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	EVENT_ID NUMBER not null
+		references EVENT,
+	ESTABLISHMENT CHAR
+		constraint YES_OR_NO_ONLY7
+			check (ESTABLISHMENT IN ('Y','N')),
+	REFERRING_PROBATION_AREA_ID NUMBER
+		references PROBATION_AREA,
+	REFERRED_TO_PROBATION_AREA_ID NUMBER
+		references PROBATION_AREA,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORIGINAL_APPROVED_PREMISES_ID NUMBER
+		references R_APPROVED_PREMISES,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	RESERVATION_START_DATE DATE,
+	RESERVATION_LENGTH NUMBER,
+	foreign key (INSTITUTION_ID, ESTABLISHMENT) references R_INSTITUTION,
+	constraint APPROVED_PREMISES_REFERRAL_TYP
+		check ( (REFERRAL_GROUP_ID IS NULL AND APPROVED_PREMISES_ID IS NOT NULL)
+OR
+(REFERRAL_GROUP_ID IS NOT NULL AND  APPROVED_PREMISES_ID  IS NULL)
+OR
+(REFERRAL_GROUP_ID IS NOT NULL AND APPROVED_PREMISES_ID  IS NOT NULL)),
+	constraint AP_REF_CUS_INSTITUTION
+		check ( (
+( INSTITUTION_ID IS NOT NULL AND ESTABLISHMENT = 'Y') OR (   INSTITUTION_ID IS NULL AND ESTABLISHMENT IS NULL)
+))
+)
+/
+
+create table APPROVED_PREMISES_RESIDENCE
+(
+	APPROVED_PREMISES_RESIDENCE_ID NUMBER not null
+		constraint XPKAPPROVED_PREMISES_RESIDENCE
+			primary key,
+	APPROVED_PREMISES_REFERRAL_ID NUMBER not null
+		references APPROVED_PREMISES_REFERRAL,
+	ARRIVAL_DATE DATE not null,
+	EXPECTED_DEPARTURE_DATE DATE,
+	ROOM_NUMBER VARCHAR2(30),
+	ARRIVAL_NOTES CLOB,
+	DEPARTURE_DATE DATE,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE41
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	DEPARTURE_REASON_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	APPROVED_PREMISES_ID NUMBER
+		references R_APPROVED_PREMISES,
+	DEST_APPROVED_PREMISES_ID NUMBER
+		references R_APPROVED_PREMISES,
+	MOVE_ON_CATEGORY_ID NUMBER
+		references R_MOVE_ON_CATEGORY,
+	APPROVED_PREMISES_STAFF_ID NUMBER
+		references STAFF,
+	KEY_WORKER_STAFF_ID NUMBER
+		references STAFF,
+	CREATED_DATETIME DATE not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	APPROVED_PREMISES_TEAM_ID NUMBER
+		references TEAM,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS
+)
+/
+
+create table PERSONAL_CONTACT
+(
+	PERSONAL_CONTACT_ID NUMBER not null
+		constraint XPKPERSONAL_CONTACT
+			primary key,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	RELATIONSHIP VARCHAR2(500) not null,
+	START_DATE DATE,
+	END_DATE DATE,
+	ADDRESS_ID NUMBER
+		references ADDRESS,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	FIRST_NAME VARCHAR2(35) not null,
+	OTHER_NAMES VARCHAR2(35),
+	SURNAME VARCHAR2(35) not null,
+	PREVIOUS_SURNAME VARCHAR2(35),
+	MOBILE_NUMBER VARCHAR2(35),
+	EMAIL_ADDRESS VARCHAR2(255),
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE72
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER default 0 not null,
+	GENDER_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	NOTES CLOB,
+	TITLE_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	RELATIONSHIP_TYPE_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	ORGANISATIONS T_ARR_ORGANISATIONS
+)
+/
+
+create table CUSTODY
+(
+	CUSTODY_ID NUMBER not null
+		constraint XPKCUSTODY
+			primary key,
+	DISPOSAL_ID NUMBER not null
+		references DISPOSAL,
+	STATUS_CHANGE_DATE DATE not null,
+	PRISONER_NUMBER VARCHAR2(10),
+	PAROLE_NUMBER VARCHAR2(10),
+	LOCATION_CHANGE_DATE DATE,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE19
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	CUSTODIAL_STATUS_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	PC_TELEPHONE_NUMBER VARCHAR2(35),
+	PRISON_OFFICER VARCHAR2(200),
+	PROBATION_CONTACT VARCHAR2(200),
+	PO_TELEPHONE_NUMBER VARCHAR2(35),
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	INSTITUTION_ID NUMBER,
+	CREATED_BY_USER_ID NUMBER not null,
+	ESTABLISHMENT CHAR
+		constraint CUSTODIAL_ESTABLISHMENT_ON_CUS
+			check ( (
+ESTABLISHMENT = 'Y'
+))
+		constraint YES_OR_NO_ONLY8
+			check (ESTABLISHMENT IN ('Y','N')),
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	PSS_START_DATE DATE,
+	foreign key (INSTITUTION_ID, ESTABLISHMENT) references R_INSTITUTION
+)
+/
+
+create table CUSTODY_HISTORY
+(
+	CUSTODY_HISTORY_ID NUMBER not null
+		constraint XPKCUSTODY_HISTORY
+			primary key,
+	CUSTODY_EVENT_TYPE_ID NUMBER not null
+		constraint R_788
+			references R_STANDARD_REFERENCE_LIST,
+	DETAIL VARCHAR2(4000),
+	CUSTODY_ID NUMBER not null
+		constraint R_789
+			references CUSTODY,
+	OFFENDER_ID NUMBER not null
+		constraint R_790
+			references OFFENDER,
+	HISTORICAL_DATE DATE not null,
+	ROW_VERSION NUMBER default 0 not null,
+	PARTITION_AREA_ID NUMBER not null
+		constraint R_801
+			references PARTITION_AREA,
+	TRAINING_SESSION_ID NUMBER
+		constraint R_794
+			references TRAINING_SESSION
+)
+/
+
+create table KEY_DATE
+(
+	CUSTODY_ID NUMBER not null
+		references CUSTODY,
+	KEY_DATE_TYPE_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	KEY_DATE DATE not null,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE56
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	KEY_DATE_ID NUMBER not null
+		constraint XPKKEY_DATE
+			primary key,
+	constraint XAK1KEY_DATE
+		unique (CUSTODY_ID, KEY_DATE_TYPE_ID, KEY_DATE)
+)
+/
+
+create table INSTITUTIONAL_REPORT
+(
+	INSTITUTIONAL_REPORT_ID NUMBER not null
+		constraint XPKINSTITUTIONAL_REPORT
+			primary key,
+	CUSTODY_ID NUMBER not null
+		references CUSTODY,
+	DATE_REQUESTED DATE not null,
+	DATE_REQUIRED DATE not null,
+	DATE_ALLOCATION DATE,
+	DATE_COMPLETED DATE,
+	VIDEO_LINK CHAR,
+	NOTES CLOB,
+	SENT_TO_PRISON_DATE DATE,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE55
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	INSTITUTION_REPORT_TYPE_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	INSTITUTION_ID NUMBER not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	ESTABLISHMENT CHAR not null
+		constraint YES_OR_NO_ONLY31
+			check (ESTABLISHMENT IN ('Y','N')),
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	DATE_ABANDONED DATE,
+	DATE_SENT DATE,
+	PENDING_TRANSFER NUMBER(22) not null
+		constraint TRUE_OR_FALSE_1347698696
+			check (PENDING_TRANSFER IN (0, 1)),
+	foreign key (INSTITUTION_ID, ESTABLISHMENT) references R_INSTITUTION
+)
+/
+
+create table RELEASE
+(
+	RELEASE_ID NUMBER not null
+		constraint XPKRELEASE
+			primary key,
+	ACTUAL_RELEASE_DATE DATE not null,
+	NOTES CLOB,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE76
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER default 0 not null,
+	RELEASE_TYPE_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	CUSTODY_ID NUMBER not null
+		references CUSTODY,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	LENGTH NUMBER,
+	INSTITUTION_ID NUMBER,
+	ESTABLISHMENT CHAR,
+	PROBATION_AREA_ID NUMBER
+)
+/
+
+create table RECALL
+(
+	RECALL_ID NUMBER not null
+		constraint XPKRECALL
+			primary key,
+	RECALL_DATE DATE not null,
+	NOTES CLOB,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE74
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	RECALL_REASON_ID NUMBER not null
+		references R_RECALL_REASON,
+	RELEASE_ID NUMBER not null
+		references RELEASE,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS
+)
+/
+
+create table PROVISION
+(
+	PROVISION_ID NUMBER not null
+		constraint XPKPROVISION
+			primary key,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	SOFT_DELETED NUMBER not null,
+	START_DATE DATE not null,
+	FINISH_DATE DATE,
+	NOTES CLOB,
+	ROW_VERSION NUMBER default 0 not null,
+	DISABILITY_ID NUMBER not null
+		references DISABILITY,
+	PROVISION_TYPE_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	PROBATION_AREA_ID NUMBER
+)
+/
+
+create table PSS_RQMNT
+(
+	PSS_RQMNT_ID NUMBER(22) not null
+		constraint XPKPSS_RQMNT
+			primary key,
+	CUSTODY_ID NUMBER(22) not null
+		constraint R_938
+			references CUSTODY,
+	IMPOSED_DATE DATE not null,
+	LENGTH NUMBER(22),
+	PSS_RQMNT_NOTES CLOB,
+	COMMENCEMENT_DATE DATE,
+	COMMENCEMENT_NOTES CLOB,
+	TERMINATION_DATE DATE,
+	TERMINATION_NOTES CLOB,
+	SOFT_DELETED NUMBER(22) not null
+		constraint TRUE_OR_FALSE_1802687451
+			check (SOFT_DELETED IN (0, 1)),
+	EXPECTED_START_DATE DATE,
+	EXPECTED_END_DATE DATE,
+	ROW_VERSION NUMBER(22) default 0 not null,
+	PSS_RQMNT_TYPE_MAIN_CAT_ID NUMBER(22)
+		constraint R_939
+			references R_PSS_RQMNT_TYPE_MAIN_CATEGORY,
+	PSS_RQMNT_TYPE_SUB_CAT_ID NUMBER(22)
+		constraint R_940
+			references R_PSS_RQMNT_TYPE_SUB_CATEGORY,
+	PSS_RQMNT_TERM_REASON_ID NUMBER(22)
+		constraint R_941
+			references R_STANDARD_REFERENCE_LIST,
+	OFFENDER_ID NUMBER(22) not null
+		constraint R_942
+			references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	ACTIVE_FLAG NUMBER(22) not null
+		constraint TRUE_OR_FALSE_1801363653
+			check (ACTIVE_FLAG IN (0, 1)),
+	PENDING_TRANSFER NUMBER(22) not null
+		constraint TRUE_OR_FALSE_1346489564
+			check (PENDING_TRANSFER IN (0, 1)),
+	CREATED_BY_USER_ID NUMBER(22) not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER(22) not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ATTENDANCE_COUNT NUMBER(22),
+	constraint ACTIVE_FLAG_TERMINA_1282482389
+		check ( (ACTIVE_FLAG = 0 AND TERMINATION_DATE IS NOT NULL) 
+OR 
+(ACTIVE_FLAG = 1 AND TERMINATION_DATE IS NULL)
+)
+)
+/
+
+create table CONTACT
+(
+	CONTACT_ID NUMBER not null
+		constraint XPKCONTACT
+			primary key,
+	LINKED_CONTACT_ID NUMBER
+		references CONTACT,
+	CONTACT_DATE DATE not null,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	CONTACT_START_TIME DATE,
+	CONTACT_END_TIME DATE,
+	RQMNT_ID NUMBER
+		references RQMNT,
+	LIC_CONDITION_ID NUMBER
+		references LIC_CONDITION,
+	PROVIDER_LOCATION_ID NUMBER
+		references PROVIDER_LOCATION,
+	PROVIDER_EMPLOYEE_ID NUMBER
+		references PROVIDER_EMPLOYEE,
+	HOURS_CREDITED NUMBER(10,2)
+		constraint GREATER_THAN_0
+			check (HOURS_CREDITED > 0),
+	NOTES CLOB,
+	VISOR_CONTACT CHAR,
+	STAFF_ID NUMBER
+		references STAFF,
+	TEAM_ID NUMBER
+		references TEAM,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE16
+			check (SOFT_DELETED IN (0, 1)),
+	VISOR_EXPORTED CHAR
+		constraint YES_OR_NO_400
+			check (VISOR_EXPORTED IN ('Y','N')),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	OFFICE_LOCATION_ID NUMBER
+		references OFFICE_LOCATION,
+	ROW_VERSION NUMBER default 0 not null,
+	ALERT_ACTIVE CHAR,
+	ATTENDED CHAR
+		constraint YES_OR_NO_401
+			check (ATTENDED IN ('Y','N')),
+	CREATED_DATETIME DATE not null,
+	COMPLIED CHAR
+		constraint YES_OR_NO_402
+			check (COMPLIED IN ('Y','N')),
+	SENSITIVE CHAR
+		constraint YES_OR_NO_403
+			check (SENSITIVE IN ('Y','N')),
+	LAST_UPDATED_DATETIME DATE not null,
+	EVENT_ID NUMBER
+		references EVENT,
+	CONTACT_TYPE_ID NUMBER not null
+		references R_CONTACT_TYPE,
+	PROVIDER_TEAM_ID NUMBER
+		references PROVIDER_TEAM,
+	CONTACT_OUTCOME_TYPE_ID NUMBER
+		references R_CONTACT_OUTCOME_TYPE,
+	CREATED_BY_USER_ID NUMBER not null,
+	EXPLANATION_ID NUMBER
+		references R_EXPLANATION,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	TRUST_PROVIDER_FLAG NUMBER not null
+		constraint TRUE_OR_FALSE18
+			check (TRUST_PROVIDER_FLAG IN (0, 1)),
+	STAFF_EMPLOYEE_ID NUMBER not null,
+	PROBATION_AREA_ID NUMBER not null
+		references PROBATION_AREA,
+	TRUST_PROVIDER_TEAM_ID NUMBER not null,
+	ENFORCEMENT NUMBER
+		constraint ENFORCEMENT_ONE_OR_N_470810165
+			check (ENFORCEMENT = 1 OR ENFORCEMENT IS NULL),
+	DOCUMENT_LINKED CHAR,
+	UPLOAD_LINKED CHAR,
+	LATEST_ENFORCEMENT_ACTION_ID NUMBER
+		constraint R_786
+			references R_ENFORCEMENT_ACTION,
+	NSI_ID NUMBER
+		constraint R_895
+			references NSI,
+	TABLE_NAME VARCHAR2(30)
+		constraint CONTACT_TABLE_69233217
+			check (TABLE_NAME IN ('APPROVED_PREMISES_REFERRAL', 'APPROVED_PREMISES_RESIDENCE', 'COURT_REPORT', 'INSTITUTIONAL_REPORT')),
+	PRIMARY_KEY_ID NUMBER(22),
+	PSS_RQMNT_ID NUMBER(22)
+		constraint R_981
+			references PSS_RQMNT,
+	RAR_ACTIVITY CHAR
+		constraint YES_OR_NO_ONLY_1885306206
+			check (RAR_ACTIVITY IN ('Y','N')),
+	NOMIS_CASE_NOTE_ID NUMBER
+		constraint XAK1CONTACT
+			unique,
+	LINKED_DOCUMENT_CONTACT_ID NUMBER
+		constraint R_1225
+			references CONTACT,
+	constraint R_1718
+		foreign key (TRUST_PROVIDER_FLAG, STAFF_EMPLOYEE_ID) references OFFICER,
+	foreign key (TRUST_PROVIDER_FLAG, TRUST_PROVIDER_TEAM_ID) references ALL_TEAM,
+	constraint CONTACT_TYPE
+		check ( (
+(EVENT_ID IS NOT NULL AND RQMNT_ID IS NULL AND LIC_CONDITION_ID IS NULL AND NSI_ID IS NULL AND PSS_RQMNT_ID IS NULL)
+OR
+(EVENT_ID IS NOT NULL AND RQMNT_ID IS NOT NULL AND LIC_CONDITION_ID IS NULL AND NSI_ID IS NULL AND PSS_RQMNT_ID IS NULL)
+OR
+(EVENT_ID IS NOT NULL AND RQMNT_ID IS NULL AND LIC_CONDITION_ID IS NOT NULL AND NSI_ID IS NULL AND PSS_RQMNT_ID IS NULL)
+OR
+(EVENT_ID IS NOT NULL AND RQMNT_ID IS NULL AND LIC_CONDITION_ID IS NULL AND NSI_ID IS NOT NULL AND PSS_RQMNT_ID IS NULL)
+OR
+(EVENT_ID IS NOT NULL AND RQMNT_ID IS NULL AND LIC_CONDITION_ID IS NULL AND NSI_ID IS NULL AND PSS_RQMNT_ID IS NOT NULL)
+OR
+(EVENT_ID IS NULL AND RQMNT_ID IS NULL AND LIC_CONDITION_ID IS NULL AND NSI_ID IS NOT NULL AND PSS_RQMNT_ID IS NULL )
+OR
+(EVENT_ID IS NULL AND RQMNT_ID IS NULL AND LIC_CONDITION_ID IS NULL AND NSI_ID IS NULL AND PSS_RQMNT_ID IS NULL)
+)),
+	constraint OFFENDER_MANAGER_TEAM_XOR
+		check ( (
+(TEAM_ID IS NOT NULL AND PROVIDER_TEAM_ID IS NULL)
+OR
+(TEAM_ID IS NULL AND PROVIDER_TEAM_ID IS NOT NULL)
+)),
+	constraint PROVIDER_EMPLOYEE_OR_STAFF
+		check ( (
+(PROVIDER_EMPLOYEE_ID IS NOT NULL  AND STAFF_ID IS NULL)
+OR
+(PROVIDER_EMPLOYEE_ID IS NULL  AND STAFF_ID IS NOT NULL)
+)),
+	constraint STAFF_OR_TEAM1
+		check ( (
+STAFF_EMPLOYEE_ID = STAFF_ID
+OR
+STAFF_EMPLOYEE_ID = PROVIDER_EMPLOYEE_ID
+)),
+	constraint TRUST_OR_PROVIDER1
+		check ( (
+TRUST_PROVIDER_TEAM_ID = TEAM_ID
+OR
+TRUST_PROVIDER_TEAM_ID = PROVIDER_TEAM_ID
+))
+)
+/
+
+create table SUBJECT_ACCESS_REPORT_CONTACT
+(
+	SAR_CONTACT_ID NUMBER not null
+		constraint XPKSUBJECT_ACCESS_REPORT_CONTA
+			primary key,
+	SUBJECT_ACCESS_REPORT_ID NUMBER not null
+		references SUBJECT_ACCESS_REPORT,
+	CONTACT_ID NUMBER not null
+		references CONTACT,
+	DPA_SAR_EXCLUSION_REASON_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION
+)
+/
+
+create table OASYS_ASSESSMENT
+(
+	OASYS_ASSESSMENT_ID NUMBER not null
+		constraint XPKOASYS_ASSESSMENT
+			primary key,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	OASYS_ID VARCHAR2(50) not null,
+	ASSESSMENT_DATE DATE not null,
+	OASYS_TOTAL_SCORE NUMBER,
+	RISK_FLAGS VARCHAR2(50),
+	CONCERN_FLAGS VARCHAR2(50),
+	DATE_CREATED DATE not null,
+	INITIAL_SENTENCE_PLAN_DATE DATE,
+	ASSESSED_BY VARCHAR2(35) not null,
+	SENTENCE_PLAN_REVIEW_DATE DATE,
+	REVIEW_TERMINATED CHAR
+		constraint YES_OR_NO_420
+			check (REVIEW_TERMINATED IN ('Y','N')),
+	REVIEW_NUMBER VARCHAR2(20),
+	LAYER_TYPE VARCHAR2(20),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	OGRS_SCORE_1 NUMBER
+		constraint GREATER_THAN_08
+			check (OGRS_SCORE_1 > 0),
+	OGRS_SCORE_2 NUMBER
+		constraint GREATER_THAN_09
+			check (OGRS_SCORE_2 > 0),
+	OGP_SCORE_1 NUMBER,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE59
+			check (SOFT_DELETED IN (0, 1)),
+	OGP_SCORE_2 NUMBER,
+	ROW_VERSION NUMBER default 0 not null,
+	OVP_SCORE_1 NUMBER,
+	OFFENCE_ID NUMBER
+		references R_OFFENCE,
+	ASSESSMENT_RECEIVED_DATE DATE,
+	EVENT_NUMBER VARCHAR2(50),
+	COURT_ID NUMBER
+		references COURT,
+	OASYS_ASSESSMENT_DESCRIPTION VARCHAR2(4000),
+	OVP_SCORE_2 NUMBER,
+	OBJECTIVE_STATUS VARCHAR2(50),
+	CONTACT_ID NUMBER
+		references CONTACT,
+	LAYER_1_OBJECTIVE VARCHAR2(4000),
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	TIER_CODE_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	CREATED_BY_USER_ID NUMBER(22) not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER(22) not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	constraint XAK1OASYS_ASSESSMENT
+		unique (OASYS_ID, OASYS_ASSESSMENT_ID)
+)
+/
+
+create table OASYS_ASSMNT_SECTION_SCORE
+(
+	OASYS_ASSESSMENT_ID NUMBER not null
+		references OASYS_ASSESSMENT,
+	LEVEL_ NUMBER not null,
+	SECTION_SCORE NUMBER,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE60
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKOASYS_ASSMNT_SECTION_SCORE
+		primary key (OASYS_ASSESSMENT_ID, LEVEL_)
+)
+/
+
+create table OASYS_SENTENCE_PLAN
+(
+	OASYS_SENTENCE_PLAN_ID NUMBER not null
+		constraint XPKOASYS_SENTENCE_PLAN
+			primary key,
+	OASYS_ASSESSMENT_ID NUMBER not null
+		references OASYS_ASSESSMENT,
+	OBJECTIVE_NUMBER NUMBER,
+	OBJECTIVE VARCHAR2(4000),
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE61
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS
+)
+/
+
+create table OASYS_SP_WORK_SUMMARY
+(
+	OASYS_SENTENCE_PLAN_ID NUMBER not null
+		references OASYS_SENTENCE_PLAN,
+	LEVEL_ NUMBER not null,
+	WORK_SUMMARY VARCHAR2(4000) not null,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE64
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	constraint XPKOASYS_SP_WORK_SUMMARY
+		primary key (OASYS_SENTENCE_PLAN_ID, LEVEL_)
+)
+/
+
+create table OASYS_SP_TEXT
+(
+	OASYS_SENTENCE_PLAN_ID NUMBER not null
+		references OASYS_SENTENCE_PLAN,
+	LEVEL_ NUMBER not null,
+	TEXT VARCHAR2(4000) not null,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE63
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	constraint XPKOASYS_SP_TEXT
+		primary key (OASYS_SENTENCE_PLAN_ID, LEVEL_)
+)
+/
+
+create table OASYS_SP_NEED
+(
+	OASYS_SENTENCE_PLAN_ID NUMBER not null
+		references OASYS_SENTENCE_PLAN,
+	LEVEL_ NUMBER not null,
+	NEED VARCHAR2(4000) not null,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE62
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	constraint XPKOASYS_SP_NEED
+		primary key (OASYS_SENTENCE_PLAN_ID, LEVEL_)
+)
+/
+
+create table UPW_APPOINTMENT
+(
+	UPW_APPOINTMENT_ID NUMBER not null
+		constraint XPKUPW_APPOINTMENT
+			primary key,
+	UPW_DETAILS_ID NUMBER not null
+		references UPW_DETAILS,
+	UPW_PROJECT_ID NUMBER not null
+		references UPW_PROJECT,
+	APPOINTMENT_DATE DATE not null,
+	START_TIME DATE,
+	END_TIME DATE,
+	MINUTES_OFFERED NUMBER(10,2),
+	MINUTES_CREDITED NUMBER(10,2),
+	TRAVEL_TIME NUMBER(10,2),
+	ATTENDED CHAR
+		constraint YES_OR_NO_OR_UNKNOWN1
+			check (ATTENDED IN ('N','Y','U')),
+	COMPLIED CHAR
+		constraint YES_OR_NO_OR_UNKNOWN2
+			check (COMPLIED IN ('N','Y','U')),
+	HIGH_VISIBILITY_VEST CHAR
+		constraint YES_OR_NO_OR_UNKNOWN3
+			check (HIGH_VISIBILITY_VEST IN ('N','Y','U')),
+	NOTES CLOB,
+	TEAM_ID NUMBER
+		references TEAM,
+	STAFF_ID NUMBER
+		references STAFF,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE22
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	WORK_QUALITY_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	BEHAVIOUR_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	PENALTY_TIME NUMBER,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	UPW_OUTCOME_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	CONTACT_OUTCOME_TYPE_ID NUMBER
+		references R_CONTACT_OUTCOME_TYPE,
+	CONTACT_ID NUMBER not null
+		references CONTACT,
+	PROVIDER_TEAM_ID NUMBER
+		references PROVIDER_TEAM,
+	CREATED_BY_USER_ID NUMBER not null,
+	PROVIDER_EMPLOYEE_ID NUMBER
+		references PROVIDER_EMPLOYEE,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	PROJECT_NAME VARCHAR2(60),
+	PROJECT_TYPE_ID NUMBER
+		constraint R_1051
+			references R_STANDARD_REFERENCE_LIST,
+	INTENSIVE CHAR
+		constraint YES_OR_NO_ONLY_304805078
+			check (INTENSIVE IN ('Y','N')),
+	DOCUMENT_LINKED CHAR
+		constraint YES_OR_NO_ONLY_1297648776
+			check (DOCUMENT_LINKED IN ('Y','N')),
+	constraint OFFENDER_MANAGER_TEAM_XOR2
+		check ( (
+(TEAM_ID IS NOT NULL AND PROVIDER_TEAM_ID IS NULL)
+OR
+(TEAM_ID IS NULL AND PROVIDER_TEAM_ID IS NOT NULL)
+)),
+	constraint PROVIDER_EMPLOYEE_OR_STAFF2
+		check ( (
+(PROVIDER_EMPLOYEE_ID IS NOT NULL  AND STAFF_ID IS NULL)
+OR
+(PROVIDER_EMPLOYEE_ID IS NULL  AND STAFF_ID IS NOT NULL)
+))
+)
+/
+
+create table ENFORCEMENT
+(
+	ENFORCEMENT_ID NUMBER not null
+		constraint XPKENFORCEMENT
+			primary key,
+	UPW_APPOINTMENT_ID NUMBER
+		references UPW_APPOINTMENT,
+	CONTACT_ID NUMBER not null
+		references CONTACT,
+	ACTION_TAKEN_DATE DATE,
+	ACTION_TAKEN_TIME DATE,
+	RESPONSE_DATE DATE,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE51
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_DATETIME DATE not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ENFORCEMENT_ACTION_ID NUMBER
+		references R_ENFORCEMENT_ACTION,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION
+)
+/
+
+create table REGISTRATION
+(
+	REGISTRATION_ID NUMBER not null
+		constraint XPKREGISTRATION
+			primary key,
+	REGISTER_TYPE_ID NUMBER not null
+		references R_REGISTER_TYPE,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	REGISTRATION_DATE DATE not null,
+	NEXT_REVIEW_DATE DATE,
+	REGISTRATION_NOTES CLOB,
+	REGISTERING_TEAM_ID NUMBER not null
+		references TEAM,
+	REGISTERING_STAFF_ID NUMBER not null
+		references STAFF,
+	REGISTRATION_LEVEL NUMBER,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE34
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	REGISTRATION_CATEGORY NUMBER,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRIGGER_OFFENCE_ID NUMBER
+		references TRIGGER_OFFENCE,
+	REGISTER_LEVEL_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	CREATED_BY_USER_ID NUMBER not null,
+	REGISTER_CATEGORY_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CONTACT_ID NUMBER not null
+		references CONTACT,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	DEREGISTERED NUMBER not null
+		constraint TRUE_OR_FALSE35
+			check (DEREGISTERED IN (0, 1)),
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	constraint REGISTRATION
+		check ( (
+(REGISTRATION_DATE <= NEXT_REVIEW_DATE) OR (NEXT_REVIEW_DATE IS NULL)
+))
+)
+/
+
+create table DEREGISTRATION
+(
+	DEREGISTRATION_ID NUMBER not null
+		constraint XPKDEREGISTRATION
+			primary key,
+	DEREGISTRATION_DATE DATE not null,
+	DEREGISTERING_TEAM_ID NUMBER not null
+		references TEAM,
+	DEREGISTERING_STAFF_ID NUMBER not null
+		references STAFF,
+	DEREGISTERING_NOTES CLOB,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE28
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	REGISTRATION_ID NUMBER not null
+		references REGISTRATION,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	CONTACT_ID NUMBER not null
+		references CONTACT,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS
+)
+/
+
+create table REGISTRATION_REVIEW
+(
+	REGISTRATION_REVIEW_ID NUMBER not null
+		constraint XPKREGISTRATION_REVIEW
+			primary key,
+	REGISTRATION_ID NUMBER not null
+		references REGISTRATION,
+	REVIEW_DATE DATE not null,
+	REVIEW_DATE_DUE DATE,
+	NOTES CLOB,
+	REVIEWING_TEAM_ID NUMBER not null
+		references TEAM,
+	REVIEWING_STAFF_ID NUMBER not null
+		references STAFF,
+	COMPLETED CHAR
+		constraint YES_OR_NO_422
+			check (COMPLETED IN ('Y','N')),
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE75
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	CONTACT_ID NUMBER not null
+		references CONTACT,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS
+)
+/
+
+create table DOCUMENT_TEMPLATE
+(
+	DOCUMENT_TEMPLATE_ID NUMBER not null
+		constraint XPKDOCUMENT_TEMPLATE
+			primary key,
+	TEMPLATE_NAME VARCHAR2(200) not null,
+	DESCRIPTION VARCHAR2(4000),
+	TEMPLATE BLOB not null,
+	DATE_CREATED_DATE DATE not null,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	SECTOR VARCHAR2(7)
+		constraint DOCUMENT_TEMPLATE_S_1489212050
+			check (SECTOR IN ('PUBLIC','PRIVATE','BOTH','LOCAL')),
+	constraint XAK1DOCUMENT_TEMPLATE
+		unique (TEMPLATE_NAME, TRAINING_SESSION_ID, DOCUMENT_TEMPLATE_ID)
+)
+/
+
+create table DOCUMENT_TEMPLATE_AREA
+(
+	DOCUMENT_TEMPLATE_ID NUMBER not null
+		references DOCUMENT_TEMPLATE,
+	PROBATION_AREA_ID NUMBER not null
+		references PROBATION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKDOCUMENT_TEMPLATE_AREA
+		primary key (DOCUMENT_TEMPLATE_ID, PROBATION_AREA_ID)
+)
+/
+
+create table OBJECT_TYPE_DOCUMENT_TEMPLATE
+(
+	OBJECT_TYPE_DOC_TEMPLATE_ID NUMBER not null
+		constraint XPKOBJECT_TYPE_DOCUMENT_TEMPLA
+			primary key,
+	OBJECT_NAME VARCHAR2(32) not null,
+	OBJECT_PRIMARY_KEY_ID NUMBER not null,
+	DOCUMENT_TEMPLATE_ID NUMBER not null
+		references DOCUMENT_TEMPLATE,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION
+)
+/
+
+create table TRAINING_TABLE_ROWS
+(
+	TRAINING_TABLE_ROWS_ID NUMBER not null
+		constraint XPKTRAINING_TABLE_ROWS
+			primary key,
+	PARENT_TABLE VARCHAR2(30),
+	TABLE_NAME VARCHAR2(30),
+	HIERARCHY_LEVEL NUMBER,
+	NEW_PROBATION_AREA_ID NUMBER,
+	OLD_OFFENDER_ID NUMBER,
+	NEW_OFFENDER_ID NUMBER,
+	OLD_PK_VALUE VARCHAR2(4000),
+	NEW_PK_VALUE VARCHAR2(4000),
+	OLD_FK_KEY VARCHAR2(4000),
+	NEW_FK_KEY VARCHAR2(4000),
+	NEW_FIELD_LIST CLOB
+)
+/
+
+create table REFERRAL
+(
+	REFERRAL_ID NUMBER not null
+		constraint XPKREFERRAL
+			primary key,
+	REFERRAL_DATE DATE not null,
+	ATTENDED CHAR
+		constraint YES_OR_NO_ONLY27
+			check (ATTENDED IN ('Y','N')),
+	SOURCE_NOTES CLOB,
+	NOTES CLOB,
+	EVENT_ID NUMBER not null
+		references EVENT,
+	REF_TO_TEAM_ID NUMBER
+		references TEAM,
+	REF_TO_STAFF_ID NUMBER
+		references STAFF,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	REF_TO_PROVIDER_EMPLOYEE_ID NUMBER
+		references PROVIDER_EMPLOYEE,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE33
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER default 0 not null,
+	TREATMENT_AIM_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	REF_TO_PROVIDER_TEAM_ID NUMBER
+		references PROVIDER_TEAM,
+	REFERRAL_TYPE_ID NUMBER not null
+		references R_REFERRAL_TYPE,
+	REFERRAL_SOURCE_ID NUMBER not null
+		references R_REFERRAL_SOURCE,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	GENERIC_REFERRAL_OUTCOME_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	DOCUMENT_LINKED CHAR
+		constraint YES_OR_NO_ONLY_1079849424
+			check (DOCUMENT_LINKED IN ('Y','N')),
+	constraint REFERRAL_STAFF_XOR_PROVIDER_EM
+		check ( (
+(REF_TO_PROVIDER_EMPLOYEE_ID IS NOT NULL  AND REF_TO_STAFF_ID IS NULL)
+OR
+(REF_TO_PROVIDER_EMPLOYEE_ID IS NULL  AND REF_TO_STAFF_ID IS NOT NULL)
+)),
+	constraint REFERRAL_TEAM_XOR_PROVIDER_TEA
+		check ( (
+(REF_TO_TEAM_ID IS NOT NULL AND REF_TO_PROVIDER_TEAM_ID IS NULL)
+OR
+(REF_TO_TEAM_ID IS NULL AND REF_TO_PROVIDER_TEAM_ID IS NOT NULL)
+))
+)
+/
+
+create table ASSESSMENT
+(
+	ASSESSMENT_ID NUMBER not null
+		constraint XPKASSESSMENT
+			primary key,
+	REFERRAL_ID NUMBER not null
+		references REFERRAL,
+	ASSESSMENT_DATE DATE not null,
+	OFFENDERS_AGREEMENT CHAR
+		constraint YES_OR_NO_OR_UNKNOWN
+			check (OFFENDERS_AGREEMENT IN ('N','Y','U')),
+	NOTES CLOB,
+	TEAM_ID NUMBER
+		references TEAM,
+	STAFF_ID NUMBER
+		references STAFF,
+	PROVIDER_EMPLOYEE_ID NUMBER
+		references PROVIDER_EMPLOYEE,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE15
+			check (SOFT_DELETED IN (0, 1)),
+	OFFENDER_REQUIRED_TO_ATTEND CHAR not null,
+	OFFENDER_ATTENDED CHAR,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	ASSESSMENT_TYPE_ID NUMBER not null
+		references R_ASSESSMENT_TYPE,
+	PROVIDER_TEAM_ID NUMBER
+		references PROVIDER_TEAM,
+	SCORE VARCHAR2(20),
+	DURATION_MINUTES NUMBER,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ASSESSMENT_OUTCOME_ID NUMBER
+		references R_ASSESSMENT_OUTCOME,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	DOCUMENT_LINKED CHAR
+		constraint YES_OR_NO_ONLY_1291962580
+			check (DOCUMENT_LINKED IN ('Y','N')),
+	constraint ASSESSMENT_TEAM_XOR
+		check ( (
+(TEAM_ID IS NOT NULL AND PROVIDER_TEAM_ID IS NULL)
+OR
+(TEAM_ID IS NULL AND PROVIDER_TEAM_ID IS NOT NULL)
+)),
+	constraint ASSESSMENT_XOR
+		check ( (
+(STAFF_ID IS NOT NULL AND PROVIDER_EMPLOYEE_ID IS NULL)
+OR
+(STAFF_ID IS NULL AND PROVIDER_EMPLOYEE_ID IS NOT NULL)
+))
+)
+/
+
+create table DRUGS_TEST
+(
+	DRUGS_TEST_ID NUMBER not null
+		constraint XPKDRUGS_TEST
+			primary key,
+	DATE_OF_TEST DATE not null,
+	TESTED_BY VARCHAR2(107),
+	OFFENDER_COMPLIANCE CHAR,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE30
+			check (SOFT_DELETED IN (0, 1)),
+	NOTES CLOB,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	CREATED_BY_USER_ID NUMBER not null,
+	ROW_VERSION NUMBER default 0 not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	EVENT_ID NUMBER not null
+		references EVENT,
+	ORGANISATIONS T_ARR_ORGANISATIONS
+)
+/
+
+create table DRUG_TEST_RESULT
+(
+	DRUG_TEST_RESULT_ID NUMBER not null
+		constraint XPKDRUG_TEST_RESULT
+			primary key,
+	DRUGS_TEST_ID NUMBER not null
+		references DRUGS_TEST,
+	TESTED CHAR not null
+		constraint YES_OR_NO_ONLY24
+			check (TESTED IN ('Y','N')),
+	ADMITTED_USE CHAR
+		constraint YES_OR_NO_ONLY25
+			check (ADMITTED_USE IN ('Y','N')),
+	TEST_RESULT VARCHAR2(50)
+		constraint DRUG_RESULT
+			check (TEST_RESULT IN ('Positive', 'Negative', 'Not Tested')),
+	QUANTITY_USED NUMBER,
+	INJECTED CHAR
+		constraint YES_OR_NO_OR_UNKNOWN5
+			check (INJECTED IN ('N','Y','U')),
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE31
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	DRUG_TYPE_ID NUMBER not null
+		references R_DRUG_TYPE,
+	AGREED CHAR
+		constraint YES_OR_NO_407
+			check (AGREED IN ('Y','N')),
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS
+)
+/
+
+create table USER_
+(
+	USER_ID NUMBER not null
+		constraint XPKUSER_
+			primary key,
+	STAFF_ID NUMBER
+		references STAFF,
+	PROVIDER_EMPLOYEE_ID NUMBER
+		references PROVIDER_EMPLOYEE,
+	SURNAME VARCHAR2(35) not null,
+	FORENAME VARCHAR2(35) not null,
+	FORENAME2 VARCHAR2(35),
+	END_DATE DATE,
+	NOTES CLOB,
+	ROW_VERSION NUMBER default 0 not null,
+	DISTINGUISHED_NAME VARCHAR2(500) not null,
+	EXTERNAL_PROVIDER_EMPLOYEEFLAG CHAR
+		constraint YES_OR_NO_435
+			check (EXTERNAL_PROVIDER_EMPLOYEEFLAG IN ('Y','N')),
+	EXTERNAL_PROVIDER_ID NUMBER
+		references EXTERNAL_PROVIDER,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	PRIVATE NUMBER not null
+		constraint TRUE_OR_FALSE_941631159
+			check (PRIVATE IN (0, 1)),
+	ORGANISATION_ID NUMBER not null
+		constraint R_891
+			references ORGANISATION,
+	SC_PROVIDER_ID NUMBER
+		constraint R_892
+			references SC_PROVIDER,
+	constraint XAK1USER_
+		unique (USER_ID, DISTINGUISHED_NAME, TRAINING_SESSION_ID)
+)
+/
+
+create table RESTRICTION
+(
+	RESTRICTION_ID NUMBER not null
+		constraint XPKRESTRICTION
+			primary key,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	USER_ID NUMBER not null
+		references USER_,
+	RESTRICTION_DATE DATE not null,
+	RESTRICTION_TIME DATE not null,
+	RESTRICTION_START_STAFF_ID NUMBER not null
+		references STAFF,
+	RESTRICTION_END_DATE DATE,
+	RESTRICTION_END_TIME DATE,
+	ROW_VERSION NUMBER default 0 not null,
+	RESTRICTION_REASON_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	RESTRICTION_END_STAFF_ID NUMBER
+		references STAFF,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	RESTRICTION_START_TEAM_ID NUMBER not null
+		references TEAM,
+	CREATED_BY_USER_ID NUMBER not null,
+	RESTRICTION_END_TEAM_ID NUMBER
+		references TEAM,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION
+)
+/
+
+create table USER_TRAINING_SESSION
+(
+	USER_ID NUMBER not null
+		constraint XPKUSER_TRAINING_SESSION
+			primary key
+		references USER_,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER not null
+		references TRAINING_SESSION
+)
+/
+
+create table AP_AUDIT_REGISTER
+(
+	AP_AUDIT_REGISTER_ID NUMBER not null
+		constraint XPKAP_AUDIT_REGISTER
+			primary key,
+	APPROVED_PREMISES_ID NUMBER not null
+		references R_APPROVED_PREMISES,
+	RESIDENTS NUMBER not null,
+	LAST_RESIDENCY_AUDIT_DATETIME DATE not null,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	USER_ID NUMBER not null
+		references USER_
+)
+/
+
+create table MOST_RECENTLY_VIEWED_OFFENDERS
+(
+	USER_ID NUMBER not null
+		references USER_,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	TIME_AND_DATE DATE not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKMOST_RECENTLY_VIEWED_OFFEND
+		primary key (USER_ID, OFFENDER_ID)
+)
+/
+
+create table PROBATION_AREA_USER
+(
+	USER_ID NUMBER not null
+		references USER_,
+	PROBATION_AREA_ID NUMBER not null
+		references PROBATION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_DATETIME DATE not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint XPKPROBATION_AREA_USER
+		primary key (USER_ID, PROBATION_AREA_ID)
+)
+/
+
+create table EXCLUSION
+(
+	EXCLUSION_ID NUMBER not null
+		constraint XPKEXCLUSION
+			primary key,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	USER_ID NUMBER not null
+		references USER_,
+	EXCLUSION_DATE DATE not null,
+	EXCLUSION_END_DATE DATE,
+	EXCLUSION_END_TIME DATE,
+	EXCLUSION_START_STAFF_ID NUMBER not null
+		references STAFF,
+	ROW_VERSION NUMBER default 0 not null,
+	EXCLUSION_REASON_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	EXCLUSION_END_STAFF_ID NUMBER
+		references STAFF,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	EXCLUSION_START_TEAM_ID NUMBER not null
+		references TEAM,
+	CREATED_BY_USER_ID NUMBER not null,
+	EXCLUSION_END_TEAM_ID NUMBER
+		references TEAM,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION
+)
+/
+
+create table UPW_ADJUSTMENT
+(
+	UPW_ADJUSTMENT_ID NUMBER not null
+		constraint XPKUPW_ADJUSTMENT
+			primary key,
+	UPW_DETAILS_ID NUMBER not null
+		references UPW_DETAILS,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE36
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ADJUSTMENT_AMOUNT NUMBER not null
+		constraint GREATER_THAN_04
+			check (ADJUSTMENT_AMOUNT > 0),
+	ADJUSTMENT_DATE DATE,
+	ADJUSTMENT_TYPE VARCHAR2(20) not null
+		constraint POSITIVE_NEGATIVE
+			check (ADJUSTMENT_TYPE IN ('POSITIVE', 'NEGATIVE')),
+	ROW_VERSION NUMBER default 0 not null,
+	ADJUSTMENT_REASON_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	ADJUSTED_BY_USER_ID NUMBER not null
+		references USER_,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null
+)
+/
+
+create table DOCUMENT
+(
+	DOCUMENT_ID NUMBER not null
+		constraint XPKDOCUMENT
+			primary key,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	TABLE_NAME VARCHAR2(30)
+		constraint DOCUMENT_TABLE
+			check ( TABLE_NAME IN (
+         'ADDRESSASSESSMENT', 'ASSESSMENT',
+         'APPROVED_PREMISES_REFERRAL', 'REFERRAL',
+	 'CASE_ALLOCATION',
+         'COURT_REPORT', 'INSTITUTIONAL_REPORT',
+	 'CONTACT', 'PERSONALCONTACT',
+         'OFFENDER', 'EVENT', 'NSI',
+         'PERSONAL_CIRCUMSTANCE',
+         'UPW_APPOINTMENT')
+),
+	DOCUMENT BLOB,
+	PRIMARY_KEY_ID NUMBER,
+	LAST_SAVED TIMESTAMP(6) not null,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE29
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER default 0 not null,
+	STATUS CHAR not null
+		constraint YES_OR_NO_ONLY23
+			check (STATUS IN ('Y','N')),
+	WORK_IN_PROGRESS CHAR
+		constraint YES_OR_NO_406
+			check (WORK_IN_PROGRESS IN ('Y','N')),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	LAST_UPDATED_USER_ID NUMBER
+		references USER_,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	TEMPLATE_NAME VARCHAR2(200),
+	DOCUMENT_NAME VARCHAR2(200),
+	LAST_UPD_AUTHOR_PROVIDER_ID NUMBER
+		constraint R_1091
+			references PROBATION_AREA,
+	CREATED_PROVIDER_ID NUMBER
+		constraint R_1092
+			references PROBATION_AREA,
+	CREATED_BY_USER_ID NUMBER,
+	CREATED_DATETIME DATE,
+	ALFRESCO_DOCUMENT_ID VARCHAR2(36)
+		constraint XAK1DOCUMENT
+			unique,
+	PUBLISHED CHAR
+		constraint YES_OR_NO_ONLY_1030455660
+			check (PUBLISHED IN ('Y','N'))
+)
+/
+
+create table COURT_REPORT
+(
+	COURT_REPORT_ID NUMBER not null
+		constraint XPKCOURT_REPORT
+			primary key,
+	COURT_APPEARANCE_ID NUMBER not null
+		references COURT_APPEARANCE,
+	DATE_REQUESTED DATE not null,
+	DATE_REQUIRED DATE not null,
+	ALLOCATION_DATE DATE,
+	COMPLETED_DATE DATE,
+	SENT_TO_COURT_DATE DATE,
+	RECEIVED_BY_COURT_DATE DATE,
+	VIDEO_LINK VARCHAR2(20),
+	NOTES CLOB,
+	PUNISHMENT CHAR
+		constraint YES_OR_NO_ONLY11
+			check (PUNISHMENT IN ('Y','N')),
+	REDUCTION_OF_CRIME CHAR
+		constraint YES_OR_NO_ONLY12
+			check (REDUCTION_OF_CRIME IN ('Y','N')),
+	REFORM_AND_REHABILITATION CHAR
+		constraint YES_OR_NO_ONLY13
+			check (REFORM_AND_REHABILITATION IN ('Y','N')),
+	PUBLIC_PROTECTION CHAR
+		constraint YES_OR_NO_ONLY14
+			check (PUBLIC_PROTECTION IN ('Y','N')),
+	REPARATION CHAR
+		constraint YES_OR_NO_ONLY15
+			check (REPARATION IN ('Y','N')),
+	RECOMMENDATIONS_NOT_STATED CHAR
+		constraint YES_OR_NO_ONLY16
+			check (RECOMMENDATIONS_NOT_STATED IN ('Y','N')),
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE27
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	LEVEL_OF_SERIOUSNESS_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	DELIVERED_REPORT_REASON_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	SECTION_178 CHAR
+		constraint YES_OR_NO_405
+			check (SECTION_178 IN ('Y','N')),
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	COURT_REPORT_TYPE_ID NUMBER
+		references R_COURT_REPORT_TYPE,
+	CREATED_BY_USER_ID NUMBER not null,
+	DELIVERED_COURT_REPORT_TYPE_ID NUMBER
+		references R_COURT_REPORT_TYPE,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	REQUIRED_BY_COURT_ID NUMBER
+		constraint R_787
+			references COURT,
+	PENDING_TRANSFER NUMBER not null
+		constraint TRUE_OR_FALSE_218769512
+			check (PENDING_TRANSFER IN (0, 1))
+)
+/
+
+create table PROPOSAL
+(
+	PROPOSAL_ID NUMBER not null
+		constraint XPKPROPOSAL
+			primary key,
+	LENGTH NUMBER,
+	AMOUNT NUMBER(16,2),
+	COURT_REPORT_ID NUMBER not null
+		references COURT_REPORT,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE73
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER not null,
+	LEVEL_OF_SERIOUSNESS_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	PROPOSAL_TYPE_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	PROPOSED_TIER_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION
+)
+/
+
+create table PROPOSED_RQMNT
+(
+	PROPOSED_RQMNT_ID NUMBER not null
+		constraint XPKPROPOSED_RQMNT
+			primary key,
+	PROPOSAL_ID NUMBER not null
+		references PROPOSAL,
+	LENGTH NUMBER,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE25
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	RQMNT_TYPE_MAIN_CATEGORY_ID NUMBER
+		references R_RQMNT_TYPE_MAIN_CATEGORY,
+	RQMNT_TYPE_SUB_CATEGORY_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	AD_RQMNT_TYPE_MAIN_CATEGORY_ID NUMBER
+		references R_AD_RQMNT_TYPE_MAIN_CATEGORY,
+	CREATED_BY_USER_ID NUMBER not null,
+	AD_RQMNT_TYPE_SUB_CATEGORY_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	constraint PROPOSED_RQMNT_TYPE
+		check ( (
+	(
+	RQMNT_TYPE_MAIN_CATEGORY_ID 	IS NOT NULL
+	AND
+	AD_RQMNT_TYPE_MAIN_CATEGORY_ID 	IS NULL
+	AND
+	AD_RQMNT_TYPE_SUB_CATEGORY_ID 	IS NULL
+	)
+	OR
+ 	(
+ 	AD_RQMNT_TYPE_MAIN_CATEGORY_ID 	IS NOT NULL
+ 	AND
+ 	RQMNT_TYPE_MAIN_CATEGORY_ID 	IS NULL
+ 	AND
+ 	RQMNT_TYPE_SUB_CATEGORY_ID 	IS NULL
+ 	)
+))
+)
+/
+
+create table OFFLOC
+(
+	OFFLOC_ID NUMBER not null
+		constraint XPKOFFLOC
+			primary key,
+	PRISON_CODE VARCHAR2(20),
+	OFFENDER_MANAGER VARCHAR2(500),
+	SURNAME VARCHAR2(35),
+	FORENAME_1 VARCHAR2(35),
+	FORENAME_2 VARCHAR2(35),
+	DOB DATE,
+	GENDER VARCHAR2(40),
+	ETHNICITY VARCHAR2(40),
+	NATIONALITY VARCHAR2(50),
+	CRO VARCHAR2(4000),
+	PRISON_NUMBER VARCHAR2(20),
+	NOMIS_NUMBER VARCHAR2(20),
+	STATUS VARCHAR2(10)
+		constraint OFFLOC_STATUS
+			check (STATUS IN ('Active', 'Inactive', 'Unknown')),
+	NOMIS_STATUS VARCHAR2(20),
+	SENTENCING_COURT VARCHAR2(50),
+	SENTENCE_DATE DATE,
+	SENTENCE_YEARS NUMBER,
+	SENTENCE_MONTH NUMBER,
+	SENTENCE_DAYS NUMBER,
+	CONDITIONAL_RELEASE_DATE DATE,
+	PAROLE_ELIGIBILITY_DATE DATE,
+	LICENSE_EXPIRY_DATE DATE,
+	SENTENCE_EXPIRY_DATE DATE,
+	HDC_ELIGIBILITY_DATE DATE,
+	ACTUAL_RELEASE_DATE DATE,
+	DSS_UPDATED_DATE DATE not null,
+	SOURCE_CODE CHAR
+		constraint LIDS_OR_NOMIS
+			check (SOURCE_CODE IN ('L', 'N')),
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	PSS_END_DATE DATE,
+	ALERTS CLOB
+)
+/
+
+create table PNC_NUMBER
+(
+	PNC_NUMBER_ID NUMBER not null
+		constraint XPKPNC_NUMBER
+			primary key,
+	PNC_NUMBER VARCHAR2(20) not null,
+	OFFLOC_ID NUMBER not null
+		references OFFLOC,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION
+)
+/
+
+create table BUSINESS_INT_XML_MAP
+(
+	BUSINESS_INT_XML_MAP_ID NUMBER not null
+		constraint XPKBUSINESS_INT_XML_MAP
+			primary key,
+	BUSINESS_INTERACTION_ID NUMBER not null,
+	ROOT_XML_MESSAGE_ID NUMBER not null,
+	XML_MESSAGE_NAME VARCHAR2(100) not null,
+	DATA_UPDATE_MODE CHAR,
+	INCLUDE_XML_MESSAGE_LIST VARCHAR2(1000),
+	EXCLUDE_XML_MESSAGE_LIST VARCHAR2(1000),
+	XSD_NUMBER NUMBER default 1 not null,
+	constraint XAK1BUSINESS_INT_XML_MAP
+		unique (BUSINESS_INTERACTION_ID, ROOT_XML_MESSAGE_ID, XSD_NUMBER)
+)
+/
+
+create table SPG_CONTROL
+(
+	SPG_CONTROL_ID NUMBER not null
+		constraint XPKSPG_CONTROL
+			primary key,
+	CONTROL_CODE VARCHAR2(10) not null
+		constraint XAK1SPG_CONTROL
+			unique,
+	CONTROL_NAME VARCHAR2(200),
+	CONTROL_TYPE CHAR not null
+		constraint CONTROL_TYPE_2015836973
+			check (CONTROL_TYPE IN ('C', 'N', 'D', 'R')),
+	VALUE_STRING VARCHAR2(4000),
+	VALUE_NUMBER NUMBER,
+	VALUE_DATE DATE
+)
+/
+
+create table SPG_ERROR_LOG
+(
+	SPG_ERROR_LOG_ID NUMBER not null
+		constraint XPKSPG_ERROR_LOG
+			primary key,
+	ERROR_CODE NUMBER not null,
+	ERROR_MESSAGE VARCHAR2(4000) not null,
+	BACKTRACE CLOB not null,
+	CALLSTACK CLOB not null,
+	DATE_CREATED DATE not null,
+	CREATED_BY VARCHAR2(30) not null,
+	PACKAGE_NAME VARCHAR2(30) not null,
+	PROCEDURE_NAME VARCHAR2(30) not null,
+	LABEL VARCHAR2(10) not null,
+	INSTANCE_ID NUMBER default 0 not null
+)
+/
+
+create table SPG_INBOUND_INDEX
+(
+	SPG_INBOUND_INDEX_ID NUMBER not null
+		constraint XPKSPG_INBOUND_INDEX
+			primary key,
+	CONTROL_REFERENCE NUMBER not null,
+	SOURCE_PROVIDER_ID NUMBER not null
+		constraint R_1049
+			references PROBATION_AREA,
+	RECEIVED_TIMESTAMP TIMESTAMP(6) not null,
+	constraint XAK1SPG_INBOUND_INDEX
+		unique (SOURCE_PROVIDER_ID, CONTROL_REFERENCE)
+)
+/
+
+create table SPG_MESSAGE_LOG
+(
+	SPG_MESSAGE_LOG_ID NUMBER not null
+		constraint XPKSPG_MESSAGE_LOG
+			primary key,
+	MESSAGE_TIMESTAMP TIMESTAMP(6) not null,
+	MESSAGE_TYPE_ID NUMBER not null,
+	COMPONENT_CODE VARCHAR2(30) not null,
+	PACKAGE_NAME VARCHAR2(30) not null,
+	PROCEDURE_NAME VARCHAR2(30) not null,
+	LABEL VARCHAR2(10) not null,
+	MESSAGE_TEXT VARCHAR2(4000) not null,
+	SPG_ERROR_LOG_ID NUMBER,
+	INSTANCE_ID NUMBER default 0 not null
+)
+/
+
+create table CASE_ALLOCATION
+(
+	CASE_ALLOCATION_ID NUMBER not null
+		constraint XPKCASE_ALLOCATION
+			primary key,
+	OFFENDER_ID NUMBER not null
+		constraint R_1067
+			references OFFENDER,
+	EVENT_ID NUMBER not null
+		constraint R_1068
+			references EVENT,
+	RSR_SCORE NUMBER(5,2),
+	RSR_ASSESSOR_PROVIDER_ID NUMBER
+		constraint R_1069
+			references PROBATION_AREA,
+	RSR_ASSESSOR_TEAM_ID NUMBER
+		constraint R_1070
+			references TEAM,
+	RSR_ASSESSOR_STAFF_ID NUMBER
+		constraint R_1072
+			references STAFF,
+	RSR_ASSESSOR_DATE DATE,
+	ALLOCATION_DECISION_ID NUMBER
+		constraint R_1073
+			references R_STANDARD_REFERENCE_LIST,
+	ALLOCATION_DECISION_DATE DATE,
+	TARGET_PROVIDER_ID NUMBER
+		constraint R_1074
+			references PROBATION_AREA,
+	DECISION_PROVIDER_ID NUMBER
+		constraint R_1075
+			references PROBATION_AREA,
+	DECISION_TEAM_ID NUMBER
+		constraint R_1076
+			references TEAM,
+	DECISION_STAFF_ID NUMBER
+		constraint R_1077
+			references STAFF,
+	ALLOCATION_DECISION_NOTES CLOB,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ALLOCATION_OVERRIDE_REASON_ID NUMBER
+		constraint R_1119
+			references R_STANDARD_REFERENCE_LIST,
+	ALLOCATION_OVERRIDE NUMBER
+		constraint TRUE_OR_FALSE_1016374440
+			check (ALLOCATION_OVERRIDE IN (0, 1)),
+	OSP_SCORE NUMBER(16,2)
+)
+/
+
+create table CASE_ALLOCATION_QUESTION
+(
+	CASE_ALLOCATION_QUESTION_ID NUMBER not null
+		constraint XPKCASE_ALLOCATION_QUESTION
+			primary key,
+	CASE_ALLOCATION_ID NUMBER not null
+		constraint R_1078
+			references CASE_ALLOCATION,
+	QUESTION_ID NUMBER not null
+		constraint R_1079
+			references R_STANDARD_REFERENCE_LIST,
+	QUESTION_ANSWER CHAR
+		constraint YES_OR_NO_ONLY_621469556
+			check (QUESTION_ANSWER IN ('Y','N')),
+	ROW_VERSION NUMBER default 0 not null
+)
+/
+
+create table MASTER_TRANSFER
+(
+	MASTER_TRANSFER_ID NUMBER not null
+		constraint XPKMASTER_TRANSFER
+			primary key,
+	OFFENDER_ID NUMBER not null
+		constraint R_1063
+			references OFFENDER,
+	TRANSFER_DATE DATE not null,
+	TRANSFER_USER_ID NUMBER not null,
+	TRANSFER_STATUS_ID NUMBER not null
+		constraint R_1064
+			references R_STANDARD_REFERENCE_LIST,
+	TRANSFER_STATUS_DATE DATE not null,
+	TARGET_PROVIDER_ID NUMBER not null
+		constraint R_1066
+			references PROBATION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null
+)
+/
+
+create table COURT_REPORT_TRANSFER
+(
+	COURT_REPORT_TRANSFER_ID NUMBER not null
+		constraint XPKCOURT_REPORT_TRANSFER
+			primary key,
+	OFFENDER_ID NUMBER not null
+		constraint R_1021
+			references OFFENDER,
+	COURT_REPORT_ID NUMBER not null
+		constraint R_1022
+			references COURT_REPORT,
+	TRANSFER_STATUS_ID NUMBER not null
+		constraint R_1023
+			references R_STANDARD_REFERENCE_LIST,
+	REQUEST_DATE DATE,
+	ACCEPTED_DECISION_ID NUMBER
+		constraint R_1024
+			references R_STANDARD_REFERENCE_LIST,
+	REJECTED_REASON_ID NUMBER
+		constraint R_1025
+			references R_STANDARD_REFERENCE_LIST,
+	ORIGIN_TEAM_ID NUMBER
+		constraint R_1026
+			references TEAM,
+	ORIGIN_STAFF_ID NUMBER
+		constraint R_1027
+			references STAFF,
+	RECEIVING_TEAM_ID NUMBER
+		constraint R_1028
+			references TEAM,
+	RECEIVING_STAFF_ID NUMBER
+		constraint R_1029
+			references STAFF,
+	NOTES CLOB,
+	ALLOCATION_REASON_ID NUMBER
+		constraint R_1030
+			references R_STANDARD_REFERENCE_LIST,
+	TRANSFER_REASON_ID NUMBER not null
+		constraint R_1031
+			references R_TRANSFER_REASON,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE_1563935964
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	WITHDRAWAL_REASON_ID NUMBER
+		constraint R_1059
+			references R_STANDARD_REFERENCE_LIST,
+	TRANSFER_STATUS_DATE DATE,
+	MASTER_TRANSFER_ID NUMBER
+		constraint R_1085
+			references MASTER_TRANSFER
+)
+/
+
+create table PSS_RQMNT_TRANSFER
+(
+	PSS_RQMNT_TRANSFER_ID NUMBER(22) not null
+		constraint XPKPSS_RQMNT_TRANSFER
+			primary key,
+	OFFENDER_ID NUMBER(22) not null
+		constraint R_952
+			references OFFENDER,
+	PSS_RQMNT_ID NUMBER(22) not null
+		constraint R_951
+			references PSS_RQMNT,
+	TRANSFER_STATUS_ID NUMBER(22) not null
+		constraint R_953
+			references R_STANDARD_REFERENCE_LIST,
+	REQUEST_DATE DATE,
+	ACCEPTED_DECISION_ID NUMBER(22)
+		constraint R_954
+			references R_STANDARD_REFERENCE_LIST,
+	REJECTION_REASON_ID NUMBER(22)
+		constraint R_955
+			references R_STANDARD_REFERENCE_LIST,
+	ORIGIN_TEAM_ID NUMBER(22)
+		constraint R_956
+			references TEAM,
+	ORIGIN_STAFF_ID NUMBER(22)
+		constraint R_957
+			references STAFF,
+	RECEIVING_TEAM_ID NUMBER(22)
+		constraint R_958
+			references TEAM,
+	RECEIVING_STAFF_ID NUMBER(22)
+		constraint R_959
+			references STAFF,
+	NOTES CLOB,
+	ALLOCATION_REASON_ID NUMBER(22)
+		constraint R_960
+			references R_STANDARD_REFERENCE_LIST,
+	TRANSFER_REASON_ID NUMBER(22) not null
+		constraint R_961
+			references R_TRANSFER_REASON,
+	SOFT_DELETED NUMBER(22) not null
+		constraint TRUE_OR_FALSE_289571199
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER(22) default 0 not null,
+	CREATED_BY_USER_ID NUMBER(22) not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER(22) not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	WITHDRAWAL_REASON_ID NUMBER
+		constraint R_1058
+			references R_STANDARD_REFERENCE_LIST,
+	TRANSFER_STATUS_DATE DATE,
+	MASTER_TRANSFER_ID NUMBER
+		constraint R_1084
+			references MASTER_TRANSFER
+)
+/
+
+create table PSS_RQMNT_MANAGER
+(
+	PSS_RQMNT_MANAGER_ID NUMBER(22) not null
+		constraint XPKPSS_RQMNT_MANAGER
+			primary key,
+	PSS_RQMNT_ID NUMBER(22) not null
+		constraint R_943
+			references PSS_RQMNT,
+	ALLOCATION_DATE DATE not null,
+	TEAM_ID NUMBER(22)
+		constraint R_944
+			references TEAM,
+	STAFF_ID NUMBER(22)
+		constraint R_945
+			references STAFF,
+	SOFT_DELETED NUMBER(22) not null
+		constraint TRUE_OR_FALSE_428933
+			check (SOFT_DELETED IN (0, 1)),
+	END_DATE DATE,
+	ROW_VERSION NUMBER(22) default 0 not null,
+	CREATED_BY_USER_ID NUMBER(22) not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER(22) not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRANSFER_REASON_ID NUMBER(22) not null
+		constraint R_946
+			references R_TRANSFER_REASON,
+	TRUST_PROVIDER_FLAG NUMBER(22) not null,
+	TRUST_PROVIDER_TEAM_ID NUMBER(22) not null,
+	STAFF_EMPLOYEE_ID NUMBER(22),
+	ACTIVE_FLAG NUMBER(22) not null
+		constraint TRUE_OR_FALSE_200484710
+			check (ACTIVE_FLAG IN (0, 1)),
+	PSS_RQMNT_TRANSFER_ID NUMBER(22)
+		constraint R_962
+			references PSS_RQMNT_TRANSFER,
+	ALLOCATION_REASON_ID NUMBER(22)
+		constraint R_1001
+			references R_STANDARD_REFERENCE_LIST,
+	PROBATION_AREA_ID NUMBER(22) not null
+		constraint R_1005
+			references PROBATION_AREA,
+	constraint R_948
+		foreign key (TRUST_PROVIDER_FLAG, TRUST_PROVIDER_TEAM_ID) references ALL_TEAM,
+	constraint R_950
+		foreign key (TRUST_PROVIDER_FLAG, STAFF_EMPLOYEE_ID) references OFFICER,
+	constraint ACTIVE_FLAG_END_DAT_1299265494
+		check ( (ACTIVE_FLAG = 0 AND END_DATE IS NOT NULL) 
+OR 
+(ACTIVE_FLAG = 1 AND END_DATE IS NULL)
+),
+	constraint MANAGEMENT_VALID_DA_1173549581
+		check ( (
+(ALLOCATION_DATE <= NVL(END_DATE, ALLOCATION_DATE))
+))
+)
+/
+
+create table INSTITUTIONAL_REPORT_TRANSFER
+(
+	INSTITUTIONAL_REP_TRANSFER_ID NUMBER(22) not null
+		constraint XPKINSTUTUTIONAL_REPORT_TRANSF
+			primary key,
+	OFFENDER_ID NUMBER(22) not null
+		constraint R_970
+			references OFFENDER,
+	INSTITUTIONAL_REPORT_ID NUMBER(22) not null
+		constraint R_971
+			references INSTITUTIONAL_REPORT,
+	TRANSFER_STATUS_ID NUMBER(22) not null
+		constraint R_972
+			references R_STANDARD_REFERENCE_LIST,
+	REQUEST_DATE DATE,
+	ACCEPTED_DECISION_ID NUMBER(22)
+		constraint R_973
+			references R_STANDARD_REFERENCE_LIST,
+	REJECTION_REASON_ID NUMBER(22)
+		constraint R_974
+			references R_STANDARD_REFERENCE_LIST,
+	ORIGIN_TEAM_ID NUMBER(22)
+		constraint R_975
+			references TEAM,
+	ORIGIN_STAFF_ID NUMBER(22)
+		constraint R_976
+			references STAFF,
+	RECEIVING_TEAM_ID NUMBER(22)
+		constraint R_977
+			references TEAM,
+	RECEIVING_STAFF_ID NUMBER(22)
+		constraint R_978
+			references STAFF,
+	NOTES CLOB,
+	ALLOCATION_REASON_ID NUMBER(22)
+		constraint R_979
+			references R_STANDARD_REFERENCE_LIST,
+	TRANSFER_REASON_ID NUMBER(22) not null
+		constraint R_980
+			references R_TRANSFER_REASON,
+	SOFT_DELETED NUMBER(22) not null
+		constraint TRUE_OR_FALSE_19966594
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER(22) default 0 not null,
+	CREATED_BY_USER_ID NUMBER(22) not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER(22) not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	WITHDRAWAL_REASON_ID NUMBER
+		constraint R_1060
+			references R_STANDARD_REFERENCE_LIST,
+	TRANSFER_STATUS_DATE DATE,
+	MASTER_TRANSFER_ID NUMBER
+		constraint R_1086
+			references MASTER_TRANSFER
+)
+/
+
+create table REPORT_MANAGER
+(
+	REPORT_MANAGER_ID NUMBER not null
+		constraint XPKREPORT_MANAGER
+			primary key,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE3
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER default 0 not null,
+	EVENT_ID NUMBER not null
+		references EVENT,
+	COURT_REPORT_ID NUMBER
+		references COURT_REPORT,
+	INSTITUTIONAL_REPORT_ID NUMBER
+		references INSTITUTIONAL_REPORT,
+	TEAM_ID NUMBER
+		references TEAM,
+	STAFF_ID NUMBER
+		references STAFF,
+	PROVIDER_EMPLOYEE_ID NUMBER
+		references PROVIDER_EMPLOYEE,
+	ALLOCATION_DATE DATE not null,
+	END_DATE DATE,
+	CREATED_DATETIME DATE not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	PROVIDER_TEAM_ID NUMBER
+		references PROVIDER_TEAM,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRANSFER_REASON_ID NUMBER not null
+		references R_TRANSFER_REASON,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	TRUST_PROVIDER_FLAG NUMBER not null
+		constraint TRUE_OR_FALSE5
+			check (TRUST_PROVIDER_FLAG IN (0, 1)),
+	STAFF_EMPLOYEE_ID NUMBER not null,
+	TRUST_PROVIDER_TEAM_ID NUMBER not null,
+	PROBATION_AREA_ID NUMBER not null
+		references PROBATION_AREA,
+	ACTIVE_FLAG NUMBER not null,
+	INSTITUTIONAL_REP_TRANSFER_ID NUMBER(22)
+		constraint R_1006
+			references INSTITUTIONAL_REPORT_TRANSFER,
+	COURT_REPORT_TRANSFER_ID NUMBER
+		constraint R_1032
+			references COURT_REPORT_TRANSFER,
+	INST_REP_ALLOCATION_REASON_ID NUMBER
+		constraint R_1033
+			references R_STANDARD_REFERENCE_LIST,
+	COURT_REP_ALLOCATION_REASON_ID NUMBER
+		constraint R_1034
+			references R_STANDARD_REFERENCE_LIST,
+	foreign key (TRUST_PROVIDER_FLAG, STAFF_EMPLOYEE_ID) references OFFICER,
+	foreign key (TRUST_PROVIDER_FLAG, TRUST_PROVIDER_TEAM_ID) references ALL_TEAM,
+	constraint ACTIVE_FLAG_END_DATE1
+		check ( (ACTIVE_FLAG = 0 AND END_DATE IS NOT NULL)
+OR
+(ACTIVE_FLAG = 1 AND END_DATE IS NULL)
+),
+	constraint MANAGEMENT_VALID_DATES1
+		check ( (
+(ALLOCATION_DATE <= NVL(END_DATE, ALLOCATION_DATE))
+)),
+	constraint REPORT_MANAGER_REPORT_TYPE
+		check ( (
+(COURT_REPORT_ID IS NOT NULL AND INSTITUTIONAL_REPORT_ID IS NULL)
+OR
+(COURT_REPORT_ID IS NULL AND INSTITUTIONAL_REPORT_ID IS NOT NULL)
+)),
+	constraint REPORT_MANAGER_TEAM_XOR
+		check ( (
+(TEAM_ID IS NOT NULL AND PROVIDER_TEAM_ID IS NULL)
+OR
+(TEAM_ID IS NULL AND PROVIDER_TEAM_ID IS NOT NULL)
+)),
+	constraint REPORT_MANAGER_XOR
+		check ( (
+(PROVIDER_EMPLOYEE_ID IS NOT NULL  AND STAFF_ID IS NULL)
+OR
+(PROVIDER_EMPLOYEE_ID IS NULL  AND STAFF_ID IS NOT NULL)
+)),
+	constraint STAFF_OR_TEAM
+		check ( (
+STAFF_EMPLOYEE_ID = STAFF_ID
+OR
+STAFF_EMPLOYEE_ID = PROVIDER_EMPLOYEE_ID
+)),
+	constraint TRUST_OR_PROVIDER
+		check ( (
+TRUST_PROVIDER_TEAM_ID = TEAM_ID
+OR
+TRUST_PROVIDER_TEAM_ID = PROVIDER_TEAM_ID
+))
+)
+/
+
+create table RQMNT_TRANSFER
+(
+	RQMNT_TRANSFER_ID NUMBER not null
+		constraint XPKRQMNT_TRANSFER
+			primary key,
+	OFFENDER_ID NUMBER not null
+		constraint R_903
+			references OFFENDER,
+	RQMNT_ID NUMBER not null
+		constraint R_871
+			references RQMNT,
+	TRANSFER_STATUS_ID NUMBER not null
+		constraint R_872
+			references R_STANDARD_REFERENCE_LIST,
+	REQUEST_DATE DATE,
+	ACCEPTED_DECISION_ID NUMBER
+		constraint R_873
+			references R_STANDARD_REFERENCE_LIST,
+	REJECTION_REASON_ID NUMBER
+		constraint R_874
+			references R_STANDARD_REFERENCE_LIST,
+	ORIGIN_TEAM_ID NUMBER
+		constraint R_875
+			references TEAM,
+	ORIGIN_STAFF_ID NUMBER
+		constraint R_876
+			references STAFF,
+	RECEIVING_TEAM_ID NUMBER
+		constraint R_877
+			references TEAM,
+	RECEIVING_STAFF_ID NUMBER
+		constraint R_878
+			references STAFF,
+	ORIGIN_PROVIDER_TEAM_ID NUMBER
+		constraint R_912
+			references PROVIDER_TEAM,
+	ORIGIN_PROVIDER_EMPLOYEE_ID NUMBER
+		constraint R_913
+			references PROVIDER_EMPLOYEE,
+	RECEIVING_PROVIDER_TEAM_ID NUMBER
+		constraint R_914
+			references PROVIDER_TEAM,
+	RECEIVING_PROVIDER_EMPLOYEE_ID NUMBER
+		constraint R_915
+			references PROVIDER_EMPLOYEE,
+	NOTES CLOB,
+	ALLOCATION_REASON_ID NUMBER
+		constraint R_879
+			references R_STANDARD_REFERENCE_LIST,
+	TRANSFER_REASON_ID NUMBER not null
+		constraint R_880
+			references R_TRANSFER_REASON,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE_1309528533
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		constraint R_881
+			references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	TRAINING_SESSION_ID NUMBER
+		constraint R_882
+			references TRAINING_SESSION,
+	WITHDRAWAL_REASON_ID NUMBER
+		constraint R_1056
+			references R_STANDARD_REFERENCE_LIST,
+	TRANSFER_STATUS_DATE DATE,
+	MASTER_TRANSFER_ID NUMBER
+		constraint R_1082
+			references MASTER_TRANSFER,
+	constraint RQMNT_TRANS_ORGIN_STAFF_XOR
+		check ( (
+(ORIGIN_STAFF_ID IS NOT NULL AND ORIGIN_PROVIDER_EMPLOYEE_ID IS NULL)
+OR
+(ORIGIN_STAFF_ID IS NULL AND ORIGIN_PROVIDER_EMPLOYEE_ID IS NOT NULL)
+)),
+	constraint RQMNT_TRANS_ORGIN_TEAM_XOR
+		check ( (
+(ORIGIN_TEAM_ID IS NOT NULL AND ORIGIN_PROVIDER_TEAM_ID IS NULL)
+OR
+(ORIGIN_TEAM_ID IS NULL AND ORIGIN_PROVIDER_TEAM_ID IS NOT NULL)
+)),
+	constraint RQMNT_TRANS_REC_STAFF_XOR
+		check ( (
+(RECEIVING_STAFF_ID IS NOT NULL AND RECEIVING_PROVIDER_EMPLOYEE_ID IS NULL)
+OR
+(RECEIVING_STAFF_ID IS NULL AND RECEIVING_PROVIDER_EMPLOYEE_ID IS NOT NULL)
+)),
+	constraint RQMNT_TRANS_REC_TEAM_XOR
+		check ( (
+(RECEIVING_TEAM_ID IS NOT NULL AND RECEIVING_PROVIDER_TEAM_ID IS NULL)
+OR
+(RECEIVING_TEAM_ID IS NULL AND RECEIVING_PROVIDER_TEAM_ID IS NOT NULL)
+))
+)
+/
+
+create table RQMNT_MANAGER
+(
+	RQMNT_MANAGER_ID NUMBER not null
+		constraint XPKRQMNT_MANAGER
+			primary key,
+	RQMNT_ID NUMBER not null
+		references RQMNT,
+	ALLOCATION_DATE DATE not null,
+	ALLOCATED_TEAM_ID NUMBER
+		references TEAM,
+	ALLOCATED_STAFF_ID NUMBER
+		references STAFF,
+	PROVIDER_EMPLOYEE_ID NUMBER
+		references PROVIDER_EMPLOYEE,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE6
+			check (SOFT_DELETED IN (0, 1)),
+	END_DATE DATE,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	PROVIDER_TEAM_ID NUMBER
+		references PROVIDER_TEAM,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRANSFER_REASON_ID NUMBER not null
+		references R_TRANSFER_REASON,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	TRUST_PROVIDER_FLAG NUMBER not null
+		constraint TRUE_OR_FALSE8
+			check (TRUST_PROVIDER_FLAG IN (0, 1)),
+	STAFF_EMPLOYEE_ID NUMBER not null,
+	TRUST_PROVIDER_TEAM_ID NUMBER not null,
+	PROBATION_AREA_ID NUMBER not null
+		references PROBATION_AREA,
+	ACTIVE_FLAG NUMBER not null,
+	RQMNT_TRANSFER_ID NUMBER
+		constraint R_885
+			references RQMNT_TRANSFER,
+	ALLOCATION_REASON_ID NUMBER(22)
+		constraint R_984
+			references R_STANDARD_REFERENCE_LIST,
+	foreign key (TRUST_PROVIDER_FLAG, STAFF_EMPLOYEE_ID) references OFFICER,
+	foreign key (TRUST_PROVIDER_FLAG, TRUST_PROVIDER_TEAM_ID) references ALL_TEAM,
+	constraint ACTIVE_FLAG_END_DATE2
+		check ( (ACTIVE_FLAG = 0 AND END_DATE IS NOT NULL)
+OR
+(ACTIVE_FLAG = 1 AND END_DATE IS NULL)
+),
+	constraint ALLOCATED_MANAGER_STAFF_XOR_PR
+		check ( (
+(PROVIDER_EMPLOYEE_ID IS NOT NULL  AND ALLOCATED_STAFF_ID IS NULL)
+OR
+(PROVIDER_EMPLOYEE_ID IS NULL  AND ALLOCATED_STAFF_ID IS NOT NULL)
+)),
+	constraint ALLOCATED_MANAGER_TEAM_XOR_PRO
+		check ( (
+(ALLOCATED_TEAM_ID IS NOT NULL AND PROVIDER_TEAM_ID IS NULL)
+OR
+(ALLOCATED_TEAM_ID IS NULL AND PROVIDER_TEAM_ID IS NOT NULL)
+)),
+	constraint MANAGEMENT_VALID_DATES2
+		check ( (
+(ALLOCATION_DATE <= NVL(END_DATE, ALLOCATION_DATE))
+)),
+	constraint STAFF_OR_TEAM3
+		check ( (
+STAFF_EMPLOYEE_ID = ALLOCATED_STAFF_ID
+OR
+STAFF_EMPLOYEE_ID = PROVIDER_EMPLOYEE_ID
+)),
+	constraint TRUST_OR_PROVIDER3
+		check ( (
+TRUST_PROVIDER_TEAM_ID = ALLOCATED_TEAM_ID
+OR
+TRUST_PROVIDER_TEAM_ID = PROVIDER_TEAM_ID
+))
+)
+/
+
+create table NSI_TRANSFER
+(
+	NSI_TRANSFER_ID NUMBER not null
+		constraint XPKNSI_TRANSFER
+			primary key,
+	OFFENDER_ID NUMBER not null
+		constraint R_901
+			references OFFENDER,
+	NSI_ID NUMBER not null
+		constraint R_825
+			references NSI,
+	TRANSFER_STATUS_ID NUMBER not null
+		constraint R_826
+			references R_STANDARD_REFERENCE_LIST,
+	REQUEST_DATE DATE,
+	ACCEPTED_DECISION_ID NUMBER
+		constraint R_827
+			references R_STANDARD_REFERENCE_LIST,
+	REJECTION_REASON_ID NUMBER
+		constraint R_828
+			references R_STANDARD_REFERENCE_LIST,
+	ORIGIN_TEAM_ID NUMBER not null
+		constraint R_829
+			references TEAM,
+	ORIGIN_STAFF_ID NUMBER not null
+		constraint R_830
+			references STAFF,
+	TARGET_TEAM_ID NUMBER not null
+		constraint R_831
+			references TEAM,
+	TARGET_STAFF_ID NUMBER not null
+		constraint R_832
+			references STAFF,
+	NOTES CLOB,
+	ALLOCATION_REASON_ID NUMBER
+		constraint R_833
+			references R_STANDARD_REFERENCE_LIST,
+	TRANSFER_REASON_ID NUMBER not null
+		constraint R_846
+			references R_TRANSFER_REASON,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE_1231758036
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		constraint R_835
+			references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	TRAINING_SESSION_ID NUMBER
+		constraint R_836
+			references TRAINING_SESSION,
+	WITHDRAWAL_REASON_ID NUMBER
+		constraint R_1061
+			references R_STANDARD_REFERENCE_LIST,
+	TRANSFER_STATUS_DATE DATE,
+	MASTER_TRANSFER_ID NUMBER
+		constraint R_1087
+			references MASTER_TRANSFER
+)
+/
+
+create table NSI_MANAGER
+(
+	NSI_MANAGER_ID NUMBER not null
+		constraint XPKNSI_MANAGER
+			primary key,
+	NSI_ID NUMBER not null
+		constraint R_837
+			references NSI,
+	START_DATE DATE not null,
+	END_DATE DATE,
+	PROBATION_AREA_ID NUMBER not null
+		constraint R_838
+			references PROBATION_AREA,
+	TEAM_ID NUMBER not null
+		constraint R_839
+			references TEAM,
+	STAFF_ID NUMBER not null
+		constraint R_840
+			references STAFF,
+	NSI_TRANSFER_ID NUMBER
+		constraint R_841
+			references NSI_TRANSFER,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE_1382103337
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		constraint R_842
+			references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ACTIVE_FLAG NUMBER not null,
+	TRANSFER_REASON_ID NUMBER
+		constraint R_845
+			references R_TRANSFER_REASON,
+	TRAINING_SESSION_ID NUMBER
+		constraint R_844
+			references TRAINING_SESSION,
+	ALLOCATION_REASON_ID NUMBER(22)
+		constraint R_983
+			references R_STANDARD_REFERENCE_LIST,
+	constraint ACTIVE_FLAG_END_DATE_238841213
+		check ( (ACTIVE_FLAG = 0 AND END_DATE IS NOT NULL)
+OR
+(ACTIVE_FLAG = 1 AND END_DATE IS NULL)
+)
+)
+/
+
+create table OFFENDER_TRANSFER
+(
+	OFFENDER_TRANSFER_ID NUMBER not null
+		constraint XPKOFFENDER_TRANSFER
+			primary key,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE24
+			check (SOFT_DELETED IN (0, 1)),
+	REQUEST_DATE DATE,
+	ROW_VERSION NUMBER default 0 not null,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	TRANSFER_STATUS_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	ACCEPTED_DECISION_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	REJECTION_REASON_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	NOTES CLOB,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRANSFER_REASON_ID NUMBER not null
+		references R_TRANSFER_REASON,
+	ALLOCATION_REASON_ID NUMBER
+		references R_STANDARD_REFERENCE_LIST,
+	ORIGIN_TEAM_ID NUMBER
+		references TEAM,
+	ORIGIN_STAFF_ID NUMBER
+		references STAFF,
+	ORIGIN_PROVIDER_EMPLOYEE_ID NUMBER
+		references PROVIDER_EMPLOYEE,
+	ORIGIN_PROVIDER_TEAM_ID NUMBER
+		references PROVIDER_TEAM,
+	RECEIVING_TEAM_ID NUMBER
+		references TEAM,
+	RECEIVING_STAFF_ID NUMBER
+		references STAFF,
+	RECEIVING_PROVIDER_EMPLOYEE_ID NUMBER
+		references PROVIDER_EMPLOYEE,
+	CREATED_BY_USER_ID NUMBER not null,
+	RECEIVING_PROVIDER_TEAM_ID NUMBER
+		references PROVIDER_TEAM,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	WITHDRAWAL_REASON_ID NUMBER
+		constraint R_1054
+			references R_STANDARD_REFERENCE_LIST,
+	TRANSFER_STATUS_DATE DATE,
+	MASTER_TRANSFER_ID NUMBER
+		constraint R_1080
+			references MASTER_TRANSFER,
+	constraint OFFENDER_TRANS_ORGIN_STAFF_XO
+		check ( (
+(ORIGIN_STAFF_ID IS NOT NULL AND ORIGIN_PROVIDER_EMPLOYEE_ID IS NULL)
+OR
+(ORIGIN_STAFF_ID IS NULL AND ORIGIN_PROVIDER_EMPLOYEE_ID IS NOT NULL)
+)),
+	constraint OFFENDER_TRANS_ORGIN_TEAM_XOR
+		check ( (
+(ORIGIN_TEAM_ID IS NOT NULL AND ORIGIN_PROVIDER_TEAM_ID IS NULL)
+OR
+(ORIGIN_TEAM_ID IS NULL AND ORIGIN_PROVIDER_TEAM_ID IS NOT NULL)
+)),
+	constraint OFFENDER_TRANS_REC_STAFF_XOR
+		check ( (
+(RECEIVING_STAFF_ID IS NOT NULL AND RECEIVING_PROVIDER_EMPLOYEE_ID IS NULL)
+OR
+(RECEIVING_STAFF_ID IS NULL AND RECEIVING_PROVIDER_EMPLOYEE_ID IS NOT NULL)
+)),
+	constraint OFFENDER_TRANS_REC_TEAM_XOR
+		check ( (
+(RECEIVING_TEAM_ID IS NOT NULL AND RECEIVING_PROVIDER_TEAM_ID IS NULL)
+OR
+(RECEIVING_TEAM_ID IS NULL AND RECEIVING_PROVIDER_TEAM_ID IS NOT NULL)
+))
+)
+/
+
+create table OFFENDER_MANAGER
+(
+	OFFENDER_MANAGER_ID NUMBER not null
+		constraint XPKOFFENDER_MANAGER
+			primary key,
+	ALLOCATION_DATE DATE not null,
+	END_DATE DATE,
+	TEAM_ID NUMBER
+		references TEAM,
+	ALLOCATION_STAFF_ID NUMBER
+		references STAFF,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE47
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER default 0 not null,
+	ALLOCATION_REASON_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	PROVIDER_EMPLOYEE_ID NUMBER
+		references PROVIDER_EMPLOYEE,
+	OFFENDER_TRANSFER_ID NUMBER
+		references OFFENDER_TRANSFER,
+	PROVIDER_TEAM_ID NUMBER
+		references PROVIDER_TEAM,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	TRUST_PROVIDER_FLAG NUMBER not null
+		constraint TRUE_OR_FALSE49
+			check (TRUST_PROVIDER_FLAG IN (0, 1)),
+	STAFF_EMPLOYEE_ID NUMBER not null,
+	PROBATION_AREA_ID NUMBER not null
+		references PROBATION_AREA,
+	TRUST_PROVIDER_TEAM_ID NUMBER not null,
+	ACTIVE_FLAG NUMBER not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	foreign key (TRUST_PROVIDER_FLAG, STAFF_EMPLOYEE_ID) references OFFICER,
+	foreign key (TRUST_PROVIDER_FLAG, TRUST_PROVIDER_TEAM_ID) references ALL_TEAM,
+	constraint ACTIVE_FLAG_END_DATE4
+		check ( (ACTIVE_FLAG = 0 AND END_DATE IS NOT NULL)
+OR
+(ACTIVE_FLAG = 1 AND END_DATE IS NULL)
+),
+	constraint OFFENDER_MANAGER_TEAM_XOR5
+		check ( (
+(TEAM_ID IS NOT NULL AND PROVIDER_TEAM_ID IS NULL)
+OR
+(TEAM_ID IS NULL AND PROVIDER_TEAM_ID IS NOT NULL)
+)),
+	constraint OFFENDER_MANAGER_XOR
+		check ( (
+(PROVIDER_EMPLOYEE_ID IS NOT NULL  AND ALLOCATION_STAFF_ID IS NULL)
+OR
+(PROVIDER_EMPLOYEE_ID IS NULL  AND ALLOCATION_STAFF_ID IS NOT NULL)
+)),
+	constraint STAFF_OR_TEAM21
+		check ( (
+STAFF_EMPLOYEE_ID = ALLOCATION_STAFF_ID
+OR
+STAFF_EMPLOYEE_ID = PROVIDER_EMPLOYEE_ID
+)),
+	constraint TRUST_OR_PROVIDER5
+		check ( (
+TRUST_PROVIDER_TEAM_ID = TEAM_ID
+OR
+TRUST_PROVIDER_TEAM_ID = PROVIDER_TEAM_ID
+))
+)
+/
+
+create table COHORT_DIARY
+(
+	COHORT_DIARY_ID NUMBER not null
+		constraint XPKCOHORT_DIARY
+			primary key,
+	OFFENDER_ID NUMBER not null
+		constraint R_1012
+			references OFFENDER,
+	OFFENDER_MANAGER_ID NUMBER not null
+		constraint R_1013
+			references OFFENDER_MANAGER,
+	EVENT_ID NUMBER not null
+		constraint R_1014
+			references EVENT,
+	MAIN_OFFENCE_ID NUMBER
+		constraint R_1015
+			references MAIN_OFFENCE,
+	DISPOSAL_ID NUMBER not null
+		constraint R_1016
+			references DISPOSAL,
+	DISPOSAL_TYPE_ID NUMBER not null
+		constraint R_1017
+			references R_DISPOSAL_TYPE,
+	TRUST_PROVIDER_FLAG NUMBER not null,
+	TRUST_PROVIDER_TEAM_ID NUMBER not null,
+	STAFF_EMPLOYEE_ID NUMBER not null,
+	COHORT VARCHAR2(1) not null
+		constraint COHORT_1126705185
+			check (COHORT IN ('S','R','T')),
+	PROBATION_AREA_ID NUMBER not null
+		constraint R_1020
+			references PROBATION_AREA,
+	FIRST_RELEASE_DATE DATE,
+	DISPOSAL_DATE DATE,
+	UPW NUMBER
+		constraint TRUE_OR_FALSE_388581676
+			check (UPW IN (0, 1)),
+	OFFENCE_DATE DATE,
+	ROW_VERSION NUMBER default 0,
+	constraint R_1018
+		foreign key (TRUST_PROVIDER_FLAG, TRUST_PROVIDER_TEAM_ID) references ALL_TEAM,
+	constraint R_1019
+		foreign key (TRUST_PROVIDER_FLAG, STAFF_EMPLOYEE_ID) references OFFICER
+)
+/
+
+create table CONTACT_ALERT
+(
+	CONTACT_ALERT_ID NUMBER not null
+		constraint XPKCONTACT_ALERT
+			primary key,
+	OFFENDER_ID NUMBER
+		constraint R_770
+			references OFFENDER,
+	OFFENDER_MANAGER_ID NUMBER
+		constraint R_771
+			references OFFENDER_MANAGER,
+	CONTACT_ID NUMBER
+		constraint R_772
+			references CONTACT,
+	CONTACT_TYPE_ID NUMBER
+		constraint R_773
+			references R_CONTACT_TYPE,
+	CONTACT_OUTCOME_TYPE_ID NUMBER
+		constraint R_774
+			references R_CONTACT_OUTCOME_TYPE,
+	TRUST_PROVIDER_FLAG NUMBER,
+	TRUST_PROVIDER_TEAM_ID NUMBER,
+	STAFF_EMPLOYEE_ID NUMBER,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER,
+	constraint R_775
+		foreign key (TRUST_PROVIDER_FLAG, TRUST_PROVIDER_TEAM_ID) references ALL_TEAM,
+	constraint R_776
+		foreign key (TRUST_PROVIDER_FLAG, STAFF_EMPLOYEE_ID) references OFFICER
+)
+/
+
+create table LIC_CONDITION_TRANSFER
+(
+	LIC_CONDITION_TRANSFER_ID NUMBER not null
+		constraint XPKLIC_CONDITION_TRANSFER
+			primary key,
+	OFFENDER_ID NUMBER not null
+		constraint R_902
+			references OFFENDER,
+	LIC_CONDITION_ID NUMBER not null
+		constraint R_859
+			references LIC_CONDITION,
+	TRANSFER_STATUS_ID NUMBER not null
+		constraint R_860
+			references R_STANDARD_REFERENCE_LIST,
+	REQUEST_DATE DATE,
+	ACCEPTED_DECISION_ID NUMBER
+		constraint R_861
+			references R_STANDARD_REFERENCE_LIST,
+	REJECTION_REASON_ID NUMBER
+		constraint R_862
+			references R_STANDARD_REFERENCE_LIST,
+	ORIGIN_TEAM_ID NUMBER
+		constraint R_863
+			references TEAM,
+	ORIGIN_STAFF_ID NUMBER
+		constraint R_864
+			references STAFF,
+	RECEIVING_TEAM_ID NUMBER
+		constraint R_865
+			references TEAM,
+	RECEIVING_STAFF_ID NUMBER
+		constraint R_866
+			references STAFF,
+	ORIGIN_PROVIDER_TEAM_ID NUMBER
+		constraint R_904
+			references PROVIDER_TEAM,
+	ORIGIN_PROVIDER_EMPLOYEE_ID NUMBER
+		constraint R_905
+			references PROVIDER_EMPLOYEE,
+	RECEIVING_PROVIDER_TEAM_ID NUMBER
+		constraint R_906
+			references PROVIDER_TEAM,
+	RECEIVING_PROVIDER_EMPLOYEE_ID NUMBER
+		constraint R_907
+			references PROVIDER_EMPLOYEE,
+	NOTES CLOB,
+	ALLOCATION_REASON_ID NUMBER
+		constraint R_867
+			references R_STANDARD_REFERENCE_LIST,
+	TRANSFER_REASON_ID NUMBER not null
+		constraint R_868
+			references R_TRANSFER_REASON,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE_1450363321
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		constraint R_869
+			references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	TRAINING_SESSION_ID NUMBER
+		constraint R_870
+			references TRAINING_SESSION,
+	WITHDRAWAL_REASON_ID NUMBER
+		constraint R_1057
+			references R_STANDARD_REFERENCE_LIST,
+	TRANSFER_STATUS_DATE DATE,
+	MASTER_TRANSFER_ID NUMBER
+		constraint R_1083
+			references MASTER_TRANSFER,
+	constraint LIC_COND_TRANS_ORGIN_STAFF_XOR
+		check ( (
+(ORIGIN_STAFF_ID IS NOT NULL AND ORIGIN_PROVIDER_EMPLOYEE_ID IS NULL)
+OR
+(ORIGIN_STAFF_ID IS NULL AND ORIGIN_PROVIDER_EMPLOYEE_ID IS NOT NULL)
+)),
+	constraint LIC_COND_TRANS_ORGIN_TEAM_XOR
+		check ( (
+(ORIGIN_TEAM_ID IS NOT NULL AND ORIGIN_PROVIDER_TEAM_ID IS NULL)
+OR
+(ORIGIN_TEAM_ID IS NULL AND ORIGIN_PROVIDER_TEAM_ID IS NOT NULL)
+)),
+	constraint LIC_COND_TRANS_REC_STAFF_XOR
+		check ( (
+(RECEIVING_STAFF_ID IS NOT NULL AND RECEIVING_PROVIDER_EMPLOYEE_ID IS NULL)
+OR
+(RECEIVING_STAFF_ID IS NULL AND RECEIVING_PROVIDER_EMPLOYEE_ID IS NOT NULL)
+)),
+	constraint LIC_COND_TRANS_REC_TEAM_XOR
+		check ( (
+(RECEIVING_TEAM_ID IS NOT NULL AND RECEIVING_PROVIDER_TEAM_ID IS NULL)
+OR
+(RECEIVING_TEAM_ID IS NULL AND RECEIVING_PROVIDER_TEAM_ID IS NOT NULL)
+))
+)
+/
+
+create table LIC_CONDITION_MANAGER
+(
+	LIC_CONDITION_MANAGER_ID NUMBER not null
+		constraint XPKLIC_CONDITION_MANAGER
+			primary key,
+	LIC_CONDITION_ID NUMBER not null
+		references LIC_CONDITION,
+	ALLOCATION_DATE DATE not null,
+	TEAM_ID NUMBER
+		references TEAM,
+	STAFF_ID NUMBER
+		references STAFF,
+	EXTERNAL_PROVIDER_ID NUMBER
+		references EXTERNAL_PROVIDER,
+	PROVIDER_EMPLOYEE_ID NUMBER
+		references PROVIDER_EMPLOYEE,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE44
+			check (SOFT_DELETED IN (0, 1)),
+	END_DATE DATE,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	PROVIDER_TEAM_ID NUMBER
+		references PROVIDER_TEAM,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TRANSFER_REASON_ID NUMBER not null
+		references R_TRANSFER_REASON,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	TRUST_PROVIDER_FLAG NUMBER not null
+		constraint TRUE_OR_FALSE46
+			check (TRUST_PROVIDER_FLAG IN (0, 1)),
+	STAFF_EMPLOYEE_ID NUMBER not null,
+	TRUST_PROVIDER_TEAM_ID NUMBER not null,
+	PROBATION_AREA_ID NUMBER not null
+		references PROBATION_AREA,
+	ACTIVE_FLAG NUMBER not null,
+	LIC_CONDITION_TRANSFER_ID NUMBER
+		constraint R_884
+			references LIC_CONDITION_TRANSFER,
+	ALLOCATION_REASON_ID NUMBER(22)
+		constraint R_982
+			references R_STANDARD_REFERENCE_LIST,
+	foreign key (TRUST_PROVIDER_FLAG, STAFF_EMPLOYEE_ID) references OFFICER,
+	foreign key (TRUST_PROVIDER_FLAG, TRUST_PROVIDER_TEAM_ID) references ALL_TEAM,
+	constraint ACTIVE_FLAG_END_DATE3
+		check ( (ACTIVE_FLAG = 0 AND END_DATE IS NOT NULL)
+OR
+(ACTIVE_FLAG = 1 AND END_DATE IS NULL)
+),
+	constraint MANAGEMENT_VALID_DATES3
+		check ( (
+(ALLOCATION_DATE <= NVL(END_DATE, ALLOCATION_DATE))
+)),
+	constraint OFFENDER_MANAGER_TEAM_XOR4
+		check ( (
+(TEAM_ID IS NOT NULL AND PROVIDER_TEAM_ID IS NULL)
+OR
+(TEAM_ID IS NULL AND PROVIDER_TEAM_ID IS NOT NULL)
+)),
+	constraint PROVIDER_EMPLOYEE_OR_STAFF4
+		check ( (
+(PROVIDER_EMPLOYEE_ID IS NOT NULL  AND STAFF_ID IS NULL)
+OR
+(PROVIDER_EMPLOYEE_ID IS NULL  AND STAFF_ID IS NOT NULL)
+)),
+	constraint STAFF_OR_TEAM4
+		check ( (
+STAFF_EMPLOYEE_ID = STAFF_ID
+OR
+STAFF_EMPLOYEE_ID = PROVIDER_EMPLOYEE_ID
+)),
+	constraint TRUST_OR_PROVIDER4
+		check ( (
+TRUST_PROVIDER_TEAM_ID = TEAM_ID
+OR
+TRUST_PROVIDER_TEAM_ID = PROVIDER_TEAM_ID
+))
+)
+/
+
+create table ORDER_TRANSFER
+(
+	ORDER_TRANSFER_ID NUMBER not null
+		constraint XPKORDER_TRANSFER
+			primary key,
+	OFFENDER_ID NUMBER not null
+		constraint R_900
+			references OFFENDER,
+	EVENT_ID NUMBER not null
+		constraint R_847
+			references EVENT,
+	TRANSFER_STATUS_ID NUMBER not null
+		constraint R_848
+			references R_STANDARD_REFERENCE_LIST,
+	REQUEST_DATE DATE,
+	ACCEPTED_DECISION_ID NUMBER
+		constraint R_849
+			references R_STANDARD_REFERENCE_LIST,
+	REJECTION_REASON_ID NUMBER
+		constraint R_850
+			references R_STANDARD_REFERENCE_LIST,
+	ORIGIN_TEAM_ID NUMBER
+		constraint R_851
+			references TEAM,
+	ORIGIN_STAFF_ID NUMBER
+		constraint R_852
+			references STAFF,
+	RECEIVING_TEAM_ID NUMBER
+		constraint R_853
+			references TEAM,
+	RECEIVING_STAFF_ID NUMBER
+		constraint R_854
+			references STAFF,
+	ORIGIN_PROVIDER_TEAM_ID NUMBER
+		constraint R_908
+			references PROVIDER_TEAM,
+	ORIGIN_PROVIDER_EMPLOYEE_ID NUMBER
+		constraint R_909
+			references PROVIDER_EMPLOYEE,
+	RECEIVING_PROVIDER_TEAM_ID NUMBER
+		constraint R_910
+			references PROVIDER_TEAM,
+	RECEIVING_PROVIDER_EMPLOYEE_ID NUMBER
+		constraint R_911
+			references PROVIDER_EMPLOYEE,
+	ALLOCATION_REASON_ID NUMBER
+		constraint R_855
+			references R_STANDARD_REFERENCE_LIST,
+	TRANSFER_REASON_ID NUMBER not null
+		constraint R_856
+			references R_TRANSFER_REASON,
+	NOTES CLOB,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE_1460850910
+			check (SOFT_DELETED IN (0, 1)),
+	PARTITION_AREA_ID NUMBER not null
+		constraint R_857
+			references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	TRAINING_SESSION_ID NUMBER
+		constraint R_858
+			references TRAINING_SESSION,
+	WITHDRAWAL_REASON_ID NUMBER
+		constraint R_1055
+			references R_STANDARD_REFERENCE_LIST,
+	TRANSFER_STATUS_DATE DATE,
+	MASTER_TRANSFER_ID NUMBER
+		constraint R_1081
+			references MASTER_TRANSFER,
+	constraint ORDER_TRANS_ORGIN_STAFF_XOR
+		check ( (
+(ORIGIN_STAFF_ID IS NOT NULL AND ORIGIN_PROVIDER_EMPLOYEE_ID IS NULL)
+OR
+(ORIGIN_STAFF_ID IS NULL AND ORIGIN_PROVIDER_EMPLOYEE_ID IS NOT NULL)
+)),
+	constraint ORDER_TRANS_ORGIN_TEAM_XOR
+		check ( (
+(ORIGIN_TEAM_ID IS NOT NULL AND ORIGIN_PROVIDER_TEAM_ID IS NULL)
+OR
+(ORIGIN_TEAM_ID IS NULL AND ORIGIN_PROVIDER_TEAM_ID IS NOT NULL)
+)),
+	constraint ORDER_TRANS_REC_STAFF_XOR
+		check ( (
+(RECEIVING_STAFF_ID IS NOT NULL AND RECEIVING_PROVIDER_EMPLOYEE_ID IS NULL)
+OR
+(RECEIVING_STAFF_ID IS NULL AND RECEIVING_PROVIDER_EMPLOYEE_ID IS NOT NULL)
+)),
+	constraint ORDER_TRANS_REC_TEAM_XOR
+		check ( (
+(RECEIVING_TEAM_ID IS NOT NULL AND RECEIVING_PROVIDER_TEAM_ID IS NULL)
+OR
+(RECEIVING_TEAM_ID IS NULL AND RECEIVING_PROVIDER_TEAM_ID IS NOT NULL)
+))
+)
+/
+
+create table ORDER_MANAGER
+(
+	ORDER_MANAGER_ID NUMBER not null
+		constraint XPKORDER_MANAGER
+			primary key,
+	ALLOCATION_DATE DATE not null,
+	ALLOCATION_TEAM_ID NUMBER
+		references TEAM,
+	ALLOCATION_STAFF_ID NUMBER
+		references STAFF,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE
+			check (SOFT_DELETED IN (0, 1)),
+	END_DATE DATE,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	EVENT_ID NUMBER not null
+		references EVENT,
+	ALLOCATION_REASON_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	PROVIDER_EMPLOYEE_ID NUMBER
+		references PROVIDER_EMPLOYEE,
+	CREATED_DATETIME DATE not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	PROVIDER_TEAM_ID NUMBER
+		references PROVIDER_TEAM,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	TRANSFER_REASON_ID NUMBER not null
+		references R_TRANSFER_REASON,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	TRUST_PROVIDER_FLAG NUMBER not null
+		constraint TRUE_OR_FALSE2
+			check (TRUST_PROVIDER_FLAG IN (0, 1)),
+	STAFF_EMPLOYEE_ID NUMBER not null,
+	TRUST_PROVIDER_TEAM_ID NUMBER not null,
+	PROBATION_AREA_ID NUMBER not null
+		references PROBATION_AREA,
+	ACTIVE_FLAG NUMBER not null,
+	ORDER_TRANSFER_ID NUMBER
+		constraint R_897
+			references ORDER_TRANSFER,
+	foreign key (TRUST_PROVIDER_FLAG, STAFF_EMPLOYEE_ID) references OFFICER,
+	foreign key (TRUST_PROVIDER_FLAG, TRUST_PROVIDER_TEAM_ID) references ALL_TEAM,
+	constraint ACTIVE_FLAG_END_DATE
+		check ( (ACTIVE_FLAG = 0 AND END_DATE IS NOT NULL)
+OR
+(ACTIVE_FLAG = 1 AND END_DATE IS NULL)
+),
+	constraint MANAGEMENT_VALID_DATES
+		check ( (
+(ALLOCATION_DATE <= NVL(END_DATE, ALLOCATION_DATE))
+)),
+	constraint ORDER_MANAGER_TEAM_XOR
+		check ( (
+(ALLOCATION_TEAM_ID IS NOT NULL AND PROVIDER_TEAM_ID IS NULL)
+OR
+(ALLOCATION_TEAM_ID IS NULL AND PROVIDER_TEAM_ID IS NOT NULL)
+)),
+	constraint ORDER_MANAGER_XOR
+		check ( (
+(PROVIDER_EMPLOYEE_ID IS NOT NULL  AND ALLOCATION_STAFF_ID IS NULL)
+OR
+(PROVIDER_EMPLOYEE_ID IS NULL  AND ALLOCATION_STAFF_ID IS NOT NULL)
+)),
+	constraint STAFF_OR_TEAM2
+		check ( (
+STAFF_EMPLOYEE_ID = ALLOCATION_STAFF_ID
+OR
+STAFF_EMPLOYEE_ID = PROVIDER_EMPLOYEE_ID
+)),
+	constraint TRUST_OR_PROVIDER2
+		check ( (
+TRUST_PROVIDER_TEAM_ID = ALLOCATION_TEAM_ID
+OR
+TRUST_PROVIDER_TEAM_ID = PROVIDER_TEAM_ID
+))
+)
+/
+
+create table R_REGISTER_TYPE_PROVIDER
+(
+	REGISTER_TYPE_ID NUMBER not null
+		constraint R_1097
+			references R_REGISTER_TYPE,
+	PROBATION_AREA_ID NUMBER not null
+		constraint R_1098
+			references PROBATION_AREA,
+	ROW_VERSION NUMBER default 0,
+	constraint XPKR_REGISTER_TYPE_PROVIDER
+		primary key (REGISTER_TYPE_ID, PROBATION_AREA_ID)
+)
+/
+
+create table R_REGISTER_TYPE_LEVEL
+(
+	REGISTER_TYPE_ID NUMBER not null
+		constraint R_1099
+			references R_REGISTER_TYPE,
+	REGISTER_LEVEL_ID NUMBER not null
+		constraint R_1100
+			references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER default 0 not null,
+	constraint XPKR_REGISTER_TYPE_LEVEL
+		primary key (REGISTER_TYPE_ID, REGISTER_LEVEL_ID)
+)
+/
+
+create table R_REGISTER_TYPE_CATEGORY
+(
+	REGISTER_TYPE_ID NUMBER not null
+		constraint R_1101
+			references R_REGISTER_TYPE,
+	REGISTER_CATEGORY_ID NUMBER not null
+		constraint R_1102
+			references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER default 0 not null,
+	constraint XPKR_REGISTER_TYPE_CATEGORY
+		primary key (REGISTER_TYPE_ID, REGISTER_CATEGORY_ID)
+)
+/
+
+create table R_CIRCUMSTANCE_TYPE_PROVIDER
+(
+	CIRCUMSTANCE_TYPE_ID NUMBER not null
+		constraint R_1109
+			references R_CIRCUMSTANCE_TYPE,
+	PROBATION_AREA_ID NUMBER not null
+		constraint R_1110
+			references PROBATION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	constraint XPKR_CIRCUMSTANCE_PROVIDER
+		primary key (CIRCUMSTANCE_TYPE_ID, PROBATION_AREA_ID)
+)
+/
+
+create table PROVIDER_LAO
+(
+	PROVIDER_LAO_ID NUMBER not null
+		constraint XPKPROVIDER_LAO
+			primary key,
+	OFFENDER_ID NUMBER not null
+		constraint R_1111
+			references OFFENDER,
+	PROBATION_AREA_ID NUMBER not null
+		constraint R_1112
+			references PROBATION_AREA,
+	RESTRICTION_TEXT VARCHAR2(4000),
+	EXCLUSION_TEXT VARCHAR2(4000),
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	RESTRICTION_UPDATED_USER_ID NUMBER,
+	RESTRICTION_UPDATED_DATETIME DATE,
+	EXCLUSION_UPDATED_USER_ID NUMBER,
+	EXCLUSION_UPDATED_DATETIME DATE,
+	ROW_VERSION NUMBER default 0 not null,
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE_1382361809
+			check (SOFT_DELETED IN (0, 1))
+)
+/
+
+create table SPG_SEARCH_REQUEST
+(
+	SPG_SEARCH_REQUEST_ID NUMBER not null
+		constraint XPKSPG_SEARCH_REQUEST
+			primary key,
+	CRC_SEARCH_ID NUMBER not null,
+	SURNAME VARCHAR2(35),
+	FIRST_NAME VARCHAR2(35),
+	SECOND_NAME VARCHAR2(35),
+	DATE_OF_BIRTH_DATE DATE,
+	GENDER_ID NUMBER
+		constraint R_1114
+			references R_STANDARD_REFERENCE_LIST,
+	CRN CHAR(7),
+	PNC_NUMBER CHAR(13),
+	CRO_NUMBER VARCHAR2(12),
+	NOMS_NUMBER CHAR(7),
+	NI_NUMBER CHAR(9),
+	LAST_UPDATED_USER_ID NUMBER not null,
+	SPG_SEARCH_NIL CHAR
+		constraint YES_OR_NO_ONLY_1919921875
+			check (SPG_SEARCH_NIL IN ('Y','N')),
+	SPG_SEARCH_COUNT NUMBER,
+	SPG_SEARCH_EXCESS CHAR
+		constraint YES_OR_NO_ONLY_808538369
+			check (SPG_SEARCH_EXCESS IN ('Y','N')),
+	SPG_SEARCH_LAO CHAR
+		constraint YES_OR_NO_ONLY_1785900753
+			check (SPG_SEARCH_LAO IN ('Y','N'))
+)
+/
+
+create table SPG_SEARCH_OFFENDER
+(
+	SPG_SEARCH_REQUEST_ID NUMBER not null
+		constraint R_1115
+			references SPG_SEARCH_REQUEST,
+	SPG_SEARCH_SEQUENCE NUMBER not null,
+	OFFENDER_ID NUMBER not null
+		constraint R_1116
+			references OFFENDER,
+	constraint XPKSPG_SEARCH_OFFENDER
+		primary key (SPG_SEARCH_REQUEST_ID, SPG_SEARCH_SEQUENCE, OFFENDER_ID)
+)
+/
+
+create table DSS_SEARCH_REQUEST
+(
+	DSS_SEARCH_REQUEST_ID NUMBER not null
+		constraint XPKDSS_SEARCH_REQUEST
+			primary key,
+	OFFENDER_ID NUMBER not null
+		constraint R_1117
+			references OFFENDER,
+	CRC_SEARCH_ID NUMBER,
+	CRN CHAR(7),
+	DSS_SEARCH_NIL CHAR
+		constraint YES_OR_NO_ONLY_1869786070
+			check (DSS_SEARCH_NIL IN ('Y','N')),
+	DSS_SEARCH_COUNT NUMBER,
+	DSS_SEARCH_EXCESS CHAR
+		constraint YES_OR_NO_ONLY_758402564
+			check (DSS_SEARCH_EXCESS IN ('Y','N')),
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null
+)
+/
+
+create table DSS_SEARCH_OFFENDER
+(
+	DSS_SEARCH_REQUEST_ID NUMBER not null,
+	DSS_SEARCH_SEQUENCE NUMBER not null,
+	OFFLOC_ID NUMBER not null
+		constraint R_1118
+			references OFFLOC,
+	constraint XPKDSS_SEARCH_OFFENDER
+		primary key (DSS_SEARCH_REQUEST_ID, DSS_SEARCH_SEQUENCE, OFFLOC_ID)
+)
+/
+
+create table SPG_EXCEPTION
+(
+	SPG_EXCEPTION_ID NUMBER not null
+		constraint XPKSPG_EXCEPTION
+			primary key,
+	OFFENDER_ID NUMBER
+		constraint R_1122
+			references OFFENDER,
+	ENTITY_TYPE_ID NUMBER
+		constraint R_1123
+			references R_STANDARD_REFERENCE_LIST,
+	ENTITY_ID NUMBER,
+	EXCEPTION_TYPE_ID NUMBER
+		constraint R_1124
+			references R_STANDARD_REFERENCE_LIST,
+	EXCEPTION_TEXT CLOB,
+	IMS_PROVIDER_ID NUMBER
+		constraint R_1125
+			references PROBATION_AREA,
+	IMS_SENDER_REFERENCE NUMBER,
+	STATUS_ID NUMBER
+		constraint R_1126
+			references R_STANDARD_REFERENCE_LIST,
+	STATUS_DATE DATE,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ROW_VERSION NUMBER default 0 not null,
+	INCIDENT_IDENTIFIER VARCHAR2(100),
+	ASSIGNED_TO_STAFF_ID NUMBER
+		constraint R_1230
+			references STAFF
+)
+/
+
+create table R_REGISTER_DUPLICATE_GROUP
+(
+	REGISTER_GROUP_ID NUMBER(22) not null
+		constraint XPKR_REGISTER_DUPLICATE_GROUP
+			primary key,
+	CODE VARCHAR2(20) not null,
+	DESCRIPTION VARCHAR2(200) not null,
+	SELECTABLE CHAR not null,
+	ROW_VERSION NUMBER(22) default 0 not null,
+	CREATED_BY_USER_ID NUMBER(22) not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER(22) not null,
+	LAST_UPDATED_DATETIME DATE not null
+)
+/
+
+create table R_REGISTER_TYPE_DUP_GRP
+(
+	REGISTER_TYPE_DUP_GRP_ID NUMBER not null
+		constraint XPKR_REGISTER_TYPE_DUP_GRP
+			primary key,
+	REGISTER_TYPE_ID NUMBER not null
+		constraint R_1141
+			references R_REGISTER_TYPE,
+	REGISTER_GROUP_ID NUMBER not null
+		constraint R_1142
+			references R_REGISTER_DUPLICATE_GROUP,
+	ROW_VERSION NUMBER default 0 not null,
+	TRAINING_SESSION_ID NUMBER
+		constraint R_1143
+			references TRAINING_SESSION
+)
+/
+
+create table REJECTED_TRANSFER_DIARY
+(
+	REJECTED_TRANSFER_DIARY_ID NUMBER not null
+		constraint XPKREJECTED_TRANSFER
+			primary key,
+	TRANSFER_REQUEST_DATE DATE not null,
+	TRANSFER_STATUS_DATE DATE,
+	TARGET_PROVIDER_ID NUMBER not null
+		constraint R_1144
+			references PROBATION_AREA,
+	TARGET_TEAM_ID NUMBER not null
+		constraint R_1145
+			references TEAM,
+	TARGET_STAFF_ID NUMBER not null
+		constraint R_1146
+			references STAFF,
+	ORIGIN_PROVIDER_ID NUMBER not null
+		constraint R_1147
+			references PROBATION_AREA,
+	ORIGIN_TEAM_ID NUMBER not null
+		constraint R_1148
+			references TEAM,
+	ORIGIN_STAFF_ID NUMBER not null
+		constraint R_1149
+			references STAFF,
+	REJECTION_REASON_ID NUMBER not null
+		constraint R_1150
+			references R_STANDARD_REFERENCE_LIST,
+	OFFENDER_ID NUMBER not null
+		constraint R_1151
+			references OFFENDER,
+	MASTER_TRANSFER_ID NUMBER
+		constraint R_1152
+			references MASTER_TRANSFER,
+	OFFENDER_TRANSFER_ID NUMBER
+		constraint R_1153
+			references OFFENDER_TRANSFER,
+	NSI_TRANSFER_ID NUMBER
+		constraint R_1154
+			references NSI_TRANSFER,
+	NSI_ID NUMBER
+		constraint R_1155
+			references NSI,
+	ORDER_TRANSFER_ID NUMBER
+		constraint R_1168
+			references ORDER_TRANSFER,
+	EVENT_ID NUMBER
+		constraint R_1157
+			references EVENT,
+	RQMNT_TRANSFER_ID NUMBER
+		constraint R_1158
+			references RQMNT_TRANSFER,
+	RQMNT_ID NUMBER
+		constraint R_1159
+			references RQMNT,
+	LIC_CONDITION_TRANSFER_ID NUMBER
+		constraint R_1160
+			references LIC_CONDITION_TRANSFER,
+	LIC_CONDITION_ID NUMBER
+		constraint R_1161
+			references LIC_CONDITION,
+	PSS_RQMNT_TRANSFER_ID NUMBER
+		constraint R_1162
+			references PSS_RQMNT_TRANSFER,
+	PSS_RQMNT_ID NUMBER
+		constraint R_1163
+			references PSS_RQMNT,
+	INSTITUTIONAL_REP_TRANSFER_ID NUMBER
+		constraint R_1164
+			references INSTITUTIONAL_REPORT_TRANSFER,
+	INSTITUTIONAL_REPORT_ID NUMBER
+		constraint R_1165
+			references INSTITUTIONAL_REPORT,
+	COURT_REPORT_TRANSFER_ID NUMBER
+		constraint R_1166
+			references COURT_REPORT_TRANSFER,
+	COURT_REPORT_ID NUMBER
+		constraint R_1167
+			references COURT_REPORT,
+	NOTE_FLAG CHAR
+		constraint YES_OR_NO_ONLY_1313517795
+			check (NOTE_FLAG IN ('Y','N'))
+)
+/
+
+create table R_HOST
+(
+	HOST_ID NUMBER not null,
+	INSTITUTION_ID NUMBER not null,
+	ESTABLISHMENT CHAR not null,
+	PROBATION_AREA_ID NUMBER not null,
+	START_DATE DATE not null,
+	END_DATE DATE,
+	LEAD_HOST CHAR,
+	CREATED_BY_USER_ID NUMBER(22) not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER(22) not null,
+	LAST_UPDATED_DATETIME DATE not null
+)
+/
+
+create table HOST_AT_RELEASE
+(
+	HOST_AT_RELEASE_ID NUMBER not null,
+	RELEASE_ID NUMBER not null,
+	PROBATION_AREA_ID NUMBER not null,
+	CREATED_BY_USER_ID NUMBER(22) not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER(22) not null,
+	LAST_UPDATED_DATETIME DATE not null
+)
+/
+
+create table TIER_ALLOCATION
+(
+	TIER_ALLOCATION_ID NUMBER not null
+		constraint XPKTIER_ALLOCATION
+			primary key,
+	OFFENDER_ID NUMBER not null
+		constraint R_1184
+			references OFFENDER,
+	EVENT_ID NUMBER not null
+		constraint R_1185
+			references EVENT,
+	ALLOCATION_DECISION_ID NUMBER
+		constraint R_1186
+			references R_STANDARD_REFERENCE_LIST,
+	ALLOCATION_DECISION_DATE DATE,
+	TIER_AT_POINT_OF_DECISION_ID NUMBER
+		constraint R_1187
+			references R_STANDARD_REFERENCE_LIST,
+	DECISION_PROVIDER_ID NUMBER
+		constraint R_1188
+			references PROBATION_AREA,
+	DECISION_TEAM_ID NUMBER
+		constraint R_1189
+			references TEAM,
+	DECISION_STAFF_ID NUMBER
+		constraint R_1190
+			references STAFF,
+	ALLOCATION_OVERRIDE_REASON_ID NUMBER
+		constraint R_1191
+			references R_STANDARD_REFERENCE_LIST,
+	ALLOCATION_OVERRIDE NUMBER,
+	ALLOCATION_DECISION_NOTES CLOB,
+	ROW_VERSION NUMBER default 0 not null,
+	NOTES CLOB,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null
+)
+/
+
+create table TIER_ALLOCATION_QUESTION
+(
+	TIER_ALLOCATION_QUESTION_ID NUMBER not null
+		constraint XPKTIER_ALLOCATION_QUESTION
+			primary key,
+	TIER_ALLOCATION_ID NUMBER not null
+		constraint R_1192
+			references TIER_ALLOCATION,
+	QUESTION_ID NUMBER not null
+		constraint R_1193
+			references R_STANDARD_REFERENCE_LIST,
+	QUESTION_ANSWER CHAR
+		check (QUESTION_ANSWER IN ('Y','N')),
+	ROW_VERSION NUMBER default 0 not null
+)
+/
+
+create table SPG_XSD
+(
+	SPG_XSD_ID NUMBER not null
+		constraint XPKSPG_XSD
+			primary key,
+	XSD_NUMBER NUMBER,
+	XSD_NAME VARCHAR2(200) not null,
+	XSD_VERSION VARCHAR2(30) not null,
+	XSD_DATE DATE not null,
+	ACTIVE_FLAG NUMBER not null
+		constraint TRUE_OR_FALSE_644453978
+			check (ACTIVE_FLAG IN (0, 1)),
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ROW_ID NUMBER default 0 not null
+)
+/
+
+create table R_SPG_XSD_PROBATION_AREA
+(
+	SPG_XSD_ID NUMBER not null
+		constraint R_1195
+			references SPG_XSD,
+	PROBATION_AREA_ID NUMBER not null
+		constraint R_1196
+			references PROBATION_AREA,
+	ROW_VERSION NUMBER default 0 not null,
+	constraint XPKR_SPG_XSD_PROBATION_AREA
+		primary key (SPG_XSD_ID, PROBATION_AREA_ID)
+)
+/
+
+create table PRISON_OFFENDER_MANAGER
+(
+	PRISON_OFFENDER_MANAGER_ID NUMBER not null
+		constraint XPKPRISON_OFFENDER_MANAGER
+			primary key,
+	OFFENDER_ID NUMBER not null
+		constraint R_1197
+			references OFFENDER,
+	PROBATION_AREA_ID NUMBER not null
+		constraint R_1198
+			references PROBATION_AREA,
+	ALLOCATION_TEAM_ID NUMBER not null
+		constraint R_1199
+			references TEAM,
+	ALLOCATION_STAFF_ID NUMBER not null
+		constraint R_1200
+			references STAFF,
+	ALLOCATION_REASON_ID NUMBER not null
+		constraint R_1201
+			references R_STANDARD_REFERENCE_LIST,
+	TRANSFER_REASON_ID NUMBER
+		constraint R_1202
+			references R_TRANSFER_REASON,
+	ALLOCATION_DATE DATE not null,
+	END_DATE DATE,
+	ACTIVE_FLAG NUMBER not null
+		constraint TRUE_OR_FALSE_1484563887
+			check (ACTIVE_FLAG IN (0, 1)),
+	SOFT_DELETED NUMBER not null
+		constraint TRUE_OR_FALSE_1988641336
+			check (SOFT_DELETED IN (0, 1)),
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_DATETIME DATE not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	constraint ACTIVE_FLAG_END_DATE_15186317
+		check ( (ACTIVE_FLAG = 0 AND END_DATE IS NOT NULL)
+OR (ACTIVE_FLAG = 1 AND END_DATE IS NULL)
+),
+	constraint MANAGEMENT_VALID_DAT_945183357
+		check ( ((ALLOCATION_DATE <= NVL(END_DATE, ALLOCATION_DATE))))
+)
+/
+
+create table CASELOAD
+(
+	CASELOAD_ID NUMBER not null
+		constraint XPKCASELOAD
+			primary key,
+	OFFENDER_ID NUMBER not null
+		references OFFENDER,
+	OFFENDER_MANAGER_ID NUMBER
+		references OFFENDER_MANAGER,
+	EVENT_ID NUMBER
+		references EVENT,
+	ORDER_MANAGER_ID NUMBER
+		references ORDER_MANAGER,
+	DISPOSAL_ID NUMBER
+		references DISPOSAL,
+	LIC_CONDITION_ID NUMBER
+		references LIC_CONDITION,
+	LIC_CONDITION_MANAGER_ID NUMBER
+		references LIC_CONDITION_MANAGER,
+	RQMNT_ID NUMBER
+		references RQMNT,
+	RQMNT_MANAGER_ID NUMBER
+		references RQMNT_MANAGER,
+	TRUST_PROVIDER_FLAG NUMBER not null
+		constraint TRUE_OR_FALSE43
+			check (TRUST_PROVIDER_FLAG IN (0, 1)),
+	TRUST_PROVIDER_TEAM_ID NUMBER not null,
+	STAFF_EMPLOYEE_ID NUMBER not null,
+	DISPOSAL_TYPE_ID NUMBER
+		references R_DISPOSAL_TYPE,
+	LIC_COND_TYPE_MAIN_CAT_ID NUMBER
+		references R_LIC_COND_TYPE_MAIN_CAT,
+	CRN CHAR(7) not null,
+	RQMNT_TYPE_MAIN_CATEGORY_ID NUMBER
+		references R_RQMNT_TYPE_MAIN_CATEGORY,
+	AD_RQMNT_TYPE_MAIN_CATEGORY_ID NUMBER
+		constraint R_916
+			references R_AD_RQMNT_TYPE_MAIN_CATEGORY,
+	FIRST_NAME VARCHAR2(35) not null,
+	GENDER_ID NUMBER not null
+		references R_STANDARD_REFERENCE_LIST,
+	SECOND_NAME VARCHAR2(35),
+	THIRD_NAME VARCHAR2(35),
+	DATE_OF_BIRTH DATE not null,
+	CURRENT_HIGHEST_RISK_COLOUR VARCHAR2(10),
+	SURNAME VARCHAR2(35) not null,
+	CURRENT_EXCLUSION NUMBER not null,
+	CURRENT_TIER NUMBER,
+	CURRENT_RESTRICTION NUMBER not null,
+	LENGTH_VALUE NUMBER,
+	START_DATE DATE,
+	ROLE_CODE VARCHAR2(3) not null,
+	ROW_VERSION NUMBER default 0 not null,
+	PARTITION_AREA_ID NUMBER not null
+		references PARTITION_AREA,
+	ORGANISATIONS T_ARR_ORGANISATIONS,
+	TRAINING_SESSION_ID NUMBER
+		references TRAINING_SESSION,
+	ALLOCATION_DATE DATE,
+	PSS_RQMNT_ID NUMBER(22)
+		constraint R_1002
+			references PSS_RQMNT,
+	PSS_RQMNT_MANAGER_ID NUMBER(22)
+		constraint R_1003
+			references PSS_RQMNT_MANAGER,
+	PSS_RQMNT_TYPE_MAIN_CAT_ID NUMBER(22)
+		constraint R_1004
+			references R_PSS_RQMNT_TYPE_MAIN_CATEGORY,
+	LENGTH_IN_DAYS NUMBER,
+	ENTRY_LENGTH_UNITS_ID NUMBER
+		constraint R_1044
+			references R_STANDARD_REFERENCE_LIST,
+	NOTIONAL_END_DATE DATE,
+	ENTRY_LENGTH NUMBER,
+	NSI_ID NUMBER
+		constraint R_1170
+			references NSI,
+	NSI_MANAGER_ID NUMBER
+		constraint R_1171
+			references NSI_MANAGER,
+	PRISON_OFFENDER_MANAGER_ID NUMBER
+		constraint R_1203
+			references PRISON_OFFENDER_MANAGER,
+	foreign key (TRUST_PROVIDER_FLAG, TRUST_PROVIDER_TEAM_ID) references ALL_TEAM,
+	foreign key (TRUST_PROVIDER_FLAG, STAFF_EMPLOYEE_ID) references OFFICER
+)
+/
+
+create table RESPONSIBLE_OFFICER
+(
+	RESPONSIBLE_OFFICER_ID NUMBER not null
+		constraint XPKRESPONSIBLE_OFFICER
+			primary key,
+	OFFENDER_ID NUMBER not null
+		constraint R_1204
+			references OFFENDER,
+	OFFENDER_MANAGER_ID NUMBER
+		constraint R_1205
+			references OFFENDER_MANAGER,
+	PRISON_OFFENDER_MANAGER_ID NUMBER
+		constraint R_1206
+			references PRISON_OFFENDER_MANAGER,
+	START_DATE DATE not null,
+	END_DATE DATE,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ROW_VERSION NUMBER default 0 not null
+)
+/
+
+create table R_CONTACT_TYPE_NOMIS_TYPE
+(
+	NOMIS_CONTACT_TYPE VARCHAR2(32) not null
+		constraint XPKR_CONTACT_TYPE_NOMIS_TYPE
+			primary key,
+	CONTACT_TYPE_ID NUMBER not null
+		constraint R_1207
+			references R_CONTACT_TYPE
+)
+/
+
+create table PRECON_HISTORY
+(
+	PRECON_HISTORY_ID NUMBER not null
+		constraint XPKPRECON_HISTORY
+			primary key,
+	PRECON_TRANSACTION_ID NUMBER not null,
+	SOURCE_OFFENDER_CRN CHAR(7),
+	TARGET_OFFENDER_CRN CHAR(7),
+	MERGE_DATE DATE,
+	ALFRESCO_DOCUMENT_ID VARCHAR2(36),
+	IN_TRASHCAN NUMBER
+		constraint TRUE_OR_FALSE_1163906008
+			check (IN_TRASHCAN IN (0, 1)),
+	MOVE_TO_SOURCE_BEFORE_UNDEL NUMBER
+		constraint TRUE_OR_FALSE_302875035
+			check (MOVE_TO_SOURCE_BEFORE_UNDEL IN (0, 1)),
+	MOVE_FROM_TRASH_TO_TARGET NUMBER
+		constraint TRUE_OR_FALSE_169940484
+			check (MOVE_FROM_TRASH_TO_TARGET IN (0, 1)),
+	MOVE_FROM_TARGET_TO_SOURCE NUMBER
+		constraint TRUE_OR_FALSE_204404833
+			check (MOVE_FROM_TARGET_TO_SOURCE IN (0, 1)),
+	TRASH_DOC_CREATED_BY_USER_ID NUMBER,
+	TRASH_DOC_CREATED_DATETIME DATE,
+	TRASH_DOC_NAME VARCHAR2(200),
+	TRASH_DOC_EDIT_DATE DATE,
+	TRASH_DOC_OFFENDER_ID NUMBER,
+	TRASH_DOC_CREATED_PROVIDER_ID NUMBER
+		constraint R_1209
+			references PROBATION_AREA,
+	TRASH_DOC_LAST_UPDATED_USER_ID NUMBER,
+	TRASH_DOC_LAST_UPD_PROVIDER_ID NUMBER
+		constraint R_1210
+			references PROBATION_AREA,
+	TRASH_DOC_PRECON_DATE DATE,
+	ROW_VERSION NUMBER default 0 not null
+)
+/
+
+create table R_TIER_ALLOC_QUESTION_TIER
+(
+	TIER_ALLOC_QUESTION_TIER_ID NUMBER not null
+		constraint XPKR_TIER_ALLOC_QUESTION_TIER
+			primary key,
+	TIER_ALLOCATION_ID NUMBER not null
+		constraint R_1211
+			references R_STANDARD_REFERENCE_LIST,
+	QUESTION_ID NUMBER not null
+		constraint R_1212
+			references R_STANDARD_REFERENCE_LIST,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ROW_VERSION NUMBER default 0 not null
+)
+/
+
+create table R_NOMIS_TYPE_NSI_TYPE
+(
+	NOMIS_TYPE_NSI_TYPE_ID NUMBER not null
+		constraint XPKR_NOMIS_TYPE_NSI_TYPE
+			primary key,
+	NOMIS_CONTACT_TYPE VARCHAR2(32) not null,
+	NSI_TYPE_ID NUMBER not null
+		constraint R_1214
+			references R_NSI_TYPE,
+	NSI_LEVEL VARCHAR2(20) not null
+)
+/
+
+create table OFFENDER_DELTA
+(
+	OFFENDER_ID NUMBER not null,
+	DATE_CHANGED DATE not null,
+	ACTION VARCHAR2(10) not null
+		constraint OFFENDER_DELTA_ACTI_1109726585
+			check (ACTION IN ('UPSERT', 'DELETE'))
+)
+/
+
+create table SPG_DOCUMENT_REQUEST
+(
+	SPG_DOCUMENT_REQUEST_ID NUMBER not null
+		constraint XPKSPG_DOCUMENT_REQUEST
+			primary key,
+	CRC_SEARCH_ID NUMBER not null,
+	OFFENDER_ID NUMBER not null
+		constraint R_1226
+			references OFFENDER,
+	EVENT_ID NUMBER
+		constraint R_1227
+			references EVENT,
+	SEARCH_COUNT NUMBER,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	TARGET_PROVIDER_ID NUMBER
+		constraint R_1246
+			references PROBATION_AREA,
+	ROW_VERSION NUMBER default 0 not null
+)
+/
+
+create table NOMIS_CASE_NOTE_ERROR
+(
+	NOMIS_CASE_NOTE_ERROR_ID NUMBER not null
+		constraint XPKNOMIS_CASE_NOTE_ERROR
+			primary key,
+	NOMIS_NUMBER VARCHAR2(7) not null,
+	STAFF_ID NUMBER
+		constraint R_1228
+			references STAFF,
+	ERROR_DATE DATE not null,
+	NOTE_TYPE VARCHAR2(32),
+	CASE_NOTE_ID NUMBER,
+	CASE_NOTE CLOB,
+	RESENT CHAR default 'N' not null
+		constraint YES_OR_NO_ONLY_1025318769
+			check (RESENT IN ('Y','N')),
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ROW_VERSION NUMBER default 0 not null,
+	CONTACT_DATE DATE,
+	RESPONSE_CODE NUMBER,
+	REQUEST_METHOD VARCHAR2(6) default 'PUT'
+)
+/
+
+create table R_COURT_TEAM
+(
+	COURT_ID NUMBER not null
+		constraint R_1238
+			references COURT,
+	TEAM_ID NUMBER not null
+		constraint R_1239
+			references TEAM,
+	ROW_VERSION NUMBER default 0 not null,
+	constraint XPKR_COURT_TEAM
+		primary key (COURT_ID, TEAM_ID)
+)
+/
+
+create table R_TEAM_SHORT_POSTCODE
+(
+	SHORT_POSTCODE_ID NUMBER not null
+		constraint R_1240
+			references R_STANDARD_REFERENCE_LIST,
+	TEAM_ID NUMBER not null
+		constraint R_1241
+			references TEAM,
+	ROW_VERSION NUMBER default 0 not null,
+	constraint XPKR_TEAM_SHORT_POSTCODE
+		primary key (SHORT_POSTCODE_ID, TEAM_ID)
+)
+/
+
+create table R_TEAM_LONG_POSTCODE
+(
+	LONG_POSTCODE_ID NUMBER not null
+		constraint R_1242
+			references R_STANDARD_REFERENCE_LIST,
+	TEAM_ID NUMBER not null
+		constraint R_1243
+			references TEAM,
+	ROW_VERSION NUMBER default 0 not null,
+	constraint XPKR_TEAM_LONG_POSTCODE
+		primary key (LONG_POSTCODE_ID, TEAM_ID)
+)
+/
+
+create table CRC_INACTIVE_OFFENDER
+(
+	CRC_INACTIVE_OFFENDER_ID NUMBER not null
+		constraint XPKCRC_INACTIVE_OFFENDER
+			primary key,
+	OFFENDER_ID NUMBER not null
+		constraint R_1244
+			references OFFENDER,
+	CRC_PROVIDER_ID NUMBER not null
+		constraint R_1245
+			references PROBATION_AREA,
+	PROCESSED_FLAG NUMBER default 0 not null
+		constraint TRUE_OR_FALSE_1885951589
+			check (PROCESSED_FLAG IN (0, 1)),
+	PROCESSED_DATETIME DATE,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE default SYSDATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE default SYSDATE not null
+)
+/
+
+create table DATA_SCRIPT_MESSAGE
+(
+	DATA_SCRIPT_MESSAGE_ID NUMBER not null
+		constraint XPKDATA_SCRIPT_MESSAGE
+			primary key,
+	DATA_SCRIPT_NAME VARCHAR2(100) not null,
+	CREATED_DATETIME DATE default SYSDATE not null,
+	OFFENDER_ID NUMBER not null,
+	EVENT_ID NUMBER
+		constraint R_1248
+			references EVENT,
+	DISPOSAL_TERMINATION_DATE DATE,
+	UNIQUE_ID NUMBER not null,
+	BUSINESS_INTERACTION_ID NUMBER not null
+)
+/
+
+create table SPG_NOTIFICATION
+(
+	SPG_NOTIFICATION_ID NUMBER not null
+		constraint XPKSPG_NOTIFICATION
+			primary key,
+	BUSINESS_INTERACTION_ID NUMBER
+		constraint R_1045
+			references BUSINESS_INTERACTION,
+	OFFENDER_ID NUMBER
+		constraint R_1046
+			references OFFENDER,
+	UNIQUE_ID NUMBER,
+	DATE_CREATED DATE,
+	PROCESSED_FLAG NUMBER default 0 not null
+		constraint PROCESSED_FLAG_1079194201
+			check (PROCESSED_FLAG IN (0, 1, 2, 3, 4, 5)),
+	PROCESSED_DATETIME DATE,
+	MESSAGE_ID VARCHAR2(200),
+	ERROR_FLAG NUMBER default 0 not null
+		constraint TRUE_OR_FALSE_1224137979
+			check (ERROR_FLAG IN (0, 1)),
+	ERROR_MESSAGE CLOB,
+	AQ_MESSAGE_ID RAW(16),
+	AQ_DATETIME DATE,
+	CONTROL_REFERENCE NUMBER,
+	SENDER_IDENTITY_ID NUMBER
+		constraint R_1047
+			references PROBATION_AREA,
+	RECEIVER_IDENTITY_ID NUMBER
+		constraint R_1048
+			references PROBATION_AREA,
+	XML_MESSAGE XMLTYPE,
+	SPG_VERSION RAW(32),
+	RECEIVER_CONTROL_REFERENCE NUMBER,
+	MESSAGE_DIRECTION CHAR default 'O' not null
+		constraint MESSAGE_DIRECTION_1934366784
+			check (MESSAGE_DIRECTION IN ('I', 'O')),
+	PARENT_ENTITY_ID NUMBER,
+	SPG_MESSAGE_CONTEXT_ID NUMBER
+		constraint R_1137
+			references R_STANDARD_REFERENCE_LIST,
+	SPG_INTERCHANGE_STATUS_ID NUMBER
+		constraint R_1138
+			references R_STANDARD_REFERENCE_LIST,
+	ROW_VERSION NUMBER default 0 not null,
+	REGENERATED_NOTIFICATION_ID NUMBER
+		constraint R_1231
+			references SPG_NOTIFICATION,
+	MT_COMPONENT_ID NUMBER,
+	MT_THREAD_ID NUMBER,
+	DATE_SUBMITTED DATE,
+	EXPORT_TO_FILE_FLAG NUMBER default 0 not null
+		constraint TRUE_OR_FALSE_1632058710
+			check (EXPORT_TO_FILE_FLAG IN (0, 1)),
+	DATA_SCRIPT_MESSAGE_ID NUMBER
+		constraint R_1256
+			references DATA_SCRIPT_MESSAGE
+)
+/
+
+create table OFFENDER_CRC_EXPORT
+(
+	OFFENDER_CRC_EXPORT_ID NUMBER not null
+		constraint XPKOFFENDER_CRC_EXPORT
+			primary key,
+	OFFENDER_ID NUMBER not null
+		constraint R_1088
+			references OFFENDER,
+	CRC_PROVIDER_ID NUMBER not null
+		constraint R_1089
+			references PROBATION_AREA,
+	EXPORT_DATE DATE not null,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	REQUESTED_EXPORT_LEVEL NUMBER
+		constraint REQUESTED_EXPORT_LE_2133375239
+			check (REQUESTED_EXPORT_LEVEL IN (1, 3)),
+	ERROR_FLAG NUMBER default 0
+		constraint TRUE_OR_FALSE_150510653
+			check (ERROR_FLAG IN (0, 1)),
+	SUBMITTED_DATETIME DATE,
+	PROCESSED_DATETIME DATE,
+	ERROR_MESSAGE VARCHAR2(4000),
+	SPG_NOTIFICATION_ID NUMBER
+		constraint R_1169
+			references SPG_NOTIFICATION,
+	CURRENT_RECORD_FLAG VARCHAR2(1)
+		constraint CURRENT_RECORD_FLAG_1028330410
+			check (CURRENT_RECORD_FLAG IN ('Y', 'X')),
+	BATCH_FLAG NUMBER default 1 not null
+		constraint TRUE_OR_FALSE_51672258
+			check (BATCH_FLAG IN (0, 1))
+)
+/
+
+create table SPG_ERROR
+(
+	SPG_ERROR_ID NUMBER not null
+		constraint XPKSPG_ERROR
+			primary key,
+	SPG_NOTIFICATION_ID NUMBER not null
+		constraint R_1127
+			references SPG_NOTIFICATION,
+	SPG_MESSAGE_TYPE_ID NUMBER not null
+		constraint R_1128
+			references R_STANDARD_REFERENCE_LIST,
+	ERROR_DATE DATE not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ROW_VERSION NUMBER default 0 not null,
+	SPG_ERROR_CATEGORY_ID NUMBER not null
+		constraint R_1139
+			references R_STANDARD_REFERENCE_LIST,
+	MESSAGE_CRN CHAR(7) not null,
+	NOTES CLOB,
+	RESOLUTION_STATUS_ID NUMBER
+		constraint R_1140
+			references R_STANDARD_REFERENCE_LIST,
+	RESOLUTION_DATE DATE,
+	INCIDENT_IDENTIFIER VARCHAR2(100),
+	ASSIGNED_TO_STAFF_ID NUMBER
+		constraint R_1229
+			references STAFF
+)
+/
+
+create table SPG_ERROR_ELEMENT
+(
+	SPG_ERROR_ELEMENT_ID NUMBER not null
+		constraint XPKSPF_ERROR_ELEMENT
+			primary key,
+	SPG_ERROR_ID NUMBER not null
+		constraint R_1130
+			references SPG_ERROR,
+	SPG_ELEMENT_TYPE_ID NUMBER not null
+		constraint R_1131
+			references R_STANDARD_REFERENCE_LIST,
+	UNIQUE_ID NUMBER,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE not null,
+	ROW_VERSION NUMBER default 0 not null
+)
+/
+
+create table SPG_ERROR_DETAIL
+(
+	SPG_ERROR_DETAIL_ID NUMBER not null
+		constraint XPKSPG_ERROR_DETAIL
+			primary key,
+	SPG_ERROR_ID NUMBER not null
+		constraint R_1132
+			references SPG_ERROR,
+	SPG_ERROR_ELEMENT_ID NUMBER
+		constraint R_1133
+			references SPG_ERROR_ELEMENT,
+	SPG_ERROR_CODE_ID NUMBER
+		constraint R_1136
+			references R_STANDARD_REFERENCE_LIST,
+	DATA_ITEM VARCHAR2(255)
+)
+/
+
+create table CONTACT_ALERT_CLEAR
+(
+	CONTACT_ALERT_CLEAR_ID NUMBER not null
+		constraint XPKCONTACT_ALERT_CLEAR
+			primary key,
+	OFFENDER_ID NUMBER not null
+		constraint R_1215
+			references OFFENDER,
+	CONTACT_ID NUMBER not null
+		constraint R_1216
+			references CONTACT,
+	SPG_NOTIFICATION_ID NUMBER
+		constraint R_1217
+			references SPG_NOTIFICATION,
+	SUBMITTED_DATETIME DATE not null,
+	PROCESSED_DATETIME DATE,
+	PROCESSED_FLAG NUMBER not null
+		constraint TRUE_OR_FALSE_895591335
+			check (PROCESSED_FLAG IN (0, 1)),
+	ERROR_FLAG NUMBER not null
+		constraint TRUE_OR_FALSE_65056682
+			check (ERROR_FLAG IN (0, 1)),
+	ERROR_MESSAGE VARCHAR2(4000),
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null
+		constraint R_1218
+			references USER_,
+	CREATED_DATETIME DATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null
+		constraint R_1219
+			references USER_,
+	LAST_UPDATED_DATETIME DATE not null
+)
+/
+
+create table SPG_ERROR_CLEAR_REQUEST
+(
+	SPG_ERROR_CLEAR_REQUEST_ID NUMBER not null
+		constraint XPKSPG_ERROR_CLEAR_REQUEST
+			primary key,
+	SPG_NOTIFICATION_ID NUMBER not null
+		constraint R_1233
+			references SPG_NOTIFICATION,
+	PROCESSED_FLAG NUMBER default 0 not null
+		constraint TRUE_OR_FALSE_1933636605
+			check (PROCESSED_FLAG IN (0, 1)),
+	PROCESSED_DATETIME DATE,
+	ROW_VERSION NUMBER default 0 not null,
+	CREATED_BY_USER_ID NUMBER not null,
+	CREATED_DATETIME DATE default SYSDATE not null,
+	LAST_UPDATED_USER_ID NUMBER not null,
+	LAST_UPDATED_DATETIME DATE default SYSDATE not null
+)
+/
+
+create PACKAGE pkg_user_support AS
+--
+--
+-- Filename:    : pkg_user_support.sql
+--
+-- Description  : This package provides procedures to create and rename users in PCMS.
+--                  It should be run from the user DELIUS_USER_SUPPORT.
+--
+-- Author       : David Reid
+--
+-- Date     : 24/01/2013
+--
+-- PARAMETERS   : PROCEDURE createdbuser(<Operator AD Name>, <AD Name>, <Surname>, <Forename>, <Probation Code>, <Private>, <Return Value>, <Debug Flag>)
+--          : PROCEDURE renamedbuser(<Operator AD Name>, <Old AD Name>, <New AD Name>, <New Surname>, <New Forename>, <Return Value>, <Debug Flag>)
+--          : PROCEDURE reactivateuser(<Operator AD Name>, <AD Name>, <New Surname>, <New Forename>, <Return Value>, <Debug Flag>)
+-- EXAMPLES
+--              declare
+--              p_return char(1024);
+--              begin
+--                  DELIUS_APP_SCHEMA.pkg_user_support.createdbuser('JohnBrown','DavidReid','Reid','David','TVY',p_return,0);
+--                  dbms_output.put_line('Return value is '||p_return);
+--                  DELIUS_APP_SCHEMA.pkg_user_support.renamedbuser('JohnBrown', 'DavidReid', 'DavidBrown', 'Brown','David',p_return,0);
+--                  dbms_output.put_line('Return value is '||p_return);
+--                  DELIUS_APP_SCHEMA.pkg_user_support.reactivateuser('JohnBrown','DavidBrown', 'Brown','David',p_return,0);
+--                  dbms_output.put_line('Return value is '||p_return);
+--              end;
+--
+--  Change History:
+--
+--  Version PDM Date        Who               Description
+--  ------- --- ----------- ------------    ------------------------------------------------
+--     1.01 43  24-JAN-2013   D Reid            Initial Version
+--     1.01 43  25-JAN-2013   D Reid            Included p_return
+--     1.02 43  29-JAN-2013   D Reid            Audit changes
+--     1.03 43  30-JAN-2013   D Reid            Changed to outcome of 'P' on AUDITED_INTERACTION
+--     1.04 43  12-FEB-2013   D Reid            Made search for existing user case insensitive
+--     1.05 43  26-FEB-2013   D Reid            Further case insensitive changes
+--     1.06 401 11-FEB-2014   D Reid            Revised to support TR
+--     1.07 401 12-FEB-2014   D Reid            Changed to work with name that have single quote
+--                                              and rollback on exception
+--     1.08 803 22-OCT-2015   M.Brumpton        Added getSPGInboundUserID function
+--     1.09 804 09-DEC-2015   M.Brumpton        Updated getSPGInboundUserID
+--     1.10 805 04-JAN-2016   Y.Fedkiv          Minor updated to simplify Oracle -> PG portability
+--  ------- --- ----------- ------------    ------------------------------------------------
+--
+--
+--
+PROCEDURE createdbuser(
+    p_operatoradname VARCHAR2,
+    p_distinguished_name VARCHAR2,
+    p_surname VARCHAR2,
+    p_forename VARCHAR2,
+    p_userareatricode CHAR,
+    p_private NUMBER,
+    p_return OUT CHAR,
+    debug_flag CHAR );
+
+PROCEDURE renamedbuser(
+    p_operatoradname VARCHAR2,
+    p_old_distinguished_name VARCHAR2,
+    p_new_distinguished_name VARCHAR2,
+    p_surname VARCHAR2,
+    p_forename VARCHAR2,
+    p_return OUT CHAR,
+    debug_flag CHAR );
+
+PROCEDURE reactivateuser(
+    p_operatoradname VARCHAR2,
+    p_distinguished_name VARCHAR2,
+    p_surname VARCHAR2,
+    p_forename VARCHAR2,
+    p_return OUT CHAR,
+    debug_flag CHAR );
+--
+FUNCTION  getSPGInboundUserID(
+    spgusername_in IN VARCHAR2,
+    probationareaid_in IN NUMBER,
+    createifnotexist_in IN VARCHAR2 DEFAULT 'Y' )
+RETURN NUMBER;
+
+--
+--
+--
+--
+END pkg_user_support;
+/
+
+create PACKAGE pkg_Debug
+AS
+--
+--
+-- Description  : The package definitions for Debug
+--
+-- Author       : Yuri Fedkiv
+--
+--  Date        : 02/05/2012
+--
+--  Change History:
+--
+--  Version PDM  Date        Who          Description
+--  ------- ---- ----------- ------------ -----------------------------
+--     1.01 40   02-MAY-2012 Y Fedkiv     An initial version based on PKG_Search
+--     1.02 40   31-MAY-2012 Y Fedkiv     Added new procsetDebugMode
+--     1.03 40   01-JUN-2012 Y Fedkiv     Re-instated the Exception handler within the procDebug
+--     1.04 40   06-JUN-2012 Y Fedkiv     Added DB Stats tracing subroutines
+--     1.05 40   11-JUN-2012 Y Fedkiv     Fixed the funcExtractToken function
+--     1.06 40   21-JUN-2012 Y Fedkiv     Replaced v$mystat and v$statname with v_$mystat and v_$statname (defect# 9551)
+--     1.07 41   18-JUL-2012 Y Fedkiv     Added P_PRINT_FLAG parameter to the procDebug
+--     1.08 503  14-OCT-2014 M Brumpton   Changed call into procDebug to CLOB datatype
+--     1.08 503  14-OCT-2014 M Brumpton   Changed call into procDebug to CLOB datatype
+--     1.09 809  15-FEB-2017 Y Fedkiv     - Introduced DBMS_PIPE option within procDebug
+--                                        - Re-factored the PKG_Debug package to utilise GLOBAL_CACHE_MGR (global context) functionality
+--     1.10 1106 22-MAY-2018 Y Fedkiv     Added new funcGetDebugActive function
+--  ------- ---- ----------- ------------ -----------------------------
+--
+--
+--
+PROCEDURE procDebug(p_msg CLOB, p_print_flag VARCHAR2 DEFAULT 'N');
+PROCEDURE procsetDebugMode(p_debug_mode SMALLINT);
+FUNCTION funcgetDebugMode RETURN VARCHAR2;
+FUNCTION funcGetDebugActive RETURN BOOLEAN;
+--
+PROCEDURE procrecordDbStats(p_res IN OUT INTEGER);
+PROCEDURE procrecordDbStats_START;
+PROCEDURE procrecordDbStats_STOP;
+FUNCTION funcgetDbStats(p_buffer_gets INTEGER DEFAULT NULL) RETURN VARCHAR2;
+--
+FUNCTION funcExtractToken(p_str VARCHAR2, p_token VARCHAR2) RETURN VARCHAR2;
+
+--
+-- DBMS_PIPE helpers
+--
+FUNCTION get_pipe_name RETURN VARCHAR2;
+FUNCTION get_pipe_size RETURN NUMBER;
+--
+PROCEDURE send_message_pipe( p_msg VARCHAR2 );
+PROCEDURE receive_message_pipe;
+--
+GC_DBMS_PIPE_SIZE CONSTANT INTEGER := 2*1024*1024;
+PROCEDURE reset_pipe(p_pipe_size NUMBER DEFAULT GC_DBMS_PIPE_SIZE);
+
+--
+--
+--
+--
+END pkg_Debug ;
+/
+
+create PACKAGE PKG_Common AS
+--
+-- ===============================================================
+--  PCMS Project: Migration Stream
+-- ===============================================================
+--
+--  Filename:  PKG_Common.sql
+--  Purpose :  MT DB Common Utils package
+--  Author  :  Y.Fedkiv, Beaumont Colson
+--
+--  Change History:
+--
+--  Version Date    Who      Description
+--  ------- ----------- ------------ -----------------------------
+--     1.00 14-NOV-2010 Y.Fedkiv     Initial version
+--     2.00 26-SEP-2014 Y.Fedkiv     Added new STR2NULL function; introduced POSTGRES compatibility
+--     2.01 06-JAN-2015 Y.Fedkiv     Added new funcMultisetIntersect function
+--     2.02 15-JAN-2015 Y.Fedkiv     Use new PKG_Global API calls
+--     2.03 29-JAN-2015 Y.Fedkiv     Replaced INTEGER data type declarations (for *ID values) to NUMBER
+--     2.04 03-FEB-2015 Y.Fedkiv     Added new REGEXP_LIKE and NVL2(T_ARR_ORGANISATIONS, ...) functions
+--     2.05 03-MAR-2015 Y.Fedkiv     Removed DELIUS_APP_SCHEMA owner tag dependency
+--     2.06 05-MAR-2015 Y.Fedkiv     Added new CHAR_2_NUMBER function
+--     2.07 10-MAR-2015 Y.Fedkiv     Added new GET_DURATION and GET_DURATION_SEC function
+--     2.08 28-OCT-2015 Y.Fedkiv     Added new NVLSTR function
+--     2.08 27-NOV-2015 Y.Fedkiv     Added new EMPTY2NULL(clob) funtction
+--     2.09 29-DEC-2015 M.Brumpton   Added bin2dec and dec2bin functions
+--     2.10 09-MAR-2016 Y.Fedkiv     - Renamed parameters for empty2null(CLOB) overload
+--                                   - Changed NVSTR to use the native NVL (instead of custom NVL2)
+--     2.11 20-JUL-2016 Y.Fedkiv     - Fixed Empty2NULL(<CLOB>) to retaing carriage returns within non-empty strings
+--                                   - Added a new optional P_REPLACE_CR_WITH parameter for EMPTY2NULL(<CLOB>)
+--     2.12 19-AUG-2016 Y.Fedkiv     - Re-factored EMPTY2NULL(<CLOB>)
+--                                   - Added new CHAR_2_ASCII function
+--     2.13 29-JAN-2017 M.Brumpton   Applied fix for SPG-12845 - add option to remove non-printable characters from EMPTY2NULL function
+--     2.14 06-MAR-2017 Y.Fedkiv     Added new optional P_LOG_OUTPUT_FLAG PARAMETER to PRINT_MESSAGE
+--     2.15 01-OCT-2017 Y.Fedkiv     Added new BOOL_2_CHAR function
+--     2.16 17-OCT-2017 Y.Fedkiv     #DST-1069: Added /n and \n special character processing within EMPTY2NULL
+--     2.17 03-MAY-2018 Y.Fedkiv     Added new XML_2_CLOB function
+--     2.18 03-SEP-2018 Y.Fedkiv     - (PG) CRCD-10102: Excluded the CHR(8211) from non-printable characters list (see SPG-12845)
+--                                   - Amended EMPTY2NULL(<CLOB>) function to replace non-printable chars with the space character (to preserve total CLOB field length)
+--
+-- ===============================================================
+--
+
+GC_TRACE_LEVEL  CONSTANT NUMBER       := 30;
+GC_CR           CONSTANT VARCHAR2(1)  := CHR(10);
+
+--TYPE varray_tab_TYP IS TABLE OF VARCHAR2(250) INDEX BY BINARY_INTEGER;
+
+PROCEDURE print_message(p_msg VARCHAR2, p_label VARCHAR2 DEFAULT NULL, p_trace_level NUMBER DEFAULT 5, p_log_output_flag VARCHAR2 DEFAULT 'O');
+PROCEDURE raise_error(p_err_msg VARCHAR2, p_proc VARCHAR2, p_label VARCHAR2 DEFAULT NULL);
+--
+FUNCTION empty2null(p_str VARCHAR2) RETURN VARCHAR2;
+FUNCTION empty2null(
+    p_CLOB                 CLOB,
+    p_remove_line_ret_flag VARCHAR2 DEFAULT 'N',
+    p_replace_CR_with      VARCHAR2 DEFAULT NULL,
+    p_printable_only_flag  VARCHAR2 DEFAULT 'N')
+RETURN CLOB;
+FUNCTION is_str_empty(p_str VARCHAR2, p_ignore_spaces_and_zeroes VARCHAR2 DEFAULT 'N') RETURN VARCHAR2;
+PROCEDURE do_compress_spaces(p_list IN OUT VARCHAR2);
+--
+FUNCTION char_2_ascii(p_val VARCHAR2) RETURN VARCHAR2;
+--
+FUNCTION char_2_number(p_val VARCHAR2) RETURN NUMBER;
+FUNCTION bool_2_char  (p_val BOOLEAN ) RETURN VARCHAR2;
+--
+FUNCTION xml_2_clob(p_xml XMLTYPE) RETURN CLOB;
+--
+FUNCTION get_duration_sec(p_date1 DATE, p_date2 DATE) RETURN NUMBER;
+FUNCTION get_duration(p_date1 DATE, p_date2 DATE) RETURN NUMBER;
+--
+FUNCTION nvl2(
+    p_val1 BOOLEAN             , p_val2 BOOLEAN             , p_val3 BOOLEAN DEFAULT NULL, p_val4 BOOLEAN DEFAULT NULL, p_val5 BOOLEAN DEFAULT NULL,
+    p_val6 BOOLEAN DEFAULT NULL, p_val7 BOOLEAN DEFAULT NULL, p_val8 BOOLEAN DEFAULT NULL, p_val9 BOOLEAN DEFAULT NULL, p_val10 BOOLEAN DEFAULT NULL,
+    p_ignore_spaces_and_zeroes VARCHAR2 DEFAULT 'N'
+) RETURN BOOLEAN;
+--
+FUNCTION nvl2(
+    p_val1 VARCHAR2             , p_val2 VARCHAR2             , p_val3 VARCHAR2 DEFAULT NULL, p_val4 VARCHAR2 DEFAULT NULL, p_val5 VARCHAR2 DEFAULT NULL,
+    p_val6 VARCHAR2 DEFAULT NULL, p_val7 VARCHAR2 DEFAULT NULL, p_val8 VARCHAR2 DEFAULT NULL, p_val9 VARCHAR2 DEFAULT NULL, p_val10 VARCHAR2 DEFAULT NULL,
+    p_ignore_spaces_and_zeroes VARCHAR2 DEFAULT 'N'
+) RETURN VARCHAR2;
+--
+FUNCTION nvlstr(p_str1 VARCHAR2, p_str2 VARCHAR2) RETURN VARCHAR2;
+--
+FUNCTION nvl2(
+    p_val1 DATE             , p_val2 DATE             , p_val3 DATE DEFAULT NULL, p_val4 DATE DEFAULT NULL, p_val5 DATE DEFAULT NULL,
+    p_val6 DATE DEFAULT NULL, p_val7 DATE DEFAULT NULL, p_val8 DATE DEFAULT NULL, p_val9 DATE DEFAULT NULL, p_val10 DATE DEFAULT NULL
+) RETURN DATE;
+--
+FUNCTION nvl2(
+    p_val1 NUMBER             , p_val2 NUMBER             , p_val3 NUMBER DEFAULT NULL, p_val4 NUMBER DEFAULT NULL, p_val5 NUMBER DEFAULT NULL,
+    p_val6 NUMBER DEFAULT NULL, p_val7 NUMBER DEFAULT NULL, p_val8 NUMBER DEFAULT NULL, p_val9 NUMBER DEFAULT NULL, p_val10 NUMBER DEFAULT NULL,
+    p_ignore_zeroes VARCHAR2 DEFAULT 'N'
+) RETURN NUMBER;
+--
+FUNCTION nvl2(
+    p_val1 t_tab_ORGANISATIONS             , p_val2 t_tab_ORGANISATIONS             , p_val3 t_tab_ORGANISATIONS DEFAULT NULL, p_val4 t_tab_ORGANISATIONS DEFAULT NULL, p_val5 t_tab_ORGANISATIONS DEFAULT NULL,
+    p_val6 t_tab_ORGANISATIONS DEFAULT NULL, p_val7 t_tab_ORGANISATIONS DEFAULT NULL, p_val8 t_tab_ORGANISATIONS DEFAULT NULL, p_val9 t_tab_ORGANISATIONS DEFAULT NULL, p_val10 t_tab_ORGANISATIONS DEFAULT NULL)
+RETURN t_tab_ORGANISATIONS;
+
+FUNCTION nvl2(
+    p_val1 t_arr_ORGANISATIONS             , p_val2 t_arr_ORGANISATIONS             , p_val3 t_arr_ORGANISATIONS DEFAULT NULL, p_val4 t_arr_ORGANISATIONS DEFAULT NULL, p_val5  t_arr_ORGANISATIONS DEFAULT NULL,
+    p_val6 t_arr_ORGANISATIONS DEFAULT NULL, p_val7 t_arr_ORGANISATIONS DEFAULT NULL, p_val8 t_arr_ORGANISATIONS DEFAULT NULL, p_val9 t_arr_ORGANISATIONS DEFAULT NULL, p_val10 t_arr_ORGANISATIONS DEFAULT NULL)
+RETURN t_arr_ORGANISATIONS;
+--
+FUNCTION get_least(p_val1 DATE, p_val2 DATE, p_val3 DATE DEFAULT NULL) RETURN DATE;
+FUNCTION get_greatest(p_val1 DATE, p_val2 DATE, p_val3 DATE DEFAULT NULL) RETURN DATE;
+--
+FUNCTION funcMultisetExcept          (p_set1 t_tab_ORGANISATIONS, p_set2 t_tab_ORGANISATIONS) RETURN t_tab_ORGANISATIONS;
+FUNCTION funcMultisetIntersect       (p_set1 t_tab_ORGANISATIONS, p_set2 t_tab_ORGANISATIONS) RETURN t_tab_ORGANISATIONS;
+FUNCTION funcMultisetIntersectIsEmpty(p_set1 t_tab_ORGANISATIONS, p_set2 t_tab_ORGANISATIONS) RETURN SMALLINT;
+--
+FUNCTION compare_vals(p_val1 SMALLINT, p_val2 BOOLEAN) RETURN BOOLEAN;
+FUNCTION compare_vals(p_val1 BOOLEAN, p_val2 SMALLINT) RETURN BOOLEAN;
+--
+FUNCTION get_session_name RETURN VARCHAR2;
+FUNCTION get_session_id RETURN VARCHAR2;
+--
+FUNCTION bin2dec (binval IN CHAR) RETURN NUMBER;
+FUNCTION dec2bin (N IN NUMBER) RETURN VARCHAR2;
+--FUNCTION regexp_like(p_string VARCHAR2, p_pattern VARCHAR2, p_opt VARCHAR2) RETURN BOOLEAN DETERMINISTIC;
+--
+--
+END PKG_Common;
+/
+
+create PACKAGE PKG_LstUtl
+AS
+--
+-- ===============================================================
+--  PCMS Project: Migration Stream
+-- ===============================================================
+--
+--  Filename:  pkg_lst_utils.sql
+--  Purpose :  Common String Based Lists Utils package
+--  Author  :  Y.Fedkiv, Beaumont Colson
+--
+--  Change History:
+--
+--  Version Date          Who            Description
+--  ------- ----------- ------------ -----------------------------
+--     1.00 26-JUN-2012 Y.Fedkiv     Initial version based on MT C00000_UTILS_PKG PLSQL package
+--     1.01 18-JUL-2012 Y.Fedkiv     Removed DBMS_OUTPUT calls to avoid DBMS_OUTPUT area overflow
+--     1.02 01-AUG-2012 Y.Fedkiv     Added new P_INCLUDE_NULLS parameter to the CONCAT function
+--     1.03 18-SEP-2012 Y.Fedkiv     Added new optional P_ITERATOR_FUNCTION parameter to GET_ARRAY_2_LIST functions
+--     1.04 03-DEC-2014 Y.Fedkiv     Added 2 new optional parameters for the GET_LIST_2_ARRAY: P_TOKEN_NUM and P_TOKEN_DELIM
+--     1.04a01-MAY-2015 Y.Fedkiv     Added new GET_INDENTED_TEXT and ONCAT_CLOB functions; added local wrappers for the new PKG_Common package
+--     1.05 21-MAY-2015 Y.Fedkiv     Added new replace_CLOB function
+--     1.06 09-JUL-2015 Y.Fedkiv     Fixes in various places for VARCHAR2(4000)<->VARCHAR2(32767)
+--     1.07 18-SEP-2015 Y.Fedkiv     - Added new P_DELIM optional parameter to the GET_ARRAY_2_LIST
+--                                   - Added new GET_ARRAY_2_LIST_CLOB function
+--     1.08 24-NOV-2015 Y.Fedkiv     Extended (1.06) fix to all subroutines
+--     1.09 30-DEC-2015 Y.Fedkiv     Refactored a number of subroutines to increase PLSQL code portability to PG
+--     1.10 11-JAN-2016 Y.Fedkiv     Added new optional P_DISTINCT_VALUES_FLAG parameter to GET_LIST_2_ARRAY functions
+--     1.11 09-MAR-2016 Y.Fedkiv     - Changed NVLSTR to directly use the PKG_Common.NVLSTR
+--                                   - Changed the GET_INDENTED_TEXT return data type to CLOB
+--     1.12 12-JUN-2017 Y.Fedkiv     Amended GET_ARRAY_2_LIST_CLOB to make DO_EVAL call conditional (when P_ITERATOR_FUNCTION is specified)
+--     1.13 13-JUN-2017 Y.Fedkiv     Fixed CLOB concatenation logic within get_array_2_list_CLOB
+--
+-- ===============================================================
+--
+
+FUNCTION list_next_elem  (p_list IN OUT VARCHAR2, p_delim IN VARCHAR2 DEFAULT ','                 ) RETURN VARCHAR2;
+FUNCTION list_last_elem  (p_list IN OUT VARCHAR2, p_delim IN VARCHAR2 DEFAULT ','                 ) RETURN VARCHAR2;
+FUNCTION list_num_elem   (p_list IN VARCHAR2    , p_delim IN VARCHAR2 DEFAULT ',', p_num INTEGER  ) RETURN VARCHAR2;
+FUNCTION list_num_tail   (p_list IN VARCHAR2    , p_delim IN VARCHAR2 DEFAULT ',', p_num INTEGER  ) RETURN VARCHAR2;
+FUNCTION list_count_elem (p_list IN VARCHAR2    , p_delim IN VARCHAR2 DEFAULT ','                 ) RETURN INTEGER;
+FUNCTION list_find_elem  (p_list IN VARCHAR2    , p_elem VARCHAR2, p_delim IN VARCHAR2 DEFAULT ',') RETURN INTEGER;
+FUNCTION list_exists_elem(p_list IN VARCHAR2    , p_elem VARCHAR2, p_delim IN VARCHAR2 DEFAULT ',') RETURN VARCHAR2;
+--
+FUNCTION add_prefix(p_prefix VARCHAR2, p_text VARCHAR2, p_max_len INTEGER DEFAULT 4000, p_ignore_spaces_and_zeroes VARCHAR2 DEFAULT 'N') RETURN VARCHAR2;
+FUNCTION add_prefix(p_prefix VARCHAR2, p_clob CLOB) RETURN CLOB;
+--
+FUNCTION add_postfix(p_text VARCHAR2, p_postfix VARCHAR2, p_max_len INTEGER DEFAULT 4000, p_ignore_spaces_and_zeroes VARCHAR2 DEFAULT 'N') RETURN VARCHAR2;
+FUNCTION add_postfix(p_clob CLOB, p_postfix VARCHAR2, p_ignore_spaces_and_zeroes VARCHAR2 DEFAULT 'N') RETURN CLOB;
+--
+FUNCTION concat(
+    p_val1  VARCHAR2             , p_val2  VARCHAR2             , p_val3  VARCHAR2 DEFAULT NULL, p_val4  VARCHAR2 DEFAULT NULL, p_val5  VARCHAR2 DEFAULT NULL,
+    p_val6  VARCHAR2 DEFAULT NULL, p_val7  VARCHAR2 DEFAULT NULL, p_val8  VARCHAR2 DEFAULT NULL, p_val9  VARCHAR2 DEFAULT NULL, p_val10 VARCHAR2 DEFAULT NULL,
+    p_val11 VARCHAR2 DEFAULT NULL, p_val12 VARCHAR2 DEFAULT NULL, p_val13 VARCHAR2 DEFAULT NULL, p_val14 VARCHAR2 DEFAULT NULL, p_val15 VARCHAR2 DEFAULT NULL,
+    p_val16 VARCHAR2 DEFAULT NULL, p_val17 VARCHAR2 DEFAULT NULL, p_val18 VARCHAR2 DEFAULT NULL, p_val19 VARCHAR2 DEFAULT NULL, p_val20 VARCHAR2 DEFAULT NULL,
+    p_val21 VARCHAR2 DEFAULT NULL, p_val22 VARCHAR2 DEFAULT NULL, p_val23 VARCHAR2 DEFAULT NULL, p_val24 VARCHAR2 DEFAULT NULL, p_val25 VARCHAR2 DEFAULT NULL,
+    p_val26 VARCHAR2 DEFAULT NULL, p_val27 VARCHAR2 DEFAULT NULL, p_val28 VARCHAR2 DEFAULT NULL, p_val29 VARCHAR2 DEFAULT NULL, p_val30 VARCHAR2 DEFAULT NULL,
+    p_val31 VARCHAR2 DEFAULT NULL, p_val32 VARCHAR2 DEFAULT NULL, p_val33 VARCHAR2 DEFAULT NULL, p_val34 VARCHAR2 DEFAULT NULL, p_val35 VARCHAR2 DEFAULT NULL,
+    p_val36 VARCHAR2 DEFAULT NULL, p_val37 VARCHAR2 DEFAULT NULL, p_val38 VARCHAR2 DEFAULT NULL, p_val39 VARCHAR2 DEFAULT NULL, p_val40 VARCHAR2 DEFAULT NULL,
+    p_val41 VARCHAR2 DEFAULT NULL, p_val42 VARCHAR2 DEFAULT NULL, p_val43 VARCHAR2 DEFAULT NULL, p_val44 VARCHAR2 DEFAULT NULL, p_val45 VARCHAR2 DEFAULT NULL,
+    p_val46 VARCHAR2 DEFAULT NULL, p_val47 VARCHAR2 DEFAULT NULL, p_val48 VARCHAR2 DEFAULT NULL, p_val49 VARCHAR2 DEFAULT NULL, p_val50 VARCHAR2 DEFAULT NULL,
+    --
+    p_max_len       INTEGER DEFAULT 4000,
+    p_delim         VARCHAR2 DEFAULT '',
+    p_include_nulls VARCHAR2 DEFAULT 'N')
+RETURN VARCHAR2;
+--
+FUNCTION concat_CLOB(
+    p_val1  CLOB             , p_val2  CLOB             , p_val3  CLOB DEFAULT NULL, p_val4  CLOB DEFAULT NULL, p_val5  CLOB DEFAULT NULL,
+    p_val6  CLOB DEFAULT NULL, p_val7  CLOB DEFAULT NULL, p_val8  CLOB DEFAULT NULL, p_val9  CLOB DEFAULT NULL, p_val10 CLOB DEFAULT NULL,
+    p_val11 CLOB DEFAULT NULL, p_val12 CLOB DEFAULT NULL, p_val13 CLOB DEFAULT NULL, p_val14 CLOB DEFAULT NULL, p_val15 CLOB DEFAULT NULL,
+    p_val16 CLOB DEFAULT NULL, p_val17 CLOB DEFAULT NULL, p_val18 CLOB DEFAULT NULL, p_val19 CLOB DEFAULT NULL, p_val20 CLOB DEFAULT NULL,
+    --
+    p_delim         VARCHAR2 DEFAULT '',
+    p_include_nulls VARCHAR2 DEFAULT 'N')
+RETURN CLOB;
+
+FUNCTION replace_CLOB(
+  p_clob          IN CLOB,
+  p_what          IN VARCHAR2,
+  p_with          IN CLOB )
+RETURN CLOB;
+
+--
+-- t_tab_ORGANISATIONS / t_arr_ORGANISATIONS types helpers
+FUNCTION get_array_2_list_CLOB(p_tab   t_tab_ORGANISATIONS, p_max_len INTEGER DEFAULT 1024, p_iterator_function VARCHAR2 DEFAULT NULL, p_iterator_function_args_cnt INTEGER DEFAULT 1, p_delim VARCHAR2 DEFAULT ',') RETURN CLOB;
+FUNCTION get_array_2_list     (p_tab   t_tab_ORGANISATIONS, p_max_len INTEGER DEFAULT 1024, p_iterator_function VARCHAR2 DEFAULT NULL, p_iterator_function_args_cnt INTEGER DEFAULT 1, p_delim VARCHAR2 DEFAULT ',') RETURN VARCHAR2;
+FUNCTION get_array_2_list     (p_array t_arr_ORGANISATIONS, p_max_len INTEGER DEFAULT 1024, p_iterator_function VARCHAR2 DEFAULT NULL, p_iterator_function_args_cnt INTEGER DEFAULT 1, p_delim VARCHAR2 DEFAULT ',') RETURN VARCHAR2;
+--
+FUNCTION get_list_2_array(
+    p_list                 VARCHAR2,
+    p_token_num            INTEGER DEFAULT -1,
+    p_token_delim          VARCHAR2 DEFAULT ',',
+    p_distinct_values_flag VARCHAR2 DEFAULT 'N' )
+RETURN t_tab_ORGANISATIONS;
+--
+FUNCTION get_list_2_array(
+    p_clob                 CLOB,
+    p_delim                VARCHAR2 DEFAULT ',',
+    p_distinct_values_flag VARCHAR2 DEFAULT 'N' )
+RETURN t_tab_ORGANISATIONS;
+--
+FUNCTION get_tab_2_varray(p_tab t_tab_ORGANISATIONS)   RETURN t_arr_ORGANISATIONS;
+--
+--
+FUNCTION get_indented_text(p_text VARCHAR2, p_num_of_spaces INTEGER) RETURN CLOB;
+--
+--
+--
+--
+END PKG_LstUtl;
+/
+
+create PACKAGE pkg_Lookups
+AS
+--
+-- Description  : The package definitions for reference table lookups
+--
+-- Author       : Yuri Fedkiv
+--  Date        : 25/04/12
+--
+--  Change History:
+--
+--  Version PDM  Date        Who            Description
+--  ------- ---- ----------- ------------ -----------------------------
+--     1.00 39   25-APR-2012 Y Fedkiv     Initial version
+--     1.01 40   17-MAY-2012 Y Fedkiv     - Fixed funcgetTeamDescription
+--                                        - Added new function funcgetStaffDescription
+--     1.02 40   07-JUN-2012 Y Fedkiv     - Added the following new functions: funcgetStdRefListCodeDesc,
+--                                          funcgetDisposalTypePreCJA2003 and funcgetDisposalTypeCJA2003
+--     1.03 40   27-JUN-2012 Y Fedkiv     - Added new function: funcgetStdRefListCodeAndDesc
+--     1.04 40   04-JUL-2012 Y Fedkiv     - Added new function: funcgetStaffTeamLst
+--     1.05 41   26-JUL-2012 Y Fedkiv     - Added an override funcgetStdRefListCodeDesc(p_ID INTEGER)
+--     1.06 41   07-AUG-2012 Y Fedkiv     - Added new FUNCTION procFindEnforcementEventsTAB pipelined function
+--     1.07 41   13-AUG-2012 Y Fedkiv     - Defect# 10433 (CONTACT.CONTACT_DATE containing the time element)
+--     1.08 41   23-AUG-2012 Y Fedkiv     - Added new funcGetTabPkFields function
+--     1.09 41   11-SEP-2012 M Brumpton   - Updated funcGetTabPkFields to include R_DISPOSAL_TYPE_TERMINATION, R_LINKED_LIST
+--     1.10 41   12-SEP-2012 M Brumpton   - Added OBJECT_EXISTS function
+--     1.11 41   14-SEP-2012 Y Fedkiv     - Replaced all calls from funcgetTabRecord_CACHED to funcgetTabRecord (for backward 11gR1 compatibility)
+--     1.12 41   16-SEP-2012 M Brumpton   - Corrected funcGetTabPkFields
+--     1.13 41   20-SEP-2012 Y Fedkiv     - Removed the RELY_ON within funcGetTabPkFields (for 11gR1 backward compatibility)
+--     1.14 43   24-SEP-2012 Y Fedkiv     - PDM v0.43 uplift (CONTACT.enforcement)
+--     1.14 43   27-SEP-2012 Y Fedkiv     - Fixed procFindEnforcementEventsTAB following the pdm uplift change
+--     1.14 43   08-NOV-2012 Y Fedkiv     - Modified contact_enf_tab_TYP ( INDEX BY VARCHAR2(100) )
+--     1.17 43   08-NOV-2012 K Foster     - Updated enforcement query to include national standards flag
+--     1.18 43   20-DEC-2012 K Foster     - Updated enforcement query to include national standards flag
+--     1.19 43   21-FEB-2013 K Foster     - Updated to remove per contact enforcement check for performance
+--     1.20 43   07-MAR-2013 Y Fedkiv     - Reverted changes done in 1.19 (contact enforcement check has to stay)
+--     1.21 43   11-MAR-2013 K Foster     - Updated to include PCMS2_FUNC032, PCMS2_FUNC013, PCMS2_FUNC024, PCMS2_FUNC023
+--     1.22 101  13-MAR-2013 K Foster     - PDM 101 Uplift
+--     1.23 101  18-MAR-2013 K Foster     - Fixed HPSD2512882
+--     1.24 101  10-MAY-2013 Y Fedkiv     - Fixed Performance issues within the procFindEnforcementEventsTAB
+--     1.25 101  13-MAY-2013 D Reid       - Slight revision to 1.24 re performance
+--     1.26 101  04-SEP-2013 K Foster     - Fix to enforcement limit issue
+--     1.27 202  30-OCT-2013 K Foster     - Fixed 6390 - Enforcement diary OM only
+--     1.28 301  07-JAN-2014 K Foster     - Fixed problem 6904 - Enforcement Diary ordering when limit applied
+--     1.29 401  13-FEB-2014 K Foster     - Updated caseload for additional requirements
+--     1.30 502  24-OCT-2014 Y Fedkiv     - Added do_flush_TAB_cache to package specification
+--     1.31 503  07-NOV-2014 Y Fedkiv     - Increased maximum g_cache_TAB table index key size up to 4000 characters
+--     1.32 503  13-NOV-2014 Y Fedkiv     - Altered funcgetTabRecord_CACHED_1 to reset the PLSQL cache when the db SCN number has changed
+--     1.33 503  17-NOV-2014 Y Fedkiv     - Added new GET_SQL_XPLAIN_PLAN function
+--     1.34 503  17-NOV-2014 Y Fedkiv     - Added new GET_PLSQLCACHE_REBUILD_FLAG, DO_SET_PLSQLCACHE_REBUILD_FLAG and DO_SET_CACHE_FLUSH_SIGNALS
+--                                          subroutines to support the cross-session PLSQL cache reset
+--     1.35 601  12-JAN-2015 Y Fedkiv     - Added new GET_PDM_VERSION and DO_INIT_VARS subroutines
+--                                        - Enhanced PLSQL exceptions handling within the package initialisation block
+--     1.36 801  06-AUG-2015 M Brumpton   - Added business interaction lookup
+--     1.37 803  16-OCT-2015 M.Brumpton   - Added additional user lookups
+--     1.38 803  29-OCT-2015 M.Brumpton   - Added comma between forename and surname when generating user
+--     1.39 803  05-NOV-2015 M.Brumpton   - Added getresponsibleteam and getresponsibleofficer functions
+--     1.40 804  08-DEC-2015 M.Brumpton   - Added additional functions to support RESPONSIBLE OFFICER and TEAM processing
+--     1.41 805  19-DEC-2015 M.Brumpton   - Added exception block to GetUserID
+--     1.42 805  23-DEC-2015 Y.Fedkiv     - Refactored a number of subroutines to increase PG portability
+--     1.43 805  19-JAN-2016 M.Brumpton   - Removed space after comman in GetUserName function
+--     1.44 805  25-FEB-2016 Y.Fedkiv     - Added new TAB_COL_EXISTS function
+--     1.45 808  22-SEP-2016 Y.Fedkiv     - Amended GetUserName to return the TRIM(surname) || '','' || TRIM(forename)
+--     1.46 810  22-FEB-2017 Y.Fedkiv     - Removed double caching (RESULT_CACHE)
+--     1.47 912  16-JUN-2017 M.Brumpton   - Added 2 new functions for SPG-15012
+--     1.48 1008 16-JUN-2017 Y.Fedkiv     - #DST-1794: Factored in new OFFENDER_DELTA table within funcGetTabPkFields
+--  ------- ---- ----------- ------------ -----------------------------
+--
+
+GC_LUP_BIND_VAR_MISSING CONSTANT VARCHAR2(16) := 'xyz_NO_VALUE_xyz';
+
+FUNCTION funcgetTabRecord(
+    p_table VARCHAR2,
+    p_ref_col     VARCHAR2,
+    p_ref_val     VARCHAR2,
+    p_data_fld    VARCHAR2,
+    p_default_val VARCHAR2 DEFAULT NULL,
+    p_where       VARCHAR2 DEFAULT NULL,
+    p_order_by    VARCHAR2 DEFAULT NULL,
+    p_bind_var1   VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING, p_bind_var2 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING, p_bind_var3 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING,  p_bind_var4 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING, p_bind_var5  VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING,
+    p_bind_var6   VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING, p_bind_var7 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING, p_bind_var8 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING,  p_bind_var9 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING, p_bind_var10 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING,
+    p_all_records VARCHAR2 DEFAULT 'N', p_delim VARCHAR2 DEFAULT CHR(10), p_max_len INTEGER  DEFAULT 4000)
+RETURN VARCHAR2;
+
+FUNCTION funcgetTabRecord_CACHED(
+    p_table       VARCHAR2,
+    p_ref_col     VARCHAR2,
+    p_ref_val     VARCHAR2,
+    p_data_fld    VARCHAR2,
+    p_default_val VARCHAR2 DEFAULT NULL,
+    p_where       VARCHAR2 DEFAULT NULL,
+    p_order_by    VARCHAR2 DEFAULT NULL,
+    p_bind_var1   VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING, p_bind_var2 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING, p_bind_var3 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING,  p_bind_var4 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING, p_bind_var5  VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING,
+    p_bind_var6   VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING, p_bind_var7 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING, p_bind_var8 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING,  p_bind_var9 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING, p_bind_var10 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING,
+    p_all_records VARCHAR2 DEFAULT 'N', p_delim VARCHAR2 DEFAULT CHR(10), p_max_len INTEGER  DEFAULT 4000)
+RETURN VARCHAR2 RESULT_CACHE;
+
+-- Using custom PLSQL Cache (not RESULT_CACHE)
+FUNCTION get_cache_miss_cnt  RETURN NUMBER;
+FUNCTION get_cache_flush_cnt RETURN NUMBER;
+FUNCTION get_parsed_tab_list(p_tables_lst VARCHAR2) RETURN VARCHAR2;
+FUNCTION funcgetTabRecord_CACHED_1(
+    p_table       VARCHAR2,
+    p_ref_col     VARCHAR2,
+    p_ref_val     VARCHAR2,
+    p_data_fld    VARCHAR2,
+    p_default_val VARCHAR2 DEFAULT NULL,
+    p_where       VARCHAR2 DEFAULT NULL,
+    p_order_by    VARCHAR2 DEFAULT NULL,
+    p_bind_var1   VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING, p_bind_var2 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING, p_bind_var3 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING,  p_bind_var4 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING, p_bind_var5  VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING,
+    p_bind_var6   VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING, p_bind_var7 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING, p_bind_var8 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING,  p_bind_var9 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING, p_bind_var10 VARCHAR2 DEFAULT GC_LUP_BIND_VAR_MISSING,
+    p_all_records VARCHAR2 DEFAULT 'N',
+    p_delim       VARCHAR2 DEFAULT CHR(10),
+    p_max_len     INTEGER  DEFAULT 4000,
+    p_cache_key   VARCHAR2 DEFAULT NULL)
+RETURN VARCHAR2;
+--
+FUNCTION get_plsqlcache_rebuild_flag(p_sid NUMBER DEFAULT NULL) RETURN VARCHAR2;
+PROCEDURE do_set_plsqlcache_rebuild_flag(p_flag BOOLEAN, p_sid NUMBER DEFAULT NULL);
+PROCEDURE do_set_cache_flush_signals;
+PROCEDURE do_flush_TAB_cache(p_global_flag BOOLEAN DEFAULT FALSE);
+--
+--
+FUNCTION funcgetStdRefListID(p_code_set VARCHAR2, p_code VARCHAR2) RETURN NUMBER;
+FUNCTION funcgetStdRefListCodeDesc(p_ID NUMBER) RETURN VARCHAR2;
+FUNCTION funcgetStdRefListCodeDesc(p_code_set VARCHAR2, p_ID NUMBER) RETURN VARCHAR2;
+FUNCTION funcgetStdRefListCodeAndDesc(p_ID NUMBER, p_delim VARCHAR2 DEFAULT ',') RETURN VARCHAR2;
+FUNCTION funcgetNDParameterValue(p_par_name VARCHAR2, p_default_value NUMBER DEFAULT NULL) RETURN NUMBER;
+--
+FUNCTION funcgetGenderCode(p_gender_id NUMBER) RETURN VARCHAR2;
+FUNCTION funcgetTierDescription(p_tier_id NUMBER) RETURN VARCHAR2;
+FUNCTION funcgetTeamDescription(p_trust_provider_flag NUMBER, p_trust_provider_team_id NUMBER) RETURN VARCHAR2;
+FUNCTION funcgetStaffDescription(p_trust_provider_flag NUMBER, p_staff_employee_id NUMBER) RETURN VARCHAR2;
+FUNCTION funcgetDisposalTypeDescription(p_disposal_type_id NUMBER) RETURN VARCHAR2;
+FUNCTION funcgetDisposalTypeUnits(p_disposal_type_id NUMBER) RETURN VARCHAR2;
+FUNCTION funcgetDisposalTypePreCJA2003(p_disposal_type_id NUMBER) RETURN VARCHAR2;
+FUNCTION funcgetDisposalTypeCJA2003(p_disposal_type_id NUMBER) RETURN VARCHAR2;
+FUNCTION funcgetLicCondTypeDescription(p_lic_cond_type_main_cat_id NUMBER) RETURN VARCHAR2;
+FUNCTION funcgetLicCondTypeUnits(p_lic_cond_type_main_cat_id NUMBER) RETURN VARCHAR2;
+FUNCTION funcgetRqmntTypeID(p_code VARCHAR2) RETURN NUMBER;
+FUNCTION funcgetRqmntTypeDescription(p_rqmnt_type_main_cat_id NUMBER) RETURN VARCHAR2;
+FUNCTION funcgetRqmntTypeUnits(p_rqmnt_type_main_cat_id NUMBER) RETURN VARCHAR2;
+FUNCTION funcgetADRqmntTypeDescription(p_ad_rqmnt_type_main_cat_id NUMBER) RETURN VARCHAR2;
+FUNCTION funcgetADRqmntTypeUnits(p_ad_rqmnt_type_main_cat_id NUMBER) RETURN VARCHAR2;
+FUNCTION funcgetPSSRqmntTypeID(p_code VARCHAR2) RETURN NUMBER;
+FUNCTION funcgetPSSRqmntTypeDescription(p_pss_rqmnt_type_main_cat_id NUMBER) RETURN VARCHAR2;
+FUNCTION funcgetPSSRqmntTypeUnits(p_pss_rqmnt_type_main_cat_id NUMBER) RETURN VARCHAR2;
+--
+FUNCTION funcgetStaffTeamLst(p_team_id NUMBER) RETURN VARCHAR2;
+--
+FUNCTION get_court_data(p_court_id NUMBER, p_data_fld VARCHAR2) RETURN VARCHAR2;
+--
+FUNCTION funcGetContactTypeRecord(p_contact_type_id NUMBER, p_data_fld VARCHAR2) RETURN VARCHAR2;
+--
+FUNCTION object_exists(p_object_type IN VARCHAR2, p_object_name IN VARCHAR2, p_object_owner IN VARCHAR2 DEFAULT 'DELIUS_APP_SCHEMA') RETURN BOOLEAN;
+FUNCTION tab_col_exists(p_tab_name IN VARCHAR2, p_col_name VARCHAR2, p_owner IN VARCHAR2 DEFAULT 'DELIUS_APP_SCHEMA') RETURN VARCHAR2;
+--
+FUNCTION funcGetBusinessInteractionID(p_business_interaction_code IN VARCHAR2) RETURN NUMBER;
+FUNCTION funcGetBusinessInteraction(p_business_interaction_id IN NUMBER) RETURN VARCHAR2;
+FUNCTION isReferenceDataBI(p_business_interaction_code IN BUSINESS_INTERACTION.business_interaction_code%TYPE) RETURN VARCHAR2;
+FUNCTION isReferenceDataBI(p_business_interaction_id IN BUSINESS_INTERACTION.business_interaction_id%TYPE) RETURN VARCHAR2;
+--
+FUNCTION GetUserID(p_distinguished_name IN VARCHAR2) RETURN NUMBER;
+FUNCTION GetUserName(p_user_id IN NUMBER) RETURN VARCHAR2;
+--
+FUNCTION GetResponsibleTeam(p_team_id IN NUMBER) RETURN VARCHAR2;
+FUNCTION GetResponsibleOfficer(p_staff_id IN NUMBER) RETURN VARCHAR2;
+--
+FUNCTION GetLDUID(lducode_in  IN VARCHAR2, probationareaid_in IN NUMBER DEFAULT NULL) RETURN NUMBER;
+FUNCTION GetBoroughID(boroughcode_in  IN VARCHAR2, probationareaid_in IN NUMBER DEFAULT NULL) RETURN NUMBER;
+FUNCTION GetDistrictID(districtcode_in  IN VARCHAR2, boroughid_in IN NUMBER DEFAULT NULL) RETURN NUMBER;
+
+--
+--============================================================================--
+-- Helper Pipelined functions that are used within the PKG_Search
+--============================================================================--
+
+-- Officer Diary Enforcemens Search: Event Details sub-component
+TYPE trecOfficerDiaryEvent IS RECORD(
+    offender_id   NUMBER,
+    event_id      NUMBER,
+    --
+    /*01*/ crn                         OFFENDER.crn%TYPE,
+    /*02*/ first_name                  OFFENDER.first_name%TYPE,
+    /*03*/ second_name                 OFFENDER.second_name%TYPE,
+    /*04*/ third_name                  OFFENDER.third_name%TYPE,
+    /*05*/ surname                     OFFENDER.surname%TYPE,
+    /*06*/ current_highest_risk_colour OFFENDER.current_highest_risk_colour%TYPE,
+    /*07*/ current_restriction         OFFENDER.current_restriction%TYPE,
+    /*08*/ current_exclusion           OFFENDER.current_exclusion%TYPE,
+    /*09*/ restriction_message         OFFENDER.restriction_message%TYPE,
+    /*10*/ exclusion_message           OFFENDER.exclusion_message%TYPE,
+    --
+    /*11*/ contact_id                  CONTACT.contact_id%TYPE,
+    /*12*/ contact_date                DATE,
+    /*13*/ contact_start_time          CONTACT.contact_start_time%TYPE,
+    /*14*/ contact_type_id             CONTACT.contact_type_id%TYPE,
+    /*15*/ contact_type_code           R_CONTACT_TYPE.code%TYPE,
+    /*16*/ contact_type_desc           R_CONTACT_TYPE.description%TYPE,
+    /*17*/ contact_outcome_type_id     CONTACT.contact_outcome_type_id%TYPE,
+    --
+    /*20*/ current_tier                OFFENDER.current_tier%TYPE,
+    /*21*/ ea_desc                     R_ENFORCEMENT_ACTION.description%TYPE,
+    /*22*/ user_editable               R_CONTACT_TYPE.EDITABLE%TYPE ,
+    /*23*/ date_of_birth               OFFENDER.date_of_birth_date%TYPE);
+TYPE ttabOfficerDiaryEvent IS TABLE OF trecOfficerDiaryEvent;
+
+FUNCTION funcCheckContactEnforcement(p_contact_id NUMBER, p_contact_date DATE) RETURN VARCHAR2;
+FUNCTION procFindEnforcementEventsTAB(
+    p_date                 DATE,
+    p_team_id              NUMBER,
+    p_provider_team_id     NUMBER,
+    p_staff_id             NUMBER,
+    p_provider_employee_id NUMBER,
+    p_filter               INTEGER,
+    p_max_rows             INTEGER DEFAULT 100000)
+RETURN ttabOfficerDiaryEvent PIPELINED;
+
+--============================================================================--
+-- Misc
+--============================================================================--
+FUNCTION funcGetTabPkFields(
+    p_table_name VARCHAR2,
+    p_col_prefix VARCHAR2 DEFAULT '',
+    p_delim VARCHAR2 DEFAULT ':')
+RETURN VARCHAR2;
+
+FUNCTION get_sql_xplain_plan(p_SQL VARCHAR2) RETURN CLOB;
+
+-- Test MTT_DEBUG pipelined functiuon
+TYPE trecMttDebug IS RECORD(
+    /*01*/ record_id    NUMBER,
+    /*02*/ dbg_context  VARCHAR2(4000),
+    /*03*/ dbg_message  CLOB );
+TYPE ttabMttDebug IS TABLE OF trecMttDebug;
+
+FUNCTION procFindMttDebugTAB(
+    p_date                 DATE     DEFAULT NULL,
+    p_dbg_context          VARCHAR2 DEFAULT NULL,
+    p_dbg_search_mask      VARCHAR2 DEFAULT NULL,
+    p_max_rows             INTEGER DEFAULT 100000)
+RETURN ttabMttDebug PIPELINED;
+
+--
+--
+--
+--
+END pkg_Lookups;
+/
+
+create PACKAGE pkg_policy AUTHID CURRENT_USER
+AS
+--
+--
+-- NOTE the documentation lies inside the package because Oracle rips it out
+--        when the procedure is exported.
+-- Description  : The package definitions for VPD Policy
+--
+-- Author       : BCL
+--
+--  Change History:
+--
+--  Version PDM  Date        Who          Description
+--  ------- ---- ----------- ------------ -----------------------------
+--     1.01 37   26-MAR-2012 Y Fedkiv     PDM v0.37 baseline
+--     1.02 40   15-JUN-2012 Y Fedkiv     Defect # 9527 - amended the funcContactPolicy
+--     1.03 40   18-JUN-2012 Y Fedkiv     Moved funcContactPolicy to PKG_Search
+--     1.04 41   30-JUL-2012 Y Fedkiv     Moved funcContactPolicy back to to PKG_TriggerSupport
+--     1.05 41   31-JUL-2012 Y Fedkiv     New PKG_VpdSupport package introduced
+--     1.06 1004 23-NOV-2017 Y Fedkiv     #DST-1381: Added optional P_NPS_FLAG=Y option for VPD policy (to allow a universal VPD access for all NPS users)
+--
+--  ------- ---- ----------- ------------ -----------------------------
+--
+--
+
+FUNCTION funcOffenderPolicy(schema_name IN VARCHAR2, object_name IN VARCHAR2) RETURN VARCHAR2;
+FUNCTION funcContactPolicy(schema_name IN VARCHAR2, object_name IN VARCHAR2) RETURN VARCHAR2;
+
+--
+--
+--
+--
+END pkg_policy;
+/
+
+create PACKAGE pkg_VpdSupport AS
+--
+--
+-- Description  : The package definitions for search
+--
+-- Author       : Yuri Fedkiv
+-- Date         :
+--
+--  Change History:
+--
+--  Version PDM  Date        Who          Description
+--  ------- ---- ----------- ------------ -----------------------------
+--     1.00 41   31-JUL-2012 Y Fedkiv     Initial Version (based on v1.15 PKG_TriggerSupport)
+--     1.01 41   05-AUG-2012 Y Fedkiv     Added new funcOffenderPolicyPredicate function
+--     1.02 41   11-SEP-2012 K Foster     Amended the funcGetUserProbAreas_NOCACHE to resolve Defect# 10533
+--     1.03 43   18-OCT-2012 Y Fedkiv     Streamlined the underliying query within the funcGetOffProbAreas_NOCACHE
+--     1.04 1004 23-NOV-2017 Y Fedkiv     #DST-1381: Added optional P_NPS_FLAG parameter to funcGetOffProbAreas_NOCACHE, funcGetOffProbAreas and funcContactPolicy
+--
+--  ------- ---- ----------- ------------ -----------------------------
+--
+
+--============================================================================--
+-- VPD Support Functions
+--============================================================================--
+
+FUNCTION funcGetUserProbAreas_NOCACHE(p_user_id INTEGER, p_external_provider_id INTEGER DEFAULT NULL, p_nps_flag VARCHAR2 DEFAULT 'N')
+RETURN t_tab_ORGANISATIONS;
+--
+FUNCTION funcGetUserProbAreas(p_user_name VARCHAR2, p_nps_flag VARCHAR2 DEFAULT 'N')
+RETURN t_tab_ORGANISATIONS RESULT_CACHE;
+--
+FUNCTION funcGetOffProbAreas_NOCACHE(p_offender_id INTEGER)
+RETURN t_tab_ORGANISATIONS;
+--
+FUNCTION funcGetOffProbAreas_NOCACHE_1(p_offender_id INTEGER)
+RETURN t_tab_ORGANISATIONS;
+--
+FUNCTION funcGetOffProbAreas(p_offender_id INTEGER, p_scn_number NUMBER DEFAULT NULL)
+RETURN t_tab_ORGANISATIONS;
+-- for Trigger support
+FUNCTION funcGetOffProbAreas_varray(p_offender_id INTEGER, p_scn_number NUMBER DEFAULT NULL) RETURN t_arr_ORGANISATIONS;
+
+-- CONTACT vpd policy predicate function
+FUNCTION funcContactPolicy(p_offender_id INTEGER, p_scn_number NUMBER DEFAULT NULL, p_nps_flag VARCHAR2 DEFAULT 'N') RETURN VARCHAR2;
+
+-- Offender vpd policy WHERE clause
+FUNCTION funcOffenderPolicyPredicate(p_object_name VARCHAR2) RETURN VARCHAR2;
+
+--============================================================================--
+-- SCN Functions                                                              --
+--============================================================================--
+FUNCTION get_current_scn_number RETURN NUMBER;
+FUNCTION get_g_scn_number       RETURN NUMBER;
+PROCEDURE set_g_scn_number(p_scn NUMBER);
+
+--============================================================================--
+-- PLSQL Cache Counters Functions                                                              --
+--============================================================================--
+FUNCTION get_prob_area_counter  RETURN INTEGER;
+
+FUNCTION get_tab_off_prob_areas_CNT   RETURN INTEGER;
+FUNCTION get_off_area_cache_HITS      RETURN INTEGER;
+FUNCTION get_off_area_cache_MISSES    RETURN INTEGER;
+FUNCTION get_off_area_cache_INV_PART  RETURN INTEGER;
+FUNCTION get_off_area_cache_INV_FULL  RETURN INTEGER;
+
+FUNCTION get_tab_cont_off_CNT_HITS RETURN INTEGER;
+FUNCTION get_tab_cont_off_CNT_MISS RETURN INTEGER;
+
+--
+--
+--
+--
+END pkg_VpdSupport;
+/
+
+create PACKAGE nsi_support_api
+IS
+--
+-- ===============================================================
+-- DELIUS_APP_SCHEMA
+-- ===============================================================
+--
+--  Filename:  nsi_support_api_pkg.sql
+--  Purpose :  NSI Pipeline Package
+--  Author  :  Matt Brumpton, Beaumont Colson
+--
+--  Change History:
+--
+--  Version Date	      Who	                Description
+--  ------- ------      ---                 --------------------------
+--  1.00    27-SEP-2014	matt@mb-comp.co.uk  Initial version
+--  1.01    29-SEP-2014                     Added breachrecall List Helper
+--  1.02    29-SEP-2014                     Added extra columns to NSIListData
+--  1.03    29-SEP-2014                     Added extra columns to outcursor for NSIListData
+--  1.04    29-SEP-2014                     Added nsi_status_date and pending_transfer to NSIListData
+--  1.05    29-SEP-2014                     Added EventOnlyIn flag to NSIListData
+--  1.06    29-SEP-2014                     Added borough, district, ldu tables and filters to BreachRecall
+--  1.07    02-OCT-2014                     Changed active_flag processing on getNSIListSQL
+--  1.08    28-OCT-2014   Karl Foster       QC14942
+--  1.09    12-DEC-2014   Karl Foster       Level filter not working
+--
+-- ===============================================================
+--
+--
+FUNCTION getNSISummaryListSQL (eventBasedin IN VARCHAR2 DEFAULT 'N') RETURN CLOB;
+--
+PROCEDURE getNSISummaryData(  OffenderIdIn  IN nsi.offender_id%TYPE,
+                              EventIdIn     IN nsi.event_id%TYPE DEFAULT NULL,
+                              ActiveFlagIn  IN nsi.active_flag%TYPE DEFAULT 1,
+                              SoftDeletedIn IN nsi.soft_deleted%TYPE DEFAULT 0,
+                              OutCursor     OUT SYS_REFCURSOR);
+--
+FUNCTION getNSISummaryDataTab(  OffenderIdIn  IN nsi.offender_id%TYPE,
+                                EventIdIn     IN nsi.event_id%TYPE DEFAULT NULL,
+                                ActiveFlagIn  IN nsi.active_flag%TYPE DEFAULT 1,
+                                SoftDeletedIn IN nsi.soft_deleted%TYPE DEFAULT 0) RETURN nsi_pipeline.nsi_summary_tab PIPELINED;
+--
+--
+FUNCTION getNSIListSQL( StaffIdIn               IN staff.staff_id%TYPE DEFAULT NULL,
+                        NsiTypeIdIn             IN nsi.nsi_type_id%TYPE DEFAULT NULL,
+						NsiSubTypeIdIn          IN nsi.nsi_sub_type_id%TYPE DEFAULT NULL,
+						NsiStatusIdIn           IN nsi.nsi_status_id%TYPE DEFAULT NULL,
+                        BoroughIdIn             IN borough.borough_id%TYPE DEFAULT NULL,
+                        DistrictIdIn            IN district.district_id%TYPE DEFAULT NULL,
+                        LocalDeliveryUnitIdIn   IN local_delivery_unit.local_delivery_unit_id%TYPE DEFAULT NULL,
+                        EventIdIn               IN event.event_id%TYPE DEFAULT NULL,
+                        ActiveFlagIn            IN nsi.active_flag%TYPE DEFAULT 1,
+                        LevelIn             IN VARCHAR2 DEFAULT 'ALL',
+                        PagedSyntax             IN VARCHAR2 DEFAULT 'N') RETURN CLOB;
+--
+FUNCTION getNSIListDataTab( ProbationAreaIdIn       IN probation_area.probation_area_id%TYPE,
+                            TeamIdIn                IN team.team_id%TYPE,
+                            StaffIdIn               IN staff.staff_id%TYPE DEFAULT NULL,
+                            NsiTypeIdIn             IN nsi.nsi_type_id%TYPE DEFAULT NULL,
+							NsiSubTypeIdIn          IN nsi.nsi_sub_type_id%TYPE DEFAULT NULL,
+							NsiStatusIdIn           IN nsi.nsi_status_id%TYPE DEFAULT NULL,
+                            BoroughIdIn             IN borough.borough_id%TYPE DEFAULT NULL,
+                            DistrictIdIn            IN district.district_id%TYPE DEFAULT NULL,
+                            LocalDeliveryUnitIdIn   IN local_delivery_unit.local_delivery_unit_id%TYPE DEFAULT NULL,
+                            EventIdIn               IN event.event_id%TYPE DEFAULT NULL,
+                            LevelIn             IN VARCHAR2 DEFAULT 'ALL',
+                            ActiveFlagIn            IN nsi.active_flag%TYPE DEFAULT 1,
+                            SoftDeletedIn           IN nsi.soft_deleted%TYPE DEFAULT 0) RETURN nsi_pipeline.nsi_list_tab PIPELINED;
+--
+PROCEDURE getNSIListData( ProbationAreaIdIn       IN probation_area.probation_area_id%TYPE,
+                          TeamIdIn                IN team.team_id%TYPE,
+                          StaffIdIn               IN staff.staff_id%TYPE DEFAULT NULL,
+                          NsiTypeIdIn             IN nsi.nsi_type_id%TYPE DEFAULT NULL,
+						  NsiSubTypeIdIn          IN nsi.nsi_sub_type_id%TYPE DEFAULT NULL,
+						  NsiStatusIdIn           IN nsi.nsi_status_id%TYPE DEFAULT NULL,
+                          BoroughIdIn             IN borough.borough_id%TYPE DEFAULT NULL,
+                          DistrictIdIn            IN district.district_id%TYPE DEFAULT NULL,
+                          LocalDeliveryUnitIdIn   IN local_delivery_unit.local_delivery_unit_id%TYPE DEFAULT NULL,
+                          EventIdIn               IN event.event_id%TYPE DEFAULT NULL,
+                          LevelIn             IN VARCHAR2 DEFAULT 'ALL',
+                          ActiveFlagIn            IN nsi.active_flag%TYPE DEFAULT 1,
+                          SoftDeletedIn           IN nsi.soft_deleted%TYPE DEFAULT 0,
+                          OutCursor               OUT SYS_REFCURSOR);
+--
+FUNCTION getNSIListData_Paged ( ProbationAreaIdIn       IN probation_area.probation_area_id%TYPE,
+                                TeamIdIn                IN team.team_id%TYPE,
+                                StaffIdIn               IN staff.staff_id%TYPE DEFAULT NULL,
+                                NsiTypeIdIn             IN nsi.nsi_type_id%TYPE DEFAULT NULL,
+                                BoroughIdIn             IN borough.borough_id%TYPE DEFAULT NULL,
+                                DistrictIdIn            IN district.district_id%TYPE DEFAULT NULL,
+                                LocalDeliveryUnitIdIn   IN local_delivery_unit.local_delivery_unit_id%TYPE DEFAULT NULL,
+                                EventIdIn               IN event.event_id%TYPE DEFAULT NULL,
+                                LevelIn             IN VARCHAR2 DEFAULT 'ALL',
+                                ActiveFlagIn            IN nsi.active_flag%TYPE DEFAULT 1,
+                                SoftDeletedIn           IN nsi.soft_deleted%TYPE DEFAULT 0,
+                                PageNumberIn            IN NUMBER,
+                                PageSizeIn              IN NUMBER) RETURN nsi_pipeline.nsi_list_tab PIPELINED;
+--
+PROCEDURE getNSIListData_Paged (  ProbationAreaIdIn       IN probation_area.probation_area_id%TYPE,
+                                  TeamIdIn                IN team.team_id%TYPE,
+                                  StaffIdIn               IN staff.staff_id%TYPE DEFAULT NULL,
+                                  NsiTypeIdIn             IN nsi.nsi_type_id%TYPE DEFAULT NULL,
+                                  BoroughIdIn             IN borough.borough_id%TYPE DEFAULT NULL,
+                                  DistrictIdIn            IN district.district_id%TYPE DEFAULT NULL,
+                                  LocalDeliveryUnitIdIn   IN local_delivery_unit.local_delivery_unit_id%TYPE DEFAULT NULL,
+                                  EventIdIn               IN event.event_id%TYPE DEFAULT NULL,
+                                  LevelIn             IN VARCHAR2 DEFAULT 'ALL',
+                                  ActiveFlagIn            IN nsi.active_flag%TYPE DEFAULT 1,
+                                  SoftDeletedIn           IN nsi.soft_deleted%TYPE DEFAULT 0,
+                                  PageNumberIn            IN NUMBER,
+                                  PageSizeIn              IN NUMBER,
+                                  OutCursor               OUT SYS_REFCURSOR );
+--
+--
+FUNCTION getBreachRecallSQL ( TeamIdIn                IN team.team_id%TYPE DEFAULT NULL,
+                              StaffIdIn               IN staff.staff_id%TYPE DEFAULT NULL,
+                              NSITypeIdIn             IN r_nsi_type.nsi_type_id%TYPE DEFAULT NULL,
+                              ProbationAreaIdIn       IN probation_area.probation_area_id%TYPE DEFAULT NULL,
+                              BoroughIdIn             IN borough.borough_id%TYPE DEFAULT NULL,
+                              DistrictIdIn            IN district.district_id%TYPE DEFAULT NULL,
+                              LocalDeliveryUnitIdIn   IN local_delivery_unit.local_delivery_unit_id%TYPE DEFAULT NULL,
+                              PagedSyntax IN VARCHAR2 DEFAULT 'N' ) RETURN CLOB;
+--
+--
+FUNCTION getBreachRecallInterventions(  TeamIdIn                IN team.team_id%TYPE DEFAULT NULL,
+                                        StaffIdIn               IN staff.staff_id%TYPE DEFAULT NULL,
+                                        NsiTypeIdIn             IN nsi.nsi_type_id%TYPE DEFAULT NULL,
+                                        ProbationAreaIdIn       IN probation_area.probation_area_id%TYPE DEFAULT NULL,
+                                        BoroughIdIn             IN borough.borough_id%TYPE DEFAULT NULL,
+                                        DistrictIdIn            IN district.district_id%TYPE DEFAULT NULL,
+                                        LocalDeliveryUnitIdIn   IN local_delivery_unit.local_delivery_unit_id%TYPE DEFAULT NULL,
+                                        ActiveFlagIn            IN nsi.active_flag%TYPE DEFAULT 1,
+                                        SoftDeletedIn           IN nsi.soft_deleted%TYPE DEFAULT 0) RETURN nsi_pipeline.nsi_bcreachrecall_tab PIPELINED;
+--
+PROCEDURE getBreachRecallInterventions( TeamIdIn                IN team.team_id%TYPE DEFAULT NULL,
+                                        StaffIdIn               IN staff.staff_id%TYPE DEFAULT NULL,
+                                        NsiTypeIdIn             IN nsi.nsi_type_id%TYPE DEFAULT NULL,
+                                        ProbationAreaIdIn       IN probation_area.probation_area_id%TYPE DEFAULT NULL,
+                                        BoroughIdIn             IN borough.borough_id%TYPE DEFAULT NULL,
+                                        DistrictIdIn            IN district.district_id%TYPE DEFAULT NULL,
+                                        LocalDeliveryUnitIdIn   IN local_delivery_unit.local_delivery_unit_id%TYPE DEFAULT NULL,
+                                        ActiveFlagIn            IN nsi.active_flag%TYPE DEFAULT 1,
+                                        SoftDeletedIn           IN nsi.soft_deleted%TYPE DEFAULT 0,
+                                        OutCursor               OUT SYS_REFCURSOR);
+--
+FUNCTION getBreachRecall_Paged (  TeamIdIn                IN team.team_id%TYPE DEFAULT NULL,
+                                  StaffIdIn               IN staff.staff_id%TYPE DEFAULT NULL,
+                                  NsiTypeIdIn             IN nsi.nsi_type_id%TYPE DEFAULT NULL,
+                                  ProbationAreaIdIn       IN probation_area.probation_area_id%TYPE DEFAULT NULL,
+                                  BoroughIdIn             IN borough.borough_id%TYPE DEFAULT NULL,
+                                  DistrictIdIn            IN district.district_id%TYPE DEFAULT NULL,
+                                  LocalDeliveryUnitIdIn   IN local_delivery_unit.local_delivery_unit_id%TYPE DEFAULT NULL,
+                                  ActiveFlagIn            IN nsi.active_flag%TYPE DEFAULT 1,
+                                  SoftDeletedIn           IN nsi.soft_deleted%TYPE DEFAULT 0,
+                                  PageNumberIn            IN NUMBER,
+                                  PageSizeIn              IN NUMBER) RETURN nsi_pipeline.nsi_bcreachrecall_tab PIPELINED;
+--
+--
+END nsi_support_api;
+/
+
+create PACKAGE offender_support_api
+IS
+--
+-- ===============================================================
+-- DELIUS_APP_SCHEMA
+-- ===============================================================
+--
+--  Filename:  offender_support_api_pkg.sql
+--  Purpose :  Offender Support Package
+--  Author  :  Matt Brumpton, Beaumont Colson
+--
+--  Change History:
+--
+--  Version Date	      Who	                Description
+--  ------- ------      ---                 --------------------------
+--  1.00    15-OCT-2014	matt@mb-comp.co.uk  Initial version
+--  1.01    16-OCT-2014                     Added global variables - some validation
+--  1.02    13-NOV-2014                     Added duplicate CRN check - raise -20100 error if detected
+--  1.03    26-NOV-2014                     Added maxvalue to sequence generation, function to return remaining values
+--                                          Get next CRN now rolls over sequence till valid number found or sequence exhausted
+--  1.04    27-NOV-2014 K Foster            Added correct grant for access
+--  1.05    27-NOV-2014 M Brumpton          Changed set procedure to UPSERT in case code missing
+--  1.06    02-DEC-2014 K Foster            As per discussion with AL, made default prefix X
+--
+-- ===============================================================
+--
+--
+FUNCTION getCRNPrefix RETURN VARCHAR2 RESULT_CACHE;
+PROCEDURE setCRNPrefix(inCRNPrefix IN VARCHAR2);
+--
+FUNCTION getNextCRN RETURN VARCHAR2;
+PROCEDURE setNextCRNSequenceNumber(inNextNumber IN INTEGER);
+FUNCTION getRemainingValues RETURN INTEGER;
+--
+--
+END offender_support_api;
+/
+
+create PACKAGE pkg_merge_offender
+AS
+--
+--
+-- Description  : The package definitions for Merge Offender
+--
+-- Author       : Karl Foster
+--
+--  Date        : 21/03/2011
+--
+--  Change History:
+--
+--  Version PDM  Date        Who              Description
+--  ------- ---- ----------- ---------------- -----------------------------
+--  001          10/09/2013  Karl Foster      Initial Version
+--  002          08/10/2013  Karl Foster      Move Documents in merge
+--  003          14/10/2013  Karl Foster      Changed name of field post official PDM
+--  004          17/10/2013  Karl Foster      Fixed defect 12768
+--  005          24/10/2013  Karl Foster      Fixed defect 12779
+--  006          31/10/2013  Karl Foster      Fixed defect 12756
+--  007          31/10/2013  Karl Foster      Fixed defect 12924, 12963, 12964
+--  008          17/07/2014  Karl Foster      PayMech implementation
+--  009          07/08/2014  Karl Foster      TS2 - TtG
+--  010          10/09/2014  David Middleton  Fixed issue with ambiguous table_name column
+--  011          12/09/2014  Karl Foster      PDM 502 fixes
+--  012          15/09/2014  Karl Foster      TS2 - Other 9
+--  013	         02/11/2016  Peter Wilson     CC0077
+--                           Richard Bradwell
+--  014          23/11/2016  Peter Wilson     SPG-11271 - fix invalid date check
+--  015          29/11/2016  Peter Wilson     SPG-12328 - return case allocation docs
+--  016          04/01/2016  Peter Wilson     SPG-12631 - move event docs updated to take into account CPS docs
+--  017          10/01/2017  Peter Wilson     SPG-12636 - Handle assessment documents correctly
+--  018          18/01/2017  Peter Wilson     SPG-12734 - Added mechanism for retrieving documents related to assessment
+--  019          10/01/2017  Peter Wilson     SPG-12734 - Forther mechanisms for retrieving info without updating
+--  020          23/01/2017  Peter WIlson     SPG-12634 - Method for retrieving sentencing docs
+--  021          23/01/2017  Peter Wilson     SPG-12634 - Method for retrieving PSS Docs
+--  022          23/01/2017  Peter Wilson     SPG-12634 - Fixed sentencing docs function
+--  023          13/02/2017  Peter Wilson     SPG-12872 - Added functionality to rename documents
+--  024          28/12/2017  Yuri fedkiv      #DST-1593 - Added PKG_TriggerSupport.procRebuildOptTables_ALL within procMergeOffenders and procUnmergeOffenders
+--  025          19/03/2018  Yuri fedkiv      #DST-2625 - Added UPW_APPOINTMENT type of event level entries within findEventLevelDocuments
+--  026     1022 27/03/2018  Yuri Fedkiv      #DST-2488 - -//- within moveEventDocuments
+--  027     1022 28/03/2018  Yuri Fedkiv      #DST-2625 - -//- within moveEventDocuments, softDeleteEventDocuments, findEventLevelDocuments,
+--                                                        findSentenceDocuments, softDeleteComponentDocuments
+--  028     1022 11/04/2018  Yuri Fedkiv      #DST-1773: Suppress Alfresco messages rebuild within procMergeOffenders
+--
+--  ------- ---- ----------- ---------------- -----------------------------
+--
+--
+PROCEDURE procMergeOffenders(
+    p_target_offender IN   NUMBER,
+    p_origin_offender IN   NUMBER);
+
+PROCEDURE procUnmergeOffenders(
+    p_target_offender IN   NUMBER,
+    p_origin_offender IN   NUMBER);
+
+PROCEDURE procIsConcurrentConsecutive(
+    p_offender_id           NUMBER,
+    p_origin_offender_id    NUMBER,
+    p_outcursor           OUT SYS_REFCURSOR);
+
+PROCEDURE moveCourtReportDocuments(
+	p_courtReportId NUMBER,
+	p_srcOffenderId NUMBER,
+	p_outcursor  OUT SYS_REFCURSOR) ;
+
+PROCEDURE moveCourtAppearanceDocuments(
+	p_courtAppearanceId NUMBER,
+	p_srcOffenderId NUMBER,
+	p_outcursor  OUT SYS_REFCURSOR) ;
+
+PROCEDURE moveAPReferralDocuments(
+	p_referral_id NUMBER,
+	p_srcOffenderId NUMBER,
+	p_outcursor  OUT SYS_REFCURSOR) ;
+
+PROCEDURE moveInstReportDoc (
+	p_institutionalReportId NUMBER,
+	p_srcOffenderId NUMBER,
+	p_outcursor  OUT SYS_REFCURSOR) ;
+
+PROCEDURE moveNSIDocuments (
+	p_nsiId NUMBER,
+	p_srcOffenderId NUMBER,
+	p_outcursor  OUT SYS_REFCURSOR) ;
+
+PROCEDURE moveSupervisionRequirements (
+	p_pssId NUMBER,
+	p_srcOffenderId NUMBER,
+	p_outcursor  OUT SYS_REFCURSOR) ;
+
+PROCEDURE moveEventDocuments (
+	p_eventId NUMBER,
+	p_srcOffenderId NUMBER,
+	p_outcursor  OUT SYS_REFCURSOR
+) ;
+
+PROCEDURE softDeleteEventDocuments(
+	p_eventId NUMBER,
+	p_offenderId NUMBER,
+	p_softDelete SMALLINT,
+	p_outcursor  OUT SYS_REFCURSOR
+) ;
+
+PROCEDURE softDeleteOffenderDocuments(
+	p_offenderId NUMBER,
+	p_softDelete SMALLINT,
+	p_outcursor  OUT SYS_REFCURSOR
+) ;
+
+PROCEDURE softDeleteComponentDocuments(
+	p_componentType VARCHAR2,
+	p_primaryKeyId NUMBER,
+	p_offenderId NUMBER,
+	p_softDelete SMALLINT,
+	p_outcursor  OUT SYS_REFCURSOR
+) ;
+
+PROCEDURE findAssessmentDocuments (
+	p_primaryKeyId NUMBER,
+	p_offenderId NUMBER,
+	p_outcursor  OUT SYS_REFCURSOR
+);
+
+PROCEDURE findEventLevelDocuments(
+	p_eventId NUMBER,
+	p_offenderId NUMBER,
+	p_outcursor  OUT SYS_REFCURSOR
+);
+
+PROCEDURE findNsiDocuments(
+	p_primaryKeyId NUMBER,
+	p_offenderId NUMBER,
+	p_outcursor  OUT SYS_REFCURSOR
+);
+
+PROCEDURE findOffenderDocuments(
+	p_offenderId NUMBER,
+	p_outcursor  OUT SYS_REFCURSOR
+);
+
+PROCEDURE findSentenceDocuments(
+	p_componentType VARCHAR2,
+	p_primaryKeyId  NUMBER,
+	p_offenderId    NUMBER,
+	p_outcursor     OUT SYS_REFCURSOR
+) ;
+
+PROCEDURE findPSSDocuments(
+	p_primaryKeyId NUMBER,
+	p_offenderId   NUMBER,
+	p_outcursor    OUT SYS_REFCURSOR
+) ;
+
+PROCEDURE updateDocumentName(
+	p_alfrescoDocumentID VARCHAR2,
+	p_documentName       VARCHAR2,
+	p_outcursor          OUT SYS_REFCURSOR
+) ;
+
+--
+--
+--
+--
+END pkg_merge_offender;
+/
+
+create PACKAGE pkg_vpd_ctx /*AUTHID CURRENT_USER*/ AS
+--
+--
+-- Description  : The package definitions for VPD Session Context
+--
+-- Author       : BCL
+-- Date         :
+--
+--  Change History:
+--
+--  Version PDM Date        Who          Description
+--  ------- --- -----------	------------ -----------------------------
+--     1.00 37  n/a         BCL          Initial  version
+--     1.01 37  26-MAR-2012 Y Fedkiv     PDM v0.37 uplift
+--     1.02 41  22-AUG-2012 Y Fedkiv     Changed SET_CLIENT_IDENTIFIER (added IF <curr_ident> <> <new_ident> condtition)
+--  ------- --- -----------	------------ -----------------------------
+--
+--
+
+PROCEDURE set_client_identifier(username VARCHAR2);
+PROCEDURE set_client_identifier(userID INTEGER);
+PROCEDURE clear_client_identifier;
+
+PROCEDURE set_table_value(keyValue IN varchar2, val IN varchar2) ;
+--PROCEDURE set_user(username IN varchar2, rolename IN varchar2) ;
+--PROCEDURE set_context_variable(userID IN NUMBER, externalFlag IN varchar2, externalProviderID IN NUMBER) ;
+--PROCEDURE set_context_variable_full(username IN varchar2, rolename IN varchar2, userID IN NUMBER, externalFlag IN varchar2, externalProviderID IN NUMBER) ;
+
+--
+--
+--
+--
+END pkg_vpd_ctx;
+/
+
+create PACKAGE PKG_TriggerSupport
+AS
+--
+-- Description  : The package definitions for search
+--
+-- Author       : Gordon Stutchbury
+-- Date         :
+--
+--  Change History:
+--
+--  Version PDM  Date        Who          Description
+--  ------- ---- ----------- ------------ -----------------------------
+--     1.01 35   10-FEB-2012 Y Fedkiv     Added support for new PROBATION_AREA_LIST_1/2 Varray fields
+--     1.02 36   07-MAR-2012 Y Fedkiv     Re-instated the RELIES_ON clause within funcGetUserProbAreas (for 11gR1 backwards compatibility)
+--     1.03 36   09-MAR-2012 Y Fedkiv     Introduced the new procUpdateProbAreas_DEFERRED procedure (to mitigate the ORA-04091 error)
+--     1.04 36   23-MAR-2012 Y Fedkiv     Fixed the "Number overflow" error within the funcGetOffProbAreas function
+--     1.05 37   26-MAR-2012 Y Fedkiv     PDM v0.37 uplift
+--     1.06 37   12-APR-2012 Y Fedkiv     Added NO_DATA_FOUND error handler to funcGetTeamProbAreaID, funcGetProvTeamProbAreaID and funcGetProvTeamExtProviderID
+--     1.07 40   23-APR-2012 Y Fedkiv     Added new procRebuildCaseloadTable and procRebuildCaseloadTable_ALL procedures
+--     1.08 40   31-MAY-2012 Y Fedkiv     Added new procRebuildOptTables_ALL and procAddSuperUser procedures
+--     1.09 40   15-JUN-2012 Y Fedkiv     Defect # 9527 - added new funcContactPolicy (used by PKG_VPD_POLICY.funcContactPolicy predicate)
+--     1.10 40   18-JUN-2012 Y Fedkiv     1. Moved funcContactPolicy to PKG_Search
+--                                        2. Added new set_g_scn_number procedure
+--     1.11 40   28-JUN-2012 Y Fedkiv     Moved get_list_2_array, get_array_2_list, get_array_2_list and get_tab_2_varray into the new PKG_LstUtl PLSQL package
+--     1.12 41   10-JUL-2012 Y Fedkiv     - Added new funcGetVpdDeferredUpdatesCNT function
+--                                        - Introduced CASELOAD table mutation check into the procRebuildCaseloadTable_OFF (see CHECK_CASELOAD_MUTATED procedure)
+--     1.13 41   11-JUL-2012 Y Fedkiv     De-activated the CASELOAD table mutation check - agreed with Steria
+--     1.14 41   25-JUL-2012 Y Fedkiv     - Added new procValidate_VPD_Labels procedure
+--                                        - Added new optional P_FORCE_FLAG parameter to procRebuildOptTables_ALL
+--                                        - Incorporated procRebuildOffProbAreas_JOB into the procRebuildOffProbAreas
+--                                        - Changed the procDebug to use PKG_Debug package instead of PKG_Search
+--                                        - Added P_SOFT_DELETED parameter to the GET_ACTIVE_FLAG function
+--     1.15 41   30-JUN-2012 Y Fedkiv     Moved funcContactPolicy back to PKG_TriggerSupport
+--     1.16 41   31-JUN-2012 Y Fedkiv     Moved all VPD Policy support functions into the new PKG_VpdSupport package
+--     1.17 41   14-AUG-2012 Y Fedkiv     Defect# 10379: Added new procSetOffenderCurrDisposal procedure
+--     1.18 41   20-AUG-2012 Y Fedkiv     Added an optional parameter P_DISTINGUISHED_NAME to the procAddSuperUser
+--     1.19 41   24-AUG-2012 Y Fedkiv     Added new procChangeCapture_InsRecord procedure
+--     1.20 41   17-SEP-2012 Y Fedkiv     Removed the PROCREBUILDOFFPROBAREAS call from within the procInsertOrgOffenderRecord
+--     1.21 41   18-SEP-2012 M Brumpton   Removed commented out lines from procChangeCapture_InsRecord
+--     1.22 41   18-SEP-2012 Y Fedkiv     Amended a debug messega within the PROCUPDATEPROBATIONAREAS to print the Probation Area codes list, instead of IDs
+--     1.23 43   24-SEP-2012 Y Fedkiv     Added three new functions to support the OFFENDER.current_tier: funcGetCurrTierDeferredUpdCNT, procAddCurrTierDeferred and procUpdateOffCurrTier_DEFERRED
+--     1.24 43   01-OCT-2012 Y Fedkiv     Fixed procUpdateOffCurrTier_DEFERRED (added a missing WHERE O.offender_id = :p_offender_id)
+--     1.25 43   10-OCT-2012 Y Fedkiv     Introduced the CDC RESEED mode into the procChangeCapture_InsRecord
+--     1.26 43   20-NOV-2012 Y Fedkiv     Amended procAddSuperUser to support Update of the USER
+--     1.27 43   28-NOV-2012 M Brumpton   Added do_init_nls procedure to set NLS
+--     1.28 43   07-JAN-2013 Y Fedkiv     Added new procSetVPDRebuildFlag procedure
+--     1.29 43   22-APR-2013 M Brumpton   Added new procOFFENDER_PERF and helper functions for PDT awareness
+--     1.30 101  11-JUL-2013 K Foster     Fixed procRebuildOptTables to correctly join AP Groupings
+--     1.31 102  28-AUG-2013 K Foster     Implemented PCMS2_FUNC148 (recent caseload)
+--     1.32 202  10-OCT-2013 K Foster     Implemented new VPD for TR
+--     1.33 301  05-FEB-2014 Y Fedkiv     Uplifted procAddSuperUser to PDM 3.01
+--     1.34 401  13-FEB-2014 K Foster     Updated caseload for additional requirements
+--     1.35 401  14-FEB-2014 Y Fedkiv     Added new procSetVPDRebuildFlag overloaded procedure (required for TR work)
+--     1.36 401  12-MAR-2014 Y Fedkiv     Added new procSetCDCFlag procedure (required for TR work)
+--     1.37 501  11-AUG-2014 M Brumpton   Added PSS_RQMNT and PSS_RQMNT_MANAGER
+--     1.38 501  12-AUG-2014 M Brumpton   Added PSS_RQMNT_MANAGER and PSS_RQMNT_TRANSFER to PROCREBUILDOPTTABLES
+--     1.39 502  12-SEP-2014 K Foster     Fixing for PDM502
+--     1.40 502  19-SEP-2014 Y Fedkiv     VPD related changes required by TS2_D2_Other_4
+--     1.41 503  06-OCT-2014 K Foster     QC14611 - Manager active flag NOT based on soft deleted
+--     1.42 503  07-OCT-2014 Y Fedkiv     Altered GET_ACTIVE_FLAG to get the SOFT_DELETED flag out of the equasion
+--     1.43 503  24-OCT-2014 Y Fedkiv     QC14832 added PKG_Lookups.do_flush_TAB_cache call within the procUpdateProbationAreas
+--     1.44 503  24-NOV-2014 Y Fedkiv     QC14832 added PKG_Lookups.do_flush_TAB_cache call within the procInsertOrgOffenderRecord
+--     1.45 601  02-DEC-2014 Y Fedkiv     Added COHORT_DIARY table support subroutines (similar to CASELOAD)
+--     1.46 601  09-DEC-2014 Y Fedkiv     Added support for NULL/-1 P_OFFENDERID parameter value within the procRebuildOptTables
+--     1.47 601  09-DEC-2014 K Foster     Offender Transfers do not count as historical access
+--     1.48 601  12-JAN-2015 Y Fedkiv     Amended PLSQL package initialisation block to use the new PKG_Lookups.get_pdm_version function
+--     1.49 703  20-MAY-2015 Y Fedkiv     Fixed procUpdateOffCurrTier_DEFERRED (Live incident 3361933)
+--     1.50 703  04-JUN-2015 Y Fedkiv     Added COURT_REPORT_TRANSFER and INSTITUTIONAL_REPORT_TRANSFER tables into the DO_REBUILD_VPD (QC16425)
+--     1.51 804  04-NOV-2015 Y Fedkiv     Fixed the "Numeric or Value ERROR" within procUpdateProbationAreas_ALL
+--     1.52 804  10-DEC-2015 Y Fedkiv     - Re-arranged the base SQL query within DO_REBUILD_VPD
+--                                        - Added missing SOFT_DELETED=0 checks for all INNER JOIN offender based tables
+--     1.53 805  23-DEC-2015 Y Fedkiv     Amended procAddSuperUser to optionally generate the USER_ID from the database sequence
+--     1.54 805  04-JAN-2016 Y Fedkiv     Re-factored a few PLSQL subroutines to simplify Oracle to PG code portability
+--     1.55 806  01-JUL-2016 M Brumpton   Added Alfresco processing
+--     1.56 808  20-SEP-2016 Y Fedkiv     Added new procRebuildRejTransfersDiary and DO_REBUILD_REJ_TRANSFERS_DIARY subroutines
+--     1.57 809  25-OCT-2016 Y Fedkiv     Amended DO_REBUILD_CASELOAD and DO_REBUILD_COHORT_DIARY to use PKG_CASELOAD API
+--     1.58 809  26-OCT-2016 Y Fedkiv     Added NSI level columns within DO_REBUILD_CASELOAD
+--     1.59 809  22-DEC-2016 Y Fedkiv     - Suppressed DO_PDT_DEBUG_MESSAGE calls
+--                                        - Enforced g_VPD_rebuild_flag to be always set to TRUE
+--     1.60 809  16-JAN-2017 M Brumpton   CFO issue when offender transitions from active to inactive - processing requires on
+--                                        last touch column being updated and on offeder table.
+--     1.61 809  15-FEB-2017 Y Fedkiv     - Oracle SCN based caching fix applied to procRebuildOffProbAreas
+--                                        - Amended funcPDTActive to use GLOBAL_CACHE_MGR.pdt_get_status (instead of SYS_CONTEXT)
+--     1.62 810  22-FEB-2017 Y Fedkiv     Double RESULT_CACHE fix
+--     1.63 905  06-APR-2017 Y Fedkiv     Added PRISON_OFFENDER_MANAGER into VPD and CASELOAD re-build procedures
+--     1.64 909  23-JUN-2017 Y Fedkiv     Implemented the deferred cascade update of the ORGANISATIONS columns within DO_REBUILD_VPD procedure
+--     1.65 912  22-AUG-2017 Y Fedkiv     Set initial value for g_VPD_deferred_rebuild_flag global variable to FALSE
+--     1.66 1004 17-OCT-2017 Y Fedkiv     #DST-995: Added ALFRESCOSUPPORT.addOffender2Queue API call within procInsertOrgOffenderRecord procedure
+--     1.67 1004 07-NOV-2017 Y Fedkiv     Added procAddOffenderToRebuildList within DO_REBUILD_VPD
+--     1.68 1004 08-NOV-2017 Y Fedkiv     #DST-1328: Added P_OFFENDER_ID_LST parameter to procRebuildOptTables_ALL
+--     1.69 1004 09-NOV-2017 Y Fedkiv     - Added new UPDATE_OFFENDER_ID subroutine
+--                                        - Added Offender ID fix within the procRebuildOptTables_ALL (via the PKG_DynSQL.offender_records_iterator)
+--     1.70 1004 16-NOV-2017 Y Fedkiv     - Added new optional P_UPDATE_OFFENDER_ID_FLAG parameter to procRebuildOptTables_ALL
+--                                        - Removed PKG_VPD_CTX.set_client_identifier(userID => 1) within procRebuildOptTables_ALL
+--     1.71 1008 12-DEC-2017 Y Fedkiv     - #DST-1593: Added ALFRESCOSUPPORT.addOffender2Queue call within procRebuildOptTables_ALL
+--                                        - #DST-1328: Moved procRebuildOptTables API call after the cascade OFFENDER_ID update within procRebuildOptTables_ALL
+--     1.72 1008 28-DEC-2017 Y Fedkiv     - Added <table_name>/* and */<table_name> templates for PKG_DynSQL.offender_records_iterator API call within procRebuildOptTables_ALL
+--     1.73 1013 24-JAN-2018 Y Fedkiv     - #DST-1773: Avoid sending duplicate ALF messages within procRebuildOptTables_ALL
+--     1.74 1013 24-JAN-2018 Y Fedkiv     - #DST-1728: Removed a top level OFFENDER.organisations check within procRebuildOffProbAreas(p_offenders_list, p_validate_flag)
+--     1.75 1020 14-MAR-2018 Y Fedkiv     Implemented bulk ALFRESCOSUPPORT.processQueue within procRebuildOptTables_ALL
+--     1.76 1020 16-MAR-2018 Y Fedkiv     Fixed ALFRESCOSUPPORT.addOffenders2Queue systax within procRebuildOptTables_ALL
+--     1.77 1022 11-APR-2018 Y Fedkiv     #DST-1773: Added optional P_PROCESS_ALFRESCO_FLAG parameter within  procRebuildOptTables_ALL
+--
+--  ------- --- ----------- ------------ -----------------------------
+--
+
+gc_APPEND      CONSTANT NUMBER := 1;
+gc_REMOVE      CONSTANT NUMBER := 2;
+gc_UPDATE      CONSTANT NUMBER := 3;
+gc_ASSIGN      CONSTANT NUMBER := 4;
+
+G_PDM_VERSION  NUMBER  := 1021;
+
+g_VPD_validation_mode BOOLEAN := TRUE;
+
+-- CDC CONTEXT constants
+GC_CDC_CTX_NONE   CONSTANT NUMBER := 0;
+GC_CDC_CTX_RESEED CONSTANT NUMBER := 1;
+
+--============================================================================--
+-- VPD Optimisation Table support
+--============================================================================--
+PROCEDURE procRebuildOptTables(
+    p_offenderID            NUMBER,
+    p_process_alfresco_flag VARCHAR2 DEFAULT 'Y' );
+PROCEDURE procRebuildOptTables_ALL(
+    p_force_flag              VARCHAR2 DEFAULT 'N',
+    p_offender_id_LST         CLOB,
+    p_update_offender_id_flag VARCHAR2 DEFAULT 'Y',
+    p_process_alfresco_flag   VARCHAR2 DEFAULT 'Y' );
+PROCEDURE procValidate_VPD_Labels;
+PROCEDURE procSetVPDRebuildFlag(p_vpd_rebuild_flag BOOLEAN);
+PROCEDURE procSetCDCFlag(p_cdc_flag BOOLEAN);
+
+PROCEDURE update_offender_id(p_offender_id NUMBER, p_table VARCHAR2, p_row_id ROWID, p_parent_table VARCHAR2);
+
+PROCEDURE set_VPD_deferred_flag(p_flag BOOLEAN);
+FUNCTION get_VPD_deferred_flag RETURN BOOLEAN;
+
+PROCEDURE procAddSuperUser(p_user_id NUMBER, p_forename VARCHAR2 DEFAULT NULL, p_surname VARCHAR2 DEFAULT NULL, p_distinguished_name VARCHAR2 DEFAULT NULL, p_area_code VARCHAR2 DEFAULT NULL);
+
+PROCEDURE procInsertOffenderRecord(p_offender_ID NUMBER, p_probation_area_id NUMBER, p_training_session_id NUMBER DEFAULT NULL);
+PROCEDURE procInsertProviderRecord(p_offender_ID NUMBER, p_probation_area_id NUMBER, p_external_provider_id NUMBER, p_training_session_id NUMBER DEFAULT NULL);
+PROCEDURE procInsertOrgOffenderRecord(
+    p_offender_id          NUMBER,
+    p_probation_area_id    NUMBER DEFAULT NULL,
+    p_external_provider_id NUMBER DEFAULT NULL,
+    p_team_id              NUMBER DEFAULT NULL,
+    p_provider_team_id     NUMBER DEFAULT NULL,
+    p_training_session_id  NUMBER DEFAULT NULL);
+
+PROCEDURE procOffender_PERF (p_offender_id NUMBER, p_institution_id NUMBER, p_establishment VARCHAR);
+
+PROCEDURE procRebuildOffProbAreas(p_offenders_list VARCHAR2 DEFAULT NULL, p_validate_flag VARCHAR2 DEFAULT 'N');
+PROCEDURE procAddOffenderToRebuildList(p_offender_id NUMBER, p_new_probation_area_id NUMBER DEFAULT NULL, p_new_external_provider_id NUMBER DEFAULT NULL);
+
+PROCEDURE procUpdateProbationAreas(
+    p_offender_id         NUMBER,
+    p_table_name          VARCHAR2,
+    p_update_mode         NUMBER,
+    p_ORGANISATIONS_NEW t_tab_ORGANISATIONS,
+    p_ORGANISATIONS_OLD t_tab_ORGANISATIONS DEFAULT NULL);
+-- overloads
+PROCEDURE procUpdateProbationAreas(p_offender_id NUMBER, p_table_name VARCHAR2);
+PROCEDURE procUpdateProbationAreas;
+
+FUNCTION funcGetVpdDeferredUpdatesCNT RETURN NUMBER;
+PROCEDURE procUpdateProbAreas_DEFERRED;
+
+PROCEDURE procUpdateProbationAreas_ALL(p_offender_id NUMBER, p_ORGANISATIONS t_tab_ORGANISATIONS, p_update_mode NUMBER DEFAULT gc_ASSIGN );
+-- overload
+PROCEDURE procUpdateProbationAreas_ALL(p_offender_id NUMBER);
+
+-- Offenders queue for the ORGANISATIONS field rebuild
+FUNCTION get_tab_offenders_list     RETURN VARCHAR2;
+FUNCTION get_tab_offenders_list_1   RETURN t_tab_ORGANISATIONS;
+FUNCTION get_tab_offenders_list_cnt RETURN NUMBER;
+
+FUNCTION get_off_area_counter   RETURN NUMBER;
+PROCEDURE inc_off_area_counter;
+
+--============================================================================--
+-- CASELOAD Rebuild suport subroutines
+--============================================================================--
+PROCEDURE procRebuildCaseloadTable(p_offender_id NUMBER);
+PROCEDURE procCaseloadAddOffender(p_offender_id NUMBER);
+PROCEDURE procRebuildCaseloadTable_OFF;
+FUNCTION funcGetRebuildCaseload_OFF_lst RETURN VARCHAR2;
+PROCEDURE procRebuildCaseloadTable_ALL(p_offender_ID_from NUMBER DEFAULT NULL, p_offender_ID_to NUMBER DEFAULT NULL);
+
+--============================================================================--
+-- COHORT_DIARY Rebuild suport subroutines
+--============================================================================--
+PROCEDURE procRebuildCohortTable(p_offender_id NUMBER);
+PROCEDURE procCohortAddOffender(p_offender_id NUMBER);
+PROCEDURE procRebuildCohortTable_OFF;
+FUNCTION funcGetRebuildCohort_OFF_lst RETURN VARCHAR2;
+PROCEDURE procRebuildCohortTable_ALL(p_offender_ID_from NUMBER DEFAULT NULL, p_offender_ID_to NUMBER DEFAULT NULL);
+
+--============================================================================--
+-- REJECTED_TRANSFER_DIARY Rebuild suport subroutines
+--============================================================================--
+PROCEDURE procRebuildRejTransfersDiary(p_offender_id NUMBER);
+
+--
+--
+PROCEDURE procFindAPFromGroup(
+    p_offender_ID                 NUMBER,
+    p_approvedPremisesReferral_ID NUMBER,
+    p_referralGroup_ID            NUMBER);
+
+-- Trigger Support subroutines
+
+--============================================================================--
+--    TRUST_PROVIDER_FLAG / TRUST_PROVIDER_TEAM_ID / STAFF_EMPLOYEE_ID /
+--    PROBATION_AREA_ID maintenance subroutines
+--============================================================================--
+FUNCTION funcGetTeamProbAreaID(p_team_id NUMBER) RETURN NUMBER;
+FUNCTION funcGetProvTeamProbAreaID(p_provider_team_id NUMBER) RETURN NUMBER;
+FUNCTION funcGetProvTeamExtProviderID(p_provider_team_id NUMBER) RETURN NUMBER;
+
+PROCEDURE procSetTrustStaffTeamArea(
+    p_staff_id               IN     NUMBER,
+    p_provider_employee_id   IN     NUMBER,
+    p_team_id                IN     NUMBER,
+    p_provider_team_id       IN     NUMBER,
+    p_TRUST_PROVIDER_FLAG    IN OUT NUMBER,
+    p_TRUST_PROVIDER_TEAM_ID IN OUT NUMBER,
+    p_STAFF_EMPLOYEE_ID      IN OUT NUMBER,
+    p_PROBATION_AREA_ID      IN OUT NUMBER);
+
+--
+FUNCTION get_active_flag(p_end_date DATE, p_soft_deleted NUMBER DEFAULT 0) RETURN SMALLINT;
+--
+FUNCTION get_active_flag_for_manager(p_end_date DATE) RETURN SMALLINT;
+
+--============================================================================--
+--    OFFENDER.current_disposal maintenance subroutines
+--============================================================================--
+FUNCTION funcGetOffenderCurrentDisposal(p_offender_id NUMBER) RETURN NUMBER;
+PROCEDURE procSetOffenderCurrDisposal(p_offender_id NUMBER, p_trigger_name VARCHAR2 DEFAULT NULL);
+PROCEDURE procAddCurrDispDeferred(p_offender_id NUMBER, p_trigger_name VARCHAR2 DEFAULT NULL);
+FUNCTION funcGetCurrDispDeferredUpdCNT RETURN NUMBER;
+PROCEDURE procUpdateOffCurrDisp_DEFERRED(p_trigger_name VARCHAR2 DEFAULT NULL);
+
+--============================================================================--
+--    OFFENDER.current_tier maintenance subroutines
+--============================================================================--
+FUNCTION funcGetCurrTierDeferredUpdCNT RETURN NUMBER;
+PROCEDURE procAddCurrTierDeferred(p_offender_id NUMBER, p_trigger_name VARCHAR2 DEFAULT NULL);
+PROCEDURE procUpdateOffCurrTier_DEFERRED(p_trigger_name VARCHAR2 DEFAULT NULL);
+
+--============================================================================--
+--    MIS Support subroutines
+--============================================================================--
+--
+-- CDC SET / CLEAR CONTEXT subroutines
+FUNCTION procChangeCapture_GetContext RETURN NUMBER;
+PROCEDURE procChangeCapture_SetContext(p_cdc_ctx NUMBER);
+PROCEDURE procChangeCapture_ClearContext;
+
+-- CDC Insert Into a CDC audit table subroutine
+PROCEDURE procChangeCapture_InsRecord(
+    p_src_table_name VARCHAR2,
+    p_src_key_value  VARCHAR2,
+    p_src_ROWID      ROWID,
+    p_action         VARCHAR2,
+    p_row_version    PLS_INTEGER);
+
+--============================================================================--
+--    Miscelanious
+--============================================================================--
+PROCEDURE procDebug(p_msg VARCHAR2, p_print_flag VARCHAR2 DEFAULT 'N');
+
+--
+--
+--
+--
+END pkg_TriggerSupport;
+/
+
+create PACKAGE PKG_SPG_SUPPORT AUTHID DEFINER
+AS
+--
+-- ===============================================================
+--  PCMS Project: Migration Stream
+-- ===============================================================
+--
+--  Filename  : PKG_SPG_SUPPORT_PKG.sql
+--  Purpose   : Production Data Transport (PDT) Support Package
+--  Author    : Y.Fedkiv, Beaumont Colson
+--
+--  Change History:
+--
+--  Version Date        Who             Description
+--  ------- ----------- -------------   -----------------------------
+--  2.00    03-JUN-2015 Y Fedkiv        Initial Version
+--  2.01    26-JUN-2015 M.Brumpton      Added persist to disk procedure
+--  2.02    30-JUN-2015 Y.Fedkiv        Added support for the new t_rpt_REC_TYP.notes1 field
+--  2.03    09-JUL-2015 Y.Fedkiv        Added support for the dummy fields (TARGET_TABLE is postfixed with *) within GET_PARSED_FLD_LST
+--  2.04    29-JUL-2015 M.Brumpton      Added document_to_disk procedure for unstructured data
+--  2.05    04-AUG-2015 Y.Fedkiv        Added SPG_SEED_METADATA support subroutines
+--  2.06    05-AUG-2015 M.Brumpton      Updated documents to disk
+--  2.07    25-AUG-2015 Y.Fedkiv        Introduced new DO_INIT_TAB_INFO to improve caching performance
+--  2.08    08-SEP-2015 Y.Fedkiv        - Amended GET_PARSED_FLD_LST to include all FK fields when P_CR_VIEW_MODE=Y
+--                                      - Added new UPDATE_GUID_VALUE procedure
+--                                      - Added new GET_LIST_OF_PRIMARY_ID_VALUES pipelined procedure that runs within the AUTONOMOUS_TRANSACTION context
+--  2.09    11-SEP-2015 Y.Fedkiv        - Added support for the new BUSINESS_INT_XML_DETAIL.include_in_delete_flag field
+--                                      - Amended GET_PARSED_FLD_LST to add support for the "LAST_UPDATED_USER_ID:USER_:NAME" notion
+--  2.10    17-SEP-2015 Y.Fedkiv        Added support for the BUSINESS_INT_XML_MAP reconciliation level
+--  2.11    18-SEP-2015 Y.Fedkiv        Added P_UPDATE_MODE parameter in GET_PARSED_FLD_LST (to support Delete ND SPG XML messages)
+--  2.12    21-SEP-2015 Y.Fedkiv        Amended GET_PARSED_FLD_LST to add support for double-lookups semantics e.g. DISPOSAL_TYPE_ID:R_DISPOSAL_TYPE:UNITS_ID:STDREF_CODE
+--  2.13    24-SEP-2015 M.Brumpton      Changed get_guid_value to return VARCHAR2 added RAWTOHEX conversion
+--  2.14    16-OCT-2015 M.Brumpton      Added additional type to support delete messages
+--  2.15    19-OCT-2015 Y.Fedkiv        Fixed data format for the XML date and datetime data types
+--  2.16    23-OCT-2015 M.Brumpton      Added compare_inbound_guid function
+--  2.17    28-OCT-2015 M.Brumpton      Corrected delete element processing
+--  2.18    03-NOV-2015 Y.Fedkiv        Fixed data format for the XML "time" data type
+--  2.19    04-NOV-2015 Y.Fedkiv        Fixed the Unique Key constraint violation within UPDATE_GUID_VALUE
+--  2.20    27-NOV-2015 Y.Fedkiv        Amended get_parsed_fld_lst to remove obsolete line feed and/or space characters, within CLOB fields
+--  2.21    02-DEC-2015 Y.Fedkiv        Fixed NO_DATA_FOUND error within UPDATE_GUID_VALUE
+--  2.22    03-DEC-2015 Y.Fedkiv        Added new GET_RESPONSIBLE_TEAM and GET_RESPONSIBLE_STAFF functions
+--  2.23    10-DEC-2015 Y.Fedkiv        Added optional P_TRACE_LEVEL to procDebug
+--  2.24    10-DEC-2015 M.Brumpton      Added new isCRCExport function
+--  2.25    11-DEC-2015 Y.Fedkiv        - Added new GET_OFFICE_LOCATION function
+--                                      - Fixed VARCHAR2(32kb) limitation within GEN_XML_VIEWS procedure
+--                                      - Amended GET_PARSED_FLD_LST to increase returned value maximum length (4000->32kb)
+--  2.26    14-DEC-2015 M.Brumpton      Added support for username and password in broker connection
+--  2.27    14-DEC-2015 M.Brumpton      Fixed delete PSSRequirement message - incorrect element name
+--  2.28    19-DEC-2015 M.Brumpton      Added format statements to TEAM / OFFICER / LOCATION for SPG created entries
+--  2.29    30-DEC-2015 Y.Fedkiv        A few minor changes to simplify the PLSQL code portability to PG
+--  2.30    22-JAN-2016 Y.Fedkiv        Amended get_parsed_fld_lst to map *:USER_:NAME to USER_.SURNAME||, ||USER_.FORENAME
+--  2.31    22-FEB-2016 Y.Fedkiv        Amended UPDATE_GUID_VALUE to preserve the previous GUID value for deleted records
+--  2.32    22-FEB-2016 M.Brumpton      Added procedure for change capture workaround
+--                                      - on insert to case allocation create rows in REFERRAL and ASSESSMENT
+--  2.33    23-FEB-2016 Y.Fedkiv        RAW(32) to VARCHAR2 conversion error fix for UPDATE_GUID_VALUE
+--  2.34    26-FEB-2016 M.Brumpton      Introduced procedures to avoid mutating trigger issues with CASE_ALLOCATION
+--  2.35    26-FEB-2016 M.Brumpton      Updated referral source to code 'CDC'
+--  2.36    23-MAR-2016 Y.Fedkiv        Updated GET_DELETE_ELEMENTS to incorporate Delete XML Message logic for 2022 (CustodyReleaseUndo) and 2023 (CustodyRecallUndo)
+--  2.37    12-APR-2016 Y.Fedkiv        Added new GET_SPG_ROOT_TABLE function
+--  2.38    23-APR-2016 M.Brumpton      Added additional options to delete element return
+--  2.39    28-APR-2016 Y.Fedkiv        #SPG-9994: amended GET_DELETE_ELEMENTS to set the group name to ProviderLAODetailsD for 1060 message
+--  2.40    20-JUL-2016 Y.Fedkiv        #SPG-10240, #SPG-10286: Moved the CHR(10) substitution from SPGMessage.process_q_msg into PKG_SPG_SUPPORT.get_parsed_fld_lst
+--  2.41    23-AUG-2016 Y.Fedkiv        #SPG-10757: Added new GET_UPDATE_GUID_PENDING_CNT and UPDATE_GUID_VALUES_FOR_CLOB to support SPG_VERSION update triggers for CLOB fields
+--  2.42    27-SEP-2016 Y.Fedkiv        - Amended GET_PARSED_FLD_LST for SPGUpdateUser to use a comma as a delimiter (was ", ")
+--                                      - Same change as above, within the GET_RESPONSIBLE_STAFF
+--  2.43    06-OCT-2016 Y.Fedkiv        Updated GET_DELETE_ELEMENTS to incorporate Delete XML Message logic for 2024 (CustodyPSSUndo)
+--  2.43ND  07-SEP-2016 Y.Fedkiv        - Added new GET_JMS_THREADS, SET_JMS_THREADS, DO_ALLOCATE_JMS_THREAD and DO_RELEASE_JMS_THREAD subroutines
+--                                      - Introduced JMS processing parallel degree control within sendUpdateToJMS (using the above API)
+--  2.44ND  09-NOV-2016 Y.Fedkiv        Amended GET_PARSED_FLD_LST (for CLOBs)
+--  2.45ND  29-JAN-2017 M.Brumpton      SPG-12845 - included additional parameter on call to remove non-printable characters from Notes
+--  2.46ND  16-FEB-2017 Y.Fedkiv        Implemented a "lazy" SPG_VERSION generation within GET_GUID_VALUE (via the DO_INSERT_SPG_VERSION)
+--  2.47ND  21-FEB-2017 M.Brumpton      Updated for multi-schema support
+--  2.48ND  22-FEB-2017 Y.Fedkiv        - Removed double RESULT_CACHE
+--                                      - #SPG-12817, #SPG-12821, #SPG-13023:  GUID for Custodial (2002,2003,2004) messages should be maintained at Event (1008) level
+--  2.49ND  27-FEB-2017 Y.Fedkiv        - #SPG-12817: Custody*Undo messages should always increment SPGVersion at 1008 (Event) level
+--                                      - Amended GEN_XML_VIEWS to initially drop all 'XML%_MSG_%_V' views that have consecutive 4 digit (xml_msg_id) in their name
+--  2.50ND  31-MAR-2017 Y.Fedkiv        - CustodyLocation (1023) message should always increment SPGVersion at 1008 (Event) level
+--                                      - GUID for CustodyLocation (1023) messages should be maintained at Event (1008) level
+--  2.51ND  04-APR-2017 M.Brumpton      Aligned with PDM904
+--  2.52ND  12-APR-2017 Y.Fedkiv        Multi-schema fix
+--  2.53ND  12-APR-2017 M.Brumpton      LAZY_SEED of SPG_VERSION set to xsd_number 1
+--  2.54ND  22-AUG-2017 Y.Fedkiv        Increased timeout 5min to 1 hour within DO_ALLOCATE_JMS_THREAD
+--  2.55ND  04-SEP-2017 Y.Fedkiv        Amended GEN_XML_VIEWS to exclude 5xxx (Optional Exchange) messages
+--  2.55ND  15-SEP-2017 Y Fedkiv        Added CREATE_CRC_EXPORT_BATCH wrapper
+--  2.56ND  05-OCT-2017 Y Fedkiv        #SPG-16247: Added soft locks within SET_JMS_THREADS and DO_ALLOCATE_JMS_THREAD
+--  2.57ND  17-OCT-2017 Y.Fedkiv        #DST-1069: Added /n and \n special character processing GET_PARSED_FLD_LST - for CLOB and *TransferNotes XML elements
+--  2.58ND  22-DEC-2017 Y.Fedkiv        CRCD-7775: Added STDREF_DESC lookup type within GET_PARSED_FLD_LST
+--  2.59ND  23-MAR-2018 Y.Fedkiv        #DST-1790: Added new RESUBMIT_FAILED_MESSAGES subroutine
+--  2.60ND  12-APR-2018 Y.Fedkiv        #DST-17110: Added new P_SPG_NOTIFICATION_ID to CREATE_CRC_EXPORT_BATCH wrapper
+--  2.61ND  02-MAY-2018 Y.Fedkiv        #DST-2987: Added PKG_Global.GC_SPG_MTHREAD_FLAG check within DO_ALLOCATE_JMS_THREAD and DO_RELEASE_JMS_THREAD
+--  2.62ND  08-MAY-2018 Y.Fedkiv        Replaced PKG_Global.GC_SPG_MTHREAD_FLAG with SPGConfig.SPGMultiThreadActive
+--  2.63ND  14-MAY-2018 Y.Fedkiv        Added more debug details within unhandled exception handlers
+--  2.64ND  22-MAY-2018 Y.Fedkiv        Added PKG_Debug.funcGetDebugActive for all complex debug details
+--  2.65ND  03-JUL-2018 Y.Fedkiv        #DST-3213: Limited total max length to 80 characters within GET_RESPONSIBLE_STAFF
+--  2.66ND  31-JUL-2018 Y.Fedkiv        #DST-3537: Included the "code + /" element to an ocerall limit of 80 characters within GET_RESPONSIBLE_STAFF
+--  2.67ND  08-AUG-2018 Y.Fedkiv        - Added optional P_EXPORT_CASELOAD_FLAG parameter to PERSIST_XML_TO_DISK
+--                                      - Fixed lookup query within GET_RESPONSIBLE_STAFF for Provider Employee
+--  2.68ND  29-AUG-2018 Y.Fedkiv        #DST-3875: Changed PERSIST_XML_TO_DISK and OFFENDER_DOCUMENTS_TO_DISK to propagate error to the top calling procedure
+--  2.70ND  13-SEP-2018 K.Foster        DST-3716 - Added Errors only flag and SPG error ID to related messages
+--  2.71ND  12-SEP-2018 Y.Fedkiv        #DST-3293, #DST-3296: added new SUBMIT_DATA_SCRIPT_MESSAGE procedure
+--  2.69ND  30-AUG-2018 K.Foster        SPG Error Experimental - Related Messages
+--  2.69ND  13-SEP-2018 K.Foster        DST-3716 - Added Errors only flag and SPG error ID to related messages
+--  2.71ND  14-SEP-2018 Y.Fedkiv        #DST-3293, #DST-3296: added new SUBMIT_DATA_SCRIPT_MESSAGE procedure
+--  2.72ND  24-SEP-2018 Y.Fedkiv        #DST-4094: Suppressed messages for L3 target, when EVENT termination date is not NULL
+--  2.73ND  27-SEP-2018 K.Foster        #DST-4057: Amended procGetRelatedSPGMessages to only include SPGISN in related responses
+--
+-- ================================================================
+--
+
+GC_VERSION CONSTANT VARCHAR2(10) := '2.73ND';
+FUNCTION get_version RETURN VARCHAR2;
+
+PROCEDURE do_init_tab_info;
+
+FUNCTION get_parsed_fld_lst(
+    p_table               VARCHAR2,
+    p_cr_view_mode        VARCHAR2 DEFAULT 'N',
+    p_src_tab_prefix_flag VARCHAR2 DEFAULT 'N',
+    p_delim               VARCHAR2 DEFAULT ',',
+    p_source_tables       VARCHAR2 DEFAULT NULL,
+    p_update_mode         VARCHAR2 DEFAULT 'I' )
+RETURN VARCHAR2;
+
+PROCEDURE gen_xml_views;
+
+TYPE t_rpt_REC_TYP IS RECORD(
+  owner_flag       VARCHAR2(10),
+  --
+  bi_code                   BUSINESS_INTERACTION.business_interaction_code%TYPE,
+  xml_message_name1         BUSINESS_INT_XML_MAP.xml_message_name%TYPE,
+  data_update_mode          BUSINESS_INT_XML_MAP.data_update_mode%TYPE,
+  root_xml_message_id       BUSINESS_INT_XML_MAP.root_xml_message_id%TYPE,
+  include_xml_message_list  BUSINESS_INT_XML_MAP.include_xml_message_list%TYPE,
+  exclude_xml_message_list  BUSINESS_INT_XML_MAP.exclude_xml_message_list%TYPE,
+  --
+  level_flag       VARCHAR2(30),
+  xml_message_id   BUSINESS_INT_XML_DETAIL.xml_message_id%TYPE,
+  xml_message_name BUSINESS_INT_XML_SUMMARY.xml_message_name%TYPE,
+  source_tables    VARCHAR2(4000),
+  notes            VARCHAR2(4000),
+  notes1           VARCHAR2(4000),
+  --
+  source_table          BUSINESS_INT_XML_DETAIL.source_table%TYPE,
+  source_column         VARCHAR2(250) /*BUSINESS_INT_XML_DETAIL.source_column%TYPE*/,
+  xml_field_name        BUSINESS_INT_XML_DETAIL.xml_field_name%TYPE,
+  xml_identifier_flag   BUSINESS_INT_XML_DETAIL.xml_identifier_flag%TYPE,
+  xml_data_type         BUSINESS_INT_XML_DETAIL.xml_data_type%TYPE,
+  xml_nillable          VARCHAR2(1),
+  xml_ref_data_flag     BUSINESS_INT_XML_DETAIL.reference_data_flag%TYPE,
+  xml_min_len           BUSINESS_INT_XML_DETAIL.xml_minimum_length%TYPE,
+  xml_max_len           BUSINESS_INT_XML_DETAIL.xml_maximum_length%TYPE,
+  xml_referential_flag  BUSINESS_INT_XML_DETAIL.referential_flag%TYPE,
+  include_in_del_msg    BUSINESS_INT_XML_DETAIL.include_in_delete_flag%TYPE );
+--
+TYPE t_rpt_TAB_TYP IS TABLE OF t_rpt_REC_TYP;
+
+FUNCTION get_xml_mappings_TAB RETURN t_rpt_TAB_TYP PIPELINED;
+
+PROCEDURE init_RPT;
+
+FUNCTION set_rpt_element(
+  p_owner_flag                VARCHAR2,
+  p_level_flag                VARCHAR2,
+  --
+  p_bi_code                   BUSINESS_INTERACTION.business_interaction_code%TYPE,
+  p_xml_message_name1         BUSINESS_INT_XML_MAP.xml_message_name%TYPE,
+  p_data_update_mode          BUSINESS_INT_XML_MAP.data_update_mode%TYPE,
+  p_root_xml_message_id       BUSINESS_INT_XML_MAP.root_xml_message_id%TYPE,
+  p_include_xml_message_list  BUSINESS_INT_XML_MAP.include_xml_message_list%TYPE,
+  p_exclude_xml_message_list  BUSINESS_INT_XML_MAP.exclude_xml_message_list%TYPE,
+  --
+  p_xml_message_id        BUSINESS_INT_XML_DETAIL.xml_message_id%TYPE,
+  p_xml_message_name      BUSINESS_INT_XML_SUMMARY.xml_message_name%TYPE,
+  p_source_tables         VARCHAR2,
+  p_notes                 VARCHAR2,
+  p_notes1                VARCHAR2,
+  --
+  p_source_table          BUSINESS_INT_XML_DETAIL.source_table%TYPE,
+  p_source_column         BUSINESS_INT_XML_DETAIL.source_column%TYPE,
+  p_xml_field_name        BUSINESS_INT_XML_DETAIL.xml_field_name%TYPE,
+  p_xml_identifier_flag   BUSINESS_INT_XML_DETAIL.xml_identifier_flag%TYPE,
+  p_xml_data_type         BUSINESS_INT_XML_DETAIL.xml_data_type%TYPE,
+  p_xml_nillable          VARCHAR2,
+  p_xml_ref_data_flag     BUSINESS_INT_XML_DETAIL.reference_data_flag%TYPE,
+  p_xml_min_len           BUSINESS_INT_XML_DETAIL.xml_minimum_length%TYPE,
+  p_xml_max_len           BUSINESS_INT_XML_DETAIL.xml_maximum_length%TYPE,
+  p_xml_referential_flag  BUSINESS_INT_XML_DETAIL.referential_flag%TYPE,
+  p_include_in_del_msg    BUSINESS_INT_XML_DETAIL.include_in_delete_flag%TYPE )
+RETURN t_rpt_REC_TYP;
+--
+FUNCTION set_rpt_element_D(
+  p_owner_flag            VARCHAR2,
+  p_xml_message_id        BUSINESS_INT_XML_DETAIL.xml_message_id%TYPE,
+  p_notes                 VARCHAR2,
+  p_notes1                VARCHAR2,
+  --
+  p_source_table          BUSINESS_INT_XML_DETAIL.source_table%TYPE,
+  p_source_column         BUSINESS_INT_XML_DETAIL.source_column%TYPE,
+  p_xml_field_name        BUSINESS_INT_XML_DETAIL.xml_field_name%TYPE,
+  p_xml_identifier_flag   BUSINESS_INT_XML_DETAIL.xml_identifier_flag%TYPE,
+  p_xml_data_type         BUSINESS_INT_XML_DETAIL.xml_data_type%TYPE,
+  p_xml_nillable          VARCHAR2,
+  p_xml_ref_data_flag     BUSINESS_INT_XML_DETAIL.reference_data_flag%TYPE,
+  p_xml_min_len           BUSINESS_INT_XML_DETAIL.xml_minimum_length%TYPE,
+  p_xml_max_len           BUSINESS_INT_XML_DETAIL.xml_maximum_length%TYPE,
+  p_xml_referential_flag  BUSINESS_INT_XML_DETAIL.referential_flag%TYPE,
+  p_include_in_del_msg    BUSINESS_INT_XML_DETAIL.include_in_delete_flag%TYPE )
+RETURN t_rpt_REC_TYP;
+--
+FUNCTION set_rpt_element_S(
+  p_owner_flag            VARCHAR2,
+  p_xml_message_id        BUSINESS_INT_XML_DETAIL.xml_message_id%TYPE,
+  p_xml_message_name      BUSINESS_INT_XML_SUMMARY.xml_message_name%TYPE,
+  p_source_tables         VARCHAR2,
+  p_notes                 VARCHAR2 )
+RETURN t_rpt_REC_TYP;
+--
+FUNCTION set_rpt_element_M(
+  p_owner_flag                VARCHAR2,
+  p_bi_code                   BUSINESS_INTERACTION.business_interaction_code%TYPE,
+  p_xml_message_name          BUSINESS_INT_XML_MAP.xml_message_name%TYPE,
+  p_data_update_mode          BUSINESS_INT_XML_MAP.data_update_mode%TYPE,
+  p_root_xml_message_id       BUSINESS_INT_XML_MAP.root_xml_message_id%TYPE,
+  p_include_xml_message_list  BUSINESS_INT_XML_MAP.include_xml_message_list%TYPE,
+  p_exclude_xml_message_list  BUSINESS_INT_XML_MAP.exclude_xml_message_list%TYPE )
+RETURN t_rpt_REC_TYP;
+--
+PROCEDURE add_rpt_element(p_rec t_rpt_REC_TYP);
+
+FUNCTION do_compare_values(p_fld_name VARCHAR2, p_val1 VARCHAR2, p_val2 VARCHAR2) RETURN VARCHAR2;
+
+FUNCTION get_LM_2_PM_cmp(
+    p_reconcile_level  VARCHAR2,
+    p_xml_message_id   BUSINESS_INT_XML_DETAIL.xml_message_id%TYPE,
+    p_xml_field_name   BUSINESS_INT_XML_DETAIL.xml_field_name%TYPE,
+    p_source_table     BUSINESS_INT_XML_DETAIL.source_table%TYPE,
+    p_bi_code          BUSINESS_INTERACTION.business_interaction_code%TYPE,
+    p_data_update_mode VARCHAR2 )
+RETURN VARCHAR2;
+--
+PROCEDURE persist_xml_to_disk(
+    spg_notification_id_in NUMBER,
+    p_export_caseload_flag VARCHAR2 DEFAULT 'N' );
+
+PROCEDURE offender_documents_to_disk(offender_id_in NUMBER, document_id_in NUMBER DEFAULT NULL);
+--
+TYPE delete_elements_TYP IS RECORD(
+  xml_message_id      BUSINESS_INT_XML_SUMMARY.xml_message_id%TYPE,
+  message_name        BUSINESS_INT_XML_SUMMARY.xml_message_name%TYPE,
+  root_element_name   VARCHAR2(107),
+  group_element_name  VARCHAR2(101),
+  unique_key          BUSINESS_INT_XML_SUMMARY.unique_key%TYPE,
+  xml_field_name      BUSINESS_INT_XML_DETAIL.xml_field_name%TYPE);
+TYPE delete_elements_tab_TYP IS TABLE OF delete_elements_TYP;
+--
+FUNCTION get_delete_elements(xmlmessageid_in IN VARCHAR2) RETURN delete_elements_tab_TYP;
+
+--
+-- Responsible TEAM / OFFICER functions
+--
+FUNCTION get_responsible_team(
+    p_team_id          NUMBER,
+    p_provider_team_id NUMBER,
+    p_default_value    VARCHAR2 DEFAULT NULL )
+RETURN VARCHAR2;
+
+FUNCTION get_responsible_staff(
+    p_staff_id             NUMBER,
+    p_provider_employee_id NUMBER,
+    p_default_value        VARCHAR2 DEFAULT NULL )
+RETURN VARCHAR2;
+
+FUNCTION get_office_location(
+    p_office_location_id   NUMBER,
+    p_default_value        VARCHAR2 DEFAULT NULL )
+RETURN VARCHAR2;
+
+--
+-- GUID Support Subroutines
+--
+TYPE g_spg_version_rec_TYP IS RECORD(
+  source_table_name   SPG_VERSION_ENTRY.source_table_name%TYPE,
+  source_action_flag  SPG_VERSION_ENTRY.source_action_flag%TYPE,
+  xml_view_name       SPG_VERSION_ENTRY.table_name%TYPE,
+  offender_id         SPG_VERSION_ENTRY.offender_id%TYPE,
+  primary_key_id      SPG_VERSION_ENTRY.primary_key_id%TYPE );
+TYPE g_spg_version_tab_TYP IS TABLE OF g_spg_version_rec_TYP;
+--
+FUNCTION get_spg_root_table(p_message_id NUMBER) RETURN VARCHAR2;
+
+FUNCTION get_spg_version_CNT RETURN INTEGER;
+
+FUNCTION get_spg_version_TAB RETURN g_spg_version_tab_TYP PIPELINED;
+
+FUNCTION get_list_of_primary_id_values(
+    p_source_table_name  VARCHAR2,
+    p_source_action_flag VARCHAR2,
+    p_xml_view_name      VARCHAR2,
+    p_link_col_name      VARCHAR2,
+    p_search_by_key      VARCHAR2,
+    p_debug_flag         VARCHAR2 DEFAULT 'Y' )
+RETURN g_spg_version_tab_TYP PIPELINED;
+
+PROCEDURE update_guid_value(
+    p_source_table_name  VARCHAR2,
+    p_source_action_flag VARCHAR2,
+    p_xml_view_name      VARCHAR2,
+    p_link_col_name      VARCHAR2,
+    p_search_by_key      VARCHAR2,
+    p_deferred_flag      VARCHAR2 DEFAULT 'N',
+    p_immediate_run_flag VARCHAR2 DEFAULT 'N' );
+
+FUNCTION get_update_guid_pending_cnt(p_source_table_name VARCHAR2, p_xml_view_name VARCHAR2) RETURN NUMBER;
+
+FUNCTION get_guid_value(p_xml_message_id NUMBER, p_search_by_key VARCHAR2, p_persist_flag VARCHAR2 DEFAULT 'Y') RETURN VARCHAR2 /*SPG_VERSION_ENTRY.spg_version%TYPE*/;
+
+PROCEDURE update_guid_values_for_CLOB(
+    p_table_name    VARCHAR2,
+    p_search_by_key VARCHAR2,
+    p_pk_fld_name   VARCHAR2,
+    p_clob_fld_name VARCHAR2,
+    p_trigger_name  VARCHAR2 DEFAULT NULL );
+
+FUNCTION get_username_value(p_xml_message_id NUMBER, p_search_by_key VARCHAR2) RETURN VARCHAR2;
+FUNCTION compare_inbound_guid(  xmlmessagename_in   IN VARCHAR2,
+                                searchkey_in        IN VARCHAR2,
+                                inboundguidvalue_in IN VARCHAR2) RETURN NUMBER;
+FUNCTION bisCRCExport (offenderid_in IN NUMBER) RETURN BOOLEAN;
+FUNCTION isCRCExport (offenderid_in IN NUMBER) RETURN VARCHAR2;
+--
+-- SPG_SEED_METADATA support subroutines
+--
+PROCEDURE do_ins_S(
+    p_xml_message_id        VARCHAR2,
+    p_xml_message_name      VARCHAR2,
+    p_source_tables         VARCHAR2,
+    p_where_clause          VARCHAR2,
+    p_where_clause1         VARCHAR2,
+    p_hier_level            NUMBER,
+    p_level_order_by        NUMBER,
+    p_unique_key            VARCHAR2,
+    p_fk_key                VARCHAR2,
+    p_parent_xml_message_id VARCHAR2,
+    p_Notes                 VARCHAR2,
+    p_xsd_number      NUMBER DEFAULT 1);
+--
+PROCEDURE do_ins_D(
+    p_xml_message_id      VARCHAR2,
+    p_xml_field_id        NUMBER,
+    p_source_table        VARCHAR2,
+    p_source_column       VARCHAR2,
+    p_target_sql_expr     VARCHAR2,
+    p_target_table        VARCHAR2,
+    p_xml_field_name      VARCHAR2,
+    p_xml_identifier_flag VARCHAR2,
+    p_xml_data_type       VARCHAR2,
+    p_xml_min_occurs      NUMBER,
+    p_xml_max_occurs      NUMBER,
+    p_ref_data_flag       VARCHAR2,
+    p_xml_min_length      NUMBER,
+    p_xml_max_length      NUMBER,
+    p_referential_flag    VARCHAR2,
+    p_Notes               VARCHAR2,
+    p_include_in_del_msg  VARCHAR2,
+    p_xsd_number    NUMBER DEFAULT 1);
+--
+PROCEDURE do_ins_M(
+      p_business_interaction_id NUMBER,
+      p_root_xml_message_id     VARCHAR2,
+      p_xml_message_name        VARCHAR2,
+      p_inc_xml_msg_list        VARCHAR2,
+      p_excl_xml_msg_list       VARCHAR2,
+      p_data_update_mode        VARCHAR2,
+      p_xsd_number              NUMBER DEFAULT 1);
+--
+--
+FUNCTION get_max_jms_threads(p_date_time DATE DEFAULT SYSDATE) RETURN INTEGER;
+FUNCTION get_jms_threads RETURN INTEGER;
+PROCEDURE set_jms_threads(p_inc INTEGER DEFAULT 1);
+PROCEDURE do_allocate_jms_thread;
+PROCEDURE do_release_jms_thread;
+--
+FUNCTION sendUpdateTOJMS(
+    msgClob                 CLOB,
+    jmsUrl                      VARCHAR2,
+    queueName                   VARCHAR2,
+    senderControlReference  VARCHAR2,
+    JMSPriority               NUMBER,
+    SenderIdentity            VARCHAR2 )
+RETURN VARCHAR2;
+
+FUNCTION sendUpdateToJMS( msgClob                 CLOB,
+                          jmsUser                 VARCHAR2,
+                          jmsPass                 VARCHAR2,
+                          jmsUrl                  VARCHAR2,
+                          queueName               VARCHAR2,
+                          senderControlReference  VARCHAR2,
+                          JMSPriority             NUMBER,
+                          senderIdentity          VARCHAR2 )
+RETURN VARCHAR2;
+--
+FUNCTION sendJMSmessage(  msgString               CLOB,
+                          jmsUrl                  VARCHAR2,
+                          queueName               VARCHAR2,
+                          senderControlReference  VARCHAR2,
+                          JMSPriority             NUMBER,
+                          senderIdentity          VARCHAR2) RETURN VARCHAR2
+AS LANGUAGE JAVA NAME 'active.jms.OracleJMSSender.sendMessage(  java.sql.Clob,
+                                                                java.lang.String,
+                                                                java.lang.String,
+                                                                java.lang.String,
+                                                                java.lang.Integer,
+                                                                java.lang.String) return java.lang.String';
+FUNCTION sendJMSmessage(  msgString               CLOB,
+                          jmsUser                 VARCHAR2,
+                          jmsPass                 VARCHAR2,
+                          jmsUrl                  VARCHAR2,
+                          queueName               VARCHAR2,
+                          senderControlReference  VARCHAR2,
+                          JMSPriority             NUMBER,
+                          senderIdentity          VARCHAR2) RETURN VARCHAR2
+AS LANGUAGE JAVA NAME 'active.jms.OracleJMSSender.sendMessage(  java.sql.Clob,
+                                                                java.lang.String,
+                                                                java.lang.String,
+                                                                java.lang.String,
+                                                                java.lang.String,
+                                                                java.lang.String,
+                                                                java.lang.Integer,
+                                                                java.lang.String) return java.lang.String';
+--
+--
+PROCEDURE addAllocation2Queue(caseAllocationID_in IN NUMBER);
+PROCEDURE processAllocationQueue;
+PROCEDURE change_capture_case_allocation(caseAllocationID_in NUMBER);
+--
+--
+PROCEDURE create_crc_export_batch(
+    p_probation_area_id           NUMBER,
+    p_team_id                     NUMBER    DEFAULT -1,
+    p_staff_id                    NUMBER    DEFAULT -1,
+    p_excl_already_extracted_flag VARCHAR2  DEFAULT 'N',
+    p_incl_already_extracted_flag VARCHAR2  DEFAULT 'N',
+    p_crc_export_date_from        DATE      DEFAULT NULL,
+    p_crc_export_date_to          DATE      DEFAULT NULL,
+    p_crn                         VARCHAR2  DEFAULT NULL,
+    p_status_export_flag          SMALLINT  DEFAULT 0,
+    p_debug_flag                  VARCHAR2  DEFAULT 'Y',
+    --
+    p_max_rows                    INTEGER   DEFAULT -1,
+    p_max_rows_L1                 INTEGER   DEFAULT -1,
+    p_max_rows_L3                 INTEGER   DEFAULT -1,
+    --
+    p_async_flag                  VARCHAR2 DEFAULT 'N',
+    p_spg_notification_id         NUMBER   DEFAULT NULL );
+
+--
+--
+PROCEDURE resubmit_failed_messages(p_spg_notification_id_LST CLOB);
+
+--
+--
+PROCEDURE procGetRelatedSPGMessages(
+    p_spg_notification_id           NUMBER DEFAULT NULL,
+     p_errors_only                 CHAR DEFAULT 'N',
+    p_outcursor               OUT SYS_REFCURSOR );
+--
+--
+FUNCTION get_off_interested_CRCs( p_offender_id NUMBER, p_area_code_flag VARCHAR2 DEFAULT 'N' )
+RETURN T_TAB_ORGANISATIONS;
+--
+PROCEDURE submit_data_script_message(
+    p_data_script_message_id    NUMBER,
+    p_business_interaction_id   NUMBER,
+    p_offender_id               NUMBER,
+    p_unique_id                 NUMBER,
+    p_event_id                  NUMBER   DEFAULT NULL,
+    p_disposal_termination_date DATE     DEFAULT NULL,
+    p_data_script_name          VARCHAR2 DEFAULT NULL,
+    p_debug_mode                VARCHAR2 DEFAULT 'N' );
+
+--
+--
+--
+END PKG_SPG_SUPPORT;
+/
+
+create PACKAGE pkg_dpa_deletion
+AS
+--
+--
+-- Description  : The package definitions for DPA Deletion
+--
+-- Author       : Karl Foster
+--
+--  Date        : 21/03/2011
+--
+--  Change History:
+--
+--  Version PDM Date        Who                Description
+--  ------- --- ----------- ---------------- -----------------------------
+--  001         21/03/2011  Karl Foster      Initial Version
+--  006         26/09/2011  David Middleton  Fixed defect 6665
+--  007         06/12/2011  David Middleton  Fixed defect 7868
+--  009         17/01/2012  Karl Foster      Fixed defect 8163
+--  010         22/02/2012  Yuri Fedkiv      Further work required to fix defect 8163
+--  011         29/02/2012  Karl Foster      Fixed defect 8287. Added distinct.
+--  012     036 16/03/2012  Yuri Fedkiv      Applied further fix required to resolve defect 8163
+--  012.1   037 26/03/2012  Yuri Fedkiv      PDM v0.37 uplift
+--  012.2   037 10/04/2012  Yuri Fedkiv      Another fix for 8163 following the Offender hierarchy amendments
+--                                           that were done to version 1.59 of the PKG_SEARCH package
+--  012.3   041 25/07/2012  Yuri Fedkiv      Changed the procDebug to use PKG_Debug package instead of PKG_Search
+--  013     201 27/09/2013  Karl Foster      Do not return offenders soft deleted as part of a merge.
+--  014     202 31/10/2013  Karl Foster      Fixed defect 12792
+--  015     301 25/11/2013  Karl Foster      Don't find soft deleted offenders
+--  016     402 14/05/2014  Yuri Fedkiv      Added new P_DEL_REC procedure (based on PDM table hierarchy)
+--  017     402 10/09/2014  Yuri Fedkiv      Added new P_DEST_SCHEMA parameter into P_DEL_REC
+--  018     807 05/09/2016  Yuri Fedkiv      procDeleteDPAReportOffenders: moved the Delete Merge Data tables into T_CL_OFFENDER_BDR trigger
+--  019     806 22/09/2016  Yuri Fedkiv      Amended procDeleteDPAReportOffenders to remove a deletion for the
+--                                           MERGE_OFFENDER_VALUES, MERGE_HISTORY and MERGE_DUPLICATES (moved to T_CL_OFFENDER_BDR db trigger)
+--  ------- --- ----------- ---------------- -----------------------------
+--
+--
+
+GC_DEST_SCHEMA CONSTANT VARCHAR2(30) := 'DELIUS_APP_SCHEMA';
+
+PROCEDURE procDebug(p_msg VARCHAR2);
+
+PROCEDURE p_del_rec(
+    p_tab_name        VARCHAR2,
+    p_row_id          ROWID,
+    p_debug_message   VARCHAR2 DEFAULT NULL,
+    p_recursive_level INTEGER DEFAULT 1,
+    p_dest_schema     VARCHAR2 DEFAULT GC_DEST_SCHEMA );
+
+PROCEDURE procGetDPAReportOffenders(
+    p_dpa_report_id IN   DPA_REPORT.dpa_report_id%TYPE,
+    p_outcursor     OUT  SYS_REFCURSOR );
+
+PROCEDURE procFindDPAReportOffenders(
+    p_trust         IN   PROBATION_AREA.probation_area_id%TYPE,
+    p_borough       IN   BOROUGH.borough_id%TYPE,
+    p_district      IN   DISTRICT.district_id%TYPE,
+    p_team          IN   TEAM.team_id%TYPE,
+    p_provider_team IN   PROVIDER_TEAM.provider_team_id%TYPE,
+    p_limit         IN   NUMBER,
+    p_outcursor     OUT  SYS_REFCURSOR ) ;
+
+PROCEDURE procDeleteDPAReportOffenders(
+    p_dpa_report_id IN  DPA_REPORT.dpa_report_id%TYPE,
+    p_outcursor     OUT SYS_REFCURSOR) ;
+
+FUNCTION funcFindRegistrations(p_offenderid IN OFFENDER.offender_id%TYPE) RETURN VARCHAR2;
+
+FUNCTION funcTerminationDate(p_offenderid IN OFFENDER.offender_id%TYPE) RETURN  DATE;
+
+FUNCTION funcLastContactDate(p_offenderid IN OFFENDER.offender_id%TYPE) RETURN  DATE;
+
+FUNCTION funcLateContactDate(p_offenderid IN OFFENDER.offender_id%TYPE, dpa_period IN NUMBER) RETURN  CHAR;
+
+--
+--
+END pkg_dpa_deletion;
+/
+
+create PACKAGE OfflocCursorPkg IS
+  TYPE CursorType IS REF CURSOR;
+END;
+/
+
+create PACKAGE SPGConfig
+AS
+--
+-- ===============================================================
+--  PCMS Project: Migration Stream
+-- ===============================================================
+--
+--  Filename  : PKG_SPG_CONFIG.sql
+--  Purpose   : SPG Messaging Configuration Package
+--  Author    : M.Brumpton, Beaumont Colson
+--
+--  Change History:
+--
+--  Version Date            Who             Description
+--  ------- ----------- -------------   -----------------------------
+--  1.00    13-APR-2015 M Brumpton      Initial Version
+--  1.01    20-MAY-2015 M Brumpton      Added get_xml_map function
+--  1.02    22-MAY-2015 Y Fedkiv        - Added support for the new BUSINESS_INT_XML_MAP.data_update_mode field;
+--                                      - Changed presentetion of the BUSINESS_INT_XML_MAP.{inc|excl}_xml_msg_list fields
+--  1.03    31-MAY-2015 M.Brumpton      Added control reference function
+--  1.04    01-JUN-2015 M.Brumpton      Added generateidentifiers procedure plus logging
+--  1.05    24-JUN-2015 M.Brumpton      Added broadcast_reference_data Procedure
+--  1.06    26-JUN-2015 M.Brumpton      Added persist message handling
+--  1.07    04-AUG-2015 Y.Fedkiv        PDM 8.01 changes
+--  1.08    05-AUG-2015 M.Brumpton      Added switch for document to disk
+--                                      Added receivercontrolreference to identifier generation
+--  1.09    06-AUG-2015 M.Brumpton      Change business_interaction lookups
+--  1.10    08-AUG-2015 M.Brumpton      Changed process_q procedure to skip generation if control_reference known
+--  1.11    16-OCT-2015 M.Brumpton      Added additional text to error message
+--  1.12    23-OCT-2015 M.Brumpton      Added get_xml_message_id function
+--  1.13    30-OCT-2015 M.Brumpton      Corrected reference data broadcast
+--  1.14    08-DEC-2015 M.Brumpton      Added additional functions for RESPONSIBLE OFFICER and TEAM processing
+--  1.15    10-DEC-2015 M.Brumpton      Added switch for validatexml and alfresco
+--  1.16    10-DEC-2015 M.Brumpton      Correct generation errors with high number CRC's
+--  1.17    14-DEC-2015 M.Brumpton      Added support for username and password in broker connection
+--  1.18    30-DEC-2015 M.Brumpton      Moved switches into bitmap persisted in database
+--  1.19    30-DEC-2015 Y.Fedkiv        Re-factored a number of subroutines to simplify the PLSQL code portability to PG
+--  1.20    28-JAN-2016 M.Brumpton      Corrected error in default sender
+--  1.21    26-FEB-2016 M.Brumpton      Corrected issue with sending single simple reference data item
+--  1.22    28-FEB-2016 M.Brumpton      Added Alfresco API configuration
+--  1.23    16-MAR-2016 M.Brumpton      Added support for different log tables
+--  1.24    28-MAR-2016 M.Brumpton      Fix to log table error handling
+--  1.25    23-APR-2016 M.Brumpton      Added linked list to broadcast reference data
+--                                      Added switch for direct Alfresco permission
+--  1.26    22-FEB-2017 Y.Fedkiv        Removed double caching (RESULT_CACHE)
+--  1.27    27-FEB-2017 M.Brumpton      Updated for multischema support
+--  1.28    01-MAR-2017 M.Brumpton      Change processing for officer_code
+--  1.29    04-APR-2017 M.Brumpton      Aligned with PDM904
+--  1.30    05-APR-2017 Y.Fedkiv        Added NO_DATA_FOUND error handler within GET_XSD_NUMBER
+--  1.31    12-APR-2017 Y.Fedkiv        Added multi-schema support to GET_XML_MAP and GET_XML_MESSAGE_ID
+--  1.32    12-APR-2017 M.Brumpton      Added overload to get_schema_name based on xsd_number
+--  1.33    15-MAY-2017 M.Brumpton      Added function to return default sender and broadcast domain
+--  1.34    20-JUN-2016 Y.Fedkiv        Backported fixes 2.04, 2.05 changes from crcDelius:
+--                                        - 2.04 Issue with non numeric probation area codes on creation of team/staff
+--                                        - 2.05 Fixed RAISE_ERROR to also propagate en error when error code=0
+--  1.35    16-JAN-2018 Y.Fedkiv        - Moved GC_REFDATA_IN_LATEST_XSD_FLAG from SPGMessage
+--                                      - Added an optional P_BI_CODE parameter to GET_XSD_NUMBER
+--                                      - Added new GET_XSD_NUMBER(<NUMBER>, <NUMBER>) overload
+--  1.36    01-MAY-2018 Y.Fedkiv        - Added SPG*Active_C VARCHAR2 wrappers
+--                                      - Added new SPGSaveXMLActive
+--  1.37    08-MAY-2018 Y.Fedkiv        Added SPGMultiThreadActive_C
+--  1.38    16-MAY-2018 Y.Fedkiv        Added new SPGSuppressDeferralActive
+--  1.39    21-MAY-2018 Y.Fedkiv        Added MESSAGE_ID reset within RECORD_ERROR_MESSAGE
+--  1.40    12-JUN-2018 Y.Fedkiv        Added new SPGDocsMigrateActive
+--  1.41    18-SEP-2018 K.Foster        DST-3918 - Raise errors for failed to generate messages
+--
+-- ================================================================
+--
+
+-- Global Variables specific to this package
+GC_VERSION CONSTANT VARCHAR2(10) := '1.40';
+--
+
+FUNCTION get_version RETURN VARCHAR2;
+--
+PROCEDURE raise_error(
+    error_code_in       IN PLS_INTEGER DEFAULT NULL,
+    error_message_in    IN VARCHAR2 DEFAULT NULL);
+--
+FUNCTION SPGInfoActive                  RETURN BOOLEAN;
+FUNCTION SPGWarnActive                  RETURN BOOLEAN;
+FUNCTION SPGPersistActive               RETURN BOOLEAN;
+FUNCTION SPGDocsToDiskActive            RETURN BOOLEAN;
+FUNCTION SPGValidateXMLActive           RETURN BOOLEAN;
+FUNCTION SPGAlfrescoActive              RETURN BOOLEAN;
+FUNCTION SPGPermissionDirectActive      RETURN BOOLEAN;
+FUNCTION SPGSaveXMLActive               RETURN BOOLEAN;
+FUNCTION SPGMultiThreadActive           RETURN BOOLEAN;
+FUNCTION SPGSuppressDeferralActive      RETURN BOOLEAN;
+FUNCTION SPGDocsMigrateActive           RETURN BOOLEAN;
+
+FUNCTION SPGInfoActive_c                RETURN VARCHAR2;
+FUNCTION SPGWarnActive_c                RETURN VARCHAR2;
+FUNCTION SPGPersistActive_c             RETURN VARCHAR2;
+FUNCTION SPGDocsToDiskActive_c          RETURN VARCHAR2;
+FUNCTION SPGValidateXMLActive_c         RETURN VARCHAR2;
+FUNCTION SPGAlfrescoActive_c            RETURN VARCHAR2;
+FUNCTION SPGPermissionDirectActive_c    RETURN VARCHAR2;
+FUNCTION SPGSaveXMLActive_c             RETURN VARCHAR2;
+FUNCTION SPGMultiThreadActive_c         RETURN VARCHAR2;
+FUNCTION SPGSuppressDeferralActive_c    RETURN VARCHAR2;
+FUNCTION SPGDocsMigrateActive_c         RETURN VARCHAR2;
+
+--
+PROCEDURE insert_message_log( message_type_id_in          IN NUMBER,
+                              component_code_in           IN VARCHAR2,
+                              package_name_in             IN VARCHAR2,
+                              procedure_name_in           IN VARCHAR2,
+                              label_in                    IN VARCHAR2,
+                              message_text_in             IN VARCHAR2,
+                              spg_error_log_id_in         IN NUMBER DEFAULT NULL,
+                              dbms_output_in              IN VARCHAR2 DEFAULT 'N',
+                              log_table_name              IN VARCHAR2 DEFAULT 'SPG_MESSAGE_LOG');
+--
+PROCEDURE record_error( message_type_id_in  IN NUMBER,
+                        component_code_in   IN VARCHAR2,
+                        package_name_in     IN VARCHAR2,
+                        procedure_name_in   IN VARCHAR2,
+                        label_in            IN VARCHAR2,
+                        message_text_in     IN VARCHAR2,
+                        raise_error_in      IN BOOLEAN DEFAULT FALSE,
+                        log_table_name      IN VARCHAR2 DEFAULT 'SPG_MESSAGE_LOG');
+--
+PROCEDURE record_error_message( spg_notification_id_in spg_notification.spg_notification_id%TYPE,
+                                error_message_in       spg_notification.error_message%TYPE);
+--
+PROCEDURE set_outbound_broker(broker_in IN VARCHAR2);
+FUNCTION get_outbound_broker RETURN VARCHAR2;
+PROCEDURE set_outbound_queue(queue_in IN VARCHAR2);
+FUNCTION get_outbound_queue RETURN VARCHAR2;
+FUNCTION get_schema_name RETURN VARCHAR2;
+FUNCTION get_schema_name(xsd_number_in IN SPG_XSD.xsd_number%TYPE) RETURN VARCHAR2;
+--
+PROCEDURE set_broker_credentials(username_in IN VARCHAR2, password_in IN VARCHAR2);
+FUNCTION get_broker_username RETURN VARCHAR2;
+FUNCTION get_broker_password (username_in IN VARCHAR2) RETURN VARCHAR2;
+--
+PROCEDURE set_spg_modules (modules_in IN NUMBER);
+PROCEDURE set_spg_modules (modules_in IN VARCHAR2);
+FUNCTION get_spg_modules RETURN NUMBER;
+FUNCTION get_spg_module_map RETURN VARCHAR2;
+--
+PROCEDURE set_alfresco_url (url_in IN VARCHAR2);
+FUNCTION get_alfresco_url RETURN VARCHAR2;
+--
+PROCEDURE set_alfresco_user (user_in IN VARCHAR2);
+FUNCTION get_alfresco_user RETURN VARCHAR2;
+--
+PROCEDURE generateIdentifiers(p_payload_in                IN  spg_payload_type,
+                              control_reference_out       OUT SPG_NOTIFICATION.control_reference%TYPE,
+                              receiver_ctl_reference_out  OUT SPG_NOTIFICATION.receiver_control_reference%TYPE,
+                              sender_identity_id_out      OUT SPG_NOTIFICATION.sender_identity_id%TYPE,
+                              receiver_identity_id_out    OUT SPG_NOTIFICATION.receiver_identity_id%TYPE);
+FUNCTION getNextControlReference(probation_area_code_in probation_area.code%TYPE) RETURN NUMBER;
+--
+FUNCTION getNextTeamReference(probation_area_code_in probation_area.code%TYPE) RETURN VARCHAR2;
+FUNCTION getNextStaffReference(probation_area_code_in probation_area.code%TYPE, p_preferred_code STAFF.officer_code%TYPE DEFAULT NULL) RETURN VARCHAR2;
+FUNCTION getNextLocationReference(probation_area_code_in probation_area.code%TYPE) RETURN VARCHAR2;
+--
+--
+TYPE xml_map_rec IS RECORD (
+    business_interaction_code   business_interaction.business_interaction_code%TYPE,
+    table_name                  user_views.view_name%TYPE,
+    message_name                business_int_xml_map.xml_message_name%TYPE,
+    inc_tab_list                VARCHAR2(4000),
+    exc_tab_list                VARCHAR2(4000),
+    data_update_mode            business_int_xml_map.data_update_mode%TYPE );
+--
+FUNCTION get_xml_map (business_interaction_code_in business_interaction.business_interaction_code%TYPE)
+RETURN xml_map_rec;
+--
+PROCEDURE broadcast_reference_data(probation_area_id_in IN NUMBER DEFAULT NULL);
+--
+FUNCTION get_xml_message_id(p_xml_message_name IN VARCHAR2) RETURN NUMBER;
+--
+-- GET_XSD_NUMBER overloaded functions
+--
+FUNCTION get_xsd_number(
+    p_probation_area_id          NUMBER,
+    p_bi_code                    VARCHAR2 DEFAULT NULL,
+    p_refdata_in_latest_xsd_flag VARCHAR2 DEFAULT NULL )
+RETURN SPG_xsd.xsd_number%TYPE;
+--
+-- Overload 1
+FUNCTION get_xsd_number(
+    p_probation_area_code        PROBATION_AREA.code%TYPE,
+    p_bi_code                    VARCHAR2 DEFAULT NULL,
+    p_refdata_in_latest_xsd_flag VARCHAR2 DEFAULT NULL )
+RETURN SPG_xsd.xsd_number%TYPE;
+--
+-- Overload 2
+FUNCTION get_xsd_number(
+    p_probation_area_id          NUMBER,
+    p_bi_id                      NUMBER DEFAULT NULL,
+    p_refdata_in_latest_xsd_flag VARCHAR2 DEFAULT NULL )
+RETURN SPG_xsd.xsd_number%TYPE;
+--
+--
+FUNCTION get_default_sender_id RETURN NUMBER;
+FUNCTION get_default_sender_code RETURN VARCHAR2;
+FUNCTION get_broadcast_domain_id RETURN NUMBER;
+FUNCTION get_broadcast_domain_code RETURN VARCHAR2;
+
+PROCEDURE debug (message_in VARCHAR2);
+
+--
+--
+--
+--
+END SPGConfig;
+/
+
+create PACKAGE StaffSupport
+AS
+--
+-- ===============================================================
+--  PCMS Project: Migration Stream
+-- ===============================================================
+--
+--  Filename  : PKG_STAFF_SUPPORT.sql
+--  Purpose   : STAFF Support Package for DELIUS_APP_SCHEMA
+--  Author    : M.Brumpton, Beaumont Colson
+--
+--  Change History:
+--
+--  Version Date            Who             Description
+--  ------- ----------- -------------   -----------------------------
+--  1.00    06-DEC-2015 M Brumpton      Initial Version
+--  1.01    10-DEC-2015 M Brumpton      Added user_id as IN parameters
+--  1.02    19-DEC-2015 M.Brumpton      Added format function for SPG created Staff
+--  1.03    19-DEC-2015 M.Brumpton      Updated SQL on GETID function
+--  1.04    30-DEC-2015 M.Brumpton      Changed responsible officer processing
+--  1.05    13-JAN-2015 M.Brumpton      Updated GetStaffID procedure for PG translation
+--  1.06    22-FEB-2017 Y.Fedkiv        Removed double RESULT_CACHE
+--  1.07    04-MAY-2017 Y.Fedkiv        Added optional P_TEAM_ID within getSPGResponsibleStaffID
+--  1.08    18-SEP-2017 Y.Fedkiv        Added new CREATYE_UNALLOCATED_STAFF procedure
+--  1.09    09-OCT-2017 Y.Fedkiv        #SPG-15986: Added [ and ] characters processing within formatStaffDescription
+--  1.10    21-NOV-2017 Y.Fedkiv        #SPG-16535, #SPG-16655: Corrected the 1.09 change
+--  1.11    13-DEC-2017 Y.Fedkiv        Added new getStaffDisplayName
+--  1.12    18-JAN-2018 Y.Fedkiv        #SPG-16795, #SPG-16794: Allow Staff names to contain the "/" character
+--  1.13    02-FEB-2018 Y.Fedkiv        #SPG-16750: Remove leading/trailing space characters from within Staff names (when DisplayName is being constructed)
+--  1.14    06-FEB-2018 K Foster        Store provided team and remove code from description
+--  1.15    06-FEB-2018 Y Fedkiv        Added Update Officer names within parseResponsibleOfficer
+--  1.16    07-FEB-2018 K Foster        Added update allowed flag for transfers
+--  1.17    05-MAR-2018 M.Wetherall     Staff added by SPG inbound are end dated DST-2274
+--  1.18    19-SEP-2018 Y Fedkiv        #SPG-17804, #SPG-17812: Fixed the NULL values interpretation within getSPGResponsibleStaffID
+--
+-- ================================================================
+--
+
+GC_VERSION CONSTANT VARCHAR2(10) := '1.18';
+
+
+--
+-- Global Variables specific to this package
+FUNCTION get_version RETURN VARCHAR2;
+--
+/*100000*/
+FUNCTION getSPGResponsibleStaffID( responsiblestaff_in  IN VARCHAR2,
+                                  probationareaid_in    IN NUMBER,
+                                  createifnotexist_in   IN VARCHAR2 DEFAULT 'Y',
+                                  userid_in             IN NUMBER DEFAULT NULL,
+                                  updatedescription_in IN VARCHAR2 DEFAULT 'Y',
+                                  teamid_in             IN NUMBER DEFAULT NULL )
+RETURN NUMBER;
+--
+/*200000*/
+FUNCTION getSPGResponsibleStaffID( responsiblestaff_in  IN VARCHAR2,
+                                  probationareacode_in  IN VARCHAR2,
+                                  createifnotexist_in   IN VARCHAR2 DEFAULT 'Y',
+                                  userid_in             IN NUMBER DEFAULT NULL,
+                                  updatedescription_in IN VARCHAR2 DEFAULT 'Y',
+                                  teamid_in             IN NUMBER DEFAULT NULL )
+RETURN NUMBER;
+--
+/*200010*/
+FUNCTION getSPGResponsibleStaffID_ATNM(
+    responsiblestaff_in  IN VARCHAR2,
+    probationareacode_in IN VARCHAR2,
+    createifnotexist_in  IN VARCHAR2 DEFAULT 'Y',
+    userid_in            IN NUMBER DEFAULT NULL,
+    teamid_in            IN NUMBER DEFAULT NULL )
+RETURN NUMBER;
+--
+/*300000*/
+FUNCTION formatStaffDescription(description_in IN VARCHAR2) RETURN VARCHAR2;
+--
+PROCEDURE create_unallocated_staff;
+
+FUNCTION getStaffDisplayName(p_staff_id NUMBER) RETURN VARCHAR2 RESULT_CACHE;
+
+--
+--
+--
+--
+END StaffSupport;
+/
+
+create PACKAGE TeamSupport
+AS
+--
+-- ===============================================================
+--  PCMS Project: Migration Stream
+-- ===============================================================
+--
+--  Filename  : PKG_TEAM_SUPPORT.sql
+--  Purpose   : TEAM Support Package for DELIUS_APP_SCHEMA
+--  Author    : M.Brumpton, Beaumont Colson
+--
+--  Change History:
+--
+--  Version Date            Who             Description
+--  ------- ----------- -------------   -----------------------------
+--  1.00    06-DEC-2015 M Brumpton      Initial Version
+--  1.01    10-DEC-2015 M Brumpton      Added user_id to parameters
+--  1.02    19-DEC-2015 M.Brumpton      Added format function for SPG created TEAM
+--  1.03    19-DEC-2015 M.Brumpton      Updated SQL on GETID function
+--  1.04    08-JAN-2016 M.Brumpton      Changed code processing
+--  1.05    08-JAN-2016 M.Brumpton      Corrected following unit test
+--  1.06    13-JAN-2016 M.Brumpton      Change GetTeamID processing for PG translation
+--  1.07    22-FEB-2017 Y.Fedkiv        Double RESULT_CACHE fix
+--  1.08    09-OCT-2017 Y Fedkiv        #SPG-15986: Added [ and ] characters processing within formatTeamDescription
+--  1.09    06-FEB-2018 K Foster        Store provided team and remove code from description
+--  1.10    06-FEB-2018 Y Fedkiv        Added Update Team description within parseResponsibleTeam
+--  1.11    07-FEB-2018 K Foster        Added update allowed flag for transfers
+--  1.12    05-MAR-2018 M.Wetherall     Teams added by SPG inbound are end dated DST-2274
+--  1.13    13-MAR-2018 K Foster        DST-2271: Creating teams also creats unallocated officer and staff team link
+--
+-- ================================================================
+--
+
+GC_VERSION CONSTANT VARCHAR2(10) := '1.10';
+
+--
+-- Global Variables specific to this package
+FUNCTION get_version RETURN VARCHAR2;
+--
+/*100000*/
+FUNCTION getSPGResponsibleTeamID( responsibleteam_in  IN VARCHAR2,
+                                  probationareaid_in  IN NUMBER,
+                                  createifnotexist_in IN VARCHAR2 DEFAULT 'Y',
+                                  updatedescription_in IN VARCHAR2 DEFAULT 'Y',
+                                  userid_in           IN NUMBER DEFAULT NULL) RETURN NUMBER;
+--
+/*200000*/
+FUNCTION getSPGResponsibleTeamID( responsibleteam_in    IN VARCHAR2,
+                                  probationareacode_in  IN VARCHAR2,
+                                  createifnotexist_in   IN VARCHAR2 DEFAULT 'Y',
+                                  updatedescription_in IN VARCHAR2 DEFAULT 'Y',
+                                  userid_in             IN NUMBER DEFAULT NULL) RETURN NUMBER;
+--
+/*300000*/
+FUNCTION formatTeamDescription(description_in IN VARCHAR2) RETURN VARCHAR2;
+
+--
+--
+--
+--
+END TeamSupport;
+/
+
+create PACKAGE LocationSupport
+AS
+--
+-- ===============================================================
+--  PCMS Project: Migration Stream
+-- ===============================================================
+--
+--  Filename  : PKG_LOCATION_SUPPORT.sql
+--  Purpose   : LOCATION Support Package for DELIUS_APP_SCHEMA
+--  Author    : M.Brumpton, Beaumont Colson
+--
+--  Change History:
+--
+--  Version Date            Who             Description
+--  ------- ----------- -------------   -----------------------------
+--  1.00    08-DEC-2015 M Brumpton      Initial Version
+--  1.01    10-DEC-2015 M Brumpton      Added user_id to IN parameters
+--  1.02    19-DEC-2015 M.Brumpton      Added format function for SPG Location
+--  1.03    19-DEC-2015 M.Brumpton      Updated SQL on GETID functions
+--  1.04    08-JAN-2016 M.Brumpton      Change GETID processing inline with STAFF and TEAM
+--  1.05    13-JAN-2016 M.Brumpton      Change GetLocationID processing for PG translation
+--  1.06    22-FEB-2017 Y.Fedkiv        Double RESULT_CACHE fix
+--  1.07    25-MAY-2017 Y.Fedkiv        Added new getAddressID function
+--  1.08    09-OCT-2017 Y Fedkiv        #SPG-15986: Added [ and ] characters processing within formatLocationDescription
+--  1.09    21-JUN-2018 Y Fedkiv        #SPG-17507: changed GetLocationID to search for existing matching Location based on CODE only
+--
+-- ================================================================
+--
+
+GC_VERSION CONSTANT VARCHAR2(10) := '1.09';
+
+--
+-- Global Variables specific to this package
+FUNCTION get_version RETURN VARCHAR2;
+--
+/*100000*/
+FUNCTION getSPGOfficeLocationID(  officelocation_in     IN VARCHAR2,
+                                  probationareaid_in    IN NUMBER,
+                                  createifnotexist_in   IN VARCHAR2 DEFAULT 'Y',
+                                  userid_in             IN NUMBER DEFAULT NULL) RETURN NUMBER;
+----
+/*200000*/
+FUNCTION getSPGOfficeLocationID(  officelocation_in     IN VARCHAR2,
+                                  probationareacode_in  IN VARCHAR2,
+                                  createifnotexist_in   IN VARCHAR2 DEFAULT 'Y',
+                                  userid_in             IN NUMBER DEFAULT NULL) RETURN NUMBER;
+--
+/*300000*/
+FUNCTION formatLocationDescription(description_in IN VARCHAR2) RETURN VARCHAR2 RESULT_CACHE;
+--
+--
+--
+FUNCTION getAddressID(
+    p_building_name     ADDRESS.building_name%TYPE,
+    p_address_number    ADDRESS.address_number%TYPE,
+    p_street_name       ADDRESS.street_name%TYPE,
+    p_district          ADDRESS.district%TYPE,
+    p_town_city         ADDRESS.town_city%TYPE,
+    p_county            ADDRESS.county%TYPE,
+    p_postcode          ADDRESS.postcode%TYPE,
+    p_telephone_number  ADDRESS.telephone_number%TYPE )
+RETURN NUMBER;
+
+FUNCTION getAddressID( p_address_string    VARCHAR2 )
+RETURN NUMBER;
+
+--
+--
+--
+--
+END LocationSupport;
+/
+
+create PACKAGE AlfrescoSupport
+AS
+--
+-- ===============================================================
+--  PCMS Project: Migration Stream
+-- ===============================================================
+--
+--  Filename  : PKG_ALFRESCO_SUPPORT.sql
+--  Purpose   : ALFRESCO Support Package for DELIUS_APP_SCHEMA
+--  Author    : M.Brumpton, Beaumont Colson
+--
+--  Change History:
+--
+--  Version Date            Who             Description
+--  ------- ----------- -------------   -----------------------------
+--  1.00    08-DEC-2015 M Brumpton      Initial Version
+--  1.01    10-DEC-2015 M.Brumpton      Added trigger and notification procedures
+--  1.02    29-DEC-2015 M.Brumpton      Changed pending rows type
+--  1.03    19-JAN-2016 M.Brumpton      Initial version of Alfresco API calls
+--  1.04    19-JAN-2016 M.Brumpton      Updated error handling
+--  1.05    28-JAN-2016 M.Brumpton      Added step to clear array
+--  1.06    28-FEB-2016 M.Brumpton      Added additional Alfresco API Methods
+--                                      Standardised return responses
+--  1.07    06-MAR-2016 M.Brumpton      DocMigration Compatible version
+--  1.08    15-MAR-2016 M.Brumpton      Updated to migrate documents and store return values
+--  1.09    18-MAR-2016 M.Brumpton      Implement fix for SPG8896
+--  1.10    20-MAR-2016 M.Brumpton      Updated to include locking functionality
+--  1.11    28-MAR-2016 M.Brumpton      Added checkout functionality
+--                                      Fixes to locking functionality
+--                                      Added transfer timeout to HTTP request
+--  1.12    06-APR-2016 M.Brumpton      Additional code to close open response and request objects
+--  1.13    11-APR-2016 M.Brumpton      Changed debug output
+--                                      Baselined for doc migration release
+--  1.14    21-SEP-2016 M.Brumpton      Added handling for soft_deleted and dynamic status change
+--  1.15    21-SEP-2016 Y.Fedkiv        Amended DOCUMENT_DELETED custom exception declaration
+--  1.16    11-NOV-2016 M.Brumpton      Amendments to support dynamic migration component
+--  1.17    28-FEB-2017 Y.Fedkiv        #SPG-12990: amended processQueue to remove offender records that do not exist in OFFENDER table
+--  1.18    24-APR-2017 M.Brumpton      Updates for document migration tool - changed assignOffender URL
+--  1.18a   15-MAY-2017 M.Brumpton      Correct row_soft_deleted function - SPG-14475
+--  1.18b   16-MAY-2017 M.Brumpton      Changed search return to handle large content from response
+--  1.19    24-JAN-2018 Y.Fedkiv        - Added new addOffender2Queue(t_tab_ORGANISATIONS) overload
+--                                      - Added new removeOffenderFromQueue and getOffendersQueue subroutines
+--  1.20    14-MAR-2018 Y.Fedkiv        - Removed RESULT_CACHE in ROW_SOFT_DELETED
+--                                      - Added debug info within processQueue
+--  1.21    20-MAR-2018 Y.Fedkiv        Added pending_offenders.COUNT > 0 check within processQueue
+--  1.22    09-MAY-2018 Y.Fedkiv        Added SENDER_IDENTITY_ID within addMessage2Queue
+--  1.23    12-JUN-2018 Y.Fedkiv        Amended processQueue to check SPGConfig.SPGDocsMigrateActive (controls DOCMIGRATIONSUPPORT.add_offender_2_dynamic_q API call)
+--
+-- ================================================================
+--
+
+GC_VERSION CONSTANT VARCHAR2(10) := '1.23';
+
+--
+-- Global Variables specific to this package
+FUNCTION get_version RETURN VARCHAR2;
+
+TYPE alfresco_row_TYP IS RECORD (
+                crn             VARCHAR2(7),
+                area_code       VARCHAR2(3),
+                level1_value    NUMBER(1,0),
+                level2_value    NUMBER(1,0),
+                level3_value    NUMBER(1,0),
+                alfresco_value  NUMBER(1,0)
+                                );
+TYPE alfresco_tab_TYP IS TABLE OF alfresco_row_TYP;
+
+TYPE apiParameters IS TABLE OF VARCHAR2(32767) INDEX BY VARCHAR2(64);
+
+/*100000*/
+FUNCTION get_alfresco_permissions(offenderid_in IN NUMBER, noAccessFlag_in IN VARCHAR2 DEFAULT 'N') RETURN alfresco_tab_typ PIPELINED;
+
+/*300000*/
+PROCEDURE addOffender2Queue(offenderid_in IN NUMBER);
+PROCEDURE addOffenders2Queue(offenderid_TAB_in IN t_tab_ORGANISATIONS);
+--
+PROCEDURE removeOffenderFromQueue(offenderid_in IN NUMBER);
+PROCEDURE removeOffendersFromQueue(offenderid_TAB_in IN t_tab_ORGANISATIONS);
+--
+FUNCTION getOffendersQueue RETURN t_tab_ORGANISATIONS;
+
+/*400000*/
+PROCEDURE processQueue;
+
+/*500000*/
+PROCEDURE addMessage2Queue(offenderid_in IN NUMBER);
+
+/*600000*/
+FUNCTION fetchDocument(docId_in IN VARCHAR2, responseString_out OUT VARCHAR2, document_out OUT BLOB, reserveFlag_in IN VARCHAR2 DEFAULT 'N') RETURN VARCHAR2;
+
+/*700000*/
+FUNCTION uploadNew( entityType_in       IN VARCHAR2 DEFAULT 'DOCUMENT',
+                    entityId_in         IN NUMBER,
+                    responseString_out  OUT VARCHAR2,
+                    returnString_out    OUT VARCHAR2,
+                    lockDocument_in     IN VARCHAR2 DEFAULT 'N',
+                    checkoutDocument_in IN VARCHAR2 DEFAULT 'N') RETURN VARCHAR2;
+
+/*750000*/
+FUNCTION uploadAndRelease(  entityType_in       IN VARCHAR2 DEFAULT 'DOCUMENT',
+                            entityId_in         IN NUMBER,
+                            responseString_out  OUT VARCHAR2,
+                            returnString_out    OUT VARCHAR2,
+                            lockDocument_in     IN VARCHAR2 DEFAULT 'N',
+                            checkoutDocument_in IN VARCHAR2 DEFAULT 'N') RETURN VARCHAR2;
+
+/*800000*/
+FUNCTION assignOffender(offenderid_in IN NUMBER, responsestring_out OUT VARCHAR2, returnString_out OUT VARCHAR2, noAccessFlag_in IN VARCHAR2 DEFAULT 'N') RETURN VARCHAR2;
+
+/*850000*/
+FUNCTION processDocument(docId_in IN VARCHAR2, operation_in IN VARCHAR2, responseString_out OUT VARCHAR2, returnString_out OUT VARCHAR2) RETURN VARCHAR2;
+
+/*900000*/
+FUNCTION searchAlfresco(offenderID_in IN NUMBER, responseString_out OUT VARCHAR2, returnString_out OUT CLOB) RETURN VARCHAR2;
+
+-- exposed for unit testing
+FUNCTION createGetParameters(parameters_in IN apiParameters) RETURN VARCHAR2;
+FUNCTION row_soft_deleted ( table_name_in IN DOCUMENT.table_name%TYPE,
+                            primary_key_in DOCUMENT.primary_key_id%TYPE) RETURN VARCHAR2 /* RESULT_CACHE*/;
+
+--
+--
+--
+--
+END AlfrescoSupport;
+/
+
+create PACKAGE PKG_RBAC AUTHID CURRENT_USER
+AS
+--
+-- Description  : The package definitions for search
+--
+-- Author       : Yuri Fedkiv
+--
+-- Date         : 25/10/2016
+--
+--  Change History:
+--
+--  Version PDM  Date        Who            Description
+--  ------- ---- ----------- ------------ ---------------------------------------
+--     1.00 809  25-OCT-2016 Y Fedkiv     - Initial version based on PKG_Search
+--     1.01 905  07-APR-2017 Y Fedkiv     - Amended procGetOwnersTAB to use the CASELOAD based L3 check for all *MANAGER tables
+--     1.02 912  12-JUN-2017 Y Fedkiv     - Amended DBMS_LOB.SUBSTR() call within procGetOwnersTAB
+--     1.03 1004 23-NOV-2017 Y Fedkiv     - #DST-1381: Added P_NPS_FLAG=Y option for L2 RBAC check (to allow a universal L2 access for NPS users)
+--     1.04 1004 24-NOV-2017 Y Fedkiv     - Fixed the P_NPS_FLAG="Y" syntax within procGetOwnersTAB
+--     1.05 1008 11-DEC-2017 Y Fedkiv     - #DST-1638: L2 Universal Access for NPS Users is not being applied
+--     1.06 1304 13-AUG-2018 Y Fedkiv     - Added ORDER BY (to deal with the ORA-01555) within procGetOwnersTAB
+--
+--   ------ ---- ----------- ------------ ---------------------------------------
+--
+
+TYPE trecOwners IS RECORD(
+  /*00*/ offender_id OFFENDER.offender_id%TYPE,
+  /*01*/ L1          NUMBER,
+  /*02*/ L2          NUMBER,
+  /*03*/ L3          NUMBER
+  );
+TYPE ttabOwners IS TABLE OF trecOwners;
+
+FUNCTION procGetOwnersTAB(
+    p_user_id             NUMBER,
+    p_offender_id_LST     CLOB
+)
+RETURN ttabOwners PIPELINED;
+
+PROCEDURE do_set_rbac_levels(
+    p_offender_id        NUMBER,
+    p_L1          IN OUT NUMBER,
+    p_L2          IN OUT NUMBER,
+    p_L3          IN OUT NUMBER,
+    p_username    IN VARCHAR2 DEFAULT NULL );
+
+--
+--
+--
+--
+END PKG_RBAC;
+/
+
+create PACKAGE PKG_CASELOAD AUTHID CURRENT_USER
+AS
+--
+-- Description  : The package definitions for search
+--
+-- Author       : Yuri Fedkiv
+--
+-- Date         : 25/10/2016
+--
+--  Change History:
+--
+--  Version PDM  Date        Who            Description
+--  ------- ---- ----------- ------------ ---------------------------------------
+--     1.00 809  25-OCT-2016 Y Fedkiv     - Initial version based on PKG_Search
+--     1.01 809  26-OCT-2016 Y Fedkiv     - Added NSI level into CASELOAD (not presented to nDelius application yet)
+--     1.02 905  06-APR-2017 Y Fedkiv     - Added PRISON_OFFENDER_MANAGER level into CASELOAD (not presented to nDelius application yet)
+--     1.03 905  21-APR-2017 K Foster     - Presented POM to nDelius application yet)
+--     1.04 1019 01-MAR-2018 Y Fedkiv     - Split OFFENDER and EVENT level NSIs (for future updates) within dynamic SQL
+--     1.05 1407 24-OCT-2018 Y Fedkiv     - #DST-4413: Added new procCourtAppDiaryTAB subroutine
+--                                        - Moved procReleaseDiaryTAB from PKG_SEARCH
+--
+--   ------ ---- ----------- ------------ -----------------------------
+--
+
+--
+-- CASELOAD
+--
+TYPE trecCaseLoad IS RECORD(
+    /*00*/ record_type                 VARCHAR2(30),
+    /*01*/ offender_id                 OFFENDER.offender_id%TYPE,
+    /*02*/ crn                         OFFENDER.crn%TYPE,
+    /*03*/ gender                      R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+    /*04*/ first_name                  OFFENDER.first_name%TYPE,
+    /*05*/ second_name                 OFFENDER.second_name%TYPE,
+    /*06*/ third_name                  OFFENDER.third_name%TYPE,
+    /*07*/ surname                     OFFENDER.surname%TYPE,
+    /*08*/ current_highest_risk_colour OFFENDER.current_highest_risk_colour%TYPE,
+    /*09*/ current_restriction         OFFENDER.current_restriction%TYPE,
+    /*10*/ current_exclusion           OFFENDER.current_exclusion%TYPE,
+    /*11*/ restriction_message         OFFENDER.restriction_message%TYPE,
+    /*12*/ exclusion_message           OFFENDER.exclusion_message%TYPE,
+    --
+    /*13*/ tier_description            R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+    /*14*/ team                        VARCHAR2(100),
+    -- ID values
+    /*15*/ offender_manager_id         OFFENDER_MANAGER.offender_manager_id%TYPE,
+    /*16*/ event_id                    EVENT.event_id%TYPE,
+    /*17*/ order_manager_id            ORDER_MANAGER.order_manager_id%TYPE,
+    /*18*/ disposal_id                 DISPOSAL.disposal_id%TYPE,
+    /*19*/ lic_condition_id            LIC_CONDITION.lic_condition_id%TYPE,
+    /*20*/ lic_condition_manager_id    LIC_CONDITION_MANAGER.lic_condition_manager_id%TYPE,
+    /*21*/ rqmnt_id                    RQMNT.rqmnt_id%TYPE,
+    /*22*/ rqmnt_manager_id            RQMNT.rqmnt_id%TYPE,
+-- TS2 start
+    /*23*/ pss_rqmnt_id                PSS_RQMNT.pss_rqmnt_id%TYPE,
+    /*24*/ pss_rqmnt_manager_id        PSS_RQMNT_MANAGER.pss_rqmnt_manager_id%TYPE,
+-- TS2 end
+    /*25*/ sentence_description        VARCHAR2(255),
+    /*26*/ length_value                NUMBER,
+    /*27*/ component_description       VARCHAR2(100),
+    /*28*/ role_code                   VARCHAR2(3),
+    /*29*/ length_units                VARCHAR2(20),
+    /*30*/ date_of_birth               DATE,
+    /*31*/ start_date                  DATE,
+    -- Staff / Team FK
+    /*32*/ trust_provider_flag         CASELOAD.trust_provider_flag%TYPE,
+    /*33*/ trust_provider_team_id      CASELOAD.trust_provider_team_id%TYPE,
+    /*34*/ staff_employee_id           CASELOAD.staff_employee_id%TYPE,
+    -- LUP ID values
+    /*35*/ gender_id                   CASELOAD.gender_id%TYPE,
+    /*36*/ current_tier                CASELOAD.current_tier%TYPE,
+    /*37*/ disposal_type_id            CASELOAD.disposal_type_id%TYPE,
+    /*38*/ lic_cond_type_main_cat_id   CASELOAD.lic_cond_type_main_cat_id%TYPE,
+    /*39*/ rqmnt_type_main_category_id CASELOAD.rqmnt_type_main_category_id%TYPE,
+    /*40*/ ad_rqmnt_type_main_category_id CASELOAD.ad_rqmnt_type_main_category_id%TYPE,
+    /*41*/ pss_rqmnt_type_main_cat_id  CASELOAD.pss_rqmnt_type_main_cat_id%TYPE,
+    /*42*/ allocation_date             DATE,
+-- PTR1 start
+    /*43*/ notional_end_date           DATE,
+    /*44*/ entry_length                NUMBER,
+    /*45*/ length_in_days              NUMBER,
+    /*46*/ entry_length_units_id       NUMBER,
+    /*47*/ entry_length_units_code     R_STANDARD_REFERENCE_LIST.code_value%TYPE,
+    /*48*/ entry_length_units_desc     R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+-- PTR1 end
+    --
+    /*49*/ nsi_id                      NUMBER,
+    /*50*/ nsi_manager_id              NUMBER,
+    /*51*/ prison_offender_manager_id  NUMBER,
+    --
+    /*52*/ L1                          NUMBER,
+    /*53*/ L2                          NUMBER,
+    /*54*/ L3                          NUMBER
+    --
+    );
+TYPE ttabCaseLoad IS TABLE OF trecCaseLoad;
+--
+FUNCTION procFindCaseLoadTAB(
+    p_team_id              NUMBER  DEFAULT NULL,
+    p_provider_team_id     NUMBER  DEFAULT NULL,
+    p_staff_id             NUMBER  DEFAULT NULL,
+    p_provider_employee_id NUMBER  DEFAULT NULL,
+    p_offender_id          NUMBER  DEFAULT NULL,
+    p_components           VARCHAR2 DEFAULT 'Y',
+    p_filter               VARCHAR2 DEFAULT NULL,
+    p_date                 DATE DEFAULT NULL,
+    p_borough_id            NUMBER DEFAULT NULL,
+    p_district_id           NUMBER DEFAULT NULL,
+    p_use_caseload_table   VARCHAR2 DEFAULT 'N',
+    p_max_rows             INTEGER  DEFAULT 100000)
+RETURN ttabCaseLoad PIPELINED;
+--
+--
+-- COHORT Diary
+--
+TYPE trecCohortDiary IS RECORD(
+  /*00*/ offender_ID          OFFENDER.offender_id%TYPE,
+  /*01*/ first_name           OFFENDER.first_name%TYPE,
+  /*02*/ surname              OFFENDER.surname%TYPE,
+  /*03*/ third_name           OFFENDER.third_name%TYPE,
+  /*04*/ current_highest_risk_colour OFFENDER.current_highest_risk_colour%TYPE,
+  /*05*/ current_exclusion    OFFENDER.current_exclusion%TYPE,
+  /*06*/ current_restriction  OFFENDER.current_restriction%TYPE,
+  /*07*/ crn                  OFFENDER.crn%TYPE,
+  --
+  /*08*/ event_ID             EVENT.event_id%TYPE,
+  --
+  /*09*/ disposal_ID          DISPOSAL.disposal_id%TYPE,
+  /*10*/ disposal_date        DATE,
+  /*11*/ termination_date     DATE,
+  --
+  /*12*/ first_release_date   DATE,
+  --
+  /*13*/ upw                  DISPOSAL.upw%TYPE,
+  /*14*/ sentence_type        R_DISPOSAL_TYPE.sentence_type%TYPE,
+  /*15*/ cja2003              R_DISPOSAL_TYPE.cja2003%TYPE,
+  /*16*/ pre_cja2003          R_DISPOSAL_TYPE.pre_cja2003%TYPE,
+  /*17*/ cohort               R_DISPOSAL_TYPE.cohort%TYPE,
+  --
+  /*18*/ probation_area_desc  PROBATION_AREA.description%TYPE,
+  --
+  /*19*/ L1 NUMBER,
+  /*20*/ L2 NUMBER,
+  /*21*/ L3 NUMBER,
+  --
+  /*22*/ offender_manager_id    OFFENDER_MANAGER.offender_manager_id%TYPE,
+  /*23*/ main_offence_id        MAIN_OFFENCE.main_offence_id%TYPE,
+  /*24*/ probation_area_id      PROBATION_AREA.probation_area_id%TYPE,
+  /*25*/ trust_provider_flag    OFFENDER_MANAGER.trust_provider_flag%TYPE,
+  /*26*/ trust_provider_team_id OFFENDER_MANAGER.trust_provider_team_id%TYPE,
+  /*27*/ staff_employee_id      OFFENDER_MANAGER.staff_employee_id%TYPE,
+  /*28*/ disposal_type_id       DISPOSAL.disposal_type_id%TYPE,
+  /*29*/ offence_date           DATE
+);
+TYPE ttabCohortDiary IS TABLE OF trecCohortDiary;
+
+FUNCTION procFindCohortDiaryTAB(
+    p_probation_area_ID   PROBATION_AREA.probation_area_id%TYPE DEFAULT NULL,
+    p_sentence_date       DATE    DEFAULT NULL,
+    p_release_date        DATE    DEFAULT NULL,
+    p_offence_date        DATE    DEFAULT NULL,
+    p_team_id             TEAM.team_id%TYPE   DEFAULT NULL,
+    p_staff_id            STAFF.staff_id%TYPE DEFAULT NULL,
+    --
+    p_offender_id         OFFENDER.offender_id%TYPE DEFAULT NULL,
+    p_use_cohort_table    VARCHAR2 DEFAULT 'N',
+    --
+    p_max_rows            INTEGER DEFAULT 100000 )
+RETURN ttabCohortDiary PIPELINED;
+
+--
+-- Court Appearance Diary
+--
+TYPE trecCourtAppDiary IS RECORD(
+  /*00*/ court_appearance_id  NUMBER,
+  /*01*/ appearance_date      DATE,
+  /*02*/ court_name           COURT.court_name%TYPE,
+  /*03*/ outcome_desc         R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+  --
+  /*04*/ offender_id          NUMBER,
+  /*05*/ crn                  OFFENDER.crn%TYPE,
+  /*06*/ first_name           OFFENDER.first_name%TYPE,
+  /*07*/ second_name          OFFENDER.second_name%TYPE,
+  /*08*/ third_name           OFFENDER.third_name%TYPE,
+  /*09*/ surname              OFFENDER.surname%TYPE,
+  /*10*/ date_of_birth        DATE,
+  --
+  /*11*/ current_highest_risk_colour OFFENDER.current_highest_risk_colour%TYPE,
+  /*12*/ current_exclusion    OFFENDER.current_exclusion%TYPE,
+  /*13*/ current_restriction  OFFENDER.current_restriction%TYPE,
+  /*14*/ gender_desc          R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+  /*15*/ current_tier_desc    R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+  --
+  /*16*/ event_ID             NUMBER,
+  --
+  /*17*/ disposal_ID          NUMBER,
+  /*18*/ termination_date     DATE,
+  /*19*/ upw                  DISPOSAL.upw%TYPE,
+  /*20*/ disposal_type_id     NUMBER,
+  /*21*/ sentence_type        R_DISPOSAL_TYPE.sentence_type%TYPE,
+  /*22*/ cja2003              R_DISPOSAL_TYPE.cja2003%TYPE,
+  /*23*/ pre_cja2003          R_DISPOSAL_TYPE.pre_cja2003%TYPE
+);
+TYPE ttabCourtAppDiary IS TABLE OF trecCourtAppDiary;
+
+FUNCTION procCourtAppDiaryTAB(
+    p_date                DATE,
+    p_appearance_type_id  NUMBER,
+    p_probation_area_ID   NUMBER   DEFAULT NULL,
+    p_court_id            NUMBER   DEFAULT NULL,
+    p_soft_deleted        SMALLINT DEFAULT 0,
+    --
+    p_max_rows            INTEGER DEFAULT 100000 )
+RETURN ttabCourtAppDiary PIPELINED;
+
+--
+-- Release Diary
+--
+TYPE trecReleaseDiary IS RECORD(
+  /*00*/ offender_id                 OFFENDER.offender_id%TYPE,
+  /*01*/ key_date                    DATE,
+  /*02*/ prisoner_number             CUSTODY.prisoner_number%TYPE,
+  /*03*/ custody_id                  CUSTODY.custody_id%TYPE,
+  /*04*/ institution_name            R_INSTITUTION.description%TYPE,
+  /*05*/ disposal_id                 DISPOSAL.disposal_id%TYPE,
+  /*06*/ disposal_date               DISPOSAL.disposal_date%TYPE,
+  /*07*/ termination_date            DISPOSAL.termination_date%TYPE,
+  /*08*/ upw_order                   DISPOSAL.upw%TYPE,
+  /*09*/ first_name                  OFFENDER.first_name%TYPE,
+  /*10*/ surname                     OFFENDER.surname%TYPE,
+  /*11*/ third_name                  OFFENDER.third_name%TYPE,
+  /*12*/ crn                         OFFENDER.crn%TYPE,
+  /*13*/ current_highest_risk_colour OFFENDER.current_highest_risk_colour%TYPE,
+  /*14*/ current_exclusion           OFFENDER.current_exclusion%TYPE,
+  /*15*/ current_restriction         OFFENDER.current_restriction%TYPE,
+  /*16*/ event_id                    EVENT.event_id%TYPE
+);
+TYPE ttabReleaseDiary IS TABLE OF trecReleaseDiary;
+
+FUNCTION procReleaseDiaryTAB(
+    p_team_id              OFFENDER_MANAGER.team_id%TYPE,
+    p_provider_team_id     OFFENDER_MANAGER.provider_team_id%TYPE,
+    p_staff_id             OFFENDER_MANAGER.allocation_staff_id%TYPE,
+    p_provider_employee_id OFFENDER_MANAGER.provider_employee_id%TYPE,
+    p_from_date            DATE,
+    p_to_date              DATE,
+    p_key_date_type_code   R_STANDARD_REFERENCE_LIST.code_value%TYPE,
+    p_max_rows             INTEGER DEFAULT 100000 )
+RETURN ttabReleaseDiary PIPELINED;
+
+--
+--
+--
+--
+END PKG_CASELOAD;
+/
+
+create PACKAGE PKG_SPG_EXPORT AUTHID CURRENT_USER
+AS
+--
+-- Description  : The package definitions for SPG Offender Export
+--
+-- Author       : Yuri Fedkiv
+--
+-- Date         : 26/10/2016
+--
+--  Change History:
+--
+--  Version PDM  Date        Who            Description
+--  ------- ---- ----------- ------------ ---------------------------------------
+--     1.01 809  26-OCT-2016 Y Fedkiv     - Initial version based on PKG_SEARCH
+--     1.02 809  27-OCT-2016 Y Fedkiv     - Amended L3 RBAC level calculation for NSI - to use CASELOAD denormalised table
+--     1.03 809  07-NOV-2016 Y Fedkiv     - Added the following new subroutines:
+--                                          add_spg_202_DEFERRED_LST: used within the SPG_NOTIFICATION_BI database trigger
+--                                          process_spg_202_DEFERRED: used within the SPG_NOTIFICATION_AS database trigger
+--                                          SUBMIT_CRC_EXPORT: generates SPG outbound allocation XML messages
+--                                          GENERATE_SPG_RESPONSE_202: for test purposes only
+--     1.04 809  08-NOV-2016 Y Fedkiv    - Added a set of crc_export_deferred* trigger support procedures
+--     1.05 809  10-NOV-2016 Y Fedkiv    - Added new DO_RESUME_PENDING_MESSAGES procedure (called from within DO_MARK_CRC_EXPORT_PROCESSED)
+--     1.06 809  17-NOV-2016 Y Fedkiv    - #SPG-12275: fixed SUBMIT_CRC_EXPORT.do_check_rbac (CASELOAD.probation_area_id should match OFFENDER_CRC_EXPORT.crc_provider_id)
+--                                       - #SPG-12273: Offender entity message (1003) is not being sent out from ND for an SPG Transition Export
+--     1.07 809  22-NOV-2016 Y Fedkiv    - #SPG-12319: fixed procGetOffCRCExtractSummaryTAB to count DISTINCT offender_id for L3 sections
+--     1.08 809  23-NOV-2016 Y Fedkiv    - #SPG-12312: It is not possible to Re-Export records which have Status Error
+--     1.09 809  25-NOV-2016 Y Fedkiv    - #SPG-12343: Added P_MAX_ROWS_L1/P_MAX_ROWS_L3 check within procGetOffCRCExtractTAB (must be mutually exclusine when one of them is set to > than 0)
+--     1.10 809  29-NOV-2016 Y Fedkiv    - #SPG-12322: "Other Offender - Total" when rendered for each Team in a Provider add up to more than when only the Provider is used to filter
+--     1.11 809  05-DEC-2016 Y Fedkiv    - #SPG-12417: Amended procGetOffCRCExtractTAB to exclude PROCESSED (not COMPLETED) records
+--     1.12 809  06-DEC-2016 Y Fedkiv    - #SPG-12419: Fixed the L3 data sample criteria within procGetOffCRCExtractTAB
+--     1.13 809  09-DEC-2016 Y Fedkiv    - #SPG-12443: Added PROVIDER_ID criteria for OFFENDER_CRC_EXPORT and SPG_NOTIFICATION within procGetOffCRCExtractSummaryTAB and procGetOffCRCExtractTAB
+--                                       - #SPG-12419: Removed the L3 data sample criteria within procGetOffCRCExtractTAB; replaced it with the offender de-duplication method
+--     1.14 809  19-DEC-2016 Y Fedkiv    - Changed procGetOffCRCExtractedOffTAB to enforce P_MAX_ROWS parameter (when set to NULL by application) to its declared default value
+--     1.15 809  17-Jan-2017 M Wetherall - #SPG-12427: Added current exclusion/restriction to list of return values procGetOffCRCExtractedOffTAB
+--     1.16 905  12-APR-2017 Y Fedkiv    - Added XSD multi-schema support
+--     1.17 912  17-JUL-2017 Y Fedkiv    - Re-factored dynamic SQL within procGetOffCRCExtractSummaryTAB
+--     1.18 912  08-SEP-2017 Y Fedkiv    - Added new CREATE_CRC_EXPORT_BATCH procedure
+--     1.19 1011 08-SEP-2017 Y Fedkiv    - #DST-1750, #DST-1566: re-factored main SQL within procGetOffCRCExtractSummaryTAB
+--     1.20 1020 15-MAR-2018 Y Fedkiv    - #DST-2639: Restricted result set to Team+Staff (when both are specified) within procGetOffCRCExtractSummaryTAB
+--     1.21 1102 12-APR-2018 Y Fedkiv    - #SPG-17110: Added OFFENDER_CRC_EXPORT.batch_flag support within CREATE_CRC_EXPORT_BATCH
+--     1.22 1105 17-MAY-2018 Y Fedkiv    - OFFENDER_CRC_EXPORT.current_record_flag support within CREATE_CRC_EXPORT_BATCH
+--     1.23 1106 18-MAY-2018 Y Fedkiv    - Fixed a bug within create_crc_export_batch, that was introduced by (1.22) change
+--     1.24 1107 24-MAY-2018 Y Fedkiv    - Added DB Trigger mode support within CREATE_CRC_EXPORT_BATCH
+--                                       - Introduced new get_deferred_SPG_202_FLAG and GET_CRC_EXPORT_DEFERRED_FLAG functions
+--     1.25 1107 30-MAY-2018 M Wetherall - #DST-3240: Return extra field ttabOffCRCExtractedOff
+--     1.26 1302 31-JUL-2018 Y Fedkiv    - #DST-2773: Added new procGetInactiveOffCRCTAB and POPULATE_INACTIVE_OFFENDERS subroutines
+--     1.27 1303 09-AUG-2018 Y Fedkiv    - #DST-2777, #DST-3369, #DST-3371, #DST-3372: Added new EXPORT_INACTIVE_OFFENDERS subroutine
+--     1.28 1304 29-AUG-2018 Y Fedkiv    - #DST-3859: added OFFENDER_CRC_EXPORT table check within procGetInactiveOffCRCTAB
+--                                       - #DST-3857: Court and Institutional Reports are now checked within procGetInactiveOffCRCTAB
+--                                       - #DST-3877: Amended POPULATE_INACTIVE_OFFENDERS to exclude duplicates in CRC_INACTIVE_OFFENDER
+--     1.29 1304 10-SEP-2018 Y Fedkiv    - #DST-3874: added new P_RESUBMIT_FAILED_EXPORTS parameter (to support re-try for failed XML exports) within EXPORT_INACTIVE_OFFENDERS
+--                                       - #DST-3370: Added G_LABEL initialisation with the 000000 value
+--
+--   ------ ---- ----------- ----------- -----------------------------
+--
+
+TYPE trecOffCRCExtractSummary IS RECORD(
+  /*00*/ rbac_level  VARCHAR2(4),
+  /*01*/ num_of_rows NUMBER );
+TYPE ttabOffCRCExtractSummary IS TABLE OF trecOffCRCExtractSummary;
+
+FUNCTION procGetOffCRCExtractSummaryTAB(
+    p_probation_area_id NUMBER,
+    p_team_id           NUMBER DEFAULT -1,
+    p_staff_id          NUMBER DEFAULT -1 )
+RETURN ttabOffCRCExtractSummary PIPELINED;
+
+TYPE trecOffCRCExtract IS RECORD(
+  /*00*/ offender_id NUMBER,
+  /*01*/ rbac_level  VARCHAR2(4),
+  /*02*/ entity_code VARCHAR2(3),
+  /*03*/ entity_name VARCHAR2(30),
+  /*04*/ entity_id   NUMBER );
+TYPE ttabOffCRCExtract IS TABLE OF trecOffCRCExtract;
+
+FUNCTION procGetOffCRCExtractTAB(
+    p_probation_area_id           NUMBER,
+    p_team_id                     NUMBER    DEFAULT -1,
+    p_staff_id                    NUMBER    DEFAULT -1,
+    p_excl_already_extracted_flag VARCHAR2  DEFAULT 'N',
+    p_incl_already_extracted_flag VARCHAR2  DEFAULT 'N',
+    p_crc_export_date_from        DATE      DEFAULT NULL,
+    p_crc_export_date_to          DATE      DEFAULT NULL,
+    p_crn                         VARCHAR2  DEFAULT NULL,
+    p_status_export_flag          SMALLINT  DEFAULT 0,
+    p_debug_flag                  VARCHAR2  DEFAULT 'Y',
+    --
+    p_max_rows                    INTEGER   DEFAULT -1,
+    p_max_rows_L1                 INTEGER   DEFAULT -1,
+    p_max_rows_L3                 INTEGER   DEFAULT -1 )
+RETURN ttabOffCRCExtract PIPELINED;
+
+TYPE trecOffCRCExtractedOff IS RECORD(
+  /*00*/ offender_id            OFFENDER.offender_id%TYPE,
+  /*01*/ first_name             OFFENDER.first_name%TYPE,
+  /*02*/ second_name            OFFENDER.second_name%TYPE,
+  /*03*/ surname                OFFENDER.surname%TYPE,
+  /*04*/ crn                    OFFENDER.crn%TYPE,
+  --
+  /*05*/ probation_area_id      PROBATION_AREA.probation_area_id%TYPE,
+  /*06*/ probation_area_code    PROBATION_AREA.code%TYPE,
+  /*07*/ probation_area_desc    PROBATION_AREA.description%TYPE,
+  --
+  /*08*/ trust_provider_flag    OFFENDER_MANAGER.trust_provider_flag%TYPE,
+  /*09*/ trust_provider_team_id OFFENDER_MANAGER.trust_provider_team_id%TYPE,
+  /*10*/ team_code              TEAM.code%TYPE,
+  /*11*/ team_desc              ALL_TEAM.description%TYPE,
+  /*12*/ staff_employee_id      OFFENDER_MANAGER.staff_employee_id%TYPE,
+  /*13*/ staff_code             STAFF.officer_code%TYPE,
+  /*14*/ staff_first_name       OFFICER.forename%TYPE,
+  /*15*/ staff_second_name      OFFICER.forename2%TYPE,
+  /*16*/ staff_surname          OFFICER.surname%TYPE,
+  --
+  /*17*/ export_date            OFFENDER_CRC_EXPORT.export_date%TYPE,
+  /*18*/ rbac_level             VARCHAR2(2),
+  /*19*/ crc_provider_id        PROBATION_AREA.probation_area_id%TYPE,
+  --
+  /*20*/ row_version            NUMBER,
+  /*21*/ created_by_user_id     NUMBER,
+  /*22*/ created_datetime       DATE,
+  /*23*/ last_updated_user_id   NUMBER,
+  /*24*/ last_updated_datetime  DATE,
+  /*25*/ requested_export_level OFFENDER_CRC_EXPORT.requested_export_level%TYPE,
+  /*26*/ error_flag             OFFENDER_CRC_EXPORT.error_flag%TYPE,
+  /*27*/ submitted_datetime     DATE,
+  /*28*/ processed_datetime     DATE,
+  /*29*/ error_message          OFFENDER_CRC_EXPORT.error_message%TYPE,
+  /*30*/ spg_notification_id    NUMBER,
+  /*31*/ offender_crc_export_id NUMBER,
+  /*32*/ current_exclusion      OFFENDER.CURRENT_EXCLUSION%TYPE,
+  /*33*/ current_restriction    OFFENDER.CURRENT_RESTRICTION%TYPE,
+  /*34*/ batch_flag             OFFENDER_CRC_EXPORT.batch_flag%TYPE);
+TYPE ttabOffCRCExtractedOff IS TABLE OF trecOffCRCExtractedOff;
+
+FUNCTION procGetOffCRCExtractedOffTAB(
+    p_probation_area_id           NUMBER,
+    p_team_id                     NUMBER    DEFAULT -1,
+    p_staff_id                    NUMBER    DEFAULT -1,
+    p_crc_export_date_from        DATE      DEFAULT NULL,
+    p_crc_export_date_to          DATE      DEFAULT NULL,
+    p_crn                         VARCHAR2  DEFAULT NULL,
+    p_status_export_flag          SMALLINT  DEFAULT 0,
+    p_max_rows                    INTEGER   DEFAULT 10000 )
+RETURN ttabOffCRCExtractedOff PIPELINED;
+
+--
+-- CRC Extract DB trigger support subroutines
+--
+FUNCTION get_override_bi(
+    p_business_interaction_id NUMBER,
+    p_action                  VARCHAR2,
+    p_fld                     VARCHAR2 DEFAULT 'ID')
+RETURN VARCHAR2;
+
+PROCEDURE do_dedup_messages(p_offender_id NUMBER, p_crc_probation_area_id NUMBER, x_max_spg_notification_id OUT NUMBER);
+
+PROCEDURE do_resume_pending_messages(p_offender_id NUMBER, p_crc_probation_area_id NUMBER);
+
+PROCEDURE do_mark_crc_export_processed(
+    p_spg_notification_id NUMBER,
+    p_trigger_name        VARCHAR2 DEFAULT NULL );
+
+FUNCTION get_spg_202_deferred_CNT RETURN NUMBER;
+FUNCTION get_deferred_SPG_202_FLAG RETURN BOOLEAN;
+
+PROCEDURE add_spg_202_DEFERRED_LST(
+    p_spg_notification_id         NUMBER,
+    p_business_interaction_id     NUMBER,
+    p_receiver_control_reference  SPG_NOTIFICATION.receiver_control_reference%TYPE,
+    p_trigger_name                VARCHAR2 DEFAULT NULL );
+
+PROCEDURE process_spg_202_DEFERRED(p_trigger_name VARCHAR2 DEFAULT NULL);
+
+FUNCTION get_crc_export_deferred_CNT RETURN NUMBER;
+FUNCTION get_crc_export_deferred_FLAG RETURN BOOLEAN;
+
+PROCEDURE add_crc_export_DEFERRED_LST(
+    p_offender_crc_export_id      NUMBER,
+    p_trigger_name                VARCHAR2 DEFAULT NULL );
+
+PROCEDURE process_crc_export_DEFERRED(p_trigger_name VARCHAR2 DEFAULT NULL);
+
+--
+-- CRC Export submit outbound messages
+--
+PROCEDURE submit_crc_export(
+    p_crc_provider_id        NUMBER DEFAULT NULL,
+    p_export_date_from       DATE   DEFAULT NULL,
+    p_export_date_to         DATE   DEFAULT NULL,
+    p_offender_crc_export_id NUMBER DEFAULT NULL );
+
+PROCEDURE create_crc_export_batch(
+    p_probation_area_id           NUMBER,
+    p_team_id                     NUMBER    DEFAULT -1,
+    p_staff_id                    NUMBER    DEFAULT -1,
+    p_excl_already_extracted_flag VARCHAR2  DEFAULT 'N',
+    p_incl_already_extracted_flag VARCHAR2  DEFAULT 'N',
+    p_crc_export_date_from        DATE      DEFAULT NULL,
+    p_crc_export_date_to          DATE      DEFAULT NULL,
+    p_crn                         VARCHAR2  DEFAULT NULL,
+    p_status_export_flag          SMALLINT  DEFAULT 0,
+    p_debug_flag                  VARCHAR2  DEFAULT 'Y',
+    --
+    p_max_rows                    INTEGER   DEFAULT -1,
+    p_max_rows_L1                 INTEGER   DEFAULT -1,
+    p_max_rows_L3                 INTEGER   DEFAULT -1,
+    --
+    p_async_flag                  VARCHAR2 DEFAULT 'N',
+    p_spg_notification_id         NUMBER   DEFAULT NULL,
+    p_offender_id                 NUMBER   DEFAULT NULL,
+    p_db_trigger_mode             VARCHAR2 DEFAULT 'N' );
+
+--
+-- Generate 202 (Response) messages
+--
+PROCEDURE generate_spg_response_202(
+    p_crc_provider_id     NUMBER DEFAULT NULL,
+    p_export_date_from    DATE   DEFAULT NULL,
+    p_export_date_to      DATE   DEFAULT NULL,
+    p_spg_notification_id NUMBER DEFAULT NULL );
+
+--
+-- CRC Inactive Offenders
+--
+TYPE trecInactiveOffCRC IS RECORD(
+  /*00*/ crc_inactive_offender_id NUMBER,
+  /*01*/ offender_id              NUMBER,
+  /*02*/ crc_provider_id          NUMBER,
+  /*03*/ processed_flag           SMALLINT,
+  /*04*/ processed_datetime       DATE,
+  /*05*/ created_by_user_id       NUMBER,
+  /*06*/ created_datetime         DATE,
+  /*07*/ last_updated_user_id     NUMBER,
+  /*08*/ last_updated_datetime    DATE );
+TYPE ttabInactiveOffCRC IS TABLE OF trecInactiveOffCRC;
+
+FUNCTION procGetInactiveOffCRCTAB(
+    p_probation_area_id           NUMBER,
+    p_team_id                     NUMBER   DEFAULT NULL,
+    p_staff_id                    NUMBER   DEFAULT NULL,
+    --
+    p_exclude_extracted_flag      VARCHAR2 DEFAULT 'N',
+    --
+    p_debug_flag                  VARCHAR2 DEFAULT 'Y',
+    --
+    p_max_rows                    INTEGER  DEFAULT -1 )
+RETURN ttabInactiveOffCRC PIPELINED;
+--
+PROCEDURE populate_inactive_offenders(
+    p_probation_area_id           NUMBER,
+    p_team_id                     NUMBER   DEFAULT NULL,
+    p_staff_id                    NUMBER   DEFAULT NULL,
+    --
+    p_max_rows                    INTEGER  DEFAULT -1 );
+--
+PROCEDURE export_inactive_offenders(
+    p_probation_area_id        NUMBER   DEFAULT NULL,
+    p_crc_inactive_offender_id NUMBER   DEFAULT NULL,
+    p_resubmit_failed_exports  VARCHAR2 DEFAULT 'N',
+    p_max_rows                 INTEGER  DEFAULT -1 );
+
+--
+--
+--
+--
+END PKG_SPG_EXPORT;
+/
+
+create PACKAGE pkg_off_nat_search AUTHID CURRENT_USER
+AS
+--
+-- Description  : The package definitions for National Offender Search
+--
+-- Author       : Yuri Fedkiv
+-- Date         : 20/12/2016
+--
+--  Change History:
+--
+--  Version PDM  Date        Who            Description
+--  ------- ---- ----------- ------------ ---------------------------------------
+--     1.00 809  20-DEC-2016 Y Fedkiv     - Initial version based on PKG_Search
+--     1.01 809  21-DEC-2016 Y Fedkiv     - Implemented support for P_CRN, P_PNC_NUMBER and P_DATE_OF_BIRTH within funcFindOffendersTAB
+--     1.02 809  09-JAN-2017 Y Fedkiv     - Fixed several bugs within funcFindOffendersTAB (following Systest)
+--     1.03 809  20-JAN-2017 Y Fedkiv     - #SPG-12692: Search on P_MIDDLE_NAME wasn not performed correctly for SOUNDEX2 search type
+--     1.04 809  24-JAN-2017 Y Fedkiv     - #SPG-12775: SR3-012: National Search - Additional Identifier
+--                                        - #SPG-12776: SR3-013: National Search - Date of Birth
+--                                        - #SPG-12778: SR3-015: National Search - PNC
+--                                        - #SPG-12779: SR3-016: National Search - Additional Identifier
+--                                        - #SPG-12780: SR3-017: National Search - Gender
+--     1.05 809  24-JAN-2017 Y Fedkiv     - #NDD-4090: National Search on names (alias off) and DOB returns MORE rows than Names alone, should be weighted only
+--                                        - #NDD-4091: SR3-013 National Search to ADD DOB to the Search results doesnt filter
+--                                        - #NDD-4092: SR3-012 A CRN National Search is CASE senstive in its extra Search for MTCRN, MFCRN , DOFF etc
+--     1.06 901  27-JAN-2017 Y Fedkiv     - Fixed DOB ranking issue (when used in combination with PNC / Other identifiers)
+--     1.07 901  07-FEB-2017 Y Fedkiv     - #NDD-4108: Wildcard on first name + SOUNDEX(last name) returns no result
+--                                        - Added the highest ranking score (50000) to PNC_NUMBER exact match
+--     1.08 901  27-FEB-2017 Y Fedkiv     - #SPG-13124: CRN number search should should be alowed in a combination with other parameters (similar to PNC number)
+--     1.09 902  17-MAR-2017 Y Fedkiv     - #SPG-13289: National Search - CRN and Names Search does not apply any weighting when there's matching on Names and MTCRN value
+--                                        - #SPG-13179: National Search on CRN and PNC number is placing CRN matches below the PNC Matches instead of the other way around
+--     1.10 902  19-MAR-2017 Y Fedkiv     - nDelius 3.0.011b National Search hot fix
+--     1.11 902  22-MAR-2017 Y Fedkiv     - Moved the ADDITIONAL_IDENTIFIER based criteria within funcFindOffendersTAB into a separate sub-union
+--                                        - Added new optional P_RESULTSET_LIMIT_FLAG paremeter to funcFindOffendersTAB
+--     1.12 905  07-APR-2017 M Brumpton   - Corrected problem with @ character at start of lines causing installation to fail
+--     1.13 906  24-APR-2017 Y Fedkiv     - Added National Custody Search functionality
+--     1.14 906  26-APR-2017 Y Fedkiv     - Amended National Search to allow P_INSTITUTION_ID to be specified on its own
+--     1.15 908  15-MAY-2017 Y Fedkiv     - #NDST-892: SR6- "My Providers" National Search with Forename and Surname does not find Offender, whereas "My Providers" and CRN search does
+--     1.16 912  10-AUG-2017 Y Fedkiv     - #DST-562: National Custody Search - Not all results are displayed on an exact match
+--     1.17 912  14-AUG-2017 Y Fedkiv     - Changed default value to Y for P_RESULTSET_LIMIT_FLAG parameter within funcFindOffendersTAB
+--     1.18 912  12-SEP-2017 Y Fedkiv     - #DST-957: Added DISTINCT clause to de-duplicate the result set
+--     1.19 912  13-SEP-2017 Y Fedkiv     - #SPG-15603: Added new P_EXCLUDE_INACTIVE_FLAG parameter within funcFindOffendersTAB
+--     1.20 912  05-OCT-2017 Y Fedkiv     - #DST-1112: Added an extra in-line view within funcFindOffendersTAB, to eliminate unwanted sub-unions
+--     1.21 1004 05-OCT-2017 Y Fedkiv     - #DST-1227, #DST-1228, #DST-1229: Siggle character search for offender names
+--     1.22 1004 22-NOV-2017 Y Fedkiv     - Added RANK-ing for CRN/NOMS/PNC when any of them are specified without offender names
+--     1.23 1004 30-NOV-2017 Y Fedkiv     - #DST-1497: Both National and Custody Search with names plus CRN weren't displaying all the Alias records
+--     1.24 1201 14-JUN-2018 Y Fedkiv     - #DST-????: National Custody Search performance issue (CRN + P_INSTITUTION_ID)
+--     1.25 1404 03-OCT-2018 Y Fedkiv     - #DST-4167: First Name only (WILDCARD) search issue fix
+--     1.26 1405 11-OCT-2018 Y Fedkiv     - #DST-4167: First Name only (EXACT) search issue fix
+--
+--   ------ ---- ----------- ------------ -----------------------------
+--
+
+--================
+-- Search OFFENDER
+--================
+
+TYPE trecOffender IS RECORD (
+    /*00*/ offender_ID          OFFENDER.offender_id%TYPE,
+    /*01*/ crn                  OFFENDER.crn%TYPE,
+    /*02*/ first_name           OFFENDER.first_name%TYPE,
+    /*03*/ second_name          OFFENDER.second_name%TYPE,
+    /*04*/ third_name           OFFENDER.third_name%TYPE,
+    /*05*/ surname              OFFENDER.surname%TYPE,
+    /*06*/ date_of_birth        OFFENDER.date_of_birth_date%TYPE,
+    /*07*/ risk                 OFFENDER.current_highest_risk_colour%TYPE,
+    /*08*/ gender               R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+    /*09*/ current_exclusion    VARCHAR2(1),
+    /*10*/ current_restriction  VARCHAR2(1),
+    /*11*/ trust                PROBATION_AREA.description%TYPE,
+    /*12*/ officer_forename     OFFICER.forename%TYPE,
+    /*13*/ officer_forename2    OFFICER.forename2%TYPE,
+    /*14*/ officer_surname      OFFICER.surname%TYPE,
+    /*15*/ disposal             VARCHAR2(1),
+    /*16*/ alias_id             ALIAS.alias_id%TYPE,
+    /*17*/ rank                 NUMBER,
+    -- National Custody Search
+    /*18*/ institution_id       NUMBER,
+    /*19*/ institution_code     R_INSTITUTION.code%TYPE,
+    /*20*/ institution_name     R_INSTITUTION.description%TYPE,
+    /*21*/ location_change_date DATE,
+    /*22*/ noms_number          OFFENDER.noms_number%TYPE
+  );
+TYPE ttabOffenders IS TABLE OF trecOffender;
+
+FUNCTION funcFindOffendersTAB(
+    p_first_name            OFFENDER.first_name%TYPE  DEFAULT NULL,
+    p_middle_name           OFFENDER.second_name%TYPE DEFAULT NULL,
+    p_last_name             OFFENDER.surname%TYPE     DEFAULT NULL,
+    p_alias_first_name      ALIAS.first_name%TYPE     DEFAULT NULL,
+    p_alias_second_name     ALIAS.second_name%TYPE    DEFAULT NULL,
+    p_alias_third_name      ALIAS.third_name%TYPE     DEFAULT NULL,
+    p_alias_surname         ALIAS.surname%TYPE        DEFAULT NULL,
+    p_gender                OFFENDER.gender_id%TYPE   DEFAULT NULL,
+    p_other_identifier_type VARCHAR2                  DEFAULT NULL,
+    p_other_identifier      VARCHAR2                  DEFAULT NULL,
+    p_national_search       VARCHAR2                  DEFAULT 'Y',
+    --
+    p_trust                 PROBATION_AREA.code%TYPE  DEFAULT NULL,
+    --
+    p_crn                   OFFENDER.CRN%TYPE         DEFAULT NULL,
+    p_noms_number           OFFENDER.noms_number%TYPE DEFAULT NULL,
+    p_pnc_number            OFFENDER.pnc_number%TYPE  DEFAULT NULL,
+    p_date_of_birth         DATE                      DEFAULT NULL,
+    --
+    p_dob_ranking_flag      VARCHAR2                  DEFAULT 'Y',
+    p_gender_ranking_flag   VARCHAR2                  DEFAULT 'Y',
+    --
+    p_custodial_search      VARCHAR2                  DEFAULT 'N',
+    p_institution_id        NUMBER                    DEFAULT NULL,
+    --
+    p_lor_flag              VARCHAR2                  DEFAULT 'Y',
+    --
+    p_exclude_inactive_flag VARCHAR2                  DEFAULT 'N',
+    --
+    p_resultset_limit_flag  VARCHAR2                  DEFAULT 'Y',
+    p_max_rows              INTEGER DEFAULT           100000 )
+RETURN ttabOffenders  PIPELINED;
+
+PROCEDURE procfindOffenders_OLD(
+    p_first_name           OFFENDER.first_name%TYPE,
+    p_middle_name          OFFENDER.second_name%TYPE,
+    p_last_name            OFFENDER.surname%TYPE,
+    p_alias_first_name     ALIAS.first_name%TYPE,
+    p_alias_second_name    ALIAS.second_name%TYPE,
+    p_alias_third_name     ALIAS.third_name%TYPE,
+    p_alias_surname        ALIAS.surname%TYPE,
+    p_gender               OFFENDER.gender_id%TYPE,
+    p_other_identifier_type VARCHAR2,
+    p_other_identifier     VARCHAR2,
+    p_national_search      VARCHAR2,
+    p_trust                PROBATION_AREA.code%TYPE,
+    --
+    p_outcursor  OUT SYS_REFCURSOR );
+
+--=================
+-- Offender Summary
+--=================
+
+TYPE trecOffenderSummary IS RECORD (
+    /*00*/ offenderID               OFFENDER.offender_id%TYPE,
+    /*01*/ aliasFirstName           ALIAS.first_name%TYPE,
+    /*02*/ aliasSecondName          ALIAS.second_name%TYPE,
+    /*03*/ aliasThirdName           ALIAS.third_name%TYPE,
+    /*04*/ aliasSurname             ALIAS.surname%TYPE,
+    /*05*/ buildingName             OFFENDER_ADDRESS.building_name%TYPE,
+    /*06*/ addressNumber            OFFENDER_ADDRESS.address_number%TYPE,
+    /*07*/ streetName               OFFENDER_ADDRESS.street_name%TYPE,
+    /*08*/ district                 OFFENDER_ADDRESS.district%TYPE,
+    /*09*/ town                     OFFENDER_ADDRESS.town_city%TYPE,
+    /*10*/ county                   OFFENDER_ADDRESS.county%TYPE,
+    /*11*/ postcode                 OFFENDER_ADDRESS.postcode%TYPE,
+    /*12*/ croNumber                OFFENDER.cro_number%TYPE,
+    /*13*/ niNumber                 OFFENDER.ni_number%TYPE,
+    /*14*/ nomsNumber               OFFENDER.noms_number%TYPE,
+    /*15*/ pncNumber                OFFENDER.pnc_number%TYPE,
+    /*16*/ prisoner_number          OFFENDER.most_recent_prisoner_number%TYPE,
+    /*17*/ identifier               ADDITIONAL_IDENTIFIER.identifier%TYPE,
+    /*18*/ offenderIdentifierType   R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+    /*19*/ current_flag             VARCHAR2(1),
+    /*20*/ transferInProgress       VARCHAR2(1),
+    /*21*/ ethnicity                R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+    /*22*/ nationality              R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+    /*23*/ disabilitiesRecorded     VARCHAR2(1),
+    /*24*/ prisonLocation           R_INSTITUTION.institution_name%TYPE,
+    /*25*/ level3                   VARCHAR2(30), --district.description%TYPE,
+    /*26*/ team                     ALL_TEAM.description%TYPE,
+    /*27*/ teamTelephoneNumber      ALL_TEAM.telephone%TYPE,
+    /*28*/ laoExclusionMessage      OFFENDER.exclusion_message%TYPE,
+    /*29*/ laoRestrictionMessage    OFFENDER.restriction_message%TYPE,
+    /*30*/ v_event_number           EVENT.event_number%TYPE,
+    /*31*/ offender_details         OFFENDER.offender_details%TYPE,
+    /*32*/ level2                   VARCHAR2(30) );
+TYPE ttabOffenderSummary IS TABLE OF trecOffenderSummary;
+
+FUNCTION funcGetOffenderSummaryTAB(p_offender_id IN OFFENDER.offender_id%TYPE, p_national_search IN VARCHAR2)
+RETURN ttabOffenderSummary PIPELINED;
+
+
+--=================
+-- Helper Functions
+--=================
+FUNCTION  funcIsTransferInProgress(p_offenderid IN OFFENDER.offender_id%TYPE) RETURN CHAR;
+FUNCTION  funcFindEthnicity(p_offenderid IN OFFENDER.offender_id%TYPE) return R_STANDARD_REFERENCE_LIST.code_description%TYPE;
+FUNCTION  funcFindNationality(p_offenderid IN OFFENDER.offender_id%TYPE) return R_STANDARD_REFERENCE_LIST.code_description%TYPE;
+PROCEDURE procCurrentlyDisabled(p_offenderid IN OFFENDER.offender_id%TYPE, p_disabilityDesc OUT NOCOPY NUMBER, p_isDisabled OUT NOCOPY CHAR);
+
+PROCEDURE procWildCardFindOffenders(
+    p_first_name       IN OFFENDER.FIRST_NAME%TYPE,
+    p_middle_name      IN OFFENDER.SECOND_NAME%TYPE,
+    p_last_name        IN OFFENDER.SURNAME%TYPE,
+    p_alias_first_name  IN ALIAS.FIRST_NAME%TYPE,
+    p_alias_second_name IN ALIAS.SECOND_NAME%TYPE,
+    p_alias_third_name  IN ALIAS.THIRD_NAME%TYPE,
+    p_alias_surname    IN ALIAS.SURNAME%TYPE,
+    p_outcursor       IN OUT SYS_REFCURSOR) ;
+
+FUNCTION  funcUserInitialSurname(userid IN user_.user_id%TYPE) RETURN VARCHAR2;
+
+PROCEDURE procFindMainAddress(
+    p_offenderid      IN OFFENDER.offender_id%TYPE,
+    p_building_name     OUT offender_address.building_name%TYPE,
+    p_address_number    OUT offender_address.address_number%TYPE,
+    p_street_name     OUT offender_address.street_name%TYPE,
+    p_district          OUT offender_address.district%TYPE,
+    p_town_city           OUT offender_address.town_city%TYPE,
+    p_county              OUT offender_address.county%TYPE,
+    p_postcode          OUT offender_address.postcode%TYPE);
+
+FUNCTION funcRankOffenderName(
+    p_first_name       OFFENDER.first_name%TYPE,
+    p_secondname       OFFENDER.second_name%TYPE,
+    p_thirdname        OFFENDER.third_name%TYPE,
+    p_surname          OFFENDER.surname%TYPE,
+    p_dob              OFFENDER.date_of_birth_date%TYPE,
+    p_gender           OFFENDER.gender_id%TYPE,
+    p_noms_number      OFFENDER.noms_number%TYPE,
+    p_pnc_number       OFFENDER.pnc_number%TYPE,
+    p_crn              OFFENDER.crn%TYPE,
+    P_act_firstname    OFFENDER.first_name%TYPE,
+    p_act_secondname   OFFENDER.second_name%TYPE,
+    p_act_thirdname    OFFENDER.third_name%TYPE,
+    p_act_surname      OFFENDER.surname%TYPE,
+    p_act_dob          OFFENDER.date_of_birth_date%TYPE,
+    p_act_gender       OFFENDER.gender_id%TYPE,
+    p_act_noms_number  OFFENDER.noms_number%TYPE,
+    p_act_pnc_number   OFFENDER.pnc_number%TYPE,
+    p_act_crn          OFFENDER.crn%TYPE,
+    --
+    p_act_offender_id  OFFENDER.offender_id%TYPE,
+    --
+    p_disposal         OFFENDER.current_disposal%TYPE,
+    p_alias            CHAR,
+    p_NULL_flag        VARCHAR2 DEFAULT 'N' )
+RETURN NUMBER;
+--
+PROCEDURE generate_nat_search_result (
+    p_surname             IN SPG_SEARCH_REQUEST.surname%TYPE,
+    p_first_name          IN SPG_SEARCH_REQUEST.surname%TYPE,
+    p_second_name         IN SPG_SEARCH_REQUEST.surname%TYPE,
+    p_date_of_birth_date  IN SPG_SEARCH_REQUEST.surname%TYPE,
+    p_gender_id           IN SPG_SEARCH_REQUEST.surname%TYPE,
+    p_crn                 IN SPG_SEARCH_REQUEST.surname%TYPE,
+    p_pnc_number          IN SPG_SEARCH_REQUEST.surname%TYPE,
+    p_cro_number          IN SPG_SEARCH_REQUEST.surname%TYPE,
+    p_noms_number         IN SPG_SEARCH_REQUEST.surname%TYPE,
+    p_ni_number           IN SPG_SEARCH_REQUEST.surname%TYPE,
+    p_search_request_id   OUT SPG_SEARCH_REQUEST.spg_search_request_id%TYPE);
+
+--
+--
+--
+--
+END pkg_off_nat_search;
+/
+
+create PACKAGE pkg_search AUTHID CURRENT_USER
+AS
+--
+-- Description  : The package definitions for search
+--
+-- Author       : Gordon Stutchbury
+--
+-- Date         : 09/09/10
+--
+--  Change History:
+--
+--  Version PDM Date        Who            Description
+--  ------- --- ----------- ------------ ---------------------------------------
+--     001  N/A 09-SEP-2010 G Stutchbury - The original
+--     1.31 28  28-JUN-2011 D Reid       - Rewrite of Offender Search for performance, based on v1.27
+--     1.32 31  01-AUG-2011 D Middleton  - Fixed defect 5828
+--     1.33 31  09-AUG-2011 D Middleton  - Fixed defect 5962
+--     1.34 31  19-AUG-2011 D Middleton  - Fixed defect 6113
+--     1.35 32  06-SEP-2011 D Reid       - Rewrite of View Offender further tuning on Offender Search
+--     1.36 32  15-SEP-2001 D Middleton  - Changed most_recent_instituion_id on offender to institution_id to match PDM
+--     1.37 32  12-OCT-2011 R Pilmoor    - Split/Optimize SQL
+--     1.38 32  02-NOV-2011 D Reid       - Fixed defect 6940 / Search Results Termination Message
+--     1.39 33  16-NOV-2011 D Reid       - Removed enhanced soundex search introduced in 1.37
+--     1.40 33  16-NOV-2011 D Reid       - Further work to correct enhanced soundex search introduced in 1.37
+--     1.41 34  14-DEC-2011 D Middleton  - Fixed defect 7676
+--     1.42 34  15-DEC-2011 D Reid       - Fixed defect 7708, 7736, 7737, 7859 and 7650
+--     1.43 34  15-DEC-2011 K Foster     - Included UPW Search procedure
+--     1.44 35  15-DEC-2011 K Foster     - UPW Search procedure revised
+--     1.45 35  16-JAN-2012 D Reid       - Fixed defect 8024, search on additional identifier
+--     1.46 35  17-JAN-2012 D Reid       - Fixed defect 8081, search on middlename wildcard
+--     1.47 35  23-JAN-2012 D Reid       - Fixed defect 7946, reference data caching
+--     1.48 35  30-JAN-2012 Y Fedkiv     - Introduced a set of new subroutines to imlement the Enforcement Contacts DAO (defect# 8268)
+--     1.49 35  03-FEB-2012 D Reid       - Fixed defect 8249, 8250 and 8272, issues around Alias searching
+--     1.50 35  03-FEB-2012 Y Fedkiv     - Fixed defect 7765, 8382, 8386, 8387 (Alert Contacts performance issue as well as some others)
+--                                       - Changed the package body initialisation block to use the new generic lookup functions
+--     1.51 35  08-FEB-2012 Y Fedkiv     - Fixed defect 7927 / UPW Officer Search
+--     1.52 35  21-FEB-2012 Y FEdkiv     - Added new GET_TAB_LIST pipelined function (to support the reuired change as per defect# 8163)
+--     1.53 36  29-FEB-2012 Y Fedkiv     - Added new procFindCaseLoad to support the new Officer Diary caseload earch screen
+--     1.54 36  07-MAR-2012 Y Fedkiv     - Implemented the workaround for MS-DOS based SQL*Plus issue
+--     1.55 36  09-MAR-2012 Y Fedkiv     - Amended procDebug to increment the g_debug_cnt in-memory counter
+--     1.56 36  13-MAR-2012 D Middleton  - Fixed defect 8136
+--     1.57 37  26-MAR-2012 Y Fedkiv     - PDM v0.37 uplift
+--     1.58 37  30-MAR-2012 Y Fedkiv     - Amended the funcGetBreachDate and funcGetBreachDateEnd in line with the recent HLD spec:
+--                                       - removed the ERCL (Recall/Return to Prison) contact type
+--     1.59 37  11-APR-2012 Y Fedkiv     - Fixed the GET_TAB_LIST function
+--     1.60 39  17-APR-2012 Y Fedkiv     - PDM v0.39 uplift; Fixed defect 8572
+--     1.61 39  20-APR-2012 Y Fedkiv     - Further performance improvements on procFindCaseLoadTAB
+--     1.62 40  01-MAY-2012 Y Fedkiv     - PDM v0.40 uplift (with the new CASELOAD de-normalised table)
+--     1.63 40  02-MAY-2012 Y Fedkiv     - Moved procDebug implementation to the new PKG_Debug package
+--     1.64 40  14-MAY-2012 D Reid       - Added new procGetContacts procedure
+--     1.65 40  28-MAY-2012 Y Fedkiv     - Addded some debug information within the procFindOffenders
+--     1.66 40  01-JUN-2012 K Foster     - Handle migrated null LAO messages
+--     1.67 40  06-JUN-2012 Y Fedkiv     - Tuned procfindUPWOffendersTAB performance
+--     1.68 40  07-JUN-2012 Y Fedkiv     - Added the run time DB Stats debug info to all PLSQL pipelined procedures
+--     1.69 40  11-JUN-2012 Y Fedkiv     - More changes to procfindUPWOffendersTAB following the Unit Testing
+--     1.70 40  12-JUN-2012 Y Fedkiv     - Further performance improvements on procfindUPWOffendersTAB
+--     1.71 40  18-JUN-2012 Y Fedkiv     - Moved funcContactPolicy from PKG_TriggerSupport
+--     1.72 40  28-JUN-2012 Y Fedkiv     - Added new procFindStaffteamTAB and procFindStaffteam functions (defect #9020)
+--     1.73 40  29-JUN-2012 Y Fedkiv     - Changed the procfindUPWOffendersTAB (defect #8904)
+--     1.74 40  04-JUL-2012 Y Fedkiv     - Defect #9105 (Amended procFindCaseLoadTAB to support External Providers)
+--                                       - Changed procFindStaffTeamTAB to make the RESULT_CACHE backward compatible with 11gR1
+--     1.75 41  05-JUL-2012 Y Fedkiv     - PDM v0.41 uplift
+--     1.76 41  13-JUL-2012 Y Fedkiv     - Defect #7709 - Contact Enforcements (added an extra sub-union based on CONTACT table)
+--     1.77 41  13-JUL-2012 D Middleton  - Fixed defect 10018
+--     1.78 41  19-JUL-2012 K Foster     - Fixed defect 10046
+--     1.79 41  26-JUL-2012 Y Fedkiv     - Back ported the performance fix for procGetContacts (prototyped and tested in 1.74_04)
+--                                       - Added new procGetEventsTAB and procGetEvents procedures
+--     1.80 41  01-AUG-2012 K Foster     - Fixed defect in setting referral date on contact list
+--     1.81 41  30-JUL-2012 Y Fedkiv     - Moved funcContactPolicy back to PKG_TriggerSupport
+--     1.82 41  30-JUL-2012 Y Fedkiv     - Introduced new PKG_VpdSupport package
+--     1.83 41  07-AUG-2012 Y Fedkiv     - Defect # 7853: procFindEnforcementContactsTAB is now using an external
+--                                         PKG_Lookups.procFindEnforcementEventsTAB pipelined function
+--     1.84 41  08-AUG-2012 K Foster     - Changed lookup in UPW search to attended instead of complied.
+--     1.85 41  10-AUG-2012 Y Fedkiv     - Added EVENT level contacts within the procGetContactsTAB (defect# 10415)
+--     1.86 41  13-AUG-2012 Y Fedkiv     - Defect# 10433 (CONTACT.CONTACT_DATE containing the time element)
+--     1.87 41  21-AUG-2012 Y Fedkiv     - In assistance to Defect# 10533 - added more debug information to the procfindOffenders
+--     1.88 41  22-AUG-2012 D Middleton  - Fixed defect 10633
+--     1.89 41  29-AUG-2012 M Brumpton   - Changed procGetContactTab() to outer join to DISPOSAL
+--     1.90 41  30-AUG-2012 D Middleton  - Changed procGetContactTab() to remove active_flag check
+--     1.91 41  17-SEP-2012 Y Fedkiv     - Added the current CLIENT_IDENTIFIER into the debug message within the procfindOffenders
+--     1.92 43  16-NOV-2012 Y Fedkiv     - Added Attended and Complied into the trecContacts (Contact List search procedure)
+--     1.93 43  20-NOV-2012 Y Fedkiv     - Added one extra R_DISPOSAL_TYPE.auto_terminate field to the trecEvents (used within the procGetEvents)
+--     1.94 43  20-NOV-2012 K Foster     - Added Attended and Complied into the trecContacts (Contact List search procedure)
+--     1.95 43  12-DEC-2012 D Middleton  - Fixed defect 11966
+--     1.96 43  13-DEC-2012 K Foster     - Updated event list to get first sentencing appearance
+--     1.97 43  15-JAN-2013 K Foster     - Fixed for defect #12091
+--     1.98 43  11-MAR-2013 K Foster     - Updated to include PCMS2_FUNC032, PCMS2_FUNC013, PCMS2_FUNC024, PCMS2_FUNC023
+--     1.99 101 13-MAR-2013 K Foster     - PDM 101 Uplift
+--     1.100 101 18-Mar-2013 K Foster    - Implement CONTACT_ALERT table for alert diary
+--     1.101 101 04-Apr-2013 K Foster    - Implemented limits for defensive coding
+--     1.102 101 10-Apr-2013 K Foster    - Implemented Effective Length and Consecutive/Concurrent
+--     1.103 101 16-Apr-2013 K Foster    - Implemented limits for defensive coding
+--     1.104 101 02-May-2013 M Brumpton  - Added CONTACT_ALERT to get_tab_list
+--     1.105 101 20-May-2013 Y Fedkiv    - Added ORDER BY clause within procGetContactsTAB
+--     1.106 101 15-Jul-2013 K Foster    - Implemented fix for HPSD2644511
+--     1.107 102 28-AUG-2013 K Foster    - Implemented PCMS2_FUNC148 (recent caseload)
+--     1.108 102 26-SEP-2013 D Middleton - Implemented PCMS2_FUNC061 (breach in progress indicator)
+--     1.109 102 28-OCT-2013 K Foster    - TR Added pending transfer diary procedure
+--     1.110 202 28-OCT-2013 K Foster    - TR Added NSI to contact list
+--     1.111 301 29-NOV-2013 K Foster    - TR Added Contact Filtering and NSI to pending transfer
+--     1.112 301 29-NOV-2013 K Foster    - Fixed defect 12883
+--     1.113 301 06-DEC-2013 K Foster    - Added ownership level to alert diary
+--     1.114 301 06-DEC-2013 Y Fedkiv    - Corrected Offender hierarchy within the GET_TAB_LIST
+--     1.115 301 16-DEC-2013 K Foster    - Added ownership level to enforcement diary
+--     1.116 301 17-DEC-2013 D Middleton - Removed Region from national search
+--     1.117 301 16-DEC-2013 K Foster    - Added ownership level to upw search and caseload
+--     1.118 301 07-JAN-2014 K Foster    - Corrected Offender hierarchy within the GET_TAB_LIST
+--     1.119 301 21-JAN-2014 K Foster    - Fixed defect 13095
+--     1.120 301 04-FEB-2014 Y Fedkiv    - Re-factored ownership level logic within Officer Diary subroutines (to address the timeout issue)
+--     1.121 301 06-FEB-2014 Y Fedkiv    - Same as 1.120 but for all the rest subroutines that do use the ownership levels
+--     1.122 401 13-FEB-2014 K Foster    - Updated caseload for additional requirements
+--     1.123 401 13-FEB-2014 K Foster    - Update alert contact to return levels correctly
+--     1.124 401 24-FEB-2014 K Foster    - UPW Search ownership levels
+--     1.125 401 26-FEB-2014 M Wetherall - Fixed defects 13254, 12883
+--     1.126 402 24-APR-2014 Y Fedkiv    - Fixed defects 13569
+--     1.127 402 28-APR-2014 Y Fedkiv    - Defect 13569: added CASE_LOAD at different levels within the GET_TAB_LIST
+--     1.128 402 28-APR-2014 D Reid      - Defect 13569: changed sequence for OASYS_ASSESSMENT, needs to be deleted before CONTACT
+--     1.129 402 31-MAY-2014 D Middleton - Fixed HPSD 2951394
+--     1.130 402 25-JUN-2014 Y Fedkiv    - Introduced new procGetPendingTransfersTAB (re-factored the original procGetPendingTransfers to improve performance/manageability)
+--                                       - Amended do_set_rbac_levels to use UPPER case for USER_.distinguished_name (performance fix)
+--     1.131 402 01-JUL-2014 Y Fedkiv    - Fixed QC defect 13867 (procGetPendingTransfersTAB)
+--     1.132 402 02-JUL-2014 Y Fedkiv    - Added 2 new fields to the procGetPendingTransfersTAB (Target and Source DISTRICT description)
+--     1.133 402 03-JUL-2014 M Wetherall - Fixed QC defect 13867
+--     1.134 501 05-AUG-2014 K Foster      TtG 1 Pending Transfers
+--     1.135 501 06-AUG-2014 K Foster      TtG 1 Contacts
+--     1.136 501 11-AUG-2014 M.Brumpton    TS2 Changes PSS_RQMNT, PSS_RQMNT_MANAGER
+--     1.137 501 12-AUG-2014 M Brumpton    Added PSS_RQMNT_MANAGER to procGetOwnersTab
+--     1.138 501 14-AUG-2014 M Brumpton   - Added custodial_status_code_value to procGetEventsTAB
+--     1.139 501 17-AUG-2014 M Brumpton   - Added additional bind variables to procFindCaseLoadTAB
+--     1.140 501 08-SEP-2014 K Foster     - Fixed QC14116
+--     1.141 502 15-SEP-2014 K Foster     - TS2 - Other 4 Implementation
+--     1.142 502 19-SEP-2014 Y Fedkiv     - Minor cosmetic refinements to RBAC subroutines
+--     1.143 502 19-SEP-2014 K Foster     - Fixed QC 14156
+--     1.144 502 02-OCT-2014 M Wetherall  - Fixed QC 14104
+--     1.145 503 30-SEP-2014 K Foster     - Paymech 5 Caseload Implementation
+--     1.146 503 01-OCT-2014 M Brumpton   - Added additional filters to Pending Transfers
+--     1.147 503 02-OCT-2014 M Brumpton   - Added staff, team and nsi filters to Pending Transfer
+--                                        - Added additional report type CT (Component Transfer) to Pending Transfer
+--     1.148 503 02-OCT-2014 K Foster     - FIxed mapping bugs in pending transfer
+--     1.149 503 04-OCT-2014 M Brumpton   - Added NO_DATA_NEEDED hadling to getownership procedure
+--     1.150 503 14-OCT-2014 M Brumpton   - Added Institutional Reports to procGetPendingTransfersTAB
+--     1.151 503 20-OCT-2014 K Foster     - Removed v_SQL from debug for get pending transfers tab due to size
+--     1.152 503 10-OCT-2014 Y Fedkiv     - Fixed procFindOfficeContactsTAB to remove hardwired dependency on DELIUS_APP_SCHEMA
+--     1.153 503 17-OCT-2014 Y Fedkiv     - Uplifted GET_TAB_LIST to PDM 503
+--     1.154 503 24-OCT-2014 Y Fedkiv     - Improved debug details (added SQL explain plan; split debug info into 2 steps)
+--     1.155 503 05-NOV-2014 K Foster     - QC15042 - Pending transfers
+--     1.156 503 07-NOV-2014 Y Fedkiv     - Removed RESULT_CACHE for large transactional tables within the procGetOwnersTAB
+--                                        - Amended do_set_rbac_levels to reset PLSQL (db session level) cache when
+--                                          PROBATION_AREA_USER table is updated
+--     1.157 503 05-NOV-2014 M Brumpton   - Introduced new funcGetOffenderSummaryTAB
+--     1.158 503 11-NOV-2014 Y Fedkiv     - Removed dependency on PKG_Common package
+--     1.159 503 13-NOV-2014 Y Fedkiv     - Added COHORT Diary subroutines
+--     1.160 503 17-NOV-2014 Y Fedkiv     - Moved GET_SQL_XPLAIN_PLAN to PKG_Lookups
+--     1.161 503 20-NOV-2014 Y Fedkiv     - QC 14502: re-factored procGetContactsTAB to improve the performance
+--     1.162 503 27-NOV-2014 K Foster     - PR7192 - Soft deleted offenders returned in PNC search
+--     1.163 503 28-NOV-2014 K Foster     - QC15256
+--     1.164 503 04-DEC-2014 Y Fedkiv     - QC 15287: re-factored procFindOfficeContactsTAB to improve the performance
+--     1.165 601 05-DEC-2014 Y Fedkiv     - Added support for COHORT_DIARY de-normalised table
+--     1.166 601 08-DEC-2014 Y Fedkiv     - Fixed dynamic SQL within the procCohortDiaryTAB
+--     1.167 601 17-DEC-2014 Y Fedkiv     - Amended procCohortDiaryTAB to suppress the RBAC L1/2/3 levels calculation in
+--                                          COHORT_DIARY table rebuild mode
+--     1.168 601 23-DEC-2014 Y Fedkiv     - Fixed QC defect 15334 (procGetPendingTransfersTAB)
+--     1.169 601 29-DEC-2014 Y Fedkiv     - Further changes for QC15334: added support for long offender IDs list
+--                                          (changed procGetOwnersTAB.P_OFFENDER_ID_LST data type to CLOB)
+--     1.170 601 21-JAN-2015 Y Fedkiv     - Amended ADD_ELEM to deal with FK keys for > 29 characters table names
+--     1.171 601 16-MAR-2015 S Hatton     - Changes for PTR14, pending transfers to include court reports
+--     1.172 701 24-MAR-2015 M Brumpton   - Added COURT REPORT TRANSFER to procGetOwnersTAB
+--     1.173 702 17-APR-2015 D Graham     - Updated for PTR45
+--     1.174 702 15-APR-2015 Y Fedkiv     - Added new procfindUPWDiaryTAB and procfindUPWDiary subroutines
+--     1.174a702 05-MAY-2015 Y Fedkiv     - moved the GET_TAB_LIST implementetion into new PKG_DynSQL package
+--     1.175 702 07-MAR-2015 Y Fedkiv     - Changed CaseLoad rebuild procedure to add new (PDM701) DISPOSAL fields
+--     1.176 703 12-NOV-2015 K Foster     - QC16216 - RAR Count becomes a stored procedure
+--     1.177 703 13-NOV-2015 K Foster     - QC16270 - Fixed court report type retrieval error
+--     1.178 703 28-MAY-2015 K Foster     - QC16385 - RAR Total count including soft deleted contacts
+--     1.179 802 21-SEP-2015 M Wetherall  - SPG - Procedure for Offender Transfer Request screen
+--     1.180 802 30-OCT-2015 M Wetherall  - SPG - Procedure for Offender Transfer Review screen
+--     1.181 802 30-OCT-2015 P Miller     - Update to procGetEvents to return Case Allocation Id
+--     1.182 802 06-OCT-2015 K Foster     - Added procedure to get interested CRC providers
+--     1.183 803 15-OCT-2015 K Foster     - Fixed interested CRCs providers to not be user centric
+--     1.184 803 19-NOV-2015 Y Fedkiv     - SPG - Added new procedures for Offenders CRC Extract screen
+--     1.185 803 25-NOV-2015 Y Fedkiv     - Fixed dynamic SQL query within procGetOffCRCExtractTAB
+--     1.186 803 26-NOV-2015 K Foster     - SPG-5827 - updated to include terminated components in transfer request
+--     1.187 803 30-NOV-2015 Y Fedkiv     - Amended L1/L3 calculation logic within procGetOffCRCExtractSummaryTAB and procGetOffCRCExtractTAB
+--                                        - Added more optional parameters (P_INCL_ALREADY_EXTRACTED_FLAG, P_CRC_EXPORT_DATE_FROM and P_CRC_EXPORT_DATE_TO) to procGetOffCRCExtractTAB
+--     1.188 803 01-DEC-2015 Y Fedkiv     - Added new procGetOffCRCExtractedOffTAB and procGetOffCRCExtractedOff subroutines
+--     1.189 803 02-DEC-2015 Y Fedkiv     - Added new P_MAX_ROWS parameter to procGetOffCRCExtractTAB and procGetOffCRCExtractedOffTAB
+--     1.189 803 03-DEC-2015 K Foster     - Fixed SPG-3036
+--     1.190 804 09-DEC-2015 M.Brumpton   - Refactored procGetInterestedCRCsTAB
+--     1.191 805 30-DEC-2015 Y.Fedkiv     - Refactored a number of subroutines to increase PLSQL code portability to PG
+--     1.192 805 06-JAN-2016 K.Foster     - SPG-3036 - Added soft deleted check into procGetOwnersTAB
+--     1.193 805 12-JAN-2016 M.Brumpton   - Reverted trecEvents event_number back to NUMBER
+--     1.194 805 12-JAN-2016 M.Brumpton   - Changed EVENT.event_number to database type definition
+--     1.195 805 13-JAN-2016 Y.Fedkiv     - Added two new optional p_max_rows_L1 and p_max_rows_L3 parameters to procGetOffCRCExtractedOffTAB
+--     1.196 805 14-JAN-2016 Y.Fedkiv     - Re-introduced P_EXCL_ALREADY_EXTRACTED_FLAG and P_EXCL_ALREADY_EXTRACTED_FLAG parameters within procGetOffCRCExtractedOffTAB
+--     1.197 805 15-JAN-2016 Y.Fedkiv     - Moved the (1.195, 1.195) functionality into procGetOffCRCExtractTAB
+--     1.198 805 18-JAN-2016 Y.Fedkiv     - Amended data selection criteria within procGetOffCRCExtractTAB: L1 records can only be at OM level + {offender_id, RBAC_LEVEL} must be unique (i.e. a random sample for Offender's L3 set)
+--     1.199 805 26-JAN-2016 Y.Fedkiv     - Re-factored procOffTransferRequests to introduce the interim PIPELINED procedure that will return the actual result set
+--     1.200 805 03-FEB-2016 Y.Fedkiv     - Re-factored procOffTransferReviews to introduce the interim PIPELINED procedure that will return the actual result set
+--     1.201 805 09-FEB-2016 Y.Fedkiv     - Implemented fixes for SPG-8309 and SPG-8310 defects
+--     1.202 805 15-FEB-2016 M.Wetherall  - Implemented fixes for SPG-8524
+--     1.203 805 25-FEB-2016 Y.Fedkiv     - Aded new procOffTransferRejectsTAB and procOffTransferRejects subroutines
+--     1.204 805 26-FEB-2016 M.Wetherall  - Implemented fixes for SPG-8642
+--     1.205 806 04-FEB-2016 K.Foster     - CC0014 Level 2 and Level 3 ot offender screens
+--     1.206 805 01-MAR-2016 M.Wetherall  - Made changes to procOffTransferRejectsTAB and procOffTransferRejects
+--     1.207 805 07-MAR-2016 M.Wetherall  - Implemented changes for CC0021 procOffTransferReviews
+
+--     1.208 805 23-MAR-2016 M.Wetherall  - Implemented changes for CC025 Rejected Transfers
+--     1.209 805 29-MAR-2016 M.Wetherall  - Implemented changes for CC045 and Transfer
+--     1.210 806 31-MAR-2016 Y.Fedkiv     - Added an extra search criteria (to exclude offender records that have already been sent to CRC) within procGetOffCRCExtractSummaryTAB and procGetOffCRCExtractTAB
+--                                        - #SPG-8874: made P_TEAM_ID and P_STAFF_ID as an optional for procGetOffCRCExtractSummaryTAB, procGetOffCRCExtractTAB and procGetOffCRCExtractedTAB
+--     1.211 806 01-APR-2016 Y.Fedkiv     - Amended procGetOffCRCExtractSummaryTAB to show total # of pending AllocateOffender messages as a separate figure
+--     1.212 806 05-APR-2016 Y.Fedkiv     - #FSPG-60-cc045-court-and-institutional-reports: Amended L3 level criteria for Court and Inst report components (procGetOwnersTAB)
+--     1.213 806 21-APR-2016 Y.Fedkiv     - Removed an extra search criteria (to exclude offender records that have already been sent to CRC) within procGetOffCRCExtractSummaryTAB
+--     1.214 806 10-MAY-2016 Y.Fedkiv     - Added new procMasterTranPenTranTAB pipelined function
+--     1.214 806 01-JUN-2016 M.Wetherall  - Fixed SPG-9665
+-- YF: back ported from NDelius release 1.0 into 1.1
+--     1.300 806 01-APR-2016 Y.Fedkiv     - Amended procGetOffCRCExtractSummaryTAB to show total # of pending AllocateOffender messages as a separate figure
+--     1.301 806 21-APR-2016 Y.Fedkiv     - Removed an extra search criteria (to exclude offender records that have already been sent to CRC) within procGetOffCRCExtractSummaryTAB
+--     1.302 806 29-JUN-2016 M.Brumpton   - Refactored procGetInterestedCRCsTAB
+--     1.303 806 29-JUN-2016 M.Brumpton     Changed the list processing for RBAC Levels (Regular Expressions)
+--     1.304 806 30-JUN-2016 M.Brumpton     Added code to trecInterestedAreas
+--     1.305 806 05-JUL-2016 K.Foster     - Incident 3626359 - Corrected available lengths for descriptions in transfer queries
+--     1.306 806 06-JUL-2016 M.Wetherall  - Incident 3626616 - Added release diary SP
+--     1.307 806 07-JUL-2016 Y.Fedkiv     - Implemented new procReleaseDiaryTAB and procReleaseDiary subroutines
+-- YF: END
+--     1.400 806 07-JUL-2016 M.Brumpton   - Consolidated package after GIT merge problems.
+--     1.401 806 15-JUL-2016 M.Wetherall  - Fixed SPG-10216
+--     1.402 806 07-JUL-2016 Y.Fedkiv     - Performance/query fixes in a various subroutines containing a join to DISPOSAL and R_DISPOSAL_TYPE:
+--                                            - avoid an LEFT OUTER JOIN where possible
+--                                            - where missing add DISPOSAL.soft_deleted = 0 check
+--                                            - replace DISPOSAL.termination_date IS NULL with DISPOSAL.active_flag = 1 clause
+--
+--     1.403 806 12-JUL-2016 Y.Fedkiv     - #SPG-10175: RBAC L3 for COURT_REPORT fix
+--     1.404 806 20-JUL-2016 Y.Fedkiv     - Fixed the GIT merge errors
+--     1.405 806 27-JUL-2016 M.Wetherall  - #SPG-8825: Extended procOffTransferRequestsTAB and procOffTransferReviewsTAB to include additional Court Appearance details
+--     1.406 806 16-AUG-2016 Y.Fedkiv     - Some further refinements to 1.405
+--     1.407 806 22-AUG-2016 M.Wetherall  - #SPG-10820: Transfer review fix
+--     1.408 808 16-SEP-2016 M.Wetherall  - Modified rejected transfer diary to use new rejected transfer diary table
+--     1.409 808 20-SEP-2016 Y.Fedkiv     - Re-factored the base query within procOffTransferRejectsTAB (to collapse 7 sub-unions into a single one); also added the live query option,
+--                                          in order to support an automatic re-build of the REJECTED_TRANSFER_DIARY table
+--     1.410 809 25-OCT-2016 Y.Fedkiv     - Moved Caseload and Cohort Diary pipelined subroutines into PKG_CASELOAD package
+--                                        - Moved RBAC subroutines into PKG_RBAC package
+--     1.411 809 26-OCT-2016 Y.Fedkiv     - Moved SPG Offender Extract pipelined subroutines into PKG_SPG_EXPORT package
+--     1.412 809 07-NOV-2016 Y.Fedkiv     - Added extra fields to procGetOffCRCExtractedOff wrapper procedure
+--     1.413 809 08-NOV-2016 Y.Fedkiv     - Added new P_CRN and P_STATUS_EXPORT_FLAG to procGetOffCRCExtractedOffTAB and procGetOffCRCExtractedOff
+--     1.414 809 16-DEC-2016 Y.Fedkiv     - #NDD-4085 -improvements-to-national-search:
+--                                          - Added an extra P_NULL_FLAG parameter to funcRankOffenderName
+--     1.415 809 20-DEC-2016 Y.Fedkiv     - Moved Offender Search subroutines into PKG_OFF_NAT_SEARCH package
+--     1.416 809 17-JAN-2017 M Wetherall  - #SPG-12427: Added current exclusion/restriction to list of return values procGetOffCRCExtractedOffTAB
+--     1.417 910 07-FEB-2017 Y.Fedkiv     - Re-alligned parameter namings for PKG_OFF_NAT_SEARCH API calls
+--     1.418 901 08-FEB-2017 M Aspin      - #SPG-12839: Added exclusion/restriction messages to return values of procOffenderTransferRejects
+--     1.419 902 16-MAR-2017 K Foster     - Added AP procedures and changed to remove non arrivals
+--     1.420 902 14-MAR-2017 M Aspin      - Added tier_allocation_decision_id to procGetEvents
+--     1.421 902 23-MAR-2017 K Foster     - NDST-250
+--     1.422 902 30-MAR-2017 M Wetherall  - Modified procOffenderTransferReviews to retrieve transfer notes
+--     1.423 902 03-APR-2017 K Foster     - SPG-13521
+--     1.424 905 05-APR-2017 M Wetherall  - Modified procOffenderTransferRejects to retrieve transfer notes
+--     1.425 906 24-APR-2017 Y Fedkiv     - Added National Custody Search procedures
+--     1.426 906 26-APR-2017 Y Fedkiv     - Made Offender Names parameters optional within *FindCustody* subroutines
+--     1.427 906 25-APR-2017 M Wetherall  - Modified procPendingTransfers to retrieve establishment provider flag
+--     1.428 907 02-MAR-2017 M Wetherall  - Modified OffenderTransferReject to retrieve establishment provider flag
+--     1.429 906 02-MAY-2017 K Foster     - Remedy 470899 - AP Current Residents LAO
+--     1.430 906 04-MAY-2017 K Foster     - NDST-800 - Transfer review for establishment providers
+--     1.431 907 04-MAY-2017 M Wetherall  - NDST-850 - Transfer NSI changes
+--     1.432 912 12-JUN-2017 Y Fedkiv     - Fixed DBMS_LOB.SUBSTR() call within procGetInterestedCRCsTAB
+--     1.433 912  20-JUN-2017 M Wetherall - Fixed PR033
+--     1.434 912  17-AUG-2017 Y Fedkiv    - Streamlined dynamic SQL parameters binding within procGetContactsTAB
+--     1.435 912  31-AUG-2017 D Reid      - DST-836 p_exact_match_flag introduced to limit procGetContacts to exact match on parameters
+--     1.436 912  13-SEP-2017 Y Fedkiv    - #SPG-15603: Added new P_EXCLUDE_INACTIVE_FLAG parameter within funcFindOffendersTAB
+--     1.437 912  14-SEP-2017 Y Fedkiv    - Added CREATE_CRC_EXPORT_BATCH
+--     1.438 1004 27-SEP-2017 Y Fedkiv    - Fixed the database debug mode check within procGetContactsTAB
+--                                        - #DST-1082, #DST-1074, #DST-1076, #DST-1077, #DST-1078, #DST-1079, #DST-1081:
+--                                          Added P_FILTER_TYPE and P_All*NSI flags handling within procGetContactsTAB
+--     1.439 1004 09-OCT-2017 Y Fedkiv    - #DST-1163: changed procGetContactsTAB to return all offender contacts when P_FILTER_TYPE=FILTER_OFFENDER_CONTACT
+--                                        - #DST-1076: When ALL_EVENT filter type is selected, Exclude NSI (event) level contacts for the filtered search
+--     1.440 1004 12-OCT-2017 Y Fedkiv    - #DST-1174, #DST-1176, #DST-1171, #DST-1165, #DST-1164: Revised logic within procGetContactsTAB (according to the latest case scenarios from AR)
+--     1.441 1004 16-OCT-2017 Y Fedkiv    - #DST-1166: Include all levels for FILTER_EVENT_CONTACT type Context Search
+--                                        - #DST-1170: Include NSI contacts for FILTER_COMPONENT_CONTACT type Context Search
+--     1.442 1004 08-NOV-2017 Y Fedkiv    - #DST-1207: Added new FILTER_OFFENDER_CONTACT and FILTER_ALL filter types (Component Level Search and All Contacts options) within the procGetContactsTAB
+--     1.443 1004 09-NOV-2017 Y Fedkiv    - #DST-1322: Added SGC flag column to the procGetContactsTAB
+--     1.444 1004 15-NOV-2017 Y Fedkiv    - Added /*64*/ SGC_FLAG into procGetContacts
+--     1.445 1004 20-NOV-2017 Y Fedkiv    - #DST-1348: Added new optional P_EXCLUDE_SGC_FLAG parameter to procGetContactsTAB
+--     1.446 1004 21-NOV-2017 Y Fedkiv    - #DST-1216: Changed ORDER BY within procGetContactsTAB (/*65*/ contact_created_datetime DESC)
+--     1.447 1004 23-NOV-2017 Y Fedkiv    - #DST-1381: Added p_NPS_flag=>Y within procFindOfficeContactsTAB
+--     1.448 1004 29-NOV-2017 Y Fedkiv    - #DST-744: Added new procGetAlfrescoPermissions
+--     1.449 1004 30-NOV-2017 Y Fedkiv    - #DST-1216: Added new (57) disposal_date and (58) latest_court_appearance_date within procGetContactsTAB
+--     1.450 1004 08-FEB-2018 M Wetherall - #DST-1331: Return SPG active code for transfer targets
+--     1.451 1019 28-FEB-2018 Y Fedkiv    - #DST-2393, #DST-2432: Fixed Disposal Type attribute calculation within procGetContactsTAB
+--     1.452 1020 15-MAR-2018 Y Fedkiv    - #DST-17030: Added OFFENDER.soft_deleted=0 check within procGetPendingTransfersTAB
+--     1.453 1020 12-APR-2018 Y Fedkiv    - #DST-2893: changes ORDER BY clause within procGetContactsTAB
+--     1.454 1020 30-APR-2018 K Foster    - #DST-2943: join outcome to contact instead of contact alert within procGetContactsTAB
+--     1.455 1107 30-MAY-2018 M Wetherall - #DST-3240: Return extra field ttabOffCRCExtractedOff
+--     1.456 1401 07-SEP-2018 Y Fedkiv    - #DST-2930: Amended ORDER BY clause within procGetContactsTAB to treat NULL values in CONTACT.contact_start_time as 00:00
+--     1.457 1401 12-OCT-2018 K Foster    - Refactored alert indicator count check
+--     1.458 1407 24-OCT-2018 Y Fedkiv    - #DST-4413: Added new procCourtAppDiaryTAB subroutine
+--                                        - Moved procReleaseDiaryTAB into PKG_CASELOAD
+--     1.459 1407 25-OCT-2018 K Foster    - #DST-4413: Fixed a typo in court diary procedure
+--
+--
+--   ------- --- ----------- ------------ -----------------------------
+--
+
+--
+-- RBAC wrappers
+--
+FUNCTION procGetOwnersTAB(
+    p_user_id             NUMBER,
+    p_offender_id_LST     CLOB
+)
+RETURN PKG_RBAC.ttabOwners PIPELINED;
+
+PROCEDURE do_set_rbac_levels(
+    p_offender_id        NUMBER,
+    p_L1          IN OUT NUMBER,
+    p_L2          IN OUT NUMBER,
+    p_L3          IN OUT NUMBER,
+    p_username    IN VARCHAR2 DEFAULT NULL );
+
+PROCEDURE procGetOwnershipLevels(
+    p_offender_id_LST CLOB,
+    p_user_id         USER_.user_id%TYPE,
+    p_outcursor   OUT SYS_REFCURSOR );
+
+PROCEDURE procGetOwnershipLevel(
+    p_offender_id       offender.OFFENDER_ID%TYPE,
+    p_user_id           user_.USER_ID%TYPE,
+    p_outcursor     OUT SYS_REFCURSOR );
+
+PROCEDURE procGetAlfrescoPermissions(
+    p_offender_id NUMBER,
+    p_outcursor   OUT SYS_REFCURSOR );
+
+--
+-- Search OFFENDER
+--
+FUNCTION funcFindOffendersTAB(
+    p_firstname             OFFENDER.first_name%TYPE,
+    p_middlename            OFFENDER.second_name%TYPE,
+    p_lastname              OFFENDER.surname%TYPE,
+    p_aliasfirstname        ALIAS.first_name%TYPE,
+    p_aliassecondname       ALIAS.second_name%TYPE,
+    p_aliasthirdname        ALIAS.third_name%TYPE,
+    p_aliassurname          ALIAS.surname%TYPE,
+    p_gender                OFFENDER.gender_id%TYPE,
+    p_otheridentifierType   VARCHAR2,
+    p_otheridentifier       VARCHAR2,
+    p_nationalsearch        VARCHAR2,
+    p_trust                 PROBATION_AREA.code%TYPE,
+    --
+    p_crn                   OFFENDER.CRN%TYPE         DEFAULT NULL,
+    p_pnc_number            OFFENDER.pnc_number%TYPE  DEFAULT NULL,
+    p_date_of_birth         DATE                      DEFAULT NULL,
+    --
+    p_exclude_inactive_flag VARCHAR2                  DEFAULT 'N' )
+RETURN PKG_OFF_NAT_SEARCH.ttabOffenders PIPELINED;
+
+PROCEDURE procfindOffenders(
+    p_firstname             OFFENDER.first_name%TYPE,
+    p_middlename            OFFENDER.second_name%TYPE,
+    p_lastname              OFFENDER.surname%TYPE,
+    p_aliasfirstname        ALIAS.first_name%TYPE,
+    p_aliassecondname       ALIAS.second_name%TYPE,
+    p_aliasthirdname        ALIAS.third_name%TYPE,
+    p_aliassurname          ALIAS.surname%TYPE,
+    p_gender                OFFENDER.gender_id%TYPE,
+    p_otheridentifierType   VARCHAR2,
+    p_otheridentifier       VARCHAR2,
+    p_nationalsearch        VARCHAR2,
+    p_trust                 PROBATION_AREA.code%TYPE,
+    --
+    p_crn                   OFFENDER.CRN%TYPE         DEFAULT NULL,
+    p_pnc_number            OFFENDER.pnc_number%TYPE  DEFAULT NULL,
+    p_date_of_birth         DATE                      DEFAULT NULL,
+    --
+    p_exclude_inactive_flag VARCHAR2                  DEFAULT 'N',
+    --
+    p_outcursor             OUT SYS_REFCURSOR );
+
+--
+-- National Custody Search
+--
+FUNCTION funcFindCustodyTAB(
+    p_first_name          OFFENDER.first_name%TYPE  DEFAULT NULL,
+    p_middle_name         OFFENDER.second_name%TYPE DEFAULT NULL,
+    p_last_name           OFFENDER.surname%TYPE     DEFAULT NULL,
+    --
+    p_crn                 OFFENDER.CRN%TYPE         DEFAULT NULL,
+    p_noms_number         OFFENDER.noms_number%TYPE DEFAULT NULL,
+    p_date_of_birth       DATE                      DEFAULT NULL,
+    p_institution_id      NUMBER                    DEFAULT NULL )
+RETURN PKG_OFF_NAT_SEARCH.ttabOffenders PIPELINED;
+
+PROCEDURE procfindCustody(
+    p_first_name          OFFENDER.first_name%TYPE  DEFAULT NULL,
+    p_middle_name         OFFENDER.second_name%TYPE DEFAULT NULL,
+    p_last_name           OFFENDER.surname%TYPE     DEFAULT NULL,
+    --
+    p_crn                 OFFENDER.CRN%TYPE         DEFAULT NULL,
+    p_noms_number         OFFENDER.noms_number%TYPE DEFAULT NULL,
+    p_date_of_birth       DATE                      DEFAULT NULL,
+    p_institution_id      NUMBER                    DEFAULT NULL,
+    --
+    p_outcursor           OUT SYS_REFCURSOR );
+
+--===========
+-- Offender Summary
+--===========
+
+FUNCTION funcGetOffenderSummaryTAB(p_offender_id IN offender.offender_id%TYPE, p_nationalsearch IN VARCHAR2)
+RETURN PKG_OFF_NAT_SEARCH.ttabOffenderSummary PIPELINED;
+
+PROCEDURE procgetOffenderSummary(p_offenderID IN offender.offender_id%TYPE, p_nationalsearch VARCHAR2, p_outcursor  IN OUT SYS_REFCURSOR);
+
+
+--
+-- Offender Search Helper Functions
+--
+FUNCTION  funcIsTransferInProgress(p_offenderID IN offender.offender_id%TYPE) RETURN CHAR;
+FUNCTION  funcFindEthnicity(p_offenderID IN offender.offender_id%TYPE) RETURN r_standard_reference_list.code_description%TYPE;
+FUNCTION  funcFindNationality(p_offenderID IN offender.offender_id%TYPE) RETURN r_standard_reference_list.code_description%TYPE;
+PROCEDURE procCurrentlyDisabled(p_offenderID IN offender.offender_id%TYPE, p_disabilityDesc IN OUT NOCOPY NUMBER, p_isDisabled IN OUT NOCOPY CHAR);
+
+PROCEDURE procWildCardFindOffenders(
+    p_firstname       IN offender.FIRST_NAME%TYPE,
+    p_middlename      IN offender.SECOND_NAME%TYPE,
+    p_lastname        IN offender.SURNAME%TYPE,
+    p_aliasfirstname  IN alias.FIRST_NAME%TYPE,
+    p_aliassecondname IN alias.SECOND_NAME%TYPE,
+    p_aliasthirdname  IN alias.THIRD_NAME%TYPE,
+    p_aliassurname    IN alias.SURNAME%TYPE,
+    p_outcursor       IN OUT SYS_REFCURSOR) ;
+
+FUNCTION  funcUserInitialSurname(userid IN user_.user_id%TYPE) RETURN VARCHAR2;
+
+PROCEDURE procFindMainAddress(
+    p_offenderID      IN offender.offender_id%TYPE,
+    p_building_name   IN OUT offender_address.building_name%TYPE,
+    p_address_number  IN OUT offender_address.address_number%TYPE,
+    p_street_name     IN OUT offender_address.street_name%TYPE,
+    p_district        IN OUT offender_address.district%TYPE,
+    p_town_city       IN OUT offender_address.town_city%TYPE,
+    p_county          IN OUT offender_address.county%TYPE,
+    p_postcode        IN OUT offender_address.postcode%TYPE);
+
+--============================================================================--
+-- Pipelined PROCEDURES are being used here in an attempt to improve the
+-- Search procedure's performance
+--============================================================================--
+
+-- Events List
+TYPE trecEvents IS RECORD(
+  /*00*/ event_id                   EVENT.event_id%TYPE,
+  /*01*/ event_number               EVENT.event_number%TYPE,
+  /*02*/ offence_desc               R_OFFENCE.description%TYPE,
+  /*03*/ disposal_type_id           R_DISPOSAL_TYPE.disposal_type_id%TYPE,
+  /*04*/ disposal_type_code         R_DISPOSAL_TYPE.disposal_type_code%TYPE,
+  /*05*/ disposal_type_desc         R_DISPOSAL_TYPE.description%TYPE,
+  /*06*/ sentence_type              R_DISPOSAL_TYPE.sentence_type%TYPE,
+  /*07*/ cja2003                    R_DISPOSAL_TYPE.cja2003%TYPE,
+  /*08*/ pre_cja2003                R_DISPOSAL_TYPE.pre_cja2003%TYPE,
+  /*09*/ disposal_id                DISPOSAL.disposal_id%TYPE,
+  /*10*/ disposal_termination_date  DATE,
+  /*11*/ disposal_length            DISPOSAL.length%TYPE,
+  /*12*/ disposal_upw_flag          DISPOSAL.upw%TYPE,
+  /*13*/ disposal_type_units_id     R_STANDARD_REFERENCE_LIST.standard_reference_list_id%TYPE,
+  /*14*/ disposal_type_units_code   R_STANDARD_REFERENCE_LIST.code_value%TYPE,
+  /*15*/ disposal_type_units_desc   R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+  -- courtAppearanceDAO.getSentencingCourtForEventList
+  /*16*/ sc_court_code             COURT.code%TYPE,
+  /*17*/ sc_court_name             COURT.court_name%TYPE,
+  /*18*/ sc_locality               COURT.locality%TYPE,
+  /*19*/ sc_appearance_date        DATE,
+  /*20*/ sc_court_app_outcome_code R_STANDARD_REFERENCE_LIST.code_value%TYPE,
+  /*21*/ sc_court_app_outcome_desc R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+  -- courtAppearanceDAO.getLatestCourtAppearanceWithOutcomeForEventList
+  /*22*/ lc_court_code             COURT.code%TYPE,
+  /*23*/ lc_court_name             COURT.court_name%TYPE,
+  /*24*/ lc_appearance_date        DATE,
+  /*25*/ lc_court_app_outcome_code R_STANDARD_REFERENCE_LIST.code_value%TYPE,
+  /*26*/ lc_court_app_outcome_desc R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+  /*27*/ referral_date             EVENT.referral_date%TYPE,
+  --
+  /*28*/ auto_terminate            R_DISPOSAL_TYPE.auto_terminate%TYPE,
+  /*29*/ effective_length            NUMBER,
+  /*30*/ CONCURRENT_WITH_EVENT_ID   EVENT.CONCURRENT_WITH_EVENT_ID%TYPE,
+  /*31*/ CONSECUTIVE_TO_EVENT_ID    EVENT.CONSECUTIVE_TO_EVENT_ID%TYPE,
+  /*32*/ SENTENCE_DATE              DATE,
+  /*33*/ BREACH_END_DATE            DATE,
+  /*34*/ FTC_COUNT                  NUMBER,
+  /*35*/ IN_BREACH                  EVENT.in_breach%TYPE,
+  /*36*/ custodial_status_code_value  R_STANDARD_REFERENCE_LIST.code_value%TYPE,
+  /*37*/ PSS_RQMNT_FLAG             EVENT.pss_rqmnt_flag%TYPE,
+  /*38*/ ENTRY_LENGTH               NUMBER,
+  /*39*/ ENTRY_LENGTH_UNITS_DESC    R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+  /*40*/ CASE_ALLOCATION_ID         CASE_ALLOCATION.CASE_ALLOCATION_ID%TYPE,
+  /*41*/ TIER_ALLOCATION_DECISION_ID  TIER_ALLOCATION.ALLOCATION_DECISION_ID%TYPE
+  );
+TYPE ttabEvents IS TABLE OF trecEvents;
+
+FUNCTION procGetEventsTAB(p_offenderID NUMBER, p_max_rows INTEGER DEFAULT 100000) RETURN ttabEvents PIPELINED;
+
+PROCEDURE procGetEvents(p_offenderID NUMBER, p_outcursor OUT SYS_REFCURSOR);
+
+-- Contacts List
+TYPE trecContacts IS RECORD(
+  /*xx*/ contact_level                  VARCHAR2(1),
+  /*00*/ offender_id                    OFFENDER.offender_id%TYPE,
+  /*01*/ row_version                    NUMBER,
+  /*02*/ linked_contact_id              CONTACT.linked_contact_id%TYPE,
+  /*03*/ contact_id                     CONTACT.contact_id%TYPE,
+  /*04*/ contact_date                   DATE,
+  /*05*/ contact_start_time             DATE,
+  /*06*/ contact_end_time               DATE,
+  /*07*/ contact_type_id                R_CONTACT_TYPE.contact_type_id%TYPE,
+  /*08*/ contact_type_code              R_CONTACT_TYPE.code%TYPE,
+  /*09*/ contact_type_desc              R_CONTACT_TYPE.description%TYPE,
+  /*10*/ contact_outcome_desc           R_CONTACT_OUTCOME_TYPE.description%TYPE,
+  /*11*/ contact_outcome_type_id        R_CONTACT_OUTCOME_TYPE.contact_outcome_type_id%TYPE,
+  /*12*/ staff_id                       STAFF.staff_id%TYPE,
+  /*13*/ officer_code                   STAFF.officer_code%TYPE,
+  /*14*/ staff_forename                 STAFF.forename%TYPE,
+  /*15*/ staff_forename2                STAFF.forename2%TYPE,
+  /*16*/ staff_surname                  STAFF.surname%TYPE,
+  /*17*/ provider_employee_id           PROVIDER_EMPLOYEE.provider_employee_id%TYPE,
+  /*18*/ provider_emp_code              PROVIDER_EMPLOYEE.code%TYPE,
+  /*19*/ provider_emp_forename          PROVIDER_EMPLOYEE.forename%TYPE,
+  /*20*/ provider_emp_forename2         PROVIDER_EMPLOYEE.forename2%TYPE,
+  /*21*/ provider_emp_surname           PROVIDER_EMPLOYEE.surname%TYPE,
+  /*22*/ event_id                       EVENT.event_id%TYPE,
+  /*23*/ event_number                   EVENT.event_number%TYPE,
+  /*24*/ disposal_type                  R_DISPOSAL_TYPE.description%TYPE,
+  /*25*/ lic_condition_id               LIC_CONDITION.lic_condition_id%TYPE,
+  /*26*/ rqmnt_id                       RQMNT.rqmnt_id%TYPE,
+  /*27*/ comp_main_cat_id               R_LIC_COND_TYPE_MAIN_CAT.lic_cond_type_main_cat_id%TYPE,
+  /*28*/ comp_main_cat_desc             R_LIC_COND_TYPE_MAIN_CAT.description%TYPE,
+  /*29*/ comp_unit_desc                 R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+  /*30*/ comp_sub_id                    R_STANDARD_REFERENCE_LIST.standard_reference_list_id%TYPE,
+  /*31*/ comp_sub_desc                  R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+  /*32*/ comp_length                    LIC_CONDITION.length%TYPE,
+  /*33*/ ad_main_cat_id                 R_AD_RQMNT_TYPE_MAIN_CATEGORY.ad_rqmnt_type_main_category_id%TYPE,
+  /*34*/ ad_main_cat_desc               R_AD_RQMNT_TYPE_MAIN_CATEGORY.description%TYPE,
+  /*35*/ ad_unit_desc                   R_STANDARD_REFERENCE_LIST.CODE_DESCRIPTION%TYPE,
+  /*36*/ ad_sub_id                      R_STANDARD_REFERENCE_LIST.standard_reference_list_id%TYPE,
+  /*37*/ ad_sub_desc                    R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+  /*38*/ trust_provider_flag            CONTACT.trust_provider_flag%TYPE,
+  /*39*/ staff_employee_id              CONTACT.staff_employee_id%TYPE,
+  /*40*/ lic_cond_type_main_cat_id      NUMBER,
+  /*41*/ rqmnt_type_main_category_id    NUMBER,
+  /*42*/ ad_rqmnt_type_main_category_id NUMBER,
+  /*43*/ lic_cond_type_sub_cat_id       NUMBER,
+  /*44*/ rqmnt_type_sub_category_id     NUMBER,
+  /*45*/ ad_rqmnt_type_sub_category_id  NUMBER,
+  --
+  /*46*/ attended                       CONTACT.attended%TYPE,
+  /*47*/ complied                       CONTACT.complied%TYPE,
+  /*48*/ document_linked                CONTACT.DOCUMENT_LINKED%TYPE,
+  /*49*/ user_editable                  R_CONTACT_TYPE.EDITABLE%TYPE,
+  /*50*/ nsi_id                         NSI.NSI_ID%TYPE,
+  /*51*/ nsi_type_id                    R_NSI_TYPE.NSI_TYPE_ID%TYPE,
+  /*52*/ nsi_type_desc                  R_NSI_TYPE.DESCRIPTION%TYPE,
+  /*53*/ nsi_sub_type_id                NUMBER,
+  /*54*/ nsi_sub_type_desc              R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+  /*55*/ nsi_length                     NSI.LENGTH%TYPE,
+  /*56*/ nsi_length_unit_desc           R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+  /*57*/ pss_rqmnt_id                   PSS_RQMNT.PSS_RQMNT_ID%TYPE,
+  /*58*/ pss_rqmnt_type_id              R_PSS_RQMNT_TYPE_MAIN_CATEGORY.PSS_RQMNT_TYPE_MAIN_CAT_ID%TYPE,
+  /*59*/ pss_rqmnt_type_desc            R_PSS_RQMNT_TYPE_MAIN_CATEGORY.DESCRIPTION%TYPE,
+  /*60*/ pss_rqmnt_sub_type_id          R_PSS_RQMNT_TYPE_SUB_CATEGORY.PSS_RQMNT_TYPE_SUB_CAT_ID%TYPE,
+  /*61*/ pss_rqmnt_sub_type_desc        R_PSS_RQMNT_TYPE_SUB_CATEGORY.description%TYPE,
+  /*62*/ pss_rqmnt_length               PSS_RQMNT.LENGTH%TYPE,
+  /*63*/ pss_rqmnt_length_unit_desc     R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+  --
+  /*64*/ sgc_flag                       R_CONTACT_TYPE.sgc_flag%TYPE,
+  /*65*/ contact_created_datetime       DATE,
+  --
+  /*66*/ disposal_date                  DATE,
+  /*67*/ latest_court_appearance_date   DATE
+  );
+TYPE ttabContacts IS TABLE OF trecContacts;
+
+FUNCTION procGetContactsTAB(
+    p_offenderID          OFFENDER.offender_id%TYPE,
+    p_eventID             EVENT.event_id%TYPE,
+    p_licconID            lic_condition.lic_condition_id%TYPE,
+    p_rqmntID             rqmnt.rqmnt_id%TYPE,
+    p_StartDate           contact.contact_date%TYPE,
+    p_EndDate             contact.contact_date%TYPE,
+    p_filter_type         VARCHAR2,
+    p_category            r_standard_reference_list.standard_reference_list_id%TYPE,
+    p_offenderNsiID       contact.nsi_id%TYPE,
+    p_allOffenderNsi      NUMBER,
+    p_eventNsiID          contact.nsi_id%TYPE,
+    p_allEventNsi         NUMBER,
+    p_pssRqmntID          pss_rqmnt.pss_rqmnt_id%TYPE,
+    p_exact_match_flag    VARCHAR2,
+    p_exclude_sgc_flag    VARCHAR2,
+    --
+    p_max_rows          INTEGER DEFAULT 100000)
+RETURN ttabContacts PIPELINED;
+
+PROCEDURE procGetContacts(
+    p_offenderID          contact.offender_id%TYPE,
+    p_eventID             contact.event_id%TYPE,
+    p_licconID             contact.LIC_CONDITION_ID%TYPE,
+    p_rqmntID             contact.RQMNT_ID%TYPE,
+    p_StartDate           DATE,
+    p_EndDate             DATE,
+    p_filter_type         VARCHAR2,
+    p_category            NUMBER,
+    p_offenderNsiID       contact.nsi_id%TYPE,
+    p_allOffenderNsi      NUMBER,
+    p_eventNsiID          contact.nsi_id%TYPE,
+    p_allEventNsi         NUMBER,
+    p_pssRqmntID          contact.PSS_RQMNT_ID%TYPE,
+    p_exact_match_flag    VARCHAR2,
+    p_exclude_sgc_flag    VARCHAR2,
+    p_outcursor           OUT SYS_REFCURSOR);
+
+TYPE trecUpwDiary IS RECORD(
+    /*00*/ upw_project_id       UPW_APPOINTMENT.upw_project_id%TYPE,
+    /*01*/ upw_project_name     UPW_PROJECT.name%TYPE,
+    /*02*/ upw_project_code     UPW_PROJECT.code%TYPE,
+    /*03*/ start_time           UPW_PROJECT_AVAILABILITY.start_time%TYPE,
+    /*04*/ end_time             UPW_PROJECT_AVAILABILITY.end_time%TYPE,
+    /*05*/ upw_details_cnt      INTEGER );
+TYPE ttabUpwDiary IS TABLE OF trecUpwDiary;
+
+FUNCTION procfindUPWDiaryTAB(
+    p_team_id           NUMBER,
+    p_provider_team_id  NUMBER,
+    p_appointment_date  DATE,
+    p_upw_day_of_week   VARCHAR2,
+    p_max_rows          INTEGER DEFAULT 10000 )
+RETURN ttabUpwDiary PIPELINED;
+
+PROCEDURE procfindUPWDiary(
+    p_team_id           NUMBER,
+    p_provider_team_id  NUMBER,
+    p_appointment_date  DATE,
+    p_upw_day_of_week   VARCHAR2,
+    p_outcursor           OUT SYS_REFCURSOR );
+
+-- UPW Officer Search
+TYPE trecUpwOffenders IS RECORD(
+    /* 1*/upw_details_id         UPW_DETAILS.upw_details_id%TYPE,
+    /* 2*/event_id               EVENT.event_id%TYPE,
+    /* 3*/offender_id            OFFENDER.offender_id%TYPE,
+    /* 4*/crn                    OFFENDER.crn%TYPE,
+    /* 5*/offender_surname       OFFENDER.surname%TYPE,
+    /* 6*/offender_first_name    OFFENDER.first_name%TYPE,
+    /* 7*/offender_second_name   OFFENDER.second_name%TYPE,
+    /* 8*/date_of_birth_date     DATE,
+    /* 9*/upw_length_minutes     NUMBER,
+    /*10*/al_minutes_credited    NUMBER,
+    /*11*/disposal_date          DATE,
+    /*12*/upw_status_description R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+    /*13*/staff_surname          STAFF.surname%TYPE,
+    /*14*/staff_forename         STAFF.forename%TYPE,
+    /*15*/staff_forename2        STAFF.forename2%TYPE,
+    /*16*/restriction_message    OFFENDER.restriction_message%TYPE,
+    /*17*/exclusion_message      OFFENDER.exclusion_message%TYPE,
+    /*18*/current_restriction    OFFENDER.current_restriction%TYPE,
+    /*19*/current_exclusion      OFFENDER.current_exclusion%TYPE,
+    --
+    /*20*/ L1                    NUMBER,
+    /*21*/ L2                    NUMBER,
+    /*22*/ L3                    NUMBER );
+TYPE ttabUpwOffenders IS TABLE OF trecUpwOffenders;
+
+-- UPW Officer Search: UPW Details sub-component
+TYPE trecUpwDetails IS RECORD(
+    /*00*/ upw_details_id       UPW_DETAILS.upw_details_id%TYPE,
+    /*01*/ disposal_id          DISPOSAL.disposal_id%TYPE,
+    /*02*/ rqmnt_id             RQMNT.rqmnt_id%TYPE,
+    /*03*/ event_id             EVENT.event_id%TYPE,
+    /*04*/ offender_id          OFFENDER.offender_id%TYPE,
+    /*05*/ upw_status_id        UPW_DETAILS.upw_status_id%TYPE,
+    /*06*/ staff_id             STAFF.staff_id%TYPE,
+    /*07*/ provider_employee_id PROVIDER_EMPLOYEE.provider_employee_id%TYPE,
+    /*08*/ pre_cja_flag         VARCHAR2(1),
+    /*09*/ post_cja_flag        VARCHAR2(1),
+    /*10*/ disposal_date        DATE,
+    /*11*/ upw_length_minutes   NUMBER);
+TYPE ttabUpwDetails IS TABLE OF trecUpwDetails;
+
+FUNCTION procfindUPWDetailsTAB(
+    p_team_id           NUMBER,
+    p_provider_team_id  NUMBER,
+    p_upw_status        NUMBER)
+RETURN ttabUpwDetails PIPELINED;
+
+FUNCTION procfindUPWOffendersTAB(
+    p_team_id           NUMBER,
+    p_provider_team_id  NUMBER,
+    p_upw_status        NUMBER,
+    p_max_rows          INTEGER DEFAULT 100000)
+RETURN ttabUpwOffenders PIPELINED;
+
+PROCEDURE procfindUPWOffenders(
+    p_team_id           NUMBER,
+    p_provider_team_id  NUMBER,
+    p_upw_status        NUMBER,
+    p_outcursor         OUT SYS_REFCURSOR);
+
+-- Officer Diary
+TYPE trecOfficerDiary IS RECORD(
+    /*00*/ offender_id                 OFFENDER.offender_id%TYPE,
+    /*01*/ crn                         OFFENDER.crn%TYPE,
+    /*02*/ first_name                  OFFENDER.first_name%TYPE,
+    /*03*/ second_name                 OFFENDER.second_name%TYPE,
+    /*04*/ third_name                  OFFENDER.third_name%TYPE,
+    /*05*/ surname                     OFFENDER.surname%TYPE,
+    /*06*/ current_highest_risk_colour OFFENDER.current_highest_risk_colour%TYPE,
+    /*07*/ current_restriction         OFFENDER.current_restriction%TYPE,
+    /*08*/ current_exclusion           OFFENDER.current_exclusion%TYPE,
+    /*09*/ restriction_message         OFFENDER.restriction_message%TYPE,
+    /*10*/ exclusion_message           OFFENDER.exclusion_message%TYPE,
+    /*11*/ contact_id                  CONTACT.contact_id%TYPE,
+    /*12*/ contact_date                DATE,
+    /*13*/ contact_start_time          CONTACT.contact_start_time%TYPE,
+    /*14*/ contact_type_id             R_CONTACT_TYPE.contact_type_id%TYPE,
+    /*15*/ contact_type_code           R_CONTACT_TYPE.code%TYPE,
+    /*16*/ contact_type_desc           R_CONTACT_TYPE.description%TYPE,
+    /*17*/ contact_outcome_type_id     R_CONTACT_OUTCOME_TYPE.contact_outcome_type_id%TYPE,
+    /*18*/ contact_outcome_type_desc   R_CONTACT_OUTCOME_TYPE.description%TYPE,
+    /*19*/ tier_description            R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+    /*20*/ current_tier                CASELOAD.current_tier%TYPE,
+    /*21*/ ea_desc                     R_ENFORCEMENT_ACTION.description%TYPE,
+    /*22*/ user_editable R_CONTACT_TYPE.EDITABLE%TYPE,
+    /*23*/ L1                          NUMBER,
+    /*24*/ L2                          NUMBER,
+    /*25*/ L3                          NUMBER,
+    /*26*/ date_of_birth               DATE
+);
+TYPE ttabOfficerDiary IS TABLE OF trecOfficerDiary;
+
+FUNCTION procFindAlertContactsTAB(
+    p_date                 DATE,
+    p_team_id              NUMBER,
+    p_provider_team_id     NUMBER,
+    p_staff_id             NUMBER,
+    p_provider_employee_id NUMBER,
+    p_max_rows             INTEGER DEFAULT 100000)
+RETURN ttabOfficerDiary PIPELINED;
+--
+PROCEDURE procFindAlertContacts(
+    p_date              DATE,
+    p_team_id           NUMBER,
+    p_provider_team_id  NUMBER,
+    p_staff_id           NUMBER,
+    p_provider_employee_id  NUMBER,
+    p_outcursor             OUT SYS_REFCURSOR ) ;
+
+FUNCTION procFindEnforcementContactsTAB(
+    p_date                 DATE,
+    p_team_id              NUMBER,
+    p_provider_team_id     NUMBER,
+    p_staff_id             NUMBER,
+    p_provider_employee_id NUMBER,
+    p_filter               INTEGER,
+    p_max_rows             INTEGER DEFAULT 100000)
+RETURN ttabOfficerDiary PIPELINED;
+--
+PROCEDURE procFindEnforcementContacts(
+    p_date                  DATE,
+    p_team_id               NUMBER,
+    p_provider_team_id      NUMBER,
+    p_staff_id              NUMBER,
+    p_provider_employee_id  NUMBER,
+    p_filter                NUMBER,
+    p_outcursor             OUT SYS_REFCURSOR);
+
+FUNCTION funcGetBreachDate(p_event_id NUMBER) RETURN DATE;
+
+FUNCTION funcGetBreachDateEnd(p_event_id NUMBER) RETURN DATE;
+--
+--
+-- CASELOAD
+--
+FUNCTION procFindCaseLoadTAB(
+    p_team_id              NUMBER  DEFAULT NULL,
+    p_provider_team_id     NUMBER  DEFAULT NULL,
+    p_staff_id             NUMBER  DEFAULT NULL,
+    p_provider_employee_id NUMBER  DEFAULT NULL,
+    p_offender_id          NUMBER  DEFAULT NULL,
+    p_components           VARCHAR2 DEFAULT 'Y',
+    p_filter               VARCHAR2 DEFAULT NULL,
+    p_date                 DATE DEFAULT NULL,
+    p_borough_id            NUMBER DEFAULT NULL,
+    p_district_id           NUMBER DEFAULT NULL,
+    p_use_caseload_table   VARCHAR2 DEFAULT 'N',
+    p_max_rows             INTEGER  DEFAULT 100000)
+RETURN PKG_CASELOAD.ttabCaseLoad PIPELINED;
+--
+PROCEDURE procFindCaseLoad(
+    p_team_id               NUMBER,
+    p_provider_team_id      NUMBER,
+    p_staff_id              NUMBER,
+    p_provider_employee_id  NUMBER,
+    p_components            VARCHAR2,
+    p_filter                VARCHAR2,
+    p_date                  DATE DEFAULT NULL,
+    p_borough_id            NUMBER DEFAULT NULL,
+    p_district_id           NUMBER DEFAULT NULL,
+    p_outcursor             OUT SYS_REFCURSOR ) ;
+
+-- Staff
+TYPE trecStaff IS RECORD(
+  /*00*/ staff_id         STAFF.staff_id%TYPE,
+  /*01*/ staff_grade_id   STAFF.staff_grade_id%TYPE,
+  /*02*/ staff_grade_code r_standard_reference_list.code_value%TYPE,
+  /*03*/ staff_grade_desc r_standard_reference_list.code_description%TYPE,
+  /*04*/ officer_code     staff.officer_code%TYPE,
+  /*05*/ forename         staff.forename%TYPE,
+  /*06*/ forename2        staff.forename2%TYPE,
+  /*07*/ surname          staff.surname%TYPE);
+TYPE ttabStaff IS TABLE OF trecStaff; --staff%ROWTYPE
+--
+FUNCTION procFindStaffTeamTAB(
+    p_team_id  NUMBER,
+    p_max_rows INTEGER  DEFAULT 10000)
+RETURN ttabStaff PIPELINED;
+--
+PROCEDURE procFindStaffTeam(
+    p_team_id   NUMBER,
+    p_outcursor OUT SYS_REFCURSOR);
+
+--============================================================================--
+-- NDelius Tables Hierarchy function                                          --
+--============================================================================--
+FUNCTION get_tab_list(p_reverse_order_flag VARCHAR2 DEFAULT 'N') RETURN PKG_DynSQL.ttabTablesHierarchy PIPELINED;
+
+--
+-- Pending Transfers List
+--
+TYPE trecPendingTransfers IS RECORD(
+  /*00*/    rpt_level                     VARCHAR2(10),
+  /*01*/    transfer_id                   NUMBER,
+  /*02*/    offender_id                   OFFENDER.offender_id%TYPE,
+  /*03*/    request_date                  DATE,
+  /*04*/    tgt_probation_area_id         PROBATION_AREA.probation_area_id%TYPE,
+  /*05*/    tgt_probation_area_desc       PROBATION_AREA.description%TYPE,
+  /*06*/    src_probation_area_id         PROBATION_AREA.probation_area_id%TYPE,
+  /*07*/    src_probation_area_desc       PROBATION_AREA.description%TYPE,
+  /*08*/    tgt_probation_area_id_1       PROBATION_AREA.probation_area_id%TYPE,
+  /*09*/    tgt_probation_area_desc_1     PROBATION_AREA.description%TYPE,
+  /*10*/    src_probation_area_id_1       PROBATION_AREA.probation_area_id%TYPE,
+  /*11*/    src_probation_area_desc_1     PROBATION_AREA.description%TYPE,
+  /*12*/    staff_forename                STAFF.forename%TYPE,
+  /*13*/    staff_surname                 STAFF.surname%TYPE,
+  /*14*/    officer_code                  STAFF.officer_code%TYPE,
+  /*15*/    provider_employee_forename    PROVIDER_EMPLOYEE.forename%TYPE,
+  /*16*/    provider_employee_surname     PROVIDER_EMPLOYEE.surname%TYPE,
+  /*17*/    provider_employee_code        PROVIDER_EMPLOYEE.code%TYPE,
+  /*18*/    crn                           OFFENDER.crn%TYPE,
+  /*19*/    first_name                    OFFENDER.first_name%TYPE,
+  /*20*/    second_name                   OFFENDER.second_name%TYPE,
+  /*21*/    third_name                    OFFENDER.third_name%TYPE,
+  /*22*/    surname                       OFFENDER.surname%TYPE,
+  /*23*/    date_of_birth_date            DATE,
+  /*24*/    CURRENT_HIGHEST_RISK_COLOUR   OFFENDER.current_highest_risk_colour%TYPE,
+  /*25*/    CURRENT_RESTRICTION           OFFENDER.current_restriction%TYPE,
+  /*26*/    CURRENT_EXCLUSION             OFFENDER.current_exclusion%TYPE,
+  /*27*/    event_id                      EVENT.event_id%TYPE,
+  /*28*/    referral_date                 DATE,
+  /*29*/    disposal_id                   DISPOSAL.disposal_id%TYPE,
+  /*30*/    disposal_termination_date     DATE,
+  /*31*/    disposal_upw                  DISPOSAL.upw%TYPE,
+  /*32*/    disposal_sentence_type        R_DISPOSAL_TYPE.sentence_type%TYPE,
+  /*33*/    disposal_cja2003              R_DISPOSAL_TYPE.cja2003%TYPE,
+  /*34*/    disposal_PRE_CJA2003          R_DISPOSAL_TYPE.pre_cja2003%TYPE,
+  /*35*/    rqmnt_id                      RQMNT.rqmnt_id%TYPE,
+  /*36*/    lic_condition_id              LIC_CONDITION.lic_condition_id%TYPE,
+  /*37*/    nsi_id                        NSI.nsi_id%TYPE,
+  /*38*/    tgt_team_description          TEAM.description%TYPE,
+  /*39*/    src_team_description          TEAM.description%TYPE,
+  /*40*/    tgt_provider_team_name        PROVIDER_TEAM.name%TYPE,
+  /*41*/    src_provider_team_name        PROVIDER_TEAM.name%TYPE,
+  /*42*/    disposal_type_description     R_DISPOSAL_TYPE.description%TYPE,
+  /*43*/    rqmnt_main_cat_descrition     R_RQMNT_TYPE_MAIN_CATEGORY.description%TYPE,
+  /*44*/    rqmnt_ad_cat_descrition       R_AD_RQMNT_TYPE_MAIN_CATEGORY.description%TYPE,
+  /*45*/    lc_main_cat_descrition        R_LIC_COND_TYPE_MAIN_CAT.description%TYPE,
+  /*46*/    nsi_type_descrition           R_NSI_TYPE.description%TYPE,
+  /*47*/    pss_id                        PSS_RQMNT.pss_rqmnt_id%TYPE,
+  /*48*/    pss_type_description          r_pss_rqmnt_type_main_category.description%TYPE,
+  --
+  /*49*/  tgt_district_description        DISTRICT.description%TYPE,
+  /*50*/  src_district_description        DISTRICT.description%TYPE,
+  --
+  /*51*/  institutional_report_id         INSTITUTIONAL_REPORT.institutional_report_id%TYPE,
+  /*52*/    ireport_type_description      R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+  --
+  /*53*/    court_report_id               COURT_REPORT.court_report_id%TYPE,
+  /*54*/    court_report_type_description R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+  --
+  /*55*/    establishment_flag            PROBATION_AREA.ESTABLISHMENT%TYPE,
+  /*56*/    establishment_provider_flag   PROBATION_AREA.ESTABLISHMENT%TYPE
+);
+TYPE ttabPendingTransfers IS TABLE OF trecPendingTransfers;
+--
+FUNCTION procGetPendingTransfersTAB(
+    p_probation_area_to   PROBATION_AREA.PROBATION_AREA_ID%TYPE,
+    p_probation_area_from PROBATION_AREA.PROBATION_AREA_ID%TYPE,
+    p_filter              VARCHAR2,
+    --
+    p_max_rows            INTEGER  DEFAULT 10000,
+    p_borough_to          IN BOROUGH.BOROUGH_ID%TYPE DEFAULT NULL,
+    p_borough_from        IN BOROUGH.BOROUGH_ID%TYPE DEFAULT NULL,
+    p_district_to         IN DISTRICT.DISTRICT_ID%TYPE DEFAULT NULL,
+    p_district_from       IN DISTRICT.DISTRICT_ID%TYPE DEFAULT NULL,
+    p_ldu_to              IN LOCAL_DELIVERY_UNIT.LOCAL_DELIVERY_UNIT_ID%TYPE DEFAULT NULL,
+    p_ldu_from            IN LOCAL_DELIVERY_UNIT.LOCAL_DELIVERY_UNIT_ID%TYPE DEFAULT NULL,
+    p_staff_to            IN STAFF.STAFF_ID%TYPE DEFAULT NULL,
+    p_staff_from          IN STAFF.STAFF_ID%TYPE DEFAULT NULL,
+    p_team_to             IN TEAM.TEAM_ID%TYPE DEFAULT NULL,
+    p_team_from           IN TEAM.TEAM_ID%TYPE DEFAULT NULL,
+    p_nsi_type            IN NSI.NSI_ID%TYPE DEFAULT NULL)
+RETURN ttabPendingTransfers PIPELINED;
+
+PROCEDURE procGetPendingTransfers(
+    p_probation_area_to       PROBATION_AREA.PROBATION_AREA_ID%TYPE,
+    p_probation_area_from     PROBATION_AREA.PROBATION_AREA_ID%TYPE,
+    p_filter                  VARCHAR2,
+    p_outcursor               OUT SYS_REFCURSOR,
+    p_borough_to              IN BOROUGH.BOROUGH_ID%TYPE DEFAULT NULL,
+    p_borough_from            IN BOROUGH.BOROUGH_ID%TYPE DEFAULT NULL,
+    p_district_to             IN DISTRICT.DISTRICT_ID%TYPE DEFAULT NULL,
+    p_district_from           IN DISTRICT.DISTRICT_ID%TYPE DEFAULT NULL,
+    p_ldu_to                  IN LOCAL_DELIVERY_UNIT.LOCAL_DELIVERY_UNIT_ID%TYPE DEFAULT NULL,
+    p_ldu_from                IN LOCAL_DELIVERY_UNIT.LOCAL_DELIVERY_UNIT_ID%TYPE DEFAULT NULL,
+    p_staff_to                IN STAFF.STAFF_ID%TYPE DEFAULT NULL,
+    p_staff_from              IN STAFF.STAFF_ID%TYPE DEFAULT NULL,
+    p_team_to                 IN TEAM.TEAM_ID%TYPE DEFAULT NULL,
+    p_team_from               IN TEAM.TEAM_ID%TYPE DEFAULT NULL,
+    p_nsi_type                IN NSI.NSI_ID%TYPE DEFAULT NULL);
+
+--
+--
+-- Office Contacts
+TYPE trecOfficeContact IS RECORD(
+  /*00*/ offender_id                  OFFENDER.offender_id%TYPE,
+  /*01*/ crn                          OFFENDER.crn%TYPE,
+  /*02*/ first_name                   OFFENDER.first_name%TYPE,
+  /*03*/ second_name                  OFFENDER.second_name%TYPE,
+  /*04*/ third_name                   OFFENDER.third_name%TYPE,
+  /*05*/ surname                      OFFENDER.surname%TYPE,
+  /*06*/ current_highest_risk_colour  OFFENDER.current_highest_risk_colour%TYPE,
+  /*07*/ current_restriction          OFFENDER.current_restriction%TYPE,
+  /*08*/ current_exclusion            OFFENDER.current_restriction%TYPE,
+  /*09*/ contact_id                   CONTACT.CONTACT_ID%TYPE,
+  /*10*/ contact_date                 DATE,
+  /*11*/ contact_start_time           CONTACT.contact_start_time%TYPE,
+  /*12*/ contact_type_id              NUMBER,
+  /*13*/ CONTACT_TYPE_CODE            R_CONTACT_TYPE.code%TYPE,
+  /*14*/ CONTACT_TYPE_DESC            R_CONTACT_TYPE.description%TYPE,
+  /*15*/ TIER_DESCRIPTION             R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+  /*16*/ current_tier                 NUMBER,
+  /*17*/ USER_EDITABLE                R_CONTACT_TYPE.editable%TYPE,
+  /*18*/ staff_forename               STAFF.FORENAME%TYPE,
+  /*19*/ staff_surname                STAFF.SURNAME%TYPE,
+  /*20*/ officer_code                 STAFF.OFFICER_CODE%TYPE,
+  /*21*/ TELEPHONE                    TEAM.TELEPHONE%TYPE,
+  /*22*/ OFFICE_LOCATION_DESC         OFFICE_LOCATION.DESCRIPTION%TYPE,
+  /*23*/ L1                           NUMBER,
+  /*24*/ L2                           NUMBER,
+  /*25*/ L3                           NUMBER,
+  /*26*/ AUTHORISED                   INTEGER
+);
+TYPE ttabOfficeContact IS TABLE OF trecOfficeContact;
+
+FUNCTION procFindOfficeContactsTAB(
+    p_date                 DATE,
+    p_location_id          NUMBER,
+    p_linked_locations     VARCHAR2,
+    p_username             VARCHAR2,
+    p_max_rows             INTEGER DEFAULT 100000)
+RETURN ttabOfficeContact PIPELINED;
+--
+PROCEDURE procFindOfficeContacts(
+    p_date                 DATE,
+    p_location_id          NUMBER,
+    p_linked_locations     VARCHAR2,
+    p_username             VARCHAR2,
+    p_outcursor        OUT SYS_REFCURSOR );
+
+--
+-- COHORT Diary
+--
+FUNCTION procFindCohortDiaryTAB(
+    p_probation_area_ID   PROBATION_AREA.probation_area_id%TYPE DEFAULT NULL,
+    p_sentence_date       DATE    DEFAULT NULL,
+    p_release_date        DATE    DEFAULT NULL,
+    p_offence_date        DATE    DEFAULT NULL,
+    p_team_id             TEAM.team_id%TYPE   DEFAULT NULL,
+    p_staff_id            STAFF.staff_id%TYPE DEFAULT NULL,
+    --
+    p_offender_id         OFFENDER.offender_id%TYPE DEFAULT NULL,
+    p_use_cohort_table    VARCHAR2 DEFAULT 'N',
+    --
+    p_max_rows            INTEGER DEFAULT 100000 )
+RETURN PKG_CASELOAD.ttabCohortDiary PIPELINED;
+--
+PROCEDURE procFindCohortDiary(
+    p_probation_area_ID   PROBATION_AREA.probation_area_id%TYPE,
+    p_sentence_date       DATE,
+    p_release_date        DATE,
+    p_offence_date        DATE,
+    p_team_id             TEAM.team_id%TYPE   DEFAULT NULL,
+    p_staff_id            STAFF.staff_id%TYPE DEFAULT NULL,
+    --
+    p_max_rows             INTEGER DEFAULT 100000,
+    p_outcursor             OUT SYS_REFCURSOR );
+
+--
+-- Court Appearance Diary
+--
+FUNCTION procCourtAppDiaryTAB(
+    p_date                DATE,
+    p_appearance_type_id  NUMBER,
+    p_probation_area_ID   NUMBER   DEFAULT NULL,
+    p_court_id            NUMBER   DEFAULT NULL,
+    p_soft_deleted        SMALLINT DEFAULT 0,
+    --
+    p_max_rows            INTEGER DEFAULT 100000 )
+RETURN PKG_CASELOAD.ttabCourtAppDiary PIPELINED;
+
+PROCEDURE procCourtAppDiary(
+    p_date                DATE,
+    p_appearance_type_id  NUMBER,
+    p_probation_area_ID   NUMBER   DEFAULT NULL,
+    p_court_id            NUMBER   DEFAULT NULL,
+    p_soft_deleted        SMALLINT DEFAULT 0,
+    --
+    p_max_rows            INTEGER DEFAULT 100000,
+    --
+    p_outcursor        OUT SYS_REFCURSOR );
+
+--
+-- Release Diary
+--
+FUNCTION procReleaseDiaryTAB(
+    p_team_id              OFFENDER_MANAGER.team_id%TYPE,
+    p_provider_team_id     OFFENDER_MANAGER.provider_team_id%TYPE,
+    p_staff_id             OFFENDER_MANAGER.allocation_staff_id%TYPE,
+    p_provider_employee_id OFFENDER_MANAGER.provider_employee_id%TYPE,
+    p_from_date            DATE,
+    p_to_date              DATE,
+    p_key_date_type_code   R_STANDARD_REFERENCE_LIST.code_value%TYPE,
+    p_max_rows             INTEGER DEFAULT 100000 )
+RETURN PKG_CASELOAD.ttabReleaseDiary PIPELINED;
+
+PROCEDURE procReleaseDiary(
+    p_team_id              OFFENDER_MANAGER.team_id%TYPE,
+    p_provider_team_id     OFFENDER_MANAGER.provider_team_id%TYPE,
+    p_staff_id             OFFENDER_MANAGER.allocation_staff_id%TYPE,
+    p_provider_employee_id OFFENDER_MANAGER.provider_employee_id%TYPE,
+    p_from_date            DATE,
+    p_to_date              DATE,
+    p_key_date_type_code   R_STANDARD_REFERENCE_LIST.code_value%TYPE,
+    p_max_rows             INTEGER DEFAULT 100000,
+    p_outcursor        OUT SYS_REFCURSOR );
+
+PROCEDURE procTotalRARCount(
+    p_rar_code           R_RQMNT_TYPE_MAIN_CATEGORY.CODE%TYPE,
+    p_rqmnt_id           RQMNT.RQMNT_ID%TYPE,
+    p_outcursor           OUT SYS_REFCURSOR);
+--
+--
+--
+TYPE trecOffenderTransferRequest IS RECORD(
+  /*00*/ rec_level                    VARCHAR2(10),
+  /*01*/ start_date                   DATE,
+  /*02*/ team_desc                    TEAM.description%TYPE,
+  /*03*/ staff_forename               STAFF.forename%TYPE,
+  /*04*/ staff_surname                STAFF.surname%TYPE,
+  /*05*/ provider_team_name           PROVIDER_TEAM.name%TYPE,
+  /*06*/ provider_employee_forename   PROVIDER_EMPLOYEE.forename%TYPE,
+  /*07*/ provider_employee_surname    PROVIDER_EMPLOYEE.surname%TYPE,
+  /*08*/ team_probation_area_desc     PROBATION_AREA.description%TYPE,
+  /*19*/ provider_probation_area_desc PROBATION_AREA.description%TYPE,
+  /*10*/ main_type_desc               VARCHAR2(500),
+  /*11*/ sub_type_desc                VARCHAR2(500),
+  /*12*/ pending_transfer             NUMBER,
+  /*13*/ main_type_id                 NUMBER,
+  /*14*/ add_main_type_id             NUMBER,
+  /*15*/ add_main_type_desc           VARCHAR2(200),
+  /*16*/ add_sub_type_desc            VARCHAR2(500),
+  /*17*/ probation_area_id            PROBATION_AREA.probation_area_id%TYPE,
+  /*18*/ provider_probation_area_id   PROBATION_AREA.probation_area_id%TYPE,
+  /*19*/ team_id                      TEAM.team_id%TYPE,
+  /*20*/ staff_id                     STAFF.staff_id%TYPE,
+  /*21*/ provider_team_id             PROVIDER_TEAM.provider_team_id%TYPE,
+  /*22*/ provider_employee_id         PROVIDER_EMPLOYEE.provider_employee_id%TYPE,
+  --
+  /*23*/ offender_id                  OFFENDER.offender_id%TYPE,
+  --
+  /*24*/ nsi_id                       NSI.nsi_id%TYPE,
+  /*25*/ nsi_event_id                 NSI.event_id%TYPE,
+  /*26*/ nsi_actual_end_date          DATE,
+  --
+  /*27*/ event_id                     EVENT.event_id%TYPE,
+  /*28*/ event_number                 EVENT.event_number%TYPE,
+  /*29*/ event_termination_date       DATE,
+  --
+  /*30*/ rqmnt_id                     RQMNT.rqmnt_id%TYPE,
+  /*31*/ rqmnt_termination_date       DATE,
+  --
+  /*32*/ lic_condition_id             LIC_CONDITION.lic_condition_id%TYPE,
+  /*33*/ lic_cond_termination_date    DATE,
+  --
+  /*34*/ pss_rqmnt_id                 PSS_RQMNT.pss_rqmnt_id%TYPE,
+  /*35*/ pss_termination_date         DATE,
+  --
+  /*36*/ institutional_report_id      INSTITUTIONAL_REPORT.institutional_report_id%TYPE,
+  /*37*/ inst_rpt_custody_id          INSTITUTIONAL_REPORT.custody_id%TYPE,
+  /*38*/ inst_rpt_date_completed      DATE,
+  /*39*/ inst_rpt_date_abandoned      DATE,
+  --
+  /*40*/ court_report_id              COURT_REPORT.court_report_id%TYPE,
+  /*41*/ court_rep_completed_date     DATE,
+  /*42*/ court_rep_received_by_date   DATE,
+  /*43*/ court_app_type_desc          R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+  --
+  /*44*/ nsi_rate_card_flag           R_NSI_TYPE.RATE_CARD_FLAG%TYPE
+);
+TYPE ttabOffenderTransferRequest IS TABLE OF trecOffenderTransferRequest;
+
+FUNCTION procOffTransferRequestsTAB( p_offender_id OFFENDER.OFFENDER_ID%TYPE, p_establishment number default 0  )
+RETURN ttabOffenderTransferRequest PIPELINED;
+
+PROCEDURE procOffenderTransferRequests(
+    p_offender_id           OFFENDER.OFFENDER_ID%TYPE,
+    p_establishment number default 0,
+    p_outcursor             OUT SYS_REFCURSOR);
+
+--
+--
+--
+TYPE trecOffenderTransferReview IS RECORD(
+  /*00*/ rec_level                    VARCHAR2(10),
+  /*01*/ request_date                 DATE,
+  /*02*/ team_desc                    TEAM.description%TYPE,
+  /*03*/ staff_forename               STAFF.forename%TYPE,
+  /*04*/ staff_surname                STAFF.surname%TYPE,
+  /*05*/ provider_team_name           PROVIDER_TEAM.name%TYPE,
+  /*06*/ provider_employee_forename   PROVIDER_EMPLOYEE.forename%TYPE,
+  /*07*/ provider_employee_surname    PROVIDER_EMPLOYEE.surname%TYPE,
+  /*08*/ team_probation_area_desc     PROBATION_AREA.description%TYPE,
+  /*09*/ provider_probation_area_desc PROBATION_AREA.description%TYPE,
+  /*10*/ main_type_desc               VARCHAR2(500),
+  /*11*/ sub_type_desc                VARCHAR2(500),
+  /*12*/ main_type_id                 NUMBER,
+  /*13*/ add_main_type_id             NUMBER,
+  /*14*/ add_main_type_desc           VARCHAR2(200),
+  /*15*/ add_sub_type_desc            VARCHAR2(500),
+  /*16*/ probation_area_id            PROBATION_AREA.probation_area_id%TYPE,
+  /*17*/ provider_probation_area_id   PROBATION_AREA.probation_area_id%TYPE,
+  /*18*/ team_id                      TEAM.team_id%TYPE,
+  /*19*/ staff_id                     STAFF.staff_id%TYPE,
+  /*20*/ provider_team_id             PROVIDER_TEAM.provider_team_id%TYPE,
+  /*21*/ provider_employee_id         PROVIDER_EMPLOYEE.provider_employee_id%TYPE,
+  /*22*/ transfer_id                  NUMBER,
+  /*23*/ allocation_reason_id         NUMBER,
+  /*24*/ allocation_reason_desc       VARCHAR2(500),
+  --
+  /*25*/ receiving_team_id            TEAM.team_id%TYPE,
+  /*26*/ receiving_team_desc          TEAM.description%TYPE,
+  /*27*/ receiving_staff_id           STAFF.staff_id%TYPE,
+  /*28*/ receiving_staff_forename     STAFF.forename%TYPE,
+  /*29*/ receiving_staff_surname      STAFF.surname%TYPE,
+  /*30*/ receiving_probation_area_id  PROBATION_AREA.probation_area_id%TYPE,
+  /*31*/ receiving_probation_area_desc PROBATION_AREA.description%TYPE,
+--
+  /*32*/ offender_id                  OFFENDER.offender_id%TYPE,
+  --
+  /*33*/ nsi_id                       NSI.nsi_id%TYPE,
+  /*34*/ nsi_event_id                 NSI.event_id%TYPE,
+  --
+  /*35*/ event_id                     EVENT.event_id%TYPE,
+  /*36*/ event_number                 EVENT.event_number%TYPE,
+  --
+  /*37*/ rqmnt_id                     RQMNT.rqmnt_id%TYPE,
+  --
+  /*38*/ lic_condition_id             LIC_CONDITION.lic_condition_id%TYPE,
+  --
+  /*39*/ pss_rqmnt_id                 PSS_RQMNT.pss_rqmnt_id%TYPE,
+  --
+  /*40*/ institutional_report_id      INSTITUTIONAL_REPORT.institutional_report_id%TYPE,
+  /*41*/ inst_rpt_custody_id          INSTITUTIONAL_REPORT.custody_id%TYPE,
+  --
+  /*[42]*/ court_report_id              COURT_REPORT.court_report_id%TYPE,
+  --
+  /*[43]*/ disposal_id                  DISPOSAL.DISPOSAL_ID%TYPE,
+  /*[44]*/ termination_date             DISPOSAL.TERMINATION_DATE%TYPE,
+  /*[45]*/ upw                          DISPOSAL.UPW%TYPE,
+  /*[46]*/ sentence_type                R_DISPOSAL_TYPE.SENTENCE_TYPE%TYPE,
+  /*[47]*/ cja2003                      R_DISPOSAL_TYPE.CJA2003%TYPE,
+  /*[48]*/ pre_cja2003                  R_DISPOSAL_TYPE.PRE_CJA2003%TYPE,
+  /*[49]*/ disposal_event_id            EVENT.event_id%TYPE,
+  /*[50]*/ court_app_type_desc          R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+  --
+  /*[51]*/ nsi_rate_card_flag           R_NSI_TYPE.RATE_CARD_FLAG%TYPE,
+  --
+  /*[52]*/ transfer_notes               OFFENDER_TRANSFER.NOTES%TYPE,
+  /*[53]*/ receiving_area_spg_active               R_STANDARD_REFERENCE_LIST.CODE_VALUE%TYPE
+);
+TYPE ttabOffenderTransferReview IS TABLE OF trecOffenderTransferReview;
+
+FUNCTION procOffTransferReviewsTAB( p_offender_id OFFENDER.OFFENDER_ID%TYPE, p_establishment number default 0)
+RETURN ttabOffenderTransferReview PIPELINED;
+
+PROCEDURE procOffenderTransferReviews(
+    p_offender_id           OFFENDER.OFFENDER_ID%TYPE,
+    p_establishment number default 0,
+    p_outcursor           OUT SYS_REFCURSOR);
+--
+TYPE trecOffenderTransferReject IS RECORD(
+  /*00*/ rec_level                    VARCHAR2(10),
+  /*01*/ request_date                 DATE,
+  /*02*/ tgt_team_desc                TEAM.description%TYPE,
+  /*03*/ tgt_staff_forename           STAFF.forename%TYPE,
+  /*04*/ tgt_staff_surname            STAFF.surname%TYPE,
+  /*05*/ tgt_team_probation_area_desc PROBATION_AREA.description%TYPE,
+  /*06*/ main_type_desc               VARCHAR2(500),
+  /*07*/ sub_type_desc                VARCHAR2(500),
+  /*08*/ main_type_id                 NUMBER,
+  /*09*/ add_main_type_id             NUMBER,
+  /*10*/ add_main_type_desc           VARCHAR2(200),
+  /*11*/ add_sub_type_desc            VARCHAR2(500),
+  /*12*/ rejection_reason_desc        R_STANDARD_REFERENCE_LIST.code_description%TYPE,
+  --
+  /*13*/ offender_transfer_id         OFFENDER_TRANSFER.offender_transfer_id%TYPE,
+  /*14*/ offender_id                  OFFENDER.offender_id%TYPE,
+  /*15*/ crn                          OFFENDER.crn%TYPE,
+  --
+  /*16*/ nsi_transfer_id              NSI_TRANSFER.nsi_transfer_id%TYPE,
+  /*17*/ nsi_event_id                 NSI.event_id%TYPE,
+  /*18*/ nsi_id                       NSI.nsi_id%TYPE,
+  --
+  /*19*/ event_transfer_id            ORDER_TRANSFER.order_transfer_id%TYPE,
+  /*20*/ event_id                     EVENT.event_id%TYPE,
+  /*21*/ event_number                 EVENT.event_number%TYPE,
+  --
+  /*22*/ rqmnt_transfer_id            RQMNT_TRANSFER.rqmnt_transfer_id%TYPE,
+  /*23*/ rqmnt_id                     RQMNT.rqmnt_id%TYPE,
+  --
+  /*24*/ lic_condition_transfer_id    LIC_CONDITION_TRANSFER.lic_condition_transfer_id%TYPE,
+  /*25*/ lic_condition_id             LIC_CONDITION.lic_condition_id%TYPE,
+  --
+  /*26*/ pss_rqmnt_transfer_id        PSS_RQMNT_TRANSFER.pss_rqmnt_transfer_id%TYPE,
+  /*27*/ pss_rqmnt_id                 PSS_RQMNT.pss_rqmnt_id%TYPE,
+  --
+  /*28*/ inst_rpt_transfer_id         INSTITUTIONAL_REPORT_TRANSFER.institutional_rep_transfer_id%TYPE,
+  /*29*/ institutional_report_id      INSTITUTIONAL_REPORT.institutional_report_id%TYPE,
+  /*30*/ inst_rpt_custody_id          CUSTODY.custody_id%TYPE,
+  --
+  /*31*/ court_report_transfer_id     COURT_REPORT_TRANSFER.court_report_transfer_id%TYPE,
+  /*32*/ court_report_id              COURT_REPORT.court_report_id%TYPE,
+  --
+  /*33*/ transfer_status_date         OFFENDER_TRANSFER.transfer_status_date%TYPE,
+  /*34*/ current_restriction          OFFENDER.current_restriction%TYPE,
+  /*35*/ current_exclusion            OFFENDER.current_exclusion%TYPE,
+  /*36*/ restriction_message          OFFENDER.restriction_message%TYPE,
+  /*37*/ exclusion_message            OFFENDER.exclusion_message%TYPE,
+  --
+  /*38*/ tgt_team_id                  TEAM.team_id%TYPE,
+  /*39*/ tgt_staff_id                 STAFF.staff_id%TYPE,
+  /*40*/ tgt_provider_id              PROBATION_AREA.probation_area_id%TYPE,
+  /*41*/ orig_team_id                 TEAM.team_id%TYPE,
+  /*42*/ orig_staff_id                STAFF.staff_id%TYPE,
+  /*43*/ orig_provider_id             PROBATION_AREA.probation_area_id%TYPE,
+  --
+  /*44*/ rejection_reason_id          OFFENDER_TRANSFER.rejection_reason_id%TYPE,
+  --
+  /*45*/ NOTE_FLAG                    REJECTED_TRANSFER_DIARY.NOTE_FLAG%TYPE,
+  --
+  /*46*/ establishment_flag           PROBATION_AREA.ESTABLISHMENT%TYPE
+
+);
+TYPE ttabOffenderTransferReject IS TABLE OF trecOffenderTransferReject;
+
+FUNCTION procOffTransferRejectsTAB(
+    p_origin_team_id              TEAM.team_id%TYPE DEFAULT NULL,
+    p_origin_staff_id             STAFF.staff_id%TYPE DEFAULT NULL,
+    p_start_date                  DATE,
+    p_end_date                    DATE,
+    p_target_team_id              TEAM.team_id%TYPE DEFAULT NULL,
+    p_target_staff_id             STAFF.staff_id%TYPE DEFAULT NULL,
+    p_target_probation_area_id    PROBATION_AREA.PROBATION_AREA_ID%TYPE DEFAULT NULL,
+    p_origin_probation_area_id    PROBATION_AREA.PROBATION_AREA_ID%TYPE DEFAULT NULL,
+    --
+    p_offender_id                 OFFENDER.offender_id%TYPE DEFAULT NULL,
+    --
+    p_use_live_query_flag         VARCHAR2 DEFAULT 'N' )
+RETURN ttabOffenderTransferReject PIPELINED;
+
+PROCEDURE procOffenderTransferRejects(
+    p_origin_team_id     TEAM.team_id%TYPE DEFAULT NULL,
+    p_origin_staff_id    STAFF.staff_id%TYPE DEFAULT NULL,
+    p_start_date  DATE,
+    p_end_date    DATE,
+    p_target_team_id     TEAM.team_id%TYPE DEFAULT NULL,
+    p_target_staff_id    STAFF.staff_id%TYPE DEFAULT NULL,
+    p_target_probation_area_id    PROBATION_AREA.PROBATION_AREA_ID%TYPE DEFAULT NULL,
+    p_origin_probation_area_id    PROBATION_AREA.PROBATION_AREA_ID%TYPE DEFAULT NULL,
+    p_outcursor   OUT SYS_REFCURSOR );
+
+--
+--
+--
+TYPE trecMasterTranPenTran IS RECORD(
+  /*00*/ level_code NUMBER
+  );
+TYPE ttabMasterTranPenTran IS TABLE OF trecMasterTranPenTran;
+--
+FUNCTION procMasterTranPenTranTAB(p_master_transfer_id MASTER_TRANSFER.master_transfer_id%TYPE) RETURN ttabMasterTranPenTran PIPELINED;
+--
+PROCEDURE procMasterTranPenTran(
+    p_master_transfer_id         MASTER_TRANSFER.MASTER_TRANSFER_ID%TYPE,
+    p_outcursor           OUT SYS_REFCURSOR);
+--
+TYPE trecInterestedAreas IS RECORD(
+  /*00*/ offender_id          OFFENDER.offender_id%TYPE,
+  /*01*/ probation_area_id    PROBATION_AREA.probation_area_id%TYPE,
+  /*02*/ code                 PROBATION_AREA.code%TYPE
+  );
+TYPE ttabInterestedAreas IS TABLE OF trecInterestedAreas;
+--
+FUNCTION procGetInterestedCRCsTAB(p_offender_id_LST IN CLOB) RETURN ttabInterestedAreas PIPELINED;
+--
+PROCEDURE procGetInterestedCRCs(
+                                p_offender_id_LST IN  CLOB,
+                                p_outcursor       OUT SYS_REFCURSOR );
+--
+--
+-- Offender CRC Extract support subroutines
+--
+FUNCTION procGetOffCRCExtractSummaryTAB(
+    p_probation_area_id NUMBER,
+    p_team_id           NUMBER DEFAULT -1,
+    p_staff_id          NUMBER DEFAULT -1 )
+RETURN PKG_SPG_EXPORT.ttabOffCRCExtractSummary PIPELINED;
+
+PROCEDURE procGetOffCRCExtractSummary(
+    p_probation_area_id NUMBER,
+    p_team_id           NUMBER DEFAULT -1,
+    p_staff_id          NUMBER DEFAULT -1,
+    p_outcursor OUT SYS_REFCURSOR );
+--
+--
+FUNCTION procGetOffCRCExtractTAB(
+    p_probation_area_id           NUMBER,
+    p_team_id                     NUMBER    DEFAULT -1,
+    p_staff_id                    NUMBER    DEFAULT -1,
+    p_excl_already_extracted_flag VARCHAR2  DEFAULT 'N',
+    p_incl_already_extracted_flag VARCHAR2  DEFAULT 'N',
+    p_crc_export_date_from        DATE      DEFAULT NULL,
+    p_crc_export_date_to          DATE      DEFAULT NULL,
+    p_crn                         VARCHAR2  DEFAULT NULL,
+    p_status_export_flag          SMALLINT  DEFAULT 0,
+    p_debug_flag                  VARCHAR2  DEFAULT 'Y',
+    --
+    p_max_rows                    INTEGER   DEFAULT 10000,
+    p_max_rows_L1                 INTEGER   DEFAULT 10000,
+    p_max_rows_L3                 INTEGER   DEFAULT 10000 )
+RETURN PKG_SPG_EXPORT.ttabOffCRCExtract PIPELINED;
+
+PROCEDURE procGetOffCRCExtract(
+    p_probation_area_id           NUMBER,
+    p_team_id                     NUMBER    DEFAULT -1,
+    p_staff_id                    NUMBER    DEFAULT -1,
+    p_excl_already_extracted_flag VARCHAR2  DEFAULT 'N',
+    p_max_rows                    INTEGER   DEFAULT 10000,
+    p_max_rows_L1                 INTEGER   DEFAULT 10000,
+    p_max_rows_L3                 INTEGER   DEFAULT 10000,
+    p_outcursor               OUT SYS_REFCURSOR );
+--
+--
+FUNCTION procGetOffCRCExtractedOffTAB(
+    p_probation_area_id           NUMBER,
+    p_team_id                     NUMBER    DEFAULT -1,
+    p_staff_id                    NUMBER    DEFAULT -1,
+    p_crc_export_date_from        DATE      DEFAULT NULL,
+    p_crc_export_date_to          DATE      DEFAULT NULL,
+    p_crn                         VARCHAR2  DEFAULT NULL,
+    p_status_export_flag          SMALLINT  DEFAULT 0,
+    p_max_rows                    INTEGER   DEFAULT 10000 )
+RETURN PKG_SPG_EXPORT.ttabOffCRCExtractedOff PIPELINED;
+
+PROCEDURE procGetOffCRCExtractedOff(
+    p_probation_area_id           NUMBER,
+    p_team_id                     NUMBER    DEFAULT -1,
+    p_staff_id                    NUMBER    DEFAULT -1,
+    p_crc_export_date_from        DATE      DEFAULT NULL,
+    p_crc_export_date_to          DATE      DEFAULT NULL,
+    p_crn                         VARCHAR2  DEFAULT NULL,
+    p_status_export_flag          SMALLINT  DEFAULT 0,
+    p_max_rows                    INTEGER   DEFAULT 10000,
+    p_outcursor               OUT SYS_REFCURSOR );
+
+PROCEDURE create_crc_export_batch(
+    p_probation_area_id           NUMBER,
+    p_team_id                     NUMBER    DEFAULT -1,
+    p_staff_id                    NUMBER    DEFAULT -1,
+    p_excl_already_extracted_flag VARCHAR2  DEFAULT 'N',
+    p_incl_already_extracted_flag VARCHAR2  DEFAULT 'N',
+    p_crc_export_date_from        DATE      DEFAULT NULL,
+    p_crc_export_date_to          DATE      DEFAULT NULL,
+    p_crn                         VARCHAR2  DEFAULT NULL,
+    p_status_export_flag          SMALLINT  DEFAULT 0,
+    p_debug_flag                  VARCHAR2  DEFAULT 'Y',
+    --
+    p_max_rows                    INTEGER   DEFAULT -1,
+    p_max_rows_L1                 INTEGER   DEFAULT -1,
+    p_max_rows_L3                 INTEGER   DEFAULT -1,
+    --
+    p_async_flag                  VARCHAR2 DEFAULT 'N' );
+
+  PROCEDURE procGetCurrentResidents(
+    p_approved_premises_id           NUMBER DEFAULT NULL,
+    p_approved_premises_group_id                     NUMBER    DEFAULT NULL,
+    p_outcursor               OUT SYS_REFCURSOR );
+
+  PROCEDURE procGetCurrentReservationCount(
+    p_approved_premises_id           NUMBER DEFAULT NULL,
+    p_date                           DATE,
+    p_outcursor               OUT SYS_REFCURSOR );
+
+  PROCEDURE procGetAlertCountForStaff(
+    p_staff_id           NUMBER DEFAULT NULL,
+    p_outcursor               OUT SYS_REFCURSOR );
+
+--
+--
+--
+--
+END pkg_Search;
+/
+
+create PACKAGE pkg_contact_alert AUTHID DEFINER
+AS
+--
+-- Description  : The package definitions for OM Contact Alert
+--
+-- Author       : Yuri Fedkiv
+--
+-- Date         : 13/11/2017
+--
+--  Change History:
+--
+--  Version PDM Date        Who            Description
+--  ------- ---- ----------- ------------ ---------------------------------------
+--     1.01 1008 13-NOV-2017 Y Fedkiv     - Initial version
+--     1.02 1008 17-NOV-2017 Y Fedkiv     - Stable (unit tested) release
+--     1.03 1008 30-NOV-2017 Y Fedkiv     - #DST-1518: send the 1004 (O) UPD Contact message to all involved CRC Providers
+--     1.04 1008 18-DEC-2017 Y Fedkiv     - #DST-1696: send the 1004 (O) UPD Contact message only when SPG_INTEREST=1
+--     1.05 1008 18-JAN-2018 Y Fedkiv     - #DST-1812: Append extra details in Contact Notes within DO_CLEAR_OM_ALERT
+--     1.06 1010 06-MAR-2018 Y Fedkiv     - Added missing Release Soft Lock API call within SUBMIT_OM_ALERT_CLEAR_BATCH
+--     1.07 1010 12-MAR-2018 K Foster     - DST-2344: Altered wording on contact alert update to match story wording.
+--
+--   ------- --- ----------- ------------ -----------------------------
+--
+
+
+--
+-- OM Contact Alert Clear Batch submit
+--
+PROCEDURE submit_om_alert_clear_batch(
+    p_contact_id_lst            CLOB,
+    p_requested_date            DATE     DEFAULT SYSDATE,
+    p_excl_already_cleared_flag VARCHAR2 DEFAULT 'N',
+    p_incl_already_cleared_flag VARCHAR2 DEFAULT 'N',
+    --
+    p_debug_flag                VARCHAR2 DEFAULT 'N',
+    p_async_flag                VARCHAR2 DEFAULT 'N' );
+
+
+--
+--
+--
+--
+END pkg_contact_alert;
+/
+
+create FUNCTION GET_OFFLOC_PNCS(inOFFLOC_ID in number) RETURN VARCHAR2 IS PNCs VARCHAR2(100);
+    CURSOR PNC_cur IS
+        SELECT PNC_NUMBER FROM PNC_NUMBER
+        WHERE OFFLOC_ID = inOFFLOC_ID;
+BEGIN
+    PNCs := '';
+    FOR R1 IN PNC_cur LOOP
+        PNCs := PNCS || R1.PNC_NUMBER || '|';
+    END LOOP;
+    RETURN PNCs;
+END;
+/
+
+create PROCEDURE OFFLOC_SEARCH
+(inOffenderID  in number,
+ inDOB IN DATE,
+ inPNC in string,
+ inCRO in string,
+ inNOMISNO in string,
+ inPRISONNO in string,
+ inSURNAME in string,
+ inGender in string,
+ inFORENAME_1 in string,
+ inFORENAME_2 in string,
+ inSORTBY in string,
+ inMAXRESULTS in number,
+ lCursor IN OUT OfflocCursorPkg.CursorType)
+AS
+  -- Offloc Search Procedure
+  -- based on Legacy Delius version
+  --
+  -- written by Paul Davies
+  --
+  -- 002 - 15/06/2011 - David Middleton - Fixed defect 4294
+  --
+  -- 003 - 01/07/2011 - David Middleton - Fixed defect 4294
+  --
+  -- 004 - 05/11/2011 - David Middleton - Fixed defect 6230
+  --
+  -- 005 - 30/07/2012 - David Middleton - Fixed defect 10229
+  --
+  -- 006 - 01/08/2012 - David Middleton - Fixed defect 10229
+  --
+  -- 007 - 27/02/2012 - Karl Foster - Updated stage 1 search PNC check for performance
+  --
+  -- 008 - 19/04/2017 - Marcus Aspin - SR5-CA03-06 - DSS records shall be matched with custody locations on the basis of the CDE code.
+  --
+
+  AliasSurnames  Varchar2(1500); -- concatenated string of Alias surnames
+  AliasDOBs      Varchar2(1000);  -- concatenated string of alias DOBs
+  S1             Varchar2(100);
+  S2             Varchar2(10);
+  RowsFound      number;
+
+  -- cursor for Alias surnames/dobs
+  CURSOR ALIASES IS
+  SELECT SURNAME ALIAS_SURNAME, TO_CHAR(DATE_OF_BIRTH_DATE,'DD/MM/YYYY') ALIAS_DOB
+  FROM ALIAS
+  WHERE
+  OFFENDER_ID = inOffenderID;
+
+  -- cursors for different stages of search -
+  CURSOR STAGE1 IS
+  SELECT COUNT(DISTINCT(O.OFFLOC_ID)) FROM OFFLOC O, PNC_NUMBER P
+  WHERE
+  P.OFFLOC_ID(+) = O.OFFLOC_ID AND
+  (
+      NVL(P.PNC_NUMBER,'----') LIKE '%' || NVL(inPNC,'++++') || '%' OR
+      NVL(P.PNC_NUMBER,'----') LIKE '%' || NVL(substr(inPNC,3),'++++') || '%' OR
+      NVL(O.PRISON_NUMBER,'----') = NVL(inPRISONNO,'++++') OR
+      NVL(O.NOMIS_NUMBER,'----') = NVL(inNOMISNO,'++++')
+  );
+
+  CURSOR STAGE2 IS
+  SELECT COUNT(OFFLOC_ID) FROM OFFLOC
+  WHERE
+  UPPER(SURNAME) = UPPER(inSURNAME) and
+  DOB = inDOB;
+
+  CURSOR STAGE3 IS
+  SELECT COUNT(DISTINCT O.OFFLOC_ID) FROM OFFLOC O, ALIAS A
+  WHERE A.OFFENDER_ID = inOffenderID
+  AND   UPPER(O.SURNAME) = UPPER(A.SURNAME)
+  AND   ((O.DOB = A.DATE_OF_BIRTH_DATE) OR (O.DOB = inDOB));
+
+  CURSOR STAGE4 IS
+  SELECT COUNT(OFFLOC_ID) FROM OFFLOC
+  WHERE
+  SOUNDEX(SURNAME) = SOUNDEX(inSURNAME) AND
+  DOB = inDOB;
+
+BEGIN
+  -- Load Alias surnames and dobs into strings for searching
+  OPEN ALIASES;
+  AliasSurnames := '|';
+  AliasDOBs     := '|';
+  if ALIASES%ISOPEN then
+   LOOP
+     FETCH ALIASES into S1, S2;
+     EXIT WHEN ALIASES%NOTFOUND;
+     AliasSurnames := AliasSurnames || S1 || '|';
+     IF (S2 <> '01/01/2200') and (S2 is not null) then
+       AliasDOBs     := AliasDOBs || S2 || '|';
+     end if;
+   END LOOP;
+  end if;
+ -- Stage 1. Search for match on PNC, NOMIS or Prison Number-
+ OPEN STAGE1;
+ FETCH STAGE1 INTO RowsFound;
+ if RowsFound > 0 then
+     OPEN lCursor FOR
+      SELECT DISTINCT MATCH_SCORE, OFFLOC_ID, SURNAME, FORENAME_1, FORENAME_2, DOB, GENDER, PNC, PRISON_NUMBER, NOMIS_NUMBER, PRISON_CODE, PRISON_NAME, CRO, ETHNICITY, NATIONALITY, STATUS, DSS_UPDATED_DATE, SOURCE_CODE, ROWS_FOUND, ALIAS_MATCHED, ACTUAL_RELEASE_DATE
+      FROM
+      (   SELECT
+            ( (CASE WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(inPNC,'-----') ||'%' THEN 20
+                    WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(substr(inPNC,3),'-----') ||'%' THEN 20
+                    ELSE 0 END) +
+              DECODE(NVL(O.NOMIS_NUMBER,'----'), NVL(inNOMISNO,'++++'),30,0) +
+              DECODE(NVL(O.PRISON_NUMBER,'----'), NVL(inPRISONNO,'++++'),30,0) +
+              DECODE(O.DOB,inDOB,10,0) +
+              (CASE WHEN O.CRO LIKE '%' || NVL(inCRO,'-----') || '%' THEN 5 ELSE 0 END) +
+              DECODE(O.SURNAME,inSURNAME,5,0) +
+              DECODE(SUBSTR(NVL(O.GENDER,'U'),1,1), SUBSTR(inGENDER,1,1),5,0) +
+              DECODE(SUBSTR(NVL(FORENAME_1,''),1,1), SUBSTR(NVL(inFORENAME_1,''),1,1),4,0) +
+              DECODE(SUBSTR(NVL(FORENAME_2,'-'),1,1), SUBSTR(NVL(inFORENAME_2,'+'),1,1),4,0) +
+              (CASE WHEN AliasSurnames LIKE '%|' || O.SURNAME || '|%' THEN 3 ELSE 0 END) +
+              DECODE(SOUNDEX(O.SURNAME), SOUNDEX(inSURNAME), 2, 0)
+              ) MATCH_SCORE,
+            O.OFFLOC_ID, O.SURNAME, O.FORENAME_1, O.FORENAME_2, O.DOB, DECODE(SUBSTR(NVL(O.GENDER,''),1,1),'M','Male','F','Female','','[Not Recorded]','[Not Known]') GENDER, GET_OFFLOC_PNCS(O.OFFLOC_ID) PNC , O.PRISON_NUMBER, O.NOMIS_NUMBER, O.PRISON_CODE,
+            NVL((SELECT I.INSTITUTION_NAME FROM R_INSTITUTION I WHERE TRIM(I.CODE) = TRIM(O.PRISON_CODE) OR TRIM(I.NOMIS_CDE_CODE) = TRIM(O.PRISON_CODE)),'[Not Recorded]') PRISON_NAME,
+            O.CRO, O.ETHNICITY, O.NATIONALITY, O.STATUS, DSS_UPDATED_DATE, SOURCE_CODE, RowsFound as ROWS_FOUND, 'false' as ALIAS_MATCHED, O.ACTUAL_RELEASE_DATE
+          FROM
+            OFFLOC O
+          WHERE
+               O.OFFLOC_ID IN (SELECT offloc_id FROM PNC_NUMBER WHERE PNC_NUMBER IN (inPNC, SUBSTR(inPNC, 3))  )
+               OR
+               /*
+               NVL(GET_OFFLOC_PNCS(O.OFFLOC_ID),'----') LIKE '%' || NVL(inPNC,'++++') || '%' OR
+               NVL(GET_OFFLOC_PNCS(O.OFFLOC_ID),'----') LIKE '%' || NVL(substr(inPNC,3),'++++') || '%' OR
+               */
+               NVL(O.PRISON_NUMBER,'----') = NVL(inPRISONNO,'++++') OR
+               NVL(O.NOMIS_NUMBER,'----') = NVL(inNOMISNO,'++++')
+
+          ORDER BY
+          CASE inSORTBY
+            WHEN 'MATCH_SCORE DESC' THEN TO_CHAR
+            ( (CASE WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(inPNC,'-----') ||'%' THEN 20
+                    WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(substr(inPNC,3),'-----') ||'%' THEN 20
+                    ELSE 0 END) +
+              DECODE(NVL(O.NOMIS_NUMBER,'----'), NVL(inNOMISNO,'++++'),30,0) +
+              DECODE(NVL(O.PRISON_NUMBER,'----'), NVL(inPRISONNO,'++++'),30,0) +
+              DECODE(O.DOB,inDOB,10,0) +
+              (CASE WHEN O.CRO LIKE '%' || NVL(inCRO,'-----') || '%' THEN 5 ELSE 0 END) +
+              DECODE(O.SURNAME,inSURNAME,5,0) +
+              DECODE(SUBSTR(NVL(O.GENDER,'U'),1,1), SUBSTR(inGENDER,1,1),5,0) +
+              DECODE(SUBSTR(NVL(FORENAME_1,''),1,1), SUBSTR(NVL(inFORENAME_1,''),1,1),4,0) +
+              DECODE(SUBSTR(NVL(FORENAME_2,'-'),1,1), SUBSTR(NVL(inFORENAME_2,'+'),1,1),4,0) +
+              (CASE WHEN AliasSurnames LIKE '%|' || O.SURNAME || '|%' THEN 3 ELSE 0 END) +
+              DECODE(SOUNDEX(O.SURNAME), SOUNDEX(inSURNAME), 2, 0)
+              )
+            WHEN 'PNC DESC' THEN GET_OFFLOC_PNCS(O.OFFLOC_ID)
+            WHEN 'CRO DESC' THEN O.CRO
+            WHEN 'SURNAME DESC' THEN O.SURNAME
+            WHEN 'FORENAME_1 DESC' THEN O.FORENAME_1
+            WHEN 'FORENAME_2 DESC' THEN O.FORENAME_2
+            WHEN 'DOB DESC' THEN SUBSTR(TO_CHAR(O.DOB),7,4) || SUBSTR(TO_CHAR(O.DOB),4,2) || SUBSTR(TO_CHAR(O.DOB),1,2)
+            WHEN 'GENDER DESC' THEN O.GENDER
+            WHEN 'NATIONALITY DESC' THEN O.NATIONALITY
+            WHEN 'ETHNICITY DESC' THEN O.ETHNICITY
+            WHEN 'PRISON_NUMBER DESC' THEN nvl(O.NOMIS_NUMBER, O.PRISON_NUMBER)
+            WHEN 'CRO DESC' THEN O.CRO
+            WHEN 'STATUS DESC' THEN O.STATUS
+          END DESC,
+
+          CASE inSORTBY
+            WHEN 'MATCH_SCORE DESC' THEN O.SURNAME || ', ' || NVL(O.NOMIS_NUMBER,O.PRISON_NUMBER) || ', ' || GET_OFFLOC_PNCS(O.OFFLOC_ID)
+            WHEN 'MATCH_SCORE' THEN TO_CHAR
+            ( (CASE WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(inPNC,'-----') ||'%' THEN 20
+                    WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(substr(inPNC,3),'-----') ||'%' THEN 20
+                    ELSE 0 END) +
+              DECODE(NVL(O.NOMIS_NUMBER,'----'), NVL(inNOMISNO,'++++'),30,0) +
+              DECODE(NVL(O.PRISON_NUMBER,'----'), NVL(inPRISONNO,'++++'),30,0) +
+              DECODE(O.DOB,inDOB,10,0) +
+              (CASE WHEN O.CRO LIKE '%' || NVL(inCRO,'-----') || '%' THEN 5 ELSE 0 END) +
+              DECODE(O.SURNAME,inSURNAME,5,0) +
+              DECODE(SUBSTR(NVL(O.GENDER,'U'),1,1), SUBSTR(inGENDER,1,1),5,0) +
+              DECODE(SUBSTR(NVL(FORENAME_1,''),1,1), SUBSTR(NVL(inFORENAME_1,''),1,1),4,0) +
+              DECODE(SUBSTR(NVL(FORENAME_2,'-'),1,1), SUBSTR(NVL(inFORENAME_2,'+'),1,1),4,0) +
+              (CASE WHEN AliasSurnames LIKE '%|' || O.SURNAME || '|%' THEN 3 ELSE 0 END) +
+              DECODE(SOUNDEX(O.SURNAME), SOUNDEX(inSURNAME), 2, 0)
+            ) || O.SURNAME || ', ' || NVL(O.NOMIS_NUMBER,O.PRISON_NUMBER) || ', ' || GET_OFFLOC_PNCS(O.OFFLOC_ID)
+            WHEN 'PNC' THEN GET_OFFLOC_PNCS(O.OFFLOC_ID)
+            WHEN 'SURNAME' THEN O.SURNAME
+            WHEN 'FORENAME_1' THEN O.FORENAME_1
+            WHEN 'FORENAME_2' THEN O.FORENAME_2
+            WHEN 'DOB' THEN SUBSTR(TO_CHAR(O.DOB),7,4) || SUBSTR(TO_CHAR(O.DOB),4,2) || SUBSTR(TO_CHAR(O.DOB),1,2)
+            WHEN 'GENDER' THEN O.GENDER
+            WHEN 'NATIONALITY' THEN O.NATIONALITY
+            WHEN 'ETHNICITY' THEN O.ETHNICITY
+            WHEN 'PRISON_NUMBER' THEN NVL(O.NOMIS_NUMBER, O.PRISON_NUMBER)
+            WHEN 'CRO' THEN O.CRO
+            WHEN 'STATUS' THEN (CASE WHEN SUBSTR(O.STATUS,1,1) IN ('A','B','C','T','U') THEN 'Active' WHEN O.STATUS IS NULL THEN 'Unknown' WHEN O.STATUS = '' THEN 'Unknown' ELSE 'Inactive' END)
+          END ASC
+       ) WHERE ROWNUM <= inMAXRESULTS;
+  ELSE
+     -- Stage 2.  If no records found above, search on DOB and Surname
+     OPEN STAGE2;
+     FETCH STAGE2 INTO RowsFound;
+     IF RowsFound > 0 then
+          OPEN lCursor FOR
+          SELECT MATCH_SCORE, OFFLOC_ID, SURNAME, FORENAME_1, FORENAME_2, DOB, GENDER, PNC, PRISON_NUMBER, NOMIS_NUMBER, PRISON_CODE, PRISON_NAME, CRO, ETHNICITY, NATIONALITY, STATUS, DSS_UPDATED_DATE, SOURCE_CODE, ROWS_FOUND, ALIAS_MATCHED, ACTUAL_RELEASE_DATE
+          FROM
+              (SELECT
+               ( (CASE WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(inPNC,'-----') ||'%' THEN 20
+                    WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(substr(inPNC,3),'-----') ||'%' THEN 20
+                    ELSE 0 END) +
+                  DECODE(NVL(O.NOMIS_NUMBER,'----'), NVL(inNOMISNO,'++++'),30,0) +
+                  DECODE(NVL(O.PRISON_NUMBER,'----'), NVL(inPRISONNO,'++++'),30,0) +
+                  DECODE(O.DOB,inDOB,10,0) +
+                  (CASE WHEN O.CRO LIKE '%' || NVL(inCRO,'-----') || '%' THEN 5 ELSE 0 END) +
+                  DECODE(O.SURNAME,inSURNAME,5,0) +
+                  DECODE(SUBSTR(NVL(O.GENDER,'U'),1,1), SUBSTR(inGENDER,1,1),5,0) +
+                  DECODE(SUBSTR(NVL(FORENAME_1,''),1,1), SUBSTR(NVL(inFORENAME_1,''),1,1),4,0) +
+                  DECODE(SUBSTR(NVL(FORENAME_2,'-'),1,1), SUBSTR(NVL(inFORENAME_2,'+'),1,1),4,0) +
+                  (CASE WHEN AliasSurnames LIKE '%|' || O.SURNAME || '|%' THEN 3 ELSE 0 END) +
+                  DECODE(SOUNDEX(O.SURNAME), SOUNDEX(inSURNAME), 2, 0)
+                  )
+                MATCH_SCORE,
+                O.OFFLOC_ID, O.SURNAME, O.FORENAME_1, O.FORENAME_2, O.DOB, DECODE(SUBSTR(NVL(O.GENDER,''),1,1),'M','Male','F','Female','','[Not Recorded]','[Not Known]') GENDER, GET_OFFLOC_PNCS(O.OFFLOC_ID) PNC, O.PRISON_NUMBER, O.NOMIS_NUMBER, O.PRISON_CODE,
+                NVL((SELECT I.INSTITUTION_NAME FROM R_INSTITUTION I WHERE TRIM(I.CODE) = TRIM(O.PRISON_CODE) OR TRIM(I.NOMIS_CDE_CODE) = TRIM(O.PRISON_CODE)),'[Not Recorded]') PRISON_NAME,
+                O.CRO, O.ETHNICITY, O.NATIONALITY, O.STATUS, DSS_UPDATED_DATE, SOURCE_CODE, RowsFound as ROWS_FOUND, 'false' as ALIAS_MATCHED, O.ACTUAL_RELEASE_DATE
+              FROM
+                OFFLOC O
+              WHERE
+                UPPER(O.SURNAME) = UPPER(inSURNAME) and
+                O.DOB = inDOB
+              ORDER BY
+              CASE inSORTBY
+                WHEN 'MATCH_SCORE DESC' THEN TO_CHAR
+                ( (CASE WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(inPNC,'-----') ||'%' THEN 20
+                    WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(substr(inPNC,3),'-----') ||'%' THEN 20
+                    ELSE 0 END) +
+                  DECODE(NVL(O.NOMIS_NUMBER,'----'), NVL(inNOMISNO,'++++'),30,0) +
+                  DECODE(NVL(O.PRISON_NUMBER,'----'), NVL(inPRISONNO,'++++'),30,0) +
+                  DECODE(O.DOB,inDOB,10,0) +
+                  (CASE WHEN O.CRO LIKE '%' || NVL(inCRO,'-----') || '%' THEN 5 ELSE 0 END) +
+                  DECODE(O.SURNAME,inSURNAME,5,0) +
+                  DECODE(SUBSTR(NVL(O.GENDER,'U'),1,1), SUBSTR(inGENDER,1,1),5,0) +
+                  DECODE(SUBSTR(NVL(FORENAME_1,''),1,1), SUBSTR(NVL(inFORENAME_1,''),1,1),4,0) +
+                  DECODE(SUBSTR(NVL(FORENAME_2,'-'),1,1), SUBSTR(NVL(inFORENAME_2,'+'),1,1),4,0) +
+                  (CASE WHEN AliasSurnames LIKE '%|' || O.SURNAME || '|%' THEN 3 ELSE 0 END) +
+                  DECODE(SOUNDEX(O.SURNAME), SOUNDEX(inSURNAME), 2, 0)
+                  )
+                WHEN 'PNC DESC' THEN GET_OFFLOC_PNCS(O.OFFLOC_ID)
+                WHEN 'CRO DESC' THEN O.CRO
+                WHEN 'SURNAME DESC' THEN O.SURNAME
+                WHEN 'FORENAME_1 DESC' THEN O.FORENAME_1
+                WHEN 'FORENAME_2 DESC' THEN O.FORENAME_2
+                WHEN 'DOB DESC' THEN SUBSTR(TO_CHAR(O.DOB),7,4) || SUBSTR(TO_CHAR(O.DOB),4,2) || SUBSTR(TO_CHAR(O.DOB),1,2)
+                WHEN 'GENDER DESC' THEN O.GENDER
+                WHEN 'NATIONALITY DESC' THEN O.NATIONALITY
+                WHEN 'ETHNICITY DESC' THEN O.ETHNICITY
+                WHEN 'PRISON_NUMBER DESC' THEN nvl(O.NOMIS_NUMBER, O.PRISON_NUMBER)
+                WHEN 'CRO DESC' THEN O.CRO
+                WHEN 'STATUS DESC' THEN O.STATUS
+              END DESC,
+
+              CASE inSORTBY
+                WHEN 'MATCH_SCORE DESC' THEN O.SURNAME || ', ' || NVL(O.NOMIS_NUMBER,O.PRISON_NUMBER) || ', ' || GET_OFFLOC_PNCS(O.OFFLOC_ID)
+                WHEN 'MATCH_SCORE' THEN TO_CHAR
+                ( (CASE WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(inPNC,'-----') ||'%' THEN 20
+                    WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(substr(inPNC,3),'-----') ||'%' THEN 20
+                    ELSE 0 END) +
+                  DECODE(NVL(O.NOMIS_NUMBER,'----'), NVL(inNOMISNO,'++++'),30,0) +
+                  DECODE(NVL(O.PRISON_NUMBER,'----'), NVL(inPRISONNO,'++++'),30,0) +
+                  DECODE(O.DOB,inDOB,10,0) +
+                  (CASE WHEN O.CRO LIKE '%' || NVL(inCRO,'-----') || '%' THEN 5 ELSE 0 END) +
+                  DECODE(O.SURNAME,inSURNAME,5,0) +
+                  DECODE(SUBSTR(NVL(O.GENDER,'U'),1,1), SUBSTR(inGENDER,1,1),5,0) +
+                  DECODE(SUBSTR(NVL(FORENAME_1,''),1,1), SUBSTR(NVL(inFORENAME_1,''),1,1),4,0) +
+                  DECODE(SUBSTR(NVL(FORENAME_2,'-'),1,1), SUBSTR(NVL(inFORENAME_2,'+'),1,1),4,0) +
+                  (CASE WHEN AliasSurnames LIKE '%|' || O.SURNAME || '|%' THEN 3 ELSE 0 END) +
+                  DECODE(SOUNDEX(O.SURNAME), SOUNDEX(inSURNAME), 2, 0)
+                  ) || O.SURNAME || ', ' || NVL(O.NOMIS_NUMBER,O.PRISON_NUMBER) || ', ' || GET_OFFLOC_PNCS(O.OFFLOC_ID)
+                WHEN 'PNC' THEN GET_OFFLOC_PNCS(O.OFFLOC_ID)
+                WHEN 'SURNAME' THEN O.SURNAME
+                WHEN 'FORENAME_1' THEN O.FORENAME_1
+                WHEN 'FORENAME_2' THEN O.FORENAME_2
+                WHEN 'DOB' THEN SUBSTR(TO_CHAR(O.DOB),7,4) || SUBSTR(TO_CHAR(O.DOB),4,2) || SUBSTR(TO_CHAR(O.DOB),1,2)
+                WHEN 'GENDER' THEN O.GENDER
+                WHEN 'NATIONALITY' THEN O.NATIONALITY
+                WHEN 'ETHNICITY' THEN O.ETHNICITY
+                WHEN 'PRISON_NUMBER' THEN NVL(O.NOMIS_NUMBER, O.PRISON_NUMBER)
+                WHEN 'CRO' THEN O.CRO
+                WHEN 'STATUS' THEN O.STATUS
+              END ASC
+           ) WHERE ROWNUM <= inMAXRESULTS;
+     ELSE
+       -- Stage 3.  If still no matches, search on aliases (alias surname + alias dob OR alias surname + real dob)
+       OPEN STAGE3;
+       FETCH STAGE3 INTO RowsFound;
+       IF RowsFound > 0 then
+          OPEN lCursor FOR
+          SELECT MATCH_SCORE, OFFLOC_ID, SURNAME, FORENAME_1, FORENAME_2, DOB, GENDER, PNC, PRISON_NUMBER, NOMIS_NUMBER, PRISON_CODE, PRISON_NAME, CRO, ETHNICITY, NATIONALITY, STATUS, DSS_UPDATED_DATE, SOURCE_CODE, ROWS_FOUND, ALIAS_MATCHED, ACTUAL_RELEASE_DATE
+          FROM
+              (SELECT
+               ( (CASE WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(inPNC,'-----') ||'%' THEN 20
+                       WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(substr(inPNC,3),'-----') ||'%' THEN 20
+                       ELSE 0 END) +
+                  DECODE(NVL(O.NOMIS_NUMBER,'----'), NVL(inNOMISNO,'++++'),30,0) +
+                  DECODE(NVL(O.PRISON_NUMBER,'----'), NVL(inPRISONNO,'++++'),30,0) +
+                  DECODE(O.DOB,inDOB,10,0) +
+                  (CASE WHEN O.CRO LIKE '%' || NVL(inCRO,'-----') || '%' THEN 5 ELSE 0 END) +
+                  DECODE(O.SURNAME,inSURNAME,5,0) +
+                  DECODE(SUBSTR(NVL(O.GENDER,'U'),1,1), SUBSTR(inGENDER,1,1),5,0) +
+                  DECODE(SUBSTR(NVL(FORENAME_1,''),1,1), SUBSTR(NVL(inFORENAME_1,''),1,1),4,0) +
+                  DECODE(SUBSTR(NVL(FORENAME_2,'-'),1,1), SUBSTR(NVL(inFORENAME_2,'+'),1,1),4,0) +
+                  (CASE WHEN AliasSurnames LIKE '%|' || O.SURNAME || '|%' THEN 3 ELSE 0 END) +
+                  DECODE(SOUNDEX(O.SURNAME), SOUNDEX(inSURNAME), 2, 0)
+                  )
+                MATCH_SCORE,
+                O.OFFLOC_ID, O.SURNAME, O.FORENAME_1, O.FORENAME_2, O.DOB, DECODE(SUBSTR(NVL(O.GENDER,''),1,1),'M','Male','F','Female','','[Not Recorded]','[Not Known]') GENDER, GET_OFFLOC_PNCS(O.OFFLOC_ID) PNC, O.PRISON_NUMBER, O.NOMIS_NUMBER, O.PRISON_CODE,
+                NVL((SELECT I.INSTITUTION_NAME FROM R_INSTITUTION I WHERE TRIM(I.CODE) = TRIM(O.PRISON_CODE) OR TRIM(I.NOMIS_CDE_CODE) = TRIM(O.PRISON_CODE)),'[Not Recorded]') PRISON_NAME,
+                O.CRO, O.ETHNICITY, O.NATIONALITY, O.STATUS, DSS_UPDATED_DATE, SOURCE_CODE, RowsFound as ROWS_FOUND, 'true' as ALIAS_MATCHED, O.ACTUAL_RELEASE_DATE
+              FROM
+                OFFLOC O, ALIAS A
+              WHERE A.OFFENDER_ID = inOffenderID
+              AND   UPPER(O.SURNAME) = UPPER(A.SURNAME)
+              AND   (O.DOB = A.DATE_OF_BIRTH_DATE OR O.DOB = inDOB)
+              ORDER BY
+              CASE inSORTBY
+                WHEN 'MATCH_SCORE DESC' THEN TO_CHAR
+                ( (CASE WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(inPNC,'-----') ||'%' THEN 20
+                    WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(substr(inPNC,3),'-----') ||'%' THEN 20
+                    ELSE 0 END) +
+                  DECODE(NVL(O.NOMIS_NUMBER,'----'), NVL(inNOMISNO,'++++'),30,0) +
+                  DECODE(NVL(O.PRISON_NUMBER,'----'), NVL(inPRISONNO,'++++'),30,0) +
+                  DECODE(O.DOB,inDOB,10,0) +
+                  (CASE WHEN O.CRO LIKE '%' || NVL(inCRO,'-----') || '%' THEN 5 ELSE 0 END) +
+                  DECODE(O.SURNAME,inSURNAME,5,0) +
+                  DECODE(SUBSTR(NVL(O.GENDER,'U'),1,1), SUBSTR(inGENDER,1,1),5,0) +
+                  DECODE(SUBSTR(NVL(FORENAME_1,''),1,1), SUBSTR(NVL(inFORENAME_1,''),1,1),4,0) +
+                  DECODE(SUBSTR(NVL(FORENAME_2,'-'),1,1), SUBSTR(NVL(inFORENAME_2,'+'),1,1),4,0) +
+                  (CASE WHEN AliasSurnames LIKE '%|' || O.SURNAME || '|%' THEN 3 ELSE 0 END) +
+                  DECODE(SOUNDEX(O.SURNAME), SOUNDEX(inSURNAME), 2, 0)
+                  )
+                WHEN 'PNC DESC' THEN GET_OFFLOC_PNCS(O.OFFLOC_ID)
+                WHEN 'CRO DESC' THEN O.CRO
+                WHEN 'SURNAME DESC' THEN O.SURNAME
+                WHEN 'FORENAME_1 DESC' THEN O.FORENAME_1
+                WHEN 'FORENAME_2 DESC' THEN O.FORENAME_2
+                WHEN 'DOB DESC' THEN SUBSTR(TO_CHAR(O.DOB),7,4) || SUBSTR(TO_CHAR(O.DOB),4,2) || SUBSTR(TO_CHAR(O.DOB),1,2)
+                WHEN 'GENDER DESC' THEN O.GENDER
+                WHEN 'NATIONALITY DESC' THEN O.NATIONALITY
+                WHEN 'ETHNICITY DESC' THEN O.ETHNICITY
+                WHEN 'PRISON_NUMBER DESC' THEN nvl(O.NOMIS_NUMBER, O.PRISON_NUMBER)
+                WHEN 'CRO DESC' THEN O.CRO
+                WHEN 'STATUS DESC' THEN O.STATUS
+              END DESC,
+
+              CASE inSORTBY
+                WHEN 'MATCH_SCORE DESC' THEN O.SURNAME || ', ' || NVL(O.NOMIS_NUMBER,O.PRISON_NUMBER) || ', ' || GET_OFFLOC_PNCS(O.OFFLOC_ID)
+                WHEN 'MATCH_SCORE' THEN TO_CHAR
+                ( (CASE WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(inPNC,'-----') ||'%' THEN 20
+                    WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(substr(inPNC,3),'-----') ||'%' THEN 20
+                    ELSE 0 END) +
+                  DECODE(NVL(O.NOMIS_NUMBER,'----'), NVL(inNOMISNO,'++++'),30,0) +
+                  DECODE(NVL(O.PRISON_NUMBER,'----'), NVL(inPRISONNO,'++++'),30,0) +
+                  DECODE(O.DOB,inDOB,10,0) +
+                  (CASE WHEN O.CRO LIKE '%' || NVL(inCRO,'-----') || '%' THEN 5 ELSE 0 END) +
+                  DECODE(O.SURNAME,inSURNAME,5,0) +
+                  DECODE(SUBSTR(NVL(O.GENDER,'U'),1,1), SUBSTR(inGENDER,1,1),5,0) +
+                  DECODE(SUBSTR(NVL(FORENAME_1,''),1,1), SUBSTR(NVL(inFORENAME_1,''),1,1),4,0) +
+                  DECODE(SUBSTR(NVL(FORENAME_2,'-'),1,1), SUBSTR(NVL(inFORENAME_2,'+'),1,1),4,0) +
+                  (CASE WHEN AliasSurnames LIKE '%|' || O.SURNAME || '|%' THEN 3 ELSE 0 END) +
+                  DECODE(SOUNDEX(O.SURNAME), SOUNDEX(inSURNAME), 2, 0)
+                  ) || O.SURNAME || ', ' || NVL(O.NOMIS_NUMBER,O.PRISON_NUMBER) || ', ' || GET_OFFLOC_PNCS(O.OFFLOC_ID)
+                WHEN 'PNC' THEN GET_OFFLOC_PNCS(O.OFFLOC_ID)
+                WHEN 'SURNAME' THEN O.SURNAME
+                WHEN 'FORENAME_1' THEN O.FORENAME_1
+                WHEN 'FORENAME_2' THEN O.FORENAME_2
+                WHEN 'DOB' THEN SUBSTR(TO_CHAR(O.DOB),7,4) || SUBSTR(TO_CHAR(O.DOB),4,2) || SUBSTR(TO_CHAR(O.DOB),1,2)
+                WHEN 'GENDER' THEN O.GENDER
+                WHEN 'NATIONALITY' THEN O.NATIONALITY
+                WHEN 'ETHNICITY' THEN O.ETHNICITY
+                WHEN 'PRISON_NUMBER' THEN NVL(O.NOMIS_NUMBER, O.PRISON_NUMBER)
+                WHEN 'CRO' THEN O.CRO
+                WHEN 'STATUS' THEN O.STATUS
+              END ASC
+           ) WHERE ROWNUM <= inMAXRESULTS;
+       ELSE
+         -- Stage 4.  Try surname soundex search + real dob
+         OPEN STAGE4;
+         FETCH STAGE4 INTO RowsFound;
+         OPEN lCursor FOR
+         SELECT MATCH_SCORE, OFFLOC_ID, SURNAME, FORENAME_1, FORENAME_2, DOB, GENDER, PNC, PRISON_NUMBER, NOMIS_NUMBER, PRISON_CODE, PRISON_NAME, CRO, ETHNICITY, NATIONALITY, STATUS, DSS_UPDATED_DATE, SOURCE_CODE, ROWS_FOUND, ALIAS_MATCHED, ACTUAL_RELEASE_DATE
+         FROM
+                (  SELECT
+                   ( (CASE WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(inPNC,'-----') ||'%' THEN 20
+                           WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(substr(inPNC,3),'-----') ||'%' THEN 20
+                           ELSE 0 END) +
+                      DECODE(NVL(O.NOMIS_NUMBER,'----'), NVL(inNOMISNO,'++++'),30,0) +
+                      DECODE(NVL(O.PRISON_NUMBER,'----'), NVL(inPRISONNO,'++++'),30,0) +
+                      DECODE(O.DOB,inDOB,10,0) +
+                      (CASE WHEN O.CRO LIKE '%' || NVL(inCRO,'-----') || '%' THEN 5 ELSE 0 END) +
+                      DECODE(O.SURNAME,inSURNAME,5,0) +
+                      DECODE(SUBSTR(NVL(O.GENDER,'U'),1,1), SUBSTR(inGENDER,1,1),5,0) +
+                      DECODE(SUBSTR(NVL(FORENAME_1,''),1,1), SUBSTR(NVL(inFORENAME_1,''),1,1),4,0) +
+                      DECODE(SUBSTR(NVL(FORENAME_2,'-'),1,1), SUBSTR(NVL(inFORENAME_2,'+'),1,1),4,0) +
+                      (CASE WHEN AliasSurnames LIKE '%|' || O.SURNAME || '|%' THEN 3 ELSE 0 END) +
+                      DECODE(SOUNDEX(O.SURNAME), SOUNDEX(inSURNAME), 2, 0)
+                      )
+                    MATCH_SCORE,
+                    O.OFFLOC_ID, O.SURNAME, O.FORENAME_1, O.FORENAME_2, O.DOB, DECODE(SUBSTR(NVL(O.GENDER,''),1,1),'M','Male','F','Female','','[Not Recorded]','[Not Known]') GENDER, GET_OFFLOC_PNCS(O.OFFLOC_ID) PNC, O.PRISON_NUMBER, O.NOMIS_NUMBER, O.PRISON_CODE,
+                    NVL((SELECT I.INSTITUTION_NAME FROM R_INSTITUTION I WHERE TRIM(I.CODE) = TRIM(O.PRISON_CODE) OR TRIM(I.NOMIS_CDE_CODE) = TRIM(O.PRISON_CODE)),'[Not Recorded]') PRISON_NAME,
+                    O.CRO, O.ETHNICITY, O.NATIONALITY, O.STATUS, DSS_UPDATED_DATE, SOURCE_CODE, RowsFound as ROWS_FOUND, 'false' as ALIAS_MATCHED, O.ACTUAL_RELEASE_DATE
+                  FROM
+                    OFFLOC O
+                  WHERE
+                    SOUNDEX(O.SURNAME) = SOUNDEX(inSURNAME) AND
+                    O.DOB = inDOB
+                  ORDER BY
+                  CASE inSORTBY
+                    WHEN 'MATCH_SCORE DESC' THEN TO_CHAR
+                    ( (CASE WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(inPNC,'-----') ||'%' THEN 20
+                            WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(substr(inPNC,3),'-----') ||'%' THEN 20
+                            ELSE 0 END) +
+                      DECODE(NVL(O.NOMIS_NUMBER,'----'), NVL(inNOMISNO,'++++'),30,0) +
+                      DECODE(NVL(O.PRISON_NUMBER,'----'), NVL(inPRISONNO,'++++'),30,0) +
+                      DECODE(O.DOB,inDOB,10,0) +
+                      (CASE WHEN O.CRO LIKE '%' || NVL(inCRO,'-----') || '%' THEN 5 ELSE 0 END) +
+                      DECODE(O.SURNAME,inSURNAME,5,0) +
+                      DECODE(SUBSTR(NVL(O.GENDER,'U'),1,1), SUBSTR(inGENDER,1,1),5,0) +
+                      DECODE(SUBSTR(NVL(FORENAME_1,''),1,1), SUBSTR(NVL(inFORENAME_1,''),1,1),4,0) +
+                      DECODE(SUBSTR(NVL(FORENAME_2,'-'),1,1), SUBSTR(NVL(inFORENAME_2,'+'),1,1),4,0) +
+                      (CASE WHEN AliasSurnames LIKE '%|' || O.SURNAME || '|%' THEN 3 ELSE 0 END) +
+                      DECODE(SOUNDEX(O.SURNAME), SOUNDEX(inSURNAME), 2, 0)
+                      )
+                    WHEN 'PNC DESC' THEN GET_OFFLOC_PNCS(O.OFFLOC_ID)
+                    WHEN 'CRO DESC' THEN O.CRO
+                    WHEN 'SURNAME DESC' THEN O.SURNAME
+                    WHEN 'FORENAME_1 DESC' THEN O.FORENAME_1
+                    WHEN 'FORENAME_2 DESC' THEN O.FORENAME_2
+                    WHEN 'DOB DESC' THEN SUBSTR(TO_CHAR(O.DOB),7,4) || SUBSTR(TO_CHAR(O.DOB),4,2) || SUBSTR(TO_CHAR(O.DOB),1,2)
+                    WHEN 'GENDER DESC' THEN O.GENDER
+                    WHEN 'NATIONALITY DESC' THEN O.NATIONALITY
+                    WHEN 'ETHNICITY DESC' THEN O.ETHNICITY
+                    WHEN 'PRISON_NUMBER DESC' THEN nvl(O.NOMIS_NUMBER, O.PRISON_NUMBER)
+                    WHEN 'CRO DESC' THEN O.CRO
+                    WHEN 'STATUS DESC' THEN O.STATUS
+                  END DESC,
+
+                  CASE inSORTBY
+                    WHEN 'MATCH_SCORE DESC' THEN O.SURNAME || ', ' || NVL(O.NOMIS_NUMBER,O.PRISON_NUMBER) || ', ' || GET_OFFLOC_PNCS(O.OFFLOC_ID)
+                    WHEN 'MATCH_SCORE' THEN TO_CHAR
+                    ( (CASE WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(inPNC,'-----') ||'%' THEN 20
+                            WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(substr(inPNC,3),'-----') ||'%' THEN 20
+                            ELSE 0 END) +
+                      DECODE(NVL(O.NOMIS_NUMBER,'----'), NVL(inNOMISNO,'++++'),30,0) +
+                      DECODE(NVL(O.PRISON_NUMBER,'----'), NVL(inPRISONNO,'++++'),30,0) +
+                      DECODE(O.DOB,inDOB,10,0) +
+                      (CASE WHEN O.CRO LIKE '%' || NVL(inCRO,'-----') || '%' THEN 5 ELSE 0 END) +
+                      DECODE(O.SURNAME,inSURNAME,5,0) +
+                      DECODE(SUBSTR(NVL(O.GENDER,'U'),1,1), SUBSTR(inGENDER,1,1),5,0) +
+                      DECODE(SUBSTR(NVL(FORENAME_1,''),1,1), SUBSTR(NVL(inFORENAME_1,''),1,1),4,0) +
+                      DECODE(SUBSTR(NVL(FORENAME_2,'-'),1,1), SUBSTR(NVL(inFORENAME_2,'+'),1,1),4,0) +
+                      (CASE WHEN AliasSurnames LIKE '%|' || O.SURNAME || '|%' THEN 3 ELSE 0 END) +
+                      DECODE(SOUNDEX(O.SURNAME), SOUNDEX(inSURNAME), 2, 0)
+                      ) || O.SURNAME || ', ' || NVL(O.NOMIS_NUMBER,O.PRISON_NUMBER) || ', ' || GET_OFFLOC_PNCS(O.OFFLOC_ID)
+                    WHEN 'PNC' THEN GET_OFFLOC_PNCS(O.OFFLOC_ID)
+                    WHEN 'SURNAME' THEN O.SURNAME
+                    WHEN 'FORENAME_1' THEN O.FORENAME_1
+                    WHEN 'FORENAME_2' THEN O.FORENAME_2
+                    WHEN 'DOB' THEN SUBSTR(TO_CHAR(O.DOB),7,4) || SUBSTR(TO_CHAR(O.DOB),4,2) || SUBSTR(TO_CHAR(O.DOB),1,2)
+                    WHEN 'GENDER' THEN O.GENDER
+                    WHEN 'NATIONALITY' THEN O.NATIONALITY
+                    WHEN 'ETHNICITY' THEN O.ETHNICITY
+                    WHEN 'PRISON_NUMBER' THEN NVL(O.NOMIS_NUMBER, O.PRISON_NUMBER)
+                    WHEN 'CRO' THEN O.CRO
+                    WHEN 'STATUS' THEN O.STATUS
+                  END ASC
+              ) WHERE ROWNUM <= inMAXRESULTS;
+         end if; --open stage3
+      end if; -- open stage2
+  END IF; --open stage1
+END;
+/
+
+create PROCEDURE OFFLOC_RELEASE_DATE_SEARCH
+(inDOB IN DATE,
+ inPNC in string,
+ inNOMISNO in string,
+ inPRISONNO in string,
+ inCRO in string,
+ inSURNAME in string,
+ inGender in string,
+ inFORENAME_1 in string,
+ inFORENAME_2 in string,
+ inSORTBY in string,
+ inMAXRESULTS in number,
+ lCursor IN OUT OfflocCursorPkg.CursorType)
+AS
+  -- Offloc Release Date Search Procedure
+  -- based on Legacy Delius version
+  --
+  -- written by David Graham
+
+  -- Define individual weightings (as specified in the Throughcare HLD) for each field the stored procedure matches against when building the result set.
+  PNC_NUMBER_WEIGHTING CONSTANT NUMBER := 20;
+  NOMIS_NUMBER_WEIGHTING CONSTANT NUMBER := 30;
+  DOB_WEIGHTING CONSTANT NUMBER := 10;
+  SURNAME_WEIGHTING CONSTANT NUMBER := 5;
+
+  RowsFound      number;
+
+  -- Cursor for query based on exact match of NOMIS number OR PNC number.
+  CURSOR STAGE1 IS
+  SELECT COUNT(DISTINCT(O.OFFLOC_ID)) FROM OFFLOC O, PNC_NUMBER P
+  WHERE
+  P.OFFLOC_ID(+) = O.OFFLOC_ID AND
+  (
+      NVL(P.PNC_NUMBER,'----') LIKE '%' || NVL(inPNC,'++++') || '%' OR
+      NVL(P.PNC_NUMBER,'----') LIKE '%' || NVL(substr(inPNC,3),'++++') || '%' OR
+      NVL(O.NOMIS_NUMBER,'----') = NVL(inNOMISNO,'++++')
+  );
+
+  -- Cursor for query based on exact match of SURNAME AND DOB.
+  CURSOR STAGE2 IS
+  SELECT COUNT(OFFLOC_ID) FROM OFFLOC
+  WHERE
+  UPPER(SURNAME) = UPPER(inSURNAME) and
+  DOB = inDOB;
+
+BEGIN
+ -- Stage 1. Search for match on PNC or NOMIS Number-
+ OPEN STAGE1;
+ FETCH STAGE1 INTO RowsFound;
+   if RowsFound > 0 then
+     OPEN lCursor FOR
+      SELECT DISTINCT MATCH_SCORE, OFFLOC_ID, SURNAME, FORENAME_1, FORENAME_2, DOB, GENDER, PNC, PRISON_NUMBER, NOMIS_NUMBER, PRISON_CODE, PRISON_NAME, CRO, ETHNICITY, NATIONALITY, STATUS, DSS_UPDATED_DATE, SOURCE_CODE, ROWS_FOUND, ALIAS_MATCHED, ACTUAL_RELEASE_DATE
+      FROM
+      (    SELECT
+            ( (CASE WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(inPNC,'-----') ||'%' THEN PNC_NUMBER_WEIGHTING
+                    WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(substr(inPNC,3),'-----') ||'%' THEN PNC_NUMBER_WEIGHTING
+                    ELSE 0 END) +
+              DECODE(NVL(O.NOMIS_NUMBER,'----'), NVL(inNOMISNO,'++++'),NOMIS_NUMBER_WEIGHTING,0) +
+              DECODE(O.DOB,inDOB,DOB_WEIGHTING,0) +
+              DECODE(O.SURNAME,inSURNAME,SURNAME_WEIGHTING,0)
+              ) MATCH_SCORE,
+            O.OFFLOC_ID, O.SURNAME, O.FORENAME_1, O.FORENAME_2, O.DOB, O.ACTUAL_RELEASE_DATE, DECODE(SUBSTR(NVL(O.GENDER,''),1,1),'M','Male','F','Female','','[Not Recorded]','[Not Known]') GENDER, GET_OFFLOC_PNCS(O.OFFLOC_ID) PNC , O.PRISON_NUMBER, O.NOMIS_NUMBER, O.PRISON_CODE,
+            NVL((SELECT I.INSTITUTION_NAME FROM R_INSTITUTION I WHERE TRIM(I.CODE) = TRIM(O.PRISON_CODE) OR TRIM(I.NOMIS_CDE_CODE) = TRIM(O.PRISON_CODE)),'[Not Recorded]') PRISON_NAME,
+            O.CRO, O.ETHNICITY, O.NATIONALITY, O.STATUS, DSS_UPDATED_DATE, SOURCE_CODE, RowsFound as ROWS_FOUND, 'false' as ALIAS_MATCHED
+          FROM
+            OFFLOC O
+          WHERE
+               O.OFFLOC_ID IN (SELECT offloc_id FROM PNC_NUMBER WHERE PNC_NUMBER IN (inPNC, SUBSTR(inPNC, 3))  )
+               OR
+               NVL(O.NOMIS_NUMBER,'----') = NVL(inNOMISNO,'++++')
+
+          ORDER BY
+          CASE inSORTBY
+            WHEN 'MATCH_SCORE DESC' THEN TO_CHAR
+            ( (CASE WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(inPNC,'-----') ||'%' THEN PNC_NUMBER_WEIGHTING
+                    WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(substr(inPNC,3),'-----') ||'%' THEN PNC_NUMBER_WEIGHTING
+                    ELSE 0 END) +
+              DECODE(NVL(O.NOMIS_NUMBER,'----'), NVL(inNOMISNO,'++++'),NOMIS_NUMBER_WEIGHTING,0) +
+              DECODE(O.DOB,inDOB,DOB_WEIGHTING,0) +
+              DECODE(O.SURNAME,inSURNAME,SURNAME_WEIGHTING,0)
+              )
+            WHEN 'PNC DESC' THEN GET_OFFLOC_PNCS(O.OFFLOC_ID)
+            WHEN 'CRO DESC' THEN O.CRO
+            WHEN 'SURNAME DESC' THEN O.SURNAME
+            WHEN 'FORENAME_1 DESC' THEN O.FORENAME_1
+            WHEN 'FORENAME_2 DESC' THEN O.FORENAME_2
+            WHEN 'DOB DESC' THEN SUBSTR(TO_CHAR(O.DOB),7,4) || SUBSTR(TO_CHAR(O.DOB),4,2) || SUBSTR(TO_CHAR(O.DOB),1,2)
+            WHEN 'GENDER DESC' THEN O.GENDER
+            WHEN 'NATIONALITY DESC' THEN O.NATIONALITY
+            WHEN 'ETHNICITY DESC' THEN O.ETHNICITY
+            WHEN 'PRISON_NUMBER DESC' THEN nvl(O.NOMIS_NUMBER, O.PRISON_NUMBER)
+            WHEN 'CRO DESC' THEN O.CRO
+            WHEN 'STATUS DESC' THEN O.STATUS
+          END DESC,
+
+
+          CASE inSORTBY
+            WHEN 'MATCH_SCORE DESC' THEN O.SURNAME || ', ' || NVL(O.NOMIS_NUMBER,O.PRISON_NUMBER) || ', ' || GET_OFFLOC_PNCS(O.OFFLOC_ID)
+            WHEN 'MATCH_SCORE' THEN TO_CHAR
+            ( (CASE WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(inPNC,'-----') ||'%' THEN PNC_NUMBER_WEIGHTING
+                    WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(substr(inPNC,3),'-----') ||'%' THEN PNC_NUMBER_WEIGHTING
+                    ELSE 0 END) +
+              DECODE(NVL(O.NOMIS_NUMBER,'----'), NVL(inNOMISNO,'++++'),NOMIS_NUMBER_WEIGHTING,0) +
+              DECODE(O.DOB,inDOB,DOB_WEIGHTING,0) +
+              DECODE(O.SURNAME,inSURNAME,SURNAME_WEIGHTING,0)
+            ) || O.SURNAME || ', ' || NVL(O.NOMIS_NUMBER,O.PRISON_NUMBER) || ', ' || GET_OFFLOC_PNCS(O.OFFLOC_ID)
+            WHEN 'PNC' THEN GET_OFFLOC_PNCS(O.OFFLOC_ID)
+            WHEN 'SURNAME' THEN O.SURNAME
+            WHEN 'FORENAME_1' THEN O.FORENAME_1
+            WHEN 'FORENAME_2' THEN O.FORENAME_2
+            WHEN 'DOB' THEN SUBSTR(TO_CHAR(O.DOB),7,4) || SUBSTR(TO_CHAR(O.DOB),4,2) || SUBSTR(TO_CHAR(O.DOB),1,2)
+            WHEN 'GENDER' THEN O.GENDER
+            WHEN 'NATIONALITY' THEN O.NATIONALITY
+            WHEN 'ETHNICITY' THEN O.ETHNICITY
+            WHEN 'PRISON_NUMBER' THEN NVL(O.NOMIS_NUMBER, O.PRISON_NUMBER)
+            WHEN 'CRO' THEN O.CRO
+            WHEN 'STATUS' THEN (CASE WHEN SUBSTR(O.STATUS,1,1) IN ('A','B','C','T','U') THEN 'Active' WHEN O.STATUS IS NULL THEN 'Unknown' WHEN O.STATUS = '' THEN 'Unknown' ELSE 'Inactive' END)
+          END ASC
+       ) WHERE ROWNUM <= inMAXRESULTS;
+
+  ELSE
+     -- Stage 2.  If no records found above, search on DOB and Surname
+     OPEN STAGE2;
+     FETCH STAGE2 INTO RowsFound;
+          OPEN lCursor FOR
+          SELECT DISTINCT MATCH_SCORE, OFFLOC_ID, SURNAME, FORENAME_1, FORENAME_2, DOB, GENDER, PNC, PRISON_NUMBER, NOMIS_NUMBER, PRISON_CODE, PRISON_NAME, CRO, ETHNICITY, NATIONALITY, STATUS, DSS_UPDATED_DATE, SOURCE_CODE, ROWS_FOUND, ALIAS_MATCHED, ACTUAL_RELEASE_DATE
+          FROM
+          (SELECT
+            ( (CASE WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(inPNC,'-----') ||'%' THEN PNC_NUMBER_WEIGHTING
+                    WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(substr(inPNC,3),'-----') ||'%' THEN PNC_NUMBER_WEIGHTING
+                    ELSE 0 END) +
+              DECODE(NVL(O.NOMIS_NUMBER,'----'), NVL(inNOMISNO,'++++'),NOMIS_NUMBER_WEIGHTING,0) +
+              DECODE(O.DOB,inDOB,DOB_WEIGHTING,0) +
+              DECODE(O.SURNAME,inSURNAME,SURNAME_WEIGHTING,0)
+              ) MATCH_SCORE,
+            O.OFFLOC_ID, O.SURNAME, O.FORENAME_1, O.FORENAME_2, O.DOB, O.ACTUAL_RELEASE_DATE, DECODE(SUBSTR(NVL(O.GENDER,''),1,1),'M','Male','F','Female','','[Not Recorded]','[Not Known]') GENDER, GET_OFFLOC_PNCS(O.OFFLOC_ID) PNC , O.PRISON_NUMBER, O.NOMIS_NUMBER, O.PRISON_CODE,
+            NVL((SELECT I.INSTITUTION_NAME FROM R_INSTITUTION I WHERE TRIM(I.CODE) = TRIM(O.PRISON_CODE) OR TRIM(I.NOMIS_CDE_CODE) = TRIM(O.PRISON_CODE)),'[Not Recorded]') PRISON_NAME,
+            O.CRO, O.ETHNICITY, O.NATIONALITY, O.STATUS, DSS_UPDATED_DATE, SOURCE_CODE, RowsFound as ROWS_FOUND, 'false' as ALIAS_MATCHED
+              FROM
+                OFFLOC O
+              WHERE
+                UPPER(O.SURNAME) = UPPER(inSURNAME) and
+                O.DOB = inDOB
+             ORDER BY
+          CASE inSORTBY
+            WHEN 'MATCH_SCORE DESC' THEN TO_CHAR
+            ( (CASE WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(inPNC,'-----') ||'%' THEN PNC_NUMBER_WEIGHTING
+                    WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(substr(inPNC,3),'-----') ||'%' THEN PNC_NUMBER_WEIGHTING
+                    ELSE 0 END) +
+              DECODE(NVL(O.NOMIS_NUMBER,'----'), NVL(inNOMISNO,'++++'),NOMIS_NUMBER_WEIGHTING,0) +
+              DECODE(O.DOB,inDOB,DOB_WEIGHTING,0) +
+              DECODE(O.SURNAME,inSURNAME,SURNAME_WEIGHTING,0)
+              )
+            WHEN 'PNC DESC' THEN GET_OFFLOC_PNCS(O.OFFLOC_ID)
+            WHEN 'CRO DESC' THEN O.CRO
+            WHEN 'SURNAME DESC' THEN O.SURNAME
+            WHEN 'FORENAME_1 DESC' THEN O.FORENAME_1
+            WHEN 'FORENAME_2 DESC' THEN O.FORENAME_2
+            WHEN 'DOB DESC' THEN SUBSTR(TO_CHAR(O.DOB),7,4) || SUBSTR(TO_CHAR(O.DOB),4,2) || SUBSTR(TO_CHAR(O.DOB),1,2)
+            WHEN 'GENDER DESC' THEN O.GENDER
+            WHEN 'NATIONALITY DESC' THEN O.NATIONALITY
+            WHEN 'ETHNICITY DESC' THEN O.ETHNICITY
+            WHEN 'PRISON_NUMBER DESC' THEN nvl(O.NOMIS_NUMBER, O.PRISON_NUMBER)
+            WHEN 'CRO DESC' THEN O.CRO
+            WHEN 'STATUS DESC' THEN O.STATUS
+          END DESC,
+
+
+          CASE inSORTBY
+            WHEN 'MATCH_SCORE DESC' THEN O.SURNAME || ', ' || NVL(O.NOMIS_NUMBER,O.PRISON_NUMBER) || ', ' || GET_OFFLOC_PNCS(O.OFFLOC_ID)
+            WHEN 'MATCH_SCORE' THEN TO_CHAR
+            ( (CASE WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(inPNC,'-----') ||'%' THEN PNC_NUMBER_WEIGHTING
+                    WHEN GET_OFFLOC_PNCS(O.OFFLOC_ID) LIKE '%' || nvl(substr(inPNC,3),'-----') ||'%' THEN PNC_NUMBER_WEIGHTING
+                    ELSE 0 END) +
+              DECODE(NVL(O.NOMIS_NUMBER,'----'), NVL(inNOMISNO,'++++'),NOMIS_NUMBER_WEIGHTING,0) +
+              DECODE(O.DOB,inDOB,DOB_WEIGHTING,0) +
+              DECODE(O.SURNAME,inSURNAME,SURNAME_WEIGHTING,0)
+            ) || O.SURNAME || ', ' || NVL(O.NOMIS_NUMBER,O.PRISON_NUMBER) || ', ' || GET_OFFLOC_PNCS(O.OFFLOC_ID)
+            WHEN 'PNC' THEN GET_OFFLOC_PNCS(O.OFFLOC_ID)
+            WHEN 'SURNAME' THEN O.SURNAME
+            WHEN 'FORENAME_1' THEN O.FORENAME_1
+            WHEN 'FORENAME_2' THEN O.FORENAME_2
+            WHEN 'DOB' THEN SUBSTR(TO_CHAR(O.DOB),7,4) || SUBSTR(TO_CHAR(O.DOB),4,2) || SUBSTR(TO_CHAR(O.DOB),1,2)
+            WHEN 'GENDER' THEN O.GENDER
+            WHEN 'NATIONALITY' THEN O.NATIONALITY
+            WHEN 'ETHNICITY' THEN O.ETHNICITY
+            WHEN 'PRISON_NUMBER' THEN NVL(O.NOMIS_NUMBER, O.PRISON_NUMBER)
+            WHEN 'CRO' THEN O.CRO
+            WHEN 'STATUS' THEN (CASE WHEN SUBSTR(O.STATUS,1,1) IN ('A','B','C','T','U') THEN 'Active' WHEN O.STATUS IS NULL THEN 'Unknown' WHEN O.STATUS = '' THEN 'Unknown' ELSE 'Inactive' END)
+          END ASC
+
+
+       ) WHERE ROWNUM <= inMAXRESULTS;
+     END IF; --open stage1
+END;
+/
+
