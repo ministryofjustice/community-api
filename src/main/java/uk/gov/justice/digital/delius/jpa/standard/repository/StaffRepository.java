@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface StaffRepository extends JpaRepository<Staff, Long> {
-    Staff findByStaffId(Long staffId);
+    Optional<Staff> findByStaffId(Long staffId);
     Optional<Staff> findByOfficerCode(String officerCode);
 }

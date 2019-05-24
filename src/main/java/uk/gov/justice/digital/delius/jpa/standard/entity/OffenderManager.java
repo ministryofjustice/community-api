@@ -86,6 +86,6 @@ public class OffenderManager {
     private ResponsibleOfficer responsibleOfficer;
 
     @OneToOne
-    @JoinColumn(name = "OFFENDER_ID", referencedColumnName = "OFFENDER_ID")
+    @JoinColumn(name = "OFFENDER_ID", referencedColumnName = "OFFENDER_ID", insertable = false, updatable = false)
     private Offender managedOffender;
 }

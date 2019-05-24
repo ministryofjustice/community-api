@@ -53,8 +53,8 @@ public class PrisonOffenderManager {
 
     @OneToOne
     @JoinColumns({
-            @JoinColumn(name = "OFFENDER_MANAGER_ID", referencedColumnName = "PRISON_OFFENDER_MANAGER_ID"),
-            @JoinColumn(name = "OFFENDER_ID", referencedColumnName = "OFFENDER_ID")
+            @JoinColumn(name = "PRISON_OFFENDER_MANAGER_ID", referencedColumnName = "PRISON_OFFENDER_MANAGER_ID", insertable = false, updatable = false),
+            @JoinColumn(name = "OFFENDER_ID", referencedColumnName = "OFFENDER_ID", insertable = false, updatable = false)
     })
     private ResponsibleOfficer responsibleOfficer;
 
