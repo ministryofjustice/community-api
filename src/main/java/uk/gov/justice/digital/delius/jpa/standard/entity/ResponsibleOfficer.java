@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
@@ -17,7 +18,7 @@ import java.time.LocalDate;
 @Builder
 @Entity
 @Table(name = "RESPONSIBLE_OFFICER")
-public class ResponsibleOfficer {
+public class ResponsibleOfficer implements Serializable {
 
     @Id
     @Column(name = "RESPONSIBLE_OFFICER_ID")
