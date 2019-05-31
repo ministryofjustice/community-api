@@ -47,7 +47,10 @@ SPRING_PROFILES_ACTIVE=dev ./gradlew bootRun
 
 H2 Web console - <http://localhost:8080/api/h2-console>
 
-JDBC URL: ```jdbc:h2:mem:testdb``` 
+JDBC URL: ```jdbc:h2:mem:testdb;Mode=Oracle``` 
+USER: sa
+PASSWORD: <blank>
+
 
 ### Additional configuration
 The application is configured with conventional Spring parameters.

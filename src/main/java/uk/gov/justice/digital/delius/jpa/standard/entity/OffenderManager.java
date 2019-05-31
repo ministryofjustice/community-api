@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.List;
 
-@EqualsAndHashCode(of = "offenderManagerId")
+@EqualsAndHashCode(of = {"offenderManagerId", "offenderId" , "allocationDate"})
 @ToString(exclude = {"team","staff","partitionArea","providerTeam","probationArea", "responsibleOfficer","managedOffender" ,"officer"})
 @Data
 @NoArgsConstructor
@@ -79,7 +79,8 @@ public class OffenderManager {
 
     @JoinColumns({
             @JoinColumn(name = "OFFENDER_MANAGER_ID", referencedColumnName = "OFFENDER_MANAGER_ID", insertable = false, updatable = false),
-            @JoinColumn(name = "OFFENDER_ID", referencedColumnName = "OFFENDER_ID", insertable = false, updatable = false)
+            @JoinColumn(name = "OFFENDER_ID",
+                    referencedColumnName = "OFFENDER_ID", insertable = false, updatable = false)
     })
     @OneToOne
     private ResponsibleOfficer responsibleOfficer;

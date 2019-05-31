@@ -72,7 +72,7 @@ public class ManagedOffenderAPITest {
                         .as(ManagedOffender[].class);
 
         List<ManagedOffender> mos = Arrays.asList(managedOffenders);
-        assertThat(mos).hasSize(6);
+        assertThat(mos).hasSize(3);
     }
 
     @Test
@@ -90,7 +90,7 @@ public class ManagedOffenderAPITest {
                         .as(ManagedOffender[].class);
 
         List<ManagedOffender> mos = Arrays.asList(managedOffenders);
-        assertThat(mos).hasSize(6);
+        assertThat(mos).hasSize(3);
     }
 
     @Test

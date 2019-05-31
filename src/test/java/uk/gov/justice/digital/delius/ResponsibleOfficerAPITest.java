@@ -71,7 +71,7 @@ public class ResponsibleOfficerAPITest {
                 .as(ResponsibleOfficer[].class);
 
         List<ResponsibleOfficer> listOfRos = Arrays.asList(responsibleOfficers);
-        assertThat(listOfRos).hasSize(2);
+        assertThat(listOfRos).hasSize(1);
     }
 
     @Test
@@ -89,7 +89,7 @@ public class ResponsibleOfficerAPITest {
                 .as(ResponsibleOfficer[].class);
 
         List<ResponsibleOfficer> listOfRos = Arrays.asList(responsibleOfficers);
-        assertThat(listOfRos).hasSize(2);
+        assertThat(listOfRos).hasSize(1);
     }
 
     @Test
