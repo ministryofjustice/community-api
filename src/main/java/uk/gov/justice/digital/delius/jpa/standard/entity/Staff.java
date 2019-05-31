@@ -1,13 +1,12 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
 
+@EqualsAndHashCode(of = "staffId")
+@ToString(exclude = {"offenderManagers", "prisonOffenderManagers"})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
