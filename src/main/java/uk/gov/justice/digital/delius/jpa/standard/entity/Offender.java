@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
 import lombok.*;
-import org.hibernate.annotations.Fetch;
 
 import javax.persistence.*;
 import java.sql.Blob;
@@ -188,10 +187,10 @@ public class Offender {
     @JoinColumn(name = "PARTITION_AREA_ID")
     private PartitionArea partitionArea;
 
-    @OneToMany(mappedBy = "offenderId", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "offenderId")
     private List<OffenderManager> offenderManagers;
 
-    @OneToMany(mappedBy = "offenderId", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "offenderId")
     private List<PrisonOffenderManager> prisonOffenderManagers;
 
 }

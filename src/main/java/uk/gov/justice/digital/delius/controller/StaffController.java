@@ -27,13 +27,11 @@ import static org.springframework.http.HttpStatus.OK;
 @Api(tags = "Staff")
 public class StaffController
 {
-    private StaffService staffService;
-    private Jwt jwt;
+    private final StaffService staffService;
 
     @Autowired
-    public StaffController(StaffService staffService, Jwt jwt) {
+    public StaffController(StaffService staffService) {
         this.staffService = staffService;
-        this.jwt = jwt;
     }
 
     @RequestMapping(value = "/staff/staffCode/{staffCode}/managedOffenders", method = RequestMethod.GET)
@@ -50,22 +48,5 @@ public class StaffController
         return staffService.getManagedOffendersByStaffCode(staffCode, current)
                 .map(managedOffenders -> new ResponseEntity<>(managedOffenders ,OK))
                 .orElse(new ResponseEntity<>(NOT_FOUND));
-
-        // TODO: Check this - only NOT_FOUND if the staffCode was not an existing officer
-    }
-
-    @ExceptionHandler(HttpClientErrorException.class)
-    public ResponseEntity<String> restClientError(HttpClientErrorException e) {
-        return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
-    }
-
-    @ExceptionHandler(HttpServerErrorException.class)
-    public ResponseEntity<String> restServerError(HttpServerErrorException e) {
-        return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
-    }
-
-    @ExceptionHandler(NoSuchUserException.class)
-    public ResponseEntity<String> noSuchUser(NoSuchUserException e) {
-        return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
     }
 }

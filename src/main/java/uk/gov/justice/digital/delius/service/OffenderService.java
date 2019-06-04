@@ -137,9 +137,9 @@ public class OffenderService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<List<ResponsibleOfficer>> getResponsibleOfficersForNomsNumber(String nomsNumber, String current) {
+    public Optional<List<ResponsibleOfficer>> getResponsibleOfficersForNomsNumber(String nomsNumber, boolean current) {
         return offenderRepository.findByNomsNumber(nomsNumber).map(
-                offender -> offenderTransformer.responsibleOfficersOf(offender, Boolean.getBoolean(current)));
+                offender -> offenderTransformer.responsibleOfficersOf(offender, current));
 
     }
 }

@@ -376,7 +376,7 @@ public class OffenderController {
     @JwtValidation
     public ResponseEntity<List<ResponsibleOfficer>> getResponsibleOfficersByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
                                                                                        final @PathVariable("nomsNumber") String nomsNumber,
-                                                                                       final @RequestParam(name="current", required=false, defaultValue="false") String current) {
+                                                                                       final @RequestParam(name="current", required=false, defaultValue="false") boolean current) {
 
         return offenderService.getResponsibleOfficersForNomsNumber(nomsNumber, current)
                    .map(responsibleOfficer -> new ResponseEntity<>(responsibleOfficer ,OK))
@@ -390,21 +390,4 @@ public class OffenderController {
     private ResponseEntity<OffenderDetailSummary> offenderDetailSummaryNotFound() {
         return new ResponseEntity<>(OffenderDetailSummary.builder().build(), NOT_FOUND);
     }
-
-
-    @ExceptionHandler(HttpClientErrorException.class)
-    public ResponseEntity<String> restClientError(HttpClientErrorException e) {
-        return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
-    }
-
-    @ExceptionHandler(HttpServerErrorException.class)
-    public ResponseEntity<String> restServerError(HttpServerErrorException e) {
-        return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
-    }
-
-    @ExceptionHandler(NoSuchUserException.class)
-    public ResponseEntity<String> noSuchUser(NoSuchUserException e) {
-        return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
-    }
-
 }
