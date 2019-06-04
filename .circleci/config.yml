@@ -36,6 +36,10 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
+      # Check which services/ports are already bound to ports
+      - run: sudo apt install nmap -y
+      - run: nmap -v -A localhost
+
       - run: gradle dependencies
 
       - save_cache:
