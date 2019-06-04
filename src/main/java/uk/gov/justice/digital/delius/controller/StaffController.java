@@ -49,4 +49,19 @@ public class StaffController
                 .map(managedOffenders -> new ResponseEntity<>(managedOffenders ,OK))
                 .orElse(new ResponseEntity<>(NOT_FOUND));
     }
+
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ResponseEntity<String> restClientError(HttpClientErrorException e) {
+        return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
+    }
+
+    @ExceptionHandler(HttpServerErrorException.class)
+    public ResponseEntity<String> restServerError(HttpServerErrorException e) {
+        return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
+    }
+
+    @ExceptionHandler(NoSuchUserException.class)
+    public ResponseEntity<String> noSuchUser(NoSuchUserException e) {
+        return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
+    }
 }
