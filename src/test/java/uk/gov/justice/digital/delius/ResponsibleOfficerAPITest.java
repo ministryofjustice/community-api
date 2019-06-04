@@ -16,7 +16,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.jwt.Jwt;
-import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.user.UserData;
 
 import java.util.Arrays;
@@ -36,9 +35,6 @@ public class ResponsibleOfficerAPITest {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    OffenderService offenderService;
 
     @Autowired
     private ObjectMapper objectMapper;

@@ -8,13 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import uk.gov.justice.digital.delius.data.api.AccessLimitation;
 import uk.gov.justice.digital.delius.data.api.ManagedOffender;
-import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
-import uk.gov.justice.digital.delius.service.NoSuchUserException;
 import uk.gov.justice.digital.delius.service.StaffService;
 
 import java.util.List;
@@ -48,20 +44,5 @@ public class StaffController
         return staffService.getManagedOffendersByStaffCode(staffCode, current)
                 .map(managedOffenders -> new ResponseEntity<>(managedOffenders ,OK))
                 .orElse(new ResponseEntity<>(NOT_FOUND));
-    }
-
-    @ExceptionHandler(HttpClientErrorException.class)
-    public ResponseEntity<String> restClientError(HttpClientErrorException e) {
-        return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
-    }
-
-    @ExceptionHandler(HttpServerErrorException.class)
-    public ResponseEntity<String> restServerError(HttpServerErrorException e) {
-        return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
-    }
-
-    @ExceptionHandler(NoSuchUserException.class)
-    public ResponseEntity<String> noSuchUser(NoSuchUserException e) {
-        return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
     }
 }
