@@ -3,6 +3,8 @@ spring:
     url: 'jdbc:oracle:thin:@192.168.56.101:1521:DNDA'
     username: 'DELIUS_POOL'
     password: 'DELIUS_POOL_PASSWORD'
+    hikari:
+      maximum-pool-size: 50
   jpa:
     properties:
       hibernate:
