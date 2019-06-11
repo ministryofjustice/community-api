@@ -1,22 +1,14 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Blob;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@EqualsAndHashCode(exclude = {"offenderManagers", "prisonOffenderManagers"})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -195,8 +187,10 @@ public class Offender {
     @JoinColumn(name = "PARTITION_AREA_ID")
     private PartitionArea partitionArea;
 
-    @JoinColumn(name = "OFFENDER_ID")
-    @OneToMany
+    @OneToMany(mappedBy = "offenderId")
     private List<OffenderManager> offenderManagers;
+
+    @OneToMany(mappedBy = "offenderId")
+    private List<PrisonOffenderManager> prisonOffenderManagers;
 
 }

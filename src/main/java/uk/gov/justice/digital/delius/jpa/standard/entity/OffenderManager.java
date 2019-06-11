@@ -1,19 +1,13 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
 
+@EqualsAndHashCode(of = {"offenderManagerId", "offenderId" , "allocationDate"})
+@ToString(exclude = {"team","staff","partitionArea","providerTeam","probationArea", "responsibleOfficer","managedOffender" ,"officer"})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -83,4 +77,15 @@ public class OffenderManager {
     @OneToOne
     private StandardReference allocationReason;
 
+    @JoinColumns({
+            @JoinColumn(name = "OFFENDER_MANAGER_ID", referencedColumnName = "OFFENDER_MANAGER_ID", insertable = false, updatable = false),
+            @JoinColumn(name = "OFFENDER_ID",
+                    referencedColumnName = "OFFENDER_ID", insertable = false, updatable = false)
+    })
+    @OneToOne
+    private ResponsibleOfficer responsibleOfficer;
+
+    @OneToOne
+    @JoinColumn(name = "OFFENDER_ID", referencedColumnName = "OFFENDER_ID", insertable = false, updatable = false)
+    private Offender managedOffender;
 }

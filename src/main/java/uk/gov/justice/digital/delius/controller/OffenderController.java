@@ -13,26 +13,11 @@ import org.springframework.hateoas.Link;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import uk.gov.justice.digital.delius.data.api.AccessLimitation;
-import uk.gov.justice.digital.delius.data.api.Count;
-import uk.gov.justice.digital.delius.data.api.DocumentMeta;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
-import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
-import uk.gov.justice.digital.delius.data.api.OffenderIdsResource;
-import uk.gov.justice.digital.delius.data.api.OffenderManager;
+import org.springframework.web.bind.annotation.*;
+import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
 import uk.gov.justice.digital.delius.service.AlfrescoService;
-import uk.gov.justice.digital.delius.service.NoSuchUserException;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.UserService;
 
@@ -44,9 +29,7 @@ import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @Slf4j
@@ -372,6 +355,22 @@ public class OffenderController {
         return alfrescoService.getDocument(documentId);
     }
 
+    @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/responsibleOfficers", method = RequestMethod.GET)
+    @ApiResponses(value = {
+                      @ApiResponse(code = 200, message = "A list of responsible officers for an offender", response = ResponsibleOfficer.class, responseContainer = "List"),
+                      @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+                      @ApiResponse(code = 403, message = "The requesting user was restricted from access", response = AccessLimitation.class),
+                      @ApiResponse(code = 404, message = "The requested offender was not found.")
+            })
+    @JwtValidation
+    public ResponseEntity<List<ResponsibleOfficer>> getResponsibleOfficersByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
+                                                                                       final @PathVariable("nomsNumber") String nomsNumber,
+                                                                                       final @RequestParam(name="current", required=false, defaultValue="false") boolean current) {
+
+        return offenderService.getResponsibleOfficersForNomsNumber(nomsNumber, current)
+                   .map(responsibleOfficer -> new ResponseEntity<>(responsibleOfficer ,OK))
+                  .orElse(new ResponseEntity<>(NOT_FOUND));
+    }
 
     private ResponseEntity<OffenderDetail> offenderDetailNotFound() {
         return new ResponseEntity<>(OffenderDetail.builder().build(), NOT_FOUND);
@@ -380,21 +379,4 @@ public class OffenderController {
     private ResponseEntity<OffenderDetailSummary> offenderDetailSummaryNotFound() {
         return new ResponseEntity<>(OffenderDetailSummary.builder().build(), NOT_FOUND);
     }
-
-
-    @ExceptionHandler(HttpClientErrorException.class)
-    public ResponseEntity<String> restClientError(HttpClientErrorException e) {
-        return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
-    }
-
-    @ExceptionHandler(HttpServerErrorException.class)
-    public ResponseEntity<String> restServerError(HttpServerErrorException e) {
-        return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
-    }
-
-    @ExceptionHandler(NoSuchUserException.class)
-    public ResponseEntity<String> noSuchUser(NoSuchUserException e) {
-        return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
-    }
-
 }

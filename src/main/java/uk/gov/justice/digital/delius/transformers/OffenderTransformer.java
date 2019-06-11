@@ -4,29 +4,18 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.justice.digital.delius.data.api.Address;
-import uk.gov.justice.digital.delius.data.api.ContactDetails;
-import uk.gov.justice.digital.delius.data.api.ContactDetailsSummary;
-import uk.gov.justice.digital.delius.data.api.PreviousConviction;
-import uk.gov.justice.digital.delius.data.api.Human;
-import uk.gov.justice.digital.delius.data.api.IDs;
-import uk.gov.justice.digital.delius.data.api.KeyValue;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
-import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
-import uk.gov.justice.digital.delius.data.api.OffenderLanguages;
 import uk.gov.justice.digital.delius.data.api.OffenderManager;
-import uk.gov.justice.digital.delius.data.api.OffenderProfile;
-import uk.gov.justice.digital.delius.data.api.PhoneNumber;
+import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.data.api.Team;
+import uk.gov.justice.digital.delius.data.api.*;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Disability;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -315,5 +304,169 @@ public class OffenderTransformer {
                 .build();
     }
 
+    private ResponsibleOfficer convertToResponsibleOfficer(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager om, Offender offender) {
+
+       ResponsibleOfficer ro = uk.gov.justice.digital.delius.data.api.ResponsibleOfficer
+                            .builder()
+                            .nomsNumber(offender.getNomsNumber())
+                            .responsibleOfficerId(isCurrentRo(om.getResponsibleOfficer()) ? om.getResponsibleOfficer().getResponsibleOfficerId() : null)
+                            .offenderManagerId(om.getOffenderManagerId())
+                            .prisonOffenderManagerId(null)
+                            .staffCode(Optional.ofNullable(om.getStaff()).map(staff -> staff.getOfficerCode()).orElse(null))
+                            .surname(Optional.ofNullable(om.getStaff()).map(staff -> staff.getSurname()).orElse(null))
+                            .forenames(combinedMiddleNamesOf(om.getStaff().getForename(), om.getStaff().getForname2()).stream().collect(Collectors.joining(" ")))
+                            .providerTeamCode(Optional.ofNullable(om.getProviderTeam()).map(team -> team.getCode()).orElse(null))
+                            .providerTeamDescription(Optional.ofNullable(om.getProviderTeam()).map(team -> team.getName()).orElse(null))
+                            .lduCode(Optional.ofNullable(om.getTeam()).map(team -> team.getLocalDeliveryUnit().getCode()).orElse(null))
+                            .lduDescription(Optional.ofNullable(om.getTeam()).map(team -> team.getLocalDeliveryUnit().getDescription()).orElse(null))
+                            .probationAreaCode(Optional.ofNullable(om.getProbationArea()).map(pa -> pa.getCode()).orElse(null))
+                            .probationAreaDescription(Optional.ofNullable(om.getProbationArea()).map(pa -> pa.getDescription()).orElse(null))
+                            .isCurrentRo(isCurrentRo(om.getResponsibleOfficer()))
+                            .isCurrentOm(isCurrentManager(om.getActiveFlag(), om.getEndDate()))
+                            .isCurrentPom(false)
+                            .omStartDate(localDateOf(om.getAllocationDate()))
+                            .omEndDate(localDateOf(om.getEndDate()))
+                            .build();
+
+        return ro;
+    }
+
+    private ResponsibleOfficer convertToResponsibleOfficer(uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager pom, Offender offender) {
+
+        ResponsibleOfficer ro = uk.gov.justice.digital.delius.data.api.ResponsibleOfficer
+                        .builder()
+                        .nomsNumber(offender.getNomsNumber())
+                        .responsibleOfficerId((isCurrentRo(pom.getResponsibleOfficer()) ? pom.getResponsibleOfficer().getResponsibleOfficerId() : null))
+                        .prisonOffenderManagerId(pom.getPrisonOffenderManagerId())
+                        .staffCode(Optional.ofNullable(pom.getStaff()).map(staff -> staff.getOfficerCode()).orElse(null))
+                        .surname(Optional.ofNullable(pom.getStaff()).map(staff -> staff.getSurname()).orElse(null))
+                        .forenames(combinedMiddleNamesOf(pom.getStaff().getForename(), pom.getStaff().getForname2()).stream().collect(Collectors.joining(" ")))
+                        .providerTeamCode(Optional.ofNullable(pom.getTeam()).map(team -> team.getCode()).orElse(null))
+                        .providerTeamDescription(Optional.ofNullable(pom.getTeam()).map(team -> team.getDescription()).orElse(null))
+                        .lduCode(Optional.ofNullable(pom.getTeam()).map(team -> team.getLocalDeliveryUnit().getCode()).orElse(null))
+                        .lduDescription(Optional.ofNullable(pom.getTeam()).map(team -> team.getLocalDeliveryUnit().getDescription()).orElse(null))
+                        .probationAreaCode(Optional.ofNullable(pom.getProbationArea()).map(pa -> pa.getCode()).orElse(null))
+                        .probationAreaDescription(Optional.ofNullable(pom.getProbationArea()).map(pa -> pa.getDescription()).orElse(null))
+                        .isCurrentRo(isCurrentRo(pom.getResponsibleOfficer()))
+                        .isCurrentOm(false)
+                        .isCurrentPom(isCurrentManager(pom.getActiveFlag(), pom.getEndDate()))
+                        .omStartDate(null)
+                        .omEndDate(null)
+                        .build();
+
+        return ro;
+    }
+
+    public List<uk.gov.justice.digital.delius.data.api.ResponsibleOfficer> responsibleOfficersOf(Offender offender, boolean current) {
+
+        List<ResponsibleOfficer> responsibleOfficers = new ArrayList<>();
+
+        if (offender.getOffenderManagers() != null && !offender.getOffenderManagers().isEmpty()) {
+            responsibleOfficers.addAll(
+                    offender.getOffenderManagers().stream()
+                    .map(offMgr -> convertToResponsibleOfficer(offMgr, offender))
+                    .collect(Collectors.toList()));
+        }
+
+        if (offender.getPrisonOffenderManagers() != null && !offender.getPrisonOffenderManagers().isEmpty()) {
+            responsibleOfficers.addAll(
+                    offender.getPrisonOffenderManagers().stream()
+                    .map(prisonOffenderManager -> convertToResponsibleOfficer(prisonOffenderManager, offender))
+                    .collect(Collectors.toList()));
+        }
+
+        if (current && !responsibleOfficers.isEmpty()) {
+            // Filter the list to only those officers who hold a currently active role for this offender
+            return responsibleOfficers
+                    .stream()
+                    .filter(ro -> (ro.isCurrentOm() || ro.isCurrentPom() || ro.isCurrentRo()))
+                    .collect(Collectors.toList());
+        }
+
+        return responsibleOfficers;
+    }
+
+    private ManagedOffender convertToManagedOffender(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager om, Staff staff) {
+
+        ManagedOffender mo = uk.gov.justice.digital.delius.data.api.ManagedOffender.builder()
+                .staffCode(staff.getOfficerCode())
+                .offenderId(om.getOffenderId())
+                .nomsNumber(Optional.ofNullable(om.getManagedOffender()).map(o -> o.getNomsNumber()).orElse(null))
+                .crnNumber(Optional.ofNullable(om.getManagedOffender()).map(o -> o.getCrn()).orElse(null))
+                .offenderSurname(Optional.ofNullable(om.getManagedOffender()).map(o -> o.getSurname()).orElse(null))
+                .isCurrentRo(isCurrentRo(om.getResponsibleOfficer()))
+                .isCurrentOm(isCurrentManager(om.getActiveFlag(), om.getEndDate()))
+                .isCurrentPom(false)
+                .omStartDate(localDateOf(om.getAllocationDate()))
+                .omEndDate(localDateOf(om.getEndDate()))
+                .build();
+
+        return mo;
+    }
+
+    private ManagedOffender convertToManagedOffender(uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager pom, Staff staff) {
+
+         ManagedOffender mo = uk.gov.justice.digital.delius.data.api.ManagedOffender.builder()
+                .staffCode(staff.getOfficerCode())
+                .offenderId(pom.getOffenderId())
+                .nomsNumber(Optional.ofNullable(pom.getManagedOffender()).map(o -> o.getNomsNumber()).orElse(null))
+                .crnNumber(Optional.ofNullable(pom.getManagedOffender()).map(o -> o.getCrn()).orElse(null))
+                .offenderSurname(Optional.ofNullable(pom.getManagedOffender()).map(o -> o.getSurname()).orElse(null))
+                .isCurrentRo(isCurrentRo(pom.getResponsibleOfficer()))
+                .isCurrentOm(false)
+                .isCurrentPom(isCurrentManager(pom.getActiveFlag(),pom.getEndDate()))
+                .omStartDate(null)
+                .omEndDate(null)
+                .build();
+
+        return mo;
+    }
+
+    public List<uk.gov.justice.digital.delius.data.api.ManagedOffender> managedOffenderOf(Staff staff, boolean current) {
+
+         List<ManagedOffender> managedOffenders = new ArrayList<>();
+
+        if (staff.getOffenderManagers() != null && !staff.getOffenderManagers().isEmpty()) {
+            managedOffenders.addAll(
+                    staff.getOffenderManagers().stream()
+                            .map(offenderManager -> convertToManagedOffender(offenderManager, staff))
+                            .collect(Collectors.toList()));
+        }
+
+        if (staff.getPrisonOffenderManagers() != null && !staff.getPrisonOffenderManagers().isEmpty()) {
+            managedOffenders.addAll(
+                    staff.getPrisonOffenderManagers().stream()
+                    .map(prisonOffenderManager -> convertToManagedOffender(prisonOffenderManager, staff))
+                    .collect(Collectors.toList()));
+        }
+
+        if (current && !managedOffenders.isEmpty()) {
+
+            // Filter the list of managed offenders to only those which hold currently active OM, POM or RO roles
+            return managedOffenders
+                    .stream()
+                    .filter(mo -> (mo.isCurrentOm() || mo.isCurrentPom() || mo.isCurrentRo()))
+                    .collect(Collectors.toList());
+        }
+
+        return managedOffenders;
+    }
+
+
+    private boolean isCurrentRo(uk.gov.justice.digital.delius.jpa.standard.entity.ResponsibleOfficer ro) {
+        boolean result = false;
+        if (ro != null && ro.getEndDate() == null) {
+            result = true;
+        }
+        return result;
+    }
+
+    private boolean isCurrentManager(Long activeFlag, Timestamp endDate) {
+        boolean result = false;
+        if (activeFlag.intValue() == 1 && endDate == null) {
+            result = true;
+        }
+        return result;
+    }
 
 }
