@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class DeliusOffenderAPI {
 
     public static void main(String[] args) {
+        System.setProperty("hikaricp.configurationFile", "/hikari.properties");
         SpringApplication.run(DeliusOffenderAPI.class, args);
     }
 
