@@ -90,3 +90,15 @@ curl -X GET http://localhost:8080/api/info
 ```
 curl -X GET http://localhost:8080/api/health
 ```
+
+### Application Ping
+```
+curl -X GET http://localhost:8080/api/ping
+```
+## Health
+
+- `api/ping`: will respond `pong` to all requests.  This should be used by dependent systems to check connectivity to whereabouts,
+rather than calling the `api/health` endpoint.
+- `api/health`: provides information about the application health and its dependencies.  This should only be used
+by whereabouts health monitoring (e.g. pager duty) and not other systems who wish to find out the state of whereabouts.
+- `api/info`: provides information about the version of deployed application.
