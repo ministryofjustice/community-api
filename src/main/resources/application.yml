@@ -36,4 +36,7 @@ alfresco:
   X-DocRepository-Remote-User: 'N00'
   X-DocRepository-Real-Remote-User: 'Smith,John'
 
-logging.level.uk.gov: INFO
+logging:
+  level:
+    uk:
+      gov: INFO
