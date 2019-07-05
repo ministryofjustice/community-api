@@ -40,3 +40,8 @@ logging:
   level:
     uk:
       gov: INFO
+
+delius:
+  ldap:
+    users:
+      base: "cn=Users,dc=moj,dc=com"

@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.ldap.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.core.DirContextAdapter;
@@ -21,6 +22,8 @@ public class LdapRepository {
 
     private final LdapTemplate ldapTemplate;
     private final ContextMapper<Map<String, String>> contextMapper;
+    @Value("${delius.ldap.users.base}")
+    private String ldapUserBase;
 
     @Autowired
     public LdapRepository(LdapTemplate ldapTemplate) {
@@ -54,5 +57,9 @@ public class LdapRepository {
 
     public List<Map<String, String>> searchByFieldAndValue(String field, String value) {
         return ldapTemplate.search(query().where(field).is(value), contextMapper);
+    }
+
+    public boolean authenticateDeliusUser(String user, String password) {
+        return ldapTemplate.authenticate(ldapUserBase, "(uid=" + user + ")", password);
     }
 }
