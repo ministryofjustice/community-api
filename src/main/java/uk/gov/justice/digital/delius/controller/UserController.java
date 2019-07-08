@@ -5,12 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.digital.delius.data.api.UserAndLdap;
+import uk.gov.justice.digital.delius.data.api.UserDetails;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
 import uk.gov.justice.digital.delius.service.UserService;
@@ -21,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
@@ -63,5 +61,11 @@ public class UserController {
         return new ResponseEntity<>(ldapRepository.searchByFieldAndValue(field, value), OK);
     }
 
+    @RequestMapping(value = "/users/{username}/", method = RequestMethod.GET)
+    public ResponseEntity<UserDetails> findUser(final @PathVariable("username") String username) {
+        return userService.getUserDetails(username).map(userDetails -> new ResponseEntity<>(userDetails, OK))
+                .orElse(new ResponseEntity<>(NOT_FOUND));
+
+    }
 
 }
