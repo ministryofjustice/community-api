@@ -77,7 +77,7 @@ public class LdapRepository {
                     val roles = ldapTemplate
                             .search(
                                     query()
-                                            .base(String.format("cn=%s,cn=Users,dc=moj,dc=com", nDeliusUser.getCn()))
+                                            .base(String.format("cn=%s,%s", nDeliusUser.getCn(), ldapUserBase))
                                             .searchScope(SearchScope.ONELEVEL)
                                             .filter("(objectClass=*)"),
                                     (AttributesMapper<Optional<NDeliusRole>>) attributes ->

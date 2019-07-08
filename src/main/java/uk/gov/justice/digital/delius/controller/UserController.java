@@ -61,11 +61,4 @@ public class UserController {
         return new ResponseEntity<>(ldapRepository.searchByFieldAndValue(field, value), OK);
     }
 
-    @RequestMapping(value = "/users/{username}/", method = RequestMethod.GET)
-    public ResponseEntity<UserDetails> findUser(final @PathVariable("username") String username) {
-        return userService.getUserDetails(username).map(userDetails -> new ResponseEntity<>(userDetails, OK))
-                .orElse(new ResponseEntity<>(NOT_FOUND));
-
-    }
-
 }
