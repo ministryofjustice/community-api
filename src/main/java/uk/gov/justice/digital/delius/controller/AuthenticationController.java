@@ -37,5 +37,32 @@ public class AuthenticationController {
 
     }
 
+    @RequestMapping(value = "/users/{username}/password", method = RequestMethod.POST)
+    public ResponseEntity changePassword(final @PathVariable("username") String username, final @RequestPart("password") String password) {
+        if  (userService.changePassword(username, password)) {
+            return new ResponseEntity(OK);
+        }
+        return new ResponseEntity(NOT_FOUND);
+
+    }
+
+    @RequestMapping(value = "/users/{username}/lock", method = RequestMethod.POST)
+    public ResponseEntity lockUsersAccount(final @PathVariable("username") String username) {
+        if  (userService.lockAccount(username)) {
+            return new ResponseEntity(OK);
+        }
+        return new ResponseEntity(NOT_FOUND);
+
+    }
+
+    @RequestMapping(value = "/users/{username}/unlock", method = RequestMethod.POST)
+    public ResponseEntity unlockUsersAccount(final @PathVariable("username") String username) {
+        if  (userService.unlockAccount(username)) {
+            return new ResponseEntity(OK);
+        }
+        return new ResponseEntity(NOT_FOUND);
+
+    }
+
 
 }

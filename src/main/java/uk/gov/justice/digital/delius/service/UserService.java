@@ -96,6 +96,19 @@ public class UserService {
                         .firstName(user.getGivenname())
                         .surname(user.getSn())
                         .email(user.getMail())
+                        .locked(user.getOrclActiveEndDate() != null) // TODO check date not the presence of the date
                         .build());
+    }
+
+    public boolean changePassword(String username, String password) {
+        return ldapRepository.changePassword(username, password);
+    }
+
+    public boolean lockAccount(String username) {
+        return ldapRepository.lockAccount(username);
+    }
+
+    public boolean unlockAccount(String username) {
+        return ldapRepository.unlockAccount(username);
     }
 }

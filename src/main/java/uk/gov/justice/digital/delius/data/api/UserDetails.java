@@ -12,4 +12,5 @@ public class UserDetails {
     private String firstName;
     private String email;
     private List<UserRole> roles;
+    private boolean locked;
 }

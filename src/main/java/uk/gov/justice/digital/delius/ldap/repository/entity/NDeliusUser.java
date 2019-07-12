@@ -23,6 +23,7 @@ public class NDeliusUser {
     private String sn;
     private String mail;
     private String givenname;
+    private String orclActiveEndDate;
     @Transient
     private List<NDeliusRole> roles;
 }
