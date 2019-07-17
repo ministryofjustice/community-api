@@ -70,6 +70,7 @@ public class LdapRepository {
         val nDeliusUser = ldapTemplate.findOne(byUsername(username), NDeliusUser.class);
 
         // TODO search is slow so there should be a better way of finding these alias, filtering didn't seem to work
+        // this is probably due to references
         return Optional.ofNullable(nDeliusUser)
                 .map(user -> {
                     val roles = ldapTemplate
