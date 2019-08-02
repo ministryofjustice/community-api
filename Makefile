@@ -21,17 +21,17 @@ all:
 gradle-dependencies:
 	$(info Running gradle dependencies task for patch version $(build_version) from tag ${offenderapi_version})
 	# Build container runs as root - need to fix up perms at end so jenkins can clear up the workspace
-	docker run --rm -v $(build_dir):/build -w /build $(gradle_builder_image) bash -c "./gradlew -b $(gradle_build_file) clean dependencies"
+	docker run --rm -v $(build_dir):/delius-offender-api -w /delius-offender-api $(gradle_builder_image) bash -c "./gradlew -b $(gradle_build_file) clean dependencies"
 
 gradle-test:
 	$(info Running gradle test task for patch version $(build_version) from tag ${offenderapi_version})
 	# Build container runs as root - need to fix up perms at end so jenkins can clear up the workspace
-	docker run --rm -v $(build_dir):/build -w /build $(gradle_builder_image) bash -c "./gradlew -b $(gradle_build_file) test"
+	docker run --rm -v $(build_dir):/delius-offender-api -w /delius-offender-api $(gradle_builder_image) bash -c "./gradlew -b $(gradle_build_file) test"
 
 gradle-assemble:
 	$(info Running gradle assemble task for patch version $(build_version) from tag ${offenderapi_version})
 	# Build container runs as root - need to fix up perms at end so jenkins can clear up the workspace
-	docker run --rm -v $(build_dir):/build -w /build $(gradle_builder_image) bash -c "./gradlew -b $(gradle_build_file) -DrootProjectName=delius-offender-api assemble; chmod -R 0777 build/ .gradle/"
+	docker run --rm -v $(build_dir):/delius-offender-api -w /delius-offender-api $(gradle_builder_image) bash -c "./gradlew -b $(gradle_build_file) assemble; chmod -R 0777 build/ .gradle/"
 
 ecr-login:
 	$(shell aws ecr get-login --no-include-email --region ${aws_region})
