@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(properties = {
         "delius.ldap.users.base=ou=people,dc=memorynotfound,dc=com",
+        "features.auth.experimental=true"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext

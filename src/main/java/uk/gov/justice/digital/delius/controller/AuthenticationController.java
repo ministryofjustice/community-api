@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.controller;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,8 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
+@ConditionalOnProperty(
+        name = "features.auth.experimental")
 public class AuthenticationController {
 
     private final UserService userService;
