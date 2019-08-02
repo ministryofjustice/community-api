@@ -20,7 +20,7 @@ gradle-build: build_version = $(shell echo ${offenderapi_version} | awk -F . '{p
 gradle-build:
 	$(info Running gradle build task for patch version $(build_version) from tag ${offenderapi_version})
 	# Build container runs as root - need to fix up perms at end so jenkins can clear up the workspace
-	docker run --rm -v $(build_dir):/build -w /build $(gradle_builder_image) bash -c "./gradlew dependencies test assemble; chmod -R 0777 build/ .gradle/"
+	docker run --rm -v $(build_dir):/build -w /build $(gradle_builder_image) bash -c "./gradlew -i dependencies test assemble; chmod -R 0777 build/ .gradle/"
 
 ecr-login:
 	$(shell aws ecr get-login --no-include-email --region ${aws_region})
