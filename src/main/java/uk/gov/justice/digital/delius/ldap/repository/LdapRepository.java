@@ -16,8 +16,12 @@ import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusUser;
 
 import javax.naming.NamingEnumeration;
 import javax.naming.directory.Attribute;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
@@ -102,8 +106,7 @@ public class LdapRepository {
     public boolean lockAccount(String username) {
         val context = ldapTemplate.searchForContext(byUsername(username));
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddhhmmss");
-        context.setAttributeValue("orclActiveEndDate", dateFormat.format(new Date()).concat("Z"));
+        context.setAttributeValue("orclActiveEndDate", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss'Z'")));
 
         ldapTemplate.modifyAttributes(context);
         return true;
