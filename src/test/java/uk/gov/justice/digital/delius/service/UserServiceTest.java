@@ -10,10 +10,16 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.justice.digital.delius.data.api.AccessLimitation;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.data.api.UserDetails;
 import uk.gov.justice.digital.delius.jpa.national.entity.Exclusion;
 import uk.gov.justice.digital.delius.jpa.national.entity.Restriction;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
+import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
+import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusRole;
+import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusUser;
 import uk.gov.justice.digital.delius.service.wrapper.UserRepositoryWrapper;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -24,6 +30,10 @@ import static org.mockito.Mockito.*;
 public class UserServiceTest {
     @MockBean
     private UserRepositoryWrapper userRepositoryWrapper;
+
+    @MockBean
+    private LdapRepository ldapRepository;
+
     @Autowired
     private UserService userService;
 
@@ -276,5 +286,40 @@ public class UserServiceTest {
         assertThat(accessLimitation.getRestrictionMessage()).isEqualTo("How dare you - you are restricted");
     }
 
+    @Test
+    public void userDetailsMappedFromLdapRepository() {
+        when(ldapRepository.getDeliusUser("john.bean")).thenReturn(
+                Optional.of(NDeliusUser
+                        .builder()
+                        .givenname("John")
+                        .sn("Bean")
+                        .mail("john.bean@justice.gov.uk")
+                        .roles(ImmutableList.of(
+                                NDeliusRole
+                                        .builder()
+                                        .cn("ROLE1")
+                                        .description("The role one")
+                                        .build()))
+                        .build()));
+
+        final Optional<UserDetails> userDetails = userService.getUserDetails("john.bean");
+
+        assertThat(userDetails.orElseThrow(() -> new RuntimeException("user details missing")).getEmail()).isEqualTo("john.bean@justice.gov.uk");
+        assertThat(userDetails.orElseThrow(() -> new RuntimeException("user details missing")).getSurname()).isEqualTo("Bean");
+        assertThat(userDetails.orElseThrow(() -> new RuntimeException("user details missing")).getFirstName()).isEqualTo("John");
+        assertThat(userDetails.orElseThrow(() -> new RuntimeException("user details missing")).getRoles()).hasSize(1);
+        assertThat(userDetails.orElseThrow(() -> new RuntimeException("user details missing")).getRoles().get(0).getName()).isEqualTo("ROLE1");
+        assertThat(userDetails.orElseThrow(() -> new RuntimeException("user details missing")).getRoles().get(0).getDescription()).isEqualTo("The role one");
+    }
+
+    @Test
+    public void userDetailsMayBeAbsentFromLdapRepository() {
+        when(ldapRepository.getDeliusUser("john.bean")).thenReturn(Optional.empty());
+
+        final Optional<UserDetails> userDetails = userService.getUserDetails("john.bean");
+
+        assertThat(userDetails.isPresent()).isFalse();
+
+    }
 
 }
