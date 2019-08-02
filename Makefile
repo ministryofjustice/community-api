@@ -3,6 +3,10 @@
 aws_region := eu-west-2
 image := hmpps/new-tech-api
 gradle_builder_image := gradle:jdk8
+# gradle build expects just the PATCH value. MAJOR abd MINOR are hardcoded as 0.1
+build_version := $(shell echo ${offenderapi_version} | awk -F . '{print $$3}')
+build_dir := $(shell pwd)
+gradle_build_file := aws.build.gradle
 
 # offenderapi_version should be passed from command line
 all:
@@ -14,13 +18,20 @@ all:
 	$(MAKE) clean-remote
 	$(MAKE) clean-local
 
-gradle-build: build_dir = $(shell pwd)
-# gradle build expects just the PATCH value. MAJOR abd MINOR are hardcoded as 0.1
-gradle-build: build_version = $(shell echo ${offenderapi_version} | awk -F . '{print $$3}')
-gradle-build:
-	$(info Running gradle build task for patch version $(build_version) from tag ${offenderapi_version})
+gradle-dependencies:
+	$(info Running gradle dependencies task for patch version $(build_version) from tag ${offenderapi_version})
 	# Build container runs as root - need to fix up perms at end so jenkins can clear up the workspace
-	docker run --rm -v $(build_dir):/build -w /build $(gradle_builder_image) bash -c "./gradlew -i dependencies test assemble; chmod -R 0777 build/ .gradle/"
+	docker run --rm -v $(build_dir):/build -w /build $(gradle_builder_image) bash -c "./gradlew -b $(gradle_build_file) clean dependencies; chmod -R 0777 build/ .gradle/"
+
+gradle-test:
+	$(info Running gradle test task for patch version $(build_version) from tag ${offenderapi_version})
+	# Build container runs as root - need to fix up perms at end so jenkins can clear up the workspace
+	docker run --rm -v $(build_dir):/build -w /build $(gradle_builder_image) bash -c "./gradlew -b $(gradle_build_file) test; chmod -R 0777 build/ .gradle/"
+
+gradle-assemble:
+	$(info Running gradle assemble task for patch version $(build_version) from tag ${offenderapi_version})
+	# Build container runs as root - need to fix up perms at end so jenkins can clear up the workspace
+	docker run --rm -v $(build_dir):/build -w /build $(gradle_builder_image) bash -c "./gradlew -b $(gradle_build_file) dependencies test assemble; chmod -R 0777 build/ .gradle/"
 
 ecr-login:
 	$(shell aws ecr get-login --no-include-email --region ${aws_region})

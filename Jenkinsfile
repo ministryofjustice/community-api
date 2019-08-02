@@ -47,13 +47,35 @@ pipeline {
            }
        }
 
-       stage('Gradle Build') {
-           steps {
-                sh '''
-                    #!/bin/bash +x
-                    make gradle-build offenderapi_version=${OFFENDERAPI_VERSION};
-                '''
-           }
+        stage('Gradle Dependencies') {
+            steps {
+                    sh '''
+                        #!/bin/bash +x
+                        make gradle-dependencies offenderapi_version=${OFFENDERAPI_VERSION};
+                    '''
+            }
+        }
+
+        stage('Gradle Tests') {
+                    // Known issue with gradle tests stalling on the DeliusOffenderAPITest test suite
+                    options {
+                        timeout(time: 20, unit: 'MINUTES') 
+                    }
+                    steps {
+                            sh '''
+                                #!/bin/bash +x
+                                make gradle-test offenderapi_version=${OFFENDERAPI_VERSION};
+                            '''
+                    }
+            }
+
+        stage('Gradle Assemble') {
+            steps {
+                    sh '''
+                        #!/bin/bash +x
+                        make gradle-assemble offenderapi_version=${OFFENDERAPI_VERSION};
+                    '''
+            }
        }
 
         stage('Get ECR Login') {
