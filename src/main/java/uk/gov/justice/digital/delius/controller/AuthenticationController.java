@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.digital.delius.data.api.UserDetails;
-import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
 import uk.gov.justice.digital.delius.service.UserService;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -13,17 +12,15 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 public class AuthenticationController {
 
-    private final LdapRepository ldapRepository;
     private final UserService userService;
 
-    public AuthenticationController(LdapRepository ldapRepository, UserService userService) {
-        this.ldapRepository = ldapRepository;
+    public AuthenticationController(UserService userService) {
         this.userService = userService;
     }
 
     @RequestMapping("/authenticate")
     public ResponseEntity authenticate(final @RequestParam String username, @RequestParam String password) {
-        boolean authenticated = ldapRepository.authenticateDeliusUser(username, password);
+        boolean authenticated = userService.authenticateUser(username, password);
         if(!authenticated) {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
@@ -38,7 +35,7 @@ public class AuthenticationController {
     }
 
     @RequestMapping(value = "/users/{username}/password", method = RequestMethod.POST)
-    public ResponseEntity changePassword(final @PathVariable("username") String username, final @RequestPart("password") String password) {
+    public ResponseEntity changePassword(final @PathVariable("username") String username, final @RequestParam("password") String password) {
         if  (userService.changePassword(username, password)) {
             return new ResponseEntity(OK);
         }

@@ -100,6 +100,16 @@ public class UserService {
                         .build());
     }
 
+    public boolean authenticateUser(String user, String password) {
+        if (ldapRepository.authenticateUser(user, password)) {
+            // some LDAP implementations will not authenticate depending on how
+            // record is locked
+            // belt and braces for those who do not check the lock
+            return !ldapRepository.isLocked(user);
+        }
+        return false;
+    }
+
     public boolean changePassword(String username, String password) {
         return ldapRepository.changePassword(username, password);
     }

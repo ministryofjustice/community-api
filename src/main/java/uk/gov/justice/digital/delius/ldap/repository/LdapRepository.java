@@ -4,7 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.ldap.core.*;
+import org.springframework.ldap.core.AttributesMapper;
+import org.springframework.ldap.core.ContextMapper;
+import org.springframework.ldap.core.DirContextAdapter;
+import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.query.ContainerCriteria;
 import org.springframework.ldap.query.SearchScope;
 import org.springframework.stereotype.Repository;
@@ -16,7 +19,6 @@ import javax.naming.directory.Attribute;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static java.util.stream.Collectors.toList;
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
 @Repository
@@ -62,40 +64,30 @@ public class LdapRepository {
         return ldapTemplate.search(query().where(field).is(value), contextMapper);
     }
 
-    public boolean authenticateDeliusUser(String user, String password) {
+    public boolean authenticateUser(String user, String password) {
         return ldapTemplate.authenticate(ldapUserBase, "(uid=" + user + ")", password);
     }
 
     public Optional<NDeliusUser> getDeliusUser(String username) {
         val nDeliusUser = ldapTemplate.findOne(byUsername(username), NDeliusUser.class);
 
-        // TODO search is slow so there should be a better way of finding these alias, filtering didn't seem to work
-        // this is probably due to references
         return Optional.ofNullable(nDeliusUser)
                 .map(user -> {
                     val roles = ldapTemplate
                             .search(
                                     query()
-                                            .base(String.format("cn=%s,%s", nDeliusUser.getCn(), ldapUserBase))
+                                            .base(nDeliusUser.getDn())
                                             .searchScope(SearchScope.ONELEVEL)
-                                            .filter("(objectClass=*)"),
-                                    (AttributesMapper<Optional<NDeliusRole>>) attributes ->
-                                            attributes.get("objectclass").contains("NDRole") ?
-                                                    Optional.of(NDeliusRole
+                                            .filter("(|(objectclass=NDRole)(objectclass=NDRoleAssociation))"),
+                                    (AttributesMapper<NDeliusRole>) attributes ->
+                                                    NDeliusRole
                                                             .builder()
                                                             .cn(attributes.get("cn").get().toString())
                                                             .description(attributes.get("description").get().toString())
-                                                            .build()) :
-                                                    Optional.empty());
+                                                            .build());
 
-                    return nDeliusUser.toBuilder().roles(roles
-                            .stream()
-                            .filter(Optional::isPresent)
-                            .map(Optional::get)
-                            .collect(toList())).build();
-
+                    return nDeliusUser.toBuilder().roles(roles).build();
                 });
-
     }
 
     public boolean changePassword(String username, String password) {
@@ -128,5 +120,10 @@ public class LdapRepository {
 
     private ContainerCriteria byUsername(String username) {
         return query().base(ldapUserBase).where("uid").is(username);
+    }
+
+    public boolean isLocked(String username) {
+        val context = ldapTemplate.searchForContext(byUsername(username));
+        return context.getStringAttribute("orclActiveEndDate") != null;
     }
 }
