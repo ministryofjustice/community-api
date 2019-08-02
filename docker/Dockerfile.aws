@@ -1,0 +1,14 @@
+FROM mojdigitalstudio/hmpps-base-java:latest
+# Build time variables
+ARG OFFENDERAPI_VERSION
+ENV OFFENDERAPI_VERSION=$OFFENDERAPI_VERSION
+
+USER root
+RUN apk add curl jq
+
+USER tools
+COPY build/libs/delius-offender-api-${OFFENDERAPI_VERSION}.jar /home/tools/delius-offender-api.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["/usr/bin/java", "-jar", "/home/tools/delius-offender-api.jar"]
