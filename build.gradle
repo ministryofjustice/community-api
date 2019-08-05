@@ -28,10 +28,6 @@ springBoot {
     buildInfo()
 }
 
-test {
-    testLogging.showStandardStreams = true
-}
-
 
 sourceCompatibility = 1.8
 
