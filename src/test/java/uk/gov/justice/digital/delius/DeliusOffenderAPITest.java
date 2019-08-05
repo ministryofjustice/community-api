@@ -465,7 +465,7 @@ public class DeliusOffenderAPITest {
         given()
                 .header("Authorization", aValidToken())
                 .when()
-                .get("/offenders/crn/D002384/documents/" + UUID.randomUUID().toString() + "/detail")
+                .get("/offenders/crn/D002384/documents/fa63c379-8b31-4e36-a152-2a57dfe251c5/detail")
                 .then()
                 .statusCode(404);
     }
