@@ -4,8 +4,11 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.CourtAppearance;
 import uk.gov.justice.digital.delius.data.api.CourtReport;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.service.LookupSupplier;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,10 +19,12 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.conver
 public class CourtAppearanceTransformer {
     private final CourtReportTransformer courtReportTransformer;
     private final CourtTransformer courtTransformer;
+    private final LookupSupplier lookupSupplier;
 
-    public CourtAppearanceTransformer(CourtReportTransformer courtReportTransformer, CourtTransformer courtTransformer) {
+    public CourtAppearanceTransformer(CourtReportTransformer courtReportTransformer, CourtTransformer courtTransformer, LookupSupplier lookupSupplier) {
         this.courtReportTransformer = courtReportTransformer;
         this.courtTransformer = courtTransformer;
+        this.lookupSupplier = lookupSupplier;
     }
 
     public CourtAppearance courtAppearanceOf(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance courtAppearance) {
@@ -43,6 +48,37 @@ public class CourtAppearanceTransformer {
             .courtReports(courtReportsOf(courtAppearance.getCourtReports()))
             .build();
     }
+
+    public uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance courtAppearanceOf(
+            Long offenderId,
+            Event event,
+            uk.gov.justice.digital.delius.data.api.CourtAppearance courtAppearance) {
+        return uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance
+                .builder()
+                .appearanceDate(courtAppearance.getAppearanceDate())
+                .courtReports(null) // TODO adding court reports is a future task
+                .teamId(null) // TODO associating with a team is a future task depending on research
+                .staffId(null) // TODO associating with a team is a future task depending on research
+                .event(event)
+                .offenderId(offenderId)
+                .softDeleted(0L)
+                .outcome(Optional.ofNullable(courtAppearance.getOutcome()).map(outcome -> lookupSupplier.courtAppearanceOutcomeSupplier().apply(outcome.getCode())).orElse(null) )
+                .courtNotes(courtAppearance.getCourtNotes())
+                .bailConditions(courtAppearance.getBailConditions())
+                .createdByUserId(lookupSupplier.userSupplier().get().getUserId())
+                .createdDatetime(LocalDateTime.now())
+                .lastUpdatedUserId(lookupSupplier.userSupplier().get().getUserId())
+                .lastUpdatedDatetime(LocalDateTime.now())
+                .court(lookupSupplier.courtSupplier().apply(courtAppearance.getCourt().getCourtId()))
+                .appearanceTypeId(courtAppearance.getAppearanceTypeId())
+                .crownCourtCalendarNumber(courtAppearance.getCrownCourtCalendarNumber())
+                .partitionAreaId(0L)
+                .remandStatusId(courtAppearance.getRemandStatusId())
+                .pleaId(courtAppearance.getPleaId())
+                .rowVersion(1L)
+                .build();
+    }
+
 
     private KeyValue outcomeOf(StandardReference standardReference) {
         return Optional.ofNullable(standardReference)

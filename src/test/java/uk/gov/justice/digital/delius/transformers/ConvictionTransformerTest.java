@@ -3,18 +3,48 @@ package uk.gov.justice.digital.delius.transformers;
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import uk.gov.justice.digital.delius.data.api.CourtCase;
+import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
+import uk.gov.justice.digital.delius.service.LookupSupplier;
 
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ConvictionTransformerTest {
+    @Mock
+    private LookupSupplier lookupSupplier;
+    @Mock
+    private MainOffenceTransformer mainOffenceTransformer;
+    @Mock
+    private AdditionalOffenceTransformer additionalOffenceTransformer;
+    @Mock
+    private CourtAppearanceTransformer courtAppearanceTransformer;
     private ConvictionTransformer transformer;
 
     @Before
     public void before() {
-        transformer = new ConvictionTransformer(new MainOffenceTransformer(), new AdditionalOffenceTransformer());
+        transformer = new ConvictionTransformer(
+                mainOffenceTransformer,
+                additionalOffenceTransformer,
+                courtAppearanceTransformer,
+                lookupSupplier);
+
+        when(lookupSupplier.userSupplier()).thenReturn(() -> User.builder().userId(99L).build());
+        when(lookupSupplier.orderAllocationReasonSupplier()).thenReturn(code -> StandardReference.builder().codeValue(code).build());
+        when(lookupSupplier.transferReasonSupplier()).thenReturn(code -> TransferReason.builder().code(code).build());
+        when(lookupSupplier.probationAreaSupplier()).thenReturn(orderManager -> ProbationArea.builder().probationAreaId(orderManager.getProbationAreaId()).build());
+        when(lookupSupplier.teamSupplier()).thenReturn(orderManager -> Team.builder().teamId(orderManager.getTeamId()).build());
+        when(lookupSupplier.staffSupplier()).thenReturn(orderManager -> Staff.builder().staffId(orderManager.getOfficerId()).build());
+
+        when(courtAppearanceTransformer.courtAppearanceOf(any(), any(), any())).thenReturn(aCourtAppearanceWithNoOutcome(LocalDateTime.now()));
     }
 
     @Test
@@ -30,6 +60,12 @@ public class ConvictionTransformerTest {
 
     @Test
     public void offencesCollatedFromMainAndAdditionalOffences() {
+        transformer = new ConvictionTransformer(
+                new MainOffenceTransformer(lookupSupplier),
+                new AdditionalOffenceTransformer(lookupSupplier),
+                courtAppearanceTransformer,
+                lookupSupplier);
+
         assertThat(transformer.convictionOf(
                 anEvent()
                         .toBuilder()
@@ -83,6 +119,92 @@ public class ConvictionTransformerTest {
         assertThat((transformer.convictionOf(anEvent().toBuilder().eventNumber("5").build()).getIndex())).isEqualTo("5");
     }
 
+    @Test
+    public void offenderIdCopiedToEvent() {
+        assertThat((transformer.eventOf(99L, aCourtCase(), "1").getOffenderId())).isEqualTo(99L);
+    }
+
+    @Test
+    public void setsAuditFields() {
+        when(lookupSupplier.userSupplier()).thenReturn(() -> User.builder().userId(99L).build());
+        final Event event = transformer.eventOf(99L, aCourtCase(), "1");
+
+        assertThat(event.getCreatedByUserId()).isEqualTo(99L);
+        assertThat(event.getLastUpdatedUserId()).isEqualTo(99L);
+        assertThat(event.getCreatedDatetime()).isNotNull();
+        assertThat(event.getLastUpdatedDatetime()).isNotNull();
+    }
+
+
+    @Test
+    public void setsSensibleDefaults() {
+        final Event event = transformer.eventOf(99L, aCourtCase(), "1");
+
+        assertThat(event.getSoftDeleted()).isEqualTo(0L);
+        assertThat(event.getPartitionAreaId()).isEqualTo(0L);
+        assertThat(event.getRowVersion()).isEqualTo(1L);
+        assertThat(event.getActiveFlag()).isEqualTo(1L);
+        assertThat(event.getInBreach()).isEqualTo(0L);
+        assertThat(event.getPendingTransfer()).isEqualTo(0L);
+        assertThat(event.getPostSentenceSupervisionRequirementFlag()).isEqualTo(0L);
+    }
+
+    @Test
+    public void orderManagerIsCreatedFromTeamAreaStaffLookups() {
+        final Event event = transformer.eventOf(
+                99L,
+                aCourtCase()
+                        .toBuilder()
+                        .orderManager(
+                                uk.gov.justice.digital.delius.data.api.OrderManager
+                                        .builder()
+                                        .officerId(2L)
+                                        .probationAreaId(3L)
+                                        .teamId(4L)
+                                        .build())
+                        .build(),
+                "1");
+
+        assertThat(event.getOrderManagers()).hasSize(1);
+        assertThat(event.getOrderManagers().get(0).getStaff().getStaffId()).isEqualTo(2L);
+        assertThat(event.getOrderManagers().get(0).getProbationArea().getProbationAreaId()).isEqualTo(3L);
+        assertThat(event.getOrderManagers().get(0).getTeam().getTeamId()).isEqualTo(4L);
+    }
+
+    @Test
+    public void orderManagerProviderElementsNeverSet() {
+        final Event event = transformer.eventOf(99L, aCourtCase(), "1");
+
+        assertThat(event.getOrderManagers()).hasSize(1);
+        assertThat(event.getOrderManagers().get(0).getProviderTeam()).isNull();
+        assertThat(event.getOrderManagers().get(0).getProviderEmployee()).isNull();
+    }
+
+    @Test
+    public void orderManagerTransferReasonIsAlwaysCaseOrder() {
+        final Event event = transformer.eventOf(99L, aCourtCase(), "1");
+
+        assertThat(event.getOrderManagers()).hasSize(1);
+        assertThat(event.getOrderManagers().get(0).getTransferReason().getCode()).isEqualTo("CASE ORDER");
+    }
+
+    @Test
+    public void orderManagerIsNotEndDated() {
+        final Event event = transformer.eventOf(99L, aCourtCase(), "1");
+
+        assertThat(event.getOrderManagers()).hasSize(1);
+        assertThat(event.getOrderManagers().get(0).getEndDate()).isNull();
+    }
+
+    @Test
+    public void orderManagerAllocationReasonIsAlwaysNexEventCreated() {
+        final Event event = transformer.eventOf(99L, aCourtCase(), "1");
+
+        assertThat(event.getOrderManagers()).hasSize(1);
+        assertThat(event.getOrderManagers().get(0).getAllocationReason().getCodeValue()).isEqualTo("IN1");
+
+    }
+
     private CourtAppearance aCourtAppearance(String outcomeDescription, String outcomeCode, LocalDateTime appearanceDate) {
         return CourtAppearance
                 .builder()
@@ -124,6 +246,13 @@ public class ConvictionTransformerTest {
                 .build();
     }
 
+    private uk.gov.justice.digital.delius.data.api.Offence anApiMainOffence() {
+        return uk.gov.justice.digital.delius.data.api.Offence
+                .builder()
+                .mainOffence(true)
+                .build();
+    }
+
     private Event anEvent() {
         return Event
                 .builder()
@@ -141,5 +270,12 @@ public class ConvictionTransformerTest {
                 .build();
     }
 
+    private CourtCase aCourtCase() {
+        return CourtCase
+                .builder()
+                .offences(ImmutableList.of(anApiMainOffence()))
+                .orderManager(uk.gov.justice.digital.delius.data.api.OrderManager.builder().build())
+                .build();
+    }
 
 }

@@ -7,7 +7,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @JsonPropertyOrder({"offenceId", "mainOffence"})
 public class Offence {
     private String offenceId;

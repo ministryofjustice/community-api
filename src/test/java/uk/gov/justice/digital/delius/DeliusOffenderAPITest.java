@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import org.assertj.core.util.Lists;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -48,6 +50,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 import static java.util.Arrays.asList;
@@ -60,6 +63,9 @@ import static uk.gov.justice.digital.delius.util.OffenderHelper.anOffender;
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 public class DeliusOffenderAPITest {
+    @Rule
+    public WireMockRule wireMock = new WireMockRule(wireMockConfig().port(8088).jettyStopTimeout(10000L));
+
 
     @LocalServerPort
     int port;
@@ -89,13 +95,6 @@ public class DeliusOffenderAPITest {
         Mockito.when(offenderRepository.listOffenderIds(eq(1), eq(5))).thenReturn(LongStream.rangeClosed(1, 5).mapToObj(BigDecimal::valueOf).collect(Collectors.toList()));
         Mockito.when(offenderRepository.listOffenderIds(eq(6), eq(10))).thenReturn(LongStream.rangeClosed(6, 10).mapToObj(BigDecimal::valueOf).collect(Collectors.toList()));
         Mockito.when(offenderRepository.count()).thenReturn(666L);
-        wiremockServer = new WireMockServer(8088);
-        wiremockServer.start();
-    }
-
-    @After
-    public void teardown() {
-        wiremockServer.stop();
     }
 
     @Test
@@ -497,7 +496,7 @@ public class DeliusOffenderAPITest {
         given()
                 .header("Authorization", aValidToken())
                 .when()
-                .get("/offenders/crn/D002384/documents/" + UUID.randomUUID().toString())
+                .get("/offenders/crn/crn123/documents/doesnotexistinlist")
                 .then()
                 .statusCode(404);
     }

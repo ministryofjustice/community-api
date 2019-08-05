@@ -9,10 +9,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionalReportRepository;
-import uk.gov.justice.digital.delius.transformers.AdditionalOffenceTransformer;
-import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
-import uk.gov.justice.digital.delius.transformers.InstitutionalReportTransformer;
-import uk.gov.justice.digital.delius.transformers.MainOffenceTransformer;
+import uk.gov.justice.digital.delius.transformers.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +28,11 @@ public class InstitutionalReportServiceTest {
 
     @MockBean
     private InstitutionalReportRepository institutionalReportRepository;
+
+    @MockBean
+    private LookupSupplier lookupSupplier;
+    @MockBean
+    private CourtAppearanceTransformer courtAppearanceTransformer;
 
     @Test
     public void singleReportFilteredOutWhenSoftDeleted() {

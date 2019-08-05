@@ -22,7 +22,7 @@ plugins {
 
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
-version = "0.6.2"
+version = "0.6.3"
 
 springBoot {
     buildInfo()
@@ -90,21 +90,6 @@ dependencies {
 
 test {
     timeout = Duration.ofMinutes(15)
-    filter {
-        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.getOffenderDocumentDetailsForUnknownOffenderCRNGives404'
-        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.getOffenderDocumentDetailsForKnownOffenderCRNButUnknownDocumentGives404'
-        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.canListOffenderDocumentsByOffenderCRN'
-        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.canListOffenderDocumentsByNomsNumber'
-        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.canListOffenderDocumentsByOffenderId'
-        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.canGetOffenderDocumentDetailsByOffenderCrnAndDocumentId'
-        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.canGetOffenderDocumentDetailsByOffenderIdAndDocumentId'
-        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.canGetOffenderDocumentDetailsByOffenderNomsNumberAndDocumentId'
-        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.canRetrieveOffenderDocument'
-        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.canRetrieveOffenderIdsWithDefaultPageSizeAndPage'
-        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.listOffenderDocumentsForUnknownOffenderCRNGives404'
-        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.retrieveDocumentForUnknownOffenderCRNGives404'
-        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.retrieveDocumentForKnownOffenderButUnknownDocumentGives404'
-    }
     testLogging {
         events "started", "passed", "skipped", "failed", "standardError"
         exceptionFormat "short"

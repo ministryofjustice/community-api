@@ -18,6 +18,8 @@ import java.util.List;
 public class CourtAppearance {
 
     @Id
+    @SequenceGenerator(name = "COURT_APPEARANCE_ID_GENERATOR", sequenceName = "COURT_APPEARANCE_ID_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "COURT_APPEARANCE_ID_GENERATOR")
     @Column(name = "COURT_APPEARANCE_ID")
     private Long courtAppearanceId;
 
@@ -87,6 +89,6 @@ public class CourtAppearance {
     @Column(name = "OFFENDER_ID")
     private Long offenderId;
 
-    @OneToMany(mappedBy = "courtAppearance")
+    @OneToMany(mappedBy = "courtAppearance", cascade = {CascadeType.ALL})
     private List<CourtReport> courtReports;
 }

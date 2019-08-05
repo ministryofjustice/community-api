@@ -68,4 +68,10 @@ public class UserProxy {
 
         return proxiedConnection;
     }
+
+    public static String username() {
+        Optional<Claims> maybeClaims = Optional.ofNullable(threadLocalClaims.get());
+
+        return maybeClaims.map(claims -> claims.get(Jwt.UID).toString()).orElseThrow(() -> new RuntimeException("No user found in context"));
+    }
 }
