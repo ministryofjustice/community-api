@@ -24,6 +24,7 @@ objectclass: inetOrgPerson
 cn: Oliver Connolly
 sn: Oliver
 uid: OlIvEr.cOnNoLlY
+userPassword: secret
 
 dn: uid=jihn,ou=people,dc=memorynotfound,dc=com
 objectclass: top
@@ -42,6 +43,32 @@ objectclass: inetOrgPerson
 cn: Jahn Dae
 sn: Jahn
 uid: jahn
+
+dn: uid=bernard.beaks,ou=people,dc=memorynotfound,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: NDUser
+cn: bernard.beaks
+sn: Beaks
+givenname: Bernard
+mail: bernard.beaks@justice.gov.uk
+uid: bernard.beaks
+userPassword: secret
+
+# Delius would actually use and alias to link to role
+dn: cn=UWBT060,uid=bernard.beaks,ou=people,dc=memorynotfound,dc=com
+objectclass: top
+objectclass: NDRole
+cn: UWBT060
+adminlevel: national
+description: UPW Admin (national)
+level1: false
+level2: false
+level3: true
+sector: public
+uibusinessinteractioncollection: UWBI190
 
 # Create Groups
 dn: cn=developers,ou=groups,dc=memorynotfound,dc=com
