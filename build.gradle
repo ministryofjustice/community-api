@@ -28,6 +28,11 @@ springBoot {
     buildInfo()
 }
 
+test {
+    testLogging.showStandardStreams = true
+}
+
+
 sourceCompatibility = 1.8
 
 // Apply application plugin for easy application start
