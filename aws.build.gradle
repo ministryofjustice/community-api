@@ -116,3 +116,6 @@ test {
         showCauses = true
     }
 }
+
+// version will be injected from Jenkins pipeline from original build.gradle file
+// Once migrated, the Jenkinsfile can be switched to use the build.gradle file
