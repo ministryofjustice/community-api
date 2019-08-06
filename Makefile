@@ -26,7 +26,7 @@ gradle-dependencies:
 gradle-test:
 	$(info Running gradle test task for patch version $(build_version) from tag ${offenderapi_version})
 	# Build container runs as root - need to fix up perms at end so jenkins can clear up the workspace
-	docker run --rm -v $(build_dir):/delius-offender-api -w /delius-offender-api $(gradle_builder_image) bash -c "./gradlew -b $(gradle_build_file) test"
+	docker run --rm -v $(build_dir):/delius-offender-api -w /delius-offender-api -e JAVA_TOOL_OPTS="JAVA_TOOL_OPTIONS: -Xmx1024m -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2" $(gradle_builder_image) bash -c "./gradlew -b $(gradle_build_file) test"
 
 gradle-assemble:
 	$(info Running gradle assemble task for patch version $(build_version) from tag ${offenderapi_version})

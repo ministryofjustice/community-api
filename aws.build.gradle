@@ -89,7 +89,7 @@ dependencies {
 }
 
 test {
-    timeout = Duration.ofMinutes(10)
+    timeout = Duration.ofMinutes(15)
     filter {
         excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.getOffenderDocumentDetailsForUnknownOffenderCRNGives404'
         excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.getOffenderDocumentDetailsForKnownOffenderCRNButUnknownDocumentGives404'
@@ -112,5 +112,4 @@ test {
         showExceptions = true
         showCauses = true
     }
-    maxHeapSize = "512m"
 }
