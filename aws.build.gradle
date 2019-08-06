@@ -22,8 +22,11 @@ plugins {
 
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
-version = "0.5.7"
 archivesBaseName = 'delius-offender-api'
+
+// version will be injected from Jenkins pipeline from original build.gradle file
+// Once migrated, the Jenkinsfile can be switched to use the build.gradle file
+
 
 springBoot {
     buildInfo()
