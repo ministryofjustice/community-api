@@ -2,9 +2,6 @@ def get_offenderapi_version() {
     sh '''
     #!/bin/bash +x
     grep "version = " build.gradle | awk '{print $3}' | sed 's/\"//g' > offenderapi.version
-    # Tmp measure pre full migration to pull version in from main build.gradle file
-    # Allows separate config for Jenkins builds such as test filters, without impacting circle ci builds
-    echo "version = $(cat offenderapi.version)" >> aws.build.gradle
     '''
     return readFile("./offenderapi.version")
 }
