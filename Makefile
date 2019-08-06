@@ -11,8 +11,12 @@ gradle_build_file := aws.build.gradle
 # offenderapi_version should be passed from command line
 all:
 	$(MAKE) ecr-login
-	$(MAKE) gradle-build
+	$(MAKE) gradle-dependencies
+	$(MAKE) gradle-test
+	$(MAKE) gradle-assemble
+	$(MAKE) ecr-login
 	$(MAKE) build
+	$(MAKE) tag
 	$(MAKE) test
 	$(MAKE) push
 	$(MAKE) clean-remote
