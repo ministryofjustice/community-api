@@ -87,3 +87,29 @@ dependencies {
     testCompile "com.github.tomakehurst:wiremock:2.13.0"
 
 }
+
+test {
+    timeout = Duration.ofMinutes(15)
+    filter {
+        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.getOffenderDocumentDetailsForUnknownOffenderCRNGives404'
+        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.getOffenderDocumentDetailsForKnownOffenderCRNButUnknownDocumentGives404'
+        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.canListOffenderDocumentsByOffenderCRN'
+        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.canListOffenderDocumentsByNomsNumber'
+        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.canListOffenderDocumentsByOffenderId'
+        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.canGetOffenderDocumentDetailsByOffenderCrnAndDocumentId'
+        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.canGetOffenderDocumentDetailsByOffenderIdAndDocumentId'
+        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.canGetOffenderDocumentDetailsByOffenderNomsNumberAndDocumentId'
+        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.canRetrieveOffenderDocument'
+        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.canRetrieveOffenderIdsWithDefaultPageSizeAndPage'
+        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.listOffenderDocumentsForUnknownOffenderCRNGives404'
+        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.retrieveDocumentForUnknownOffenderCRNGives404'
+        excludeTestsMatching 'uk.gov.justice.digital.delius.DeliusOffenderAPITest.retrieveDocumentForKnownOffenderButUnknownDocumentGives404'
+    }
+    testLogging {
+        events "started", "passed", "skipped", "failed", "standardError"
+        exceptionFormat "short"
+        showStackTraces = true
+        showExceptions = true
+        showCauses = true
+    }
+}
