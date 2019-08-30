@@ -49,6 +49,9 @@ public class SpgNotificationService {
     }
     public void notifyNewCourtCaseCreated(Event event) {
 
+        // these events represent what the Delius code indicate what is inserted for this scenario and match what we see in test for Delius
+        // It would be preferable to know what the actual requirement is here to get this correct. In test we have also seen "SPGALF01" business interactions
+        // sent as well but not sure how or why they were sent
         createNotificationsFor(INSERT_EVENT, event.getOffenderId(), event.getEventId());
         event.getCourtAppearances().forEach(courtAppearance -> createNotificationsFor(INSERT_COURT_APPEARANCE, event.getOffenderId(), courtAppearance.getCourtAppearanceId()));
         createNotificationsFor(UPDATE_OFFENDER, event.getOffenderId());
@@ -71,6 +74,9 @@ public class SpgNotificationService {
 
                                 log.info("Sending SPG notification {} to {}", notificationEvent.getNotificationCode(), probationArea.getCode());
 
+                                // for these values I have looked at the legacy Delius code and looked at what the Delius application
+                                // does in test when writing these records. For now I have to assumed the values are correct however we
+                                // need to be aware that the values are not derived from any acceptance criteria but is "as is" Delius code
                                 return SpgNotification
                                         .builder()
                                         .offenderId(offenderId)

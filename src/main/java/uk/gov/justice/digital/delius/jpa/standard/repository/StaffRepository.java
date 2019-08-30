@@ -5,7 +5,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 
 import java.util.Optional;
 
-public interface  StaffRepository extends JpaRepository<Staff, Long> {
+public interface StaffRepository extends JpaRepository<Staff, Long> {
     Optional<Staff> findByStaffId(Long staffId);
     Optional<Staff> findByOfficerCode(String officerCode);
 }

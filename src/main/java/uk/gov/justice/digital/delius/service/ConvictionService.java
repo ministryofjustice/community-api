@@ -43,10 +43,14 @@ public class ConvictionService {
         val event = convictionTransformer.eventOf(
                 offenderId,
                 courtCase,
-                String.valueOf(eventRepository.findByOffenderId(offenderId).size() + 1));
+                calculateNextEventNumber(offenderId));
 
         val conviction = convictionTransformer.convictionOf(eventRepository.save(event));
         spgNotificationService.notifyNewCourtCaseCreated(event);
         return conviction;
+    }
+
+    private String calculateNextEventNumber(Long offenderId) {
+        return String.valueOf(eventRepository.findByOffenderId(offenderId).size() + 1);
     }
 }
