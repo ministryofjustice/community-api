@@ -9,6 +9,7 @@ import uk.gov.justice.digital.delius.data.api.CourtCase;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
 
+import javax.transaction.Transactional;
 import java.util.Comparator;
 import java.util.List;
 
@@ -39,6 +40,7 @@ public class ConvictionService {
                 .collect(toList());
     }
 
+    @Transactional
     public Conviction addCourtCaseFor(Long offenderId, CourtCase courtCase) {
         val event = convictionTransformer.eventOf(
                 offenderId,
