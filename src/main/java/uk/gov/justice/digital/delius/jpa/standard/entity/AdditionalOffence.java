@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 public class AdditionalOffence {
 
     @Id
+    @SequenceGenerator(name = "ADDITIONAL_OFFENCE_ID_GENERATOR", sequenceName = "ADDITIONAL_OFFENCE_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ADDITIONAL_OFFENCE_ID_GENERATOR")
     @Column(name = "ADDITIONAL_OFFENCE_ID")
     private Long additionalOffenceId;
 

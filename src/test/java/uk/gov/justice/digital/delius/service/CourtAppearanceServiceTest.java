@@ -34,6 +34,9 @@ public class CourtAppearanceServiceTest {
     @MockBean
     private CourtAppearanceRepository courtAppearanceRepository;
 
+    @MockBean
+    private LookupSupplier lookupSupplier;
+
     @Before
     public void setUp() {
         when(courtAppearanceRepository.findByOffenderId(1L))

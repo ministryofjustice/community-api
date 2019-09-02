@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @JsonPropertyOrder({"code", "description"})
 public class OffenceDetail {
     private String code;

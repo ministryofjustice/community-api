@@ -1,0 +1,15 @@
+
+create table R_REFERENCE_DATA_MASTER
+(
+    REFERENCE_DATA_MASTER_ID NUMBER not null
+        constraint XPKR_REFERENCE_DATA_MASTER
+            primary key,
+    CODE_SET_NAME VARCHAR2(100) not null,
+    DESCRIPTION VARCHAR2(500) not null,
+    LIST_SEQUENCE CHAR not null,
+    ROW_VERSION NUMBER default 0 not null,
+    TRAINING_SESSION_ID NUMBER
+        references TRAINING_SESSION,
+    constraint XAK1R_REFERENCE_DATA_MASTER
+        unique (CODE_SET_NAME, TRAINING_SESSION_ID, REFERENCE_DATA_MASTER_ID)
+);

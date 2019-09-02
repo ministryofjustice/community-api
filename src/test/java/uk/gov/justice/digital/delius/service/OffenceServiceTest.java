@@ -28,6 +28,9 @@ public class OffenceServiceTest {
     @MockBean
     private MainOffenceRepository mainOffenceRepository;
 
+    @MockBean
+    private LookupSupplier lookupSupplier;
+
     @Before
     public void setUp() {
 

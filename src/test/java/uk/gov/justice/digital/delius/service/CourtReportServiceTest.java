@@ -30,6 +30,9 @@ public class CourtReportServiceTest {
     @MockBean
     private CourtReportRepository courtReportRepository;
 
+    @MockBean
+    private LookupSupplier lookupSupplier;
+
 
 
     @Before

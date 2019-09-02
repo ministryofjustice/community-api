@@ -5,10 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Data
 @NoArgsConstructor
@@ -26,4 +23,8 @@ public class StandardReference {
 
     @Column(name = "CODE_DESCRIPTION")
     private String codeDescription;
+
+    @ManyToOne
+    @JoinColumn(name = "REFERENCE_DATA_MASTER_ID")
+    private ReferenceDataMaster referenceDataMaster;
 }

@@ -1,19 +1,40 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import com.google.common.collect.ImmutableList;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReport;
+import uk.gov.justice.digital.delius.service.LookupSupplier;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@RunWith(MockitoJUnitRunner.class)
 public class InstitutionalReportTransformerTest {
+    @Mock
+    private LookupSupplier lookupSupplier;
+    private InstitutionalReportTransformer institutionalReportTransformer;
 
-    private InstitutionalReportTransformer institutionalReportTransformer = new InstitutionalReportTransformer(new ConvictionTransformer(new MainOffenceTransformer(), new AdditionalOffenceTransformer()));
+    @Before
+    public void setup() {
+        institutionalReportTransformer = new InstitutionalReportTransformer(
+                new ConvictionTransformer(
+                        new MainOffenceTransformer(lookupSupplier),
+                        new AdditionalOffenceTransformer(lookupSupplier),
+                        new CourtAppearanceTransformer(
+                                new CourtReportTransformer(
+                                        new CourtTransformer()),
+                                new CourtTransformer(),
+                                lookupSupplier),
+                        lookupSupplier));
+    }
 
     @Test
     public void itTransformsOKWhenNothingIsSoftDeleted() {
