@@ -2,28 +2,24 @@ package uk.gov.justice.digital.delius.transformers;
 
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.AllTeam;
-import uk.gov.justice.digital.delius.data.api.Institution;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.ProbationArea;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
-import uk.gov.justice.digital.delius.jpa.standard.entity.District;
-import uk.gov.justice.digital.delius.jpa.standard.entity.ExternalProvider;
-import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Organisation;
-import uk.gov.justice.digital.delius.jpa.standard.entity.RInstitution;
-import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
+import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
 
 @Component
 public class ProbationAreaTransformer {
+    private final InstitutionTransformer institutionTransformer;
+
+    public ProbationAreaTransformer(InstitutionTransformer institutionTransformer) {
+        this.institutionTransformer = institutionTransformer;
+    }
 
     public List<ProbationArea> probationAreasOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea> probationAreas) {
         return probationAreas.stream().map(this::probationAreaOf).collect(Collectors.toList());
@@ -34,7 +30,7 @@ public class ProbationAreaTransformer {
                 .code(probationArea.getCode())
                 .description(probationArea.getDescription())
                 .organisation(organisationOf(probationArea.getOrganisation()))
-                .institution(institutionOf(probationArea.getInstitution()))
+                .institution(institutionTransformer.institutionOf(probationArea.getInstitution()))
                 .probationAreaId(probationArea.getProbationAreaId())
                 .teams(teamsOf(probationArea))
                 .build();
@@ -105,26 +101,6 @@ public class ProbationAreaTransformer {
                         .code(d.getCode())
                         .description(d.getDescription())
                         .build())
-                .orElse(null);
-    }
-
-    private Institution institutionOf(RInstitution institution) {
-        return Optional.ofNullable(institution).map(inst -> Institution.builder()
-                .code(inst.getCode())
-                .description(inst.getDescription())
-                .isEstablishment(ynToBoolean(inst.getEstablishment()))
-                .establishmentType(establishmentTypeOf(inst.getEstablishmentType()))
-                .institutionId(inst.getInstitutionId())
-                .institutionName(inst.getInstitutionName())
-                .isPrivate(zeroOneToBoolean(inst.getPrivateFlag()))
-                .build()).orElse(null);
-    }
-
-    private KeyValue establishmentTypeOf(StandardReference establishmentType) {
-        return Optional.ofNullable(establishmentType).map(et -> KeyValue.builder()
-                .code(et.getCodeValue())
-                .description(et.getCodeDescription())
-                .build())
                 .orElse(null);
     }
 

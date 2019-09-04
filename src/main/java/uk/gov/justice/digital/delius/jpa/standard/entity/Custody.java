@@ -5,14 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "CUSTODY")
@@ -31,4 +27,12 @@ public class Custody {
     @Column(name = "OFFENDER_ID")
     private Long offenderId;
 
+    @Column(name = "PRISONER_NUMBER")
+    private String prisonerNumber;
+
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "INSTITUTION_ID"),
+            @JoinColumn(name = "ESTABLISHMENT")})
+    private RInstitution institution;
 }

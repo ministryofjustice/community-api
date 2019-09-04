@@ -18,4 +18,5 @@ public class Conviction {
     private List<Offence> offences;
     private Sentence sentence;
     private KeyValue latestCourtAppearanceOutcome;
+    private Custody custody;
 }

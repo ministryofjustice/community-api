@@ -3,6 +3,7 @@ package uk.gov.justice.digital.delius.transformers;
 import com.google.common.collect.ImmutableList;
 import lombok.val;
 import org.springframework.stereotype.Component;
+import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.Offence;
 import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance;
@@ -28,12 +29,14 @@ public class ConvictionTransformer {
     private final AdditionalOffenceTransformer additionalOffenceTransformer;
     private final CourtAppearanceTransformer courtAppearanceTransformer;
     private final LookupSupplier lookupSupplier;
+    private final InstitutionTransformer institutionTransformer;
 
-    public ConvictionTransformer(MainOffenceTransformer mainOffenceTransformer, AdditionalOffenceTransformer additionalOffenceTransformer, CourtAppearanceTransformer courtAppearanceTransformer, LookupSupplier lookupSupplier) {
+    public ConvictionTransformer(MainOffenceTransformer mainOffenceTransformer, AdditionalOffenceTransformer additionalOffenceTransformer, CourtAppearanceTransformer courtAppearanceTransformer, LookupSupplier lookupSupplier, InstitutionTransformer institutionTransformer) {
         this.mainOffenceTransformer = mainOffenceTransformer;
         this.additionalOffenceTransformer = additionalOffenceTransformer;
         this.courtAppearanceTransformer = courtAppearanceTransformer;
         this.lookupSupplier = lookupSupplier;
+        this.institutionTransformer = institutionTransformer;
     }
 
     public Conviction convictionOf(Event event) {
@@ -45,6 +48,10 @@ public class ConvictionTransformer {
                 .index(event.getEventNumber())
                 .offences(offencesOf(event))
                 .sentence(Optional.ofNullable(event.getDisposal()).map(this::sentenceOf).orElse(null))
+                .custody(Optional
+                        .ofNullable(event.getDisposal())
+                        .flatMap(disposal -> Optional.ofNullable(disposal.getCustody()).map(this::custodyOf))
+                        .orElse(null))
                 .inBreach(zeroOneToBoolean(event.getInBreach()))
                 .latestCourtAppearanceOutcome(Optional.ofNullable(event.getCourtAppearances()).map(this::outcomeOf).orElse(null))
                 .build();
@@ -89,6 +96,16 @@ public class ConvictionTransformer {
                 .description(Optional.ofNullable(disposal.getDisposalType())
                         .map(DisposalType::getDescription)
                         .orElse(null))
+                .build();
+    }
+
+    private Custody custodyOf(uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody) {
+        return Custody
+                .builder()
+                .bookingNumber(custody.getPrisonerNumber())
+                .institution(Optional
+                        .ofNullable(custody.getInstitution())
+                        .map(institutionTransformer::institutionOf).orElse(null) )
                 .build();
     }
 

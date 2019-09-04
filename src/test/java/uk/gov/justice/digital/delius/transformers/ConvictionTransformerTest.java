@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.justice.digital.delius.data.api.CourtCase;
+import uk.gov.justice.digital.delius.data.api.Institution;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 import uk.gov.justice.digital.delius.service.LookupSupplier;
@@ -27,6 +28,8 @@ public class ConvictionTransformerTest {
     private AdditionalOffenceTransformer additionalOffenceTransformer;
     @Mock
     private CourtAppearanceTransformer courtAppearanceTransformer;
+    @Mock
+    private InstitutionTransformer institutionTransformer;
     private ConvictionTransformer transformer;
 
     @Before
@@ -35,7 +38,8 @@ public class ConvictionTransformerTest {
                 mainOffenceTransformer,
                 additionalOffenceTransformer,
                 courtAppearanceTransformer,
-                lookupSupplier);
+                lookupSupplier,
+                institutionTransformer);
 
         when(lookupSupplier.userSupplier()).thenReturn(() -> User.builder().userId(99L).build());
         when(lookupSupplier.orderAllocationReasonSupplier()).thenReturn(code -> StandardReference.builder().codeValue(code).build());
@@ -64,7 +68,8 @@ public class ConvictionTransformerTest {
                 new MainOffenceTransformer(lookupSupplier),
                 new AdditionalOffenceTransformer(lookupSupplier),
                 courtAppearanceTransformer,
-                lookupSupplier);
+                lookupSupplier,
+                institutionTransformer);
 
         assertThat(transformer.convictionOf(
                 anEvent()
@@ -118,6 +123,115 @@ public class ConvictionTransformerTest {
     public void indexMappedFromEventNumberString() {
         assertThat((transformer.convictionOf(anEvent().toBuilder().eventNumber("5").build()).getIndex())).isEqualTo("5");
     }
+
+    @Test
+    public void custodyNotSetWhenDisposalNotPresent() {
+        assertThat(
+                transformer.convictionOf(
+                        anEvent()
+                                .toBuilder()
+                                .disposal(null)
+                                .build()
+                ).getCustody()
+        ).isNull();
+    }
+
+    @Test
+    public void custodyNotSetWhenCustodyNotPresentInDisposal() {
+        assertThat(
+                transformer.convictionOf(
+                        anEvent()
+                                .toBuilder()
+                                .disposal(Disposal
+                                        .builder()
+                                        .custody(null)
+                                        .build())
+                                .build()
+                ).getCustody()
+        ).isNull();
+    }
+
+    @Test
+    public void custodySetWhenCustodyPresentInDisposal() {
+        assertThat(
+                transformer.convictionOf(
+                        anEvent()
+                                .toBuilder()
+                                .disposal(Disposal
+                                        .builder()
+                                        .custody(aCustody())
+                                        .build())
+                                .build()
+                ).getCustody()
+        ).isNotNull();
+    }
+
+    @Test
+    public void bookingNumberCopiedFromCustodyPrisonerNumber() {
+        assertThat(
+                transformer.convictionOf(
+                        anEvent()
+                                .toBuilder()
+                                .disposal(Disposal
+                                        .builder()
+                                        .custody(
+                                                aCustody()
+                                                        .toBuilder()
+                                                        .prisonerNumber("V74111")
+                                                        .build()
+                                        )
+                                        .build())
+                                .build()
+                ).getCustody().getBookingNumber()
+        ).isEqualTo("V74111");
+    }
+
+    @Test
+    public void institutionCopiedFromCustodyWhenPresent() {
+        when(institutionTransformer.institutionOf(any())).thenReturn(Institution.builder().build());
+
+        assertThat(
+                transformer.convictionOf(
+                        anEvent()
+                                .toBuilder()
+                                .disposal(Disposal
+                                        .builder()
+                                        .custody(
+                                                aCustody()
+                                                        .toBuilder()
+                                                        .prisonerNumber("V74111")
+                                                        .institution(anInstitution())
+                                                        .build()
+                                        )
+                                        .build())
+                                .build()
+                ).getCustody().getInstitution()
+        ).isNotNull();
+    }
+
+    @Test
+    public void institutionNotCopiedFromCustodyWhenNotPresent() {
+        when(institutionTransformer.institutionOf(any())).thenReturn(Institution.builder().build());
+
+        assertThat(
+                transformer.convictionOf(
+                        anEvent()
+                                .toBuilder()
+                                .disposal(Disposal
+                                        .builder()
+                                        .custody(
+                                                aCustody()
+                                                        .toBuilder()
+                                                        .prisonerNumber("V74111")
+                                                        .institution(null)
+                                                        .build()
+                                        )
+                                        .build())
+                                .build()
+                ).getCustody().getInstitution()
+        ).isNull();
+    }
+
 
     @Test
     public void offenderIdCopiedToEvent() {
@@ -276,6 +390,14 @@ public class ConvictionTransformerTest {
                 .offences(ImmutableList.of(anApiMainOffence()))
                 .orderManager(uk.gov.justice.digital.delius.data.api.OrderManager.builder().build())
                 .build();
+    }
+
+    private Custody aCustody() {
+        return Custody.builder().build();
+    }
+
+    private RInstitution anInstitution() {
+        return RInstitution.builder().build();
     }
 
 }
