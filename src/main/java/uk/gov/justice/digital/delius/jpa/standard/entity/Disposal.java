@@ -5,12 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 @Data
 @Builder(toBuilder = true)
@@ -58,4 +53,7 @@ public class Disposal {
     @ManyToOne
     @JoinColumn(name = "DISPOSAL_TYPE_ID")
     private DisposalType disposalType;
+
+    @OneToOne(mappedBy = "disposal")
+    private Custody custody;
 }

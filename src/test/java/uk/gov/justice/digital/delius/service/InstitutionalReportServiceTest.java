@@ -19,7 +19,7 @@ import static org.mockito.BDDMockito.given;
 
 @RunWith(SpringRunner.class)
 @Import({InstitutionalReportService.class, InstitutionalReportTransformer.class,
-    MainOffenceTransformer.class, AdditionalOffenceTransformer.class, ConvictionTransformer.class})
+    MainOffenceTransformer.class, AdditionalOffenceTransformer.class, ConvictionTransformer.class, InstitutionTransformer.class})
 public class InstitutionalReportServiceTest {
 
     public static final long EVENT_ID = 42L;

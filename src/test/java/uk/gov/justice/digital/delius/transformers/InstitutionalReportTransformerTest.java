@@ -33,7 +33,8 @@ public class InstitutionalReportTransformerTest {
                                         new CourtTransformer()),
                                 new CourtTransformer(),
                                 lookupSupplier),
-                        lookupSupplier));
+                        lookupSupplier,
+                        new InstitutionTransformer()));
     }
 
     @Test
