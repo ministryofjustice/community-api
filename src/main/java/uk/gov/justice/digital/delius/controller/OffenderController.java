@@ -3,9 +3,7 @@ package uk.gov.justice.digital.delius.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.jsonwebtoken.Claims;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -18,6 +16,7 @@ import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
 import uk.gov.justice.digital.delius.service.AlfrescoService;
+import uk.gov.justice.digital.delius.service.DocumentService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.UserService;
 
@@ -38,14 +37,16 @@ public class OffenderController {
 
     private final OffenderService offenderService;
     private final AlfrescoService alfrescoService;
+    private final DocumentService documentService;
     private final UserService userService;
     private final Jwt jwt;
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public OffenderController(OffenderService offenderService, AlfrescoService alfrescoService, UserService userService, Jwt jwt, ObjectMapper objectMapper) {
+    public OffenderController(OffenderService offenderService, AlfrescoService alfrescoService, DocumentService documentService, UserService userService, Jwt jwt, ObjectMapper objectMapper) {
         this.offenderService = offenderService;
         this.alfrescoService = alfrescoService;
+        this.documentService = documentService;
         this.userService = userService;
         this.jwt = jwt;
         this.objectMapper = objectMapper;
@@ -108,6 +109,10 @@ public class OffenderController {
     }
 
     @RequestMapping(value = "/offenders/crn/{crn}/documents", method = RequestMethod.GET)
+    @ApiOperation(
+            value = "Returns all offender related documents as a flat list given CRN",
+            notes = "This uses Alfresco as it's source of information",
+            nickname = "getOffenderDocumentListByNomsNumber")
     @JwtValidation
     public ResponseEntity<List<DocumentMeta>> getOffenderDocumentListByCrn(final @RequestHeader HttpHeaders httpHeaders,
                                                                            final @PathVariable("crn") String crn) {
@@ -117,6 +122,10 @@ public class OffenderController {
     }
 
     @RequestMapping(value = "/offenders/offenderId/{offenderId}/documents", method = RequestMethod.GET)
+    @ApiOperation(
+            value = "Returns all offender related documents as a flat list given offenderId",
+            notes = "This uses Alfresco as it's source of information",
+            nickname = "getOffenderDocumentListByNomsNumber")
     @JwtValidation
     public ResponseEntity<List<DocumentMeta>> getOffenderDocumentListByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
                                                                                   final @PathVariable("offenderId") Long offenderId) {
@@ -151,6 +160,10 @@ public class OffenderController {
     }
 
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/documents", method = RequestMethod.GET)
+    @ApiOperation(
+            value = "Returns all offender related documents as a flat list given nomsNumber",
+            notes = "This uses Alfresco as it's source of information",
+            nickname = "getOffenderDocumentListByNomsNumber")
     @JwtValidation
     public ResponseEntity<List<DocumentMeta>> getOffenderDocumentListByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
                                                                                   final @PathVariable("nomsNumber") String nomsNumber) {
@@ -158,6 +171,44 @@ public class OffenderController {
         return maybeDocumentMetasOf(offenderService.crnOf(nomsNumber))
                 .map(documentMetas -> new ResponseEntity<>(documentMetas, OK))
                 .orElse(new ResponseEntity<>(NOT_FOUND));
+    }
+
+    @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/documents/grouped", method = RequestMethod.GET)
+    @ApiOperation(
+            value = "Returns all offender related documents grouped e.g by conviction for a given nomsNumber",
+            notes = "This uses the database as it's source of information",
+            nickname = "getOffenderGroupedDocumentByNomsNumber")
+    @JwtValidation
+    public ResponseEntity<OffenderDocuments> getOffenderGroupedDocumentByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
+                                                                                  final @PathVariable("nomsNumber") String nomsNumber) {
+        log.info("Call to getOffenderGroupedDocumentByNomsNumber");
+        return offenderDocumentsResponseEntityOf(offenderService.offenderIdOfNomsNumber(nomsNumber));
+    }
+
+    @RequestMapping(value = "/offenders/offenderId/{offenderId}/documents/grouped", method = RequestMethod.GET)
+    @ApiOperation(
+            value = "Returns all offender related documents grouped e.g by conviction for a given offenderId",
+            notes = "This uses the database as it's source of information",
+            nickname = "getOffenderGroupedDocumentByOffendeerId")
+    @JwtValidation
+    public ResponseEntity<OffenderDocuments> getOffenderGroupedDocumentByOffendeerId(final @RequestHeader HttpHeaders httpHeaders,
+                                                                                  final @PathVariable("offenderId") Long offenderId) {
+        log.info("Call to getOffenderGroupedDocumentByOffendeerId");
+        Optional<OffenderDetail> maybeOffender = offenderService.getOffenderByOffenderId(offenderId);
+
+        return offenderDocumentsResponseEntityOf(maybeOffender.map(OffenderDetail::getOffenderId));
+    }
+
+    @RequestMapping(value = "/offenders/crn/{crn}/documents/grouped", method = RequestMethod.GET)
+    @ApiOperation(
+            value = "Returns all offender related documents grouped e.g by conviction for a given CRN",
+            notes = "This uses the database as it's source of information",
+            nickname = "getOffenderGroupedDocumentByCrn")
+    @JwtValidation
+    public ResponseEntity<OffenderDocuments> getOffenderGroupedDocumentByCrn(final @RequestHeader HttpHeaders httpHeaders,
+                                                                                  final @PathVariable("crn") String crn) {
+        log.info("Call to getOffenderGroupedDocumentByCrn");
+        return offenderDocumentsResponseEntityOf(offenderService.offenderIdOfCrn(crn));
     }
 
     @RequestMapping(value = "/offenders/crn/{crn}/documents/{documentId}/detail", method = RequestMethod.GET)
@@ -379,4 +430,15 @@ public class OffenderController {
     private ResponseEntity<OffenderDetailSummary> offenderDetailSummaryNotFound() {
         return new ResponseEntity<>(OffenderDetailSummary.builder().build(), NOT_FOUND);
     }
+
+    private ResponseEntity<OffenderDocuments> offenderDocumentsResponseEntityOf(Optional<Long> maybeOffenderId) {
+        return maybeOffenderId
+                .map(offenderId -> new ResponseEntity<>(documentService.offenderDocumentsFor(offenderId), HttpStatus.OK))
+                .orElseGet(this::notFoundOffenderDocuments);
+    }
+
+    private ResponseEntity<OffenderDocuments> notFoundOffenderDocuments() {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
 }
