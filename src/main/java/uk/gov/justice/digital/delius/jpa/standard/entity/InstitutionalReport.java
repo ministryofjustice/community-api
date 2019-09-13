@@ -5,12 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Data
 @Builder(toBuilder = true)
@@ -32,5 +28,18 @@ public class InstitutionalReport {
 
     @Column(name = "OFFENDER_ID")
     private Long offenderId;
+
+    @Column(name = "DATE_REQUESTED")
+    private LocalDateTime dateRequested;
+
+    @ManyToOne
+    @JoinColumn(name = "INSTITUTION_REPORT_TYPE_ID")
+    private StandardReference institutionalReportType;
+
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "INSTITUTION_ID"),
+            @JoinColumn(name = "ESTABLISHMENT")})
+    private RInstitution institution;
 
 }
