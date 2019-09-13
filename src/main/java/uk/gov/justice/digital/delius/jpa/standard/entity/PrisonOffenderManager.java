@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -19,12 +20,12 @@ public class PrisonOffenderManager {
     @Column(name = "PRISON_OFFENDER_MANAGER_ID")
     private Long prisonOffenderManagerId;
 
-    @JoinColumn(name = "ALLOCATION_TEAM_ID")
     @OneToOne
+    @JoinColumn(name = "ALLOCATION_TEAM_ID")
     private Team team;
 
-    @JoinColumn(name = "ALLOCATION_STAFF_ID")
     @OneToOne
+    @JoinColumn(name = "ALLOCATION_STAFF_ID")
     private Staff staff;
 
     @Column(name = "OFFENDER_ID")
@@ -33,8 +34,8 @@ public class PrisonOffenderManager {
     @Column(name = "SOFT_DELETED")
     private Long softDeleted;
 
-    @JoinColumn(name = "PROBATION_AREA_ID")
     @OneToOne
+    @JoinColumn(name = "PROBATION_AREA_ID")
     private ProbationArea probationArea;
 
     @Column(name = "ACTIVE_FLAG")
@@ -46,8 +47,8 @@ public class PrisonOffenderManager {
     @Column(name = "END_DATE")
     private Timestamp endDate;
 
-    @JoinColumn(name = "ALLOCATION_REASON_ID")
     @OneToOne
+    @JoinColumn(name = "ALLOCATION_REASON_ID")
     private StandardReference allocationReason;
 
     @OneToOne
@@ -59,6 +60,8 @@ public class PrisonOffenderManager {
 
     @OneToOne
     @JoinColumn(name = "OFFENDER_ID", referencedColumnName = "OFFENDER_ID", insertable = false, updatable = false)
+    // Only select OFFENDER rows that have SOFT_DELETED != 1
+    @Where(clause = "SOFT_DELETED != 1")
     private Offender managedOffender;
 
 }

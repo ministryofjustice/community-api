@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.List;
@@ -33,9 +34,13 @@ public class Staff {
 
     @OneToMany
     @JoinColumn(name = "ALLOCATION_STAFF_ID")
+    // Only select rows from OFFENDER_MANAGER where they have ACTIVE = 1 and SOFT_DELETED != 1
+    @Where(clause = "ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
     List<OffenderManager> offenderManagers;
 
     @OneToMany
     @JoinColumn(name = "ALLOCATION_STAFF_ID")
+    // Only select rows from PRISON_OFFENDER_MANAGER where they have ACTIVE = 1 AND SOFT_DELETED != 1
+    @Where(clause = "ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
     List<PrisonOffenderManager> prisonOffenderManagers;
 }

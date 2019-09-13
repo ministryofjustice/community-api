@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.sql.Blob;
@@ -133,6 +134,8 @@ public class Offender {
 
     @OneToMany
     @JoinColumn(name = "OFFENDER_ID")
+    // Only select OFFENDER_ADDRESS rows where SOFT_DELETED != 1
+    @Where(clause="SOFT_DELETED != 1")
     private List<OffenderAddress> offenderAddresses;
 
     @OneToMany
@@ -188,9 +191,12 @@ public class Offender {
     private PartitionArea partitionArea;
 
     @OneToMany(mappedBy = "offenderId")
+    // Only select OFFENDER_MANAGER rows where the ACTIVE_FLAG = 1 AND SOFT_DELETED != 1
+    @Where(clause = "ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
     private List<OffenderManager> offenderManagers;
 
     @OneToMany(mappedBy = "offenderId")
+    // Only select PRISON_OFFENDER_MANAGER rows where the ACTIVE_FLAG = 1 AND SOFT_DELETED= != 1
+    @Where(clause = "ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
     private List<PrisonOffenderManager> prisonOffenderManagers;
-
 }

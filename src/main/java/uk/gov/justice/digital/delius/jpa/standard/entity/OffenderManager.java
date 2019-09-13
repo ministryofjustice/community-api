@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -20,16 +21,16 @@ public class OffenderManager {
     @Id
     private Long offenderManagerId;
 
-    @JoinColumn(name = "TEAM_ID")
     @OneToOne
+    @JoinColumn(name = "TEAM_ID")
     private Team team;
 
-    @JoinColumn(name = "ALLOCATION_STAFF_ID")
     @OneToOne
+    @JoinColumn(name = "ALLOCATION_STAFF_ID")
     private Staff staff;
 
-    @JoinColumn(name = "PARTITION_AREA_ID")
     @OneToOne
+    @JoinColumn(name = "PARTITION_AREA_ID")
     private PartitionArea partitionArea;
 
     @Column(name = "OFFENDER_ID")
@@ -38,30 +39,30 @@ public class OffenderManager {
     @Column(name = "SOFT_DELETED")
     private Long softDeleted;
 
-    @JoinColumn(name = "PROVIDER_EMPLOYEE_ID")
     @OneToOne
+    @JoinColumn(name = "PROVIDER_EMPLOYEE_ID")
     private ProviderEmployee providerEmployee;
 
-    @JoinColumn(name = "PROVIDER_TEAM_ID")
     @OneToOne
+    @JoinColumn(name = "PROVIDER_TEAM_ID")
     private ProviderTeam providerTeam;
 
+    @OneToOne
     @JoinColumns({
             @JoinColumn(name = "STAFF_EMPLOYEE_ID", referencedColumnName = "STAFF_EMPLOYEE_ID", insertable = false, updatable = false),
             @JoinColumn(name = "TRUST_PROVIDER_FLAG", referencedColumnName = "TRUST_PROVIDER_FLAG", insertable = false, updatable = false)
     })
-    @OneToOne
     private Officer officer;
 
-    @JoinColumn(name = "PROBATION_AREA_ID")
     @OneToOne
+    @JoinColumn(name = "PROBATION_AREA_ID")
     private ProbationArea probationArea;
 
+    @OneToOne
     @JoinColumns({
             @JoinColumn(name = "TRUST_PROVIDER_TEAM_ID", referencedColumnName = "TRUST_PROVIDER_TEAM_ID", insertable = false, updatable = false),
             @JoinColumn(name = "TRUST_PROVIDER_FLAG", referencedColumnName = "TRUST_PROVIDER_FLAG", insertable = false, updatable = false)
     })
-    @OneToOne
     private AllTeam trustProviderTeam;
 
     @Column(name = "ACTIVE_FLAG")
@@ -73,19 +74,21 @@ public class OffenderManager {
     @Column(name = "END_DATE")
     private Timestamp endDate;
 
-    @JoinColumn(name = "ALLOCATION_REASON_ID")
     @OneToOne
+    @JoinColumn(name = "ALLOCATION_REASON_ID")
     private StandardReference allocationReason;
 
+    @OneToOne
     @JoinColumns({
             @JoinColumn(name = "OFFENDER_MANAGER_ID", referencedColumnName = "OFFENDER_MANAGER_ID", insertable = false, updatable = false),
             @JoinColumn(name = "OFFENDER_ID",
                     referencedColumnName = "OFFENDER_ID", insertable = false, updatable = false)
     })
-    @OneToOne
     private ResponsibleOfficer responsibleOfficer;
 
     @OneToOne
     @JoinColumn(name = "OFFENDER_ID", referencedColumnName = "OFFENDER_ID", insertable = false, updatable = false)
+    // Only select OFFENDER rows that have SOFT_DELETED != 1
+    @Where(clause = "SOFT_DELETED != 1")
     private Offender managedOffender;
 }
