@@ -3,7 +3,6 @@ package uk.gov.justice.digital.delius.jpa.standard.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.sql.Blob;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -174,11 +173,18 @@ public class Offender {
     @Column(name = "PREVIOUS_CONVICTION_DATE")
     private LocalDate previousConvictionDate;
 
-    @Column(name = "PREVIOUS_CONVICTION_DOCUMENT")
-    private Blob previousConvictionDocument;
-
     @Column(name = "PREV_CONVICTION_DOCUMENT_NAME")
     private String prevConvictionDocumentName;
+
+    @Column(name = "PREV_CON_ALFRESCO_DOCUMENT_ID")
+    private String previousConvictionsAlfrescoDocumentId;
+
+    @JoinColumn(name = "PREV_CON_CREATED_BY_USER_ID", referencedColumnName = "USER_ID")
+    @ManyToOne
+    private User previousConvictionsCreatedByUser;
+
+    @Column(name = "PREV_CON_CREATED_DATETIME")
+    private LocalDateTime previousConvictionsCreatedDatetime;
 
     @Column(name = "CURRENT_REMAND_STATUS")
     private String currentRemandStatus;

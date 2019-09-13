@@ -100,6 +100,10 @@ public class CourtReport {
     @Column(name = "COURT_REPORT_TYPE_ID")
     private Long courtReportTypeId;
 
+    @ManyToOne
+    @JoinColumn(name = "COURT_REPORT_TYPE_ID", updatable = false, insertable = false)
+    private RCourtReportType courtReportType;
+
     @Column(name = "CREATED_BY_USER_ID")
     private Long createdByUserId;
 

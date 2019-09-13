@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -88,4 +87,28 @@ public class Event {
 
     @Column(name = "LAST_UPDATED_DATETIME")
     private LocalDateTime lastUpdatedDatetime;
+
+    @Column(name = "CPS_ALFRESCO_DOCUMENT_ID")
+    private String cpsAlfrescoDocumentId;
+
+    @Column(name = "CPS_DOCUMENT_NAME")
+    private String cpsDocumentName;
+
+    @JoinColumn(name = "CPS_CREATED_BY_USER_ID", referencedColumnName = "USER_ID")
+    @ManyToOne
+    private User cpsCreatedByUser;
+
+    @Column(name = "CPS_CREATED_DATETIME")
+    private LocalDateTime cpsCreatedDatetime;
+
+    @Column(name = "CPS_DATE")
+    private LocalDate cpsDate;
+
+    @Column(name = "CPS_SOFT_DELETED")
+    private Long cpsSoftDeleted;
+
+    public boolean hasCpsPack() {
+        return !StringUtils.isEmpty(cpsAlfrescoDocumentId)
+                && cpsSoftDeleted.equals(0L);
+    }
 }
