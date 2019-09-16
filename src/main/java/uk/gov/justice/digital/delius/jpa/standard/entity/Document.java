@@ -29,7 +29,6 @@ public class Document {
     private Long offenderId;
 
     @Column(name = "PARTITION_AREA_ID")
-    @Builder.Default
     private Long partitionAreaId = 0L;
 
     @Column(name = "PRIMARY_KEY_ID")
@@ -51,11 +50,9 @@ public class Document {
     private User lastUpdatedByUser;
 
     @Column(name = "STATUS")
-    @Builder.Default
     private String status = "N";
 
     @Column(name = "WORK_IN_PROGRESS")
-    @Builder.Default
     private String workInProgress = "N";
 
     @Column(name = "TEMPLATE_NAME")

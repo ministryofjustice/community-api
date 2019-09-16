@@ -164,5 +164,163 @@ public class DocumentTransformerTest {
         assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Parole at Sheffield jail requested on 19/07/1965");
     }
 
+    @Test
+    public void addressAssessmentDescriptionsSet() {
+        final AddressAssessmentDocument document = anAddressAssessmentDocument();
+
+        document.getAddressAssessment().setAssessmentDate(LocalDateTime.of(1965, 7, 19, 0, 0));
+
+        assertThat(documentTransformer.offenderDocumentsDetailsOfAddressAssessmentDocuments(ImmutableList.of(document))).hasSize(1);
+
+        final OffenderDocumentDetail offenderDocumentDetail = documentTransformer.offenderDocumentsDetailsOfAddressAssessmentDocuments(ImmutableList.of(document)).get(0);
+
+        assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("ADDRESS_ASSESSMENT_DOCUMENT");
+        assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Address assessment related document");
+        assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Address assessment on 19/07/1965");
+    }
+
+    @Test
+    public void approvedPremisesReferralDescriptionsSet() {
+        final ApprovedPremisesReferralDocument document = anApprovedPremisesReferralDocument(1L);
+
+        document.getApprovedPremisesReferral().setReferralDate(LocalDateTime.of(1965, 7, 19, 0, 0));
+
+        assertThat(documentTransformer.offenderDocumentsDetailsOfApprovedPremisesReferralDocuments(ImmutableList.of(document))).hasSize(1);
+
+        final OffenderDocumentDetail offenderDocumentDetail = documentTransformer.offenderDocumentsDetailsOfApprovedPremisesReferralDocuments(ImmutableList.of(document)).get(0);
+
+        assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("APPROVED_PREMISES_REFERRAL_DOCUMENT");
+        assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Approved premises referral related document");
+        assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Approved premises referral on 19/07/1965");
+    }
+
+    @Test
+    public void assessmentDescriptionsSet() {
+        final AssessmentDocument document = anAssessmentDocument(1L);
+
+        document.getAssessment().setAssessmentDate(LocalDateTime.of(1965, 7, 19, 0, 0));
+        document.getAssessment().getAssessmentType().setDescription("Drugs testing");
+
+        assertThat(documentTransformer.offenderDocumentsDetailsOfAssessmentDocuments(ImmutableList.of(document))).hasSize(1);
+
+        final OffenderDocumentDetail offenderDocumentDetail = documentTransformer.offenderDocumentsDetailsOfAssessmentDocuments(ImmutableList.of(document)).get(0);
+
+        assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("ASSESSMENT_DOCUMENT");
+        assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Assessment document");
+        assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Assessment for Drugs testing on 19/07/1965");
+    }
+
+    @Test
+    public void caseAllocationDescriptionsSet() {
+        final CaseAllocationDocument document = aCaseAllocationDocument(1L);
+
+
+        assertThat(documentTransformer.offenderDocumentsDetailsOfCaseAllocationDocuments(ImmutableList.of(document))).hasSize(1);
+
+        final OffenderDocumentDetail offenderDocumentDetail = documentTransformer.offenderDocumentsDetailsOfCaseAllocationDocuments(ImmutableList.of(document)).get(0);
+
+        assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("CASE_ALLOCATION_DOCUMENT");
+        assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Case allocation document");
+    }
+
+    @Test
+    public void personalContactDescriptionsSet() {
+        final PersonalContactDocument document = aPersonalContactDocument();
+
+
+        assertThat(documentTransformer.offenderDocumentsDetailsOfPersonalContactDocuments(ImmutableList.of(document))).hasSize(1);
+
+        final OffenderDocumentDetail offenderDocumentDetail = documentTransformer.offenderDocumentsDetailsOfPersonalContactDocuments(ImmutableList.of(document)).get(0);
+
+        assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("PERSONAL_CONTACT_DOCUMENT");
+        assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Personal contact of type GP with Father");
+        assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Personal contact related document");
+    }
+
+    @Test
+    public void referralDescriptionsSet() {
+        final ReferralDocument document = aReferralDocument(1L);
+
+        document.getReferral().getReferralType().setDescription("Mental Health");
+        document.getReferral().setReferralDate(LocalDateTime.of(1965, 7, 19, 0, 0));
+
+
+        assertThat(documentTransformer.offenderDocumentsDetailsOfReferralDocuments(ImmutableList.of(document))).hasSize(1);
+
+        final OffenderDocumentDetail offenderDocumentDetail = documentTransformer.offenderDocumentsDetailsOfReferralDocuments(ImmutableList.of(document)).get(0);
+
+        assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("REFERRAL_DOCUMENT");
+        assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Referral for Mental Health on 19/07/1965");
+        assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Referral related document");
+    }
+
+    @Test
+    public void nsiDescriptionsSet() {
+        final NsiDocument document = aNsiDocument(1L);
+
+        document.getNsi().getNsiSubType().setCodeDescription("Healthy Sex Programme (HCP)");
+        document.getNsi().setReferralDate(LocalDate.of(1965, 7, 19));
+
+
+        assertThat(documentTransformer.offenderDocumentsDetailsOfNsiDocuments(ImmutableList.of(document))).hasSize(1);
+
+        final OffenderDocumentDetail offenderDocumentDetail = documentTransformer.offenderDocumentsDetailsOfNsiDocuments(ImmutableList.of(document)).get(0);
+
+        assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("NSI_DOCUMENT");
+        assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Non Statutory Intervention for Healthy Sex Programme (HCP) on 19/07/1965");
+        assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Non Statutory Intervention related document");
+    }
+
+    @Test
+    public void personalCircumstanceDescriptionsSet() {
+        final PersonalCircumstanceDocument document = aPersonalCircumstanceDocument();
+
+        document.getPersonalCircumstance().getCircumstanceType().setCodeDescription("AP - Medication in Posession - Assessment");
+        document.getPersonalCircumstance().setStartDate(LocalDate.of(1965, 7, 19));
+
+
+        assertThat(documentTransformer.offenderDocumentsDetailsOfPersonalCircumstanceDocuments(ImmutableList.of(document))).hasSize(1);
+
+        final OffenderDocumentDetail offenderDocumentDetail = documentTransformer.offenderDocumentsDetailsOfPersonalCircumstanceDocuments(ImmutableList.of(document)).get(0);
+
+        assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("PERSONAL_CIRCUMSTANCE_DOCUMENT");
+        assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Personal circumstance of AP - Medication in Posession - Assessment started on 19/07/1965");
+        assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Personal circumstance related document");
+    }
+
+    @Test
+    public void upwAppointmentDescriptionsSet() {
+        final UPWAppointmentDocument document = aUPWAppointmentDocument(1L);
+
+        document.getUpwAppointment().getUpwProject().setName("Cutting grass");
+        document.getUpwAppointment().setAppointmentDate(LocalDateTime.of(1965, 7, 19, 0, 0));
+
+
+        assertThat(documentTransformer.offenderDocumentsDetailsOfUPWAppointmentDocuments(ImmutableList.of(document))).hasSize(1);
+
+        final OffenderDocumentDetail offenderDocumentDetail = documentTransformer.offenderDocumentsDetailsOfUPWAppointmentDocuments(ImmutableList.of(document)).get(0);
+
+        assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("UPW_APPOINTMENT_DOCUMENT");
+        assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Unpaid work appointment on 19/07/1965 for Cutting grass");
+        assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Unpaid work appointment document");
+    }
+
+    @Test
+    public void contactDescriptionsSet() {
+        final ContactDocument document = aContactDocument();
+
+        document.getContact().getContactType().setDescription("Meet up");
+        document.getContact().setContactDate(LocalDate.of(1965, 7, 19));
+
+
+        assertThat(documentTransformer.offenderDocumentsDetailsOfContactDocuments(ImmutableList.of(document))).hasSize(1);
+
+        final OffenderDocumentDetail offenderDocumentDetail = documentTransformer.offenderDocumentsDetailsOfContactDocuments(ImmutableList.of(document)).get(0);
+
+        assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("CONTACT_DOCUMENT");
+        assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Contact on 19/07/1965 for Meet up");
+        assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Contact related document");
+    }
+
 
 }
