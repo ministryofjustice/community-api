@@ -56,6 +56,11 @@ public class ManagedOffenderAPITest {
     @Test
     public void getCurrentManagedOffendersForOfficer() {
 
+        /*
+         This officer has four offenders assigned in seed data.
+         Three are current and one is soft_deleted so only 3 managed offenders expected.
+         */
+
         ManagedOffender[] managedOffenders =
                 given()
                         .header("Authorization", aValidToken())
@@ -98,6 +103,30 @@ public class ManagedOffenderAPITest {
             .get("/staff/staffCode/SH9999/managedOffenders")
             .then()
             .statusCode(404);
+    }
+
+    @Test
+    public void getManagedOffendersSoftDeletedCheck() {
+
+        /*
+         This officer has two offenders assigned but one is SOFT_DELETED in seed data.
+         The response should be only one managed offender - G3232VA.
+        */
+
+        ManagedOffender[] managedOffenders =
+                given()
+                        .header("Authorization", aValidToken())
+                        .when()
+                        .get("/staff/staffCode/SH0008/managedOffenders")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .as(ManagedOffender[].class);
+
+        List<ManagedOffender> mos = Arrays.asList(managedOffenders);
+        assertThat(mos).hasSize(1);
+        assertThat(mos.get(0).getNomsNumber()).isEqualToIgnoringCase("G3232VA");
     }
 
     @Test
