@@ -363,7 +363,7 @@ public class DocumentTransformer {
         return OffenderDocumentDetail
                 .builder()
                 .author(authorOf(document))
-                .createdAt(document.getCreatedDate())
+                .createdAt(createAtOf(document))
                 .documentName(document.getDocumentName())
                 .id(document.getAlfrescoId())
                 .lastModifiedAt(document.getLastSaved());
@@ -381,6 +381,12 @@ public class DocumentTransformer {
 
 
 
+    }
+
+    private LocalDateTime createAtOf(Document document) {
+        return Optional
+                .ofNullable(document.getCreatedDate())
+                .orElseGet(document::getLastSaved);
     }
 
     private String fullName(User user) {

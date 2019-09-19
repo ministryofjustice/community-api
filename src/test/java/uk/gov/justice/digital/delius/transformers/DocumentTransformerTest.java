@@ -21,6 +21,25 @@ public class DocumentTransformerTest {
     }
 
     @Test
+    public void createdAtCopiedWhenPresent() {
+        final OffenderDocument offenderDocument = anOffenderDocument();
+        offenderDocument.setCreatedDate(LocalDateTime.of(1965, 7, 19, 0, 0, 0));
+        offenderDocument.setLastSaved(LocalDateTime.of(1985, 7, 19, 0, 0, 0));
+
+        assertThat(documentTransformer.offenderDocumentsDetailsOfOffenderDocuments(ImmutableList.of(offenderDocument))).hasSize(1);
+        assertThat(documentTransformer.offenderDocumentsDetailsOfOffenderDocuments(ImmutableList.of(offenderDocument)).get(0).getCreatedAt()).isEqualTo(LocalDateTime.of(1965, 7, 19, 0, 0, 0));
+    }
+
+    @Test
+    public void lastSavedCopiedWhenCreateNotPresent() {
+        final OffenderDocument offenderDocument = anOffenderDocument();
+        offenderDocument.setCreatedDate(null);
+        offenderDocument.setLastSaved(LocalDateTime.of(1985, 7, 19, 0, 0, 0));
+
+        assertThat(documentTransformer.offenderDocumentsDetailsOfOffenderDocuments(ImmutableList.of(offenderDocument))).hasSize(1);
+        assertThat(documentTransformer.offenderDocumentsDetailsOfOffenderDocuments(ImmutableList.of(offenderDocument)).get(0).getCreatedAt()).isEqualTo(LocalDateTime.of(1985, 7, 19, 0, 0, 0));
+    }
+    @Test
     public void authorNameUsesCreatedByWhenPresent() {
         final OffenderDocument offenderDocument = anOffenderDocument();
         offenderDocument.setCreatedByUser(
