@@ -10,6 +10,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @NoArgsConstructor
@@ -109,6 +110,6 @@ public class Event {
 
     public boolean hasCpsPack() {
         return !StringUtils.isEmpty(cpsAlfrescoDocumentId)
-                && cpsSoftDeleted.equals(0L);
+                && Optional.ofNullable(cpsSoftDeleted).orElse(0L).equals(0L);
     }
 }
