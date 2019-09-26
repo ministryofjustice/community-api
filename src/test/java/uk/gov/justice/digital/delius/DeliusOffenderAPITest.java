@@ -496,7 +496,7 @@ public class DeliusOffenderAPITest {
         given()
                 .header("Authorization", aValidToken())
                 .when()
-                .get("/offenders/crn/crn123/documents/doesnotexistinlist")
+                .get("/offenders/crn/crn123/documents/fa63c379-8b31-4e36-a152-2a57dfe251c5")
                 .then()
                 .statusCode(404);
     }
