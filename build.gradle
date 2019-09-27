@@ -19,15 +19,14 @@ project.targetCompatibility = 1.8
 def today = Instant.now()
 group = 'uk.gov.justice.digital.delius'
 
-def todayDate = LocalDate.now()
-def formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd')
-version todayDate.format(formatter)
+def todaysDate = LocalDate.now().format('yyyy-MM-dd')
+version = System.getenv('CI') ? "${todaysDate}.${System.getenv('CIRCLE_BUILD_NUM')}" : todaysDate
 
 jar {
     baseName = rootProject.name
     manifest {
         attributes 'Implementation-Title': rootProject.name,
-                'Implementation-Version': System.getenv('CI') ? "${version}.${System.getenv('CIRCLE_BUILD_NUM')}" : version
+                'Implementation-Version': version
     }
 }
 
@@ -35,7 +34,7 @@ springBoot {
     buildInfo {
         properties {
             artifact = rootProject.name
-            version = System.getenv('CI') ? "${version}.${System.getenv('CIRCLE_BUILD_NUM')}" : version
+            version =  version
             group = 'uk.gov.justice.digital.hmpps'
             name = rootProject.name
             time = today
