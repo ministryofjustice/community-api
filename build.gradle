@@ -2,7 +2,6 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 import java.time.Instant
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 plugins {
     id 'java'
