@@ -295,7 +295,7 @@ public class RegistrationTransformerTest {
                         )
                         .build())
                 .getEndDate())
-                .isEqualByComparingTo(LocalDate.now());
+                .isEqualTo(LocalDate.now());
     }
 
     @Test

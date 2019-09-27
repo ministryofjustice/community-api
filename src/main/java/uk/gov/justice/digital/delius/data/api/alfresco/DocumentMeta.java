@@ -1,17 +1,20 @@
 package uk.gov.justice.digital.delius.data.api.alfresco;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.time.OffsetDateTime;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DocumentMeta {
+    @Getter(AccessLevel.NONE)
     @JsonProperty("id")
     private String _id;
     //Annoyingly, the /details alfresco result has field named ID rather than id
+    @Getter(AccessLevel.NONE)
     @JsonProperty("ID")
     private String __ID;
     private String crn;

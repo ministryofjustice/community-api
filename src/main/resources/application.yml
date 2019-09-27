@@ -10,7 +10,7 @@ spring:
       ddl-auto: none
     properties:
       hibernate:
-#        show_sql: true
+  #        show_sql: true
   h2:
     console:
       enabled: true
@@ -20,7 +20,8 @@ jwt:
   lifetimeSeconds: 60000
 
 server:
-  context-path: ${contextpath:/api}
+  servlet:
+    context-path: ${contextpath:/api}
   compression:
     enabled: true
     mime-types: application/json
@@ -28,8 +29,19 @@ server:
 # Disable security locally so that the health end point shows full
 # details and all Spring Boot Actuator end points are visible
 management:
-  security:
-    enabled: false
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: 'info, health, ping'
+  endpoint:
+    health:
+      cache:
+        time-to-live: 2000ms
+      show-details: always
+    info:
+      cache:
+        time-to-live: 2000ms
 
 alfresco:
   baseUrl: 'http://localhost:8088/alfresco/s/noms-spg'
@@ -38,10 +50,24 @@ alfresco:
 
 logging:
   level:
-    uk:
-      gov: INFO
+    org.springframework: INFO
+    org.springframework.security: INFO
+    uk.gov.justice.hmpps: DEBUG
+  uris:
+    exclude:
+      regex: .*/health|*/info|*/ping|.*/swagger.*|/webjars/.*|
 
 delius:
   ldap:
     users:
       base: "cn=Users,dc=moj,dc=com"
+
+graceful:
+  shutdown:
+    enabled: true
+
+azure:
+  application-insights:
+    web:
+      enable-W3C: true
+

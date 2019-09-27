@@ -1,18 +1,13 @@
 package uk.gov.justice.digital.delius.config;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.health.HealthCheckRegistry;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.ApplicationListener;
@@ -47,30 +42,6 @@ public class ApplicationConfig {
                 buildProperties.iterator().forEachRemaining(prop -> log.info("{} : {}", prop.getKey(), prop.getValue()));
             } catch (NoSuchBeanDefinitionException nsbde) {
                 log.warn("No build info found! Is this a local build?");
-            }
-        };
-    }
-
-    @Bean
-    public HealthCheckRegistry healthCheckRegistry() {
-        return new HealthCheckRegistry();
-    }
-
-    @Bean
-    BeanPostProcessor hikariMetrics(MetricRegistry metricRegistry, HealthCheckRegistry healthCheckRegistry) {
-        return new BeanPostProcessor() {
-            @Override
-            public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-                return bean;
-            }
-
-            @Override
-            public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-                if (bean instanceof HikariDataSource) {
-                    ((HikariDataSource) bean).setMetricRegistry(metricRegistry);
-                    ((HikariDataSource) bean).setHealthCheckRegistry(healthCheckRegistry);
-                }
-                return bean;
             }
         };
     }

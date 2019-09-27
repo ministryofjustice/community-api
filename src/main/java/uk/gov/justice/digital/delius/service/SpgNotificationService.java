@@ -62,7 +62,7 @@ public class SpgNotificationService {
     }
 
     private void createNotificationsFor(NotificationEvents notificationEvent, Long offenderId, Long uniqueId ) {
-        spgNotificationRepository.save(
+        spgNotificationRepository.saveAll(
             areasThatHaveAnInterestInOffender(offenderId)
                     .stream()
                     .map(probationArea ->

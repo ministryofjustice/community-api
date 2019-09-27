@@ -1,14 +1,18 @@
 package uk.gov.justice.digital.delius.data.api;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Contact {
     protected Long linkedContactId;
     @ApiModelProperty(required = true)
