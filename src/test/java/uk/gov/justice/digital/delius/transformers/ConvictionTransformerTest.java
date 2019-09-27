@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.digital.delius.data.api.CourtCase;
 import uk.gov.justice.digital.delius.data.api.Institution;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
@@ -15,7 +15,7 @@ import uk.gov.justice.digital.delius.service.LookupSupplier;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -211,7 +211,6 @@ public class ConvictionTransformerTest {
 
     @Test
     public void institutionNotCopiedFromCustodyWhenNotPresent() {
-        when(institutionTransformer.institutionOf(any())).thenReturn(Institution.builder().build());
 
         assertThat(
                 transformer.convictionOf(

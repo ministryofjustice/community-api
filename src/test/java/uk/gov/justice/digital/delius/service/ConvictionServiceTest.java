@@ -20,7 +20,7 @@ import java.time.LocalDate;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -86,7 +86,7 @@ public class ConvictionServiceTest {
         when(lookupSupplier.courtSupplier()).thenReturn(courtId -> Court.builder().courtId(courtId).build());
 
         // echo back what we saved
-        when(convictionRepository.save(any(Event.class))).thenAnswer((invocationOnMock -> invocationOnMock.getArgumentAt(0, Event.class)));
+        when(convictionRepository.save(any(Event.class))).thenAnswer((invocationOnMock -> invocationOnMock.getArgument(0)));
         when(convictionRepository.findByOffenderId(1L)).thenReturn(ImmutableList.of(aEvent(), aEvent()));
 
         final Conviction conviction = convictionService.addCourtCaseFor(

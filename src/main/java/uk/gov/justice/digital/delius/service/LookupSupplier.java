@@ -65,17 +65,12 @@ public class LookupSupplier {
     }
 
     public Function<Long, Court> courtSupplier() {
-        return courtId -> Optional
-                .ofNullable(
-                        courtRepository.findOne(courtId))
+        return courtId -> courtRepository.findById(courtId)
                 .orElseThrow(() ->  new RuntimeException(String.format("No court found for %d", courtId)));
     }
 
     public Function<uk.gov.justice.digital.delius.data.api.OrderManager, ProbationArea> probationAreaSupplier() {
-        return orderManager ->
-                Optional
-                        .ofNullable(
-                                probationAreaRepository.findOne(orderManager.getProbationAreaId()))
+        return orderManager -> probationAreaRepository.findById(orderManager.getProbationAreaId())
                         .orElseThrow(() -> new RuntimeException(String.format("No probation area found for %s", orderManager.toString())));
     }
     public Function<uk.gov.justice.digital.delius.data.api.OrderManager, Team> teamSupplier() {
@@ -86,8 +81,7 @@ public class LookupSupplier {
     }
 
     private Team findTeamById(Long teamId) {
-        return Optional
-                .ofNullable(teamRepository.findOne(teamId))
+        return teamRepository.findById(teamId)
                 .orElseThrow(() -> new RuntimeException(String.format("No team found for %d", teamId)));
     }
 
@@ -110,14 +104,12 @@ public class LookupSupplier {
     }
 
     private Staff findStaffById(Long staffId) {
-        return Optional
-                .ofNullable(staffRepository.findOne(staffId))
+        return staffRepository.findById(staffId)
                 .orElseThrow(() -> new RuntimeException(String.format("No staff found for %d", staffId)));
     }
 
     private String unallocatedTeamCodeForProbationArea(Long probationAreaId) {
-        return Optional
-                .ofNullable(probationAreaRepository.findOne(probationAreaId))
+        return probationAreaRepository.findById(probationAreaId)
                 .map(probationArea -> String.format("%sUAT", probationArea.getCode())).orElseThrow(() -> new RuntimeException(String.format("No probation area found for %d", probationAreaId)));
     }
 

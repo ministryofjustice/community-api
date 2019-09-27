@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 import uk.gov.justice.digital.delius.jpa.standard.repository.*;
 
@@ -16,7 +16,7 @@ import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -77,7 +77,7 @@ public class SpgNotificationServiceTest {
                 .build());
 
         verify(spgNotificationHelperRepository, atLeastOnce()).getInterestedCRCs("99");
-        verify(spgNotificationRepository, atLeastOnce()).save(spgNotificationsCaptor.capture());
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
 
         spgNotificationsCaptor.getAllValues().forEach(notificationsSaved -> assertThat(notificationsSaved).isEmpty());
     }
@@ -98,7 +98,7 @@ public class SpgNotificationServiceTest {
                 ))
                 .build());
 
-        verify(spgNotificationRepository, atLeastOnce()).save(spgNotificationsCaptor.capture());
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
 
         assertThat(findFor(SpgNotificationService.NotificationEvents.UPDATE_OFFENDER.getNotificationCode())).hasSize(1);
     }
@@ -124,7 +124,7 @@ public class SpgNotificationServiceTest {
                 ))
                 .build());
 
-        verify(spgNotificationRepository, atLeastOnce()).save(spgNotificationsCaptor.capture());
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
 
         assertThat(findFor(SpgNotificationService.NotificationEvents.UPDATE_OFFENDER.getNotificationCode())).hasSize(2);
         assertThat(findFor(SpgNotificationService.NotificationEvents.UPDATE_OFFENDER.getNotificationCode()).stream().anyMatch(notification -> notification.getReceiverIdentity().getCode().equals("AA"))).isTrue();
@@ -148,7 +148,7 @@ public class SpgNotificationServiceTest {
                 ))
                 .build());
 
-        verify(spgNotificationRepository, atLeastOnce()).save(spgNotificationsCaptor.capture());
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
 
         assertThat(findFor(SpgNotificationService.NotificationEvents.INSERT_EVENT.getNotificationCode())).hasSize(1);
     }
@@ -174,7 +174,7 @@ public class SpgNotificationServiceTest {
                 ))
                 .build());
 
-        verify(spgNotificationRepository, atLeastOnce()).save(spgNotificationsCaptor.capture());
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
 
         assertThat(findFor(SpgNotificationService.NotificationEvents.INSERT_EVENT.getNotificationCode())).hasSize(2);
         assertThat(findFor(SpgNotificationService.NotificationEvents.INSERT_EVENT.getNotificationCode()).stream().anyMatch(notification -> notification.getReceiverIdentity().getCode().equals("AA"))).isTrue();
@@ -197,7 +197,7 @@ public class SpgNotificationServiceTest {
                 ))
                 .build());
 
-        verify(spgNotificationRepository, atLeastOnce()).save(spgNotificationsCaptor.capture());
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
 
         assertThat(findFor(SpgNotificationService.NotificationEvents.INSERT_COURT_APPEARANCE.getNotificationCode())).hasSize(2);
     }
@@ -223,7 +223,7 @@ public class SpgNotificationServiceTest {
                 ))
                 .build());
 
-        verify(spgNotificationRepository, atLeastOnce()).save(spgNotificationsCaptor.capture());
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
 
         assertThat(findFor(SpgNotificationService.NotificationEvents.INSERT_COURT_APPEARANCE.getNotificationCode())).hasSize(4);
 

@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.national.repository.UserRepository;
 import uk.gov.justice.digital.delius.jpa.oracle.UserProxy;
@@ -16,7 +16,7 @@ import uk.gov.justice.digital.delius.jwt.Jwt;
 import java.util.Optional;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -60,11 +60,11 @@ public class LookupSupplierTest {
         when(transferReasonRepository.findByCode(any())).thenReturn(Optional.of(TransferReason.builder().build()));
         when(userRepository.findByDistinguishedNameIgnoreCase(any())).thenReturn(Optional.of(User.builder().build()));
         when(standardReferenceRepository.findByCodeAndCodeSetName(any(), any())).thenReturn(Optional.of(StandardReference.builder().build()));
-        when(courtRepository.findOne(any(Long.class))).thenReturn(Court.builder().build());
-        when(probationAreaRepository.findOne(any(Long.class))).thenReturn(ProbationArea.builder().build());
-        when(teamRepository.findOne(any(Long.class))).thenReturn(Team.builder().build());
+        when(courtRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(Court.builder().build()));
+        when(probationAreaRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(ProbationArea.builder().build()));
+        when(teamRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(Team.builder().build()));
         when(teamRepository.findByCode(any())).thenReturn(Optional.of(Team.builder().build()));
-        when(staffRepository.findOne(any(Long.class))).thenReturn(Staff.builder().build());
+        when(staffRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(Staff.builder().build()));
         when(staffRepository.findByOfficerCode(any(String.class))).thenReturn(Optional.of(Staff.builder().build()));
     }
 
@@ -111,7 +111,7 @@ public class LookupSupplierTest {
     public void courtSupplierWillLookupById() {
         lookupSupplier.courtSupplier().apply(1L);
 
-        verify(courtRepository).findOne(1L);
+        verify(courtRepository).findById(1L);
     }
 
     @Test
@@ -121,7 +121,7 @@ public class LookupSupplierTest {
                 .probationAreaId(1L)
                 .build());
 
-        verify(probationAreaRepository).findOne(1L);
+        verify(probationAreaRepository).findById(1L);
     }
 
     @Test
@@ -131,12 +131,12 @@ public class LookupSupplierTest {
                 .teamId(1L)
                 .build());
 
-        verify(teamRepository).findOne(1L);
+        verify(teamRepository).findById(1L);
     }
 
     @Test
     public void teamSupplierWillLookupUnallocatedTeamForAreaWhenNoTeamIdSupplied() {
-        when(probationAreaRepository.findOne(1L)).thenReturn(ProbationArea.builder().code("ABC").build());
+        when(probationAreaRepository.findById(1L)).thenReturn(Optional.ofNullable(ProbationArea.builder().code("ABC").build()));
 
         Team team = lookupSupplier.teamSupplier().apply(uk.gov.justice.digital.delius.data.api.OrderManager
                 .builder()
@@ -156,12 +156,12 @@ public class LookupSupplierTest {
                 .officerId(1L)
                 .build());
 
-        verify(staffRepository).findOne(1L);
+        verify(staffRepository).findById(1L);
     }
 
     @Test
     public void staffSupplierWillLookupUnallocatedStaffForTeamWhenNoStaffIdSupplied() {
-        when(teamRepository.findOne(1L)).thenReturn(Team.builder().code("ABC").build());
+        when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(Team.builder().code("ABC").build()));
 
         Staff staff = lookupSupplier.staffSupplier().apply(uk.gov.justice.digital.delius.data.api.OrderManager
                 .builder()
@@ -175,7 +175,7 @@ public class LookupSupplierTest {
 
     @Test
     public void staffSupplierWillLookupUnallocatedStaffForUnallocatedTeamWhenNoStaffIdOrTeamIdSupplied() {
-        when(probationAreaRepository.findOne(1L)).thenReturn(ProbationArea.builder().code("ABC").build());
+        when(probationAreaRepository.findById(1L)).thenReturn(Optional.ofNullable(ProbationArea.builder().code("ABC").build()));
         when(teamRepository.findByCode("ABCUAT")).thenReturn(Optional.of(Team.builder().code("XYZ").build()));
 
         Staff staff = lookupSupplier.staffSupplier().apply(uk.gov.justice.digital.delius.data.api.OrderManager

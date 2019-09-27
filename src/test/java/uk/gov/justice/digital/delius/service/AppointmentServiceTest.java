@@ -6,9 +6,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
@@ -18,6 +17,7 @@ import uk.gov.justice.digital.delius.transformers.AppointmentTransformer;
 import uk.gov.justice.digital.delius.transformers.ContactTransformer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,7 +35,7 @@ public class AppointmentServiceTest {
     @Before
     public void before(){
         service = new AppointmentService(contactRepository, new AppointmentTransformer(new ContactTransformer()));
-        when(contactRepository.findAll(Matchers.any(Specification.class), Matchers.any(Sort.class))).thenReturn(ImmutableList.of());
+        when(contactRepository.findAll(any(Specification.class), any(Sort.class))).thenReturn(ImmutableList.of());
     }
 
     @Test

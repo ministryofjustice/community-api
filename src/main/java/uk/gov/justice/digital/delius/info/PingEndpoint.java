@@ -1,29 +1,18 @@
 package uk.gov.justice.digital.delius.info;
 
 
-import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
+import org.springframework.context.annotation.Configuration;
 
-@Component
-public class PingEndpoint implements Endpoint<String> {
+import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
-    @Override
-    public String getId() {
-        return "ping";
-    }
+@Configuration
+@WebEndpoint(id = "ping")
+public class PingEndpoint {
 
-    @Override
-    public String invoke() {
+    @ReadOperation(produces = TEXT_PLAIN_VALUE)
+    public String ping() {
         return "pong";
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-    @Override
-    public boolean isSensitive() {
-        return false;
     }
 }
