@@ -16,8 +16,6 @@ import uk.gov.justice.digital.delius.service.LookupSupplier;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-;
-
 @RunWith(MockitoJUnitRunner.class)
 public class MainOffenceTransformerTest {
     @Mock
