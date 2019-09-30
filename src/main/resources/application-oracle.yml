@@ -12,3 +12,7 @@ spring:
   flyway:
     enabled: false
 
+graceful:
+  shutdown:
+    enabled: true
+
