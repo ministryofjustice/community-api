@@ -9,8 +9,10 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.Oracle10gDialect
+  flyway:
+    enabled: false
 
-flyway:
-  enabled: false
-
+graceful:
+  shutdown:
+    enabled: true
 

@@ -1,9 +1,13 @@
 spring:
+  application:
+    name: community-api
   datasource:
     url: 'jdbc:h2:mem:testdb;Mode=Oracle'
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       leak-detection-threshold: 20000
+  profiles:
+    include: stdout
 
   jpa:
     hibernate:
@@ -64,7 +68,7 @@ delius:
 
 graceful:
   shutdown:
-    enabled: true
+    enabled: false
 
 azure:
   application-insights:
