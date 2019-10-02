@@ -1,8 +1,5 @@
 def get_offenderapi_version() {
-    sh '''
-    #!/bin/bash +x
-    echo 0.1.${env.BUILD_NUMBER} > offenderapi.version
-    '''
+    sh "echo 0.1.${env.BUILD_NUMBER} > offenderapi.version"
     return readFile("./offenderapi.version")
 }
 
