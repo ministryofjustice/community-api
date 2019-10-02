@@ -1,7 +1,7 @@
 def get_offenderapi_version() {
     sh '''
     #!/bin/bash +x
-    grep "version = " build.gradle | awk '{print $3}' | sed 's/\"//g' > offenderapi.version
+    echo 0.1.${env.BUILD_NUMBER} > offenderapi.version
     '''
     return readFile("./offenderapi.version")
 }
