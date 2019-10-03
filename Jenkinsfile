@@ -1,8 +1,5 @@
 def get_offenderapi_version() {
-    sh '''
-    #!/bin/bash +x
-    grep "version = " build.gradle | awk '{print $3}' | sed 's/\"//g' > offenderapi.version
-    '''
+    sh "echo 0.1.${env.BUILD_NUMBER} > offenderapi.version"
     return readFile("./offenderapi.version")
 }
 
@@ -139,7 +136,7 @@ pipeline {
         always {
             // Add a sleep to allow docker step to fully release file locks on failed run
             sleep(time: 3, unit: "SECONDS")
-            deleteDir()
+            // deleteDir()
         }
         success {
             slackSend(message: "Build successful -${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL.replace('http://', 'https://').replace(':8080', '')}|Open>)", color: 'good')
