@@ -22,7 +22,6 @@ def todaysDate = LocalDate.now().format('yyyy-MM-dd')
 version = System.getenv('CI') ? "${todaysDate}.${System.getenv('CIRCLE_BUILD_NUM')}" : todaysDate
 
 jar {
-    enabled = true
     baseName = rootProject.name
     manifest {
         attributes 'Implementation-Title': rootProject.name,
