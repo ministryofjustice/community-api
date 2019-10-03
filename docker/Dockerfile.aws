@@ -7,7 +7,7 @@ USER root
 RUN apk add curl jq
 
 USER tools
-COPY build/libs/delius-offender-api-*.${OFFENDERAPI_VERSION}.jar /home/tools/delius-offender-api.jar
+COPY build/libs/delius-offender-api-*.jar /home/tools/delius-offender-api.jar
 
 EXPOSE 8080
 
