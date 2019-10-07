@@ -20,7 +20,7 @@
         </appender>
     </springProfile>
 
-    <springProfile name="!(dev || stdout)">
+    <springProfile name="!(dev)">
         <appender name="logAppender" class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender"/>
     </springProfile>
 
