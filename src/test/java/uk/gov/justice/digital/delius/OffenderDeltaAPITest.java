@@ -18,6 +18,7 @@ import uk.gov.justice.digital.delius.jpa.dao.OffenderDelta;
 import uk.gov.justice.digital.delius.service.OffenderDeltaService;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoField;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -60,7 +61,7 @@ public class OffenderDeltaAPITest {
     @Test
     public void canGetOffenderDeltas() {
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now().with(ChronoField.MILLI_OF_SECOND, 0);;
 
         List<OffenderDelta> deltas = someDeltas(now, 20l);
         insert(deltas);
@@ -121,7 +122,7 @@ public class OffenderDeltaAPITest {
 
     @Test
     public void canDeleteOffenderDeltasOlderThan() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now().with(ChronoField.MILLI_OF_SECOND, 0);
 
         List<OffenderDelta> deltas = someDeltas(now, 20l);
         insert(deltas);
