@@ -13,12 +13,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.jpa.dao.OffenderDelta;
 import uk.gov.justice.digital.delius.service.OffenderDeltaService;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoField;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -30,6 +30,7 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"offender.ids.pagesize=5"})
+@ActiveProfiles("dev-schema")
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 public class OffenderDeltaAPITest {
@@ -61,7 +62,7 @@ public class OffenderDeltaAPITest {
     @Test
     public void canGetOffenderDeltas() {
 
-        LocalDateTime now = LocalDateTime.now().with(ChronoField.MILLI_OF_SECOND, 0);;
+        LocalDateTime now = LocalDateTime.now();
 
         List<OffenderDelta> deltas = someDeltas(now, 20l);
         insert(deltas);
@@ -122,7 +123,7 @@ public class OffenderDeltaAPITest {
 
     @Test
     public void canDeleteOffenderDeltasOlderThan() {
-        LocalDateTime now = LocalDateTime.now().with(ChronoField.MILLI_OF_SECOND, 0);
+        LocalDateTime now = LocalDateTime.now();
 
         List<OffenderDelta> deltas = someDeltas(now, 20l);
         insert(deltas);

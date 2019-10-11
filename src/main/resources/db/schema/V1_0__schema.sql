@@ -9262,7 +9262,7 @@ create table R_NOMIS_TYPE_NSI_TYPE
 create table OFFENDER_DELTA
 (
     OFFENDER_ID  NUMBER       not null,
-    DATE_CHANGED DATE         not null,
+    DATE_CHANGED TIMESTAMP    not null,
     ACTION       VARCHAR2(10) not null
         constraint OFFENDER_DELTA_ACTI_1109726585
             check (ACTION IN ('UPSERT', 'DELETE'))
