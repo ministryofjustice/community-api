@@ -1,1 +1,0 @@
-UPDATE OFFENDER SET OFFENDER_DETAILS = 'Some notes about the offender' WHERE OFFENDER_ID = 1;
