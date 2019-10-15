@@ -1,5 +1,16 @@
 def get_offenderapi_version() {
-    sh "echo 0.1.${env.BUILD_NUMBER} > offenderapi.version"
+    sh """
+    branch=\$(echo ${GIT_BRANCH} | sed 's/\\//_/g')
+    echo \$branch
+    echo ${BUILD_NUMBER}
+    if [ \\"\$branch\\" = \\"master\\" ]; then
+        echo "Master Branch build detected"
+        echo 0.1.${BUILD_NUMBER} > offenderapi.version;       
+    else
+        echo "Non Master Branch build detected"
+        echo 0.1.${BUILD_NUMBER}-\$branch > offenderapi.version;
+    fi
+    """
     return readFile("./offenderapi.version")
 }
 
