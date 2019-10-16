@@ -1,10 +1,13 @@
 package uk.gov.justice.digital.delius.util;
 
+import lombok.val;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static uk.gov.justice.digital.delius.util.OffenderHelper.anOffender;
 
@@ -62,7 +65,7 @@ public class EntityHelper {
         return anEvent(100L);
     }
 
-    private static Event anEvent(Long eventId) {
+    public static Event anEvent(Long eventId) {
         return Event
                 .builder()
                 .eventId(eventId)
@@ -76,6 +79,40 @@ public class EntityHelper {
                 .cpsDate(LocalDate.now())
                 .cpsCreatedDatetime(LocalDateTime.now())
                 .cpsSoftDeleted(0L)
+                .softDeleted(0L)
+                .activeFlag(1L)
+                .build();
+    }
+
+    public static Event aCustodyEvent() {
+        return aCustodyEvent(100L, new ArrayList<>());
+    }
+
+    public static Event aCustodyEvent(Long eventId, List<KeyDate> keyDates) {
+        val disposal = aDisposal(eventId);
+        return anEvent(eventId)
+                .toBuilder()
+                .disposal(aCustodialDisposal(keyDates, disposal))
+                .build();
+    }
+
+    private static Disposal aCustodialDisposal(List<KeyDate> keyDates, Disposal disposal) {
+        return disposal
+                .toBuilder()
+                .disposalType(DisposalType
+                        .builder()
+                        .sentenceType("NC")
+                        .build())
+                .custody(aCustody(disposal, keyDates))
+                .build();
+    }
+
+    private static Custody aCustody(Disposal disposal, List<KeyDate> keyDates) {
+        return Custody
+                .builder()
+                .disposal(disposal)
+                .custodyId(9999L)
+                .keyDates(keyDates)
                 .build();
     }
 
@@ -335,7 +372,23 @@ public class EntityHelper {
     private static Disposal aDisposal(Long eventId) {
         return Disposal
                 .builder()
+                .disposalType(
+                        DisposalType
+                                .builder()
+                                .sentenceType("SC")
+                                .build())
                 .event(anEvent(eventId))
+                .build();
+    }
+
+    public static Disposal aCommunityDisposal(Long eventId) {
+        return aDisposal(eventId)
+                .toBuilder()
+                .disposalType(
+                        DisposalType
+                                .builder()
+                                .sentenceType("SP")
+                                .build())
                 .build();
     }
 
@@ -377,5 +430,17 @@ public class EntityHelper {
                         .build())
                 .build();
 
+    }
+
+    public static KeyDate aKeyDate(String typeCode, String description, LocalDate date) {
+        return KeyDate
+                .builder()
+                .keyDate(date)
+                .keyDateType(StandardReference
+                        .builder()
+                        .codeDescription(description)
+                        .codeValue(typeCode)
+                        .build())
+                .build();
     }
 }

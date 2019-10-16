@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Data
 @Builder(toBuilder = true)
@@ -56,4 +57,7 @@ public class Disposal {
 
     @OneToOne(mappedBy = "disposal")
     private Custody custody;
+
+    @Column(name = "TERMINATION_DATE")
+    private LocalDate terminationDate;
 }

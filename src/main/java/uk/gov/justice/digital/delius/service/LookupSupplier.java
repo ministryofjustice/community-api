@@ -16,6 +16,7 @@ import java.util.function.Supplier;
 public class LookupSupplier {
     public static final String COURT_APPEARANCE_OUTCOME_REF_DATASET = "COURT APPEARANCE OUTCOME";
     public static final String ORDER_ALLOCATION_REASON_REF_DATASET = "ORDER ALLOCATION REASON";
+    public static final String CUSTODY_KEY_DATE_TYPE_REF_DATASET = "THROUGHCARE DATE TYPE";
     private final OffenceRepository offenceRepository;
     private final UserRepository userRepository;
     private final StandardReferenceRepository standardReferenceRepository;
@@ -62,6 +63,10 @@ public class LookupSupplier {
     public Function<String, StandardReference> orderAllocationReasonSupplier() {
         return code -> standardReferenceRepository.findByCodeAndCodeSetName(code, ORDER_ALLOCATION_REASON_REF_DATASET)
                 .orElseThrow(() -> new RuntimeException(String.format("No allocation reason found for %s", code)));
+    }
+
+    public Function<String, Optional<StandardReference>> custodyKeyDateTypeSupplier() {
+        return code -> standardReferenceRepository.findByCodeAndCodeSetName(code, CUSTODY_KEY_DATE_TYPE_REF_DATASET);
     }
 
     public Function<Long, Court> courtSupplier() {

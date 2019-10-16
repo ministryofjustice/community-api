@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.service;
 
 import io.jsonwebtoken.Claims;
+import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +16,7 @@ import uk.gov.justice.digital.delius.jwt.Jwt;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -108,6 +109,30 @@ public class LookupSupplierTest {
     }
 
     @Test
+    public void custodyKeyDateTypeSupplierWillLookupByCode() {
+        lookupSupplier.custodyKeyDateTypeSupplier().apply("AA");
+
+        verify(standardReferenceRepository).findByCodeAndCodeSetName("AA", "THROUGHCARE DATE TYPE");
+    }
+
+    @Test
+    public void custodyKeyDateTypeSupplierWillReturnEmptyWhenNotFound() {
+        when(standardReferenceRepository.findByCodeAndCodeSetName("AA", "THROUGHCARE DATE TYPE")).thenReturn(Optional.empty());
+
+        val maybeCustodyKeyDateType = lookupSupplier.custodyKeyDateTypeSupplier().apply("AA");
+        assertThat(maybeCustodyKeyDateType).isNotPresent();
+    }
+
+    @Test
+    public void custodyKeyDateTypeSupplierWillReturnRefDataWhenFound() {
+        when(standardReferenceRepository.findByCodeAndCodeSetName("AA", "THROUGHCARE DATE TYPE")).thenReturn(Optional.of(StandardReference.builder().build()));
+
+        val maybeCustodyKeyDateType = lookupSupplier.custodyKeyDateTypeSupplier().apply("AA");
+        assertThat(maybeCustodyKeyDateType).isPresent();
+    }
+
+
+    @Test
     public void courtSupplierWillLookupById() {
         lookupSupplier.courtSupplier().apply(1L);
 
@@ -138,7 +163,7 @@ public class LookupSupplierTest {
     public void teamSupplierWillLookupUnallocatedTeamForAreaWhenNoTeamIdSupplied() {
         when(probationAreaRepository.findById(1L)).thenReturn(Optional.ofNullable(ProbationArea.builder().code("ABC").build()));
 
-        Team team = lookupSupplier.teamSupplier().apply(uk.gov.justice.digital.delius.data.api.OrderManager
+        val team = lookupSupplier.teamSupplier().apply(uk.gov.justice.digital.delius.data.api.OrderManager
                 .builder()
                 .teamId(null)
                 .probationAreaId(1L)
@@ -163,7 +188,7 @@ public class LookupSupplierTest {
     public void staffSupplierWillLookupUnallocatedStaffForTeamWhenNoStaffIdSupplied() {
         when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(Team.builder().code("ABC").build()));
 
-        Staff staff = lookupSupplier.staffSupplier().apply(uk.gov.justice.digital.delius.data.api.OrderManager
+        val staff = lookupSupplier.staffSupplier().apply(uk.gov.justice.digital.delius.data.api.OrderManager
                 .builder()
                 .teamId(1L)
                 .build());
@@ -178,7 +203,7 @@ public class LookupSupplierTest {
         when(probationAreaRepository.findById(1L)).thenReturn(Optional.ofNullable(ProbationArea.builder().code("ABC").build()));
         when(teamRepository.findByCode("ABCUAT")).thenReturn(Optional.of(Team.builder().code("XYZ").build()));
 
-        Staff staff = lookupSupplier.staffSupplier().apply(uk.gov.justice.digital.delius.data.api.OrderManager
+        val staff = lookupSupplier.staffSupplier().apply(uk.gov.justice.digital.delius.data.api.OrderManager
                 .builder()
                 .probationAreaId(1L)
                 .build());

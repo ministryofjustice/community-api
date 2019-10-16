@@ -14,18 +14,21 @@ import uk.gov.justice.digital.delius.data.api.OffenceDetail;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
+import uk.gov.justice.digital.delius.service.ConvictionService.DuplicateConvictionsForBookingNumberException;
 import uk.gov.justice.digital.delius.transformers.*;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-@Import({ConvictionService.class, ConvictionTransformer.class, MainOffenceTransformer.class, AdditionalOffenceTransformer.class, CourtAppearanceTransformer.class, CourtReportTransformer.class, CourtTransformer.class, InstitutionTransformer.class})
+@Import({ConvictionService.class, ConvictionTransformer.class, MainOffenceTransformer.class, AdditionalOffenceTransformer.class, CourtAppearanceTransformer.class, CourtReportTransformer.class, CourtTransformer.class, InstitutionTransformer.class, CustodyKeyDateTransformer.class})
 public class ConvictionServiceTest {
 
     @Autowired
@@ -117,10 +120,79 @@ public class ConvictionServiceTest {
         verify(spgNotificationService).notifyNewCourtCaseCreated(any(Event.class));
     }
 
+    @Test
+    public void convictionReturnedWhenSingleConvictionMatchedForPrisonBookingNumber() throws DuplicateConvictionsForBookingNumberException {
+        when(convictionRepository.findByPrisonBookingNumber("A12345")).thenReturn(ImmutableList.of(
+                aEvent()
+                        .toBuilder()
+                        .eventId(999L)
+                        .build()));
+
+        Optional<Long> maybeConviction = convictionService.getConvictionIdByPrisonBookingNumber("A12345");
+
+        assertThat(maybeConviction)
+                .get()
+                .isEqualTo(999L);
+
+    }
+
+    @Test
+    public void exceptionThrownWhenMultipleActiveConvictionsMatchedForPrisonBookingNumber() {
+        when(convictionRepository.findByPrisonBookingNumber("A12345")).thenReturn(ImmutableList.of(
+                aEvent()
+                        .toBuilder()
+                        .eventId(999L)
+                        .build(),
+                aEvent()
+                        .toBuilder()
+                        .eventId(998L)
+                        .build())
+                );
+
+        assertThatThrownBy(
+                () -> convictionService.getConvictionIdByPrisonBookingNumber("A12345"))
+                .isInstanceOf(DuplicateConvictionsForBookingNumberException.class);
+    }
+
+    @Test
+    public void convictionReturnedWhenSingleActiveConvictionMatchedAmoungstDuplicatesForPrisonBookingNumber() throws DuplicateConvictionsForBookingNumberException {
+        when(convictionRepository.findByPrisonBookingNumber("A12345")).thenReturn(ImmutableList.of(
+                aEvent()
+                        .toBuilder()
+                        .eventId(998L)
+                        .activeFlag(0L)
+                        .build(),
+                aEvent()
+                        .toBuilder()
+                        .eventId(999L)
+                        .activeFlag(1L)
+                        .build()
+                ));
+
+        Optional<Long> maybeConviction = convictionService.getConvictionIdByPrisonBookingNumber("A12345");
+
+        assertThat(maybeConviction)
+                .get()
+                .isEqualTo(999L);
+
+    }
+
+
+    @Test
+    public void emptyReturnedWhenNoConvictionsMatchedForPrisonBookingNumber() throws DuplicateConvictionsForBookingNumberException {
+        when(convictionRepository.findByPrisonBookingNumber("A12345")).thenReturn(ImmutableList.of());
+
+        Optional<Long> maybeConviction = convictionService.getConvictionIdByPrisonBookingNumber("A12345");
+
+        assertThat(maybeConviction).isNotPresent();
+    }
+
+
     private Event aEvent() {
         return Event.builder()
                 .referralDate(LocalDate.now())
                 .additionalOffences(ImmutableList.of())
+                .activeFlag(1L)
                 .build();
     }
 
