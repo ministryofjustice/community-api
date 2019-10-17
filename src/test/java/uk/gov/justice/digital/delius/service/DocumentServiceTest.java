@@ -356,12 +356,14 @@ public class DocumentServiceTest {
     }
 
     @Test
-    public void nsiDocumentsDistributedToEachConviction() {
+    public void nsiDocumentsDistributedToEachConvictionAndOffender() {
         when(nsiDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(
                 aNsiDocument(1L),
                 aNsiDocument(2L),
                 aNsiDocument(2L),
-                aNsiDocument(2L)
+                aNsiDocument(2L),
+                aNsiDocument(),
+                aNsiDocument()
         ));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
@@ -369,6 +371,7 @@ public class DocumentServiceTest {
         assertThat(documents.getConvictions()).hasSize(2);
         assertThat(documents.getConvictions().get(0).getDocuments()).hasSize(1);
         assertThat(documents.getConvictions().get(1).getDocuments()).hasSize(3);
+        assertThat(documents.getDocuments()).hasSize(2);
     }
 
     @Test
