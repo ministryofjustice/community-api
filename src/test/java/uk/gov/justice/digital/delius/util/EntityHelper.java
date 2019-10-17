@@ -257,11 +257,24 @@ public class EntityHelper {
         return document;
     }
 
+    public static NsiDocument aNsiDocument() {
+        final NsiDocument document = new NsiDocument();
+        populateBasics(document);
+        document.setNsi(aNsi());
+        return document;
+    }
+
 
     private static Nsi aNsi(Long eventId) {
+        return aNsi()
+                .toBuilder()
+                .event(anEvent(eventId))
+                .build();
+    }
+
+    private static Nsi aNsi() {
         return Nsi
                 .builder()
-                .event(anEvent(eventId))
                 .nsiType(NsiType
                         .builder()
                         .description("Custody - Accredited Programme")

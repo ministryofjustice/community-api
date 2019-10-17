@@ -84,7 +84,8 @@ public class DocumentService {
         val assessmentDocuments = assessmentDocumentRepository.findByOffenderId(offenderId);
         val caseAllocationDocuments = caseAllocationDocumentRepository.findByOffenderId(offenderId);
         val referralDocuments = referralDocumentRepository.findByOffenderId(offenderId);
-        val nsiDocuments = nsiDocumentRepository.findByOffenderId(offenderId);
+        val allNsiDocuments = nsiDocumentRepository.findByOffenderId(offenderId);
+        val nsiEventDocuments = allNsiDocuments.stream().filter(this::isEventRelated).collect(toList());
         val upwAppointmentDocuments = upwAppointmentDocumentRepository.findByOffenderId(offenderId);
         val allContactDocuments = contactDocumentRepository.findByOffenderId(offenderId);
         val contactEventDocuments = allContactDocuments.stream().filter(this::isEventRelated).collect(toList());
@@ -103,7 +104,7 @@ public class DocumentService {
                 .addAll(assessmentDocuments.stream().map(this::eventId).collect(toList()))
                 .addAll(caseAllocationDocuments.stream().map(this::eventId).collect(toList()))
                 .addAll(referralDocuments.stream().map(this::eventId).collect(toList()))
-                .addAll(nsiDocuments.stream().map(this::eventId).collect(toList()))
+                .addAll(nsiEventDocuments.stream().map(this::eventId).collect(toList()))
                 .addAll(upwAppointmentDocuments.stream().map(this::eventId).collect(toList()))
                 .addAll(contactEventDocuments.stream().map(this::eventId).collect(toList()))
                 .build();
@@ -174,7 +175,7 @@ public class DocumentService {
                                         )
                                         .addAll(documentTransformer
                                                 .offenderDocumentsDetailsOfNsiDocuments(
-                                                        nsiDocuments
+                                                        nsiEventDocuments
                                                                 .stream()
                                                                 .filter(document -> eventId(document).equals(eventId))
                                                                 .collect(toList()))
@@ -211,6 +212,9 @@ public class DocumentService {
                                 .addAll(documentTransformer
                                         .offenderDocumentsDetailsOfContactDocuments(
                                                 allContactDocuments.stream().filter(not(this::isEventRelated)).collect(toList())))
+                                .addAll(documentTransformer
+                                        .offenderDocumentsDetailsOfNsiDocuments(
+                                                allNsiDocuments.stream().filter(not(this::isEventRelated)).collect(toList())))
                                 .build()
                 )
                 .convictions(convictions)
@@ -219,6 +223,10 @@ public class DocumentService {
 
     private boolean isEventRelated(ContactDocument contactDocument) {
         return Optional.ofNullable(contactDocument.getContact().getEvent()).isPresent();
+    }
+
+    private boolean isEventRelated(NsiDocument nsiDocument) {
+        return Optional.ofNullable(nsiDocument.getNsi().getEvent()).isPresent();
     }
 
     private Long eventId(EventDocument document) {
