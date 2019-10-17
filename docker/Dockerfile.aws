@@ -8,7 +8,9 @@ RUN apk add curl jq
 
 USER tools
 COPY build/libs/delius-offender-api-*.jar /home/tools/delius-offender-api.jar
+COPY build/libs/applicationinsights-agent*.jar /home/tools/agent.jar
+COPY AI-Agent.xml /home/tools/
 
 EXPOSE 8080
 
-ENTRYPOINT ["/usr/bin/java", "-jar", "/home/tools/delius-offender-api.jar"]
+ENTRYPOINT ["/usr/bin/java", "-javaagent:/home/tools/agent.jar", "-jar", "/home/tools/delius-offender-api.jar"]
