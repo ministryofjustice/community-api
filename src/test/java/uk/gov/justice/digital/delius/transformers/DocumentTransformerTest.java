@@ -277,7 +277,7 @@ public class DocumentTransformerTest {
     public void nsiDescriptionsSet() {
         final NsiDocument document = aNsiDocument(1L);
 
-        document.getNsi().getNsiSubType().setCodeDescription("Healthy Sex Programme (HCP)");
+        document.getNsi().getNsiType().setDescription("Custody - Accredited Programme");
         document.getNsi().setReferralDate(LocalDate.of(1965, 7, 19));
 
 
@@ -286,7 +286,7 @@ public class DocumentTransformerTest {
         final OffenderDocumentDetail offenderDocumentDetail = documentTransformer.offenderDocumentsDetailsOfNsiDocuments(ImmutableList.of(document)).get(0);
 
         assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("NSI_DOCUMENT");
-        assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Non Statutory Intervention for Healthy Sex Programme (HCP) on 19/07/1965");
+        assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Non Statutory Intervention for Custody - Accredited Programme on 19/07/1965");
         assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Non Statutory Intervention related document");
     }
 
