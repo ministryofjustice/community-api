@@ -53,7 +53,7 @@ tag:
 
 test: ecr_repo = $(shell cat ./ecr.repo)
 test:
-	bash -c "GOSS_FILES_STRATEGY=cp GOSS_FILES_PATH="./docker/tests/" GOSS_SLEEP=60 dgoss run $(ecr_repo):latest"
+	bash -c "GOSS_FILES_STRATEGY=cp GOSS_FILES_PATH="./docker/tests/" GOSS_SLEEP=120 dgoss run $(ecr_repo):latest"
 
 push: ecr_repo = $(shell cat ./ecr.repo)
 push:
