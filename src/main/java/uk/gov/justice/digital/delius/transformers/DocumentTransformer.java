@@ -348,7 +348,7 @@ public class DocumentTransformer {
         return offenderDocumentDetailBuilderOf(document)
                 .extendedDescription(String.format(
                         "Non Statutory Intervention for %s on %s",
-                        document.getNsi().getNsiSubType().getCodeDescription(),
+                        document.getNsi().getNsiType().getDescription(),
                         toHumanReadable(document.getNsi().getReferralDate())
                 ))
                 .type(KeyValue
