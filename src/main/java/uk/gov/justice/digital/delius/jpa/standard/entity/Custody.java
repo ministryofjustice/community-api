@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Builder(toBuilder = true)
@@ -35,4 +36,8 @@ public class Custody {
             @JoinColumn(name = "INSTITUTION_ID"),
             @JoinColumn(name = "ESTABLISHMENT")})
     private RInstitution institution;
+
+    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval=true, mappedBy = "custody")
+    private List<KeyDate> keyDates;
+
 }
