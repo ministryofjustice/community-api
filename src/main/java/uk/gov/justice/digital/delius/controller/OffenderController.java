@@ -138,38 +138,6 @@ public class OffenderController {
                 .orElse(new ResponseEntity<>(NOT_FOUND));
     }
 
-    @RequestMapping(value = "/offenders/offenderId/{offenderId}/release", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<OffenderDetail> getReleaseOffenderByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
-                                                                         final @PathVariable("offenderId") Long offenderId) {
-        Optional<OffenderDetail> offender = offenderService.getOffenderByOffenderId(offenderId);
-        return offender.map(
-                offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(offenderDetailNotFound());
-    }
-
-    //    /offenders/crn/{crn}/release
-    @RequestMapping(value = "/offenders/crn/{crn}/release", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<OffenderDetail> getReleaseFatOffenderByCrn(final @RequestHeader HttpHeaders httpHeaders,
-                                                                     final @PathVariable("crn") String crn) {
-        Optional<OffenderDetail> offender = offenderService.getOffenderByCrn(crn);
-        return offender.map(
-                offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(offenderDetailNotFound());
-
-    }
-
-    //    /offenders/nomsNumber/{nomsNumber}/release
-    @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/release", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<OffenderDetail> getReleaseOffenderByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                         final @PathVariable("nomsNumber") String nomsNumber) {
-        Optional<OffenderDetail> offender = offenderService.getOffenderByNomsNumber(nomsNumber);
-        return offender.map(
-                offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(offenderDetailNotFound());
-
-    }
-
-
     private Optional<List<DocumentMeta>> maybeDocumentMetasOf(Optional<String> maybeCrn) {
         return maybeCrn.map(crn -> alfrescoService.listDocuments(crn).getDocuments().stream().map(this::documentMetaOf).collect(Collectors.toList()));
     }
