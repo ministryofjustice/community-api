@@ -30,6 +30,7 @@ public class ConvictionService {
     private final EventRepository eventRepository;
     private final ConvictionTransformer convictionTransformer;
     private final CustodyKeyDateTransformer custodyKeyDateTransformer;
+    private final IAPSNotificationService iapsNotificationService;
     private final SpgNotificationService spgNotificationService;
     private final LookupSupplier lookupSupplier;
 
@@ -70,12 +71,14 @@ public class ConvictionService {
             ConvictionTransformer convictionTransformer,
             SpgNotificationService spgNotificationService,
             LookupSupplier lookupSupplier,
-            CustodyKeyDateTransformer custodyKeyDateTransformer) {
+            CustodyKeyDateTransformer custodyKeyDateTransformer,
+            IAPSNotificationService iapsNotificationService) {
         this.eventRepository = eventRepository;
         this.convictionTransformer = convictionTransformer;
         this.spgNotificationService = spgNotificationService;
         this.lookupSupplier = lookupSupplier;
         this.custodyKeyDateTransformer = custodyKeyDateTransformer;
+        this.iapsNotificationService = iapsNotificationService;
     }
 
     @Transactional(readOnly = true)
@@ -235,8 +238,11 @@ public class ConvictionService {
 
             eventRepository.saveAndFlush(event);
             spgNotificationService.notifyNewCustodyKeyDate(typeCode, event);
-        };
+        }
 
+        if (KeyDate.isSentenceExpiryKeyDate(typeCode)) {
+            iapsNotificationService.notifyEventUpdated(event);
+        }
 
         return getCustodyKeyDate(event, typeCode).orElseThrow(() -> new RuntimeException("Added/Updated keyDate has disappeared"));
     }
@@ -259,6 +265,9 @@ public class ConvictionService {
            keyDates.remove(keyDateToRemove);
            eventRepository.save(event);
            spgNotificationService.notifyDeletedCustodyKeyDate(keyDateToRemove, event);
+           if (KeyDate.isSentenceExpiryKeyDate(typeCode)) {
+               iapsNotificationService.notifyEventUpdated(event);
+           }
        });
     }
 

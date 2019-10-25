@@ -17,7 +17,9 @@ import uk.gov.justice.digital.delius.transformers.CustodyKeyDateTransformer;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -43,9 +45,12 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
     @Captor
     private ArgumentCaptor<Event> eventArgumentCaptor;
 
+    @Mock
+    private IAPSNotificationService iapsNotificationService;
+
     @Before
     public void setUp() {
-        convictionService = new ConvictionService(eventRepository, convictionTransformer, spgNotificationService, lookupSupplier, new CustodyKeyDateTransformer(lookupSupplier));
+        convictionService = new ConvictionService(eventRepository, convictionTransformer, spgNotificationService, lookupSupplier, new CustodyKeyDateTransformer(lookupSupplier), iapsNotificationService);
     }
 
 
@@ -84,6 +89,37 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
     }
 
     @Test
+    public void iapsIsNotNotifiedOfDeleteByOffenderIdIdAndWhenSentenceExpiryNotAffected() throws SingleActiveCustodyConvictionNotFoundException {
+        val event = aCustodyEvent(
+                1L,
+                listOf(aKeyDate("POM1", "POM Handover expected start date", LocalDate.now().minusDays(1))));
+
+        when(eventRepository.findByOffenderId(999L)).thenReturn(ImmutableList.of(event));
+
+        convictionService.deleteCustodyKeyDateByOffenderId(
+                999L,
+                "POM1");
+
+        verify(iapsNotificationService, never()).notifyEventUpdated(any());
+    }
+
+    @Test
+    public void iapsIsNotifiedOfDeleteWhenByOffenderIdAndWhenSentenceExpiryIsAffected() throws SingleActiveCustodyConvictionNotFoundException {
+        val event = aCustodyEvent(
+                1L,
+                listOf(aKeyDate("SED", "Sentence Expiry Date", LocalDate.now().minusDays(1))));
+
+        when(eventRepository.findByOffenderId(999L)).thenReturn(ImmutableList.of(event));
+
+        convictionService.deleteCustodyKeyDateByOffenderId(
+                999L,
+                "SED");
+
+        verify(iapsNotificationService).notifyEventUpdated(event);
+    }
+
+
+    @Test
     public void deletedCustodyKeyDateByConvictionIdIsRemoved() {
         val event = aCustodyEvent(1L, new ArrayList<>());
         event.getDisposal().getCustody().getKeyDates().add(aKeyDate("POM1", "POM Handover expected start date", LocalDate.now()));
@@ -115,6 +151,36 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
                 "POM1");
 
         verify(spgNotificationService).notifyDeletedCustodyKeyDate(keyDateToBeRemoved, event);
+    }
+
+    @Test
+    public void iapsIsNotNotifiedOfDeleteByConvictionIdAndWhenSentenceExpiryNotAffected() {
+        val event = aCustodyEvent(
+                1L,
+                listOf(aKeyDate("POM1", "POM Handover expected start date", LocalDate.now().minusDays(1))));
+
+        when(eventRepository.getOne(999L)).thenReturn(event);
+
+        convictionService.deleteCustodyKeyDateByConvictionId(
+                999L,
+                "POM1");
+
+        verify(iapsNotificationService, never()).notifyEventUpdated(any());
+    }
+
+    @Test
+    public void iapsIsNotifiedOfDeleteWhenByConvictionIdAndWhenSentenceExpiryIsAffected() {
+        val event = aCustodyEvent(
+                1L,
+                listOf(aKeyDate("SED", "Sentence Expiry Date", LocalDate.now().minusDays(1))));
+
+        when(eventRepository.getOne(999L)).thenReturn(event);
+
+        convictionService.deleteCustodyKeyDateByConvictionId(
+                999L,
+                "SED");
+
+        verify(iapsNotificationService).notifyEventUpdated(event);
     }
 
 
@@ -238,5 +304,9 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
         assertThat(inactiveCustodyEvent.getDisposal().getCustody().getKeyDates()).hasSize(1);
         assertThat(activeEventButTerminatedCustodyEvent.getDisposal().getCustody().getKeyDates()).hasSize(1);
 
+    }
+
+    private static <T> List<T> listOf(T item) {
+        return new ArrayList<>(singletonList(item));
     }
 }

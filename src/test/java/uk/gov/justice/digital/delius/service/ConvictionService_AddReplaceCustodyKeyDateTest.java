@@ -27,8 +27,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static uk.gov.justice.digital.delius.util.EntityHelper.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -46,6 +45,9 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
     private SpgNotificationService spgNotificationService;
 
     @Mock
+    private IAPSNotificationService iapsNotificationService;
+
+    @Mock
     private LookupSupplier lookupSupplier;
 
     @Captor
@@ -53,13 +55,13 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
 
     @Before
     public void setUp() {
-        convictionService = new ConvictionService(eventRepository, convictionTransformer, spgNotificationService, lookupSupplier, new CustodyKeyDateTransformer(lookupSupplier));
+        convictionService = new ConvictionService(eventRepository, convictionTransformer, spgNotificationService, lookupSupplier, new CustodyKeyDateTransformer(lookupSupplier), iapsNotificationService);
         when(lookupSupplier.userSupplier()).thenReturn(() -> User.builder().userId(88L).build());
         when(eventRepository.findByOffenderId(anyLong())).thenReturn(ImmutableList.of(aCustodyEvent()));
         when(lookupSupplier.custodyKeyDateTypeSupplier()).thenReturn(code -> Optional.of(StandardReference
                 .builder()
-                .codeDescription("POM Handover expected start date")
-                .codeValue("POM1")
+                .codeDescription("description")
+                .codeValue(code)
                 .build()));
     }
 
@@ -112,6 +114,38 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
                         .build());
 
         verify(spgNotificationService).notifyNewCustodyKeyDate("POM1", event);
+    }
+
+    @Test
+    public void iapsIsNotNotifiedOfAddWhenAddedByOffenderIdAndWhenSentenceExpiryNotAffected() throws SingleActiveCustodyConvictionNotFoundException, CustodyTypeCodeIsNotValidException {
+        val event = aCustodyEvent(1L, new ArrayList<>());
+        when(eventRepository.findByOffenderId(999L)).thenReturn(ImmutableList.of(event));
+
+        convictionService.addOrReplaceCustodyKeyDateByOffenderId(
+                999L,
+                "POM1",
+                CreateCustodyKeyDate
+                        .builder()
+                        .date(LocalDate.now())
+                        .build());
+
+        verify(iapsNotificationService, never()).notifyEventUpdated(any());
+    }
+
+    @Test
+    public void iapsIsNotifiedOfAddWhenAddedByOffenderIdAndWhenSentenceExpiryNotAffected() throws SingleActiveCustodyConvictionNotFoundException, CustodyTypeCodeIsNotValidException {
+        val event = aCustodyEvent(1L, new ArrayList<>());
+        when(eventRepository.findByOffenderId(999L)).thenReturn(ImmutableList.of(event));
+
+        convictionService.addOrReplaceCustodyKeyDateByOffenderId(
+                999L,
+                "SED",
+                CreateCustodyKeyDate
+                        .builder()
+                        .date(LocalDate.now())
+                        .build());
+
+        verify(iapsNotificationService).notifyEventUpdated(event);
     }
 
 
@@ -177,6 +211,44 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
                         .build());
 
         verify(spgNotificationService).notifyUpdateOfCustodyKeyDate("POM1", event);
+    }
+
+    @Test
+    public void iapsIsNotNotifiedOfReplaceWhenAddedByOffenderIdAndWhenSentenceExpiryNotAffected() throws SingleActiveCustodyConvictionNotFoundException, CustodyTypeCodeIsNotValidException {
+        val event = aCustodyEvent(
+                1L,
+                ImmutableList.of(aKeyDate("POM1", "POM Handover expected start date", LocalDate.now().minusDays(1))));
+
+        when(eventRepository.findByOffenderId(999L)).thenReturn(ImmutableList.of(event));
+
+        convictionService.addOrReplaceCustodyKeyDateByOffenderId(
+                999L,
+                "POM1",
+                CreateCustodyKeyDate
+                        .builder()
+                        .date(LocalDate.now())
+                        .build());
+
+        verify(iapsNotificationService, never()).notifyEventUpdated(any());
+    }
+
+    @Test
+    public void iapsIsNotifiedOfUpdateWhenAddedByOffenderIdAndWhenSentenceExpiryIsAffected() throws SingleActiveCustodyConvictionNotFoundException, CustodyTypeCodeIsNotValidException {
+        val event = aCustodyEvent(
+                1L,
+                ImmutableList.of(aKeyDate("SED", "Sentence Expiry Date", LocalDate.now().minusDays(1))));
+
+        when(eventRepository.findByOffenderId(999L)).thenReturn(ImmutableList.of(event));
+
+        convictionService.addOrReplaceCustodyKeyDateByOffenderId(
+                999L,
+                "SED",
+                CreateCustodyKeyDate
+                        .builder()
+                        .date(LocalDate.now())
+                        .build());
+
+        verify(iapsNotificationService).notifyEventUpdated(event);
     }
 
     @Test
@@ -252,6 +324,45 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
 
         verify(spgNotificationService).notifyNewCustodyKeyDate("POM1", event);
     }
+
+    @Test
+    public void iapsIsNotNotifiedOfReplaceWhenAddedByConvictionIdAndWhenSentenceExpiryNotAffected() throws SingleActiveCustodyConvictionNotFoundException, CustodyTypeCodeIsNotValidException {
+        val event = aCustodyEvent(
+                1L,
+                ImmutableList.of(aKeyDate("POM1", "POM Handover expected start date", LocalDate.now().minusDays(1))));
+
+        when(eventRepository.getOne(999L)).thenReturn(event);
+
+        convictionService.addOrReplaceCustodyKeyDateByConvictionId(
+                999L,
+                "POM1",
+                CreateCustodyKeyDate
+                        .builder()
+                        .date(LocalDate.now())
+                        .build());
+
+        verify(iapsNotificationService, never()).notifyEventUpdated(any());
+    }
+
+    @Test
+    public void iapsIsNotifiedOfUpdateWhenAddedByConvictionIdAndWhenSentenceExpiryIsAffected() throws CustodyTypeCodeIsNotValidException {
+        val event = aCustodyEvent(
+                1L,
+                ImmutableList.of(aKeyDate("SED", "Sentence Expiry Date", LocalDate.now().minusDays(1))));
+
+        when(eventRepository.getOne(999L)).thenReturn(event);
+
+        convictionService.addOrReplaceCustodyKeyDateByConvictionId(
+                999L,
+                "SED",
+                CreateCustodyKeyDate
+                        .builder()
+                        .date(LocalDate.now())
+                        .build());
+
+        verify(iapsNotificationService).notifyEventUpdated(event);
+    }
+
 
     @Test
     public void spgIsNotifiedOfUpdateWhenReplacedByConvictionId() throws CustodyTypeCodeIsNotValidException {

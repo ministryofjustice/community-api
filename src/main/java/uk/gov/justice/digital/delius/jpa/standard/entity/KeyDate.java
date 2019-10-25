@@ -5,6 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Data
 @ToString(exclude = {"custody"})
@@ -44,4 +45,7 @@ public class KeyDate {
     @Column(name = "LAST_UPDATED_DATETIME")
     private LocalDateTime lastUpdatedDatetime;
 
+    public static boolean isSentenceExpiryKeyDate(String keyDateCode) {
+        return "SED".equals(keyDateCode);
+    }
 }

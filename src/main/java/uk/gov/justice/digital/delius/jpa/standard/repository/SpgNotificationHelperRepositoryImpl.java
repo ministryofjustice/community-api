@@ -1,16 +1,18 @@
 package uk.gov.justice.digital.delius.jpa.standard.repository;
 
+import lombok.val;
+import org.hibernate.Session;
+import org.hibernate.jdbc.ReturningWork;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 
 import javax.persistence.EntityManager;
-import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
-import javax.persistence.StoredProcedureQuery;
 import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 @Profile("oracle")
@@ -21,20 +23,24 @@ public class SpgNotificationHelperRepositoryImpl implements SpgNotificationHelpe
 
     @Override
     public List<ProbationArea> getInterestedCRCs(String offenderId) {
-
-        StoredProcedureQuery query = entityManager.createStoredProcedureQuery( "pkg_search.procGetInterestedCRCs" );
-        query.registerStoredProcedureParameter( 1, String.class, ParameterMode.IN );
-        query.registerStoredProcedureParameter( 2, Class.class, ParameterMode.REF_CURSOR );
-        query.setParameter( 1, offenderId );
-        query.execute();
-        List<Object[]> probationAreas = query.getResultList();
-
-        return probationAreas.stream().map(rs -> ProbationArea
-                .builder()
-                .probationAreaId(((BigDecimal)rs[1]).longValue())
-                .code((String)rs[2])
-                .build()).collect(Collectors.toList());
-
+        final ReturningWork<List<ProbationArea>> work = connection -> {
+            val call = connection.prepareCall("{call pkg_search.procGetInterestedCRCs(?, ?)}");
+            call.registerOutParameter(2, oracle.jdbc.OracleTypes.CURSOR);
+            call.setString(1, offenderId);
+            call.execute();
+            val result = (ResultSet) call.getObject(2);
+            val areas = new ArrayList<ProbationArea>();
+            while (result.next()) {
+                areas.add(ProbationArea
+                        .builder()
+                        .probationAreaId(result.getBigDecimal(1).longValue())
+                        .code(result.getString(2))
+                        .build());
+            }
+            return areas;
+        };
+        Session session = (Session) entityManager.getDelegate();
+        return session.doReturningWork(work);
     }
 
 

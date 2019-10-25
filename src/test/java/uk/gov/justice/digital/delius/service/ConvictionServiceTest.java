@@ -43,6 +43,8 @@ public class ConvictionServiceTest {
     @MockBean
     private SpgNotificationService spgNotificationService;
 
+    @MockBean
+    private IAPSNotificationService iapsNotificationService;
 
     @Test
     public void convictionsOrderedByCreationDate() {
