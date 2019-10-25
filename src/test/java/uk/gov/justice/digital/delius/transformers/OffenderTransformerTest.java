@@ -174,7 +174,7 @@ public class OffenderTransformerTest {
         assertThat(offenderTransformer.offenderManagersOf(ImmutableList.of(
                 aOffenderManager()
                         .toBuilder()
-                        .probationArea(aProbationArea())
+                        .probationArea(npsProbationArea())
                         .build()))
                 .get(0).getProbationArea().getNps()).isTrue();
     }
@@ -184,7 +184,7 @@ public class OffenderTransformerTest {
         assertThat(offenderTransformer.offenderManagersOf(ImmutableList.of(
                 aOffenderManager()
                         .toBuilder()
-                        .probationArea(bProbationArea())
+                        .probationArea(crcProbationArea())
                         .build()))
                 .get(0).getProbationArea().getNps()).isFalse();
     }
@@ -202,7 +202,7 @@ public class OffenderTransformerTest {
                         .allocationDate(Timestamp.valueOf(LocalDateTime.parse("2018-01-01T00:00:00")))
                         .endDate(Timestamp.valueOf(LocalDateTime.parse("2019-01-01T00:00:00")))
                         .activeFlag(0L)
-                        .probationArea(aProbationArea())
+                        .probationArea(npsProbationArea())
                         .team(aTeam())
                         .providerTeam(aProviderTeam())
                         .staff(anOfficerWithoutOffenderManagers())
@@ -215,7 +215,7 @@ public class OffenderTransformerTest {
                         .offenderId(1L)
                         .allocationDate(Timestamp.valueOf(LocalDateTime.parse("2019-01-01T00:00:00")))
                         .activeFlag(1L)
-                        .probationArea(bProbationArea())
+                        .probationArea(crcProbationArea())
                         .team(aTeam())
                         .providerTeam(aProviderTeam())
                         .staff(anOfficerWithoutOffenderManagers())
@@ -308,11 +308,11 @@ public class OffenderTransformerTest {
         return Team.builder().teamId(5L).code("A1").description("A1 DESC").localDeliveryUnit(aLocalDeliveryUnit()).build();
     }
 
-    private ProbationArea aProbationArea() {
+    private ProbationArea npsProbationArea() {
         return ProbationArea.builder().probationAreaId(6L).code("PA1").description("PA1 DESC").privateSector(0L).build();
     }
 
-    private ProbationArea bProbationArea() {
+    private ProbationArea crcProbationArea() {
         return ProbationArea.builder().probationAreaId(6L).code("PA2").description("PA2 DESC").privateSector(1L).build();
     }
 
