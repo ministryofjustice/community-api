@@ -110,4 +110,17 @@ public class LogonAPITest {
         assertThat(jwt.parseToken(token).get().get(Jwt.UID)).isEqualTo("NationalUser");
     }
 
+    @Test
+    public void logonWithAPIUserDistinguishedNameGivesTokenContainingAPIUser() {
+        String token = given()
+                .body("APIUser")
+                .when()
+                .post("/logon")
+                .then()
+                .statusCode(200)
+                .extract().body().asString();
+
+        assertThat(jwt.parseToken(token).get().get(Jwt.UID)).isEqualTo("APIUser");
+    }
+
 }
