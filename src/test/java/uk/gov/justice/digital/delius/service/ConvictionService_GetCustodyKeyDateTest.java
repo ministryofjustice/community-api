@@ -40,9 +40,12 @@ public class ConvictionService_GetCustodyKeyDateTest {
     @Mock
     private LookupSupplier lookupSupplier;
 
+    @Mock
+    private IAPSNotificationService iapsNotificationService;
+
     @Before
     public void setUp() {
-        convictionService = new ConvictionService(eventRepository, convictionTransformer, spgNotificationService, lookupSupplier, new CustodyKeyDateTransformer(lookupSupplier));
+        convictionService = new ConvictionService(eventRepository, convictionTransformer, spgNotificationService, lookupSupplier, new CustodyKeyDateTransformer(lookupSupplier), iapsNotificationService);
         when(eventRepository.findByOffenderId(anyLong())).thenReturn(ImmutableList.of(aCustodyEvent()));
     }
 
