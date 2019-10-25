@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.controller;
 
+import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -34,8 +35,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Slf4j
 @Api(description = "Obtain JWT token", tags = "Logon as user")
 public class LogonController {
-
-    public static final String NATIONAL_USER = "NationalUser";
+    private static final List<String> SYSTEM_USERS = ImmutableList.of("NationalUser", "APIUser");
     private final Jwt jwt;
     private final LdapRepository ldapRepository;
     private final UserRepositoryWrapper userRepositoryWrapper;
@@ -60,7 +60,7 @@ public class LogonController {
 
         log.info("Received call to getToken with body {}", distinguishedName);
 
-        Optional<String> maybeUid = NATIONAL_USER.equals(distinguishedName) ? Optional.of("NationalUser") : ldapRepository.getDeliusUid(distinguishedName);
+        Optional<String> maybeUid = SYSTEM_USERS.contains(distinguishedName) ? Optional.of(distinguishedName) : ldapRepository.getDeliusUid(distinguishedName);
 
         return maybeUid.map(uid ->
                 new ResponseEntity<>(jwt.buildToken(UserData.builder()
