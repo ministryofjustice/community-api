@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
+import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +19,8 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aCustodyEvent;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aKeyDate;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SpgNotificationServiceTest {
@@ -83,7 +86,7 @@ public class SpgNotificationServiceTest {
     }
 
     @Test
-    public void withOneInterestedCBCOffenderUpdateNotificationIsSaved() {
+    public void withOneInterestedCRCOffenderUpdateNotificationIsSaved() {
         when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of(ProbationArea
                 .builder()
                 .code("AA")
@@ -239,6 +242,209 @@ public class SpgNotificationServiceTest {
         assertThat(findFor(SpgNotificationService.NotificationEvents.INSERT_COURT_APPEARANCE.getNotificationCode())
                 .stream().anyMatch(notification ->
                         notification.getReceiverIdentity().getCode().equals("AB") && notification.getUniqueId() == 21L)).isTrue();
+    }
+
+
+    @Test
+    public void withNoInterestedCRCsNothingInsertedForNewCustodyKeyDateNotification() {
+        when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of());
+
+        val event = aCustodyEvent(99L, ImmutableList.of(aKeyDate(88L, "POM1")));
+        spgNotificationService.notifyNewCustodyKeyDate("POM1", event);
+
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+        assertThat(findFor(SpgNotificationService.NotificationEvents.INSERT_CUSTODY_KEY_DATE.getNotificationCode())).isEmpty();
+    }
+
+    @Test
+    public void withOneInterestedCRCInsertCustodyKeyDateNotificationIsSaved() {
+        when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of(ProbationArea
+                .builder()
+                .code("AA")
+                .build()));
+
+        val event = aCustodyEvent(99L, ImmutableList.of(aKeyDate(88L, "POM1")));
+        spgNotificationService.notifyNewCustodyKeyDate("POM1", event);
+
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+        assertThat(findFor(SpgNotificationService.NotificationEvents.INSERT_CUSTODY_KEY_DATE.getNotificationCode())).hasSize(1);
+    }
+
+    @Test
+    public void keyInformationAboutTheInsertedCustodyKeyDateNotificationIsSaved() {
+        when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of(ProbationArea
+                .builder()
+                .code("AA")
+                .build()));
+
+        val event = aCustodyEvent(99L, 77L, ImmutableList.of(aKeyDate(88L,"POM1")));
+        spgNotificationService.notifyNewCustodyKeyDate("POM1", event);
+
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+        val notification = findFor(SpgNotificationService.NotificationEvents.INSERT_CUSTODY_KEY_DATE.getNotificationCode()).get(0);
+        assertThat(notification.getUniqueId()).isEqualTo(88L);
+        assertThat(notification.getOffenderId()).isEqualTo(77L);
+        assertThat(notification.getParentEntityId()).isEqualTo(99L);
+    }
+
+    @Test
+    public void withManyInterestedCRCsInsertCustodyKeyDateNotificationIsSavedForEachProbationArea() {
+        when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of(
+                ProbationArea
+                        .builder()
+                        .code("AA")
+                        .build(),
+                ProbationArea
+                        .builder()
+                        .code("AB")
+                        .build()));
+
+        val event = aCustodyEvent(99L, ImmutableList.of(aKeyDate(88L, "POM1")));
+        spgNotificationService.notifyNewCustodyKeyDate("POM1", event);
+
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+        assertThat(findFor(SpgNotificationService.NotificationEvents.INSERT_CUSTODY_KEY_DATE.getNotificationCode())).hasSize(2);
+        assertThat(findFor(SpgNotificationService.NotificationEvents.INSERT_CUSTODY_KEY_DATE.getNotificationCode()).stream().anyMatch(notification -> notification.getReceiverIdentity().getCode().equals("AA"))).isTrue();
+        assertThat(findFor(SpgNotificationService.NotificationEvents.INSERT_CUSTODY_KEY_DATE.getNotificationCode()).stream().anyMatch(notification -> notification.getReceiverIdentity().getCode().equals("AB"))).isTrue();
+    }
+
+    @Test
+    public void withNoInterestedCRCsNothingInsertedForUpdatedCustodyKeyDateNotification() {
+        when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of());
+
+        val event = aCustodyEvent(99L, ImmutableList.of(aKeyDate(88L, "POM1")));
+        spgNotificationService.notifyUpdateOfCustodyKeyDate("POM1", event);
+
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+        assertThat(findFor(SpgNotificationService.NotificationEvents.UPDATE_CUSTODY_KEY_DATE.getNotificationCode())).isEmpty();
+    }
+
+
+    @Test
+    public void withOneInterestedCRCUpdatedCustodyKeyDateNotificationIsSaved() {
+        when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of(ProbationArea
+                .builder()
+                .code("AA")
+                .build()));
+
+        val event = aCustodyEvent(99L, ImmutableList.of(aKeyDate(88L, "POM1")));
+        spgNotificationService.notifyUpdateOfCustodyKeyDate("POM1", event);
+
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+        assertThat(findFor(SpgNotificationService.NotificationEvents.UPDATE_CUSTODY_KEY_DATE.getNotificationCode())).hasSize(1);
+    }
+
+    @Test
+    public void keyInformationAboutTheUpdatedCustodyKeyDateNotificationIsSaved() {
+        when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of(ProbationArea
+                .builder()
+                .code("AA")
+                .build()));
+
+        val event = aCustodyEvent(99L, 77L, ImmutableList.of(aKeyDate(88L,"POM1")));
+        spgNotificationService.notifyUpdateOfCustodyKeyDate("POM1", event);
+
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+        val notification = findFor(SpgNotificationService.NotificationEvents.UPDATE_CUSTODY_KEY_DATE.getNotificationCode()).get(0);
+        assertThat(notification.getUniqueId()).isEqualTo(88L);
+        assertThat(notification.getOffenderId()).isEqualTo(77L);
+        assertThat(notification.getParentEntityId()).isEqualTo(99L);
+    }
+
+    @Test
+    public void withManyInterestedCRCsUpdateCustodyKeyDateNotificationIsSavedForEachProbationArea() {
+        when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of(
+                ProbationArea
+                        .builder()
+                        .code("AA")
+                        .build(),
+                ProbationArea
+                        .builder()
+                        .code("AB")
+                        .build()));
+
+        val event = aCustodyEvent(99L, ImmutableList.of(aKeyDate(88L, "POM1")));
+        spgNotificationService.notifyUpdateOfCustodyKeyDate("POM1", event);
+
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+        assertThat(findFor(SpgNotificationService.NotificationEvents.UPDATE_CUSTODY_KEY_DATE.getNotificationCode())).hasSize(2);
+        assertThat(findFor(SpgNotificationService.NotificationEvents.UPDATE_CUSTODY_KEY_DATE.getNotificationCode()).stream().anyMatch(notification -> notification.getReceiverIdentity().getCode().equals("AA"))).isTrue();
+        assertThat(findFor(SpgNotificationService.NotificationEvents.UPDATE_CUSTODY_KEY_DATE.getNotificationCode()).stream().anyMatch(notification -> notification.getReceiverIdentity().getCode().equals("AB"))).isTrue();
+    }
+
+    @Test
+    public void withNoInterestedCRCsNothingInsertedForDeletedCustodyKeyDateNotification() {
+        when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of());
+
+        val event = aCustodyEvent(99L, 77L, ImmutableList.of());
+        spgNotificationService.notifyDeletedCustodyKeyDate(aKeyDate(88L,"POM1"), event);
+
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+        assertThat(findFor(SpgNotificationService.NotificationEvents.DELETE_CUSTODY_KEY_DATE.getNotificationCode())).isEmpty();
+    }
+
+    @Test
+    public void withOneInterestedCRCDeleteCustodyKeyDateNotificationIsSaved() {
+        when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of(ProbationArea
+                .builder()
+                .code("AA")
+                .build()));
+
+        val event = aCustodyEvent(99L, 77L, ImmutableList.of());
+        spgNotificationService.notifyDeletedCustodyKeyDate(aKeyDate(88L,"POM1"), event);
+
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+        assertThat(findFor(SpgNotificationService.NotificationEvents.DELETE_CUSTODY_KEY_DATE.getNotificationCode())).hasSize(1);
+    }
+
+    @Test
+    public void keyInformationAboutTheDeletedCustodyKeyDateNotificationIsSaved() {
+        when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of(ProbationArea
+                .builder()
+                .code("AA")
+                .build()));
+
+        val event = aCustodyEvent(99L, 77L, ImmutableList.of());
+        spgNotificationService.notifyDeletedCustodyKeyDate(aKeyDate(88L,"POM1"), event);
+
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+        val notification = findFor(SpgNotificationService.NotificationEvents.DELETE_CUSTODY_KEY_DATE.getNotificationCode()).get(0);
+        assertThat(notification.getUniqueId()).isEqualTo(88L);
+        assertThat(notification.getOffenderId()).isEqualTo(77L);
+        assertThat(notification.getParentEntityId()).isEqualTo(99L);
+    }
+
+    @Test
+    public void withManyInterestedCRCsDeleteCustodyKeyDateNotificationIsSavedForEachProbationArea() {
+        when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of(
+                ProbationArea
+                        .builder()
+                        .code("AA")
+                        .build(),
+                ProbationArea
+                        .builder()
+                        .code("AB")
+                        .build()));
+
+        val event = aCustodyEvent(99L, ImmutableList.of());
+        spgNotificationService.notifyDeletedCustodyKeyDate(aKeyDate(88L, "POM1"), event);
+
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+        assertThat(findFor(SpgNotificationService.NotificationEvents.DELETE_CUSTODY_KEY_DATE.getNotificationCode())).hasSize(2);
+        assertThat(findFor(SpgNotificationService.NotificationEvents.DELETE_CUSTODY_KEY_DATE.getNotificationCode()).stream().anyMatch(notification -> notification.getReceiverIdentity().getCode().equals("AA"))).isTrue();
+        assertThat(findFor(SpgNotificationService.NotificationEvents.DELETE_CUSTODY_KEY_DATE.getNotificationCode()).stream().anyMatch(notification -> notification.getReceiverIdentity().getCode().equals("AB"))).isTrue();
     }
 
 

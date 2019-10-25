@@ -20,7 +20,6 @@ import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static uk.gov.justice.digital.delius.util.EntityHelper.*;
 
@@ -70,6 +69,21 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
     }
 
     @Test
+    public void spgIsNotifiedOfDeletedCustodyKeyDateByOffenderId() throws SingleActiveCustodyConvictionNotFoundException {
+        val event = aCustodyEvent(1L, new ArrayList<>());
+        val keyDateToBeRemoved = aKeyDate("POM1", "POM Handover expected start date", LocalDate.now());
+        event.getDisposal().getCustody().getKeyDates().add(keyDateToBeRemoved);
+
+        when(eventRepository.findByOffenderId(999L)).thenReturn(ImmutableList.of(event));
+
+        convictionService.deleteCustodyKeyDateByOffenderId(
+                999L,
+                "POM1");
+
+        verify(spgNotificationService).notifyDeletedCustodyKeyDate(keyDateToBeRemoved, event);
+    }
+
+    @Test
     public void deletedCustodyKeyDateByConvictionIdIsRemoved() {
         val event = aCustodyEvent(1L, new ArrayList<>());
         event.getDisposal().getCustody().getKeyDates().add(aKeyDate("POM1", "POM Handover expected start date", LocalDate.now()));
@@ -87,6 +101,22 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
         assertThat(eventArgumentCaptor.getValue().getDisposal().getCustody().getKeyDates()).hasSize(1);
         assertThat(eventArgumentCaptor.getValue().getDisposal().getCustody().getKeyDates().get(0).getKeyDateType().getCodeValue()).isEqualTo("POM2");
     }
+
+    @Test
+    public void spgIsNotifiedOfDeletedCustodyKeyDateByConvictionId() {
+        val event = aCustodyEvent(1L, new ArrayList<>());
+        val keyDateToBeRemoved = aKeyDate("POM1", "POM Handover expected start date", LocalDate.now());
+        event.getDisposal().getCustody().getKeyDates().add(keyDateToBeRemoved);
+
+        when(eventRepository.getOne(999L)).thenReturn(event);
+
+        convictionService.deleteCustodyKeyDateByConvictionId(
+                999L,
+                "POM1");
+
+        verify(spgNotificationService).notifyDeletedCustodyKeyDate(keyDateToBeRemoved, event);
+    }
+
 
     @Test
     public void nothingIsSavedWhenCustodyKeyDateByOffenderIdIsNotFound() throws SingleActiveCustodyConvictionNotFoundException {

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.jpa.standard.repository;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
+@Profile("oracle")
 public class SpgNotificationHelperRepositoryImpl implements SpgNotificationHelperRepository {
 
     @PersistenceContext

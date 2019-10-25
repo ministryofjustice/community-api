@@ -66,9 +66,14 @@ public class EntityHelper {
     }
 
     public static Event anEvent(Long eventId) {
+        return anEvent(eventId, 777L);
+    }
+
+    public static Event anEvent(Long eventId, Long offenderId) {
         return Event
                 .builder()
                 .eventId(eventId)
+                .offenderId(offenderId)
                 .cpsAlfrescoDocumentId("123")
                 .cpsCreatedByUser(User
                         .builder()
@@ -85,12 +90,16 @@ public class EntityHelper {
     }
 
     public static Event aCustodyEvent() {
-        return aCustodyEvent(100L, new ArrayList<>());
+        return aCustodyEvent(100L, 99L, new ArrayList<>());
     }
 
     public static Event aCustodyEvent(Long eventId, List<KeyDate> keyDates) {
+        return aCustodyEvent(eventId, 99L, keyDates);
+    }
+
+    public static Event aCustodyEvent(Long eventId, Long offenderId, List<KeyDate> keyDates) {
         val disposal = aDisposal(eventId);
-        return anEvent(eventId)
+        return anEvent(eventId, offenderId)
                 .toBuilder()
                 .disposal(aCustodialDisposal(keyDates, disposal))
                 .build();
@@ -439,6 +448,19 @@ public class EntityHelper {
                 .keyDateType(StandardReference
                         .builder()
                         .codeDescription(description)
+                        .codeValue(typeCode)
+                        .build())
+                .build();
+    }
+
+    public static KeyDate aKeyDate(Long keyDateId, String typeCode) {
+        return KeyDate
+                .builder()
+                .keyDateId(keyDateId)
+                .keyDate(LocalDate.now())
+                .keyDateType(StandardReference
+                        .builder()
+                        .codeDescription("description")
                         .codeValue(typeCode)
                         .build())
                 .build();
