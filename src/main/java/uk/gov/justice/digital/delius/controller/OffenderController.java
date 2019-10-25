@@ -3,7 +3,10 @@ package uk.gov.justice.digital.delius.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.jsonwebtoken.Claims;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -135,6 +138,38 @@ public class OffenderController {
                 .orElse(new ResponseEntity<>(NOT_FOUND));
     }
 
+    @RequestMapping(value = "/offenders/offenderId/{offenderId}/release", method = RequestMethod.GET)
+    @JwtValidation
+    public ResponseEntity<OffenderDetail> getReleaseOffenderByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
+                                                                         final @PathVariable("offenderId") Long offenderId) {
+        Optional<OffenderDetail> offender = offenderService.getOffenderByOffenderId(offenderId);
+        return offender.map(
+                offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(offenderDetailNotFound());
+    }
+
+    //    /offenders/crn/{crn}/release
+    @RequestMapping(value = "/offenders/crn/{crn}/release", method = RequestMethod.GET)
+    @JwtValidation
+    public ResponseEntity<OffenderDetail> getReleaseFatOffenderByCrn(final @RequestHeader HttpHeaders httpHeaders,
+                                                                     final @PathVariable("crn") String crn) {
+        Optional<OffenderDetail> offender = offenderService.getOffenderByCrn(crn);
+        return offender.map(
+                offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(offenderDetailNotFound());
+
+    }
+
+    //    /offenders/nomsNumber/{nomsNumber}/release
+    @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/release", method = RequestMethod.GET)
+    @JwtValidation
+    public ResponseEntity<OffenderDetail> getReleaseOffenderByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
+                                                                         final @PathVariable("nomsNumber") String nomsNumber) {
+        Optional<OffenderDetail> offender = offenderService.getOffenderByNomsNumber(nomsNumber);
+        return offender.map(
+                offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(offenderDetailNotFound());
+
+    }
+
+
     private Optional<List<DocumentMeta>> maybeDocumentMetasOf(Optional<String> maybeCrn) {
         return maybeCrn.map(crn -> alfrescoService.listDocuments(crn).getDocuments().stream().map(this::documentMetaOf).collect(Collectors.toList()));
     }
@@ -180,7 +215,7 @@ public class OffenderController {
             nickname = "getOffenderGroupedDocumentByNomsNumber")
     @JwtValidation
     public ResponseEntity<OffenderDocuments> getOffenderGroupedDocumentByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                                  final @PathVariable("nomsNumber") String nomsNumber) {
+                                                                                    final @PathVariable("nomsNumber") String nomsNumber) {
         log.info("Call to getOffenderGroupedDocumentByNomsNumber");
         return offenderDocumentsResponseEntityOf(offenderService.offenderIdOfNomsNumber(nomsNumber));
     }
@@ -192,7 +227,7 @@ public class OffenderController {
             nickname = "getOffenderGroupedDocumentByOffendeerId")
     @JwtValidation
     public ResponseEntity<OffenderDocuments> getOffenderGroupedDocumentByOffendeerId(final @RequestHeader HttpHeaders httpHeaders,
-                                                                                  final @PathVariable("offenderId") Long offenderId) {
+                                                                                     final @PathVariable("offenderId") Long offenderId) {
         log.info("Call to getOffenderGroupedDocumentByOffendeerId");
         Optional<OffenderDetail> maybeOffender = offenderService.getOffenderByOffenderId(offenderId);
 
@@ -206,7 +241,7 @@ public class OffenderController {
             nickname = "getOffenderGroupedDocumentByCrn")
     @JwtValidation
     public ResponseEntity<OffenderDocuments> getOffenderGroupedDocumentByCrn(final @RequestHeader HttpHeaders httpHeaders,
-                                                                                  final @PathVariable("crn") String crn) {
+                                                                             final @PathVariable("crn") String crn) {
         log.info("Call to getOffenderGroupedDocumentByCrn");
         return offenderDocumentsResponseEntityOf(offenderService.offenderIdOfCrn(crn));
     }
@@ -408,19 +443,19 @@ public class OffenderController {
 
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/responsibleOfficers", method = RequestMethod.GET)
     @ApiResponses(value = {
-                      @ApiResponse(code = 200, message = "A list of responsible officers for an offender", response = ResponsibleOfficer.class, responseContainer = "List"),
-                      @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
-                      @ApiResponse(code = 403, message = "The requesting user was restricted from access", response = AccessLimitation.class),
-                      @ApiResponse(code = 404, message = "The requested offender was not found.")
-            })
+            @ApiResponse(code = 200, message = "A list of responsible officers for an offender", response = ResponsibleOfficer.class, responseContainer = "List"),
+            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "The requesting user was restricted from access", response = AccessLimitation.class),
+            @ApiResponse(code = 404, message = "The requested offender was not found.")
+    })
     @JwtValidation
     public ResponseEntity<List<ResponsibleOfficer>> getResponsibleOfficersByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
                                                                                        final @PathVariable("nomsNumber") String nomsNumber,
-                                                                                       final @RequestParam(name="current", required=false, defaultValue="false") boolean current) {
+                                                                                       final @RequestParam(name = "current", required = false, defaultValue = "false") boolean current) {
 
         return offenderService.getResponsibleOfficersForNomsNumber(nomsNumber, current)
-                   .map(responsibleOfficer -> new ResponseEntity<>(responsibleOfficer ,OK))
-                  .orElse(new ResponseEntity<>(NOT_FOUND));
+                .map(responsibleOfficer -> new ResponseEntity<>(responsibleOfficer, OK))
+                .orElse(new ResponseEntity<>(NOT_FOUND));
     }
 
     private ResponseEntity<OffenderDetail> offenderDetailNotFound() {

@@ -17,6 +17,7 @@ public class ProbationArea {
     private Long probationAreaId;
     private String code;
     private String description;
+    private Boolean nps;
     private KeyValue organisation;
     private Institution institution;
     private List<AllTeam> teams;

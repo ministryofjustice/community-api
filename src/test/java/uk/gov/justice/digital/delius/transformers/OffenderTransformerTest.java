@@ -87,6 +87,7 @@ public class OffenderTransformerTest {
                 .containsExactly(2L, 3L, 1L);
 
     }
+
     @Test
     public void deletedDisabilitiesNotCopied() {
         assertThat(offenderTransformer.fullOffenderOf(anOffender()
@@ -129,9 +130,9 @@ public class OffenderTransformerTest {
         // Get currently managed offenders for this officer
         assertThat(offenderTransformer.managedOffenderOf(anOfficerWithOffenderManagers(), true)
                 .get(0))
-                .hasFieldOrPropertyWithValue("nomsNumber","A1111")
-                .hasFieldOrPropertyWithValue("offenderSurname","SMITH")
-                .hasFieldOrPropertyWithValue("staffCode","AAAA");
+                .hasFieldOrPropertyWithValue("nomsNumber", "A1111")
+                .hasFieldOrPropertyWithValue("offenderSurname", "SMITH")
+                .hasFieldOrPropertyWithValue("staffCode", "AAAA");
     }
 
     @Test
@@ -149,11 +150,11 @@ public class OffenderTransformerTest {
 
         // Get the current responsible officers for an offender
         assertThat(offenderTransformer.responsibleOfficersOf(anOffenderWithManagers(), true)
-                 .stream()
-                 .map(ro -> ro.getOffenderManagerId())
-                 .collect(Collectors.toList()))
-            .hasSize(1)
-            .containsOnly(2L);
+                .stream()
+                .map(ro -> ro.getOffenderManagerId())
+                .collect(Collectors.toList()))
+                .hasSize(1)
+                .containsOnly(2L);
     }
 
     @Test
@@ -165,14 +166,34 @@ public class OffenderTransformerTest {
                 .map(ro -> ro.getOffenderManagerId())
                 .collect(Collectors.toList()))
                 .hasSize(2)
-                .containsAll(Arrays.asList(1L,2L));
+                .containsAll(Arrays.asList(1L, 2L));
+    }
+
+    @Test
+    public void ProbationAreaNPSPrivateSectorTransformedToTrue() {
+        assertThat(offenderTransformer.offenderManagersOf(ImmutableList.of(
+                aOffenderManager()
+                        .toBuilder()
+                        .probationArea(npsProbationArea())
+                        .build()))
+                .get(0).getProbationArea().getNps()).isTrue();
+    }
+
+    @Test
+    public void ProbationAreaNPSPrivateSectorTransformedToFalse() {
+        assertThat(offenderTransformer.offenderManagersOf(ImmutableList.of(
+                aOffenderManager()
+                        .toBuilder()
+                        .probationArea(crcProbationArea())
+                        .build()))
+                .get(0).getProbationArea().getNps()).isFalse();
     }
 
 
     private List<OffenderManager> aListOfOffenderManagers() {
 
         // List of offender managers managing the same offender with one current and one historical
-        List<OffenderManager> offenderManagers = ImmutableList.of (
+        List<OffenderManager> offenderManagers = ImmutableList.of(
 
                 aOffenderManager()
                         .toBuilder()
@@ -181,7 +202,7 @@ public class OffenderTransformerTest {
                         .allocationDate(Timestamp.valueOf(LocalDateTime.parse("2018-01-01T00:00:00")))
                         .endDate(Timestamp.valueOf(LocalDateTime.parse("2019-01-01T00:00:00")))
                         .activeFlag(0L)
-                        .probationArea(aProbationArea())
+                        .probationArea(npsProbationArea())
                         .team(aTeam())
                         .providerTeam(aProviderTeam())
                         .staff(anOfficerWithoutOffenderManagers())
@@ -194,7 +215,7 @@ public class OffenderTransformerTest {
                         .offenderId(1L)
                         .allocationDate(Timestamp.valueOf(LocalDateTime.parse("2019-01-01T00:00:00")))
                         .activeFlag(1L)
-                        .probationArea(aProbationArea())
+                        .probationArea(crcProbationArea())
                         .team(aTeam())
                         .providerTeam(aProviderTeam())
                         .staff(anOfficerWithoutOffenderManagers())
@@ -237,7 +258,7 @@ public class OffenderTransformerTest {
     }
 
 
-    private ResponsibleOfficer aResponsibleOfficer () {
+    private ResponsibleOfficer aResponsibleOfficer() {
         return ResponsibleOfficer
                 .builder()
                 .startDate(LocalDate.parse("2018-01-01"))
@@ -287,8 +308,12 @@ public class OffenderTransformerTest {
         return Team.builder().teamId(5L).code("A1").description("A1 DESC").localDeliveryUnit(aLocalDeliveryUnit()).build();
     }
 
-    private ProbationArea aProbationArea() {
-        return ProbationArea.builder().probationAreaId(6L).code("PA1").description("PA1 DESC").build();
+    private ProbationArea npsProbationArea() {
+        return ProbationArea.builder().probationAreaId(6L).code("PA1").description("PA1 DESC").privateSector(0L).build();
+    }
+
+    private ProbationArea crcProbationArea() {
+        return ProbationArea.builder().probationAreaId(6L).code("PA2").description("PA2 DESC").privateSector(1L).build();
     }
 
     private LocalDeliveryUnit aLocalDeliveryUnit() {
