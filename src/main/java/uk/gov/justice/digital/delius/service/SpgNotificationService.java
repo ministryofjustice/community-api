@@ -35,7 +35,11 @@ public class SpgNotificationService {
     enum NotificationEvents {
         INSERT_EVENT("CWBI006"),
         INSERT_COURT_APPEARANCE("CWBI007"),
-        UPDATE_OFFENDER("OIBI027");
+        UPDATE_OFFENDER("OIBI027"),
+        INSERT_CUSTODY_KEY_DATE("SPOBI010"),
+        UPDATE_CUSTODY_KEY_DATE("SPOBI011"),
+        DELETE_CUSTODY_KEY_DATE("TCBI037");
+
 
         private final String notificationCode;
 
@@ -57,11 +61,29 @@ public class SpgNotificationService {
         createNotificationsFor(UPDATE_OFFENDER, event.getOffenderId());
     }
 
+    public void notifyNewCustodyKeyDate(String custodyKeyTypeCode, Event event) {
+        createNotificationsFor(INSERT_CUSTODY_KEY_DATE, event.getOffenderId(), keyDateIdOf(custodyKeyTypeCode, event), event.getEventId());
+    }
+
+
+    public void notifyUpdateOfCustodyKeyDate(String custodyKeyTypeCode, Event event) {
+        createNotificationsFor(UPDATE_CUSTODY_KEY_DATE, event.getOffenderId(), keyDateIdOf(custodyKeyTypeCode, event), event.getEventId());
+    }
+
+
+    public void notifyDeletedCustodyKeyDate(KeyDate deletedKeyDate, Event event) {
+        createNotificationsFor(DELETE_CUSTODY_KEY_DATE, event.getOffenderId(), deletedKeyDate.getKeyDateId(), event.getEventId());
+    }
+
     private void createNotificationsFor(NotificationEvents notificationEvent, Long offenderId) {
         createNotificationsFor(notificationEvent, offenderId, offenderId);
     }
 
-    private void createNotificationsFor(NotificationEvents notificationEvent, Long offenderId, Long uniqueId ) {
+    private void createNotificationsFor(NotificationEvents notificationEvent, Long offenderId, Long uniqueId) {
+        createNotificationsFor(notificationEvent, offenderId, uniqueId, null);
+    }
+
+    private void createNotificationsFor(NotificationEvents notificationEvent, Long offenderId, Long uniqueId, Long parentId ) {
         spgNotificationRepository.saveAll(
             areasThatHaveAnInterestInOffender(offenderId)
                     .stream()
@@ -84,6 +106,7 @@ public class SpgNotificationService {
                                         .receiverIdentity(probationArea)
                                         .senderIdentity(sendingProbationArea)
                                         .uniqueId(uniqueId)
+                                        .parentEntityId(parentId)
                                         .dateCreated(LocalDateTime.now())
                                         .spgMessageContextId(messageContextIdFor(businessInteraction))
                                         .controlReference(nextControlReferenceFor(sendingProbationArea))
@@ -127,4 +150,12 @@ public class SpgNotificationService {
         return spgNotificationHelperRepository.getInterestedCRCs(String.valueOf(offenderId));
     }
 
+    private Long keyDateIdOf(String custodyKeyTypeCode, Event event) {
+        return event.getDisposal().getCustody().getKeyDates()
+                .stream()
+                .filter(keyDate -> keyDate.getKeyDateType().getCodeValue().equals(custodyKeyTypeCode))
+                .findAny()
+                .map(KeyDate::getKeyDateId)
+                .orElseThrow(() -> new RuntimeException("Can not find key date event though it has just changed"));
+    }
 }

@@ -218,22 +218,25 @@ public class ConvictionService {
                 .filter(matchTypeCode(typeCode))
                 .findAny();
 
-        val updatedEvent = maybeExistingKeyDate.map(existingKeyDate -> {
+        maybeExistingKeyDate.ifPresent(existingKeyDate -> {
             existingKeyDate.setKeyDate(custodyKeyDate.getDate());
             existingKeyDate.setLastUpdatedDatetime(LocalDateTime.now());
             existingKeyDate.setLastUpdatedUserId(lookupSupplier.userSupplier().get().getUserId());
-            return event;
-        }).orElseGet(() -> {
+            eventRepository.save(event);
+            spgNotificationService.notifyUpdateOfCustodyKeyDate(typeCode, event);
+        });
+
+        if (!maybeExistingKeyDate.isPresent()) {
             val keyDate = custodyKeyDateTransformer.keyDateOf(event.getDisposal().getCustody(), custodyKeyDateType, custodyKeyDate.getDate());
             event.getDisposal()
                     .getCustody()
                     .getKeyDates()
                     .add(keyDate);
 
-            return event;
-        });
+            eventRepository.saveAndFlush(event);
+            spgNotificationService.notifyNewCustodyKeyDate(typeCode, event);
+        };
 
-        eventRepository.save(updatedEvent);
 
         return getCustodyKeyDate(event, typeCode).orElseThrow(() -> new RuntimeException("Added/Updated keyDate has disappeared"));
     }
@@ -255,6 +258,7 @@ public class ConvictionService {
        maybeKeyDateToRemove.ifPresent(keyDateToRemove -> {
            keyDates.remove(keyDateToRemove);
            eventRepository.save(event);
+           spgNotificationService.notifyDeletedCustodyKeyDate(keyDateToRemove, event);
        });
     }
 
