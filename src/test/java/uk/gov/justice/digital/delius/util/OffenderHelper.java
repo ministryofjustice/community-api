@@ -60,7 +60,7 @@ public interface OffenderHelper {
                         .activeFlag(1L)
                         .allocationDate(Timestamp.from(Calendar.getInstance().toInstant()))
                         .officer(Officer.builder().surname("Jones").build())
-                        .probationArea(ProbationArea.builder().code("A").description("B").build())
+                        .probationArea(ProbationArea.builder().code("A").description("B").privateSector(1L).build())
                         .build()))
                 .disabilities(Lists.newArrayList(Disability
                         .builder()

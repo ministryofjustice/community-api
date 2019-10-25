@@ -18,7 +18,7 @@ public class OffenderManager {
     private String partitionArea;
     private Boolean softDeleted;
     private Team team;
-    private KeyValue probationArea;
+    private ProbationArea probationArea;
     private LocalDate fromDate;
     private LocalDate toDate;
     private Boolean active;

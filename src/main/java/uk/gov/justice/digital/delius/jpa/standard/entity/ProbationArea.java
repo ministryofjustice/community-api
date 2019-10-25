@@ -47,4 +47,7 @@ public class ProbationArea {
     @Column(name = "END_DATE")
     private LocalDate endDate;
 
+    @Column(name = "PRIVATE")
+    private Long privateSector;
+
 }

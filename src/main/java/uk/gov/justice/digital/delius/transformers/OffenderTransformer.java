@@ -241,11 +241,16 @@ public class OffenderTransformer {
         return Optional.ofNullable(timestamp).map(t -> t.toLocalDateTime().toLocalDate()).orElse(null);
     }
 
-    private KeyValue probationAreaOf(ProbationArea probationArea) {
-        return KeyValue.builder()
+    private uk.gov.justice.digital.delius.data.api.ProbationArea probationAreaOf(ProbationArea probationArea) {
+        return uk.gov.justice.digital.delius.data.api.ProbationArea.builder()
                 .code(probationArea.getCode())
                 .description(probationArea.getDescription())
+                .nps(npsZeroOneToBoolean(probationArea.getPrivateSector()))
                 .build();
+    }
+
+    private static Boolean npsZeroOneToBoolean(Long zeroOrOne) {
+        return Optional.ofNullable(zeroOrOne).map(value -> value == 0).orElse(null);
     }
 
     private Team teamOf(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager offenderManager) {
