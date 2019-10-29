@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
@@ -29,21 +28,10 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 
     @Override
     public void configure(final HttpSecurity http) throws Exception {
-
-        http.headers().frameOptions().sameOrigin().and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-
-                // Can't have CSRF protection as requires session
-                .and().csrf().disable()
+        http
+                .antMatcher("/secure/**")
                 .authorizeRequests()
-                .antMatchers("/api/**", "/webjars/**", "/favicon.ico", "/csrf",
-                        "/h2-console/**",
-                        "/v2/api-docs",
-                        "/swagger-ui.html", "/swagger-resources", "/swagger-resources/configuration/ui",
-                        "/swagger-resources/configuration/security").permitAll()
-                .anyRequest()
-                .authenticated();
+                .anyRequest().authenticated();
     }
 
     @Override
