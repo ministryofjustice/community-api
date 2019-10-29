@@ -28,7 +28,7 @@ public class AppointmentService {
         return appointmentTransformer.appointmentsOf(
                 contactRepository.findAll(
                         filter.toBuilder().offenderId(offenderId).build(),
-                        new Sort(DESC, "contactDate")));
+                        Sort.by(DESC, "contactDate")));
     }
 
 }

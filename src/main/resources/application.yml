@@ -27,7 +27,7 @@ jwt:
 
 server:
   servlet:
-    context-path: ${contextpath:/api}
+    context-path: ${contextpath:/}
   compression:
     enabled: true
     mime-types: application/json
@@ -37,7 +37,7 @@ server:
 management:
   endpoints:
     web:
-      base-path: /
+      base-path: /api
       exposure:
         include: 'info, health, ping'
   endpoint:

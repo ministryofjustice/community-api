@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.delius.controller;
+package uk.gov.justice.digital.delius.controller.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -13,6 +13,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.digital.delius.data.api.*;
@@ -36,6 +37,7 @@ import static org.springframework.http.HttpStatus.*;
 @RestController
 @Slf4j
 @Api(description = "Offender resources", tags = "Offenders")
+@RequestMapping(value = "api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OffenderController {
 
     private final OffenderService offenderService;

@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.delius.controller;
+package uk.gov.justice.digital.delius.controller.api;
 
 import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
@@ -9,11 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.digital.delius.jpa.national.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
@@ -31,7 +27,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
-@RequestMapping("/logon")
+@RequestMapping("/api/logon")
 @Slf4j
 @Api(description = "Obtain JWT token", tags = "Logon as user")
 public class LogonController {
