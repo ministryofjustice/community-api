@@ -32,7 +32,7 @@ public class StandardDatasourceConfig {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(standardDataSource);
         
-        em.setPackagesToScan(new String[]{"uk.gov.justice.digital.delius.jpa.standard.entity"});
+        em.setPackagesToScan("uk.gov.justice.digital.delius.jpa.standard.entity");
 
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);

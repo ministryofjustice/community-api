@@ -9,7 +9,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.ManagedOffender;
-import uk.gov.justice.digital.delius.jpa.oracle.annotations.NationalUserOverride;
 import uk.gov.justice.digital.delius.service.StaffService;
 
 import javax.validation.constraints.NotNull;
@@ -40,9 +39,8 @@ public class StaffResource {
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(path = "/staff/staffCode/{staffCode}/managedOffenders")
-    @NationalUserOverride
     public ResponseEntity<List<ManagedOffender>> getOffendersForResponsibleOfficer(
-            @ApiParam(name = "staffCode", value = "Delius officer code of the responsible officer", example = "ASPD956", required = true)
+            @ApiParam(name = "staffCode", value = "Delius officer code of the responsible officer", example = "SH0001", required = true)
             @NotNull @PathVariable(value = "staffCode") final String staffCode,
             @ApiParam(name = "current", value = "Current only", example = "false")  @RequestParam(name = "current", required = false, defaultValue = "false") final boolean current) {
         return staffService.getManagedOffendersByStaffCode(staffCode, current)

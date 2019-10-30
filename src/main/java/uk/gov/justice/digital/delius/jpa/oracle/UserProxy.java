@@ -5,18 +5,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.MDC;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import uk.gov.justice.digital.delius.config.SecurityUserContext;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Optional;
+
+import static uk.gov.justice.digital.delius.utils.UserMdcFilter.USER_ID_HEADER;
 
 @Component
 @Profile("oracle")
@@ -26,29 +30,40 @@ public class UserProxy {
 
     public static final ThreadLocal<Claims> threadLocalClaims = new ThreadLocal<>();
     public static final ThreadLocal<Boolean> threadLocalNationalUserOverride = new ThreadLocal<>();
+    public static final String NATIONAL_USER = "NationalUser";
 
     private final Advisor closeConnectionAdvisor;
+    private final SecurityUserContext securityUserContext;
 
     @Autowired
-    public UserProxy(@Qualifier("bclOracleCloseConnectionAdvice") Advisor closeConnectionAdvisor) {
+    public UserProxy(@Qualifier("bclOracleCloseConnectionAdvice") Advisor closeConnectionAdvisor,
+                     final SecurityUserContext securityUserContext) {
         this.closeConnectionAdvisor = closeConnectionAdvisor;
+        this.securityUserContext = securityUserContext;
     }
 
     @Around("execution (* javax.sql.DataSource.getConnection(..))")
     public Connection doOracleProxyThing(ProceedingJoinPoint joinPoint) throws Throwable {
         Connection connection = (Connection) joinPoint.proceed(joinPoint.getArgs());
-        Optional<Claims> maybeClaims = Optional.ofNullable(threadLocalClaims.get());
-        Boolean overrideNationalUser = Optional.ofNullable(threadLocalNationalUserOverride.get()).orElse(false);
 
-        if (overrideNationalUser) {
-            return getConnection(connection, "NationalUser");
-        }
+        return securityUserContext.getCurrentUsername()
+                .map(u -> {
+                    final String username = MDC.get(USER_ID_HEADER);
+                    return getConnection(connection,  username != null ? username : NATIONAL_USER);
+                }).orElseGet(
+                        () -> {
+                            Optional<Claims> maybeClaims = Optional.ofNullable(threadLocalClaims.get());
+                            Boolean overrideNationalUser = Optional.ofNullable(threadLocalNationalUserOverride.get()).orElse(false);
 
-        return maybeClaims.map(claims -> {
+                            if (overrideNationalUser) {
+                                return getConnection(connection, NATIONAL_USER);
+                            }
 
-            String uid = claims.get(Jwt.UID).toString();
-            return getConnection(connection, uid);
-        }).orElse(connection);
+                            return maybeClaims.map(claims -> {
+                                String uid = claims.get(Jwt.UID).toString();
+                                return getConnection(connection, uid);
+                            }).orElse(connection);
+                        });
     }
 
     private Connection getConnection(Connection connection, String uid) {
