@@ -12,7 +12,6 @@ import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
-import uk.gov.justice.digital.delius.jpa.oracle.annotations.NationalUserOverride;
 import uk.gov.justice.digital.delius.service.*;
 
 import javax.validation.constraints.NotNull;
@@ -49,10 +48,9 @@ public class OffendersResource {
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/responsibleOfficers")
-    @NationalUserOverride
     public ResponseEntity<List<ResponsibleOfficer>> getResponsibleOfficersForOffender(
-            @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "A1234BB", required = true) @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber,
-            @ApiParam(name = "current", value = "Current only", example = "false", required = false) @RequestParam(name = "current", required = false, defaultValue = "false") final boolean current) {
+            @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true) @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber,
+            @ApiParam(name = "current", value = "Current only", example = "false") @RequestParam(name = "current", required = false, defaultValue = "false") final boolean current) {
         return offenderService.getResponsibleOfficersForNomsNumber(nomsNumber, current)
                 .map(responsibleOfficer -> new ResponseEntity<>(responsibleOfficer, OK))
                 .orElse(new ResponseEntity<>(NOT_FOUND));
@@ -68,9 +66,8 @@ public class OffendersResource {
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/convictions")
-    @NationalUserOverride
     public ResponseEntity<List<Conviction>> getConvictionsForOffender(
-            @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "A1234BB", required = true)
+            @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
             @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber) {
 
         return offenderService.offenderIdOfNomsNumber(nomsNumber)
@@ -88,9 +85,8 @@ public class OffendersResource {
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}")
-    @NationalUserOverride
     public ResponseEntity<OffenderDetailSummary> getOffenderDetails(
-            @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "A1234BB", required = true)
+            @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
             @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber) {
         Optional<OffenderDetailSummary> offender = offenderService.getOffenderSummaryByNomsNumber(nomsNumber);
         return offender.map(
@@ -107,9 +103,8 @@ public class OffendersResource {
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/documents/grouped")
-    @NationalUserOverride
     public ResponseEntity<OffenderDocuments> getOffenderDocuments(
-            @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "A1234BB", required = true)
+            @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
             @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber) {
 
         return offenderService.offenderIdOfNomsNumber(nomsNumber)
@@ -119,10 +114,9 @@ public class OffendersResource {
 
     @ApiOperation(value = "Returns the document contents meta data for a given document associated with an offender")
     @GetMapping(value = "/offenders/nomsNumber/{nomsNumber}/documents/{documentId}")
-    @NationalUserOverride
     public HttpEntity<Resource> getOffenderDocument(
-            final @PathVariable("nomsNumber") String nomsNumber,
-            final @PathVariable("documentId") String documentId) {
+            @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true) @NotNull final @PathVariable("nomsNumber") String nomsNumber,
+            @ApiParam(name = "documentId", value = "Document Id", example = "12312322", required = true) @NotNull final @PathVariable("documentId") String documentId) {
 
         return offenderService.crnOf(nomsNumber)
                 .map(crn -> alfrescoService.getDocument(documentId, crn))
@@ -139,9 +133,8 @@ public class OffendersResource {
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(value = "/offenders/nomsNumber/{nomsNumber}/contacts")
-    @NationalUserOverride
     public ResponseEntity<List<Contact>> getOffenderContactReportByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                              final @PathVariable("nomsNumber") String nomsNumber,
+                                                                              @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true) @NotNull final @PathVariable("nomsNumber") String nomsNumber,
                                                                               final @RequestParam("contactTypes") Optional<List<String>> contactTypes,
                                                                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final @RequestParam("from") Optional<LocalDateTime> from,
                                                                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final @RequestParam("to") Optional<LocalDateTime> to) {

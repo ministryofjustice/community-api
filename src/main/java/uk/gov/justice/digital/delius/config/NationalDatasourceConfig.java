@@ -29,7 +29,7 @@ public class NationalDatasourceConfig {
     public LocalContainerEntityManagerFactoryBean nationalEntityManager(@Qualifier("nationalDataSource") DataSource nationalDataSource) {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(nationalDataSource);
-        em.setPackagesToScan(new String[]{"uk.gov.justice.digital.delius.jpa.national.entity"});
+        em.setPackagesToScan("uk.gov.justice.digital.delius.jpa.national.entity");
 
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);

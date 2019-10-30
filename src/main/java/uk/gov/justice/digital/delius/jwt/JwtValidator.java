@@ -38,10 +38,10 @@ public class JwtValidator {
                 .filter(arg -> arg instanceof HttpHeaders)
                 .findFirst()
                 .map(headers -> ((HttpHeaders) headers).getFirst("Authorization"))
-                .map(authorization -> jwt.parseAuthorizationHeader(authorization))
+                .map(jwt::parseAuthorizationHeader)
                 .orElseThrow(() -> new JwtTokenMissingException("No Authorization Bearer token found in headers."));
 
-        maybeClaims.ifPresent(claims -> UserProxy.threadLocalClaims.set(claims));
+        maybeClaims.ifPresent(UserProxy.threadLocalClaims::set);
     }
 
 }

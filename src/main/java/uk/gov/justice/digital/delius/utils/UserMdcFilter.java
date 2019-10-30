@@ -15,7 +15,7 @@ import java.util.Optional;
 @Component
 @Order(1)
 public class UserMdcFilter implements Filter {
-    private static final String USER_ID_HEADER = "userId";
+    public static final String USER_ID_HEADER = "userId";
 
     private final SecurityUserContext securityUserContext;
 
