@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.delius.controller;
+package uk.gov.justice.digital.delius.controller.api;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.digital.delius.data.api.CreateCustodyKeyDate;
@@ -27,6 +28,7 @@ import java.util.function.Function;
 @RestController
 @Slf4j
 @Api(tags = {"Offender custody key dates", "OMiC"})
+@RequestMapping(value = "api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CustodyKeyDatesController {
     private final OffenderService offenderService;
     private final ConvictionService convictionService;

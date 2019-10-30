@@ -15,7 +15,6 @@ public class OffenderIdsResource extends ResourceSupport {
 
     private final List<BigDecimal> offenderIds;
 
-
     public OffenderIdsResource(List<BigDecimal> offenderIds) {
         this.offenderIds = offenderIds;
     }

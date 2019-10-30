@@ -1,17 +1,18 @@
-package uk.gov.justice.digital.delius.controller;
+package uk.gov.justice.digital.delius.controller.api;
 
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.Conviction;
+import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
-import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.ConvictionService;
+import uk.gov.justice.digital.delius.service.OffenderService;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import java.util.Optional;
 @RestController
 @Slf4j
 @Api(description = "Offender conviction resources", tags = "Offender convictions")
+@RequestMapping(value = "api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ConvictionController {
     private final OffenderService offenderService;
     private final ConvictionService convictionService;

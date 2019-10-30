@@ -24,7 +24,7 @@ public class PingEndpointTest {
     @Before
     public void setup() {
         RestAssured.port = port;
-        RestAssured.basePath = "/api";
+        RestAssured.basePath = "/";
     }
 
     @Test
