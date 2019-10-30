@@ -14,7 +14,7 @@ public class LegacyHealthChecks {
 
     @RequestMapping(value = "/health", produces = MediaType.APPLICATION_JSON_VALUE)
     public String health() {
-        return "{ \"status\": \"UP\" }";
+        return "{\"status\":\"UP\"}";
     }
 
     @RequestMapping(value = "/info", produces = MediaType.APPLICATION_JSON_VALUE)
