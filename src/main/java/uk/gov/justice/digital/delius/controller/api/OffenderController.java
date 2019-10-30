@@ -285,7 +285,7 @@ public class OffenderController {
     @RequestMapping(value = "/offenders/offenderIds", method = RequestMethod.GET)
     @JwtValidation
     public ResponseEntity<org.springframework.hateoas.Resource<OffenderIdsResource>> getOffenderIds(final @RequestHeader HttpHeaders httpHeaders,
-                                                                                                    final @RequestParam(defaultValue = "${offender.ids.pagesize:1000}") int pageSize,
+                                                                                                    final @RequestParam(name = "pageSize", required = false, defaultValue = "1000") int pageSize,
                                                                                                     final @RequestParam(defaultValue = "1") int page) {
 
         Link nextLink = linkTo(methodOn(OffenderController.class).getOffenderIds(httpHeaders, pageSize, page + 1)).withRel("next");

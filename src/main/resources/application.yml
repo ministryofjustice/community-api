@@ -40,7 +40,7 @@ server:
 management:
   endpoints:
     web:
-      base-path: /api
+      base-path: /
       exposure:
         include: 'info, health, ping'
   endpoint:

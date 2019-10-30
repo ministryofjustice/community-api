@@ -40,6 +40,9 @@ public class SwaggerConfig {
                 .select()
                 .apis(RequestHandlerSelectors.any())
                 .paths(Predicates.or(
+                        regex("(\\/ping.*)"),
+                        regex("(\\/info.*)"),
+                        regex("(\\/health.*)"),
                         regex("(\\/api/.*)"),
                         regex("(\\/secure/.*)")))
                 .build();
@@ -75,7 +78,7 @@ public class SwaggerConfig {
 
         return new ApiInfo(
                 "Community API Documentation",
-                "REST service for accessing community info",
+                "REST service for accessing community information",
                 getVersion().getVersion(),
                 "https://gateway.nomis-api.service.justice.gov.uk/auth/terms",
                 contactInfo(),

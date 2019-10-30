@@ -19,7 +19,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
-@Api(description = "Staff resources protected by OAUTH2", tags = "Staff (Secure)")
+@Api(description = "Staff resources protected by OAUTH2", tags = "Staff (Secure)", authorizations = {@Authorization("ROLE_COMMUNITY")})
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 @RestController
@@ -30,9 +30,7 @@ public class StaffResource {
 
     @ApiOperation(
             value = "Return list of of currently managed offenders for one responsible officer (RO)",
-            notes = "Accepts a Delius staff officer code",
-            authorizations = {@Authorization("ROLE_COMMUNITY")},
-            nickname = "getOffendersForResponsibleOfficer")
+            notes = "Accepts a Delius staff officer code")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 200, message = "OK", response = ManagedOffender.class, responseContainer = "List"),
