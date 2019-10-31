@@ -33,8 +33,8 @@ public class SpgNotificationHelperRepositoryImpl implements SpgNotificationHelpe
             while (result.next()) {
                 areas.add(ProbationArea
                         .builder()
-                        .probationAreaId(result.getBigDecimal(1).longValue())
-                        .code(result.getString(2))
+                        .probationAreaId(result.getBigDecimal(2).longValue())
+                        .code(result.getString(3))
                         .build());
             }
             return areas;
