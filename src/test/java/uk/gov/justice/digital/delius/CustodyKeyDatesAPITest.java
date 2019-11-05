@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,8 +20,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.data.api.CreateCustodyKeyDate;
 import uk.gov.justice.digital.delius.data.api.CustodyKeyDate;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
-import uk.gov.justice.digital.delius.jwt.Jwt;
-import uk.gov.justice.digital.delius.util.TokenHelper;
 
 import java.time.LocalDate;
 
@@ -31,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles("dev-seed")
 @DirtiesContext
-public class CustodyKeyDatesAPITest implements TokenHelper {
+public class CustodyKeyDatesAPITest {
     private static final String OFFENDER_ID = "2500343964";
     private static final String CRN = "X320741";
     private static final String CRN_NO_EVENTS = "CRN31";
@@ -47,13 +46,13 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private Jwt jwt;
+    @Value("${test.token.good}")
+    private String validOauthToken;
 
     @Before
     public void setup() {
         RestAssured.port = port;
-        RestAssured.basePath = "/api";
+        RestAssured.basePath = "/secure";
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
                 new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
         jdbcTemplate.execute("DELETE FROM KEY_DATE");
@@ -64,7 +63,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -73,7 +72,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .statusCode(200);
 
         CustodyKeyDate addedKeyDate = given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
                 .then()
@@ -99,7 +98,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -108,7 +107,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .statusCode(200);
 
         CustodyKeyDate addedKeyDate = given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get(String.format("offenders/nomsNumber/%s/custody/keyDates/POM1",  NOMS_NUMBER))
                 .then()
@@ -126,7 +125,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -135,7 +134,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .statusCode(200);
 
         CustodyKeyDate addedKeyDate = given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get(String.format("offenders/offenderId/%s/custody/keyDates/POM1",  OFFENDER_ID))
                 .then()
@@ -153,7 +152,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -162,7 +161,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .statusCode(200);
 
         CustodyKeyDate addedKeyDate = given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get(String.format("offenders/prisonBookingNumber/%s/custody/keyDates/POM1", PRISON_BOOKING_NUMBER))
                 .then()
@@ -181,7 +180,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -190,7 +189,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .statusCode(200);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -199,7 +198,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .statusCode(200);
 
         CustodyKeyDate[] keyDatesByCRN = given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get(String.format("offenders/crn/%s/custody/keyDates",  CRN))
                 .then()
@@ -209,7 +208,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .as(CustodyKeyDate[].class);
 
         CustodyKeyDate[] keyDatesByNOMSNumber = given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get(String.format("offenders/nomsNumber/%s/custody/keyDates",  NOMS_NUMBER))
                 .then()
@@ -219,7 +218,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .as(CustodyKeyDate[].class);
 
         CustodyKeyDate[] keyDatesByOffenderId = given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get(String.format("offenders/offenderId/%s/custody/keyDates",  OFFENDER_ID))
                 .then()
@@ -229,7 +228,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .as(CustodyKeyDate[].class);
 
         CustodyKeyDate[] keyDatesByBookingNumber = given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get(String.format("offenders/prisonBookingNumber/%s/custody/keyDates", PRISON_BOOKING_NUMBER))
                 .then()
@@ -269,7 +268,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
         LocalDate dayAfterNext = LocalDate.now().plusDays(2);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -278,7 +277,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .statusCode(200);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(dayAfterNext))
                 .when()
@@ -287,7 +286,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .statusCode(200);
 
         CustodyKeyDate addedKeyDate = given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
                 .then()
@@ -307,7 +306,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
         LocalDate dayAfterNext = LocalDate.now().plusDays(2);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -316,14 +315,14 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .statusCode(200);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
                 .then()
                 .statusCode(200);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(dayAfterNext))
                 .when()
@@ -332,7 +331,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .statusCode(200);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
                 .then()
@@ -344,7 +343,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
         LocalDate dayAfterNext = LocalDate.now().plusDays(2);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -353,14 +352,14 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .statusCode(200);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get(String.format("offenders/nomsNumber/%s/custody/keyDates/POM1",  NOMS_NUMBER))
                 .then()
                 .statusCode(200);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(dayAfterNext))
                 .when()
@@ -369,7 +368,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .statusCode(200);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get(String.format("offenders/nomsNumber/%s/custody/keyDates/POM1",  NOMS_NUMBER))
                 .then()
@@ -382,7 +381,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
         LocalDate dayAfterNext = LocalDate.now().plusDays(2);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -391,14 +390,14 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .statusCode(200);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get(String.format("offenders/offenderId/%s/custody/keyDates/POM1",  OFFENDER_ID))
                 .then()
                 .statusCode(200);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(dayAfterNext))
                 .when()
@@ -407,7 +406,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .statusCode(200);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get(String.format("offenders/offenderId/%s/custody/keyDates/POM1",  OFFENDER_ID))
                 .then()
@@ -419,7 +418,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
         LocalDate dayAfterNext = LocalDate.now().plusDays(2);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -428,14 +427,14 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .statusCode(200);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get(String.format("offenders/prisonBookingNumber/%s/custody/keyDates/POM1", PRISON_BOOKING_NUMBER))
                 .then()
                 .statusCode(200);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(dayAfterNext))
                 .when()
@@ -444,7 +443,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .statusCode(200);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get(String.format("offenders/prisonBookingNumber/%s/custody/keyDates/POM1", PRISON_BOOKING_NUMBER))
                 .then()
@@ -454,7 +453,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
     @Test
     public void shouldRespond404WhenOffenderNotFound() throws JsonProcessingException {
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(LocalDate.now()))
                 .when()
@@ -463,21 +462,21 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .statusCode(404);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .delete("offenders/nomsNumber/DOESNOTEXIST/custody/keyDates/POM1")
                 .then()
                 .statusCode(404);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get("offenders/nomsNumber/DOESNOTEXIST/custody/keyDates")
                 .then()
                 .statusCode(404);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(LocalDate.now()))
                 .when()
@@ -486,21 +485,21 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .statusCode(404);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .delete("offenders/crn/DOESNOTEXIST/custody/keyDates/POM1")
                 .then()
                 .statusCode(404);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get("offenders/crn/DOESNOTEXIST/custody/keyDates")
                 .then()
                 .statusCode(404);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(LocalDate.now()))
                 .when()
@@ -509,21 +508,21 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .statusCode(404);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get("offenders/offenderId/999999999/custody/keyDates/POM1")
                 .then()
                 .statusCode(404);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get("offenders/offenderId/999999999/custody/keyDates")
                 .then()
                 .statusCode(404);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(LocalDate.now()))
                 .when()
@@ -532,14 +531,14 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .statusCode(404);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .delete("offenders/prisonBookingNumber/DOESNOTEXIST/custody/keyDates/POM1")
                 .then()
                 .statusCode(404);
 
         given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .when()
                 .get("offenders/prisonBookingNumber/DOESNOTEXIST/custody/keyDates")
                 .then()
@@ -551,7 +550,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
     @Test
     public void shouldRespond400WhenAddingKeyDateThatIsNotValid() throws JsonProcessingException {
         JsonPath  errorMessage = given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(LocalDate.now()))
                 .when()
@@ -568,7 +567,7 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
     @Test
     public void shouldRespond400WhenOffenderHasInvalidActiveCustodyEvents() throws JsonProcessingException {
         JsonPath errorMessage = given()
-                .header("Authorization", aValidToken())
+                .auth().oauth2(validOauthToken)
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(LocalDate.now()))
                 .when()
@@ -580,10 +579,5 @@ public class CustodyKeyDatesAPITest implements TokenHelper {
                 .jsonPath();
 
         assertThat(errorMessage.getString("message")).isEqualTo(String.format("Can only add a key date where offender has one active custody related event. %s has 0", OFFENDER_ID_NO_EVENTS));
-    }
-
-        @Override
-    public Jwt jwt() {
-        return jwt;
     }
 }

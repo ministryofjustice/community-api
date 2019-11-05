@@ -16,11 +16,14 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.jpa.dao.OffenderDelta;
+import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.service.OffenderDeltaService;
+import uk.gov.justice.digital.delius.user.UserData;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -44,6 +47,8 @@ public class OffenderDeltaAPITest {
     OffenderDeltaService offenderDeltaService;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private Jwt jwt;
 
     @Before
     public void setup() {
@@ -68,7 +73,7 @@ public class OffenderDeltaAPITest {
         insert(deltas);
 
         OffenderDelta[] offenderDeltas = given()
-
+                .header("Authorization", aValidToken())
                 .when()
                 .get("/offenderDeltaIds")
                 .then()
@@ -91,7 +96,7 @@ public class OffenderDeltaAPITest {
         insert(deltas);
 
         OffenderDelta[] offenderDeltas = given()
-
+                .header("Authorization", aValidToken())
                 .when()
                 .get("/offenderDeltaIds")
                 .then()
@@ -129,6 +134,7 @@ public class OffenderDeltaAPITest {
         insert(deltas);
 
         given()
+                .header("Authorization", aValidToken())
                 .when()
                 .log().all()
                 .queryParam("before", now.toString())
@@ -144,11 +150,22 @@ public class OffenderDeltaAPITest {
     @Test
     public void beforeParameterIsMandatoryForDelete() {
         given()
+                .header("Authorization", aValidToken())
                 .when()
                 .log().all()
                 .delete("/offenderDeltaIds")
                 .then()
                 .statusCode(400);
+    }
+
+    private String aValidToken() {
+        return aValidTokenFor(UUID.randomUUID().toString());
+    }
+
+    private String aValidTokenFor(String distinguishedName) {
+        return "Bearer " + jwt.buildToken(UserData.builder()
+                .distinguishedName(distinguishedName)
+                .uid("bobby.davro").build());
     }
 
 }

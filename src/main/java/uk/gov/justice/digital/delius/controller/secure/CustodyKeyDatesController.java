@@ -1,20 +1,16 @@
-package uk.gov.justice.digital.delius.controller.api;
+package uk.gov.justice.digital.delius.controller.secure;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.digital.delius.data.api.CreateCustodyKeyDate;
 import uk.gov.justice.digital.delius.data.api.CustodyKeyDate;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
-import uk.gov.justice.digital.delius.jwt.JwtValidation;
 import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.ConvictionService.CustodyTypeCodeIsNotValidException;
 import uk.gov.justice.digital.delius.service.ConvictionService.DuplicateConvictionsForBookingNumberException;
@@ -27,8 +23,9 @@ import java.util.function.Function;
 
 @RestController
 @Slf4j
-@Api(tags = {"Offender custody key dates", "OMiC"})
-@RequestMapping(value = "api", produces = MediaType.APPLICATION_JSON_VALUE)
+@Api(tags = {"Offender custody key dates", "OMiC"}, authorizations = {@Authorization("ROLE_COMMUNITY")})
+@RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
+@PreAuthorize("hasRole('ROLE_COMMUNITY')")
 public class CustodyKeyDatesController {
     private final OffenderService offenderService;
     private final ConvictionService convictionService;
@@ -47,11 +44,9 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
     @ApiOperation(value = "Adds or replaces a custody key date for the active custodial conviction")
-    @JwtValidation
-    public CustodyKeyDate putCustodyKeyDateByCrn(final @RequestHeader HttpHeaders httpHeaders,
-                                                                 final @PathVariable String crn,
-                                                                 final @PathVariable String typeCode,
-                                                                 final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
+    public CustodyKeyDate putCustodyKeyDateByCrn(final @PathVariable String crn,
+                                                 final @PathVariable String typeCode,
+                                                 final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
         log.info("Call to putCustodyKeyDateByCrn for {} code {}", crn, typeCode);
         return addOrReplaceCustodyKeyDate(offenderService.offenderIdOfCrn(crn), typeCode, custodyKeyDate);
     }
@@ -64,11 +59,9 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
     @ApiOperation(value = "Adds or replaces a custody key date for the active custodial conviction")
-    @JwtValidation
-    public CustodyKeyDate putCustodyKeyDateByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                        final @PathVariable String nomsNumber,
-                                                                        final @PathVariable String typeCode,
-                                                                        final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
+    public CustodyKeyDate putCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber,
+                                                        final @PathVariable String typeCode,
+                                                        final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
         log.info("Call to putCustodyKeyDateByNomsNumber for {} code {}", nomsNumber, typeCode);
         return addOrReplaceCustodyKeyDate(offenderService.offenderIdOfNomsNumber(nomsNumber), typeCode, custodyKeyDate);
     }
@@ -81,11 +74,9 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
     @ApiOperation(value = "Adds or replaces a custody key date for the active custodial conviction")
-    @JwtValidation
-    public CustodyKeyDate putCustodyKeyDateByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
-                                                                        final @PathVariable Long offenderId,
-                                                                        final @PathVariable String typeCode,
-                                                                        final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
+    public CustodyKeyDate putCustodyKeyDateByOffenderId(final @PathVariable Long offenderId,
+                                                        final @PathVariable String typeCode,
+                                                        final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
         log.info("Call to putCustodyKeyDateByOffenderId for {} code {}", offenderId, typeCode);
         return addOrReplaceCustodyKeyDate(offenderService.getOffenderByOffenderId(offenderId).map(OffenderDetail::getOffenderId), typeCode, custodyKeyDate);
     }
@@ -98,11 +89,9 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 404, message = "The requested conviction with associated prison booking was not found.")
     })
     @ApiOperation(value = "Adds or replaces a custody key date for the active custodial conviction")
-    @JwtValidation
-    public CustodyKeyDate putCustodyKeyDateByPrisonBookingNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                                 final @PathVariable String prisonBookingNumber,
-                                                                                 final @PathVariable String typeCode,
-                                                                                 final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
+    public CustodyKeyDate putCustodyKeyDateByPrisonBookingNumber(final @PathVariable String prisonBookingNumber,
+                                                                 final @PathVariable String typeCode,
+                                                                 final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
         log.info("Call to putCustodyKeyDateByPrisonBookingNumber for {} code {}", prisonBookingNumber, typeCode);
         try {
             return addOrReplaceCustodyKeyDateByConvictionId(convictionService.getConvictionIdByPrisonBookingNumber(prisonBookingNumber), typeCode, custodyKeyDate);
@@ -121,10 +110,8 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 404, message = "The requested offender was not found or does not have the supplied key date type.")
     })
     @ApiOperation(value = "Gets a custody key date for the active custodial conviction")
-    @JwtValidation
-    public CustodyKeyDate getCustodyKeyDateByCrn(final @RequestHeader HttpHeaders httpHeaders,
-                                                                 final @PathVariable String crn,
-                                                                 final @PathVariable String typeCode) {
+    public CustodyKeyDate getCustodyKeyDateByCrn(final @PathVariable String crn,
+                                                 final @PathVariable String typeCode) {
         log.info("Call to getCustodyKeyDateByCrn for {} code {}", crn, typeCode);
         return getCustodyKeyDate(offenderService.offenderIdOfCrn(crn), typeCode);
     }
@@ -137,10 +124,8 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 404, message = "The requested offender was not found or does not have the supplied key date type.")
     })
     @ApiOperation(value = "Gets a custody key date for the active custodial conviction")
-    @JwtValidation
-    public CustodyKeyDate getCustodyKeyDateByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                        final @PathVariable String nomsNumber,
-                                                                        final @PathVariable String typeCode) {
+    public CustodyKeyDate getCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber,
+                                                        final @PathVariable String typeCode) {
         log.info("Call to getCustodyKeyDateByNomsNumber for {} code {}", nomsNumber, typeCode);
         return getCustodyKeyDate(offenderService.offenderIdOfNomsNumber(nomsNumber), typeCode);
     }
@@ -153,10 +138,8 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 404, message = "The requested offender was not found or does not have the supplied key date type.")
     })
     @ApiOperation(value = "Gets a custody key date for the active custodial conviction")
-    @JwtValidation
-    public CustodyKeyDate getCustodyKeyDateByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
-                                                                        final @PathVariable Long offenderId,
-                                                                        final @PathVariable String typeCode) {
+    public CustodyKeyDate getCustodyKeyDateByOffenderId(final @PathVariable Long offenderId,
+                                                        final @PathVariable String typeCode) {
         log.info("Call to getCustodyKeyDateByOffenderId for {} code {}", offenderId, typeCode);
         return getCustodyKeyDate(offenderService.getOffenderByOffenderId(offenderId).map(OffenderDetail::getOffenderId), typeCode);
     }
@@ -169,10 +152,8 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 404, message = "The requested offender was not found or does not have the supplied key date type.")
     })
     @ApiOperation(value = "Gets a custody key date for the related custodial conviction with the matching prison booking")
-    @JwtValidation
-    public CustodyKeyDate getCustodyKeyDateByPrisonBookingNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                                 final @PathVariable String prisonBookingNumber,
-                                                                                 final @PathVariable String typeCode) {
+    public CustodyKeyDate getCustodyKeyDateByPrisonBookingNumber(final @PathVariable String prisonBookingNumber,
+                                                                 final @PathVariable String typeCode) {
         log.info("Call to getCustodyKeyDateByPrisonBookingNumber for {} code {}", prisonBookingNumber, typeCode);
         try {
             return getCustodyKeyDateByConvictionId(convictionService.getConvictionIdByPrisonBookingNumber(prisonBookingNumber), typeCode);
@@ -191,9 +172,7 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
     @ApiOperation(value = "Gets a all custody key dates for the active custodial conviction")
-    @JwtValidation
-    public  List<CustodyKeyDate> getAllCustodyKeyDateByCrn(final @RequestHeader HttpHeaders httpHeaders,
-                                                                    final @PathVariable String crn) {
+    public  List<CustodyKeyDate> getAllCustodyKeyDateByCrn(final @PathVariable String crn) {
         log.info("Call to getAllCustodyKeyDateByCrn for {}", crn);
         return getCustodyKeyDates(offenderService.offenderIdOfCrn(crn));
     }
@@ -206,9 +185,7 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
     @ApiOperation(value = "Gets a all custody key dates for the active custodial conviction")
-    @JwtValidation
-    public  List<CustodyKeyDate> getAllCustodyKeyDateByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                           final @PathVariable String nomsNumber) {
+    public  List<CustodyKeyDate> getAllCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber) {
         log.info("Call to getAllCustodyKeyDateByNomsNumber for {}", nomsNumber);
         return getCustodyKeyDates(offenderService.offenderIdOfNomsNumber(nomsNumber));
     }
@@ -221,9 +198,8 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
     @ApiOperation(value = "Gets a all custody key dates for the active custodial conviction")
-    @JwtValidation
-    public  List<CustodyKeyDate> getAllCustodyKeyDateByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
-                                                                           final @PathVariable Long offenderId) {
+
+    public  List<CustodyKeyDate> getAllCustodyKeyDateByOffenderId(final @PathVariable Long offenderId) {
         log.info("Call to getAllCustodyKeyDateByOffenderId for {}", offenderId);
         return getCustodyKeyDates(offenderService.getOffenderByOffenderId(offenderId).map(OffenderDetail::getOffenderId));
     }
@@ -236,9 +212,7 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
     @ApiOperation(value = "Gets a all custody key dates for the active custodial conviction")
-    @JwtValidation
-    public List<CustodyKeyDate> getAllCustodyKeyDateByPrisonBookingNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                          final @PathVariable String prisonBookingNumber) {
+    public List<CustodyKeyDate> getAllCustodyKeyDateByPrisonBookingNumber(final @PathVariable String prisonBookingNumber) {
         log.info("Call to getAllCustodyKeyDateByPrisonBookingNumber for {}", prisonBookingNumber);
         try {
             return getCustodyKeyDatesByConvictionId(convictionService.getConvictionIdByPrisonBookingNumber(prisonBookingNumber));
@@ -256,9 +230,7 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
     @ApiOperation(value = "Deletes the custody key date for the active custodial conviction")
-    @JwtValidation
-    public void deleteCustodyKeyDateByCrn(final @RequestHeader HttpHeaders httpHeaders,
-                                          final @PathVariable String crn,
+    public void deleteCustodyKeyDateByCrn(final @PathVariable String crn,
                                           final @PathVariable String typeCode) {
         log.info("Call to deleteCustodyKeyDateByCrn for {} code {}", crn, typeCode);
         deleteCustodyKeyDate(offenderService.offenderIdOfCrn(crn), typeCode);
@@ -272,9 +244,8 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
     @ApiOperation(value = "Deletes the custody key date for the active custodial conviction")
-    @JwtValidation
-    public void deleteCustodyKeyDateByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                 final @PathVariable String nomsNumber,
+
+    public void deleteCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber,
                                                  final @PathVariable String typeCode) {
         log.info("Call to deleteCustodyKeyDateByNomsNumber for {} code {}", nomsNumber, typeCode);
         deleteCustodyKeyDate(offenderService.offenderIdOfNomsNumber(nomsNumber), typeCode);
@@ -288,9 +259,7 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
     @ApiOperation(value = "Deletes the custody key date for the active custodial conviction")
-    @JwtValidation
-    public void deleteCustodyKeyDateByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
-                                                 final @PathVariable Long offenderId,
+    public void deleteCustodyKeyDateByOffenderId(final @PathVariable Long offenderId,
                                                  final @PathVariable String typeCode) {
         log.info("Call to deleteCustodyKeyDateByOffenderId for {} code {}", offenderId, typeCode);
         deleteCustodyKeyDate(offenderService.getOffenderByOffenderId(offenderId).map(OffenderDetail::getOffenderId), typeCode);
@@ -304,10 +273,8 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 404, message = "The requested prison booking was not found.")
     })
     @ApiOperation(value = "Deletes the custody key date for the associated custodial conviction")
-    @JwtValidation
-    public void deleteCustodyKeyDateByPrisonBookingNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                                    final @PathVariable String prisonBookingNumber,
-                                                                                    final @PathVariable String typeCode) {
+    public void deleteCustodyKeyDateByPrisonBookingNumber(final @PathVariable String prisonBookingNumber,
+                                                          final @PathVariable String typeCode) {
         log.info("Call to deleteCustodyKeyDateByPrisonBookingNumber for {} code {}", prisonBookingNumber, typeCode);
         try {
             deleteCustodyKeyDateByConvictionId(convictionService.getConvictionIdByPrisonBookingNumber(prisonBookingNumber), typeCode);

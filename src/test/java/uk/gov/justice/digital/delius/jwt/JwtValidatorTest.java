@@ -6,8 +6,9 @@ import org.aspectj.lang.Signature;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
+import uk.gov.justice.digital.delius.config.SecurityUserContext;
 import uk.gov.justice.digital.delius.exception.JwtTokenMissingException;
-import uk.gov.justice.digital.delius.jpa.oracle.UserProxy;
+import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 
 import java.util.Optional;
 
@@ -22,8 +23,10 @@ public class JwtValidatorTest {
     private HttpHeaders httpHeaders = mock(HttpHeaders.class);
     private Claims claims = mock(Claims.class);
     private Signature signature = mock(Signature.class);
+    private SecurityUserContext securityUserContext = mock(SecurityUserContext.class);
 
     private JwtValidator jwtValidator = new JwtValidator(jwt);
+    private CurrentUserSupplier currentUserSupplier = new CurrentUserSupplier(securityUserContext);
 
     @Before
     public void setup() {
@@ -31,6 +34,8 @@ public class JwtValidatorTest {
         when(signature.getName()).thenReturn("myMethod");
         given(joinPoint.getSignature()).willReturn(signature);
         given(jwt.parseAuthorizationHeader("some.jwt.token")).willReturn(Optional.of(claims));
+        when(securityUserContext.isSecure()).thenReturn(false);
+        when(claims.get(Jwt.UID)).thenReturn("john.smith");
     }
 
     @Test
@@ -39,7 +44,7 @@ public class JwtValidatorTest {
 
         jwtValidator.validateJwt(joinPoint);
 
-        assertThat(UserProxy.threadLocalClaims.get()).isNotNull();
+        assertThat(currentUserSupplier.username()).isPresent();
     }
 
     @Test(expected = JwtTokenMissingException.class)

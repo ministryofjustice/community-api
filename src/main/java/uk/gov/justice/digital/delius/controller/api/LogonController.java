@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import uk.gov.justice.digital.delius.jpa.national.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
@@ -31,7 +32,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Slf4j
 @Api(description = "Obtain JWT token", tags = "Logon as user")
 public class LogonController {
-    private static final List<String> SYSTEM_USERS = ImmutableList.of("NationalUser", "APIUser");
+    private static final List<String> SYSTEM_USERS = ImmutableList.of(CurrentUserSupplier.NATIONAL_USER, CurrentUserSupplier.API_USER);
     private final Jwt jwt;
     private final LdapRepository ldapRepository;
     private final UserRepositoryWrapper userRepositoryWrapper;

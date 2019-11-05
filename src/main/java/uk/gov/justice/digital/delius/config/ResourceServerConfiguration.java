@@ -49,7 +49,6 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
         final JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
         converter.setVerifierKey(new String(Base64.decodeBase64(jwtPublicKey)));
         final DefaultAccessTokenConverter tokenConverter = new DefaultAccessTokenConverter();
-        tokenConverter.setUserTokenConverter(new UserIdAuthenticationConverter());
         converter.setAccessTokenConverter(tokenConverter);
         return converter;
     }
