@@ -4,11 +4,13 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.digital.delius.jpa.dao.OffenderDelta;
+import uk.gov.justice.digital.delius.jwt.JwtValidation;
 import uk.gov.justice.digital.delius.service.OffenderDeltaService;
 
 import javax.validation.constraints.NotNull;
@@ -29,14 +31,17 @@ public class OffenderDeltaController {
     }
 
     @RequestMapping(value = "/offenderDeltaIds", method = RequestMethod.GET)
-    public ResponseEntity<List<OffenderDelta>> getOffenderDeltas() {
+    @JwtValidation
+    public ResponseEntity<List<OffenderDelta>> getOffenderDeltas(final @RequestHeader HttpHeaders httpHeader) {
         log.info("Call to getOffenderDeltas");
         return new ResponseEntity<>(offenderDeltaService.findAll(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/offenderDeltaIds", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
-    public void deleteOffenderDeltas(@RequestParam("before")
+    @JwtValidation
+    public void deleteOffenderDeltas(final @RequestHeader HttpHeaders httpHeaders,
+                                     final @RequestParam("before")
                                      @NotNull
                                      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                              LocalDateTime dateTime) {
