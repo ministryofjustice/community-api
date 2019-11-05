@@ -48,5 +48,4 @@ public class OffenderDeltaController {
         log.info("Call to deleteOffenderDeltas before {}", dateTime.toString());
         offenderDeltaService.deleteBefore(dateTime);
     }
-
 }
