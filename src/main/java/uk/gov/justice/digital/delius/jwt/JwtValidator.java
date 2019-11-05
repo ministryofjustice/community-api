@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.exception.JwtTokenMissingException;
-import uk.gov.justice.digital.delius.jpa.oracle.UserProxy;
+import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -41,7 +41,7 @@ public class JwtValidator {
                 .map(jwt::parseAuthorizationHeader)
                 .orElseThrow(() -> new JwtTokenMissingException("No Authorization Bearer token found in headers."));
 
-        maybeClaims.ifPresent(UserProxy.threadLocalClaims::set);
+        maybeClaims.ifPresent(CurrentUserSupplier::setClaims);
     }
 
 }

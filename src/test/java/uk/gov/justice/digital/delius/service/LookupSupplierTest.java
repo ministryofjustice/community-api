@@ -1,18 +1,16 @@
 package uk.gov.justice.digital.delius.service;
 
-import io.jsonwebtoken.Claims;
 import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.national.repository.UserRepository;
-import uk.gov.justice.digital.delius.jpa.oracle.UserProxy;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 import uk.gov.justice.digital.delius.jpa.standard.repository.*;
-import uk.gov.justice.digital.delius.jwt.Jwt;
 
 import java.util.Optional;
 
@@ -42,7 +40,7 @@ public class LookupSupplierTest {
     @Mock
     private TransferReasonRepository transferReasonRepository;
     @Mock
-    private Claims jwtClaims;
+    private CurrentUserSupplier currentUserSupplier;
 
     @Before
     public void before() {
@@ -54,8 +52,8 @@ public class LookupSupplierTest {
                 probationAreaRepository,
                 teamRepository,
                 staffRepository,
-                transferReasonRepository
-        );
+                transferReasonRepository,
+                currentUserSupplier);
 
         when(offenceRepository.findByCode(any())).thenReturn(Optional.of(Offence.builder().build()));
         when(transferReasonRepository.findByCode(any())).thenReturn(Optional.of(TransferReason.builder().build()));
@@ -79,8 +77,7 @@ public class LookupSupplierTest {
 
     @Test
     public void userSupplierLooksUpUsernameFromUserProxyClaim() {
-        when(jwtClaims.get(Jwt.UID)).thenReturn("some.user");
-        UserProxy.threadLocalClaims.set(jwtClaims);
+        when(currentUserSupplier.username()).thenReturn(Optional.of("some.user"));
 
         lookupSupplier.userSupplier().get();
 

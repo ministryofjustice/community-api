@@ -4,10 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Component;
-import uk.gov.justice.digital.delius.config.UserIdAuthenticationConverter.UserIdUser;
 
 import java.util.Map;
 import java.util.Optional;
@@ -20,17 +19,22 @@ public class SecurityUserContext {
         return SecurityContextHolder.getContext().getAuthentication();
     }
 
-    public Optional<String> getCurrentUsername() {
-        return getOptionalCurrentUser().map(User::getUsername);
+    public boolean isClientOnly() {
+        if (getAuthentication() instanceof OAuth2Authentication) {
+            return ((OAuth2Authentication)getAuthentication()).isClientOnly();
+        }
+        return false;
     }
 
-    private Optional<UserIdUser> getOptionalCurrentUser() {
+    public boolean isSecure() {
+       return getAuthentication() != null;
+    }
+
+    public Optional<String> getCurrentUsername() {
         final Authentication authentication = getAuthentication();
         if (authentication == null || authentication.getPrincipal() == null) return Optional.empty();
 
         final Object userPrincipal = authentication.getPrincipal();
-
-        if (userPrincipal instanceof UserIdUser) return Optional.of((UserIdUser) userPrincipal);
 
         final String username;
         if (userPrincipal instanceof String) {
@@ -47,7 +51,7 @@ public class SecurityUserContext {
         if (StringUtils.isEmpty(username) || username.equals("anonymousUser")) return Optional.empty();
 
         log.debug("Authentication doesn't contain user id, using username instead");
-        return Optional.of(new UserIdUser(username, authentication.getCredentials().toString(), authentication.getAuthorities(), username));
+        return Optional.of(username);
     }
 
 }

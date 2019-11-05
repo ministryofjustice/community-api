@@ -44,16 +44,4 @@ public class SecureControllerAdvice {
                         .build());
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(final Exception e) {
-        log.error("Unexpected exception", e);
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ErrorResponse
-                        .builder()
-                        .status(HttpStatus.BAD_REQUEST.value())
-                        .developerMessage(e.getMessage())
-                        .build());
-    }
-
 }

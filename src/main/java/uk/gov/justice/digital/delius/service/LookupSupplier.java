@@ -2,9 +2,9 @@ package uk.gov.justice.digital.delius.service;
 
 import lombok.val;
 import org.springframework.stereotype.Component;
+import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.national.repository.UserRepository;
-import uk.gov.justice.digital.delius.jpa.oracle.UserProxy;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 import uk.gov.justice.digital.delius.jpa.standard.repository.*;
 
@@ -25,11 +25,12 @@ public class LookupSupplier {
     private final TeamRepository teamRepository;
     private final StaffRepository staffRepository;
     private final TransferReasonRepository transferReasonRepository;
+    private final CurrentUserSupplier currentUserSupplier;
 
     public static final String INITIAL_ORDER_ALLOCATION = "IN1";
     public static final String TRANSFER_CASE_INITIAL_REASON = "CASE ORDER";
 
-    public LookupSupplier(OffenceRepository offenceRepository, UserRepository userRepository, StandardReferenceRepository standardReferenceRepository, CourtRepository courtRepository, ProbationAreaRepository probationAreaRepository, TeamRepository teamRepository, StaffRepository staffRepository, TransferReasonRepository transferReasonRepository) {
+    public LookupSupplier(OffenceRepository offenceRepository, UserRepository userRepository, StandardReferenceRepository standardReferenceRepository, CourtRepository courtRepository, ProbationAreaRepository probationAreaRepository, TeamRepository teamRepository, StaffRepository staffRepository, TransferReasonRepository transferReasonRepository, CurrentUserSupplier currentUserSupplier) {
         this.offenceRepository = offenceRepository;
         this.userRepository = userRepository;
         this.standardReferenceRepository = standardReferenceRepository;
@@ -38,6 +39,7 @@ public class LookupSupplier {
         this.teamRepository = teamRepository;
         this.staffRepository = staffRepository;
         this.transferReasonRepository = transferReasonRepository;
+        this.currentUserSupplier = currentUserSupplier;
     }
 
     public Function<String, Offence> offenceSupplier() {
@@ -46,8 +48,8 @@ public class LookupSupplier {
     }
 
     public Supplier<User> userSupplier() {
-        return () -> userRepository.findByDistinguishedNameIgnoreCase(UserProxy.username())
-                .orElseThrow(() -> new RuntimeException(String.format("User in context %s not found", UserProxy.username())));
+        return () -> userRepository.findByDistinguishedNameIgnoreCase(currentUserSupplier.username().orElseThrow(() -> new RuntimeException("No user in context")))
+                .orElseThrow(() -> new RuntimeException(String.format("User in context %s not found", currentUserSupplier.username().orElseThrow(() -> new RuntimeException("No user in context")))));
     }
 
     public Function<String, StandardReference> courtAppearanceOutcomeSupplier() {
