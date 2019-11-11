@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.ManagedOffender;
+import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.service.StaffService;
 
 import javax.validation.constraints.NotNull;
@@ -18,36 +19,50 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
-@Api(description = "Staff resources protected by OAUTH2", tags = "Staff (Secure)", authorizations = {@Authorization("ROLE_COMMUNITY")})
+@Api(description = "Staff resources protected by OAUTH2", tags = "Staff (Secure)", authorizations = {
+                @Authorization("ROLE_COMMUNITY") })
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 @RestController
 @PreAuthorize("hasRole('ROLE_COMMUNITY')")
 public class StaffResource {
 
-    private final StaffService staffService;
+        private final StaffService staffService;
 
-    @ApiOperation(
-            value = "Return list of of currently managed offenders for one responsible officer (RO)",
-            notes = "Accepts a Delius staff officer code")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 200, message = "OK", response = ManagedOffender.class, responseContainer = "List"),
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
-            })
-    @GetMapping(path = "/staff/staffCode/{staffCode}/managedOffenders")
-    public ResponseEntity<List<ManagedOffender>> getOffendersForResponsibleOfficer(
-            @ApiParam(name = "staffCode", value = "Delius officer code of the responsible officer", example = "SH0001", required = true)
-            @NotNull @PathVariable(value = "staffCode") final String staffCode,
-            @ApiParam(name = "current", value = "Current only", example = "false")  @RequestParam(name = "current", required = false, defaultValue = "false") final boolean current) {
-        return staffService.getManagedOffendersByStaffCode(staffCode, current)
-                .map(managedOffenders -> new ResponseEntity<>(managedOffenders ,OK))
-                .orElse(new ResponseEntity<>(NOT_FOUND));
-    }
+        @ApiOperation(value = "Return list of of currently managed offenders for one responsible officer (RO)", notes = "Accepts a Delius staff officer code")
+        @ApiResponses(value = {
+                        @ApiResponse(code = 200, message = "OK", response = ManagedOffender.class, responseContainer = "List"),
+                        @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+                        @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+                        @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+                        @ApiResponse(code = 404, message = "Not found", response = ErrorResponse.class),
+                        @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class) })
+        @GetMapping(path = "/staff/staffCode/{staffCode}/managedOffenders")
+        public ResponseEntity<List<ManagedOffender>> getOffendersForResponsibleOfficer(
+                        @ApiParam(name = "staffCode", value = "Delius officer code of the responsible officer", example = "SH0001", required = true) @NotNull @PathVariable(value = "staffCode") final String staffCode,
+                        @ApiParam(name = "current", value = "Current only", example = "false") @RequestParam(name = "current", required = false, defaultValue = "false") final boolean current) {
+                return staffService.getManagedOffendersByStaffCode(staffCode, current)
+                                .map(managedOffenders -> new ResponseEntity<>(managedOffenders, OK))
+                                .orElse(new ResponseEntity<>(NOT_FOUND));
+        }
 
+        @ApiOperation(value = "Return details of a staff member including option user details", notes = "Accepts a Delius staff officer code")
+        @ApiResponses(value = {
+                        @ApiResponse(code = 200, message = "OK", response = StaffDetails.class),
+                        @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+                        @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+                        @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+                        @ApiResponse(code = 404, message = "Not found", response = ErrorResponse.class),
+                        @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class) })
+        @GetMapping(path = "/staff/staffCode/{staffCode}")
+        public ResponseEntity<StaffDetails> getStaffDetails(
+                        @ApiParam(name = "staffCode", value = "Delius officer code of the responsible officer", example = "SH0001", required = true) 
+                        @NotNull 
+                        @PathVariable(value = "staffCode") final String staffCode) {
+                                log.info("getStaffDetails called with {}", staffCode);
+                                return staffService.getStaffDetails(staffCode)
+                                        .map(staffDetails -> new ResponseEntity<>(staffDetails, OK))
+                                        .orElse(new ResponseEntity<>(NOT_FOUND));
 
+        }
 }
-
