@@ -475,4 +475,29 @@ public class EntityHelper {
             .teams(ImmutableList.of())
             .build();
     }
+
+    public static Team aTeam() {
+        return Team
+                .builder()
+                .code("TEAM-1")
+                .description("Team 1")
+                .district(aDistrict())
+                .localDeliveryUnit(LocalDeliveryUnit.builder()
+                        .code("LL")
+                        .description("LDU description")
+                        .build())
+                .build();
+    }
+
+     public static District aDistrict() {
+        return District.builder()
+                .code("XX")
+                .description("DD description")
+                .borough(Borough.builder()
+                        .code("BB")
+                        .description("Borough description")
+                        .build())
+                .build();
+     }   
+
 }
