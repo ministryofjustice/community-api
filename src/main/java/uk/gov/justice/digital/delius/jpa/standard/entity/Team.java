@@ -42,4 +42,8 @@ public class Team {
 
     @Column(name = "PRIVATE")
     private Long privateFlag;
+
+    @Column(name = "TELEPHONE")
+    private String telephone;
+
 }
