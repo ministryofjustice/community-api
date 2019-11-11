@@ -34,7 +34,7 @@ public class AuthenticationController {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class)
             })
-    @RequestMapping("/authenticate")
+    @GetMapping("/authenticate")
     public ResponseEntity authenticate(@ApiParam(name = "username", value = "LDAP username", example = "TESTUSERNPS", required = true) final @RequestParam String username,
                                        @ApiParam(name = "password", value = "LDAP password", example = "hello123456", required = true) final @RequestParam String password) {
         boolean authenticated = userService.authenticateUser(username, password);
