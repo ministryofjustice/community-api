@@ -49,4 +49,7 @@ public class Staff {
             joinColumns = { @JoinColumn(name="STAFF_ID", referencedColumnName="STAFF_ID")},
             inverseJoinColumns = {@JoinColumn(name="TEAM_ID", referencedColumnName="TEAM_ID")})
     private List<Team> teams;
+
+    @OneToOne(mappedBy = "staff")
+    private User user;
 }
