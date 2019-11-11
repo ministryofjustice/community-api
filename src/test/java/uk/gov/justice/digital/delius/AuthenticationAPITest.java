@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
@@ -21,8 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(properties = {
-        "delius.ldap.users.base=ou=people,dc=memorynotfound,dc=com",
-        "features.auth.experimental=true"
+        "delius.ldap.users.base=ou=people,dc=memorynotfound,dc=com"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
@@ -34,10 +34,13 @@ public class AuthenticationAPITest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Value("${test.token.auth}")
+    private String validOauthToken;
+
     @Before
     public void setup() {
         RestAssured.port = port;
-        RestAssured.basePath = "/api";
+        RestAssured.basePath = "/secure";
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig().jackson2ObjectMapperFactory(
                 (aClass, s) -> objectMapper
         ));
@@ -46,6 +49,7 @@ public class AuthenticationAPITest {
     @Test
     public void authenticateReturnsOKWhenUsernamePasswordMatch() {
         given()
+                .auth().oauth2(validOauthToken)
                 .contentType("text/plain")
                 .param("username", "oliver.connolly")
                 .param("password", "secret")
@@ -58,6 +62,7 @@ public class AuthenticationAPITest {
     @Test
     public void authenticateReturnsUNAUTHORIZEDWhenUsernamePasswordDoNotMatch() {
         given()
+                .auth().oauth2(validOauthToken)
                 .contentType("text/plain")
                 .param("username", "oliver.connolly")
                 .param("password", "incorrectpassword")
@@ -70,6 +75,7 @@ public class AuthenticationAPITest {
     @Test
     public void authenticateReturnsUNAUTHORIZEDWhenUsernameNotFound() {
         given()
+                .auth().oauth2(validOauthToken)
                 .contentType("text/plain")
                 .param("username", "not.exists")
                 .param("password", "secret")
@@ -82,6 +88,7 @@ public class AuthenticationAPITest {
     @Test
     public void canChangeAUsersPassword() {
         given()
+                .auth().oauth2(validOauthToken)
                 .contentType("text/plain")
                 .param("username", "oliver.connolly")
                 .param("password", "secret")
@@ -91,6 +98,7 @@ public class AuthenticationAPITest {
                 .statusCode(200);
 
         given()
+                .auth().oauth2(validOauthToken)
                 //.contentType("multipart/form-data")
                 .formParam("password", "newsecret")
                 .when()
@@ -99,6 +107,7 @@ public class AuthenticationAPITest {
                 .statusCode(200);
 
         given()
+                .auth().oauth2(validOauthToken)
                 .contentType("text/plain")
                 .param("username", "oliver.connolly")
                 .param("password", "secret")
@@ -108,6 +117,7 @@ public class AuthenticationAPITest {
                 .statusCode(401);
 
         given()
+                .auth().oauth2(validOauthToken)
                 .contentType("text/plain")
                 .param("username", "oliver.connolly")
                 .param("password", "newsecret")
@@ -118,6 +128,7 @@ public class AuthenticationAPITest {
 
         // restore to original password
         given()
+                .auth().oauth2(validOauthToken)
                 //.contentType("multipart/form-data")
                 .formParam("password", "secret")
                 .when()
@@ -128,6 +139,7 @@ public class AuthenticationAPITest {
     @Test
     public void canLockUsersAccount() {
         given()
+                .auth().oauth2(validOauthToken)
                 .contentType("text/plain")
                 .param("username", "oliver.connolly")
                 .param("password", "secret")
@@ -137,6 +149,7 @@ public class AuthenticationAPITest {
                 .statusCode(200);
 
         given()
+                .auth().oauth2(validOauthToken)
                 //.contentType("multipart/form-data")
                 .when()
                 .post("/users/oliver.connolly/lock")
@@ -144,6 +157,7 @@ public class AuthenticationAPITest {
                 .statusCode(200);
 
         given()
+                .auth().oauth2(validOauthToken)
                 .contentType("text/plain")
                 .param("username", "oliver.connolly")
                 .param("password", "secret")
@@ -156,6 +170,7 @@ public class AuthenticationAPITest {
     @Test
     public void canUnlockUsersAccount() {
         given()
+                .auth().oauth2(validOauthToken)
                 //.contentType("multipart/form-data")
                 .when()
                 .post("/users/oliver.connolly/lock")
@@ -163,6 +178,7 @@ public class AuthenticationAPITest {
                 .statusCode(200);
 
         given()
+                .auth().oauth2(validOauthToken)
                 .contentType("text/plain")
                 .param("username", "oliver.connolly")
                 .param("password", "secret")
@@ -172,6 +188,7 @@ public class AuthenticationAPITest {
                 .statusCode(401);
 
         given()
+                .auth().oauth2(validOauthToken)
                 //.contentType("multipart/form-data")
                 .when()
                 .post("/users/oliver.connolly/unlock")
@@ -180,6 +197,7 @@ public class AuthenticationAPITest {
 
 
         given()
+                .auth().oauth2(validOauthToken)
                 .contentType("text/plain")
                 .param("username", "oliver.connolly")
                 .param("password", "secret")
@@ -194,6 +212,7 @@ public class AuthenticationAPITest {
     @Test
     public void returnsUserDetails() {
         final UserDetails userDetails = given()
+                .auth().oauth2(validOauthToken)
                 .contentType("text/plain")
                 .when()
                 .get("/users/bernard.beaks/details")
