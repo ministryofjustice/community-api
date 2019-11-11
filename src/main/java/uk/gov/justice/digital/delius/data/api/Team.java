@@ -10,8 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Team {
+    private String code;
     private String description;
     private String telephone;
     private KeyValue district;
+    private KeyValue localDeliveryUnit;
     private KeyValue borough;
 }

@@ -64,3 +64,8 @@ dist
 
 # AWS DOcker build
 ecr.repo
+.DS_Store
+.classpath
+bin
+.settings/org.eclipse.buildship.core.prefs
+.vscode/launch.json
