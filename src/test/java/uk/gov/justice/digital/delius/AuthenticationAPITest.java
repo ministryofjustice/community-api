@@ -86,7 +86,7 @@ public class AuthenticationAPITest {
     }
 
     @Test
-    public void authenticateReturns400WhenBody() {
+    public void authenticateReturns400WhenBodyEmpty() {
         given()
                 .auth().oauth2(validOauthToken)
                 .contentType(APPLICATION_JSON_VALUE)
