@@ -25,6 +25,6 @@ public class UserDetails {
     private String email;
     @ApiModelProperty(value = "Account is locked if true", example = "false", required = true, position = 4)
     private boolean locked;
-    @ApiModelProperty(value = "Roles For this User", example = "TEST_USER_NPS", position = 5)
+    @ApiModelProperty(value = "Roles For this User", position = 5, allowEmptyValue = true)
     private List<UserRole> roles;
 }
