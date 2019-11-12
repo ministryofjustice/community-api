@@ -99,14 +99,14 @@ mail: sheila.hancock@justice.gov.uk
 uid: SheilaHancockNPS
 userPassword: secret
 
-dn: uid=UserNotFoundNPS,ou=people,dc=memorynotfound,dc=com
+dn: uid=EmailNotPresentNPS,ou=people,dc=memorynotfound,dc=com
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
 objectclass: inetOrgPerson
 objectclass: NDUser
-cn: UserNotFoundNPS
-sn: User
-givenname: Not
-uid: UserNotFoundNPS
+cn: EmailNotPresentNPS
+sn: Email
+givenname: No
+uid: EmailNotPresentNPS
 userPassword: secret

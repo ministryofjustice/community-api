@@ -5,34 +5,33 @@ import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
-import uk.gov.justice.digital.delius.util.EntityHelper;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aDistrict;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aTeam;
 
 public class TeamTransformerTest {
     private TeamTransformer teamTransformer = new TeamTransformer();
 
     @Test
     public void willCopyCode() {
-        assertThat(teamTransformer.teamOf(EntityHelper.aTeam().toBuilder().code("ABC").build())
-                .getCode()).isEqualTo("ABC");
+        assertThat(teamTransformer.teamOf(
+            aTeam().toBuilder().code("ABC").build()).getCode())
+                .isEqualTo("ABC");
 
     }
 
     @Test
     public void willCopyDescription() {
-        assertThat(teamTransformer
-                .teamOf(EntityHelper.aTeam().toBuilder().description("My Description").build())
-                .getDescription()).isEqualTo("My Description");
+        assertThat(teamTransformer.teamOf(
+            aTeam().toBuilder().description("My Description").build()).getDescription())
+                .isEqualTo("My Description");
 
     }
 
     @Test
     public void willCopyTelephone() {
-        assertThat(teamTransformer
-                .teamOf(EntityHelper.aTeam().toBuilder().telephone("0114 222 4444").build())
-                .getTelephone()).isEqualTo("0114 222 4444");
+        assertThat(teamTransformer.teamOf(aTeam().toBuilder().telephone("0114 222 4444").build()).getTelephone())
+                .isEqualTo("0114 222 4444");
 
     }
 
@@ -40,48 +39,29 @@ public class TeamTransformerTest {
     public void willCopyDistrict() {
         assertThat(
                 teamTransformer
-                        .teamOf(EntityHelper
-                        .aTeam()
-                        .toBuilder()
-                        .district(aDistrict()
-                            .toBuilder()
-                            .code("AA")
-                            .description("My Description")
-                            .build())
-                        .build())
-                .getDistrict()).isEqualTo(
-                    KeyValue
-                        .builder()
-                        .code("AA")
-                        .description("My Description")
-                        .build());
+                        .teamOf(aTeam().toBuilder()
+                                .district(aDistrict().toBuilder().code("AA")
+                                        .description("My Description").build())
+                                .build())
+                        .getDistrict())
+                                .isEqualTo(KeyValue.builder().code("AA")
+                                        .description("My Description").build());
     }
 
     @Test
     public void willCopyLocalDeliveryUnit() {
-        assertThat(teamTransformer.teamOf(
-            EntityHelper
-                .aTeam()
-                .toBuilder()
-                .localDeliveryUnit(LocalDeliveryUnit
-                    .builder()
-                    .code("LL")
-                    .description("My Description")
-                    .build())
-                .build())
+        assertThat(teamTransformer
+                .teamOf(aTeam().toBuilder()
+                        .localDeliveryUnit(LocalDeliveryUnit.builder().code("LL")
+                                .description("My Description").build())
+                        .build())
                 .getLocalDeliveryUnit()).isEqualTo(
-                        KeyValue
-                            .builder()
-                            .code("LL")
-                            .description("My Description")
-                            .build());
+                        KeyValue.builder().code("LL").description("My Description").build());
     }
 
     @Test
     public void willCopyBorough() {
-        assertThat(teamTransformer.teamOf(
-            EntityHelper
-                .aTeam()
+        assertThat(teamTransformer.teamOf(aTeam()
                 .toBuilder()
                 .district(District
                     .builder()
@@ -99,6 +79,4 @@ public class TeamTransformerTest {
                             .description("My Description")
                             .build());
     }
-
-    
 }

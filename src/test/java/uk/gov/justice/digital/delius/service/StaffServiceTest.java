@@ -16,6 +16,8 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
 import uk.gov.justice.digital.delius.transformers.ContactTransformer;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
+import uk.gov.justice.digital.delius.transformers.StaffTransformer;
+import uk.gov.justice.digital.delius.transformers.TeamTransformer;
 @RunWith(MockitoJUnitRunner.class)
 public class StaffServiceTest {
 
@@ -109,6 +111,4 @@ public class StaffServiceTest {
 
                 assertThat(staffService.getStaffDetails("ABC123")).get().extracting(StaffDetails::getEmail).isNull(); 
         }
-
-
 }

@@ -29,7 +29,7 @@ public class LdapRepositoryTest {
     }
     @Test
     public void shoudReturnNullForUserNotFound() {
-        assertThat(ldapRepository.getEmail("UserNotFoundNPS"))
+        assertThat(ldapRepository.getEmail("EmailNotPresentNPS"))
                 .isNull();
     }
     

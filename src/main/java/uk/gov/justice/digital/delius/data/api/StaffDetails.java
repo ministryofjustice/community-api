@@ -21,6 +21,4 @@ public class StaffDetails {
     private String staffCode;
     private Human staff;
     private List<Team> teams;
-
-
 }

@@ -192,7 +192,7 @@ public class OffenderTransformer {
                 .build();
     }
 
-    public List<String> combinedMiddleNamesOf(String secondName, String thirdName) {
+    private List<String> combinedMiddleNamesOf(String secondName, String thirdName) {
         Optional<String> maybeSecondName = Optional.ofNullable(secondName);
         Optional<String> maybeThirdName = Optional.ofNullable(thirdName);
 

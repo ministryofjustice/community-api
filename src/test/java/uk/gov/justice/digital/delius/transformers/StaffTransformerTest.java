@@ -14,32 +14,46 @@ public class StaffTransformerTest {
 
     @Test
     public void staffNameDetailsTakenFromStaff() {
-        assertThat(staffTransformer
-                .staffDetailsOf(aStaff().toBuilder().forename("John").surname("Smith").forname2("George").build())
-                .getStaff()).isEqualTo(Human.builder().forenames("John George").surname("Smith").build());
+        assertThat(staffTransformer.staffDetailsOf(
+                                        aStaff()
+                                            .toBuilder()
+                                            .forename("John")
+                                            .surname("Smith")
+                                            .forname2("George")
+                                            .build()).getStaff())
+                    .isEqualTo(Human.builder().forenames("John George").surname("Smith").build());
     }
 
     @Test
     public void staffCodeTakenFromStaff() {
-        assertThat(staffTransformer
-                .staffDetailsOf(aStaff().toBuilder().forename("John").surname("Smith").officerCode("XXXXX").build())
-                .getStaffCode()).isEqualTo("XXXXX");
+        assertThat(staffTransformer.staffDetailsOf(
+                                        aStaff()
+                                            .toBuilder()
+                                            .forename("John")
+                                            .surname("Smith")
+                                            .officerCode("XXXXX")
+                                            .build()).getStaffCode())
+                    .isEqualTo("XXXXX");
     }
 
     @Test
     public void teamsTakenFromStaff() {
-        assertThat(staffTransformer.staffDetailsOf(aStaff().toBuilder()
-                .teams(ImmutableList.of(aTeam(), aTeam())).build())
-                .getTeams()).hasSize(2);
+        assertThat(staffTransformer.staffDetailsOf(
+                                        aStaff()
+                                        .toBuilder()
+                                        .teams(ImmutableList.of(aTeam(), aTeam()))
+                                        .build()).getTeams())
+                    .hasSize(2);
     }
 
     @Test
     public void usernameCopiedWhenLinkedToUser() {
-        assertThat(staffTransformer.staffDetailsOf(aStaff()
-                                                    .toBuilder()
-                                                    .user(User.builder().distinguishedName("username").build())
-                                                    .build()).getUsername())
-            .isEqualTo("username");
+        assertThat(staffTransformer.staffDetailsOf(
+                                        aStaff()
+                                        .toBuilder()
+                                        .user(User.builder().distinguishedName("username").build())
+                                        .build()).getUsername())
+                      .isEqualTo("username");
     }
 
     @Test
