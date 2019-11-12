@@ -69,3 +69,4 @@ ecr.repo
 bin
 .settings/org.eclipse.buildship.core.prefs
 .vscode/launch.json
+*.code-workspace
