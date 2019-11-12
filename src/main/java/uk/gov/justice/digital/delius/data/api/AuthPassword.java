@@ -8,15 +8,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@ApiModel(description = "User Roles")
+import javax.validation.constraints.NotBlank;
+
+@ApiModel(description = "Password Credentials")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserRole {
-    @ApiModelProperty(value = "Code/Name of the Role", example = "TEST_ROLE", required = true, position = 1)
-    private String name;
-    @ApiModelProperty(value = "Description the Role", example = "A Test Role", position = 2)
-    private String description;
+public class AuthPassword {
+    @NotBlank
+    @ApiModelProperty(value = "LDAP password", example = "password123456", required = true, position = 1)
+    private String password;
 }
