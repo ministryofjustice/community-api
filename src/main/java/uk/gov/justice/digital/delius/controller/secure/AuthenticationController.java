@@ -2,7 +2,6 @@ package uk.gov.justice.digital.delius.controller.secure;
 
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +22,6 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
-@Slf4j
 @Api(tags = "Authentication", authorizations = {@Authorization("ROLE_AUTH_DELIUS_LDAP")}, description = "Authentication for Delius Identity (LDAP)")
 @AllArgsConstructor
 @PreAuthorize("hasRole('ROLE_AUTH_DELIUS_LDAP')")
@@ -42,7 +40,7 @@ public class AuthenticationController {
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class)
             })
     @PostMapping("/authenticate")
-    public ResponseEntity authenticate(@NotNull @Valid @ApiParam(value = "Authentication Details", required = true) @RequestBody final AuthUser authUser) {
+    public ResponseEntity<Void> authenticate(@NotNull @Valid @ApiParam(value = "Authentication Details", required = true) @RequestBody final AuthUser authUser) {
         boolean authenticated = userService.authenticateUser(authUser.getUsername(), authUser.getPassword());
         if(!authenticated) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -77,7 +75,7 @@ public class AuthenticationController {
                     @ApiResponse(code = 404, message = "Not Found", response = ErrorResponse.class)
             })
     @PostMapping(value = "/users/{username}/password")
-    public ResponseEntity changePassword(@ApiParam(name = "username", value = "LDAP username", example = "TESTUSERNPS", required = true) @NotNull final @PathVariable("username") String username,
+    public ResponseEntity<Void> changePassword(@ApiParam(name = "username", value = "LDAP username", example = "TESTUSERNPS", required = true) @NotNull final @PathVariable("username") String username,
                                          @NotNull @Valid @ApiParam(value = "Password Credentials", required = true) @RequestBody final AuthPassword authPassword) {
         if  (userService.changePassword(username, authPassword.getPassword())) {
             return new ResponseEntity<>(OK);
@@ -96,7 +94,7 @@ public class AuthenticationController {
                     @ApiResponse(code = 404, message = "Not Found", response = ErrorResponse.class)
             })
     @PostMapping(value = "/users/{username}/lock")
-    public ResponseEntity lockUsersAccount(@ApiParam(name = "username", value = "LDAP username", example = "TESTUSERNPS", required = true) @NotNull final @PathVariable("username") String username) {
+    public ResponseEntity<Void> lockUsersAccount(@ApiParam(name = "username", value = "LDAP username", example = "TESTUSERNPS", required = true) @NotNull final @PathVariable("username") String username) {
         if  (userService.lockAccount(username)) {
             return new ResponseEntity<>(OK);
         }
@@ -114,7 +112,7 @@ public class AuthenticationController {
                     @ApiResponse(code = 404, message = "Not Found", response = ErrorResponse.class)
             })
     @PostMapping(value = "/users/{username}/unlock")
-    public ResponseEntity unlockUsersAccount(@ApiParam(name = "username", value = "LDAP username", example = "TESTUSERNPS", required = true) @NotNull final @PathVariable("username") String username) {
+    public ResponseEntity<Void> unlockUsersAccount(@ApiParam(name = "username", value = "LDAP username", example = "TESTUSERNPS", required = true) @NotNull final @PathVariable("username") String username) {
         if  (userService.unlockAccount(username)) {
             return new ResponseEntity<>(OK);
         }

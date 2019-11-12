@@ -131,8 +131,8 @@ public class LdapRepository {
     }
 
     public String getEmail(String username) {
-        val nDeliusUser = ldapTemplate.findOne(byUsername(username), NDeliusUser.class);
+        val nDeliusUser = ldapTemplate.find(byUsername(username), NDeliusUser.class).stream().findAny();
 
-        return Optional.ofNullable(nDeliusUser).map(NDeliusUser::getMail).orElse(null);
+        return nDeliusUser.map(NDeliusUser::getMail).orElse(null);
     }
 }
