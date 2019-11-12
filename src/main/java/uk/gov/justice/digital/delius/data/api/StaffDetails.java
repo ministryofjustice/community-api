@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class StaffDetails {

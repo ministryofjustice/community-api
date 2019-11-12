@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import uk.gov.justice.digital.delius.data.api.ManagedOffender;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
+import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 import uk.gov.justice.digital.delius.transformers.StaffTransformer;
 
@@ -16,6 +17,7 @@ import uk.gov.justice.digital.delius.transformers.StaffTransformer;
 public class StaffService {
 
     private final StaffRepository staffRepository;
+    private final LdapRepository ldapRepository;
     private final OffenderTransformer offenderTransformer;
     private final StaffTransformer staffTransformer;
     
@@ -30,6 +32,15 @@ public class StaffService {
 
     @Transactional(readOnly = true)
 	public Optional<StaffDetails> getStaffDetails(String staffCode) {
-        return staffRepository.findByOfficerCode(staffCode).map(staffTransformer::staffDetailsOf);
+        return staffRepository
+                    .findByOfficerCode(staffCode)
+                    .map(staffTransformer::staffDetailsOf)
+                    .map(staffDetails -> 
+                        Optional.ofNullable(staffDetails.getUsername())
+                            .map(username -> staffDetails
+                                .toBuilder()
+                                .email(ldapRepository.getEmail(username))
+                                .build())
+                            .orElse(staffDetails));
 	}
 }

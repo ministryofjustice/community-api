@@ -500,4 +500,9 @@ public class EntityHelper {
                 .build();
      }   
 
+     public static User aUser() {
+        return User.builder()
+                .distinguishedName("XX")
+                .build();
+     }   
 }
