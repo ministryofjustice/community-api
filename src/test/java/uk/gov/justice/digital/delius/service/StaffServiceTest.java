@@ -45,6 +45,4 @@ public class StaffServiceTest {
                 assertThat(staffService.getStaffDetails("ABC123")).isPresent();
         }
 
-
-       
 }
