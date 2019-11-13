@@ -85,3 +85,28 @@ objectclass: groupOfUniqueNames
 cn: managers
 ou: manager
 uniqueMember: uid=jahn,ou=people,dc=memorynotfound,dc=com
+
+dn: uid=SheilaHancockNPS,ou=people,dc=memorynotfound,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: NDUser
+cn: SheilaHancockNPS
+sn: Hancock
+givenname: Sheila
+mail: sheila.hancock@justice.gov.uk
+uid: SheilaHancockNPS
+userPassword: secret
+
+dn: uid=EmailNotPresentNPS,ou=people,dc=memorynotfound,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: NDUser
+cn: EmailNotPresentNPS
+sn: Email
+givenname: No
+uid: EmailNotPresentNPS
+userPassword: secret
