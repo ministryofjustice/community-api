@@ -54,6 +54,7 @@ public class SecureControllerAdvice {
                 .body(ErrorResponse
                         .builder()
                         .status(HttpStatus.NOT_FOUND.value())
+                        .developerMessage(e.getMessage())
                         .build());
     }
 
@@ -65,6 +66,7 @@ public class SecureControllerAdvice {
                 .body(ErrorResponse
                         .builder()
                         .status(HttpStatus.UNAUTHORIZED.value())
+                        .developerMessage(e.getMessage())
                         .build());
     }
 
