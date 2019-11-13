@@ -129,4 +129,10 @@ public class LdapRepository {
         val context = ldapTemplate.searchForContext(byUsername(username));
         return context.getStringAttribute("orclActiveEndDate") != null;
     }
+
+    public String getEmail(String username) {
+        val nDeliusUser = ldapTemplate.find(byUsername(username), NDeliusUser.class).stream().findAny();
+
+        return nDeliusUser.map(NDeliusUser::getMail).orElse(null);
+    }
 }

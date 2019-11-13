@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-
+import com.google.common.collect.ImmutableList;
 import static uk.gov.justice.digital.delius.util.OffenderHelper.anOffender;
 
 public class EntityHelper {
@@ -465,4 +465,44 @@ public class EntityHelper {
                         .build())
                 .build();
     }
+
+    public static Staff aStaff() {
+            return Staff
+            .builder()
+            .officerCode("A1234")
+            .forename("John")
+            .surname("Smith")
+            .teams(ImmutableList.of())
+            .build();
+    }
+
+    public static Team aTeam() {
+        return Team
+                .builder()
+                .code("TEAM-1")
+                .description("Team 1")
+                .district(aDistrict())
+                .localDeliveryUnit(LocalDeliveryUnit.builder()
+                        .code("LL")
+                        .description("LDU description")
+                        .build())
+                .build();
+    }
+
+     public static District aDistrict() {
+        return District.builder()
+                .code("XX")
+                .description("DD description")
+                .borough(Borough.builder()
+                        .code("BB")
+                        .description("Borough description")
+                        .build())
+                .build();
+     }   
+
+     public static User aUser() {
+        return User.builder()
+                .distinguishedName("XX")
+                .build();
+     }   
 }
