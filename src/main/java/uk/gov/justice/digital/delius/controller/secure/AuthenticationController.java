@@ -7,7 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
-import uk.gov.justice.digital.delius.controller.UnAuthorisedException;
+import uk.gov.justice.digital.delius.controller.UnauthorisedException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.AuthPassword;
 import uk.gov.justice.digital.delius.data.api.AuthUser;
@@ -40,7 +40,7 @@ public class AuthenticationController {
     public void authenticate(@NotNull @Valid @ApiParam(value = "Authentication Details", required = true) @RequestBody final AuthUser authUser) {
         boolean authenticated = userService.authenticateUser(authUser.getUsername(), authUser.getPassword());
         if(!authenticated) {
-            throw new UnAuthorisedException(String.format("User with username %s", authUser.getUsername()));
+            throw new UnauthorisedException(String.format("User with username %s", authUser.getUsername()));
         }
     }
 

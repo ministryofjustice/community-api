@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
-import uk.gov.justice.digital.delius.controller.UnAuthorisedException;
+import uk.gov.justice.digital.delius.controller.UnauthorisedException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 
 @RestControllerAdvice(basePackages = { "uk.gov.justice.digital.delius.controller.secure" } )
@@ -57,8 +57,8 @@ public class SecureControllerAdvice {
                         .build());
     }
 
-    @ExceptionHandler(UnAuthorisedException.class)
-    public ResponseEntity<ErrorResponse> handleException(final UnAuthorisedException e) {
+    @ExceptionHandler(UnauthorisedException.class)
+    public ResponseEntity<ErrorResponse> handleException(final UnauthorisedException e) {
         log.debug("Unauthorised (401) returned", e);
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
