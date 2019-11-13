@@ -70,9 +70,9 @@ delius:
   ldap:
     users:
       base: "cn=Users,dc=moj,dc=com"
-  baseurl: 'http://localhost:8088/alfresco/s/noms-spg'
-  username: 'A'
-  password: 'A'
+  baseurl: 'http://localhost:8999'
+  username: 'default'
+  password: 'default'
 
 graceful:
   shutdown:

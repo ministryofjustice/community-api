@@ -11,7 +11,7 @@ public class CaseNoteService {
     private final RestTemplate restTemplate;
 
     @Autowired
-    public CaseNoteService(@Qualifier("alfrescoRestTemplateWithAuth") RestTemplate restTemplate) {
+    public CaseNoteService(@Qualifier("deliusRestTemplateWithAuth") RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 

@@ -16,15 +16,4 @@ public class AlfrescoConfig {
                 .rootUri(baseUrl)
                 .build();
     }
-
-    @Bean("alfrescoRestTemplateWithAuth")
-    public RestTemplate alfrescoRestTemplateWithAuth(RestTemplateBuilder restTemplateBuilder,
-                                                     @Value("${delius.baseurl}") String baseUrl,
-                                                     @Value("${delius.username}") String deliusUsername,
-                                                     @Value("${delius.password}") String deliusPassword) {
-        return restTemplateBuilder
-                .rootUri(baseUrl)
-                .basicAuthentication(deliusUsername, deliusPassword)
-                .build();
-    }
 }
