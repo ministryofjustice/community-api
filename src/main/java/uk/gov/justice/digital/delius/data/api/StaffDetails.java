@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StaffDetails {
-    @ApiModelProperty(value = "the optional username of this staff member, maybe absent of the staff member is not a user of the system", required = false, example = "SheilaHancockNPS")
+    @ApiModelProperty(value = "the optional username of this staff member, will be absent if the staff member is not a user of Delius", required = false, example = "SheilaHancockNPS")
     private String username;
-    @ApiModelProperty(value = "the optional not be present", required = false, example = "sheila.hancock@test.justice.gov.uk")
+    @ApiModelProperty(value = "the optional email address of this staff member, will be absent if the staff member is not a user of Delius", required = false, example = "sheila.hancock@test.justice.gov.uk")
     private String email;
     @ApiModelProperty(value = "staff code AKA officer code", example = "SH0001")
     private String staffCode;
