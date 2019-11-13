@@ -8,13 +8,15 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @Entity
 @Table(name = "USER_")
 public class User {
@@ -23,8 +25,9 @@ public class User {
     @Column(name = "USER_ID")
     private Long userId;
 
-    @Column(name = "STAFF_ID")
-    private Long staffId;
+    @OneToOne(optional = true)
+    @JoinColumn(name = "STAFF_ID")
+    private Staff staff;
 
     @Column(name = "FORENAME")
     private String forename;
