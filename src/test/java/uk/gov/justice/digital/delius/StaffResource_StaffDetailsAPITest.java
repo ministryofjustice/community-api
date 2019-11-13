@@ -26,6 +26,7 @@ import io.restassured.config.RestAssuredConfig;
 import lombok.val;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.service.StaffService;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -59,7 +60,7 @@ public class StaffResource_StaffDetailsAPITest {
                 val staffDetails =  given()
                         .auth()
                         .oauth2(validOauthToken)
-                        .contentType("application/json")
+                        .contentType(APPLICATION_JSON_VALUE)
                         .when()
                         .get("staff/staffCode/ABCDEF1")
                         .then()
@@ -79,7 +80,7 @@ public class StaffResource_StaffDetailsAPITest {
                 given()
                         .auth()
                         .oauth2(validOauthToken)
-                        .contentType("application/json")
+                        .contentType(APPLICATION_JSON_VALUE)
                         .when()
                         .get("staff/staffCode/ABCDEF1")
                         .then()
