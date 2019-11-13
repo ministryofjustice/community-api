@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class AlfrescoConfig {
 
-    @Bean
+    @Bean("alfrescoRestTemplate")
     public RestTemplate alfrescoRestTemplate(RestTemplateBuilder restTemplateBuilder,
                                              @Value("${alfresco.baseUrl}") String baseUrl) {
         return restTemplateBuilder
@@ -17,4 +17,14 @@ public class AlfrescoConfig {
                 .build();
     }
 
+    @Bean("alfrescoRestTemplateWithAuth")
+    public RestTemplate alfrescoRestTemplateWithAuth(RestTemplateBuilder restTemplateBuilder,
+                                                     @Value("${delius.baseurl}") String baseUrl,
+                                                     @Value("${delius.username}") String deliusUsername,
+                                                     @Value("${delius.password}") String deliusPassword) {
+        return restTemplateBuilder
+                .rootUri(baseUrl)
+                .basicAuthentication(deliusUsername, deliusPassword)
+                .build();
+    }
 }
