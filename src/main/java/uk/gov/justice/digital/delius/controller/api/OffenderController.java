@@ -10,7 +10,6 @@ import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.hateoas.Link;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,13 +24,10 @@ import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.UserService;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.http.HttpStatus.*;
 
 @RestController
@@ -284,22 +280,17 @@ public class OffenderController {
 
     @RequestMapping(value = "/offenders/offenderIds", method = RequestMethod.GET)
     @JwtValidation
-    public ResponseEntity<org.springframework.hateoas.Resource<OffenderIdsResource>> getOffenderIds(final @RequestHeader HttpHeaders httpHeaders,
-                                                                                                    final @RequestParam(name = "pageSize", required = false, defaultValue = "${offender.ids.pagesize:1000}") int pageSize,
-                                                                                                    final @RequestParam(defaultValue = "1") int page) {
+    public ResponseEntity<OffenderIdsResource> getOffenderIds(
+            final @RequestHeader HttpHeaders httpHeaders,
+            final @RequestParam(name = "pageSize", required = false, defaultValue = "${offender.ids.pagesize:1000}") int pageSize,
+            final @RequestParam(defaultValue = "1") int page) {
 
-        Link nextLink = linkTo(methodOn(OffenderController.class).getOffenderIds(httpHeaders, pageSize, page + 1)).withRel("next");
-
-
-        List<BigDecimal> offenderIds = offenderService.allOffenderIds(pageSize, page);
+        final var offenderIds = offenderService.allOffenderIds(pageSize, page);
         if (offenderIds.isEmpty()) {
             return new ResponseEntity<>(NOT_FOUND);
         }
 
-        return new ResponseEntity<>(
-                new org.springframework.hateoas.Resource<>(
-                        OffenderIdsResource.builder().offenderIds(offenderIds).build(),
-                        nextLink), OK);
+        return new ResponseEntity<>(OffenderIdsResource.builder().offenderIds(offenderIds).build(), OK);
     }
 
     @RequestMapping(value = "/offenders/count", method = RequestMethod.GET)
