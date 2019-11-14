@@ -67,7 +67,6 @@ dependencyManagement {
 dependencies {
     implementation files('lib/ojdbc8-12.2.0.1.jar')
 
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.10.1'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.1'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'org.springframework.boot:spring-boot-starter-web'
