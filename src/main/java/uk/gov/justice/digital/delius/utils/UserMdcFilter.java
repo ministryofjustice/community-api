@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.utils;
 
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
@@ -11,7 +10,6 @@ import javax.servlet.*;
 import java.io.IOException;
 import java.util.Optional;
 
-@Slf4j
 @Component
 @Order(1)
 public class UserMdcFilter implements Filter {

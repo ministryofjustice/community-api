@@ -3,7 +3,6 @@ package uk.gov.justice.digital.delius;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
@@ -71,8 +70,6 @@ public class DeliusOffenderAPITest {
 
     @Autowired
     private Jwt jwt;
-
-    private WireMockServer wiremockServer;
 
     @Before
     public void setup() {
@@ -491,10 +488,11 @@ public class DeliusOffenderAPITest {
                 .statusCode(404);
     }
 
-    @Test
+    @Test        
+    @SuppressWarnings("unchecked")
     public void canRetrieveOffenderIdsWithDefaultPageSizeAndPage() {
 
-        Map<String, Object> ids = given()
+        Map<?, ?> ids = given()
                 .header("Authorization", aValidToken())
                 .when()
                 .get("/offenders/offenderIds")
@@ -509,9 +507,10 @@ public class DeliusOffenderAPITest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void canRetrieveOffenderIdsWithExplicitPageSizeAndPage() {
 
-        Map<String, Object> ids = given()
+        Map<?, ?> ids = given()
                 .header("Authorization", aValidToken())
                 .when()
                 .queryParams("pageSize", 5, "page", 2)

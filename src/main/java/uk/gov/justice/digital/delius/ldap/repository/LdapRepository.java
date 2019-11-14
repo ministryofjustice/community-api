@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.ldap.repository;
 
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +25,6 @@ import java.util.Optional;
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
 @Repository
-@Slf4j
 public class LdapRepository {
 
     private final LdapTemplate ldapTemplate;

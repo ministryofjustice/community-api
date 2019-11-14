@@ -5,7 +5,6 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.List;
 
 @EqualsAndHashCode(of = {"offenderManagerId", "offenderId" , "allocationDate"})
 @ToString(exclude = {"team","staff","partitionArea","providerTeam","probationArea", "responsibleOfficer","managedOffender" ,"officer"})

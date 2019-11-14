@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.data.api.PersonalCircumstance;
@@ -14,7 +13,6 @@ import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
 
 @Service
-@Slf4j
 public class PersonalCircumstanceService {
     private final PersonalCircumstanceRepository personalCircumstanceRepository;
     private final PersonalCircumstanceTransformer personalCircumstanceTransformer;
