@@ -9,12 +9,11 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class AlfrescoConfig {
 
-    @Bean
+    @Bean("alfrescoRestTemplate")
     public RestTemplate alfrescoRestTemplate(RestTemplateBuilder restTemplateBuilder,
                                              @Value("${alfresco.baseUrl}") String baseUrl) {
         return restTemplateBuilder
                 .rootUri(baseUrl)
                 .build();
     }
-
 }
