@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius.service;
 
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
@@ -20,7 +21,7 @@ public class AlfrescoService {
     private final MultiValueMap<String, String> headers;
 
     @Autowired
-    public AlfrescoService(RestTemplate restTemplate,
+    public AlfrescoService(@Qualifier("alfrescoRestTemplate")RestTemplate restTemplate,
                            @Value("${alfresco.X-DocRepository-Remote-User}") String alftresecoRemoteUser,
                            @Value("${alfresco.X-DocRepository-Real-Remote-User}") String alfrescoRealRemoteUser) {
         this.restTemplate = restTemplate;
