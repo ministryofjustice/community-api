@@ -105,15 +105,6 @@ pipeline {
                 '''
             }
         }
-        stage('Image Tests') {
-            steps {
-                // Run dgoss tests
-                sh '''
-                    #!/bin/bash +x
-                    make test
-                '''
-            }
-        }
         stage('Push image') {
             steps{
                 unstash 'ecr.repo'
