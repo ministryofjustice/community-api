@@ -1,4 +1,4 @@
-.PHONY: all ecr-login gradle-build build tag test push clean-remote clean-local
+.PHONY: all ecr-login gradle-build build tag push clean-remote clean-local
 
 aws_region := eu-west-2
 image := hmpps/new-tech-api
@@ -17,7 +17,6 @@ all:
 	$(MAKE) ecr-login
 	$(MAKE) build
 	$(MAKE) tag
-	$(MAKE) test
 	$(MAKE) push
 	$(MAKE) clean-remote
 	$(MAKE) clean-local
@@ -50,10 +49,6 @@ tag: ecr_repo = $(shell cat ./ecr.repo)
 tag:
 	$(info Tag repo $(ecr_repo) $(offenderapi_version))
 	docker tag $(ecr_repo) $(ecr_repo):$(offenderapi_version)
-
-test: ecr_repo = $(shell cat ./ecr.repo)
-test:
-	bash -c "GOSS_FILES_STRATEGY=cp GOSS_FILES_PATH="./docker/tests/" GOSS_SLEEP=60 dgoss run $(ecr_repo):latest"
 
 push: ecr_repo = $(shell cat ./ecr.repo)
 push:
