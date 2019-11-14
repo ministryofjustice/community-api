@@ -42,7 +42,7 @@ public class SecurityUserContext {
         } else if (userPrincipal instanceof UserDetails) {
             username = ((UserDetails) userPrincipal).getUsername();
         } else if (userPrincipal instanceof Map) {
-            final Map userPrincipalMap = (Map) userPrincipal;
+            final Map<?, ?> userPrincipalMap = (Map<?, ?>) userPrincipal;
             username = (String) userPrincipalMap.get("username");
         } else {
             username = userPrincipal.toString();

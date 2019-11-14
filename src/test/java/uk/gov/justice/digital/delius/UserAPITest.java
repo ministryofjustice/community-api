@@ -113,7 +113,7 @@ public class UserAPITest {
 
     @Test
     public void canLookupLdapEntry() {
-        Map[] ldapEntry = given()
+        Map<?,?>[] ldapEntry = given()
                 .header("Authorization", aValidTokenFor("uid=oliver.connolly,ou=people,dc=memorynotfound,dc=com"))
                 .when()
                 .queryParam("field", "uid")

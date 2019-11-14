@@ -3,7 +3,6 @@ package uk.gov.justice.digital.delius.controller.api;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,7 +19,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
-@Slf4j
 @Api(tags = "Staff")
 @RequestMapping(value = "api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class StaffController

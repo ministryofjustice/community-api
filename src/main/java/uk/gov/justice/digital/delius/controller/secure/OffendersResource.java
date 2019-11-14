@@ -2,7 +2,6 @@ package uk.gov.justice.digital.delius.controller.secure;
 
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
@@ -22,7 +21,6 @@ import java.util.Optional;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
-@Slf4j
 @Api(description = "Offender resources protected by OAUTH2", tags = "Offenders (Secure)", authorizations = {@Authorization("ROLE_COMMUNITY")})
 @RestController
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)

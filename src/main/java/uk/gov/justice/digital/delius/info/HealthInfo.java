@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.info;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Component;
  * Adds version data to the /health endpoint. This is called by the UI to display API details
  */
 @Component
-@Slf4j
 public class HealthInfo implements HealthIndicator {
 
     @Autowired(required = false)

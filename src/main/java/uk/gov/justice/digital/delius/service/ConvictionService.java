@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,6 @@ import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
 
 @Service
-@Slf4j
 public class ConvictionService {
     private final EventRepository eventRepository;
     private final ConvictionTransformer convictionTransformer;

@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.controller.api;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
@@ -21,7 +20,6 @@ import java.util.stream.Collectors;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
-@Slf4j
 @Profile("user")
 @RequestMapping(value = "api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserController {
