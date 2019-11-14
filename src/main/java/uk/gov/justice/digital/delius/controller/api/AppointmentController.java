@@ -2,7 +2,6 @@ package uk.gov.justice.digital.delius.controller.api;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -23,7 +22,6 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@Slf4j
 @Api(description = "Offender appointment resources", tags = "Offender Appointments")
 @RequestMapping(value = "api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AppointmentController {

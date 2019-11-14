@@ -33,6 +33,7 @@ public class AppointmentServiceTest {
     private AppointmentService service;
 
     @Before
+    @SuppressWarnings("unchecked")
     public void before(){
         service = new AppointmentService(contactRepository, new AppointmentTransformer(new ContactTransformer()));
         when(contactRepository.findAll(any(Specification.class), any(Sort.class))).thenReturn(ImmutableList.of());

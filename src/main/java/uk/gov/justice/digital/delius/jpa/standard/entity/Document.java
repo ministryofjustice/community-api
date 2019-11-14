@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
-import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;

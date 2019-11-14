@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.config;
 
 import com.google.common.base.Predicates;
+import com.google.common.collect.ImmutableList;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.BuildProperties;
@@ -39,12 +40,12 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.any())
-                .paths(Predicates.or(
+                .paths(Predicates.or(ImmutableList.of(
                         regex("(\\/ping.*)"),
                         regex("(\\/info.*)"),
                         regex("(\\/health.*)"),
                         regex("(\\/api/.*)"),
-                        regex("(\\/secure/.*)")))
+                        regex("(\\/secure/.*)"))))
                 .build();
 
         docket.genericModelSubstitutes(Optional.class);
@@ -71,7 +72,8 @@ public class SwaggerConfig {
                 "dps-hmpps@digital.justice.gov.uk");
     }
 
-    private ApiInfo apiInfo() {
+    @SuppressWarnings("rawtypes")
+        private ApiInfo apiInfo() {
         final StringVendorExtension vendorExtension = new StringVendorExtension("", "");
         final Collection<VendorExtension> vendorExtensions = new ArrayList<>();
         vendorExtensions.add(vendorExtension);

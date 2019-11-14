@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.jwt;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -50,7 +51,7 @@ public class JwtTest {
         String token = jwt.buildToken(UserData.builder().distinguishedName("Colin").build());
 
         Jwt jwtOther = new Jwt("a different secret", 1);
-        Optional<Claims> claims = jwtOther.parseToken(token);
+        jwtOther.parseToken(token);
 
         fail("Should have failed signature validation.");
     }
@@ -112,7 +113,7 @@ public class JwtTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        Map<String, String> payloadMap = objectMapper.readValue(Base64.getDecoder().decode(tokenParts[1]), Map.class);
+        Map<String, String> payloadMap = objectMapper.readValue(Base64.getDecoder().decode(tokenParts[1]), new TypeReference<Map<String, String>>() {});
 
         payloadMap.put("extra", "naughty_claim");
 

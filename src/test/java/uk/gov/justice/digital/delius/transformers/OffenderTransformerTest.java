@@ -320,10 +320,6 @@ public class OffenderTransformerTest {
         return LocalDeliveryUnit.builder().localDeliveryUnitId(6L).code("LDU1").description("LUD1 DESC").build();
     }
 
-    private PrisonOffenderManager aPom() {
-        return PrisonOffenderManager.builder().build();
-    }
-
     private ProviderTeam aProviderTeam() {
         return ProviderTeam.builder().build();
 
