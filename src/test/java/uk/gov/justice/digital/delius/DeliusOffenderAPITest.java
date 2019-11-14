@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -488,7 +487,7 @@ public class DeliusOffenderAPITest {
                 .statusCode(404);
     }
 
-    @Test        
+    @Test
     @SuppressWarnings("unchecked")
     public void canRetrieveOffenderIdsWithDefaultPageSizeAndPage() {
 
@@ -500,7 +499,7 @@ public class DeliusOffenderAPITest {
                 .statusCode(200)
                 .extract().body().as(Map.class);
 
-        List<Integer> offenderIds = (List<Integer>) ids.get("offenderIds");
+        final var offenderIds = (List<Integer>) ids.get("offenderIds");
 
         assertThat(offenderIds).containsExactly(
                 Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3), Integer.valueOf(4), Integer.valueOf(5));
@@ -510,34 +509,20 @@ public class DeliusOffenderAPITest {
     @SuppressWarnings("unchecked")
     public void canRetrieveOffenderIdsWithExplicitPageSizeAndPage() {
 
-        Map<?, ?> ids = given()
-                .header("Authorization", aValidToken())
-                .when()
-                .queryParams("pageSize", 5, "page", 2)
-                .get("/offenders/offenderIds")
-                .then()
-                .statusCode(200)
-                .extract().body().as(Map.class);
+        Map<?, ?> ids =
+                given()
+                        .header("Authorization", aValidToken())
+                        .when()
+                        .queryParams("pageSize", 5, "page", 2)
+                        .get("/offenders/offenderIds")
+                        .then()
+                        .statusCode(200)
+                        .extract().body().as(Map.class);
 
-        List<Integer> offenderIds = (List<Integer>) ids.get("offenderIds");
+        final var offenderIds = (List<Integer>) ids.get("offenderIds");
 
         assertThat(offenderIds).containsExactly(
                 Integer.valueOf(6), Integer.valueOf(7), Integer.valueOf(8), Integer.valueOf(9), Integer.valueOf(10));
-    }
-
-    @Test
-    public void getOffenderIdsProvidesLinkToNextPage() {
-
-        JsonNode ids = given()
-                .header("Authorization", aValidToken())
-                .when()
-                .queryParams("pageSize", 5, "page", 1)
-                .get("/offenders/offenderIds")
-                .then()
-                .statusCode(200)
-                .extract().body().as(JsonNode.class);
-
-        assertThat(ids.findPath("_links").findPath("next").findPath("href").asText()).endsWith("/api/offenders/offenderIds?pageSize=5&page=2");
     }
 
     @Test

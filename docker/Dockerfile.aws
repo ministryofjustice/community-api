@@ -1,16 +1,22 @@
-FROM mojdigitalstudio/hmpps-base-java:latest
-# Build time variables
-ARG OFFENDERAPI_VERSION
-ENV OFFENDERAPI_VERSION=$OFFENDERAPI_VERSION
+FROM openjdk:11-slim
+LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
-USER root
-RUN apk add curl jq
+RUN apt-get update && \
+    apt-get install -y curl && \
+    rm -rf /var/lib/apt/lists/*
 
-USER tools
-COPY build/libs/delius-offender-api-*.jar /home/tools/delius-offender-api.jar
-COPY build/libs/applicationinsights-agent*.jar /home/tools/agent.jar
-COPY AI-Agent.xml /home/tools/
+ENV TZ=Europe/London
+RUN ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime && echo "$TZ" > /etc/timezone
 
-EXPOSE 8080
+RUN addgroup --gid 2000 --system appgroup && \
+    adduser --uid 2000 --system appuser --gid 2000
 
-ENTRYPOINT ["/usr/bin/java", "-javaagent:/home/tools/agent.jar", "-jar", "/home/tools/delius-offender-api.jar"]
+WORKDIR /app
+
+COPY --chown=appuser:appgroup build/libs/delius-offender*.jar /app/app.jar
+COPY --chown=appuser:appgroup build/libs/applicationinsights-agent*.jar /app/agent.jar
+COPY --chown=appuser:appgroup AI-Agent.xml /app
+
+USER 2000
+
+ENTRYPOINT ["java", "-javaagent:/app/agent.jar", "-jar", "/app/app.jar"]
