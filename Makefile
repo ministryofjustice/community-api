@@ -2,7 +2,7 @@
 
 aws_region := eu-west-2
 image := hmpps/new-tech-api
-gradle_builder_image := gradle:jdk8
+gradle_builder_image := gradle:jdk11
 # gradle build expects just the PATCH value. MAJOR abd MINOR are hardcoded as 0.1
 build_version := $(shell echo ${offenderapi_version} | awk -F . '{print $$3}')
 build_dir := $(shell pwd)
