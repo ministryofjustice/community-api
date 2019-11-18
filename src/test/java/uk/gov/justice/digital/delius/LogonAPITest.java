@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jwt.Jwt;
@@ -24,7 +23,6 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringJUnit4ClassRunner.class)
-@DirtiesContext
 public class LogonAPITest {
 
     @LocalServerPort
@@ -77,7 +75,7 @@ public class LogonAPITest {
     @Test
     public void logonWithUnknownButOtherwiseValidDistinguishedNameGivesNotFound() {
         given()
-                .body("uid=jimmysnozzle,ou=people,dc=memorynotfound,dc=com")
+                .body("uid=jimmysnozzle,ou=Users,dc=moj,dc=com")
                 .when()
                 .post("/logon")
                 .then()
@@ -87,7 +85,7 @@ public class LogonAPITest {
     @Test
     public void logonWithKnownDistinguishedNameGivesTokenContainingOracleUser() {
         String token = given()
-                .body("uid=jihn,ou=people,dc=memorynotfound,dc=com")
+                .body("uid=jihn,ou=Users,dc=moj,dc=com")
                 .when()
                 .post("/logon")
                 .then()

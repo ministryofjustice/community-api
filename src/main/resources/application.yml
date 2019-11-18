@@ -69,7 +69,7 @@ logging:
 delius:
   ldap:
     users:
-      base: "cn=Users,dc=moj,dc=com"
+      base: "ou=Users,dc=moj,dc=com"
   baseurl: 'http://localhost:8999'
   username: 'default'
   password: 'default'
