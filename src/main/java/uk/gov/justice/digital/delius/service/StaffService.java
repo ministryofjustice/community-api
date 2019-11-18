@@ -44,4 +44,15 @@ public class StaffService {
                                         .build())
                                 .orElse(staffDetails));
     }
+
+    @Transactional(readOnly = true)
+    public Optional<StaffDetails> getStaffDetailsByUsername(String username) {
+        return staffRepository.findByUsername(username)
+                .map(staffTransformer::staffDetailsOf)
+                .map(staffDetails ->
+                        staffDetails
+                                .toBuilder()
+                                .email(ldapRepository.getEmail(username))
+                                .build());
+   }
 }

@@ -19,6 +19,7 @@ import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 import uk.gov.justice.digital.delius.transformers.StaffTransformer;
 import uk.gov.justice.digital.delius.transformers.TeamTransformer;
 @RunWith(MockitoJUnitRunner.class)
+
 public class StaffServiceTest {
 
         private StaffService staffService;
@@ -39,7 +40,7 @@ public class StaffServiceTest {
         }
 
         @Test
-        public void whenStaffMemberNotFoundReturnEmpty() {
+        public void whenStaffMemberNotFoundReturnEmpty_getStaffDetails() {
                 when(staffRepository.findByOfficerCode("ABC123")).thenReturn(Optional.empty());
 
                 assertThat(staffService.getStaffDetails("ABC123")).isNotPresent();
@@ -47,14 +48,14 @@ public class StaffServiceTest {
         }
 
         @Test
-        public void whenStaffMemberFoundReturnStaffDetails() {
+        public void whenStaffMemberFoundReturnStaffDetails_getStaffDetails() {
                 when(staffRepository.findByOfficerCode("ABC123")).thenReturn(Optional.of(aStaff()));
 
                 assertThat(staffService.getStaffDetails("ABC123")).isPresent();
         }
 
         @Test
-        public void whenStaffIsAssociatedWithUserLDAPIsQueried() {
+        public void whenStaffIsAssociatedWithUserLDAPIsQueried_getStaffDetails() {
                 when(staffRepository.findByOfficerCode("ABC123"))
                         .thenReturn(
                                 Optional.of(
@@ -74,7 +75,7 @@ public class StaffServiceTest {
 
 
         @Test
-        public void willCopyEmailWhenUserFoundInLDAP() {
+        public void willCopyEmailWhenUserFoundInLDAP_getStaffDetails() {
                 when(staffRepository.findByOfficerCode("ABC123"))
                         .thenReturn(
                                 Optional.of(
@@ -94,7 +95,7 @@ public class StaffServiceTest {
 
 
         @Test
-        public void willSetNullEmailWhenUserNotFoundInLDAP() {
+        public void willSetNullEmailWhenUserNotFoundInLDAP_getStaffDetails() {
                 when(staffRepository.findByOfficerCode("ABC123"))
                         .thenReturn(
                                 Optional.of(
@@ -111,4 +112,58 @@ public class StaffServiceTest {
 
                 assertThat(staffService.getStaffDetails("ABC123")).get().extracting(StaffDetails::getEmail).isNull(); 
         }
+
+        @Test
+        public void whenStaffMemberNotFoundReturnEmpty_getStaffDetailsByUsername() {
+                when(staffRepository.findByUsername("sandrasmith")).thenReturn(Optional.empty());
+
+                assertThat(staffService.getStaffDetailsByUsername("sandrasmith")).isNotPresent();
+
+        }
+
+        @Test
+        public void whenStaffMemberFoundReturnStaffDetails_getStaffDetailsByUsername() {
+                when(staffRepository.findByUsername("sandrasmith")).thenReturn(Optional.of(aStaff()));
+
+                assertThat(staffService.getStaffDetailsByUsername("sandrasmith")).isPresent();
+        }
+
+        @Test
+        public void willCopyEmailWhenUserFoundInLDAP_getStaffDetailsByUsername() {
+                when(staffRepository.findByUsername("sandrasmith"))
+                        .thenReturn(
+                                Optional.of(
+                                        aStaff()
+                                        .toBuilder()
+                                        .user(
+                                                aUser()
+                                                        .toBuilder()
+                                                        .distinguishedName("sandrasmith")
+                                                        .build())
+                                        .build()));
+
+                when(ldapRepository.getEmail("sandrasmith")).thenReturn("user@service.com");                  
+
+                assertThat(staffService.getStaffDetailsByUsername("sandrasmith")).get().extracting(StaffDetails::getEmail).isEqualTo("user@service.com"); 
+        }
+
+        @Test
+        public void willSetNullEmailWhenUserNotFoundInLDAP_getStaffDetailsByUsername() {
+                when(staffRepository.findByUsername("sandrasmith"))
+                        .thenReturn(
+                                Optional.of(
+                                        aStaff()
+                                        .toBuilder()
+                                        .user(
+                                                aUser()
+                                                        .toBuilder()
+                                                        .distinguishedName("sandrasmith")
+                                                        .build())
+                                        .build()));
+
+                when(ldapRepository.getEmail("sandrasmith")).thenReturn(null);                  
+
+                assertThat(staffService.getStaffDetailsByUsername("sandrasmith")).get().extracting(StaffDetails::getEmail).isNull(); 
+        }
+
 }
