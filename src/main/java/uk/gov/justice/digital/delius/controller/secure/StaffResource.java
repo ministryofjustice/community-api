@@ -51,12 +51,29 @@ public class StaffResource {
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
     @GetMapping(path = "/staff/staffCode/{staffCode}")
     public StaffDetails getStaffDetails(
-            @ApiParam(name = "staffCode", value = "Delius officer code of the responsible officer", example = "SH0001", required = true)
+            @ApiParam(name = "staffCode", value = "Delius officer code", example = "SH0001", required = true)
             @NotNull
             @PathVariable(value = "staffCode") final String staffCode) {
         log.info("getStaffDetails called with {}", staffCode);
         return staffService.getStaffDetails(staffCode)
                 .orElseThrow(() -> new NotFoundException(String.format("Staff member with code %s", staffCode)));
+    }
 
+    @ApiOperation(value = "Return details of a staff member including user details", notes = "Accepts a Delius staff username")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = StaffDetails.class),
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "Not found", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
+    @GetMapping(path = "/staff/username/{username}")
+    public StaffDetails getStaffDetailsForUsername(
+            @ApiParam(name = "username", value = "Delius username", example = "SheliaHancockNPS", required = true)
+            @NotNull
+            @PathVariable(value = "username") final String username) {
+        log.info("getStaffDetailsByUsername called with {}", username);
+        return staffService.getStaffDetailsByUsername(username)
+                .orElseThrow(() -> new NotFoundException(String.format("Staff member with username %s", username)));
     }
 }
