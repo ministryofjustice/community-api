@@ -24,6 +24,7 @@ import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import lombok.val;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -35,100 +36,113 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @DirtiesContext
 public class StaffResource_StaffDetailsAPITest {
 
-        @LocalServerPort
-        int port;
+    @LocalServerPort
+    int port;
 
-        @Autowired
-        private ObjectMapper objectMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-        @Value("${test.token.good}")
-        private String validOauthToken;
+    @Value("${test.token.good}")
+    private String validOauthToken;
 
-        @Before
-        public void setup() {
-                RestAssured.port = port;
-                RestAssured.basePath = "/secure";
-                RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-                                new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
-        }
+    @Before
+    public void setup() {
+        RestAssured.port = port;
+        RestAssured.basePath = "/secure";
+        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
+                new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
+    }
 
-        @Test
-        public void canRetrieveStaffDetailsByStaffCode() throws JsonProcessingException {
+    @Test
+    public void canRetrieveStaffDetailsByStaffCode() throws JsonProcessingException {
 
-                val staffDetails =  given()
-                        .auth()
-                        .oauth2(validOauthToken)
-                        .contentType(APPLICATION_JSON_VALUE)
-                        .when()
-                        .get("staff/staffCode/SH0001")
-                        .then()
-                        .statusCode(200)
-                        .extract()
-                        .body()
-                        .as(StaffDetails.class);
+        val staffDetails = given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("staff/staffCode/SH0001")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(StaffDetails.class);
 
-                assertThat(staffDetails).isNotNull();
-        }
+        assertThat(staffDetails).isNotNull();
+    }
 
+    @Test
+    public void retrievingStaffDetailsReturn404WhenStaffDoesNotExist() throws JsonProcessingException {
 
-        @Test
-        public void retrievingStaffDetailsReturn404WhenStaffDoesNotExist() throws JsonProcessingException {
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("staff/staffCode/XXXXX")
+                .then()
+                .statusCode(404);
+    }
 
-                given()
-                        .auth()
-                        .oauth2(validOauthToken)
-                        .contentType(APPLICATION_JSON_VALUE)
-                        .when()
-                        .get("staff/staffCode/XXXXX")
-                        .then()
-                        .statusCode(404);
-        }
+    @Test
+    public void canRetrieveStaffDetailsByUsername() throws JsonProcessingException {
 
+        val staffDetails = given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("staff/username/SheilaHancockNPS")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(StaffDetails.class);
 
+        assertThat(staffDetails).isNotNull();
+    }
 
-        @Test
-        public void canRetrieveStaffDetailsByUsername() throws JsonProcessingException {
+    @Test
+    public void canRetrieveStaffDetailsByUsernameIgnoresCase() throws JsonProcessingException {
 
-                val staffDetails =  given()
-                        .auth()
-                        .oauth2(validOauthToken)
-                        .contentType(APPLICATION_JSON_VALUE)
-                        .when()
-                        .get("staff/username/SheilaHancockNPS")
-                        .then()
-                        .statusCode(200)
-                        .extract()
-                        .body()
-                        .as(StaffDetails.class);
+        val staffDetails = given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("staff/username/sheilahancocknps")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(StaffDetails.class);
 
-                assertThat(staffDetails).isNotNull();
-        }
+        assertThat(staffDetails).isNotNull();
+    }
 
+    @Test
+    public void retrievingStaffDetailsByUsernameReturn404WhenUserExistsButStaffDoesNot() throws JsonProcessingException {
 
-        @Test
-        public void retrievingStaffDetailsByUsernameReturn404WhenUserExistsButStaffDoesNot() throws JsonProcessingException {
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("staff/username/NoStaffUserNPS")
+                .then()
+                .statusCode(404);
+    }
 
-                given()
-                        .auth()
-                        .oauth2(validOauthToken)
-                        .contentType(APPLICATION_JSON_VALUE)
-                        .when()
-                        .get("staff/username/JaneHancockNPS")
-                        .then()
-                        .statusCode(404);
-        }
+    @Test
+    public void retrievingStaffDetailsByUsernameReturn404WhenUserDoesNotExist() throws JsonProcessingException {
 
-
-        @Test
-        public void retrievingStaffDetailsByUsernameReturn404WhenUserDoesNotExist() throws JsonProcessingException {
-
-                given()
-                        .auth()
-                        .oauth2(validOauthToken)
-                        .contentType(APPLICATION_JSON_VALUE)
-                        .when()
-                        .get("staff/staffCode/NOTSheliaHancock")
-                        .then()
-                        .statusCode(404);
-        }
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("staff/staffCode/NOTSheliaHancock")
+                .then()
+                .statusCode(404);
+    }
 }

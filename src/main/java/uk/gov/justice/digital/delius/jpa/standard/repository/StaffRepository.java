@@ -10,7 +10,9 @@ import java.util.Optional;
 
 public interface StaffRepository extends JpaRepository<Staff, Long> {
     Optional<Staff> findByStaffId(Long staffId);
+
     Optional<Staff> findByOfficerCode(String officerCode);
-    @Query("select u.staff from User u where u.distinguishedName = :username")
+
+    @Query("select u.staff from User u where upper(u.distinguishedName) = upper(:username)")
     Optional<Staff> findByUsername(@Param("username") String username);
 }

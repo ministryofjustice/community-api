@@ -54,5 +54,5 @@ public class StaffService {
                                 .toBuilder()
                                 .email(ldapRepository.getEmail(username))
                                 .build());
-   }
+    }
 }
