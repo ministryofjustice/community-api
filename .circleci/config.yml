@@ -18,7 +18,6 @@ jobs:
 
     environment:
       # Customize the JVM maximum heap limit
-      JVM_OPTS: -Xmx2048m
       TERM: dumb
       JAVA_TOOL_OPTIONS: -Xmx2048m -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2
 
