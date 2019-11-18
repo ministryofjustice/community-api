@@ -124,4 +124,6 @@ test {
         showExceptions = true
         showCauses = true
     }
+    minHeapSize = "128m"
+    maxHeapSize = "2048m"
 }
