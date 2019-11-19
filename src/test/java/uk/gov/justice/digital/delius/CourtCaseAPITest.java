@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.data.api.Conviction;
@@ -36,7 +35,6 @@ import static org.mockito.Mockito.when;
 @TestPropertySource(properties = {
         "features.events.experimental=true"
 })
-@DirtiesContext
 public class CourtCaseAPITest {
 
     @LocalServerPort

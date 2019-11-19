@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.data.api.AuthPassword;
 import uk.gov.justice.digital.delius.data.api.AuthUser;
@@ -24,11 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource(properties = {
-        "delius.ldap.users.base=ou=people,dc=memorynotfound,dc=com"
-})
 @RunWith(SpringJUnit4ClassRunner.class)
-@DirtiesContext
 public class AuthenticationAPITest {
 
     @LocalServerPort

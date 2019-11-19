@@ -26,7 +26,6 @@ import static io.restassured.RestAssured.given;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringJUnit4ClassRunner.class)
-@DirtiesContext
 public class CaseNoteAPITest {
 
     @LocalServerPort

@@ -1,12 +1,10 @@
 package uk.gov.justice.digital.delius;
 
-import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
-
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import io.restassured.RestAssured;
+import io.restassured.config.ObjectMapperConfig;
+import io.restassured.config.RestAssuredConfig;
+import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,26 +12,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import io.restassured.RestAssured;
-import io.restassured.config.ObjectMapperConfig;
-import io.restassured.config.RestAssuredConfig;
-import lombok.val;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 
+import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles("dev-seed")
-@TestPropertySource(properties = {
-        "delius.ldap.users.base=ou=people,dc=memorynotfound,dc=com"
-})
-@DirtiesContext
 public class StaffResource_StaffDetailsAPITest {
 
     @LocalServerPort
@@ -54,7 +43,7 @@ public class StaffResource_StaffDetailsAPITest {
     }
 
     @Test
-    public void canRetrieveStaffDetailsByStaffCode() throws JsonProcessingException {
+    public void canRetrieveStaffDetailsByStaffCode() {
 
         val staffDetails = given()
                 .auth()
@@ -72,7 +61,7 @@ public class StaffResource_StaffDetailsAPITest {
     }
 
     @Test
-    public void retrievingStaffDetailsReturn404WhenStaffDoesNotExist() throws JsonProcessingException {
+    public void retrievingStaffDetailsReturn404WhenStaffDoesNotExist() {
 
         given()
                 .auth()
@@ -85,7 +74,7 @@ public class StaffResource_StaffDetailsAPITest {
     }
 
     @Test
-    public void canRetrieveStaffDetailsByUsername() throws JsonProcessingException {
+    public void canRetrieveStaffDetailsByUsername() {
 
         val staffDetails = given()
                 .auth()
@@ -103,7 +92,7 @@ public class StaffResource_StaffDetailsAPITest {
     }
 
     @Test
-    public void canRetrieveStaffDetailsByUsernameIgnoresCase() throws JsonProcessingException {
+    public void canRetrieveStaffDetailsByUsernameIgnoresCase() {
 
         val staffDetails = given()
                 .auth()
@@ -121,7 +110,7 @@ public class StaffResource_StaffDetailsAPITest {
     }
 
     @Test
-    public void retrievingStaffDetailsByUsernameReturn404WhenUserExistsButStaffDoesNot() throws JsonProcessingException {
+    public void retrievingStaffDetailsByUsernameReturn404WhenUserExistsButStaffDoesNot() {
 
         given()
                 .auth()
@@ -134,7 +123,7 @@ public class StaffResource_StaffDetailsAPITest {
     }
 
     @Test
-    public void retrievingStaffDetailsByUsernameReturn404WhenUserDoesNotExist() throws JsonProcessingException {
+    public void retrievingStaffDetailsByUsernameReturn404WhenUserDoesNotExist() {
 
         given()
                 .auth()

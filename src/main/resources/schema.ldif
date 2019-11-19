@@ -1,22 +1,22 @@
-dn: dc=memorynotfound,dc=com
+dn: dc=moj,dc=com
 objectclass: top
 objectclass: domain
 objectclass: extensibleObject
 dc: memorynotfound
 
 # Organizational Units
-dn: ou=groups,dc=memorynotfound,dc=com
+dn: ou=groups,dc=moj,dc=com
 objectclass: top
 objectclass: organizationalUnit
 ou: groups
 
-dn: ou=people,dc=memorynotfound,dc=com
+dn: ou=Users,dc=moj,dc=com
 objectclass: top
 objectclass: organizationalUnit
 ou: people
 
 # Create People
-dn: uid=oliver.connolly,ou=people,dc=memorynotfound,dc=com
+dn: uid=oliver.connolly,ou=Users,dc=moj,dc=com
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
@@ -26,7 +26,7 @@ sn: Oliver
 uid: OlIvEr.cOnNoLlY
 userPassword: secret
 
-dn: uid=jihn,ou=people,dc=memorynotfound,dc=com
+dn: uid=jihn,ou=Users,dc=moj,dc=com
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
@@ -35,7 +35,7 @@ cn: Jihn Die
 sn: Jihn
 uid: Jihndie1
 
-dn: uid=jahn,ou=people,dc=memorynotfound,dc=com
+dn: uid=jahn,ou=Users,dc=moj,dc=com
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
@@ -44,7 +44,7 @@ cn: Jahn Dae
 sn: Jahn
 uid: jahn
 
-dn: uid=bernard.beaks,ou=people,dc=memorynotfound,dc=com
+dn: uid=bernard.beaks,ou=Users,dc=moj,dc=com
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
@@ -58,7 +58,7 @@ uid: bernard.beaks
 userPassword: secret
 
 # Delius would actually use and alias to link to role
-dn: cn=UWBT060,uid=bernard.beaks,ou=people,dc=memorynotfound,dc=com
+dn: cn=UWBT060,uid=bernard.beaks,ou=Users,dc=moj,dc=com
 objectclass: top
 objectclass: NDRole
 cn: UWBT060
@@ -71,22 +71,22 @@ sector: public
 uibusinessinteractioncollection: UWBI190
 
 # Create Groups
-dn: cn=developers,ou=groups,dc=memorynotfound,dc=com
+dn: cn=developers,ou=groups,dc=moj,dc=com
 objectclass: top
 objectclass: groupOfUniqueNames
 cn: developers
 ou: developer
-uniqueMember: uid=john,ou=people,dc=memorynotfound,dc=com
-uniqueMember: uid=jihn,ou=people,dc=memorynotfound,dc=com
+uniqueMember: uid=john,ou=Users,dc=moj,dc=com
+uniqueMember: uid=jihn,ou=Users,dc=moj,dc=com
 
-dn: cn=managers,ou=groups,dc=memorynotfound,dc=com
+dn: cn=managers,ou=groups,dc=moj,dc=com
 objectclass: top
 objectclass: groupOfUniqueNames
 cn: managers
 ou: manager
-uniqueMember: uid=jahn,ou=people,dc=memorynotfound,dc=com
+uniqueMember: uid=jahn,ou=Users,dc=moj,dc=com
 
-dn: uid=SheilaHancockNPS,ou=people,dc=memorynotfound,dc=com
+dn: uid=SheilaHancockNPS,ou=Users,dc=moj,dc=com
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
@@ -99,7 +99,7 @@ mail: sheila.hancock@justice.gov.uk
 uid: SheilaHancockNPS
 userPassword: secret
 
-dn: uid=EmailNotPresentNPS,ou=people,dc=memorynotfound,dc=com
+dn: uid=EmailNotPresentNPS,ou=Users,dc=moj,dc=com
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson

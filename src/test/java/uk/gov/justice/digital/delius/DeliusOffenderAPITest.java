@@ -17,7 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.jpa.national.entity.Exclusion;
@@ -49,7 +48,6 @@ import static uk.gov.justice.digital.delius.util.OffenderHelper.anOffender;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"offender.ids.pagesize=5"})
 @RunWith(SpringJUnit4ClassRunner.class)
-@DirtiesContext
 public class DeliusOffenderAPITest {
     @Rule
     public WireMockRule wireMock = new WireMockRule(wireMockConfig().port(8088).jettyStopTimeout(10000L));

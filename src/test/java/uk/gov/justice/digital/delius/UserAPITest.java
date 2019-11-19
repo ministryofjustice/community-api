@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.data.api.UserAndLdap;
@@ -33,7 +32,6 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles("user")
-@DirtiesContext
 public class UserAPITest {
 
     @LocalServerPort
@@ -74,7 +72,7 @@ public class UserAPITest {
     @Test
     public void canSearchForUserSurname() {
         UserAndLdap[] users = given()
-                .header("Authorization", aValidTokenFor("uid=oliver.connolly,ou=people,dc=memorynotfound,dc=com"))
+                .header("Authorization", aValidTokenFor("uid=oliver.connolly,ou=Users,dc=moj,dc=com"))
                 .when()
                 .queryParam("surname", "connolly")
                 .get("/users")
@@ -86,7 +84,7 @@ public class UserAPITest {
 
         assertThat(users).extracting("user").extracting("userId").containsOnly(1L);
 
-        assertThat(users[0].getLdapMatches().get(0).get("entryDN").equals("uid=oliver.connolly,ou=people,dc=memorynotfound,dc=com"));
+        assertThat(users[0].getLdapMatches().get(0).get("entryDN").equals("uid=oliver.connolly,ou=Users,dc=moj,dc=com"));
 
 
     }
@@ -94,7 +92,7 @@ public class UserAPITest {
     @Test
     public void canSearchForUserSurnameAndForename() {
         UserAndLdap[] users = given()
-                .header("Authorization", aValidTokenFor("uid=oliver.connolly,ou=people,dc=memorynotfound,dc=com"))
+                .header("Authorization", aValidTokenFor("uid=oliver.connolly,ou=Users,dc=moj,dc=com"))
                 .when()
                 .queryParam("surname", "connolly")
                 .queryParam("forename", "oliver")
@@ -107,14 +105,14 @@ public class UserAPITest {
 
         assertThat(users).extracting("user").extracting("userId").containsOnly(1L);
 
-        assertThat(users[0].getLdapMatches().get(0).get("entryDN").equals("uid=oliver.connolly,ou=people,dc=memorynotfound,dc=com"));
+        assertThat(users[0].getLdapMatches().get(0).get("entryDN").equals("uid=oliver.connolly,ou=Users,dc=moj,dc=com"));
 
     }
 
     @Test
     public void canLookupLdapEntry() {
         Map<?,?>[] ldapEntry = given()
-                .header("Authorization", aValidTokenFor("uid=oliver.connolly,ou=people,dc=memorynotfound,dc=com"))
+                .header("Authorization", aValidTokenFor("uid=oliver.connolly,ou=Users,dc=moj,dc=com"))
                 .when()
                 .queryParam("field", "uid")
                 .queryParam("value", "oliver.connolly")
@@ -126,7 +124,7 @@ public class UserAPITest {
                 .as(Map[].class);
 
         assertThat(ldapEntry).isNotNull();
-        assertThat(ldapEntry[0].get("entryDN")).isEqualTo("uid=oliver.connolly,ou=people,dc=memorynotfound,dc=com");
+        assertThat(ldapEntry[0].get("entryDN")).isEqualTo("uid=oliver.connolly,ou=Users,dc=moj,dc=com".toLowerCase());
 
     }
 
