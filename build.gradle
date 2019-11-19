@@ -125,5 +125,5 @@ test {
         showCauses = true
     }
     minHeapSize = "128m"
-    maxHeapSize = "2048m"
+    maxHeapSize = "1024m"
 }
