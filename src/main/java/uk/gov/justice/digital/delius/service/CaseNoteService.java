@@ -22,4 +22,6 @@ public class CaseNoteService {
         headers.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
 
         return restTemplate.exchange("/nomisCaseNotes/{nomisId}/{caseNotesId}", HttpMethod.PUT, new HttpEntity<>(caseNote, headers), String.class, nomisId, caseNotesId);
+
+    }
 }
