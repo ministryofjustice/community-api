@@ -25,6 +25,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringJUnit4ClassRunner.class)
+@DirtiesContext
 public class CaseNoteAPITest {
 
     @LocalServerPort
@@ -46,7 +47,7 @@ public class CaseNoteAPITest {
     @Test
     public void shouldReturnOKWhenSendCaseNoteToDelius() {
 
-        deliusMockServer.stubPutCaseNoteToDeliusCreated("54321", 12345L);
+        deliusMockServer.stubPutCaseNoteToDeliusNoContent("54321", 12345L);
 
         final var token = createJwt("bob", Collections.singletonList("ROLE_DELIUS_CASE_NOTES"));
 
