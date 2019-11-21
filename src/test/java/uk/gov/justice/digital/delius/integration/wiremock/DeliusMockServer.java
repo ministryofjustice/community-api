@@ -17,6 +17,7 @@ public class DeliusMockServer extends WireMockRule {
         stubFor(put(urlPathMatching(putCaseNote)).willReturn(aResponse()
                 .withHeader("Content-Type", "application/json")
                 .withStatus(201)
+                .withBody(" XXXX (crn) had a Contact created.")
         ));
     }
 

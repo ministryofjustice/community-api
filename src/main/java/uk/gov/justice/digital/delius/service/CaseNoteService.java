@@ -20,7 +20,6 @@ public class CaseNoteService {
 
     public ResponseEntity<String> upsertCaseNotesToDelius(final String nomisId, final Long caseNotesId, final String caseNote) {
 
-        final var response = restTemplate.exchange("/nomisCaseNotes/{nomisId}/{caseNotesId}", HttpMethod.PUT, new HttpEntity<>(caseNote), String.class, nomisId, caseNotesId);
-        return response;
+        return restTemplate.exchange("/nomisCaseNotes/{nomisId}/{caseNotesId}", HttpMethod.PUT, new HttpEntity<>(caseNote), String.class, nomisId, caseNotesId);
     }
 }
