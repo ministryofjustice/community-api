@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.controller.advice;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,20 +11,24 @@ import uk.gov.justice.digital.delius.service.NoSuchUserException;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ControllerAdvice
+@Slf4j
 public class GeneralControllerAdvice {
 
    @ExceptionHandler(HttpClientErrorException.class)
    public ResponseEntity<String> restClientError(HttpClientErrorException e) {
+       log.error("Unexpected exception", e);
        return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
    }
 
    @ExceptionHandler(HttpServerErrorException.class)
    public ResponseEntity<String> restServerError(HttpServerErrorException e) {
+       log.error("Unexpected exception", e);
        return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
    }
 
    @ExceptionHandler(NoSuchUserException.class)
    public ResponseEntity<String> noSuchUser(NoSuchUserException e) {
+       log.error("Unexpected exception", e);
        return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
    }
 }

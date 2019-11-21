@@ -6,8 +6,8 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
@@ -33,11 +33,10 @@ public class CaseNoteController {
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @ApiOperation(value = "Adds case note to delius")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void upsertCaseNotesToDelius(@PathVariable("nomisId") final String nomisId,
-                                        @PathVariable("caseNotesId") final Long caseNotesId,
-                                        final @RequestBody String caseNote) {
+    public ResponseEntity<String> upsertCaseNotesToDelius(@PathVariable("nomisId") final String nomisId,
+                                                          @PathVariable("caseNotesId") final Long caseNotesId,
+                                                          final @RequestBody String caseNote) {
         log.info("Call to upsertCaseNotesToDelius for noteid {}", caseNotesId);
-        caseNoteService.upsertCaseNotesToDelius(nomisId, caseNotesId, caseNote);
+        return caseNoteService.upsertCaseNotesToDelius(nomisId, caseNotesId, caseNote);
     }
 }

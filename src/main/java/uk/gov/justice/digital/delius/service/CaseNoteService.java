@@ -2,6 +2,9 @@ package uk.gov.justice.digital.delius.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -15,8 +18,9 @@ public class CaseNoteService {
         this.restTemplate = restTemplate;
     }
 
-    public void upsertCaseNotesToDelius(final String nomisId, final Long caseNotesId, final String caseNote) {
+    public ResponseEntity<String> upsertCaseNotesToDelius(final String nomisId, final Long caseNotesId, final String caseNote) {
 
-        restTemplate.put("/nomisCaseNotes/{nomisId}/{caseNotesId}", caseNote, nomisId, caseNotesId);
+        final var response = restTemplate.exchange("/nomisCaseNotes/{nomisId}/{caseNotesId}", HttpMethod.PUT, new HttpEntity<>(caseNote), String.class, nomisId, caseNotesId);
+        return response;
     }
 }
