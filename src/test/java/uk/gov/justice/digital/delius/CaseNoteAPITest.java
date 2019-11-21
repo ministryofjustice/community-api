@@ -26,6 +26,7 @@ import static io.restassured.RestAssured.given;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringJUnit4ClassRunner.class)
+@DirtiesContext
 public class CaseNoteAPITest {
 
     @LocalServerPort
@@ -45,9 +46,27 @@ public class CaseNoteAPITest {
     }
 
     @Test
-    public void shouldReturnNoContentWhenSendCaseNoteToDelius() {
+    public void shouldReturnOKWhenSendCaseNoteToDelius() {
 
-        deliusMockServer.stubPutCaseNoteToDelius("54321", 12345L);
+        deliusMockServer.stubPutCaseNoteToDeliusCreated("54321", 12345L);
+
+        final String token = createJwt("bob", Collections.singletonList("ROLE_DELIUS_CASE_NOTES"));
+
+        final ValidatableResponse responseBody = given()
+                .when()
+                .auth().oauth2(token)
+                .contentType(String.valueOf(ContentType.APPLICATION_JSON))
+                .body("{\"content\":\"Bob\"}")
+                .put("/nomisCaseNotes/54321/12345")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.CREATED.value());
+    }
+
+    @Test
+    public void shouldReturnNoContentWhenSendUpdateCaseNoteToDelius() {
+
+        deliusMockServer.stubPutCaseNoteToDeliusNoContent("54321", 12345L);
 
         final String token = createJwt("bob", Collections.singletonList("ROLE_DELIUS_CASE_NOTES"));
 
@@ -65,7 +84,7 @@ public class CaseNoteAPITest {
     @Test
     public void shouldReturnBadRequestWhenSendCaseNoteToDelius() {
 
-        deliusMockServer.stubPutCaseNoteToDeliusNoContentError("54321", 12346L);
+        deliusMockServer.stubPutCaseNoteToDeliusBadRequestError("54321", 12346L);
 
         final String token = createJwt("bob", Collections.singletonList("ROLE_DELIUS_CASE_NOTES"));
 

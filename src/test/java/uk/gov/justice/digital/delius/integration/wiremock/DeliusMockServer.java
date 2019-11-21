@@ -12,7 +12,15 @@ public class DeliusMockServer extends WireMockRule {
         super(WIREMOCK_PORT);
     }
 
-    public void stubPutCaseNoteToDelius(final String nomisId, final Long caseNotesId) {
+    public void stubPutCaseNoteToDeliusCreated(final String nomisId, final Long caseNotesId) {
+        final String putCaseNote = "/nomisCaseNotes/" + nomisId + "/" + caseNotesId;
+        stubFor(put(urlPathMatching(putCaseNote)).willReturn(aResponse()
+                .withHeader("Content-Type", "application/json")
+                .withStatus(201)
+        ));
+    }
+
+    public void stubPutCaseNoteToDeliusNoContent(final String nomisId, final Long caseNotesId) {
         final String putCaseNote = "/nomisCaseNotes/" + nomisId + "/" + caseNotesId;
         stubFor(put(urlPathMatching(putCaseNote)).willReturn(aResponse()
                 .withHeader("Content-Type", "application/json")
@@ -20,7 +28,7 @@ public class DeliusMockServer extends WireMockRule {
         ));
     }
 
-    public void stubPutCaseNoteToDeliusNoContentError(final String nomisId, final long caseNotesId) {
+    public void stubPutCaseNoteToDeliusBadRequestError(final String nomisId, final long caseNotesId) {
         final String putCaseNote = "/nomisCaseNotes/" + nomisId + "/" + caseNotesId;
         stubFor(put(urlPathMatching(putCaseNote)).willReturn(aResponse()
                 .withHeader("Content-Type", "application/json")
