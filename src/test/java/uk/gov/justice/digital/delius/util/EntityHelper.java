@@ -3,13 +3,14 @@ package uk.gov.justice.digital.delius.util;
 import lombok.val;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import com.google.common.collect.ImmutableList;
-import static uk.gov.justice.digital.delius.util.OffenderHelper.anOffender;
 
 public class EntityHelper {
     public static InstitutionalReportDocument anInstitutionalReportDocument() {
@@ -48,7 +49,7 @@ public class EntityHelper {
     }
 
     public static Offender anOffenderWithPreviousConvictionsDocument() {
-        final Offender offender = anOffender();
+        final Offender offender = OffenderHelper.anOffender();
         offender.setPrevConvictionDocumentName("precons.pdf");
         offender.setPreviousConvictionDate(LocalDate.now());
         offender.setPreviousConvictionsAlfrescoDocumentId("123");
@@ -59,6 +60,19 @@ public class EntityHelper {
                 .build());
         offender.setPreviousConvictionsCreatedDatetime(LocalDateTime.now());
         return offender;
+    }
+
+    public static Offender anOffender() {
+        return anOffender(List.of(anActiveOffenderManager()), List.of(anActivePrisonOffenderManager()));
+    }
+
+    public static Offender anOffender(List<OffenderManager> offenderManagers, List<PrisonOffenderManager> prisonOffenderManagers) {
+        return  OffenderHelper
+                .anOffender()
+                .toBuilder()
+                .offenderManagers(offenderManagers)
+                .prisonOffenderManagers(prisonOffenderManagers)
+                .build();
     }
 
     public static Event anEvent() {
@@ -467,19 +481,23 @@ public class EntityHelper {
     }
 
     public static Staff aStaff() {
+        return aStaff("A1234");
+    }
+
+    public static Staff aStaff(String officerCode) {
             return Staff
             .builder()
-            .officerCode("A1234")
+            .officerCode(officerCode)
             .forename("John")
             .surname("Smith")
             .teams(ImmutableList.of())
             .build();
     }
 
-    public static Team aTeam() {
+    public static Team aTeam(String teamCode) {
         return Team
                 .builder()
-                .code("TEAM-1")
+                .code(teamCode)
                 .description("Team 1")
                 .district(aDistrict())
                 .localDeliveryUnit(LocalDeliveryUnit.builder()
@@ -487,6 +505,10 @@ public class EntityHelper {
                         .description("LDU description")
                         .build())
                 .build();
+    }
+
+    public static Team aTeam() {
+        return aTeam("TEAM-1");
     }
 
      public static District aDistrict() {
@@ -504,5 +526,122 @@ public class EntityHelper {
         return User.builder()
                 .distinguishedName("XX")
                 .build();
-     }   
+     }
+
+    public static OffenderManager anActiveOffenderManager() {
+        return anActiveOffenderManager("AA");
+    }
+    public static OffenderManager anActiveOffenderManager(String staffCode) {
+        return anOffenderManager(aStaff(staffCode), aTeam())
+                .toBuilder()
+                .activeFlag(1L)
+                .endDate(null)
+                .build();
+    }
+
+    public static OffenderManager anInactiveOffenderManager(String staffCode) {
+        return anOffenderManager(aStaff(staffCode), aTeam())
+                .toBuilder()
+                .activeFlag(0L)
+                .endDate(Timestamp.from(Calendar.getInstance().toInstant()))
+                .build();
+    }
+    public static OffenderManager anEndDatedActiveOffenderManager(String staffCode) {
+        return anOffenderManager(aStaff(staffCode), aTeam())
+                .toBuilder()
+                .activeFlag(1L)
+                .endDate(Timestamp.from(Calendar.getInstance().toInstant()))
+                .build();
+    }
+    public static OffenderManager anOffenderManager(Staff staff, Team team) {
+        return OffenderManager.builder()
+                .activeFlag(1L)
+                .allocationDate(Timestamp.from(Calendar.getInstance().toInstant()))
+                .officer(Officer.builder().surname("Jones").build())
+                .probationArea(ProbationArea.builder().code("A").description("B").privateSector(1L).build())
+                .staff(staff)
+                .team(team)
+                .probationArea(aProbationArea())
+                .build();
+    }
+
+    public static PrisonOffenderManager anActivePrisonOffenderManager() {
+        return anActivePrisonOffenderManager("AA");
+    }
+    public static PrisonOffenderManager anActivePrisonOffenderManager(String staffCode) {
+        return aPrisonOffenderManager(aStaff(staffCode), aTeam())
+                .toBuilder()
+                .activeFlag(1L)
+                .endDate(null)
+                .build();
+    }
+
+    public static PrisonOffenderManager anInactivePrisonOffenderManager(String staffCode) {
+        return aPrisonOffenderManager(aStaff(staffCode), aTeam())
+                .toBuilder()
+                .activeFlag(0L)
+                .endDate(Timestamp.from(Calendar.getInstance().toInstant()))
+                .build();
+    }
+    public static PrisonOffenderManager anEndDatedActivePrisonOffenderManager(String staffCode) {
+        return aPrisonOffenderManager(aStaff(staffCode), aTeam())
+                .toBuilder()
+                .activeFlag(1L)
+                .endDate(Timestamp.from(Calendar.getInstance().toInstant()))
+                .build();
+    }
+
+    public static PrisonOffenderManager aPrisonOffenderManager(Staff staff, Team team) {
+        return PrisonOffenderManager.builder()
+                .activeFlag(1L)
+                .allocationDate(Timestamp.from(Calendar.getInstance().toInstant()))
+                .probationArea(ProbationArea.builder().code("A").description("B").privateSector(1L).build())
+                .staff(staff)
+                .team(team)
+                .probationArea(aPrisonProbationArea())
+                .build();
+    }
+
+    public static ProbationArea aProbationArea() {
+        return ProbationArea
+                .builder()
+                .code("NO2")
+                .probationAreaId(1L)
+                .description("NPS North East")
+                .privateSector(0L)
+                .organisation(Organisation.builder().build())
+                .providerTeams(List.of())
+                .teams(List.of())
+                .build();
+    }
+
+    public static ProbationArea aPrisonProbationArea() {
+        return aProbationArea()
+                .toBuilder()
+                .code("WWI")
+                .probationAreaId(1L)
+                .description("HMP Wandsworth")
+                .institution(aPrisonInstitution())
+                .build();
+    }
+
+    public static RInstitution aPrisonInstitution() {
+        return RInstitution
+                .builder()
+                .institutionName("HMP Wandsworth")
+                .establishment("Yes")
+                .privateFlag(0L)
+                .code("WWIHMP")
+                .description("HMP Wandsworth")
+                .build();
+    }
+
+    public static ResponsibleOfficer aResponsibleOfficer() {
+        return ResponsibleOfficer
+                .builder()
+                .offenderId(1L)
+                .startDate(LocalDate.now())
+                .responsibleOfficerId(1L)
+                .build();
+    }
 }

@@ -4,17 +4,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
-import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
-import uk.gov.justice.digital.delius.data.api.OffenderManager;
-import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
+import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
+import uk.gov.justice.digital.delius.transformers.OffenderManagerTransformer;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -22,11 +23,13 @@ public class OffenderService {
 
     private final OffenderRepository offenderRepository;
     private final OffenderTransformer offenderTransformer;
+    private final OffenderManagerTransformer offenderManagerTransformer;
 
     @Autowired
-    public OffenderService(OffenderRepository offenderRepository, OffenderTransformer offenderTransformer) {
+    public OffenderService(OffenderRepository offenderRepository, OffenderTransformer offenderTransformer, OffenderManagerTransformer offenderManagerTransformer) {
         this.offenderRepository = offenderRepository;
         this.offenderTransformer = offenderTransformer;
+        this.offenderManagerTransformer = offenderManagerTransformer;
     }
 
     @Transactional(readOnly = true)
@@ -102,9 +105,7 @@ public class OffenderService {
 
         if (offenderIds == null) {
             log.error("Call to offenderRepository.listOffenderIds {}, {} returned a null list", pageSize, page);
-        }
-
-        if (offenderIds.contains(null)) {
+        } else if (offenderIds.contains(null)) {
             log.error("Call to offenderRepository.listOffenderIds {}, {} returned a list containing null", pageSize, page);
         }
 
@@ -141,5 +142,28 @@ public class OffenderService {
         return offenderRepository.findByNomsNumber(nomsNumber).map(
                 offender -> offenderTransformer.responsibleOfficersOf(offender, current));
 
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<List<CommunityOrPrisonOffenderManager>> getAllOffenderManagersForNomsNumber(String nomsNumber) {
+        return offenderRepository.findByNomsNumber(nomsNumber).map(
+                offender -> combine(
+                        offender.getOffenderManagers()
+                                .stream()
+                                .filter(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager::isActive)
+                                .map(offenderManagerTransformer::offenderManagerOf)
+                                .collect(Collectors.toList()),
+                        offender.getPrisonOffenderManagers()
+                                .stream()
+                                .filter(uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager::isActive)
+                                .map(offenderManagerTransformer::offenderManagerOf)
+                                .collect(Collectors.toList())
+                ) );
+    }
+
+     private static <T> List<T> combine(List<T> first, List<T> second) {
+        return Stream.of(first, second)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 }

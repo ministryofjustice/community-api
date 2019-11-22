@@ -5,6 +5,7 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Optional;
 
 @EqualsAndHashCode(of = "prisonOffenderManagerId")
 @ToString(exclude = {"team","staff","probationArea", "responsibleOfficer" ,"managedOffender"})
@@ -64,4 +65,7 @@ public class PrisonOffenderManager {
     @Where(clause = "SOFT_DELETED != 1")
     private Offender managedOffender;
 
+    public boolean isActive() {
+        return endDate == null && Optional.ofNullable(activeFlag).orElse(0L) == 1L;
+    }
 }
