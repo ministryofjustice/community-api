@@ -7,6 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.*;
@@ -21,7 +22,7 @@ import java.util.Optional;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
-@Api(description = "Offender resources protected by OAUTH2", tags = "Offenders (Secure)", authorizations = {@Authorization("ROLE_COMMUNITY")})
+@Api(tags = "Offender resources protected by OAUTH2", authorizations = {@Authorization("ROLE_COMMUNITY")})
 @RestController
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
@@ -52,6 +53,27 @@ public class OffendersResource {
         return offenderService.getResponsibleOfficersForNomsNumber(nomsNumber, current)
                 .map(responsibleOfficer -> new ResponseEntity<>(responsibleOfficer, OK))
                 .orElse(new ResponseEntity<>(NOT_FOUND));
+    }
+
+    @ApiOperation(
+            value = "Returns the current community and prison offender managers for an offender",
+            notes = "Accepts a NOMIS offender nomsNumber in the format A9999AA")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "OK", response = CommunityOrPrisonOffenderManager.class, responseContainer = "List"),
+                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            })
+    @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/allOffenderManagers")
+    public List<CommunityOrPrisonOffenderManager> getAllOffenderManagersForOffender(
+            @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
+            @NotNull
+            @PathVariable(value = "nomsNumber")
+            final String nomsNumber) {
+        return offenderService.getAllOffenderManagersForNomsNumber(nomsNumber)
+                .orElseThrow(() -> new NotFoundException(String.format("Offender with NOMS number %s not found", nomsNumber)));
     }
 
     @ApiOperation(value = "Return the convictions (AKA Delius Event) for an offender")

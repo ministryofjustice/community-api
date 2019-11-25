@@ -1,13 +1,14 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.User;
+
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class StaffTransformer {
@@ -19,9 +20,9 @@ public class StaffTransformer {
     }
 
     public StaffDetails staffDetailsOf(Staff staff) {                    
-        return StaffDetails.builder().staff(Human.builder()
-                .forenames(combinedMiddleNamesOf(staff.getForename(), staff.getForname2()))
-                .surname(staff.getSurname()).build()).staffCode(staff.getOfficerCode())
+        return StaffDetails.builder()
+                .staff(humanOf(staff))
+                .staffCode(staff.getOfficerCode())
                 .username(
                     Optional.ofNullable(staff.getUser()).map(User::getDistinguishedName).orElse(null))
                 .teams(staff.getTeams().stream()
@@ -39,5 +40,10 @@ public class StaffTransformer {
                 .collect(Collectors.joining(" "));
     }
 
+    Human humanOf(Staff staff) {
+        return Human.builder()
+                .forenames(combinedMiddleNamesOf(staff.getForename(), staff.getForname2()))
+                .surname(staff.getSurname()).build();
+    }
 }
 
