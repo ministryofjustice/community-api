@@ -1,8 +1,15 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
 import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @EqualsAndHashCode(of = "teamId")
 @ToString(exclude = {"district", "probationArea"})
@@ -11,10 +18,13 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "TEAM")
 public class Team {
 
     @Id
+    @SequenceGenerator(name = "TEAM_ID_GENERATOR", sequenceName = "TEAM_ID_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TEAM_ID_GENERATOR")
     @Column(name = "TEAM_ID")
     private Long teamId;
 
@@ -46,4 +56,33 @@ public class Team {
     @Column(name = "TELEPHONE")
     private String telephone;
 
+    @Column(name = "UNPAID_WORK_TEAM")
+    private String unpaidWorkTeam;
+
+    @Column(name = "START_DATE")
+    @Builder.Default
+    private LocalDate startDate = LocalDate.now();
+
+    @Column(name = "TRAINING_SESSION_ID")
+    private Long trainingSessionId;
+
+    @Column(name = "ROW_VERSION")
+    @Builder.Default
+    private Long rowVersion = 1L;
+
+    @Column(name = "CREATED_BY_USER_ID")
+    @CreatedBy
+    private Long createdByUserId;
+
+    @Column(name = "CREATED_DATETIME")
+    @CreatedDate
+    private LocalDateTime createdDatetime;
+
+    @Column(name = "LAST_UPDATED_USER_ID")
+    @LastModifiedBy
+    private Long lastUpdatedUserId;
+
+    @Column(name = "LAST_UPDATED_DATETIME")
+    @LastModifiedDate
+    private LocalDateTime lastUpdatedDatetime;
 }

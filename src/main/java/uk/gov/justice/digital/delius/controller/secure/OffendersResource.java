@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius.controller.secure;
 
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpEntity;
@@ -27,6 +28,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 @Api(tags = "Offender resources protected by OAUTH2", authorizations = {@Authorization("ROLE_COMMUNITY")})
 @RestController
+@Slf4j
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 @PreAuthorize("hasRole('ROLE_COMMUNITY')")
@@ -37,6 +39,7 @@ public class OffendersResource {
     private final DocumentService documentService;
     private final ContactService contactService;
     private final ConvictionService convictionService;
+    private final OffenderManagerService offenderManagerService;
 
     @ApiOperation(
             value = "Return the responsible officer (RO) for an offender",
@@ -75,7 +78,7 @@ public class OffendersResource {
             @NotNull
             @PathVariable(value = "nomsNumber")
             final String nomsNumber) {
-        return offenderService.getAllOffenderManagersForNomsNumber(nomsNumber)
+        return offenderManagerService.getAllOffenderManagersForNomsNumber(nomsNumber)
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with NOMS number %s not found", nomsNumber)));
     }
 
@@ -216,5 +219,23 @@ public class OffendersResource {
                 .map(offenderId -> offenderService.getOffenderLatestRecall(offenderId))
                 .orElseThrow(() -> new NotFoundException("Offender not found"));
     }
+
+    @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/prisonOffenderManager", method = RequestMethod.PUT, consumes = "application/json")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "The new prison offender manager", response = CommunityOrPrisonOffenderManager.class),
+            @ApiResponse(code = 400, message = "Staff code does belong to the probation area related prison institution"),
+            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 404, message = "The offender or prison institution is not found")
+    })
+    @ApiOperation(value = "Allocates the prison offender manager for an offender in custody. This operation may also have a side affect of creating a Staff member if one matching the name does not already exist. An existing staff member can be used if the staff code is supplied.")
+    public CommunityOrPrisonOffenderManager allocatePrisonOffenderManagerByNomsNumber(final @PathVariable String nomsNumber,
+                                                                 final @RequestBody CreatePrisonOffenderManager prisonOffenderManager) {
+        log.info("Request to allocate a prison offender manager to {} at prison with code {}", nomsNumber, prisonOffenderManager.getNomsPrisonInstitutionCode());
+        return Optional.ofNullable(prisonOffenderManager.getOfficerCode())
+                .map(staffCode -> offenderManagerService.allocatedPrisonOffenderManagerByStaffCode(nomsNumber, staffCode, prisonOffenderManager))
+                .orElseGet(() -> offenderManagerService.allocatePrisonOffenderManagerByName(nomsNumber, prisonOffenderManager))
+                .orElseThrow(() -> new NotFoundException(String.format("Offender with noms number %s not found", nomsNumber)));
+    }
+
 }
 

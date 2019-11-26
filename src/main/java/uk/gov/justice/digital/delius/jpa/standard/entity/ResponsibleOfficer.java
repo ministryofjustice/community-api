@@ -4,23 +4,29 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "RESPONSIBLE_OFFICER")
 public class ResponsibleOfficer implements Serializable {
 
     @Id
+    @SequenceGenerator(name = "RESPONSIBLE_OFFICER_ID_GENERATOR", sequenceName = "RESPONSIBLE_OFFICER_ID_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RESPONSIBLE_OFFICER_ID_GENERATOR")
     @Column(name = "RESPONSIBLE_OFFICER_ID")
     private Long responsibleOfficerId;
 
@@ -41,8 +47,29 @@ public class ResponsibleOfficer implements Serializable {
     private Long prisonOffenderManagerId;
 
     @Column(name = "START_DATE")
-    private LocalDate startDate;
+    @Builder.Default
+    private LocalDate startDate = LocalDate.now();
 
     @Column(name = "END_DATE")
     private LocalDate endDate;
+
+    @Column(name = "ROW_VERSION")
+    @Builder.Default
+    private Long rowVersion = 1L;
+
+    @Column(name = "CREATED_BY_USER_ID")
+    @CreatedBy
+    private Long createdByUserId;
+
+    @Column(name = "CREATED_DATETIME")
+    @CreatedDate
+    private LocalDateTime createdDatetime;
+
+    @Column(name = "LAST_UPDATED_USER_ID")
+    @LastModifiedBy
+    private Long lastUpdatedUserId;
+
+    @Column(name = "LAST_UPDATED_DATETIME")
+    @LastModifiedDate
+    private LocalDateTime lastUpdatedDatetime;
 }

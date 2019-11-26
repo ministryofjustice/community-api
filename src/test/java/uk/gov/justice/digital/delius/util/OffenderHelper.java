@@ -3,9 +3,7 @@ package uk.gov.justice.digital.delius.util;
 import org.assertj.core.util.Lists;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.Calendar;
 
 public interface OffenderHelper {
      static Offender anOffender() {
@@ -58,7 +56,7 @@ public interface OffenderHelper {
                 .currentExclusion(0L)
                 .offenderManagers(Lists.newArrayList(OffenderManager.builder()
                         .activeFlag(1L)
-                        .allocationDate(Timestamp.from(Calendar.getInstance().toInstant()))
+                        .allocationDate(LocalDate.now())
                         .officer(Officer.builder().surname("Jones").build())
                         .probationArea(ProbationArea.builder().code("A").description("B").privateSector(1L).build())
                         .build()))

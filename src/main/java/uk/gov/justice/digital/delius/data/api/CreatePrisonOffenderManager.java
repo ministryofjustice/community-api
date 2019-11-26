@@ -10,15 +10,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Institution {
-    @ApiModelProperty(required = true)
-    private Long institutionId;
-    private Boolean isEstablishment;
-    private String code;
-    private String description;
-    private String institutionName;
-    private KeyValue establishmentType;
-    private Boolean isPrivate;
+public class CreatePrisonOffenderManager {
+    @ApiModelProperty(value = "Name of offender manager")
+    private Human officer;
+    @ApiModelProperty(value = "Optional officer staff code, if not present name will be used to lookup staff member", required = false)
+    private String officerCode;
     @ApiModelProperty(value = "Prison institution code in NOMIS")
     private String nomsPrisonInstitutionCode;
 }

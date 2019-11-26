@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
-import uk.gov.justice.digital.delius.controller.NotFoundException;
+import uk.gov.justice.digital.delius.controller.InvalidRequestException;
 import uk.gov.justice.digital.delius.controller.UnauthorisedException;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
 
 @RestControllerAdvice(basePackages = { "uk.gov.justice.digital.delius.controller.secure" } )
 @Slf4j
@@ -67,6 +68,18 @@ public class SecureControllerAdvice {
                 .body(ErrorResponse
                         .builder()
                         .status(HttpStatus.UNAUTHORIZED.value())
+                        .developerMessage(e.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<ErrorResponse> handleException(final InvalidRequestException e) {
+        log.debug("Bad Request (400) returned", e);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse
+                        .builder()
+                        .status(HttpStatus.BAD_REQUEST.value())
                         .developerMessage(e.getMessage())
                         .build());
     }

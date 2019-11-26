@@ -4,9 +4,7 @@ import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -199,8 +197,8 @@ public class OffenderTransformerTest {
                         .toBuilder()
                         .offenderManagerId(1L)
                         .offenderId(1L)
-                        .allocationDate(Timestamp.valueOf(LocalDateTime.parse("2018-01-01T00:00:00")))
-                        .endDate(Timestamp.valueOf(LocalDateTime.parse("2019-01-01T00:00:00")))
+                        .allocationDate(LocalDate.parse("2018-01-01"))
+                        .endDate(LocalDate.parse("2019-01-01"))
                         .activeFlag(0L)
                         .probationArea(npsProbationArea())
                         .team(aTeam())
@@ -213,7 +211,7 @@ public class OffenderTransformerTest {
                         .toBuilder()
                         .offenderManagerId(2L)
                         .offenderId(1L)
-                        .allocationDate(Timestamp.valueOf(LocalDateTime.parse("2019-01-01T00:00:00")))
+                        .allocationDate(LocalDate.parse("2019-01-01"))
                         .activeFlag(1L)
                         .probationArea(crcProbationArea())
                         .team(aTeam())
