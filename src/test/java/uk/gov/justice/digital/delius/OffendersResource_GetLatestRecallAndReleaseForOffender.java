@@ -12,8 +12,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.gov.justice.digital.delius.data.api.OffenderRecallAndRelease;
 
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -38,7 +40,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
     }
 
     @Test
-    public void getLatestRecallAndReleaseForOffender_dataFound_returnsOk() {
+    public void getLatestRecallAndReleaseForOffender_offenderFound_returnsOk() {
         given()
                 .auth()
                 .oauth2(validOauthToken)
@@ -48,6 +50,22 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
                 .then()
                 .statusCode(200);
 
+    }
+
+    @Test
+    public void getLatestRecallAndReleaseForOffender_offenderFound_responseDataOk() {
+        final var offenderRecallAndRelease = given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/nomsNumber/G9542VP/release")
+                .then()
+                .extract()
+                .body()
+                .as(OffenderRecallAndRelease.class);
+
+        assertThat(offenderRecallAndRelease.getReplaceMe()).isEqualTo("replace me");
     }
 
 }
