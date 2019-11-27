@@ -8,6 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OffenderRecallAndRelease {
-    @ApiModelProperty(value = "replace me", example = "replace me")
-    private String replaceMe;
+    @ApiModelProperty(value = "Last recall")
+    private OffenderRecall lastRecall;
+    @ApiModelProperty(value = "Last release")
+    private OffenderRelease lastRelease;
 }

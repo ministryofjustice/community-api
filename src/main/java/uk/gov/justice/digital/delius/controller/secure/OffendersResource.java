@@ -184,7 +184,9 @@ public class OffendersResource {
             @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
             @NotNull
             @PathVariable(value = "nomsNumber") final String nomsNumber) {
-        return new ResponseEntity<>(OffenderRecallAndRelease.builder().replaceMe("replace me").build(), HttpStatus.OK);
+        OffenderRecall lastRecall = OffenderRecall.builder().replaceMe("replace me").build();
+        OffenderRelease lasetRelease = OffenderRelease.builder().replaceMe("replace me").build();
+        return new ResponseEntity<>(OffenderRecallAndRelease.builder().lastRecall(lastRecall).lastRelease(lasetRelease).build(), HttpStatus.OK);
     }
 }
 

@@ -53,7 +53,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
     }
 
     @Test
-    public void getLatestRecallAndReleaseForOffender_offenderFound_responseDataOk() {
+    public void getLatestRecallAndReleaseForOffender_offenderFound_recallDataOk() {
         final var offenderRecallAndRelease = given()
                 .auth()
                 .oauth2(validOauthToken)
@@ -65,7 +65,23 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
                 .body()
                 .as(OffenderRecallAndRelease.class);
 
-        assertThat(offenderRecallAndRelease.getReplaceMe()).isEqualTo("replace me");
+        assertThat(offenderRecallAndRelease.getLastRecall().getReplaceMe()).isEqualTo("replace me");
+    }
+
+    @Test
+    public void getLatestRecallAndReleaseForOffender_offenderFound_releaseDataOk() {
+        final var offenderRecallAndRelease = given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/nomsNumber/G9542VP/release")
+                .then()
+                .extract()
+                .body()
+                .as(OffenderRecallAndRelease.class);
+
+        assertThat(offenderRecallAndRelease.getLastRelease().getReplaceMe()).isEqualTo("replace me");
     }
 
 }
