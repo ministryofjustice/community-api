@@ -167,5 +167,24 @@ public class OffendersResource {
                 .map(offenderId -> new ResponseEntity<>(contactService.contactsFor(offenderId, contactFilter), HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
+    @ApiOperation(
+            value = "Returns the latest recall and release details for an offender",
+            notes = "Accepts a NOMIS offender nomsNumber in the format A9999AA")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "OK", response = OffenderRecallAndRelease.class),
+                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            })
+    @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/release")
+    public ResponseEntity<OffenderRecallAndRelease> getLatestRecallAndReleaseForOffender(
+            @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
+            @NotNull
+            @PathVariable(value = "nomsNumber") final String nomsNumber) {
+        return new ResponseEntity<>(OffenderRecallAndRelease.builder().replaceMe("replace me").build(), HttpStatus.OK);
+    }
 }
 
