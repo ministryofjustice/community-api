@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.justice.digital.delius.data.api.OffenderRecallAndRelease;
+import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,7 +54,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
 
     @Test
     public void getLatestRecallAndReleaseForOffender_offenderFound_recallDataOk() {
-        final var offenderRecallAndRelease = given()
+        final var offenderLatestRecall = given()
                 .auth()
                 .oauth2(validOauthToken)
                 .contentType(APPLICATION_JSON_VALUE)
@@ -63,14 +63,14 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
                 .then()
                 .extract()
                 .body()
-                .as(OffenderRecallAndRelease.class);
+                .as(OffenderLatestRecall.class);
 
-        assertThat(offenderRecallAndRelease.getLastRecall().getReplaceMe()).isEqualTo("replace me");
+        assertThat(offenderLatestRecall.getLastRecall().getReplaceMe()).isEqualTo("replace me");
     }
 
     @Test
     public void getLatestRecallAndReleaseForOffender_offenderFound_releaseDataOk() {
-        final var offenderRecallAndRelease = given()
+        final var offenderLatestRecall = given()
                 .auth()
                 .oauth2(validOauthToken)
                 .contentType(APPLICATION_JSON_VALUE)
@@ -79,9 +79,9 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
                 .then()
                 .extract()
                 .body()
-                .as(OffenderRecallAndRelease.class);
+                .as(OffenderLatestRecall.class);
 
-        assertThat(offenderRecallAndRelease.getLastRelease().getReplaceMe()).isEqualTo("replace me");
+        assertThat(offenderLatestRecall.getLastRelease().getReplaceMe()).isEqualTo("replace me");
     }
 
 }

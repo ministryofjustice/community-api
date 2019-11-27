@@ -7,7 +7,7 @@ import lombok.*;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class OffenderRecallAndRelease {
+public class OffenderLatestRecall {
     @ApiModelProperty(value = "Last recall")
     private OffenderRecall lastRecall;
     @ApiModelProperty(value = "Last release")

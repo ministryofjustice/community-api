@@ -173,20 +173,20 @@ public class OffendersResource {
             notes = "Accepts a NOMIS offender nomsNumber in the format A9999AA")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "OK", response = OffenderRecallAndRelease.class),
+                    @ApiResponse(code = 200, message = "OK", response = OffenderLatestRecall.class),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
                     @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/release")
-    public ResponseEntity<OffenderRecallAndRelease> getLatestRecallAndReleaseForOffender(
+    public ResponseEntity<OffenderLatestRecall> getLatestRecallAndReleaseForOffender(
             @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
             @NotNull
             @PathVariable(value = "nomsNumber") final String nomsNumber) {
         OffenderRecall lastRecall = OffenderRecall.builder().replaceMe("replace me").build();
         OffenderRelease lasetRelease = OffenderRelease.builder().replaceMe("replace me").build();
-        return new ResponseEntity<>(OffenderRecallAndRelease.builder().lastRecall(lastRecall).lastRelease(lasetRelease).build(), HttpStatus.OK);
+        return new ResponseEntity<>(OffenderLatestRecall.builder().lastRecall(lastRecall).lastRelease(lasetRelease).build(), HttpStatus.OK);
     }
 }
 
