@@ -166,4 +166,8 @@ public class OffenderService {
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
+
+    // TODO DT-337 Flesh out this stub
+    @Transactional(readOnly = true)
+    public OffenderLatestRecall getOffenderLatestRecall(String nomsNumber) { return null; }
 }

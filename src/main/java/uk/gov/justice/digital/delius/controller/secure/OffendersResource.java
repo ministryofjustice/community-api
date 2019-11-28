@@ -15,6 +15,7 @@ import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
 import uk.gov.justice.digital.delius.service.*;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -184,9 +185,8 @@ public class OffendersResource {
             @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
             @NotNull
             @PathVariable(value = "nomsNumber") final String nomsNumber) {
-        OffenderRecall lastRecall = OffenderRecall.builder().replaceMe("replace me").build();
-        OffenderRelease lasetRelease = OffenderRelease.builder().replaceMe("replace me").build();
-        return new ResponseEntity<>(OffenderLatestRecall.builder().lastRecall(lastRecall).lastRelease(lasetRelease).build(), HttpStatus.OK);
+
+        return new ResponseEntity<>(offenderService.getOffenderLatestRecall(nomsNumber), HttpStatus.OK);
     }
 }
 
