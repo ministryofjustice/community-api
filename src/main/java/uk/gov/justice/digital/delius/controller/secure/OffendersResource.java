@@ -4,7 +4,10 @@ import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
@@ -166,6 +169,26 @@ public class OffendersResource {
         return offenderService.offenderIdOfNomsNumber(nomsNumber)
                 .map(offenderId -> new ResponseEntity<>(contactService.contactsFor(offenderId, contactFilter), HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @ApiOperation(
+            value = "Returns the latest recall and release details for an offender",
+            notes = "Accepts a NOMIS offender nomsNumber in the format A9999AA")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "OK", response = OffenderLatestRecall.class),
+                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            })
+    @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/release")
+    public ResponseEntity<OffenderLatestRecall> getLatestRecallAndReleaseForOffender(
+            @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
+            @NotNull
+            @PathVariable(value = "nomsNumber") final String nomsNumber) {
+
+        return new ResponseEntity<>(offenderService.getOffenderLatestRecall(nomsNumber), HttpStatus.OK);
     }
 }
 
