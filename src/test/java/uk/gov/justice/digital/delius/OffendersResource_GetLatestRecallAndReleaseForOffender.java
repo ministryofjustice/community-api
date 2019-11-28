@@ -17,15 +17,20 @@ import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class OffendersResource_GetLatestRecallAndReleaseForOffender {
+
+    private static final Optional<Long> ANY_OFFENDER_ID = Optional.of(123L);
+    private static final Optional<Long> OFFENDER_ID_NOT_FOUND = Optional.empty();
 
     @LocalServerPort
     int port;
@@ -49,6 +54,8 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
 
     @Test
     public void getLatestRecallAndReleaseForOffender_offenderFound_returnsOk() {
+        org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfNomsNumber(anyString()))
+                .willReturn(ANY_OFFENDER_ID);
         given()
                 .auth()
                 .oauth2(validOauthToken)
@@ -62,11 +69,13 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
 
     @Test
     public void getLatestRecallAndReleaseForOffender_offenderFound_recallDataOk() {
+        org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfNomsNumber(anyString()))
+                .willReturn(ANY_OFFENDER_ID);
         final var expectedOffenderRecall = OffenderLatestRecall.builder()
                 .lastRecall(getDefaultOffenderRecall())
                 .lastRelease(getDefaultOffenderRelease())
                 .build();
-        org.mockito.BDDMockito.given(mockOffenderService.getOffenderLatestRecall(anyString()))
+        org.mockito.BDDMockito.given(mockOffenderService.getOffenderLatestRecall(anyLong()))
                 .willReturn(expectedOffenderRecall);
 
         final var offenderLatestRecall = given()
@@ -85,11 +94,13 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
 
     @Test
     public void getLatestRecallAndReleaseForOffender_missingEstablishmentType_returnsNullEstablishmentType() {
+        org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfNomsNumber(anyString()))
+                .willReturn(ANY_OFFENDER_ID);
         final var expectedOffenderRecall = OffenderLatestRecall.builder()
                 .lastRecall(getOffenderRecallNotEstablishment())
                 .lastRelease(getOffenderReleaseNotEstablishment())
                 .build();
-        org.mockito.BDDMockito.given(mockOffenderService.getOffenderLatestRecall(anyString()))
+        org.mockito.BDDMockito.given(mockOffenderService.getOffenderLatestRecall(anyLong()))
                 .willReturn(expectedOffenderRecall);
 
         final var offenderLatestRecall = given()
@@ -105,6 +116,21 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
 
         assertThat(offenderLatestRecall.getLastRecall().getInstitution().getEstablishmentType()).isNull();
         assertThat(offenderLatestRecall.getLastRelease().getInstitution().getEstablishmentType()).isNull();
+    }
+
+    @Test
+    public void getLatestRecallAndReleaseForOffender_offenderNotFound_returnsNotFound() {
+        org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfNomsNumber(anyString()))
+                .willReturn(OFFENDER_ID_NOT_FOUND);
+
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/nomsNumber/G9542VP/release")
+                .then()
+                .statusCode(404);
     }
 
     private OffenderRecall getDefaultOffenderRecall() {
