@@ -19,7 +19,6 @@ import uk.gov.justice.digital.delius.service.OffenderService;
 import java.time.LocalDate;
 
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.when;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
