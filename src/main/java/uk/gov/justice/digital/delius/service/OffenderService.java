@@ -169,5 +169,5 @@ public class OffenderService {
 
     // TODO DT-337 Flesh out this stub
     @Transactional(readOnly = true)
-    public OffenderLatestRecall getOffenderLatestRecall(String nomsNumber) { return null; }
+    public OffenderLatestRecall getOffenderLatestRecall(Long offenderId) { return null; }
 }
