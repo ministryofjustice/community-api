@@ -64,8 +64,8 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
     @Test
     public void getLatestRecallAndReleaseForOffender_offenderFound_recallDataOk() {
         final var expectedOffenderRecall = OffenderLatestRecall.builder()
-                .lastRecall(getOffenderRecall())
-                .lastRelease(getOffenderRelease())
+                .lastRecall(getDefaultOffenderRecall())
+                .lastRelease(getDefaultOffenderRelease())
                 .build();
         org.mockito.BDDMockito.given(mockOffenderService.getOffenderLatestRecall(anyString()))
                 .willReturn(expectedOffenderRecall);
@@ -84,17 +84,58 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
         assertThat(offenderLatestRecall).isEqualTo(expectedOffenderRecall);
     }
 
-    private OffenderRecall getOffenderRecall() {
-        Institution recallInstitution = getRecallInstitution();
+    @Test
+    public void getLatestRecallAndReleaseForOffender_missingEstablishmentType_returnsNullEstablishmentType() {
+        final var expectedOffenderRecall = OffenderLatestRecall.builder()
+                .lastRecall(getOffenderRecallNotEstablishment())
+                .lastRelease(getOffenderReleaseNotEstablishment())
+                .build();
+        org.mockito.BDDMockito.given(mockOffenderService.getOffenderLatestRecall(anyString()))
+                .willReturn(expectedOffenderRecall);
+
+        final var offenderLatestRecall = given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/nomsNumber/G9542VP/release")
+                .then()
+                .extract()
+                .body()
+                .as(OffenderLatestRecall.class);
+
+        assertThat(offenderLatestRecall.getLastRecall().getInstitution().getEstablishmentType()).isNull();
+        assertThat(offenderLatestRecall.getLastRelease().getInstitution().getEstablishmentType()).isNull();
+    }
+
+    private OffenderRecall getDefaultOffenderRecall() {
+        return offenderRecallBuilder().build();
+    }
+
+    private OffenderRelease getDefaultOffenderRelease() {
+        return offenderReleaseBuilder().build();
+    }
+
+    private OffenderRecall getOffenderRecallNotEstablishment() {
+        final var nonEstablishmentInstitution = recallInstitutionBuilder().isEstablishment(false).establishmentType(null).build();
+        return offenderRecallBuilder().institution(nonEstablishmentInstitution).build();
+    }
+
+    private OffenderRelease getOffenderReleaseNotEstablishment() {
+        final var nonEstablishmentInstitution = releaseInstitutionBuilder().isEstablishment(false).establishmentType(null).build();
+        return offenderReleaseBuilder().institution(nonEstablishmentInstitution).build();
+    }
+
+    private OffenderRecall.OffenderRecallBuilder offenderRecallBuilder() {
+        Institution recallInstitution = recallInstitutionBuilder().build();
         return OffenderRecall.builder()
                 .date(LocalDate.of(2019, 11, 27))
                 .reason(KeyValue.builder().code("TEST_RECALL_REASON_CODE").description("Test recall reason description").build())
                 .notes("Test recall notes")
-                .institution(recallInstitution)
-                .build();
+                .institution(recallInstitution);
     }
 
-    private Institution getRecallInstitution() {
+    private Institution.InstitutionBuilder recallInstitutionBuilder() {
         return Institution.builder()
                 .code("RECALL_INSTITUTION_CODE")
                 .description("Recall institution description")
@@ -102,21 +143,19 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
                 .institutionName("Recall institution")
                 .isEstablishment(true)
                 .isPrivate(true)
-                .establishmentType(KeyValue.builder().code("RECALL_ESTABLISHMENT_TYPE_CODE").description("Recall establishment type description").build())
-                .build();
+                .establishmentType(KeyValue.builder().code("RECALL_ESTABLISHMENT_TYPE_CODE").description("Recall establishment type description").build());
     }
 
-    private OffenderRelease getOffenderRelease() {
-        Institution releaseInstitution = getReleaseInstitution();
+    private OffenderRelease.OffenderReleaseBuilder offenderReleaseBuilder() {
+        Institution releaseInstitution = releaseInstitutionBuilder().build();
         return OffenderRelease.builder()
                 .date(LocalDate.of(2019, 11, 26))
                 .reason(KeyValue.builder().code("TEST_RELEASE_REASON_CODE").description("Test release reason description").build())
                 .notes("Test release notes")
-                .institution(releaseInstitution)
-                .build();
+                .institution(releaseInstitution);
     }
 
-    private Institution getReleaseInstitution() {
+    private Institution.InstitutionBuilder releaseInstitutionBuilder() {
         return Institution.builder()
                 .code("RELEASE_INSTITUTION_CODE")
                 .description("Release institution description")
@@ -124,8 +163,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
                 .institutionName("Release institution")
                 .isEstablishment(true)
                 .isPrivate(true)
-                .establishmentType(KeyValue.builder().code("RELEASE_ESTABLISHMENT_TYPE_CODE").description("Release establishment type description").build())
-                .build();
+                .establishmentType(KeyValue.builder().code("RELEASE_ESTABLISHMENT_TYPE_CODE").description("Release establishment type description").build());
     }
 
 }
