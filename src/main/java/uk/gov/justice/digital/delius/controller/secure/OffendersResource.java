@@ -173,7 +173,7 @@ public class OffendersResource {
     }
 
     @ApiOperation(
-            value = "Returns the latest recall and release details for an offender",
+            value = "WARNING: This is a work in progress!  Returns the latest recall and release details for an offender", // TODO DT-337 remove warning when finished
             notes = "Accepts a NOMIS offender nomsNumber in the format A9999AA")
     @ApiResponses(
             value = {
@@ -190,6 +190,28 @@ public class OffendersResource {
             @PathVariable(value = "nomsNumber") final String nomsNumber) {
 
         return offenderService.offenderIdOfNomsNumber(nomsNumber)
+                .map(offenderId -> new ResponseEntity<>(offenderService.getOffenderLatestRecall(offenderId), HttpStatus.OK))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Offender not found"));
+    }
+
+    @ApiOperation(
+            value = "WARNING: This is a work in progress! Returns the latest recall and release details for an offender", // TODO DT-337 remove warning when finished
+            notes = "Accepts an offender CRN in the format A999999")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "OK", response = OffenderLatestRecall.class),
+                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            })
+    @GetMapping(path = "/offenders/crn/{crn}/release")
+    public ResponseEntity<OffenderLatestRecall> getLatestRecallAndReleaseForOffenderByCrn(
+            @ApiParam(name = "crn", value = "CRN for the offender", example = "X320741", required = true)
+            @NotNull
+            @PathVariable(value = "crn") final String crn) {
+
+        return offenderService.offenderIdOfCrn(crn)
                 .map(offenderId -> new ResponseEntity<>(offenderService.getOffenderLatestRecall(offenderId), HttpStatus.OK))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Offender not found"));
     }

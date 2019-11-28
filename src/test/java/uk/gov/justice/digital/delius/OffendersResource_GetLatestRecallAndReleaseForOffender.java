@@ -133,6 +133,61 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
                 .statusCode(404);
     }
 
+    @Test
+    public void getLatestRecallAndReleaseForOffenderByCrn_offenderFound_returnsOk() {
+        org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfCrn(anyString()))
+                .willReturn(ANY_OFFENDER_ID);
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/crn/X320741/release")
+                .then()
+                .statusCode(200);
+
+    }
+
+    @Test
+    public void getLatestRecallAndReleaseForOffenderByCrn_offenderFound_recallDataOk() {
+        org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfCrn(anyString()))
+                .willReturn(ANY_OFFENDER_ID);
+        final var expectedOffenderRecall = OffenderLatestRecall.builder()
+                .lastRecall(getDefaultOffenderRecall())
+                .lastRelease(getDefaultOffenderRelease())
+                .build();
+        org.mockito.BDDMockito.given(mockOffenderService.getOffenderLatestRecall(anyLong()))
+                .willReturn(expectedOffenderRecall);
+
+        final var offenderLatestRecall = given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/crn/X320741/release")
+                .then()
+                .extract()
+                .body()
+                .as(OffenderLatestRecall.class);
+
+        assertThat(offenderLatestRecall).isEqualTo(expectedOffenderRecall);
+    }
+
+    @Test
+    public void getLatestRecallAndReleaseForOffenderByCrn_offenderNotFound_returnsNotFound() {
+        org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfCrn(anyString()))
+                .willReturn(OFFENDER_ID_NOT_FOUND);
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/crn/X320741/release")
+                .then()
+                .statusCode(404);
+
+    }
+
     private OffenderRecall getDefaultOffenderRecall() {
         return offenderRecallBuilder().build();
     }
