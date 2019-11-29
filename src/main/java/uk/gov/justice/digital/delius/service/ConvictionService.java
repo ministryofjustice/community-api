@@ -33,7 +33,7 @@ public class ConvictionService {
     private final LookupSupplier lookupSupplier;
 
     public static class SingleActiveCustodyConvictionNotFoundException extends RuntimeException {
-        SingleActiveCustodyConvictionNotFoundException(Long offenderId, int activeCustodyConvictionCount) {
+        public SingleActiveCustodyConvictionNotFoundException(Long offenderId, int activeCustodyConvictionCount) {
             super(String.format("Expected offender %d to have a single custody related event but found %d events", offenderId, activeCustodyConvictionCount));
         }
     }

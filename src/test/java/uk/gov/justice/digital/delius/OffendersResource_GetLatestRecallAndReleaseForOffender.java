@@ -13,7 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.*;
+import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
 import java.time.LocalDate;
@@ -29,7 +31,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class OffendersResource_GetLatestRecallAndReleaseForOffender {
 
-    private static final Optional<Long> ANY_OFFENDER_ID = Optional.of(123L);
+    private static final Long ANY_OFFENDER_ID = 123L;
+    private static final Long SOME_OFFENDER_ID = 456L;
+    private static final Integer SOME_ACTIVE_CUSTODY_CONVICTION_COUNT = 99;
+    private static final Optional<Long> MAYBE_ANY_OFFENDER_ID = Optional.of(ANY_OFFENDER_ID);
+    private static final Optional<Long> MAYBE_SOME_OFFENDER_ID = Optional.of(SOME_OFFENDER_ID);
     private static final Optional<Long> OFFENDER_ID_NOT_FOUND = Optional.empty();
 
     @LocalServerPort
@@ -55,7 +61,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
     @Test
     public void getLatestRecallAndReleaseForOffender_offenderFound_returnsOk() {
         org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfNomsNumber(anyString()))
-                .willReturn(ANY_OFFENDER_ID);
+                .willReturn(MAYBE_ANY_OFFENDER_ID);
         given()
                 .auth()
                 .oauth2(validOauthToken)
@@ -70,7 +76,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
     @Test
     public void getLatestRecallAndReleaseForOffender_offenderFound_recallDataOk() {
         org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfNomsNumber(anyString()))
-                .willReturn(ANY_OFFENDER_ID);
+                .willReturn(MAYBE_ANY_OFFENDER_ID);
         final var expectedOffenderRecall = OffenderLatestRecall.builder()
                 .lastRecall(getDefaultOffenderRecall())
                 .lastRelease(getDefaultOffenderRelease())
@@ -95,7 +101,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
     @Test
     public void getLatestRecallAndReleaseForOffender_missingEstablishmentType_returnsNullEstablishmentType() {
         org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfNomsNumber(anyString()))
-                .willReturn(ANY_OFFENDER_ID);
+                .willReturn(MAYBE_ANY_OFFENDER_ID);
         final var expectedOffenderRecall = OffenderLatestRecall.builder()
                 .lastRecall(getOffenderRecallNotEstablishment())
                 .lastRelease(getOffenderReleaseNotEstablishment())
@@ -136,7 +142,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
     @Test
     public void getLatestRecallAndReleaseForOffenderByCrn_offenderFound_returnsOk() {
         org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfCrn(anyString()))
-                .willReturn(ANY_OFFENDER_ID);
+                .willReturn(MAYBE_ANY_OFFENDER_ID);
         given()
                 .auth()
                 .oauth2(validOauthToken)
@@ -151,7 +157,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
     @Test
     public void getLatestRecallAndReleaseForOffenderByCrn_offenderFound_recallDataOk() {
         org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfCrn(anyString()))
-                .willReturn(ANY_OFFENDER_ID);
+                .willReturn(MAYBE_ANY_OFFENDER_ID);
         final var expectedOffenderRecall = OffenderLatestRecall.builder()
                 .lastRecall(getDefaultOffenderRecall())
                 .lastRelease(getDefaultOffenderRelease())
@@ -185,6 +191,46 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
                 .get("/offenders/crn/X320741/release")
                 .then()
                 .statusCode(404);
+
+    }
+
+    @Test
+    public void getLatestRecallAndReleaseForOffender_notSingleCustodyEvent_returnsBadRequest() {
+        org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfCrn(anyString()))
+                .willReturn(MAYBE_ANY_OFFENDER_ID);
+        org.mockito.BDDMockito.given(mockOffenderService.getOffenderLatestRecall(ANY_OFFENDER_ID))
+                .willThrow(ConvictionService.SingleActiveCustodyConvictionNotFoundException.class);
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/crn/X320741/release")
+                .then()
+                .statusCode(400);
+
+    }
+
+    @Test
+    public void getLatestRecallAndReleaseForOffender_notSingleCustodyEvent_returnsDetailsIdInErrorMessage() {
+        org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfCrn(anyString()))
+                .willReturn(MAYBE_SOME_OFFENDER_ID);
+        org.mockito.BDDMockito.given(mockOffenderService.getOffenderLatestRecall(SOME_OFFENDER_ID))
+                .willThrow(new ConvictionService.SingleActiveCustodyConvictionNotFoundException(SOME_OFFENDER_ID, SOME_ACTIVE_CUSTODY_CONVICTION_COUNT));
+
+        ErrorResponse errorResponse = given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/crn/X320741/release")
+                .then()
+                .extract()
+                .body()
+                .as(ErrorResponse.class);
+
+        assertThat(errorResponse.getDeveloperMessage()).contains(SOME_OFFENDER_ID.toString());
+        assertThat(errorResponse.getDeveloperMessage()).contains(SOME_ACTIVE_CUSTODY_CONVICTION_COUNT.toString());
 
     }
 

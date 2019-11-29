@@ -22,9 +22,12 @@ public class OffenderServiceTest_getOffenderLatestRecall {
     private static final Long ANY_OFFENDER_ID = 123L;
     private static final Long SOME_OFFENDER_ID = 456L;
     private static final Optional<Offender> SOME_OFFENDER = Optional.of(Offender.builder().offenderId(SOME_OFFENDER_ID).build());
+    private static final Optional<Offender> ANY_OFFENDER = Optional.of(Offender.builder().offenderId(ANY_OFFENDER_ID).build());
 
     @Mock
     private OffenderRepository mockOffenderRepository;
+    @Mock
+    private ConvictionService mockConvictionService;
 
     private OffenderService offenderService;
 
@@ -39,7 +42,9 @@ public class OffenderServiceTest_getOffenderLatestRecall {
                                 new TeamTransformer()),
                         new TeamTransformer(),
                         new ProbationAreaTransformer(
-                                new InstitutionTransformer())));
+                                new InstitutionTransformer())),
+                mockConvictionService
+        );
     }
 
     @Test
@@ -56,6 +61,14 @@ public class OffenderServiceTest_getOffenderLatestRecall {
     public void getOffenderLatestRecall_offenderNotFound_throwsNotFound() {
         given(mockOffenderRepository.findByOffenderId(ANY_OFFENDER_ID))
                 .willReturn(Optional.empty());
+
+        offenderService.getOffenderLatestRecall(ANY_OFFENDER_ID);
+    }
+
+    @Test(expected = ConvictionService.SingleActiveCustodyConvictionNotFoundException.class)
+    public void getOffenderLatestRecall_withNoCustodyRecord_propagatesNoCustodyException() {
+        given(mockOffenderRepository.findByOffenderId(ANY_OFFENDER_ID)).willReturn(ANY_OFFENDER);
+        given(mockConvictionService.getActiveCustodialEvent(ANY_OFFENDER_ID)).willThrow(ConvictionService.SingleActiveCustodyConvictionNotFoundException.class);
 
         offenderService.getOffenderLatestRecall(ANY_OFFENDER_ID);
     }
