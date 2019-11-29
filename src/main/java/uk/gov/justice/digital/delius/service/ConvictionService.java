@@ -163,21 +163,22 @@ public class ConvictionService {
         deleteCustodyKeyDate(eventRepository.getOne(convictionId), typeCode);
     }
 
-    private String calculateNextEventNumber(Long offenderId) {
-        return String.valueOf(eventRepository.findByOffenderId(offenderId).size() + 1);
-    }
-
-    private List<Event> activeEvents(List<Event> events) {
-        return events.stream().filter(event -> event.getActiveFlag() == 1L).collect(toList());
-    }
-
-    private Event getActiveCustodialEvent(Long offenderId) throws SingleActiveCustodyConvictionNotFoundException {
+    @Transactional(readOnly = true)
+    public Event getActiveCustodialEvent(Long offenderId) throws SingleActiveCustodyConvictionNotFoundException {
         val activeCustodyConvictions = activeCustodyEvents(offenderId);
 
         if (activeCustodyConvictions.size() != 1) {
             throw new SingleActiveCustodyConvictionNotFoundException(activeCustodyConvictions.size());
         }
         return activeCustodyConvictions.get(0);
+    }
+
+    private String calculateNextEventNumber(Long offenderId) {
+        return String.valueOf(eventRepository.findByOffenderId(offenderId).size() + 1);
+    }
+
+    private List<Event> activeEvents(List<Event> events) {
+        return events.stream().filter(event -> event.getActiveFlag() == 1L).collect(toList());
     }
 
     private List<Event> activeCustodyEvents(Long offenderId) {
