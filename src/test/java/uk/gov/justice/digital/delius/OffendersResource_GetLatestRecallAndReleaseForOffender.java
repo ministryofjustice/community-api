@@ -62,6 +62,8 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
     public void getLatestRecallAndReleaseForOffender_offenderFound_returnsOk() {
         org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfNomsNumber(anyString()))
                 .willReturn(MAYBE_ANY_OFFENDER_ID);
+        org.mockito.BDDMockito.given(mockOffenderService.getOffenderLatestRecall(anyLong()))
+                .willReturn(OffenderLatestRecall.builder().build());
         given()
                 .auth()
                 .oauth2(validOauthToken)
@@ -143,6 +145,8 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
     public void getLatestRecallAndReleaseForOffenderByCrn_offenderFound_returnsOk() {
         org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfCrn(anyString()))
                 .willReturn(MAYBE_ANY_OFFENDER_ID);
+        org.mockito.BDDMockito.given(mockOffenderService.getOffenderLatestRecall(anyLong()))
+                .willReturn(OffenderLatestRecall.builder().build());
         given()
                 .auth()
                 .oauth2(validOauthToken)

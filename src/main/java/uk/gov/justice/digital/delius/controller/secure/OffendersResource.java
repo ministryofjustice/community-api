@@ -188,7 +188,7 @@ public class OffendersResource {
             @NotNull
             @PathVariable(value = "nomsNumber") final String nomsNumber) {
 
-        return getOffenderLatestRecall(offenderService.offenderIdOfNomsNumber(nomsNumber));
+        return new ResponseEntity<>(getOffenderLatestRecall(offenderService.offenderIdOfNomsNumber(nomsNumber)), HttpStatus.OK);
     }
 
     @ApiOperation(
@@ -208,12 +208,12 @@ public class OffendersResource {
             @NotNull
             @PathVariable(value = "crn") final String crn) {
 
-        return getOffenderLatestRecall(offenderService.offenderIdOfCrn(crn));
+        return new ResponseEntity<>(getOffenderLatestRecall(offenderService.offenderIdOfCrn(crn)), HttpStatus.OK);
     }
 
-    private ResponseEntity<OffenderLatestRecall> getOffenderLatestRecall(Optional<Long> maybeOffenderId) {
+    private OffenderLatestRecall getOffenderLatestRecall(Optional<Long> maybeOffenderId) {
         return maybeOffenderId
-                .map(offenderId -> new ResponseEntity<>(offenderService.getOffenderLatestRecall(offenderId), HttpStatus.OK))
+                .map(offenderId -> offenderService.getOffenderLatestRecall(offenderId))
                 .orElseThrow(() -> new NotFoundException("Offender not found"));
     }
 }
