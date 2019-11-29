@@ -10,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.Contact;
@@ -190,7 +189,7 @@ public class OffendersResource {
             @PathVariable(value = "nomsNumber") final String nomsNumber) {
 
         return offenderService.offenderIdOfNomsNumber(nomsNumber)
-                .map(offenderId -> new ResponseEntity<>(offenderService.getOffenderLatestRecall(offenderId).get(), HttpStatus.OK))
+                .map(offenderId -> new ResponseEntity<>(offenderService.getOffenderLatestRecall(offenderId), HttpStatus.OK))
                 .orElseThrow(() -> new NotFoundException("Offender not found"));
     }
 
@@ -212,7 +211,7 @@ public class OffendersResource {
             @PathVariable(value = "crn") final String crn) {
 
         return offenderService.offenderIdOfCrn(crn)
-                .map(offenderId -> new ResponseEntity<>(offenderService.getOffenderLatestRecall(offenderId).get(), HttpStatus.OK))
+                .map(offenderId -> new ResponseEntity<>(offenderService.getOffenderLatestRecall(offenderId), HttpStatus.OK))
                 .orElseThrow(() -> new NotFoundException("Offender not found"));
     }
 }

@@ -289,9 +289,6 @@ public class CustodyKeyDatesController {
                 .map(offenderId -> {
                     try {
                         return convictionService.addOrReplaceCustodyKeyDateByOffenderId(offenderId, typeCode, custodyKeyDate);
-                    } catch (SingleActiveCustodyConvictionNotFoundException e) {
-                        log.warn("No single active custodial conviction found for {}", offenderId);
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Can only add a key date where offender has one active custody related event. %d has %d", offenderId, e.getActiveCustodyConvictionCount()), e);
                     } catch (CustodyTypeCodeIsNotValidException e) {
                         log.warn("Key type code is not valid for {}", typeCode);
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -320,16 +317,8 @@ public class CustodyKeyDatesController {
     }
 
     private Function<Long, CustodyKeyDate> getCustodyKeyDateByOffenderId(String typeCode) {
-        return offenderId ->
-        {
-            try {
-                return convictionService.getCustodyKeyDateByOffenderId(offenderId, typeCode)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Key date not found"));
-            } catch (SingleActiveCustodyConvictionNotFoundException e) {
-                log.warn("No single active custodial conviction found for {}", offenderId);
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Can only get a key date where offender has one active custody related event. %d has %d", offenderId, e.getActiveCustodyConvictionCount()));
-            }
-        };
+        return offenderId -> convictionService.getCustodyKeyDateByOffenderId(offenderId, typeCode)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Key date not found"));
     }
 
     private CustodyKeyDate getCustodyKeyDateByConvictionId(Optional<Long> maybeConvictionId, String typeCode) {
@@ -346,14 +335,7 @@ public class CustodyKeyDatesController {
 
     private List<CustodyKeyDate> getCustodyKeyDates(Optional<Long> maybeOffenderId) {
         return maybeOffenderId
-                .map(offenderId -> {
-                    try {
-                        return convictionService.getCustodyKeyDatesByOffenderId(offenderId);
-                    } catch (SingleActiveCustodyConvictionNotFoundException e) {
-                        log.warn("No single active custodial conviction found for {}", offenderId);
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Can only get key dates where offender has one active custody related event. %d has %d", offenderId, e.getActiveCustodyConvictionCount()));
-                    }
-                })
+                .map(convictionService::getCustodyKeyDatesByOffenderId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Offender not found"));
     }
 
@@ -367,14 +349,7 @@ public class CustodyKeyDatesController {
         if (!maybeOffenderId.isPresent()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Offender not found");
         }
-        maybeOffenderId.ifPresent(offenderId -> {
-            try {
-                convictionService.deleteCustodyKeyDateByOffenderId(offenderId, typeCode);
-            } catch (SingleActiveCustodyConvictionNotFoundException e) {
-                log.warn("No single active custodial conviction found for {}", offenderId);
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Can only delete key date where offender has one active custody related event. %d has %d", offenderId, e.getActiveCustodyConvictionCount()));
-            }
-        });
+        maybeOffenderId.ifPresent(offenderId -> convictionService.deleteCustodyKeyDateByOffenderId(offenderId, typeCode));
     }
 
     private void deleteCustodyKeyDateByConvictionId(Optional<Long> maybeConvictionId, String typeCode) {
