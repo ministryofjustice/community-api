@@ -187,6 +187,7 @@ public class AuthenticationAPITest {
                 .then()
                 .statusCode(200);
     }
+
     @Test
     public void canLockUsersAccount() {
         given()
@@ -215,6 +216,7 @@ public class AuthenticationAPITest {
                 .statusCode(401);
 
     }
+
     @Test
     public void canUnlockUsersAccount() {
         given()
@@ -252,8 +254,8 @@ public class AuthenticationAPITest {
     }
 
     @Test
-    public void returnsUserDetails() {
-        final UserDetails userDetails = given()
+    public void usersDetails_success() {
+        final var userDetails = given()
                 .auth().oauth2(validOauthToken)
                 .contentType("text/plain")
                 .when()
@@ -268,6 +270,17 @@ public class AuthenticationAPITest {
         assertThat(userDetails.getSurname()).isEqualTo("Beaks");
         assertThat(userDetails.getEmail()).isEqualTo("bernard.beaks@justice.gov.uk");
         assertThat(userDetails.getRoles()).hasSize(1).contains(UserRole.builder().name("UWBT060").description("UPW Admin (national)").build());
+    }
+
+    @Test
+    public void usersDetails_returns404WhenUserNotFound() {
+        given()
+                .auth().oauth2(validOauthToken)
+                .contentType("text/plain")
+                .when()
+                .get("/users/john.smith/details")
+                .then()
+                .statusCode(404);
     }
 
 }

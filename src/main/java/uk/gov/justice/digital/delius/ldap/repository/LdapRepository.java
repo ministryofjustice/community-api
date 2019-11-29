@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.ldap.repository;
 
-import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.AttributesMapper;
@@ -13,8 +12,6 @@ import org.springframework.stereotype.Repository;
 import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusRole;
 import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusUser;
 
-import javax.naming.NamingEnumeration;
-import javax.naming.directory.Attribute;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -33,26 +30,25 @@ public class LdapRepository {
     private String ldapUserBase;
 
     @Autowired
-    public LdapRepository(LdapTemplate ldapTemplate) {
+    public LdapRepository(final LdapTemplate ldapTemplate) {
         this.ldapTemplate = ldapTemplate;
         contextMapper = getContextMapper();
     }
 
-    public Optional<String> getDeliusUid(String distinguishedName) {
+    public Optional<String> getDeliusUid(final String distinguishedName) {
         return Optional.ofNullable(ldapTemplate.lookup(distinguishedName,
                 (AttributesMapper<String>) attrs -> (String) attrs.get("uid").get()));
-
     }
 
     private ContextMapper<Map<String, String>> getContextMapper() {
 
         return ctx -> {
-            DirContextAdapter context = (DirContextAdapter) ctx;
+            final var context = (DirContextAdapter) ctx;
 
-            Map<String, String> attrsMap = new HashMap<>();
-            NamingEnumeration<? extends Attribute> all = context.getAttributes().getAll();
+            final Map<String, String> attrsMap = new HashMap<>();
+            final var all = context.getAttributes().getAll();
             while (all.hasMore()) {
-                Attribute attr = all.next();
+                final var attr = all.next();
                 attrsMap.put(attr.getID(), attr.get().toString());
             }
 
@@ -62,38 +58,37 @@ public class LdapRepository {
         };
     }
 
-    public List<Map<String, String>> searchByFieldAndValue(String field, String value) {
+    public List<Map<String, String>> searchByFieldAndValue(final String field, final String value) {
         return ldapTemplate.search(query().where(field).is(value), contextMapper);
     }
 
-    public boolean authenticateUser(String user, String password) {
+    public boolean authenticateUser(final String user, final String password) {
         return ldapTemplate.authenticate(ldapUserBase, "(uid=" + user + ")", password);
     }
 
-    public Optional<NDeliusUser> getDeliusUser(String username) {
-        val nDeliusUser = ldapTemplate.findOne(byUsername(username), NDeliusUser.class);
+    public Optional<NDeliusUser> getDeliusUser(final String username) {
+        final var nDeliusUser = ldapTemplate.find(byUsername(username), NDeliusUser.class).stream().findAny();
 
-        return Optional.ofNullable(nDeliusUser)
-                .map(user -> {
-                    val roles = ldapTemplate
-                            .search(
-                                    query()
-                                            .base(nDeliusUser.getDn())
-                                            .searchScope(SearchScope.ONELEVEL)
-                                            .filter("(|(objectclass=NDRole)(objectclass=NDRoleAssociation))"),
-                                    (AttributesMapper<NDeliusRole>) attributes ->
-                                                    NDeliusRole
-                                                            .builder()
-                                                            .cn(attributes.get("cn").get().toString())
-                                                            .description(attributes.get("description").get().toString())
-                                                            .build());
+        return nDeliusUser.map(user -> {
+            final var roles = ldapTemplate
+                    .search(
+                            query()
+                                    .base(user.getDn())
+                                    .searchScope(SearchScope.ONELEVEL)
+                                    .filter("(|(objectclass=NDRole)(objectclass=NDRoleAssociation))"),
+                            (AttributesMapper<NDeliusRole>) attributes ->
+                                    NDeliusRole
+                                            .builder()
+                                            .cn(attributes.get("cn").get().toString())
+                                            .description(attributes.get("description").get().toString())
+                                            .build());
 
-                    return nDeliusUser.toBuilder().roles(roles).build();
-                });
+            return user.toBuilder().roles(roles).build();
+        });
     }
 
-    public boolean changePassword(String username, String password) {
-        val context = ldapTemplate.searchForContext(byUsername(username));
+    public boolean changePassword(final String username, final String password) {
+        final var context = ldapTemplate.searchForContext(byUsername(username));
 
         context.setAttributeValue("userpassword", password);
 
@@ -101,8 +96,8 @@ public class LdapRepository {
         return true;
     }
 
-    public boolean lockAccount(String username) {
-        val context = ldapTemplate.searchForContext(byUsername(username));
+    public boolean lockAccount(final String username) {
+        final var context = ldapTemplate.searchForContext(byUsername(username));
 
         context.setAttributeValue("orclActiveEndDate", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss'Z'")));
 
@@ -110,8 +105,8 @@ public class LdapRepository {
         return true;
     }
 
-    public boolean unlockAccount(String username) {
-        val context = ldapTemplate.searchForContext(byUsername(username));
+    public boolean unlockAccount(final String username) {
+        final var context = ldapTemplate.searchForContext(byUsername(username));
 
         context.removeAttributeValue("orclActiveEndDate", context.getStringAttribute("orclActiveEndDate"));
 
@@ -119,17 +114,17 @@ public class LdapRepository {
         return true;
     }
 
-    private ContainerCriteria byUsername(String username) {
+    private ContainerCriteria byUsername(final String username) {
         return query().base(ldapUserBase).where("uid").is(username);
     }
 
-    public boolean isLocked(String username) {
-        val context = ldapTemplate.searchForContext(byUsername(username));
+    public boolean isLocked(final String username) {
+        final var context = ldapTemplate.searchForContext(byUsername(username));
         return context.getStringAttribute("orclActiveEndDate") != null;
     }
 
-    public String getEmail(String username) {
-        val nDeliusUser = ldapTemplate.find(byUsername(username), NDeliusUser.class).stream().findAny();
+    public String getEmail(final String username) {
+        final var nDeliusUser = ldapTemplate.find(byUsername(username), NDeliusUser.class).stream().findAny();
 
         return nDeliusUser.map(NDeliusUser::getMail).orElse(null);
     }
