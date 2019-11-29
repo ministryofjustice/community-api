@@ -212,7 +212,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
     }
 
     @Test
-    public void getLatestRecallAndReleaseForOffender_notSingleCustodyEvent_returnsDetailsIdInErrorMessage() {
+    public void getLatestRecallAndReleaseForOffender_notSingleCustodyEvent_returnsDetailsInErrorMessage() {
         org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfCrn(anyString()))
                 .willReturn(MAYBE_SOME_OFFENDER_ID);
         org.mockito.BDDMockito.given(mockOffenderService.getOffenderLatestRecall(SOME_OFFENDER_ID))
