@@ -18,6 +18,8 @@ import uk.gov.justice.digital.delius.service.ConvictionService.DuplicateConvicti
 import uk.gov.justice.digital.delius.transformers.*;
 
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -30,6 +32,8 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringRunner.class)
 @Import({ConvictionService.class, ConvictionTransformer.class, MainOffenceTransformer.class, AdditionalOffenceTransformer.class, CourtAppearanceTransformer.class, CourtReportTransformer.class, CourtTransformer.class, InstitutionTransformer.class, CustodyKeyDateTransformer.class})
 public class ConvictionServiceTest {
+
+    private static final Long ANY_OFFENDER_ID = 123L;
 
     @Autowired
     private ConvictionService convictionService;
@@ -189,12 +193,48 @@ public class ConvictionServiceTest {
         assertThat(maybeConviction).isNotPresent();
     }
 
+    @Test
+    public void getActiveCustodialEvent_singleActiveEvent_returnsEvent() throws ConvictionService.SingleActiveCustodyConvictionNotFoundException {
+        final var expectedEvent = anActiveEvent();
+        when(convictionRepository.findByOffenderId(ANY_OFFENDER_ID)).thenReturn(List.of(expectedEvent));
+
+        final var actualEvent = convictionService.getActiveCustodialEvent(ANY_OFFENDER_ID);
+
+        assertThat(actualEvent).isEqualTo(expectedEvent);
+    }
+
+    @Test(expected = ConvictionService.SingleActiveCustodyConvictionNotFoundException.class)
+    public void getActiveCustodialEvent_noEvents_throwsException() throws ConvictionService.SingleActiveCustodyConvictionNotFoundException {
+        when(convictionRepository.findByOffenderId(ANY_OFFENDER_ID)).thenReturn(Collections.emptyList());
+
+        convictionService.getActiveCustodialEvent(ANY_OFFENDER_ID);
+    }
+
+    @Test(expected = ConvictionService.SingleActiveCustodyConvictionNotFoundException.class)
+    public void getActiveCustodialEvent_multipleEvents_throwsException() throws ConvictionService.SingleActiveCustodyConvictionNotFoundException {
+        when(convictionRepository.findByOffenderId(ANY_OFFENDER_ID)).thenReturn(List.of(anActiveEvent(), anActiveEvent()));
+
+        convictionService.getActiveCustodialEvent(ANY_OFFENDER_ID);
+    }
 
     private Event aEvent() {
         return Event.builder()
                 .referralDate(LocalDate.now())
                 .additionalOffences(ImmutableList.of())
                 .activeFlag(1L)
+                .build();
+    }
+
+    private Event anActiveEvent() {
+        Disposal disposal = Disposal.builder()
+                .terminationDate(null)
+                .disposalType(DisposalType.builder().sentenceType("NC").build())
+                .custody(Custody.builder().build())
+                .build();
+        return Event.builder()
+                .softDeleted(0L)
+                .activeFlag(1L)
+                .disposal(disposal)
                 .build();
     }
 

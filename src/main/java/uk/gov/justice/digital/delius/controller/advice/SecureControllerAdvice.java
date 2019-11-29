@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
-import uk.gov.justice.digital.delius.controller.UnauthorisedException;
+import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
+import uk.gov.justice.digital.delius.controller.UnauthorisedException;
+import uk.gov.justice.digital.delius.service.ConvictionService;
 
 @RestControllerAdvice(basePackages = { "uk.gov.justice.digital.delius.controller.secure" } )
 @Slf4j
@@ -68,6 +70,24 @@ public class SecureControllerAdvice {
                         .status(HttpStatus.UNAUTHORIZED.value())
                         .developerMessage(e.getMessage())
                         .build());
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleException(final BadRequestException e) {
+        log.debug("Bad request (400) returned", e);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse
+                        .builder()
+                        .status(HttpStatus.BAD_REQUEST.value())
+                        .developerMessage(e.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(ConvictionService.SingleActiveCustodyConvictionNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleException(final ConvictionService.SingleActiveCustodyConvictionNotFoundException e) {
+        log.debug("Single active custody conviction expected", e);
+        return handleException(new BadRequestException(e.getMessage()));
     }
 
 }

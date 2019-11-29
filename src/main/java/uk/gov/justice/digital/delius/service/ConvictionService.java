@@ -32,16 +32,9 @@ public class ConvictionService {
     private final SpgNotificationService spgNotificationService;
     private final LookupSupplier lookupSupplier;
 
-    public static class SingleActiveCustodyConvictionNotFoundException extends Exception {
-        private final int activeCustodyConvictionCount;
-
-        SingleActiveCustodyConvictionNotFoundException(int activeCustodyConvictionCount) {
-            super(String.format("active custody conviction count was %d, should be 1", activeCustodyConvictionCount));
-            this.activeCustodyConvictionCount = activeCustodyConvictionCount;
-        }
-
-        public int getActiveCustodyConvictionCount() {
-            return activeCustodyConvictionCount;
+    public static class SingleActiveCustodyConvictionNotFoundException extends RuntimeException {
+        public SingleActiveCustodyConvictionNotFoundException(Long offenderId, int activeCustodyConvictionCount) {
+            super(String.format("Expected offender %d to have a single custody related event but found %d events", offenderId, activeCustodyConvictionCount));
         }
     }
 
@@ -124,7 +117,7 @@ public class ConvictionService {
     }
 
     @Transactional
-    public CustodyKeyDate addOrReplaceCustodyKeyDateByOffenderId(Long offenderId, String typeCode, CreateCustodyKeyDate custodyKeyDate) throws SingleActiveCustodyConvictionNotFoundException, CustodyTypeCodeIsNotValidException {
+    public CustodyKeyDate addOrReplaceCustodyKeyDateByOffenderId(Long offenderId, String typeCode, CreateCustodyKeyDate custodyKeyDate) throws CustodyTypeCodeIsNotValidException {
         return addOrReplaceCustodyKeyDate(getActiveCustodialEvent(offenderId), typeCode, custodyKeyDate);
     }
 
@@ -134,7 +127,7 @@ public class ConvictionService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<CustodyKeyDate> getCustodyKeyDateByOffenderId(Long offenderId, String typeCode) throws SingleActiveCustodyConvictionNotFoundException {
+    public Optional<CustodyKeyDate> getCustodyKeyDateByOffenderId(Long offenderId, String typeCode) {
         return getCustodyKeyDate(getActiveCustodialEvent(offenderId), typeCode);
     }
 
@@ -144,7 +137,7 @@ public class ConvictionService {
     }
 
     @Transactional(readOnly = true)
-    public List<CustodyKeyDate> getCustodyKeyDatesByOffenderId(Long offenderId) throws SingleActiveCustodyConvictionNotFoundException {
+    public List<CustodyKeyDate> getCustodyKeyDatesByOffenderId(Long offenderId) {
         return getCustodyKeyDates(getActiveCustodialEvent(offenderId));
     }
 
@@ -154,7 +147,7 @@ public class ConvictionService {
     }
 
     @Transactional
-    public void deleteCustodyKeyDateByOffenderId(Long offenderId, String typeCode) throws SingleActiveCustodyConvictionNotFoundException {
+    public void deleteCustodyKeyDateByOffenderId(Long offenderId, String typeCode) {
         deleteCustodyKeyDate(getActiveCustodialEvent(offenderId), typeCode);
     }
 
@@ -163,21 +156,22 @@ public class ConvictionService {
         deleteCustodyKeyDate(eventRepository.getOne(convictionId), typeCode);
     }
 
+    @Transactional(readOnly = true)
+    public Event getActiveCustodialEvent(Long offenderId) {
+        val activeCustodyConvictions = activeCustodyEvents(offenderId);
+
+        if (activeCustodyConvictions.size() != 1) {
+            throw new SingleActiveCustodyConvictionNotFoundException(offenderId, activeCustodyConvictions.size());
+        }
+        return activeCustodyConvictions.get(0);
+    }
+
     private String calculateNextEventNumber(Long offenderId) {
         return String.valueOf(eventRepository.findByOffenderId(offenderId).size() + 1);
     }
 
     private List<Event> activeEvents(List<Event> events) {
         return events.stream().filter(event -> event.getActiveFlag() == 1L).collect(toList());
-    }
-
-    private Event getActiveCustodialEvent(Long offenderId) throws SingleActiveCustodyConvictionNotFoundException {
-        val activeCustodyConvictions = activeCustodyEvents(offenderId);
-
-        if (activeCustodyConvictions.size() != 1) {
-            throw new SingleActiveCustodyConvictionNotFoundException(activeCustodyConvictions.size());
-        }
-        return activeCustodyConvictions.get(0);
     }
 
     private List<Event> activeCustodyEvents(Long offenderId) {

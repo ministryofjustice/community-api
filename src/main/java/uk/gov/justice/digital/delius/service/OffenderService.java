@@ -1,9 +1,10 @@
 package uk.gov.justice.digital.delius.service;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
@@ -19,18 +20,13 @@ import java.util.stream.Stream;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class OffenderService {
 
     private final OffenderRepository offenderRepository;
     private final OffenderTransformer offenderTransformer;
     private final OffenderManagerTransformer offenderManagerTransformer;
-
-    @Autowired
-    public OffenderService(OffenderRepository offenderRepository, OffenderTransformer offenderTransformer, OffenderManagerTransformer offenderManagerTransformer) {
-        this.offenderRepository = offenderRepository;
-        this.offenderTransformer = offenderTransformer;
-        this.offenderManagerTransformer = offenderManagerTransformer;
-    }
+    private final ConvictionService convictionService;
 
     @Transactional(readOnly = true)
     public Optional<OffenderDetail> getOffenderByOffenderId(Long offenderId) {
@@ -169,5 +165,10 @@ public class OffenderService {
 
     // TODO DT-337 Flesh out this stub
     @Transactional(readOnly = true)
-    public OffenderLatestRecall getOffenderLatestRecall(Long offenderId) { return null; }
+    public OffenderLatestRecall getOffenderLatestRecall(Long offenderId) {
+        Offender offender = offenderRepository.findByOffenderId(offenderId)
+                .orElseThrow(() -> new NotFoundException("Offender not found"));
+        uk.gov.justice.digital.delius.jpa.standard.entity.Event activeCustodialEvent = convictionService.getActiveCustodialEvent(offender.getOffenderId());
+        return null;
+    }
 }

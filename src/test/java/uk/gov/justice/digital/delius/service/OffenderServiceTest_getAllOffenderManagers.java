@@ -20,6 +20,8 @@ import static uk.gov.justice.digital.delius.util.EntityHelper.*;
 public class OffenderServiceTest_getAllOffenderManagers {
     @Mock
     private OffenderRepository offenderRepository;
+    @Mock
+    private ConvictionService convictionService;
 
     private OffenderService offenderService;
 
@@ -34,7 +36,9 @@ public class OffenderServiceTest_getAllOffenderManagers {
                                 new TeamTransformer()),
                         new TeamTransformer(),
                         new ProbationAreaTransformer(
-                                new InstitutionTransformer())));
+                                new InstitutionTransformer())),
+                convictionService
+        );
     }
 
     @Test

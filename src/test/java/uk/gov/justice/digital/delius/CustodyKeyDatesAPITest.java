@@ -578,6 +578,6 @@ public class CustodyKeyDatesAPITest {
                 .body()
                 .jsonPath();
 
-        assertThat(errorMessage.getString("message")).isEqualTo(String.format("Can only add a key date where offender has one active custody related event. %s has 0", OFFENDER_ID_NO_EVENTS));
+        assertThat(errorMessage.getString("developerMessage")).isEqualTo(String.format("Expected offender 31 to have a single custody related event but found 0 events", OFFENDER_ID_NO_EVENTS));
     }
 }
