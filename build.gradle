@@ -128,7 +128,7 @@ assemble.dependsOn copyAgent
 test {
     timeout = Duration.ofMinutes(15)
     testLogging {
-        events "started", "passed", "skipped", "failed", "standardError"
+        events "started", "passed", "skipped", "failed", "standardError", "standardOut"
         exceptionFormat "short"
         showStackTraces = true
         showExceptions = true
@@ -137,6 +137,4 @@ test {
     minHeapSize = "128m"
     maxHeapSize = "1024m"
 
-    include "**/ResponsibleOfficerAPITest*"
-    include "**/OffendersResource_AllocatePrisonOffenderManagerAPITest*"
 }

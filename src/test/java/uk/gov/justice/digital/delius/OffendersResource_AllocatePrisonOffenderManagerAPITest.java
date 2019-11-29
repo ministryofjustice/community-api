@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
+import org.flywaydb.core.Flyway;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +32,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev-seed")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@DirtiesContext
 @RunWith(SpringJUnit4ClassRunner.class)
 public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
 
@@ -39,6 +41,9 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private Flyway flyway;
 
     @Value("${test.token.good}")
     private String validOauthToken;
@@ -49,6 +54,12 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
         RestAssured.basePath = "/secure";
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
                 new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
+    }
+
+    @After
+    public void after() {
+        flyway.clean();
+        flyway.migrate();
     }
 
     @Test
