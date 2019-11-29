@@ -76,7 +76,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
                 .lastRelease(getDefaultOffenderRelease())
                 .build();
         org.mockito.BDDMockito.given(mockOffenderService.getOffenderLatestRecall(anyLong()))
-                .willReturn(expectedOffenderRecall);
+                .willReturn(Optional.of(expectedOffenderRecall));
 
         final var offenderLatestRecall = given()
                 .auth()
@@ -101,7 +101,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
                 .lastRelease(getOffenderReleaseNotEstablishment())
                 .build();
         org.mockito.BDDMockito.given(mockOffenderService.getOffenderLatestRecall(anyLong()))
-                .willReturn(expectedOffenderRecall);
+                .willReturn(Optional.of(expectedOffenderRecall));
 
         final var offenderLatestRecall = given()
                 .auth()
@@ -157,7 +157,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
                 .lastRelease(getDefaultOffenderRelease())
                 .build();
         org.mockito.BDDMockito.given(mockOffenderService.getOffenderLatestRecall(anyLong()))
-                .willReturn(expectedOffenderRecall);
+                .willReturn(Optional.of(expectedOffenderRecall));
 
         final var offenderLatestRecall = given()
                 .auth()
