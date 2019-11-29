@@ -38,8 +38,7 @@ public class AuthenticationController {
             })
     @PostMapping("/authenticate")
     public void authenticate(@NotNull @Valid @ApiParam(value = "Authentication Details", required = true) @RequestBody final AuthUser authUser) {
-        boolean authenticated = userService.authenticateUser(authUser.getUsername(), authUser.getPassword());
-        if(!authenticated) {
+        if (!userService.authenticateUser(authUser.getUsername(), authUser.getPassword())) {
             throw new UnauthorisedException(String.format("User with username %s", authUser.getUsername()));
         }
     }
@@ -72,8 +71,8 @@ public class AuthenticationController {
             })
     @PostMapping(value = "/users/{username}/password")
     public void changePassword(@ApiParam(name = "username", value = "LDAP username", example = "TESTUSERNPS", required = true) @NotNull final @PathVariable("username") String username,
-                                         @NotNull @Valid @ApiParam(value = "Password Credentials", required = true) @RequestBody final AuthPassword authPassword) {
-        if  (!userService.changePassword(username, authPassword.getPassword())) {
+                               @NotNull @Valid @ApiParam(value = "Password Credentials", required = true) @RequestBody final AuthPassword authPassword) {
+        if (!userService.changePassword(username, authPassword.getPassword())) {
             throw new NotFoundException(String.format("User with username %s", username));
         }
     }
@@ -90,7 +89,7 @@ public class AuthenticationController {
             })
     @PostMapping(value = "/users/{username}/lock")
     public void lockUsersAccount(@ApiParam(name = "username", value = "LDAP username", example = "TESTUSERNPS", required = true) @NotNull final @PathVariable("username") String username) {
-        if  (!userService.lockAccount(username)) {
+        if (!userService.lockAccount(username)) {
             throw new NotFoundException(String.format("User with username %s", username));
         }
     }
@@ -107,7 +106,7 @@ public class AuthenticationController {
             })
     @PostMapping(value = "/users/{username}/unlock")
     public void unlockUsersAccount(@ApiParam(name = "username", value = "LDAP username", example = "TESTUSERNPS", required = true) @NotNull final @PathVariable("username") String username) {
-        if  (!userService.unlockAccount(username)) {
+        if (!userService.unlockAccount(username)) {
             throw new NotFoundException(String.format("User with username %s", username));
         }
     }

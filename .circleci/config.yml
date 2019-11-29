@@ -1,83 +1,75 @@
-# Java Gradle CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-java/ for more details
-#
-version: 2
+defaults: &defaults
+  working_directory: ~/app
+  environment:
+    JAVA_TOOL_OPTIONS: -Xmx1024m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2
+
+version: 2.1
+
+orbs:
+  owasp: entur/owasp@0.0.6
+
+executors:
+  builder:
+    <<: *defaults
+    docker:
+      - image: circleci/openjdk:11-jdk
+
 jobs:
   build:
-    docker:
-      # specify the version you desire here
-      - image: circleci/openjdk:11-jdk-browsers
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
-    working_directory: ~/repo
-
-    environment:
-      # Customize the JVM maximum heap limit
-      JVM_OPTS: -Xmx512m
-      TERM: dumb
-      JAVA_TOOL_OPTIONS: -Xmx1024m -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2
-
+    executor: builder
     steps:
-      - run:
-          name: Generate Build version
-          command: |
-            echo "export BUILD_VERSION=$(date +%Y%m%d%H%M)-$CIRCLE_BUILD_NUM" >> $BASH_ENV
-
       - checkout
-
-    # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+            - gradle-{{ checksum "build.gradle" }}
+            - gradle-
+      - run: ./gradlew build
+      - run:
+          name: Record the Application Version
+          command: |
+            jar xvf build/libs/delius-offender-api-*.jar BOOT-INF/classes/META-INF/build-info.properties
+            APP_VERSION=$(grep 'build.version=' BOOT-INF/classes/META-INF/build-info.properties | awk -F= '{print $2}')
+            rm BOOT-INF/classes/META-INF/build-info.properties
 
-      - run: gradle dependencies
+            # make up a good version name
+            TAG=${APP_VERSION}.${CIRCLE_BRANCH}
+            if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
+              TAG=${APP_VERSION}
+            fi
+            echo $TAG > ./app_version.txt
 
       - save_cache:
           paths:
-            - ~/.m2
-          key: v1-dependencies-{{ checksum "build.gradle" }}
-
-      # run tests!
-      - run: gradle test
-
+            - ~/.gradle
+          key: gradle-{{ checksum "build.gradle" }}
       - store_test_results:
           path: build/test-results
-
       - store_artifacts:
           path: build/reports/tests
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build/libs
+            - build.gradle
+            - app_version.txt
 
-      # Assemble
-      - run: gradle assemble
+workflows:
+  version: 2
+  build-test-and-deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              ignore: /.*/
+  scheduled:
+    triggers:
+      - schedule:
+          cron: "0 7 * * 1-5"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - owasp/gradle_owasp_dependency_check:
+          executor: builder
 
-      - store_artifacts:
-          path: build/libs
-
-      - setup_remote_docker
-
-      - deploy:
-          name: Push to Docker Hub
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              ./scripts/publishDockerImage.sh deliusapi "${BUILD_VERSION}" "${CIRCLE_BUILD_NUM}" "${CIRCLE_BUILD_URL}" "${CIRCLE_SHA1}" "${DOCKER_EMAIL}" "${DOCKER_USERNAME}" "${DOCKER_PASSWORD}"
-            fi
-
-      - deploy:
-          name: Install elastic beanstalk CLI
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              ./scripts/installElasticBeanstalk.sh
-            fi
-
-      - deploy:
-          name: Deploy to Elastic Beanstalk Staging
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              ./scripts/deployElasticBeanstalk.sh "${BUILD_VERSION}"
-            fi

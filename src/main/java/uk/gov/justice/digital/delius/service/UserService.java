@@ -1,15 +1,10 @@
 package uk.gov.justice.digital.delius.service;
 
-import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.justice.digital.delius.data.api.AccessLimitation;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
-import uk.gov.justice.digital.delius.data.api.UserDetails;
-import uk.gov.justice.digital.delius.data.api.UserRole;
+import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.jpa.national.entity.ProbationArea;
-import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
 import uk.gov.justice.digital.delius.service.wrapper.UserRepositoryWrapper;
 
@@ -24,23 +19,21 @@ public class UserService {
     private final UserRepositoryWrapper userRepositoryWrapper;
     private final LdapRepository ldapRepository;
 
-
     @Autowired
-    public UserService(UserRepositoryWrapper userRepositoryWrapper, LdapRepository ldapRepository) {
+    public UserService(final UserRepositoryWrapper userRepositoryWrapper, final LdapRepository ldapRepository) {
         this.userRepositoryWrapper = userRepositoryWrapper;
         this.ldapRepository = ldapRepository;
     }
 
-
     @Transactional(readOnly = true)
-    public AccessLimitation accessLimitationOf(String subject, OffenderDetail offenderDetail) {
-        AccessLimitation.AccessLimitationBuilder accessLimitationBuilder = AccessLimitation.builder();
+    public AccessLimitation accessLimitationOf(final String subject, final OffenderDetail offenderDetail) {
+        final var accessLimitationBuilder = AccessLimitation.builder();
 
         if (offenderDetail.getCurrentExclusion() || offenderDetail.getCurrentRestriction()) {
-            User user = userRepositoryWrapper.getUser(subject);
+            final var user = userRepositoryWrapper.getUser(subject);
 
             if (offenderDetail.getCurrentExclusion()) {
-                val userExcluded = user.isExcludedFrom(offenderDetail.getOffenderId());
+                final var userExcluded = user.isExcludedFrom(offenderDetail.getOffenderId());
                 accessLimitationBuilder.userExcluded(userExcluded);
                 if (userExcluded) {
                     accessLimitationBuilder.exclusionMessage(offenderDetail.getExclusionMessage());
@@ -48,7 +41,7 @@ public class UserService {
             }
 
             if (offenderDetail.getCurrentRestriction()) {
-                val userRestricted = !user.isRestrictedUserFor(offenderDetail.getOffenderId());
+                final var userRestricted = !user.isRestrictedUserFor(offenderDetail.getOffenderId());
                 accessLimitationBuilder.userRestricted(userRestricted);
                 if (userRestricted) {
                     accessLimitationBuilder.restrictionMessage(offenderDetail.getRestrictionMessage());
@@ -59,13 +52,14 @@ public class UserService {
         return accessLimitationBuilder.build();
     }
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     @Transactional
-    public List<uk.gov.justice.digital.delius.data.api.User> getUsersList(String surname, Optional<String> forename) {
+    public List<User> getUsersList(final String surname, final Optional<String> forename) {
 
-        List<uk.gov.justice.digital.delius.data.api.User> users = forename.map(f -> userRepositoryWrapper.findBySurnameIgnoreCaseAndForenameIgnoreCase(surname, f))
+        return forename.map(f -> userRepositoryWrapper.findBySurnameIgnoreCaseAndForenameIgnoreCase(surname, f))
                 .orElse(userRepositoryWrapper.findBySurnameIgnoreCase(surname))
                 .stream()
-                .map(user -> uk.gov.justice.digital.delius.data.api.User.builder()
+                .map(user -> User.builder()
                         .userId(user.getUserId())
                         .distinguishedName(user.getDistinguishedName())
                         .endDate(user.getEndDate())
@@ -80,15 +74,14 @@ public class UserService {
                         .staffId(user.getStaffId())
                         .probationAreaCodes(probationAreaCodesOf(user.getProbationAreas()))
                         .build()).collect(toList());
-        return users;
     }
 
-    private List<String> probationAreaCodesOf(List<ProbationArea> probationAreas) {
+    private List<String> probationAreaCodesOf(final List<ProbationArea> probationAreas) {
         return Optional.ofNullable(probationAreas).map(
                 pas -> pas.stream().map(ProbationArea::getCode).collect(toList())).orElse(Collections.emptyList());
     }
 
-    public Optional<UserDetails> getUserDetails(String username) {
+    public Optional<UserDetails> getUserDetails(final String username) {
         return ldapRepository.getDeliusUser(username).map(user ->
                 UserDetails
                         .builder()
@@ -100,7 +93,7 @@ public class UserService {
                         .build());
     }
 
-    public boolean authenticateUser(String user, String password) {
+    public boolean authenticateUser(final String user, final String password) {
         if (ldapRepository.authenticateUser(user, password)) {
             // some LDAP implementations will not authenticate depending on how
             // record is locked
@@ -110,15 +103,15 @@ public class UserService {
         return false;
     }
 
-    public boolean changePassword(String username, String password) {
+    public boolean changePassword(final String username, final String password) {
         return ldapRepository.changePassword(username, password);
     }
 
-    public boolean lockAccount(String username) {
+    public boolean lockAccount(final String username) {
         return ldapRepository.lockAccount(username);
     }
 
-    public boolean unlockAccount(String username) {
+    public boolean unlockAccount(final String username) {
         return ldapRepository.unlockAccount(username);
     }
 }
