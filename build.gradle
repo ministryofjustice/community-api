@@ -23,6 +23,15 @@ configurations {
     agentDeps.transitive = false
 }
 
+dependencyCheck {
+  failBuildOnCVSS = 5
+  suppressionFiles = ['dependency-check-suppress-spring.xml']
+  format = 'ALL'
+  analyzers {
+    assemblyEnabled = false
+  }
+}
+
 project.sourceCompatibility = 11
 project.targetCompatibility = 11
 
@@ -74,13 +83,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-ldap'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.security.oauth:spring-security-oauth2:2.3.7.RELEASE'
-    implementation 'org.springframework.security:spring-security-jwt:1.0.11.RELEASE'
+    implementation 'org.springframework.security.oauth:spring-security-oauth2:2.4.0.RELEASE'
+    implementation 'org.springframework.security:spring-security-jwt:1.1.0.RELEASE'
 
     implementation 'org.hibernate:hibernate-java8:5.4.5.Final'
-    implementation 'com.unboundid:unboundid-ldapsdk:4.0.12'
+    implementation 'com.unboundid:unboundid-ldapsdk:4.0.13'
     implementation 'io.springfox:springfox-swagger2:2.9.2'
-    implementation 'org.flywaydb:flyway-core:5.2.4'
+    implementation 'org.flywaydb:flyway-core:6.1.0'
     implementation 'io.springfox:springfox-swagger-ui:2.9.2'
     implementation 'com.zaxxer:HikariCP:3.4.1'
     implementation 'commons-io:commons-io:2.6'
