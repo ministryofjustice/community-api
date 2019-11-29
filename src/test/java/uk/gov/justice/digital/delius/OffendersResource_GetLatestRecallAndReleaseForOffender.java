@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.service.ConvictionService;
+import uk.gov.justice.digital.delius.service.CustodyService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
 import java.time.LocalDate;
@@ -37,6 +38,9 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
     private static final Optional<Long> MAYBE_ANY_OFFENDER_ID = Optional.of(ANY_OFFENDER_ID);
     private static final Optional<Long> MAYBE_SOME_OFFENDER_ID = Optional.of(SOME_OFFENDER_ID);
     private static final Optional<Long> OFFENDER_ID_NOT_FOUND = Optional.empty();
+    private static final Long SOME_CUSTODIAL_EVENT_ID = 333L;
+    private static final uk.gov.justice.digital.delius.jpa.standard.entity.Event SOME_CUSTODIAL_EVENT
+            = uk.gov.justice.digital.delius.jpa.standard.entity.Event.builder().eventId(SOME_CUSTODIAL_EVENT_ID).build();
 
     @LocalServerPort
     int port;
@@ -237,6 +241,44 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
         assertThat(errorResponse.getDeveloperMessage()).contains(SOME_ACTIVE_CUSTODY_CONVICTION_COUNT.toString());
 
     }
+
+    @Test
+    public void getLatestRecallAndReleaseForOffender_custodyRecordNotFound_returnsBadRequest() {
+        org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfCrn(anyString()))
+                .willReturn(MAYBE_ANY_OFFENDER_ID);
+        org.mockito.BDDMockito.given(mockOffenderService.getOffenderLatestRecall(ANY_OFFENDER_ID))
+                .willThrow(CustodyService.CustodyNotFoundException.class);
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/crn/X320741/release")
+                .then()
+                .statusCode(400);
+    }
+
+    @Test
+    public void getLatestRecallAndReleaseForOffender_custodyRecordNotFound_returnsEventIdInErrorMessage() {
+        org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfCrn(anyString()))
+                .willReturn(MAYBE_ANY_OFFENDER_ID);
+        org.mockito.BDDMockito.given(mockOffenderService.getOffenderLatestRecall(ANY_OFFENDER_ID))
+                .willThrow(new CustodyService.CustodyNotFoundException(SOME_CUSTODIAL_EVENT));
+        ErrorResponse errorResponse = given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/crn/X320741/release")
+                .then()
+                .extract()
+                .body()
+                .as(ErrorResponse.class);
+
+        assertThat(errorResponse.getDeveloperMessage()).contains(SOME_CUSTODIAL_EVENT_ID.toString());
+    }
+
+
 
     private OffenderRecall getDefaultOffenderRecall() {
         return offenderRecallBuilder().build();

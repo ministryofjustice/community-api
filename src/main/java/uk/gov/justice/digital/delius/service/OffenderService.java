@@ -27,6 +27,7 @@ public class OffenderService {
     private final OffenderTransformer offenderTransformer;
     private final OffenderManagerTransformer offenderManagerTransformer;
     private final ConvictionService convictionService;
+    private final CustodyService custodyService;
 
     @Transactional(readOnly = true)
     public Optional<OffenderDetail> getOffenderByOffenderId(Long offenderId) {
@@ -169,6 +170,7 @@ public class OffenderService {
         Offender offender = offenderRepository.findByOffenderId(offenderId)
                 .orElseThrow(() -> new NotFoundException("Offender not found"));
         uk.gov.justice.digital.delius.jpa.standard.entity.Event activeCustodialEvent = convictionService.getActiveCustodialEvent(offender.getOffenderId());
+        uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody = custodyService.findCustodyFromCustodialEvent(activeCustodialEvent);
         return null;
     }
 }

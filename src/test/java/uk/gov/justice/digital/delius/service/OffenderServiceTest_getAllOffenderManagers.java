@@ -22,6 +22,8 @@ public class OffenderServiceTest_getAllOffenderManagers {
     private OffenderRepository offenderRepository;
     @Mock
     private ConvictionService convictionService;
+    @Mock
+    private CustodyService custodyService;
 
     private OffenderService offenderService;
 
@@ -37,7 +39,8 @@ public class OffenderServiceTest_getAllOffenderManagers {
                         new TeamTransformer(),
                         new ProbationAreaTransformer(
                                 new InstitutionTransformer())),
-                convictionService
+                convictionService,
+                custodyService
         );
     }
 
