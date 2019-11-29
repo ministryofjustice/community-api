@@ -99,6 +99,7 @@ dependencies {
     implementation 'com.microsoft.azure:applicationinsights-logging-logback:2.5.1'
     agentDeps 'com.microsoft.azure:applicationinsights-agent:2.5.1'
     implementation 'com.github.timpeeters:spring-boot-graceful-shutdown:2.1.1'
+    implementation 'com.google.guava:guava:28.1-jre'
 
     implementation configurations.agentDeps
 
