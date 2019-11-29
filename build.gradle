@@ -136,4 +136,7 @@ test {
     }
     minHeapSize = "128m"
     maxHeapSize = "1024m"
+
+    include "**/ResponsibleOfficerAPITest*"
+    include "**/OffendersResource_AllocatePrisonOffenderManagerAPITest*"
 }
