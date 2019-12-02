@@ -45,12 +45,6 @@ public class OffenderServiceTest_getOffenderLatestRecall {
                 mockOffenderRepository,
                 new OffenderTransformer(
                         new ContactTransformer()),
-                new OffenderManagerTransformer(
-                        new StaffTransformer(
-                                new TeamTransformer()),
-                        new TeamTransformer(),
-                        new ProbationAreaTransformer(
-                                new InstitutionTransformer())),
                 mockConvictionService
         );
     }

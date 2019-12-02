@@ -22,6 +22,7 @@ public class InstitutionTransformer {
                 .institutionId(inst.getInstitutionId())
                 .institutionName(inst.getInstitutionName())
                 .isPrivate(zeroOneToBoolean(inst.getPrivateFlag()))
+                .nomsPrisonInstitutionCode(inst.getNomisCdeCode())
                 .build()).orElse(null);
     }
 

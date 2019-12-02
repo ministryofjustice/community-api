@@ -14,31 +14,19 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "BOROUGH")
-public class Borough {
-    @Id
-    @SequenceGenerator(name = "BOROUGH_ID_GENERATOR", sequenceName = "BOROUGH_ID_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BOROUGH_ID_GENERATOR")
-    @Column(name = "BOROUGH_ID")
-    private Long boroughId;
+@Table(name = "STAFF_TEAM")
+@IdClass(StaffTeamPK.class)
+public class StaffTeam {
+    @Id@Column(name = "STAFF_ID")
+    private Long staffId;
 
-    @Column(name = "CODE")
-    private String code;
-
-    @Column(name = "DESCRIPTION")
-    private String description;
-
-    @Column(name = "SELECTABLE")
-    @Builder.Default
-    private String selectable = "Y";
-
-    @Column(name = "TRAINING_SESSION_ID")
-    private Long trainingSessionId;
+    @Id@Column(name = "TEAM_ID")
+    private Long teamId;
 
     @Column(name = "ROW_VERSION")
     @Builder.Default
@@ -60,7 +48,7 @@ public class Borough {
     @LastModifiedDate
     private LocalDateTime lastUpdatedDatetime;
 
-    @JoinColumn(name = "PROBATION_AREA_ID")
-    @OneToOne
-    private ProbationArea probationArea;
+    @Column(name = "TRAINING_SESSION_ID")
+    private Long trainingSessionId;
+
 }

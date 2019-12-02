@@ -1065,6 +1065,7 @@ create sequence PRISON_OFFENDER_MANAGER_ID_SEQ
 create sequence RESPONSIBLE_OFFICER_ID_SEQ
     maxvalue 900000000000000000
     cache 500
+    start with 2602412109
     ;
 
 create sequence PRECON_HISTORY_ID_SEQ

@@ -221,8 +221,8 @@ public class OffenderTransformer {
                 .team(teamOf(offenderManager))
                 .probationArea(probationAreaOf(offenderManager.getProbationArea()))
                 .active(zeroOneToBoolean(offenderManager.getActiveFlag()))
-                .fromDate(localDateOf(offenderManager.getAllocationDate()))
-                .toDate(localDateOf(offenderManager.getEndDate()))
+                .fromDate(offenderManager.getAllocationDate())
+                .toDate(offenderManager.getEndDate())
                 .allocationReason(Optional.ofNullable(offenderManager.getAllocationReason())
                         .map(this::allocationReasonOf)
                         .orElse(null))
@@ -235,10 +235,6 @@ public class OffenderTransformer {
                 .code(allocationReason.getCodeValue())
                 .description(allocationReason.getCodeDescription())
                 .build();
-    }
-
-    private LocalDate localDateOf(Timestamp timestamp) {
-        return Optional.ofNullable(timestamp).map(t -> t.toLocalDateTime().toLocalDate()).orElse(null);
     }
 
     private uk.gov.justice.digital.delius.data.api.ProbationArea probationAreaOf(ProbationArea probationArea) {
@@ -329,8 +325,8 @@ public class OffenderTransformer {
                             .isCurrentRo(isCurrentRo(om.getResponsibleOfficer()))
                             .isCurrentOm(isCurrentManager(om.getActiveFlag(), om.getEndDate()))
                             .isCurrentPom(false)
-                            .omStartDate(localDateOf(om.getAllocationDate()))
-                            .omEndDate(localDateOf(om.getEndDate()))
+                            .omStartDate(om.getAllocationDate())
+                            .omEndDate(om.getEndDate())
                             .build();
 
         return ro;
@@ -402,8 +398,8 @@ public class OffenderTransformer {
                 .isCurrentRo(isCurrentRo(om.getResponsibleOfficer()))
                 .isCurrentOm(isCurrentManager(om.getActiveFlag(), om.getEndDate()))
                 .isCurrentPom(false)
-                .omStartDate(localDateOf(om.getAllocationDate()))
-                .omEndDate(localDateOf(om.getEndDate()))
+                .omStartDate(om.getAllocationDate())
+                .omEndDate(om.getEndDate())
                 .build();
 
         return mo;
@@ -466,7 +462,7 @@ public class OffenderTransformer {
         return result;
     }
 
-    private boolean isCurrentManager(Long activeFlag, Timestamp endDate) {
+    private boolean isCurrentManager(Long activeFlag, LocalDate endDate) {
         boolean result = false;
         if (activeFlag.intValue() == 1 && endDate == null) {
             result = true;
