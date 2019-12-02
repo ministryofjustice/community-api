@@ -63,7 +63,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     }
 
     @Test
-    public void canAllocatedPrisonOffenderManagersByNOMSNumberAndStaffCode() throws JsonProcessingException {
+    public void canAllocatePrisonOffenderManagersByNOMSNumberAndStaffCode() throws JsonProcessingException {
         final var offenderManagersBeforeAllocation = given()
                 .auth()
                 .oauth2(validOauthToken)
@@ -146,7 +146,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     }
 
     @Test
-    public void canAllocatedPrisonOffenderManagersByNOMSNumberAndStaffName() throws JsonProcessingException {
+    public void canAllocatePrisonOffenderManagersByNOMSNumberAndStaffName() throws JsonProcessingException {
         final var offenderManagersBeforeAllocation = given()
                 .auth()
                 .oauth2(validOauthToken)

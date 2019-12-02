@@ -128,7 +128,7 @@ assemble.dependsOn copyAgent
 test {
     timeout = Duration.ofMinutes(15)
     testLogging {
-        events "started", "passed", "skipped", "failed", "standardError", "standardOut"
+        events "started", "passed", "skipped", "failed", "standardError"
         exceptionFormat "short"
         showStackTraces = true
         showExceptions = true
