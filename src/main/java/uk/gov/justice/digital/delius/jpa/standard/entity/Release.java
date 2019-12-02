@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @Builder(toBuilder = true)
@@ -36,5 +38,9 @@ public class Release {
 
     @OneToMany
     @JoinColumn(name = "RELEASE_ID")
-    private List<Recall> recall;
+    private List<Recall> recalls;
+
+    public Optional<Recall> findLatestRecall() {
+        return this.getRecalls() == null ? Optional.empty() : this.getRecalls().stream().max(Comparator.comparing(Recall::getRecallDate));
+    }
 }

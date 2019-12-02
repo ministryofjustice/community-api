@@ -5,9 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
@@ -28,5 +26,9 @@ public class Recall {
 
     @Column(name = "NOTES")
     private String notes;
+
+    @OneToOne
+    @JoinColumn(name = "RECALL_REASON_ID")
+    private StandardReference reason;
 
 }

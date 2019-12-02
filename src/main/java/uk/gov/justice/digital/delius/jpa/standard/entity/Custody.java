@@ -6,7 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @Builder(toBuilder = true)
@@ -44,4 +46,7 @@ public class Custody {
     @JoinColumn(name = "CUSTODY_ID")
     private List<Release> releases;
 
+    public Optional<Release> findLatestRelease() {
+        return this.getReleases().stream().max(Comparator.comparing(Release::getActualReleaseDate));
+    }
 }
