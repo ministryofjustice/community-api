@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
-import uk.gov.justice.digital.delius.controller.CustodyNotFoundException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.UnauthorisedException;
-import uk.gov.justice.digital.delius.service.ConvictionService;
 
 @RestControllerAdvice(basePackages = { "uk.gov.justice.digital.delius.controller.secure" } )
 @Slf4j
