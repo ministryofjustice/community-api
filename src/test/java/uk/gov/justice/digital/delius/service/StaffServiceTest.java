@@ -27,7 +27,6 @@ import uk.gov.justice.digital.delius.transformers.StaffTransformer;
 import uk.gov.justice.digital.delius.transformers.TeamTransformer;
 
 @RunWith(MockitoJUnitRunner.class)
-
 public class StaffServiceTest {
 
     private StaffService staffService;

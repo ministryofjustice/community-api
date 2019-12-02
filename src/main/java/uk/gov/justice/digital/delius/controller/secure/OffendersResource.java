@@ -232,7 +232,7 @@ public class OffendersResource {
                                                                  final @RequestBody CreatePrisonOffenderManager prisonOffenderManager) {
         log.info("Request to allocate a prison offender manager to {} at prison with code {}", nomsNumber, prisonOffenderManager.getNomsPrisonInstitutionCode());
         return Optional.ofNullable(prisonOffenderManager.getOfficerCode())
-                .map(staffCode -> offenderManagerService.allocatedPrisonOffenderManagerByStaffCode(nomsNumber, staffCode, prisonOffenderManager))
+                .map(staffCode -> offenderManagerService.allocatePrisonOffenderManagerByStaffCode(nomsNumber, staffCode, prisonOffenderManager))
                 .orElseGet(() -> offenderManagerService.allocatePrisonOffenderManagerByName(nomsNumber, prisonOffenderManager))
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with noms number %s not found", nomsNumber)));
     }

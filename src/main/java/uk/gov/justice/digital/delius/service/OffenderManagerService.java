@@ -63,7 +63,7 @@ public class OffenderManagerService {
     }
 
     @Transactional
-    public Optional<CommunityOrPrisonOffenderManager> allocatedPrisonOffenderManagerByStaffCode(String nomsNumber, String staffCode, CreatePrisonOffenderManager prisonOffenderManager) {
+    public Optional<CommunityOrPrisonOffenderManager> allocatePrisonOffenderManagerByStaffCode(String nomsNumber, String staffCode, CreatePrisonOffenderManager prisonOffenderManager) {
         final var maybeStaff = staffService.findByOfficerCode(staffCode);
         final var maybeOffender = offenderRepository.findByNomsNumber(nomsNumber);
         final var maybeProbationArea = probationAreaRepository.findByInstitutionByNomsCDECode(prisonOffenderManager.getNomsPrisonInstitutionCode());

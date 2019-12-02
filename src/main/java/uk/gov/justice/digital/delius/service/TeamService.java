@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 import uk.gov.justice.digital.delius.jpa.standard.repository.*;
 
@@ -18,12 +19,14 @@ public class TeamService {
     private final StaffTeamRepository staffTeamRepository;
 
 
+    @Transactional
     public Team findOrCreatePrisonOffenderManagerTeamInArea(ProbationArea probationArea) {
         final String teamCode = String.format("%s%s", probationArea.getCode(), POM_TEAM_SUFFIX);
         return teamRepository.findByCode(teamCode)
                 .orElseGet(() -> createPOMTeamInArea(teamCode, probationArea));
     }
 
+    @Transactional
     public void addStaffToTeam(Staff staff, Team team) {
         staffTeamRepository.save(
                 StaffTeam
@@ -97,7 +100,4 @@ public class TeamService {
                         .build()
         );
     }
-
-
-
 }

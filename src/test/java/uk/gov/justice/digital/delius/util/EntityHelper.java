@@ -489,6 +489,7 @@ public class EntityHelper {
             .forename("John")
             .surname("Smith")
             .teams(ImmutableList.of())
+            .probationArea(aProbationArea())
             .build();
     }
 
@@ -520,6 +521,13 @@ public class EntityHelper {
                 .build();
      }   
 
+     public static LocalDeliveryUnit aLocalDeliveryUnit() {
+        return LocalDeliveryUnit
+                .builder()
+                .code("LDU")
+                .description("LDU description")
+                .build();
+     }
      public static User aUser() {
         return User.builder()
                 .distinguishedName("XX")
