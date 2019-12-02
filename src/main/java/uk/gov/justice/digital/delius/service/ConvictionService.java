@@ -4,6 +4,7 @@ import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.CourtCase;
 import uk.gov.justice.digital.delius.data.api.CreateCustodyKeyDate;
@@ -32,7 +33,7 @@ public class ConvictionService {
     private final SpgNotificationService spgNotificationService;
     private final LookupSupplier lookupSupplier;
 
-    public static class SingleActiveCustodyConvictionNotFoundException extends RuntimeException {
+    public static class SingleActiveCustodyConvictionNotFoundException extends BadRequestException {
         public SingleActiveCustodyConvictionNotFoundException(Long offenderId, int activeCustodyConvictionCount) {
             super(String.format("Expected offender %d to have a single custody related event but found %d events", offenderId, activeCustodyConvictionCount));
         }

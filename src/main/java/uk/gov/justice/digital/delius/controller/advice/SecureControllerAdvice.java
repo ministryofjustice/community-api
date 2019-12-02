@@ -85,16 +85,4 @@ public class SecureControllerAdvice {
                         .build());
     }
 
-    @ExceptionHandler(ConvictionService.SingleActiveCustodyConvictionNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleException(final ConvictionService.SingleActiveCustodyConvictionNotFoundException e) {
-        log.debug("Single active custody conviction expected", e);
-        return handleException(new BadRequestException(e.getMessage(), e));
-    }
-
-    @ExceptionHandler(CustodyNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleException(final CustodyNotFoundException e) {
-        log.debug("Expected custody record but it could not be found");
-        return handleException(new BadRequestException(e.getMessage(), e));
-    }
-
 }
