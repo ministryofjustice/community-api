@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.justice.digital.delius.controller.CustodyNotFoundException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.*;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.OffenderManagerTransformer;
@@ -166,9 +168,14 @@ public class OffenderService {
     // TODO DT-337 Flesh out this stub
     @Transactional(readOnly = true)
     public OffenderLatestRecall getOffenderLatestRecall(Long offenderId) {
-        Offender offender = offenderRepository.findByOffenderId(offenderId)
+        offenderRepository.findByOffenderId(offenderId)
+                .map(offender -> convictionService.getActiveCustodialEvent(offender.getOffenderId()))
+                .map(activeCustodialEvent -> {
+                    return Optional.ofNullable(activeCustodialEvent.getDisposal())
+                            .map(Disposal::getCustody)
+                            .orElseThrow(() -> new CustodyNotFoundException(activeCustodialEvent));
+                })
                 .orElseThrow(() -> new NotFoundException("Offender not found"));
-        uk.gov.justice.digital.delius.jpa.standard.entity.Event activeCustodialEvent = convictionService.getActiveCustodialEvent(offender.getOffenderId());
         return null;
     }
 }

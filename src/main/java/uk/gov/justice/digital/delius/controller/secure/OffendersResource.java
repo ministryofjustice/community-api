@@ -183,7 +183,7 @@ public class OffendersResource {
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/release")
-    public ResponseEntity<OffenderLatestRecall> getLatestRecallAndReleaseForOffender(
+    public OffenderLatestRecall getLatestRecallAndReleaseForOffender(
             @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
             @NotNull
             @PathVariable(value = "nomsNumber") final String nomsNumber) {
@@ -203,7 +203,7 @@ public class OffendersResource {
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(path = "/offenders/crn/{crn}/release")
-    public ResponseEntity<OffenderLatestRecall> getLatestRecallAndReleaseForOffenderByCrn(
+    public OffenderLatestRecall getLatestRecallAndReleaseForOffenderByCrn(
             @ApiParam(name = "crn", value = "CRN for the offender", example = "X320741", required = true)
             @NotNull
             @PathVariable(value = "crn") final String crn) {
@@ -211,9 +211,9 @@ public class OffendersResource {
         return getOffenderLatestRecall(offenderService.offenderIdOfCrn(crn));
     }
 
-    private ResponseEntity<OffenderLatestRecall> getOffenderLatestRecall(Optional<Long> maybeOffenderId) {
+    private OffenderLatestRecall getOffenderLatestRecall(Optional<Long> maybeOffenderId) {
         return maybeOffenderId
-                .map(offenderId -> new ResponseEntity<>(offenderService.getOffenderLatestRecall(offenderId), HttpStatus.OK))
+                .map(offenderId -> offenderService.getOffenderLatestRecall(offenderId))
                 .orElseThrow(() -> new NotFoundException("Offender not found"));
     }
 }
