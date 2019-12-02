@@ -168,12 +168,14 @@ public class OffenderService {
     // TODO DT-337 Flesh out this stub
     @Transactional(readOnly = true)
     public OffenderLatestRecall getOffenderLatestRecall(Long offenderId) {
-        Offender offender = offenderRepository.findByOffenderId(offenderId).orElseThrow(() -> new NotFoundException("Offender not found"));
-        uk.gov.justice.digital.delius.jpa.standard.entity.Event activeCustodialEvent = convictionService.getActiveCustodialEvent(offender.getOffenderId());
-        uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody =
-                Optional.ofNullable(activeCustodialEvent.getDisposal())
-                        .map(Disposal::getCustody)
-                        .orElseThrow(() -> new CustodyNotFoundException(activeCustodialEvent));
+        offenderRepository.findByOffenderId(offenderId)
+                .map(offender -> convictionService.getActiveCustodialEvent(offender.getOffenderId()))
+                .map(activeCustodialEvent -> {
+                    return Optional.ofNullable(activeCustodialEvent.getDisposal())
+                            .map(Disposal::getCustody)
+                            .orElseThrow(() -> new CustodyNotFoundException(activeCustodialEvent));
+                })
+                .orElseThrow(() -> new NotFoundException("Offender not found"));
         return null;
     }
 }
