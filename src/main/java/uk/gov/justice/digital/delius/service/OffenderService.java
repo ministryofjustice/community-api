@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.justice.digital.delius.controller.CustodyNotFoundException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.*;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.OffenderManagerTransformer;
@@ -27,7 +29,6 @@ public class OffenderService {
     private final OffenderTransformer offenderTransformer;
     private final OffenderManagerTransformer offenderManagerTransformer;
     private final ConvictionService convictionService;
-    private final CustodyService custodyService;
 
     @Transactional(readOnly = true)
     public Optional<OffenderDetail> getOffenderByOffenderId(Long offenderId) {
@@ -167,10 +168,12 @@ public class OffenderService {
     // TODO DT-337 Flesh out this stub
     @Transactional(readOnly = true)
     public OffenderLatestRecall getOffenderLatestRecall(Long offenderId) {
-        Offender offender = offenderRepository.findByOffenderId(offenderId)
-                .orElseThrow(() -> new NotFoundException("Offender not found"));
+        Offender offender = offenderRepository.findByOffenderId(offenderId).orElseThrow(() -> new NotFoundException("Offender not found"));
         uk.gov.justice.digital.delius.jpa.standard.entity.Event activeCustodialEvent = convictionService.getActiveCustodialEvent(offender.getOffenderId());
-        uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody = custodyService.findCustodyFromCustodialEvent(activeCustodialEvent);
+        uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody =
+                Optional.ofNullable(activeCustodialEvent.getDisposal())
+                        .map(Disposal::getCustody)
+                        .orElseThrow(() -> new CustodyNotFoundException(activeCustodialEvent));
         return null;
     }
 }
