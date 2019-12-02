@@ -15,8 +15,6 @@ import java.time.LocalDate;
 public class OffenderRelease {
     @ApiModelProperty(value = "The date the release occurred", example = "2019-11-26")
     private LocalDate date;
-    @ApiModelProperty(value = "The reason for the release")
-    private KeyValue reason;
     @ApiModelProperty(value = "Some notes")
     private String notes;
     @ApiModelProperty(value = "The institution the offender was released from")

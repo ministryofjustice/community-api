@@ -40,4 +40,8 @@ public class Custody {
     @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval=true, mappedBy = "custody")
     private List<KeyDate> keyDates;
 
+    @OneToMany
+    @JoinColumn(name = "CUSTODY_ID")
+    private List<Release> releases;
+
 }
