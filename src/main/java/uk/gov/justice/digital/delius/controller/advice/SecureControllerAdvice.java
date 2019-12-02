@@ -11,8 +11,6 @@ import org.springframework.web.client.RestClientResponseException;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.UnauthorisedException;
-import uk.gov.justice.digital.delius.service.ConvictionService;
-import uk.gov.justice.digital.delius.service.CustodyService;
 
 @RestControllerAdvice(basePackages = { "uk.gov.justice.digital.delius.controller.secure" } )
 @Slf4j
@@ -83,18 +81,6 @@ public class SecureControllerAdvice {
                         .status(HttpStatus.BAD_REQUEST.value())
                         .developerMessage(e.getMessage())
                         .build());
-    }
-
-    @ExceptionHandler(ConvictionService.SingleActiveCustodyConvictionNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleException(final ConvictionService.SingleActiveCustodyConvictionNotFoundException e) {
-        log.debug("Single active custody conviction expected", e);
-        return handleException(new BadRequestException(e.getMessage(), e));
-    }
-
-    @ExceptionHandler(CustodyService.CustodyNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleException(final CustodyService.CustodyNotFoundException e) {
-        log.debug("Expected custody record but it could not be found");
-        return handleException(new BadRequestException(e.getMessage(), e));
     }
 
 }

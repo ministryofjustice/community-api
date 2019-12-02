@@ -13,10 +13,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.gov.justice.digital.delius.controller.CustodyNotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.service.ConvictionService;
-import uk.gov.justice.digital.delius.service.CustodyService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
 import java.time.LocalDate;
@@ -247,7 +247,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
         org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfCrn(anyString()))
                 .willReturn(MAYBE_ANY_OFFENDER_ID);
         org.mockito.BDDMockito.given(mockOffenderService.getOffenderLatestRecall(ANY_OFFENDER_ID))
-                .willThrow(CustodyService.CustodyNotFoundException.class);
+                .willThrow(CustodyNotFoundException.class);
         given()
                 .auth()
                 .oauth2(validOauthToken)
@@ -263,7 +263,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
         org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfCrn(anyString()))
                 .willReturn(MAYBE_ANY_OFFENDER_ID);
         org.mockito.BDDMockito.given(mockOffenderService.getOffenderLatestRecall(ANY_OFFENDER_ID))
-                .willThrow(new CustodyService.CustodyNotFoundException(SOME_CUSTODIAL_EVENT));
+                .willThrow(new CustodyNotFoundException(SOME_CUSTODIAL_EVENT));
         ErrorResponse errorResponse = given()
                 .auth()
                 .oauth2(validOauthToken)
