@@ -22,6 +22,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.function.Predicate.not;
+
 @Service
 @Slf4j
 @AllArgsConstructor
@@ -179,7 +181,9 @@ public class OffenderService {
 
     private Custody findCustodyOrThrow(Event activeCustodialEvent) {
         return Optional.ofNullable(activeCustodialEvent.getDisposal())
+                .filter(not(Disposal::isSoftDeleted))
                 .map(Disposal::getCustody)
+                .filter(not(Custody::isSoftDeleted))
                 .orElseThrow(() -> new CustodyNotFoundException(activeCustodialEvent));
     }
 

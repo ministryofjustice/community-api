@@ -142,10 +142,29 @@ public class OffenderServiceTest_getOffenderLatestRecall {
     }
 
     @Test(expected = CustodyNotFoundException.class)
+    public void getOffenderLatestRecall_disposalSoftDeleted_throwsException() {
+        given(mockConvictionService.getActiveCustodialEvent(ANY_OFFENDER_ID)).willReturn(mockCustodialEvent);
+        given(mockCustodialEvent.getDisposal()).willReturn(mockDisposal);
+        given(mockDisposal.isSoftDeleted()).willReturn(true);
+
+        offenderService.getOffenderLatestRecall(ANY_OFFENDER_ID);
+    }
+
+    @Test(expected = CustodyNotFoundException.class)
     public void getOffenderLatestRecall_disposalNoCustody_throwsException() {
         given(mockConvictionService.getActiveCustodialEvent(ANY_OFFENDER_ID)).willReturn(mockCustodialEvent);
         given(mockCustodialEvent.getDisposal()).willReturn(mockDisposal);
         given(mockDisposal.getCustody()).willReturn(null);
+
+        offenderService.getOffenderLatestRecall(ANY_OFFENDER_ID);
+    }
+
+    @Test(expected = CustodyNotFoundException.class)
+    public void getOffenderLatestRecall_custodySoftDeleted_throwsException() {
+        given(mockConvictionService.getActiveCustodialEvent(ANY_OFFENDER_ID)).willReturn(mockCustodialEvent);
+        given(mockCustodialEvent.getDisposal()).willReturn(mockDisposal);
+        given(mockDisposal.getCustody()).willReturn(mockCustody);
+        given(mockCustody.isSoftDeleted()).willReturn(true);
 
         offenderService.getOffenderLatestRecall(ANY_OFFENDER_ID);
     }
