@@ -100,4 +100,11 @@ public class Staff {
     @Column(name = "LAST_UPDATED_DATETIME")
     @LastModifiedDate
     private LocalDateTime lastUpdatedDatetime;
+
+    public boolean isUnallocated() {
+        return officerCode.endsWith("U") && !isInActive();
+    }
+    public boolean isInActive() {
+        return officerCode.endsWith("IAVU");
+    }
 }

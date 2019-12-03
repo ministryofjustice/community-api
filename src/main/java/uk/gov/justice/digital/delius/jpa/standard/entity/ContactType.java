@@ -33,4 +33,6 @@ public class ContactType {
     @Column(name = "ATTENDANCE_CONTACT")
     private String attendanceContact;
 
+    @Column(name = "CONTACT_ALERT_FLAG")
+    private String alertFlag;
 }

@@ -17,7 +17,10 @@ import java.util.Optional;
 public class ReferenceDataService {
 
     private static final String POM_ALLOCATION_REASON_DATASET = "POM ALLOCATION REASON";
-    private static final String AUTO_TRANSFER_ALLOCATION_REASON_CODE = "AUT";
+    public static final String POM_AUTO_TRANSFER_ALLOCATION_REASON_CODE = "AUT";
+    public static final String POM_INTERNAL_TRANSFER_ALLOCATION_REASON_CODE = "INA";
+    public static final String POM_EXTERNAL_TRANSFER_ALLOCATION_REASON_CODE = "EXT";
+
 
     private final ProbationAreaTransformer probationAreaTransformer;
     private final ProbationAreaRepository probationAreaRepository;
@@ -44,8 +47,19 @@ public class ReferenceDataService {
     }
 
     public  StandardReference pomAllocationAutoTransferReason() {
-        return standardReferenceRepository.findByCodeAndCodeSetName(AUTO_TRANSFER_ALLOCATION_REASON_CODE, POM_ALLOCATION_REASON_DATASET)
-                .orElseThrow(() -> new RuntimeException(String.format("No pom allocation reason found for %s", AUTO_TRANSFER_ALLOCATION_REASON_CODE)));
+        return pomAllocationTransferReason(POM_AUTO_TRANSFER_ALLOCATION_REASON_CODE);
     }
 
+    public StandardReference pomAllocationInternalTransferReason() {
+        return pomAllocationTransferReason(POM_INTERNAL_TRANSFER_ALLOCATION_REASON_CODE);
+    }
+
+    public StandardReference pomAllocationExternalTransferReason() {
+        return pomAllocationTransferReason(POM_EXTERNAL_TRANSFER_ALLOCATION_REASON_CODE);
+    }
+
+    private StandardReference pomAllocationTransferReason(String reason) {
+        return standardReferenceRepository.findByCodeAndCodeSetName(reason, POM_ALLOCATION_REASON_DATASET)
+                .orElseThrow(() -> new RuntimeException(String.format("No pom allocation reason found for %s", reason)));
+    }
 }
