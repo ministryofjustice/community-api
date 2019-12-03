@@ -76,39 +76,4 @@ public class AuthenticationController {
             throw new NotFoundException(String.format("User with username %s", username));
         }
     }
-
-    @ApiOperation(
-            value = "Lock a users (LDAP) account",
-            authorizations = {@Authorization("ROLE_AUTH_DELIUS_LDAP")})
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 200, message = "OK"),
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 404, message = "Not Found", response = ErrorResponse.class)
-            })
-    @PostMapping(value = "/users/{username}/lock")
-    public void lockUsersAccount(@ApiParam(name = "username", value = "LDAP username", example = "TESTUSERNPS", required = true) @NotNull final @PathVariable("username") String username) {
-        if (!userService.lockAccount(username)) {
-            throw new NotFoundException(String.format("User with username %s", username));
-        }
-    }
-
-    @ApiOperation(
-            value = "Unlock a users (LDAP) account by username",
-            authorizations = {@Authorization("ROLE_AUTH_DELIUS_LDAP")})
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 200, message = "OK"),
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 404, message = "Not Found", response = ErrorResponse.class)
-            })
-    @PostMapping(value = "/users/{username}/unlock")
-    public void unlockUsersAccount(@ApiParam(name = "username", value = "LDAP username", example = "TESTUSERNPS", required = true) @NotNull final @PathVariable("username") String username) {
-        if (!userService.unlockAccount(username)) {
-            throw new NotFoundException(String.format("User with username %s", username));
-        }
-    }
-
 }

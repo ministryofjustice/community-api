@@ -12,8 +12,6 @@ import org.springframework.stereotype.Repository;
 import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusRole;
 import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusUser;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,31 +94,8 @@ public class LdapRepository {
         return true;
     }
 
-    public boolean lockAccount(final String username) {
-        final var context = ldapTemplate.searchForContext(byUsername(username));
-
-        context.setAttributeValue("orclActiveEndDate", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddhhmmss'Z'")));
-
-        ldapTemplate.modifyAttributes(context);
-        return true;
-    }
-
-    public boolean unlockAccount(final String username) {
-        final var context = ldapTemplate.searchForContext(byUsername(username));
-
-        context.removeAttributeValue("orclActiveEndDate", context.getStringAttribute("orclActiveEndDate"));
-
-        ldapTemplate.modifyAttributes(context);
-        return true;
-    }
-
     private ContainerCriteria byUsername(final String username) {
         return query().base(ldapUserBase).where("uid").is(username);
-    }
-
-    public boolean isLocked(final String username) {
-        final var context = ldapTemplate.searchForContext(byUsername(username));
-        return context.getStringAttribute("orclActiveEndDate") != null;
     }
 
     public String getEmail(final String username) {
