@@ -9,7 +9,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Recall;
 public class RecallTransformer {
 
     public OffenderRecall offenderRecallOf(Recall recall) {
-        KeyValue reason = KeyValue.builder()
+        final var reason = KeyValue.builder()
                 .code(recall.getReason().getCodeValue())
                 .description(recall.getReason().getCodeDescription())
                 .build();

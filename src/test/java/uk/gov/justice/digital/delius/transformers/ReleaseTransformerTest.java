@@ -54,7 +54,7 @@ public class ReleaseTransformerTest {
     }
 
     @Test
-    public void offenderReleaseOf_institutionTransformerCalled() {
+    public void offenderReleaseOf_institutionTakenFromTransformer() {
         Release release = getDefaultRelease();
         given(mockInstitutionTransformer.institutionOf(SOME_R_INSTITUTION)).willReturn(SOME_INSTITUTION);
 

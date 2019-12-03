@@ -3,7 +3,6 @@ package uk.gov.justice.digital.delius.transformers;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
-import uk.gov.justice.digital.delius.data.api.OffenderRecall;
 import uk.gov.justice.digital.delius.data.api.OffenderRelease;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Release;
 
@@ -23,8 +22,8 @@ public class ReleaseTransformer {
     }
 
     public OffenderLatestRecall offenderLatestRecallOf(Release release) {
-        OffenderRelease offenderRelease = offenderReleaseOf(release);
-        OffenderRecall offenderRecall =
+        final var offenderRelease = offenderReleaseOf(release);
+        final var offenderRecall =
                 release.findLatestRecall()
                         .map(latestRecall -> recallTransformer.offenderRecallOf(latestRecall))
                         .orElse(null);
