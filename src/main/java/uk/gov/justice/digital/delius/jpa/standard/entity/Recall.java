@@ -19,7 +19,8 @@ public class Recall {
     private Long releaseId;
 
     @Column(name = "SOFT_DELETED")
-    private Long softDeleted;
+    @Builder.Default
+    private Long softDeleted = 0L;
 
     @Column(name = "RECALL_DATE")
     private LocalDateTime recallDate;

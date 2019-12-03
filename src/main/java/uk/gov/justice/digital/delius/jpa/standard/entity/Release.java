@@ -24,7 +24,8 @@ public class Release {
     private Long releaseId;
 
     @Column(name = "SOFT_DELETED")
-    private Long softDeleted;
+    @Builder.Default
+    private Long softDeleted = 0L;
 
     @Column(name = "ACTUAL_RELEASE_DATE")
     private LocalDateTime actualReleaseDate;
