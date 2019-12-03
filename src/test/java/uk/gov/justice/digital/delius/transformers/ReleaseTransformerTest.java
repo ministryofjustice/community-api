@@ -102,11 +102,15 @@ public class ReleaseTransformerTest {
     }
 
     private Recall getDefaultRecall(LocalDateTime dateTime) {
+        return getDefaultRecallBuilder(dateTime).build();
+    }
+
+    private Recall.RecallBuilder getDefaultRecallBuilder(LocalDateTime dateTime) {
         return Recall.builder()
                 .releaseId(SOME_RELEASE_ID)
                 .recallDate(dateTime)
                 .notes(SOME_NOTES)
                 .reason(SOME_REASON)
-                .build();
+                .softDeleted(0L);
     }
 }

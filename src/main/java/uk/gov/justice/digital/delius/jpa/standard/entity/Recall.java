@@ -31,4 +31,8 @@ public class Recall {
     @JoinColumn(name = "RECALL_REASON_ID")
     private StandardReference reason;
 
+    public boolean isSoftDeleted() {
+        return this.softDeleted != 0L;
+    }
+
 }

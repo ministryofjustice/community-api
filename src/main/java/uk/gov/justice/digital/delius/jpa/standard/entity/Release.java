@@ -11,6 +11,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.function.Predicate.not;
+
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
@@ -45,7 +47,10 @@ public class Release {
     private StandardReference releaseType;
 
     public Optional<Recall> findLatestRecall() {
-        return this.getRecalls() == null ? Optional.empty() : this.getRecalls().stream().max(Comparator.comparing(Recall::getRecallDate));
+        return this.getRecalls() == null ? Optional.empty() :
+                this.getRecalls().stream()
+                        .filter(not(Recall::isSoftDeleted))
+                        .max(Comparator.comparing(Recall::getRecallDate));
     }
 
     public boolean isSoftDeleted() {

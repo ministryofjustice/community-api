@@ -31,6 +31,14 @@ public class ReleaseTest {
     }
 
     @Test
+    public void findLatestRecall_singleRecallSoftDeleted_returnsEmpty() {
+        LocalDateTime now = LocalDateTime.now();
+        release.setRecalls(List.of(Recall.builder().recallDate(now).softDeleted(1L).build()));
+
+        assertThat(release.findLatestRecall()).isEmpty();
+    }
+
+    @Test
     public void findLatestRecall_multipleRecalls_returnsLatest() {
         LocalDateTime now = LocalDateTime.now();
         Recall recall1 = Recall.builder().recallDate(now.minusDays(2L)).build();
