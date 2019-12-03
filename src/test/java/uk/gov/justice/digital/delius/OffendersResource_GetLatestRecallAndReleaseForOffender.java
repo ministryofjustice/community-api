@@ -109,7 +109,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
         org.mockito.BDDMockito.given(mockOffenderService.offenderIdOfNomsNumber(anyString()))
                 .willReturn(MAYBE_ANY_OFFENDER_ID);
         final var expectedOffenderRecall = OffenderLatestRecall.builder()
-                .lastRecall(getOffenderRecallNotEstablishment())
+                .lastRecall(getDefaultOffenderRecall())
                 .lastRelease(getOffenderReleaseNotEstablishment())
                 .build();
         org.mockito.BDDMockito.given(mockOffenderService.getOffenderLatestRecall(anyLong()))
@@ -126,7 +126,6 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
                 .body()
                 .as(OffenderLatestRecall.class);
 
-        assertThat(offenderLatestRecall.getLastRecall().getInstitution().getEstablishmentType()).isNull();
         assertThat(offenderLatestRecall.getLastRelease().getInstitution().getEstablishmentType()).isNull();
     }
 
@@ -288,41 +287,22 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffender {
         return offenderReleaseBuilder().build();
     }
 
-    private OffenderRecall getOffenderRecallNotEstablishment() {
-        final var nonEstablishmentInstitution = recallInstitutionBuilder().isEstablishment(false).establishmentType(null).build();
-        return offenderRecallBuilder().institution(nonEstablishmentInstitution).build();
-    }
-
     private OffenderRelease getOffenderReleaseNotEstablishment() {
         final var nonEstablishmentInstitution = releaseInstitutionBuilder().isEstablishment(false).establishmentType(null).build();
         return offenderReleaseBuilder().institution(nonEstablishmentInstitution).build();
     }
 
     private OffenderRecall.OffenderRecallBuilder offenderRecallBuilder() {
-        Institution recallInstitution = recallInstitutionBuilder().build();
         return OffenderRecall.builder()
                 .date(LocalDate.of(2019, 11, 27))
                 .reason(KeyValue.builder().code("TEST_RECALL_REASON_CODE").description("Test recall reason description").build())
-                .notes("Test recall notes")
-                .institution(recallInstitution);
-    }
-
-    private Institution.InstitutionBuilder recallInstitutionBuilder() {
-        return Institution.builder()
-                .code("RECALL_INSTITUTION_CODE")
-                .description("Recall institution description")
-                .institutionId(1234L)
-                .institutionName("Recall institution")
-                .isEstablishment(true)
-                .isPrivate(true)
-                .establishmentType(KeyValue.builder().code("RECALL_ESTABLISHMENT_TYPE_CODE").description("Recall establishment type description").build());
+                .notes("Test recall notes");
     }
 
     private OffenderRelease.OffenderReleaseBuilder offenderReleaseBuilder() {
         Institution releaseInstitution = releaseInstitutionBuilder().build();
         return OffenderRelease.builder()
                 .date(LocalDate.of(2019, 11, 26))
-                .reason(KeyValue.builder().code("TEST_RELEASE_REASON_CODE").description("Test release reason description").build())
                 .notes("Test release notes")
                 .institution(releaseInstitution);
     }

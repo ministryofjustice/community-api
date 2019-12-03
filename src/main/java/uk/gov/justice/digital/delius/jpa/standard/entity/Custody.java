@@ -6,7 +6,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+
+import static java.util.function.Predicate.not;
 
 @Data
 @Builder(toBuilder = true)
@@ -40,4 +44,13 @@ public class Custody {
     @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval=true, mappedBy = "custody")
     private List<KeyDate> keyDates;
 
+    @OneToMany
+    @JoinColumn(name = "CUSTODY_ID")
+    private List<Release> releases;
+
+    public Optional<Release> findLatestRelease() {
+        return this.getReleases().stream()
+                .filter(not(Release::isSoftDeleted))
+                .max(Comparator.comparing(Release::getActualReleaseDate));
+    }
 }

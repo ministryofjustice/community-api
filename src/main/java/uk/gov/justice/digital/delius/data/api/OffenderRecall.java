@@ -19,6 +19,4 @@ public class OffenderRecall {
     private KeyValue reason;
     @ApiModelProperty(value = "Some notes")
     private String notes;
-    @ApiModelProperty(value = "The institution the offender was recalled to")
-    private Institution institution;
 }
