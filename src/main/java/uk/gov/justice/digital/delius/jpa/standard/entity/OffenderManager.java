@@ -4,7 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Optional;
 
 @EqualsAndHashCode(of = {"offenderManagerId", "offenderId" , "allocationDate"})
@@ -69,10 +69,10 @@ public class OffenderManager {
     private Long activeFlag;
 
     @Column(name = "ALLOCATION_DATE")
-    private Timestamp allocationDate;
+    private LocalDate allocationDate;
 
     @Column(name = "END_DATE")
-    private Timestamp endDate;
+    private LocalDate endDate;
 
     @OneToOne
     @JoinColumn(name = "ALLOCATION_REASON_ID")

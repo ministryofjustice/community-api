@@ -136,4 +136,5 @@ test {
     }
     minHeapSize = "128m"
     maxHeapSize = "1024m"
+
 }

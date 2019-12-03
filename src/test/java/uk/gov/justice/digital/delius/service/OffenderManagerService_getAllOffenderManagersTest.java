@@ -7,6 +7,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.PrisonOffenderManagerRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ResponsibleOfficerRepository;
 import uk.gov.justice.digital.delius.transformers.*;
 
 import java.util.List;
@@ -17,42 +20,54 @@ import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.util.EntityHelper.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class OffenderServiceTest_getAllOffenderManagers {
+public class OffenderManagerService_getAllOffenderManagersTest {
     @Mock
     private OffenderRepository offenderRepository;
     @Mock
-    private ConvictionService convictionService;
+    private ProbationAreaRepository probationAreaRepository;
+    @Mock
+    private PrisonOffenderManagerRepository prisonOffenderManagerRepository;
+    @Mock
+    private ResponsibleOfficerRepository responsibleOfficerRepository;
+    @Mock
+    private StaffService staffService;
+    @Mock
+    private TeamService teamService;
+    @Mock
+    private ReferenceDataService referenceDataService;
 
-    private OffenderService offenderService;
+    private OffenderManagerService offenderManagerService;
 
     @Before
     public void setup() {
-        offenderService = new OffenderService(
+        offenderManagerService = new OffenderManagerService(
                 offenderRepository,
-                new OffenderTransformer(
-                        new ContactTransformer()),
                 new OffenderManagerTransformer(
                         new StaffTransformer(
                                 new TeamTransformer()),
                         new TeamTransformer(),
                         new ProbationAreaTransformer(
                                 new InstitutionTransformer())),
-                convictionService
-        );
+                probationAreaRepository,
+                prisonOffenderManagerRepository,
+                responsibleOfficerRepository,
+                staffService,
+                teamService,
+                referenceDataService);
     }
 
     @Test
     public void willReturnEmptyWhenOffenderNotFound() {
         when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.empty());
 
-        assertThat(offenderService.getAllOffenderManagersForNomsNumber("G9542VP")).isNotPresent();
+        assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP")).isNotPresent();
     }
 
     @Test
     public void willReturnAListWhenOffenderFound() {
         when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.of(anOffender()));
 
-        assertThat(offenderService.getAllOffenderManagersForNomsNumber("G9542VP")).isPresent();
+        assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP")).isPresent();
     }
 
     @Test
@@ -62,7 +77,7 @@ public class OffenderServiceTest_getAllOffenderManagers {
                         List.of(),
                         List.of())));
 
-        assertThat(offenderService.getAllOffenderManagersForNomsNumber("G9542VP")).get().asList()
+        assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP")).get().asList()
                 .hasSize(0);
     }
 
@@ -73,7 +88,7 @@ public class OffenderServiceTest_getAllOffenderManagers {
                         List.of(anActiveOffenderManager()),
                         List.of())));
 
-        assertThat(offenderService.getAllOffenderManagersForNomsNumber("G9542VP")).get().asList()
+        assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP")).get().asList()
                 .hasSize(1);
     }
 
@@ -88,7 +103,7 @@ public class OffenderServiceTest_getAllOffenderManagers {
                         ),
                         List.of())));
 
-        assertThat(offenderService.getAllOffenderManagersForNomsNumber("G9542VP")).get().asList()
+        assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP")).get().asList()
                 .hasSize(1).allMatch(offenderManager -> ((CommunityOrPrisonOffenderManager)offenderManager).getStaffCode().equals("AA"));
     }
 
@@ -100,7 +115,7 @@ public class OffenderServiceTest_getAllOffenderManagers {
                         List.of(anActivePrisonOffenderManager())
                         )));
 
-        assertThat(offenderService.getAllOffenderManagersForNomsNumber("G9542VP")).get().asList()
+        assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP")).get().asList()
                 .hasSize(1);
     }
 
@@ -115,7 +130,7 @@ public class OffenderServiceTest_getAllOffenderManagers {
                                 anEndDatedActivePrisonOffenderManager("CC")
                         ))));
 
-        assertThat(offenderService.getAllOffenderManagersForNomsNumber("G9542VP")).get().asList()
+        assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP")).get().asList()
                 .hasSize(1).allMatch(offenderManager -> ((CommunityOrPrisonOffenderManager)offenderManager).getStaffCode().equals("AA"));
     }
 

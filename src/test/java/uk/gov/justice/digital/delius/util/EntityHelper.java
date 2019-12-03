@@ -1,16 +1,14 @@
 package uk.gov.justice.digital.delius.util;
 
+import com.google.common.collect.ImmutableList;
 import lombok.val;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import com.google.common.collect.ImmutableList;
 
 public class EntityHelper {
     public static InstitutionalReportDocument anInstitutionalReportDocument() {
@@ -491,6 +489,7 @@ public class EntityHelper {
             .forename("John")
             .surname("Smith")
             .teams(ImmutableList.of())
+            .probationArea(aProbationArea())
             .build();
     }
 
@@ -522,6 +521,13 @@ public class EntityHelper {
                 .build();
      }   
 
+     public static LocalDeliveryUnit aLocalDeliveryUnit() {
+        return LocalDeliveryUnit
+                .builder()
+                .code("LDU")
+                .description("LDU description")
+                .build();
+     }
      public static User aUser() {
         return User.builder()
                 .distinguishedName("XX")
@@ -543,20 +549,20 @@ public class EntityHelper {
         return anOffenderManager(aStaff(staffCode), aTeam())
                 .toBuilder()
                 .activeFlag(0L)
-                .endDate(Timestamp.from(Calendar.getInstance().toInstant()))
+                .endDate(LocalDate.now())
                 .build();
     }
     public static OffenderManager anEndDatedActiveOffenderManager(String staffCode) {
         return anOffenderManager(aStaff(staffCode), aTeam())
                 .toBuilder()
                 .activeFlag(1L)
-                .endDate(Timestamp.from(Calendar.getInstance().toInstant()))
+                .endDate(LocalDate.now())
                 .build();
     }
     public static OffenderManager anOffenderManager(Staff staff, Team team) {
         return OffenderManager.builder()
                 .activeFlag(1L)
-                .allocationDate(Timestamp.from(Calendar.getInstance().toInstant()))
+                .allocationDate(LocalDate.now())
                 .officer(Officer.builder().surname("Jones").build())
                 .probationArea(ProbationArea.builder().code("A").description("B").privateSector(1L).build())
                 .staff(staff)
@@ -580,21 +586,21 @@ public class EntityHelper {
         return aPrisonOffenderManager(aStaff(staffCode), aTeam())
                 .toBuilder()
                 .activeFlag(0L)
-                .endDate(Timestamp.from(Calendar.getInstance().toInstant()))
+                .endDate(LocalDate.now())
                 .build();
     }
     public static PrisonOffenderManager anEndDatedActivePrisonOffenderManager(String staffCode) {
         return aPrisonOffenderManager(aStaff(staffCode), aTeam())
                 .toBuilder()
                 .activeFlag(1L)
-                .endDate(Timestamp.from(Calendar.getInstance().toInstant()))
+                .endDate(LocalDate.now())
                 .build();
     }
 
     public static PrisonOffenderManager aPrisonOffenderManager(Staff staff, Team team) {
         return PrisonOffenderManager.builder()
                 .activeFlag(1L)
-                .allocationDate(Timestamp.from(Calendar.getInstance().toInstant()))
+                .allocationDate(LocalDate.now())
                 .probationArea(ProbationArea.builder().code("A").description("B").privateSector(1L).build())
                 .staff(staff)
                 .team(team)

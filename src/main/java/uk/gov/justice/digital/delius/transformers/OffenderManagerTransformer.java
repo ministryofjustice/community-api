@@ -43,6 +43,7 @@ public class OffenderManagerTransformer {
                         .map(probationAreaTransformer::probationAreaOf)
                         .orElse(null))
                 .isResponsibleOfficer(isResponsibleOfficer(offenderManager.getResponsibleOfficer()))
+                .fromDate(offenderManager.getAllocationDate())
                 .build();
     }
 
@@ -65,6 +66,7 @@ public class OffenderManagerTransformer {
                         .map(probationAreaTransformer::probationAreaOf)
                         .orElse(null))
                 .isResponsibleOfficer(isResponsibleOfficer(offenderManager.getResponsibleOfficer()))
+                .fromDate(offenderManager.getAllocationDate())
                 .build();
     }
 
