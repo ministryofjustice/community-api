@@ -17,12 +17,13 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
-import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
-import uk.gov.justice.digital.delius.data.api.Human;
-import uk.gov.justice.digital.delius.data.api.StaffDetails;
+import uk.gov.justice.digital.delius.data.api.*;
+import uk.gov.justice.digital.delius.jwt.Jwt;
+import uk.gov.justice.digital.delius.user.UserData;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
@@ -44,6 +45,10 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
 
     @Autowired
     private Flyway flyway;
+
+    @Autowired
+    private Jwt jwt;
+
 
     @Value("${test.token.good}")
     private String validOauthToken;
@@ -241,7 +246,43 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
         assertThat(communityOffenderManager(offenderManagers)).isPresent();
     }
 
-        public Optional<CommunityOrPrisonOffenderManager> prisonOffenderManager(CommunityOrPrisonOffenderManager[] offenderManagers) {
+    @Test
+    public void willAddAContactWhenAllocatingPrisonOffenderManager() throws JsonProcessingException {
+        final var justBeforeAllocation = LocalDateTime.now().minusHours(1);
+
+        final var newPrisonOffenderManager = given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .contentType("application/json")
+                .body(createPrisonOffenderManagerOf("BWIA010", "BWI"))
+                .when()
+                .put("/offenders/nomsNumber/G0560UO/prisonOffenderManager")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(CommunityOrPrisonOffenderManager.class);
+
+        assertThat(newPrisonOffenderManager.getStaffCode()).isEqualTo("BWIA010");
+
+        Contact[] contacts = given()
+                .when()
+                .header("Authorization", aValidToken())
+                .queryParam("from", justBeforeAllocation.toString())
+                .basePath("/api")
+                .get("/offenders/nomsNumber/G0560UO/contacts")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(Contact[].class);
+
+        assertThat(contacts).hasSize(1);
+        assertThat(contacts[0].getContactType().getDescription()).isEqualTo("Prison Offender Manager - Automatic Transfer");
+    }
+
+    public Optional<CommunityOrPrisonOffenderManager> prisonOffenderManager(CommunityOrPrisonOffenderManager[] offenderManagers) {
         return Stream.of(offenderManagers).filter(CommunityOrPrisonOffenderManager::getIsPrisonOffenderManager).findAny();
     }
 
@@ -327,6 +368,17 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
                 .officer(staff)
                 .nomsPrisonInstitutionCode(nomsPrisonInstitutionCode)
                 .build());
+    }
+
+
+    private String aValidToken() {
+        return aValidTokenFor(UUID.randomUUID().toString());
+    }
+
+    private String aValidTokenFor(String distinguishedName) {
+        return "Bearer " + jwt.buildToken(UserData.builder()
+                .distinguishedName(distinguishedName)
+                .uid("bobby.davro").build());
     }
 
 

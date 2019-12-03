@@ -30,12 +30,13 @@ public class OffenderManagerService {
     private final StaffService staffService;
     private final TeamService teamService;
     private final ReferenceDataService referenceDataService;
+    private final ContactService contactService;
 
 
 
 
     @Autowired
-    public OffenderManagerService(OffenderRepository offenderRepository, OffenderManagerTransformer offenderManagerTransformer, ProbationAreaRepository probationAreaRepository, PrisonOffenderManagerRepository prisonOffenderManagerRepository, ResponsibleOfficerRepository responsibleOfficerRepository, StaffService staffService, TeamService teamService, ReferenceDataService referenceDataService) {
+    public OffenderManagerService(OffenderRepository offenderRepository, OffenderManagerTransformer offenderManagerTransformer, ProbationAreaRepository probationAreaRepository, PrisonOffenderManagerRepository prisonOffenderManagerRepository, ResponsibleOfficerRepository responsibleOfficerRepository, StaffService staffService, TeamService teamService, ReferenceDataService referenceDataService, ContactService contactService) {
         this.offenderRepository = offenderRepository;
         this.offenderManagerTransformer = offenderManagerTransformer;
         this.probationAreaRepository = probationAreaRepository;
@@ -44,6 +45,7 @@ public class OffenderManagerService {
         this.staffService = staffService;
         this.teamService = teamService;
         this.referenceDataService = referenceDataService;
+        this.contactService = contactService;
     }
     @Transactional(readOnly = true)
     public Optional<List<CommunityOrPrisonOffenderManager>> getAllOffenderManagersForNomsNumber(String nomsNumber) {
@@ -107,13 +109,15 @@ public class OffenderManagerService {
                 .probationArea(probationArea)
                 .staff(staff)
                 .team(team)
-                .allocationReason(referenceDataService.pomAllocationAutoTransferReason())
+                .allocationReason(getAllocationReason(probationArea, findExistingPrisonOffenderManager(offender)))
                 .managedOffender(offender)
                 .offenderId(offender.getOffenderId())
                 .build());
 
         // deactivate existing POM
-        findExistingPrisonOffenderManager(offender).ifPresent(existingPOM -> {
+        findExistingPrisonOffenderManager(offender).ifPresentOrElse(existingPOM -> {
+            contactService.addContactForPOMAllocation(newPrisonOffenderManager, existingPOM);
+
             existingPOM.setEndDate(LocalDate.now());
             existingPOM.setActiveFlag(0L);
 
@@ -130,10 +134,22 @@ public class OffenderManagerService {
                                         .build()
                         );
                     });
-        });
+        }, () -> contactService.addContactForPOMAllocation(newPrisonOffenderManager));
 
 
         return offenderManagerTransformer.offenderManagerOf(newPrisonOffenderManager);
+    }
+
+    private StandardReference getAllocationReason(ProbationArea probationArea, Optional<PrisonOffenderManager> existingPrisonOffenderManager) {
+        return existingPrisonOffenderManager
+                .map(pom -> sameArea(probationArea, pom.getProbationArea())
+                        ? referenceDataService.pomAllocationInternalTransferReason()
+                        : referenceDataService.pomAllocationExternalTransferReason())
+                .orElseGet(referenceDataService::pomAllocationAutoTransferReason);
+    }
+
+    private boolean sameArea(ProbationArea newProbationArea, ProbationArea oldProbationArea) {
+        return newProbationArea.getCode().equals(oldProbationArea.getCode());
     }
 
     private Optional<PrisonOffenderManager> findExistingPrisonOffenderManager(Offender offender) {

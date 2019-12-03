@@ -601,6 +601,11 @@ public class EntityHelper {
         return PrisonOffenderManager.builder()
                 .activeFlag(1L)
                 .allocationDate(LocalDate.now())
+                .allocationReason(StandardReference
+                        .builder()
+                        .codeValue("AUT")
+                        .codeDescription("Automatic allocation")
+                        .build())
                 .probationArea(ProbationArea.builder().code("A").description("B").privateSector(1L).build())
                 .staff(staff)
                 .team(team)
@@ -648,6 +653,15 @@ public class EntityHelper {
                 .offenderId(1L)
                 .startDate(LocalDate.now())
                 .responsibleOfficerId(1L)
+                .build();
+    }
+
+    public static ContactType aContactType() {
+        return ContactType
+                .builder()
+                .code("EPOMEX")
+                .description("Prison Offender Manager - External Transfer")
+                .alertFlag("N")
                 .build();
     }
 }

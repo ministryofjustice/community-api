@@ -25,7 +25,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.util.EntityHelper.*;
@@ -46,6 +46,8 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
     private TeamService teamService;
     @Mock
     private ReferenceDataService referenceDataService;
+    @Mock
+    private ContactService contactService;
     @Captor
     private ArgumentCaptor<PrisonOffenderManager> prisonOffenderManagerArgumentCaptor;
     @Captor
@@ -68,11 +70,18 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                 responsibleOfficerRepository,
                 staffService,
                 teamService,
-                referenceDataService);
+                referenceDataService,
+                contactService);
 
         when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(anOffender()));
         when(staffService.findByOfficerCode(any())).thenReturn(Optional.of(aStaff()));
-        when(probationAreaRepository.findByInstitutionByNomsCDECode(any())).thenReturn(Optional.of(aProbationArea()));
+        when(probationAreaRepository.findByInstitutionByNomsCDECode(any())).thenAnswer(args -> {
+            var code = args.getArgument(0).toString();
+            return Optional.of(aPrisonProbationArea()
+                    .toBuilder()
+                    .code(code)
+                    .build());
+        });
         when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
         when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
 
@@ -211,11 +220,19 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
     }
 
     @Test
-    public void shouldSaveANewPrisonOffenderManagerWithAllocationReason() {
+    public void allocationReasonIsAutomaticTransferWhenExistingPOMIsNotPresent() {
         when(referenceDataService.pomAllocationAutoTransferReason()).thenReturn(StandardReference
                 .builder()
                 .codeValue("AUT")
                 .build());
+
+        when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
+                anOffender()
+                        .toBuilder()
+                        .prisonOffenderManagers(List.of())
+                        .build()
+        ));
+
 
         offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
                 "G9542VP",
@@ -229,6 +246,79 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
         verify(prisonOffenderManagerRepository).save(prisonOffenderManagerArgumentCaptor.capture());
         assertThat(prisonOffenderManagerArgumentCaptor.getValue().getAllocationReason().getCodeValue()).isEqualTo("AUT");
     }
+
+    @Test
+    public void allocationReasonIsInternalTransferWhenExistingAndNewPOMInSameArea() {
+        when(referenceDataService.pomAllocationInternalTransferReason()).thenReturn(StandardReference
+                .builder()
+                .codeValue("INA")
+                .build());
+
+
+        var existingPOM  = anActivePrisonOffenderManager()
+                .toBuilder()
+                .probationArea(aPrisonProbationArea()
+                        .toBuilder()
+                        .code("BWI")
+                        .build())
+                .build();
+
+        when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
+                anOffender()
+                        .toBuilder()
+                        .prisonOffenderManagers(List.of(existingPOM))
+                        .build()
+        ));
+
+        offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+                "G9542VP",
+                "N01A12345",
+                CreatePrisonOffenderManager
+                        .builder()
+                        .nomsPrisonInstitutionCode("BWI")
+                        .build());
+
+
+        verify(prisonOffenderManagerRepository).save(prisonOffenderManagerArgumentCaptor.capture());
+        assertThat(prisonOffenderManagerArgumentCaptor.getValue().getAllocationReason().getCodeValue()).isEqualTo("INA");
+    }
+
+    @Test
+    public void allocationReasonIsExternalTransferWhenExistingAndNewPOMDifferentSameArea() {
+        when(referenceDataService.pomAllocationExternalTransferReason()).thenReturn(StandardReference
+                .builder()
+                .codeValue("EXT")
+                .build());
+
+
+        var existingPOM  = anActivePrisonOffenderManager()
+                .toBuilder()
+                .probationArea(aPrisonProbationArea()
+                        .toBuilder()
+                        .code("BWI")
+                        .build())
+                .build();
+
+        when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
+                anOffender()
+                        .toBuilder()
+                        .prisonOffenderManagers(List.of(existingPOM))
+                        .build()
+        ));
+
+        offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+                "G9542VP",
+                "N01A12345",
+                CreatePrisonOffenderManager
+                        .builder()
+                        .nomsPrisonInstitutionCode("BRI")
+                        .build());
+
+
+        verify(prisonOffenderManagerRepository).save(prisonOffenderManagerArgumentCaptor.capture());
+        assertThat(prisonOffenderManagerArgumentCaptor.getValue().getAllocationReason().getCodeValue()).isEqualTo("EXT");
+    }
+
 
 
     @Test
@@ -322,5 +412,45 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
         assertThat(responsibleOfficerArgumentCaptor.getValue().getPrisonOffenderManagerId()).isEqualTo(99L);
     }
 
+    @Test
+    public void shouldAddAPOMAllocationContact() {
+        when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
+                anOffender()
+                        .toBuilder()
+                        .prisonOffenderManagers(List.of())
+                        .build()));
+
+        offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+                "G9542VP",
+                "N01A12345",
+                CreatePrisonOffenderManager
+                        .builder()
+                        .nomsPrisonInstitutionCode("N01")
+                        .build());
+
+
+        verify(contactService).addContactForPOMAllocation(isA(PrisonOffenderManager.class));
+    }
+
+    @Test
+    public void shouldAddAPOMAllocationContactNotingOldPOM() {
+        final var existingPOM = anActivePrisonOffenderManager();
+        when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
+                anOffender()
+                        .toBuilder()
+                        .prisonOffenderManagers(List.of(existingPOM))
+                        .build()));
+
+        offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+                "G9542VP",
+                "N01A12345",
+                CreatePrisonOffenderManager
+                        .builder()
+                        .nomsPrisonInstitutionCode("N01")
+                        .build());
+
+
+        verify(contactService).addContactForPOMAllocation(isA(PrisonOffenderManager.class), eq(existingPOM));
+    }
 
 }

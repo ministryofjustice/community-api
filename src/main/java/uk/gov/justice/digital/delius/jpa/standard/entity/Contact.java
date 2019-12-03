@@ -4,6 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -15,10 +20,13 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "CONTACT")
 public class Contact {
 
     @Id
+    @SequenceGenerator(name = "CONTACT_ID_GENERATOR", sequenceName = "CONTACT_ID_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CONTACT_ID_GENERATOR")
     @Column(name = "CONTACT_ID")
     private Long contactId;
 
@@ -61,16 +69,15 @@ public class Contact {
     private LocalTime contactEndTime;
 
     @Column(name = "SOFT_DELETED")
-    private Long softDeleted;
+    @Builder.Default
+    private Long softDeleted = 0L;
+
+    @Column(name = "TRUST_PROVIDER_FLAG")
+    @Builder.Default
+    private Long trustProviderFlag = 0L;
 
     @Column(name = "ALERT_ACTIVE")
     private String alertActive;
-
-    @Column(name = "CREATED_DATETIME")
-    private LocalDateTime createdDateTime;
-
-    @Column(name = "LAST_UPDATED_DATETIME")
-    private LocalDateTime lastUpdatedDateTime;
 
     @JoinColumn(name = "CONTACT_OUTCOME_TYPE_ID")
     @OneToOne
@@ -104,7 +111,17 @@ public class Contact {
     @OneToOne
     private ProbationArea probationArea;
 
-    @JoinColumn(name = "PARTITION_AREA_ID")
+    @Column(name = "PARTITION_AREA_ID")
+    @Builder.Default
+    private Long partitionAreaId = 0L;
+
+    @Column(name = "STAFF_EMPLOYEE_ID")
+    private Long staffEmployeeId;
+
+    @Column(name = "TRUST_PROVIDER_TEAM_ID")
+    private Long teamProviderId;
+
+    @JoinColumn(name = "PARTITION_AREA_ID", updatable = false, insertable = false)
     @OneToOne
     private PartitionArea partitionArea;
 
@@ -116,7 +133,12 @@ public class Contact {
     private Double hoursCredited;
 
     @Column(name = "VISOR_CONTACT")
-    private String visorContact;
+    @Builder.Default
+    private String visorContact = "N";
+
+    @Column(name = "VISOR_EXPORTED")
+    @Builder.Default
+    private String visorExported = "N";
 
     @Column(name = "ATTENDED")
     private String attended;
@@ -130,5 +152,24 @@ public class Contact {
     @Column(name = "UPLOAD_LINKED")
     private String uploadLinked;
 
+    @Column(name = "ROW_VERSION")
+    @Builder.Default
+    private Long rowVersion = 1L;
+
+    @Column(name = "CREATED_BY_USER_ID")
+    @CreatedBy
+    private Long createdByUserId;
+
+    @Column(name = "CREATED_DATETIME")
+    @CreatedDate
+    private LocalDateTime createdDateTime;
+
+    @Column(name = "LAST_UPDATED_USER_ID")
+    @LastModifiedBy
+    private Long lastUpdatedUserId;
+
+    @Column(name = "LAST_UPDATED_DATETIME")
+    @LastModifiedDate
+    private LocalDateTime lastUpdatedDateTime;
 
 }
