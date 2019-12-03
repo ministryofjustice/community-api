@@ -47,4 +47,12 @@ public class CustodyTest {
         assertThat(actualRelease.get().getActualReleaseDate()).isEqualTo(release2.getActualReleaseDate());
     }
 
+    @Test
+    public void findLatestRelease_softDeleted_isIgnored() {
+        Release release = Release.builder().softDeleted(1L).build();
+        custody.setReleases(List.of(release));
+
+        assertThat(custody.findLatestRelease()).isEmpty();
+    }
+
 }

@@ -10,6 +10,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.function.Predicate.not;
+
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
@@ -47,6 +49,8 @@ public class Custody {
     private List<Release> releases;
 
     public Optional<Release> findLatestRelease() {
-        return this.getReleases().stream().max(Comparator.comparing(Release::getActualReleaseDate));
+        return this.getReleases().stream()
+                .filter(not(Release::isSoftDeleted))
+                .max(Comparator.comparing(Release::getActualReleaseDate));
     }
 }

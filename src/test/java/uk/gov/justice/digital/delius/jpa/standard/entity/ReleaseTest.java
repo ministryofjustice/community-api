@@ -42,4 +42,18 @@ public class ReleaseTest {
         assertThat(actualRecall).isPresent();
         assertThat(actualRecall.get().getRecallDate()).isEqualTo(recall2.getRecallDate());
     }
+
+    @Test
+    public void isSoftDeleted_no_returnsFalse() {
+        final var release = Release.builder().softDeleted(0L).build();
+
+        assertThat(release.isSoftDeleted()).isFalse();
+    }
+
+    @Test
+    public void isSoftDeleted_yes_returnsTrue() {
+        final var release = Release.builder().softDeleted(1L).build();
+
+        assertThat(release.isSoftDeleted()).isTrue();
+    }
 }

@@ -47,4 +47,8 @@ public class Release {
     public Optional<Recall> findLatestRecall() {
         return this.getRecalls() == null ? Optional.empty() : this.getRecalls().stream().max(Comparator.comparing(Recall::getRecallDate));
     }
+
+    public boolean isSoftDeleted() {
+        return this.softDeleted != 0L;
+    }
 }
