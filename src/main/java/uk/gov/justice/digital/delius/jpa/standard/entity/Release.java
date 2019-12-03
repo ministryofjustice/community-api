@@ -40,6 +40,10 @@ public class Release {
     @JoinColumn(name = "RELEASE_ID")
     private List<Recall> recalls;
 
+    @OneToOne
+    @JoinColumn(name = "RELEASE_TYPE_ID")
+    private StandardReference releaseType;
+
     public Optional<Recall> findLatestRecall() {
         return this.getRecalls() == null ? Optional.empty() : this.getRecalls().stream().max(Comparator.comparing(Recall::getRecallDate));
     }

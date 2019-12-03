@@ -19,4 +19,6 @@ public class OffenderRelease {
     private String notes;
     @ApiModelProperty(value = "The institution the offender was released from")
     private Institution institution;
+    @ApiModelProperty(value = "The reason for the release")
+    private KeyValue reason;
 }

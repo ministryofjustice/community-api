@@ -34,6 +34,8 @@ public class ReleaseTransformerTest {
     private final String SOME_NOTES = "These are notes";
     private final StandardReference SOME_REASON = StandardReference.builder().codeValue("CODE_VALUE").codeDescription("Code description").build();
     private final OffenderRecall SOME_OFFENDER_RECALL = OffenderRecall.builder().date(SOME_DATE).build();
+    private final String SOME_RELEASE_TYPE_CODE = "The release type code";
+    private final String SOME_RELEASE_TYPE = "The release type";
 
     @Mock
     private InstitutionTransformer mockInstitutionTransformer;
@@ -51,6 +53,8 @@ public class ReleaseTransformerTest {
 
         assertThat(offenderRelease.getDate()).isEqualTo(SOME_DATE);
         assertThat(offenderRelease.getNotes()).isEqualTo(SOME_NOTES);
+        assertThat(offenderRelease.getReason().getCode()).isEqualTo(SOME_RELEASE_TYPE_CODE);
+        assertThat(offenderRelease.getReason().getDescription()).isEqualTo(SOME_RELEASE_TYPE);
     }
 
     @Test
@@ -93,7 +97,8 @@ public class ReleaseTransformerTest {
                 .releaseId(SOME_RELEASE_ID)
                 .actualReleaseDate(SOME_DATE_TIME)
                 .institution(SOME_R_INSTITUTION)
-                .notes(SOME_NOTES);
+                .notes(SOME_NOTES)
+                .releaseType(StandardReference.builder().codeValue(SOME_RELEASE_TYPE_CODE).codeDescription(SOME_RELEASE_TYPE).build());
     }
 
     private Recall getDefaultRecall(LocalDateTime dateTime) {
