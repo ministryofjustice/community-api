@@ -9,6 +9,8 @@ import org.springframework.ldap.odm.annotations.Id;
 import org.springframework.ldap.odm.annotations.Transient;
 
 import javax.naming.Name;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Data
@@ -23,7 +25,11 @@ public final class NDeliusUser {
     private String sn;
     private String mail;
     private String givenname;
-    private String orclActiveEndDate;
+    private String endDate;
     @Transient
     private List<NDeliusRole> roles;
+
+    public boolean isEnabled() {
+        return endDate == null || LocalDate.parse(endDate.substring(0, 8), DateTimeFormatter.ofPattern("yyyyMMdd")).isAfter(LocalDate.now());
+    }
 }
