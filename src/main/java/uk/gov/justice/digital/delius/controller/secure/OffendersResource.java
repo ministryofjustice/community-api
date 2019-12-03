@@ -216,7 +216,7 @@ public class OffendersResource {
 
     private OffenderLatestRecall getOffenderLatestRecall(Optional<Long> maybeOffenderId) {
         return maybeOffenderId
-                .map(offenderId -> offenderService.getOffenderLatestRecall(offenderId))
+                .map(offenderId -> offenderService.getOffenderLatestRecall(maybeOffenderId.get()))
                 .orElseThrow(() -> new NotFoundException("Offender not found"));
     }
 

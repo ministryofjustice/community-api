@@ -12,4 +12,6 @@ public class OffenderLatestRecall {
     private OffenderRecall lastRecall;
     @ApiModelProperty(value = "Last release")
     private OffenderRelease lastRelease;
+
+    public final static OffenderLatestRecall NO_RELEASE = OffenderLatestRecall.builder().lastRelease(null).lastRecall(null).build();
 }
