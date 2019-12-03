@@ -17,14 +17,16 @@ import java.util.List;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDetails {
-    @ApiModelProperty(value = "First name of the user", example = "John", required = true, position = 1)
+    @ApiModelProperty(value = "User ID of the user", example = "12345", required = true, position = 1)
+    private Long userId;
+    @ApiModelProperty(value = "First name of the user", example = "John", required = true, position = 2)
     private String firstName;
-    @ApiModelProperty(value = "Surname of the user", example = "Smith", required = true, position = 2)
+    @ApiModelProperty(value = "Surname of the user", example = "Smith", required = true, position = 3)
     private String surname;
-    @ApiModelProperty(value = "Email address of the user", example = "test@digital.justice.gov.uk", position = 3)
+    @ApiModelProperty(value = "Email address of the user", example = "test@digital.justice.gov.uk", position = 4)
     private String email;
-    @ApiModelProperty(value = "Account is locked if true", example = "false", required = true, position = 4)
-    private boolean locked;
-    @ApiModelProperty(value = "Roles For this User", position = 5, allowEmptyValue = true)
+    @ApiModelProperty(value = "Account is enabled if true", example = "false", required = true, position = 5)
+    private boolean enabled;
+    @ApiModelProperty(value = "Roles For this User", position = 6, allowEmptyValue = true)
     private List<UserRole> roles;
 }

@@ -82,6 +82,7 @@ public class UserService {
     }
 
     public Optional<UserDetails> getUserDetails(final String username) {
+        final var oracleUser = userRepositoryWrapper.getUser(username);
         return ldapRepository.getDeliusUser(username).map(user ->
                 UserDetails
                         .builder()
@@ -89,7 +90,8 @@ public class UserService {
                         .firstName(user.getGivenname())
                         .surname(user.getSn())
                         .email(user.getMail())
-                        .locked(user.getOrclActiveEndDate() != null) // TODO check date not the presence of the date
+                        .enabled(user.isEnabled())
+                        .userId(oracleUser.getUserId())
                         .build());
     }
 

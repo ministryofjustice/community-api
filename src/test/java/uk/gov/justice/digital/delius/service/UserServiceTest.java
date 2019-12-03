@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.justice.digital.delius.data.api.AccessLimitation;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.UserDetails;
+import uk.gov.justice.digital.delius.data.api.UserRole;
 import uk.gov.justice.digital.delius.jpa.national.entity.Exclusion;
 import uk.gov.justice.digital.delius.jpa.national.entity.Restriction;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
@@ -19,6 +19,7 @@ import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusRole;
 import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusUser;
 import uk.gov.justice.digital.delius.service.wrapper.UserRepositoryWrapper;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,7 +54,7 @@ public class UserServiceTest {
 
     @Test
     public void exclusionUnsetWhenNotExcludedForAnyone() {
-        final AccessLimitation accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(false)
@@ -66,7 +67,7 @@ public class UserServiceTest {
 
     @Test
     public void excludedMessageUnsetWhenNotExcludedForAnyone() {
-        final AccessLimitation accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(false)
@@ -107,7 +108,7 @@ public class UserServiceTest {
                         .offenderId(2L)
                         .build()))
                 .build());
-        final AccessLimitation  accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
                 .builder()
                 .currentExclusion(true)
                 .currentRestriction(false)
@@ -128,7 +129,7 @@ public class UserServiceTest {
                         .offenderId(1L)
                         .build()))
                 .build());
-        final AccessLimitation  accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
                 .builder()
                 .currentExclusion(true)
                 .currentRestriction(false)
@@ -149,7 +150,7 @@ public class UserServiceTest {
                         .offenderId(1L)
                         .build()))
                 .build());
-        final AccessLimitation  accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
                 .builder()
                 .currentExclusion(true)
                 .currentRestriction(false)
@@ -178,7 +179,7 @@ public class UserServiceTest {
 
     @Test
     public void restrictionUnsetWhenNotRestrictedToAnyone() {
-        final AccessLimitation accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(false)
@@ -191,7 +192,7 @@ public class UserServiceTest {
 
     @Test
     public void restrictedMessageUnsetWhenNotRestrictedToAnyone() {
-        final AccessLimitation accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(false)
@@ -232,7 +233,7 @@ public class UserServiceTest {
                         .offenderId(1L)
                         .build()))
                 .build());
-        final AccessLimitation  accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(true)
@@ -253,7 +254,7 @@ public class UserServiceTest {
                         .offenderId(2L)
                         .build()))
                 .build());
-        final AccessLimitation  accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(true)
@@ -274,7 +275,7 @@ public class UserServiceTest {
                         .offenderId(2L)
                         .build()))
                 .build());
-        final AccessLimitation  accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(true)
@@ -288,7 +289,7 @@ public class UserServiceTest {
 
     @Test
     public void userDetailsMappedFromLdapRepository() {
-        when(ldapRepository.getDeliusUser("john.bean")).thenReturn(
+        when(ldapRepository.getDeliusUser(anyString())).thenReturn(
                 Optional.of(NDeliusUser
                         .builder()
                         .givenname("John")
@@ -301,22 +302,26 @@ public class UserServiceTest {
                                         .description("The role one")
                                         .build()))
                         .build()));
+        when(userRepositoryWrapper.getUser(any())).thenReturn(User.builder().userId(12345L).build());
 
-        final Optional<UserDetails> userDetails = userService.getUserDetails("john.bean");
+        final var userDetails = userService.getUserDetails("john.bean");
 
-        assertThat(userDetails.orElseThrow(() -> new RuntimeException("user details missing")).getEmail()).isEqualTo("john.bean@justice.gov.uk");
-        assertThat(userDetails.orElseThrow(() -> new RuntimeException("user details missing")).getSurname()).isEqualTo("Bean");
-        assertThat(userDetails.orElseThrow(() -> new RuntimeException("user details missing")).getFirstName()).isEqualTo("John");
-        assertThat(userDetails.orElseThrow(() -> new RuntimeException("user details missing")).getRoles()).hasSize(1);
-        assertThat(userDetails.orElseThrow(() -> new RuntimeException("user details missing")).getRoles().get(0).getName()).isEqualTo("ROLE1");
-        assertThat(userDetails.orElseThrow(() -> new RuntimeException("user details missing")).getRoles().get(0).getDescription()).isEqualTo("The role one");
+        assertThat(userDetails).get().isEqualTo(
+                UserDetails.builder()
+                        .email("john.bean@justice.gov.uk")
+                        .surname("Bean")
+                        .firstName("John")
+                        .roles(List.of(UserRole.builder().name("ROLE1").description("The role one").build()))
+                        .enabled(true)
+                        .userId(12345L)
+                        .build());
     }
 
     @Test
     public void userDetailsMayBeAbsentFromLdapRepository() {
         when(ldapRepository.getDeliusUser("john.bean")).thenReturn(Optional.empty());
 
-        final Optional<UserDetails> userDetails = userService.getUserDetails("john.bean");
+        final var userDetails = userService.getUserDetails("john.bean");
 
         assertThat(userDetails.isPresent()).isFalse();
 
