@@ -9,7 +9,6 @@ import uk.gov.justice.digital.delius.jpa.oracle.annotations.NationalUserOverride
 import uk.gov.justice.digital.delius.service.NoSuchUserException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @Slf4j
@@ -18,25 +17,25 @@ public class UserRepositoryWrapper {
     private final UserRepository userRepository;
 
     @Autowired
-    public UserRepositoryWrapper(UserRepository userRepository) {
+    public UserRepositoryWrapper(final UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     @NationalUserOverride
-    public User getUser(String userDistinguishedName) {
+    public User getUser(final String userDistinguishedName) {
         log.info("Looking up user by distinguished name {}...", userDistinguishedName);
-        Optional<User> maybeUser = userRepository.findByDistinguishedNameIgnoreCase(userDistinguishedName);
+        final var maybeUser = userRepository.findByDistinguishedNameIgnoreCase(userDistinguishedName);
         log.info("... found {}: {}", userDistinguishedName, maybeUser.isPresent());
         return maybeUser.orElseThrow(() -> new NoSuchUserException("Can't resolve user: " + userDistinguishedName));
     }
 
     @NationalUserOverride
-    public List<User> findBySurnameIgnoreCaseAndForenameIgnoreCase(String surname, String forename) {
+    public List<User> findBySurnameIgnoreCaseAndForenameIgnoreCase(final String surname, final String forename) {
         return userRepository.findBySurnameIgnoreCaseAndForenameIgnoreCase(surname, forename);
     }
 
     @NationalUserOverride
-    public List<User> findBySurnameIgnoreCase(String surname) {
+    public List<User> findBySurnameIgnoreCase(final String surname) {
         return userRepository.findBySurnameIgnoreCase(surname);
     }
 

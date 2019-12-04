@@ -82,6 +82,7 @@ public class UserService {
     }
 
     public Optional<UserDetails> getUserDetails(final String username) {
+        final var oracleUser = userRepositoryWrapper.getUser(username);
         return ldapRepository.getDeliusUser(username).map(user ->
                 UserDetails
                         .builder()
@@ -89,29 +90,16 @@ public class UserService {
                         .firstName(user.getGivenname())
                         .surname(user.getSn())
                         .email(user.getMail())
-                        .locked(user.getOrclActiveEndDate() != null) // TODO check date not the presence of the date
+                        .enabled(user.isEnabled())
+                        .userId(oracleUser.getUserId())
                         .build());
     }
 
     public boolean authenticateUser(final String user, final String password) {
-        if (ldapRepository.authenticateUser(user, password)) {
-            // some LDAP implementations will not authenticate depending on how
-            // record is locked
-            // belt and braces for those who do not check the lock
-            return !ldapRepository.isLocked(user);
-        }
-        return false;
+        return ldapRepository.authenticateUser(user, password);
     }
 
     public boolean changePassword(final String username, final String password) {
         return ldapRepository.changePassword(username, password);
-    }
-
-    public boolean lockAccount(final String username) {
-        return ldapRepository.lockAccount(username);
-    }
-
-    public boolean unlockAccount(final String username) {
-        return ldapRepository.unlockAccount(username);
     }
 }
