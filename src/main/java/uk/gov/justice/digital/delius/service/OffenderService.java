@@ -11,16 +11,12 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
-import uk.gov.justice.digital.delius.transformers.OffenderManagerTransformer;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 import uk.gov.justice.digital.delius.transformers.ReleaseTransformer;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.function.Predicate.not;
 
@@ -31,7 +27,6 @@ public class OffenderService {
 
     private final OffenderRepository offenderRepository;
     private final OffenderTransformer offenderTransformer;
-    private final OffenderManagerTransformer offenderManagerTransformer;
     private final ConvictionService convictionService;
     private final ReleaseTransformer releaseTransformer;
 
@@ -145,29 +140,6 @@ public class OffenderService {
         return offenderRepository.findByNomsNumber(nomsNumber).map(
                 offender -> offenderTransformer.responsibleOfficersOf(offender, current));
 
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<List<CommunityOrPrisonOffenderManager>> getAllOffenderManagersForNomsNumber(String nomsNumber) {
-        return offenderRepository.findByNomsNumber(nomsNumber).map(
-                offender -> combine(
-                        offender.getOffenderManagers()
-                                .stream()
-                                .filter(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager::isActive)
-                                .map(offenderManagerTransformer::offenderManagerOf)
-                                .collect(Collectors.toList()),
-                        offender.getPrisonOffenderManagers()
-                                .stream()
-                                .filter(uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager::isActive)
-                                .map(offenderManagerTransformer::offenderManagerOf)
-                                .collect(Collectors.toList())
-                ) );
-    }
-
-     private static <T> List<T> combine(List<T> first, List<T> second) {
-        return Stream.of(first, second)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

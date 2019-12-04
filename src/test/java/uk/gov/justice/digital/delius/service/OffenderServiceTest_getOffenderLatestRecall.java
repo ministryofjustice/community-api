@@ -15,7 +15,9 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Release;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
-import uk.gov.justice.digital.delius.transformers.*;
+import uk.gov.justice.digital.delius.transformers.ContactTransformer;
+import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
+import uk.gov.justice.digital.delius.transformers.ReleaseTransformer;
 
 import java.util.Optional;
 
@@ -62,11 +64,6 @@ public class OffenderServiceTest_getOffenderLatestRecall {
                 mockOffenderRepository,
                 new OffenderTransformer(
                         new ContactTransformer()),
-                new OffenderManagerTransformer(
-                        new StaffTransformer(new TeamTransformer()),
-                        new TeamTransformer(),
-                        new ProbationAreaTransformer(new InstitutionTransformer())
-                ),
                 mockConvictionService,
                 mockReleaseTransformer
         );
