@@ -13,6 +13,12 @@ executors:
     <<: *defaults
     docker:
       - image: circleci/openjdk:11-jdk
+    working_directory: ~/app
+  deployer:
+    docker:
+      - image: circleci/python:3
+    working_directory: ~/app
+
 
 jobs:
   build:
@@ -52,6 +58,32 @@ jobs:
             - build/libs
             - build.gradle
             - app_version.txt
+  build_docker:
+    executor: deployer
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/app
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build container and publish to docker hub
+          command: |
+            APP_VERSION=$(cat ./app_version.txt)
+            docker build -f docker/Dockerfile.aws --rm=false . \
+               --tag "mojdigitalstudio/deliusapi:$APP_VERSION" \
+               --label "maintainer=info@digital.justice.gov.uk" \
+               --label "app.version=$APP_VERSION" \
+               --label "build.version=$APP_VERSION" \
+               --label "build.number=$CIRCLE_BUILD_NUM" \
+               --label "build.url=$CIRCLE_BUILD_URL" \
+               --label "build.gitref=$CIRCLE_SHA1"
+
+            # publish to docker hub as the tag
+            docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+            docker tag mojdigitalstudio/deliusapi:$APP_VERSION mojdigitalstudio/deliusapi:latest
+            docker push mojdigitalstudio/deliusapi:$APP_VERSION
+            docker push mojdigitalstudio/deliusapi:latest
 
 workflows:
   version: 2
@@ -61,6 +93,14 @@ workflows:
           filters:
             tags:
               ignore: /.*/
+      - build_docker:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
+
   scheduled:
     triggers:
       - schedule:
