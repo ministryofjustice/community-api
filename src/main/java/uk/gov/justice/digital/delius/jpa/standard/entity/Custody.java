@@ -53,4 +53,9 @@ public class Custody {
                 .filter(not(Release::isSoftDeleted))
                 .max(Comparator.comparing(Release::getActualReleaseDate));
     }
+
+    public boolean isSoftDeleted() {
+        return this.softDeleted != 0L;
+    }
+
 }
