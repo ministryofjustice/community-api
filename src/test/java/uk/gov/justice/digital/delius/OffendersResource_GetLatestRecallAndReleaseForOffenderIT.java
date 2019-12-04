@@ -43,7 +43,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffenderIT {
                 new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
     }
 
-    @Test // OK
+    @Test
     public void getLatestRecallAndReleaseForOffender_offenderFound_returnsOk() {
         given()
                 .auth()
