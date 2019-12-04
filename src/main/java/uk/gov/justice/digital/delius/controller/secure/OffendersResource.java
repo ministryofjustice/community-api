@@ -175,7 +175,7 @@ public class OffendersResource {
     }
 
     @ApiOperation(
-            value = "WARNING: This is a work in progress!  Returns the latest recall and release details for an offender", // TODO DT-337 remove warning when finished
+            value = "Returns the latest recall and release details for an offender",
             notes = "Accepts a NOMIS offender nomsNumber in the format A9999AA")
     @ApiResponses(
             value = {
@@ -195,7 +195,7 @@ public class OffendersResource {
     }
 
     @ApiOperation(
-            value = "WARNING: This is a work in progress! Returns the latest recall and release details for an offender", // TODO DT-337 remove warning when finished
+            value = "Returns the latest recall and release details for an offender",
             notes = "Accepts an offender CRN in the format A999999")
     @ApiResponses(
             value = {
@@ -216,7 +216,7 @@ public class OffendersResource {
 
     private OffenderLatestRecall getOffenderLatestRecall(Optional<Long> maybeOffenderId) {
         return maybeOffenderId
-                .map(offenderId -> offenderService.getOffenderLatestRecall(offenderId))
+                .map(offenderId -> offenderService.getOffenderLatestRecall(maybeOffenderId.get()))
                 .orElseThrow(() -> new NotFoundException("Offender not found"));
     }
 
