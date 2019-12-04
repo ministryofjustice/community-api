@@ -144,8 +144,8 @@ public class OffenderService {
 
     @Transactional(readOnly = true)
     public OffenderLatestRecall getOffenderLatestRecall(Long offenderId) {
-        Event actualCustodialEvent = convictionService.getActiveCustodialEvent(offenderId);
-        Custody custody = findCustodyOrThrow(actualCustodialEvent);
+        final var actualCustodialEvent = convictionService.getActiveCustodialEvent(offenderId);
+        final var custody = findCustodyOrThrow(actualCustodialEvent);
         return custody.findLatestRelease()
                 .map(releaseTransformer::offenderLatestRecallOf)
                 .orElse(OffenderLatestRecall.NO_RELEASE);
