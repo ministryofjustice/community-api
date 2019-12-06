@@ -126,13 +126,13 @@ public class OffenderManagerService {
                     .ifPresent(activeRo -> {
                         // deactivate old RO and add a new one
                         activeRo.setEndDate(LocalDate.now());
-                        responsibleOfficerRepository.save(
+                        newPrisonOffenderManager.setResponsibleOfficer(responsibleOfficerRepository.save(
                                 ResponsibleOfficer
                                         .builder()
                                         .offenderId(offender.getOffenderId())
                                         .prisonOffenderManagerId(newPrisonOffenderManager.getPrisonOffenderManagerId())
                                         .build()
-                        );
+                        ));
                     });
         }, () -> contactService.addContactForPOMAllocation(newPrisonOffenderManager));
 
