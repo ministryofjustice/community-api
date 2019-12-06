@@ -30,14 +30,14 @@ public class CreatePrisonOffenderManager {
      * This is tested in the API @see OffenderResources_AllocatePrisonOffenderManagerAPITest
      */
     public String validate() {
-        final var prisonCodeExists = !isNullOrEmpty(getNomsPrisonInstitutionCode());
+        final var prisonCodeMissing = isNullOrEmpty(getNomsPrisonInstitutionCode());
         final var officerCodeExists = !isNullOrEmpty(getOfficerCode());
         final var officerExists = !isNull(getOfficer());
-        final var officerForenamesExist = officerExists && !isNullOrEmpty(getOfficer().getForenames());
-        final var officerSurnamesExist = officerExists && !isNullOrEmpty(getOfficer().getSurname());
+        final var officerForenamesMissing = officerExists && isNullOrEmpty(getOfficer().getForenames());
+        final var officerSurnamesMissing = officerExists && isNullOrEmpty(getOfficer().getSurname());
 
         var expectedToContain = "";
-        if (!prisonCodeExists) {
+        if (prisonCodeMissing) {
             expectedToContain = "a NOMS prison institution code";
         }
         else if (!officerCodeExists && !officerExists) {
@@ -46,13 +46,13 @@ public class CreatePrisonOffenderManager {
         else if (officerCodeExists && officerExists) {
             expectedToContain = "either officer OR officer code";
         }
-        else if (officerExists && !officerForenamesExist && !officerSurnamesExist) {
+        else if (officerExists && officerForenamesMissing && officerSurnamesMissing) {
             expectedToContain = "both officer names";
         }
-        else if (officerExists && !officerForenamesExist) {
+        else if (officerExists && officerForenamesMissing) {
             expectedToContain = "an officer with forenames";
         }
-        else if (officerExists && !officerSurnamesExist) {
+        else if (officerExists && officerSurnamesMissing) {
             expectedToContain = "an officer with a surname";
         }
 
