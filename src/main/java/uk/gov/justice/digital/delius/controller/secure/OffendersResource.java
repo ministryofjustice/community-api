@@ -244,7 +244,7 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with noms number %s not found", nomsNumber)));
     }
 
-    class InvalidAllocatePOMRequestException extends BadRequestException {
+    public static class InvalidAllocatePOMRequestException extends BadRequestException {
         InvalidAllocatePOMRequestException(CreatePrisonOffenderManager createPrisonOffenderManager, String message) {
             super(message);
             log.info("Bad request: " + createPrisonOffenderManager);

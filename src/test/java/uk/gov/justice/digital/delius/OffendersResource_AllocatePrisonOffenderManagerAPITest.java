@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.justice.digital.delius.controller.InvalidRequestException;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
 import uk.gov.justice.digital.delius.controller.secure.OffendersResource;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
@@ -289,7 +290,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     }
 
     @Test
-    public void officerCodeDoesNotExist_returnsNotFound() throws JsonProcessingException {
+    public void requestWithOfficerCode_offenderManagerNotFoundOrCreated_returnsNotFound() throws JsonProcessingException {
         given(offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
                 SOME_OFFENDER_NOMS_NUMBER,
                 SOME_OFFICER_CODE,
@@ -304,6 +305,41 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
                 .statusCode(404);
+    }
+
+    @Test
+    public void requestWithOfficerName_offenderManagerNotFoundOrCreated_returnsNotFound() throws JsonProcessingException {
+        given(offenderManagerService.allocatePrisonOffenderManagerByName(
+                SOME_OFFENDER_NOMS_NUMBER,
+                createPrisonOffenderManagerOf(null, SOME_OFFICER_FORENAMES, SOME_OFFICER_SURNAME, SOME_PRISON_NOMS_CODE))
+        )
+                .willReturn(Optional.empty());
+
+        given()
+                .contentType(APPLICATION_JSON_VALUE)
+                .body(createPrisonOffenderManagerJsonOf(null, SOME_OFFICER_FORENAMES, SOME_OFFICER_SURNAME, SOME_PRISON_NOMS_CODE))
+                .when()
+                .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void staffNotInExpectedProbationArea_returnsBadRequest() throws JsonProcessingException {
+        given(offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+                SOME_OFFENDER_NOMS_NUMBER,
+                SOME_OFFICER_CODE,
+                createPrisonOffenderManagerOf(SOME_OFFICER_CODE, null, null, SOME_PRISON_NOMS_CODE))
+        )
+                .willThrow(InvalidRequestException.class);
+
+        given()
+                .contentType(APPLICATION_JSON_VALUE)
+                .body(createPrisonOffenderManagerJsonOf(SOME_OFFICER_CODE, null, null, SOME_PRISON_NOMS_CODE))
+                .when()
+                .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
+                .then()
+                .statusCode(400);
     }
 
     private CreatePrisonOffenderManager createPrisonOffenderManagerOf(String officerCode, String officerForenames, String officerSurname, String prisonCode) {
