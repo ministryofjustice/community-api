@@ -128,7 +128,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     public void requestWithEmptyOfficerCodeAndNames_mentionsMissingParametersInErrorMessage() throws JsonProcessingException {
         given()
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(createPrisonOffenderManagerJsonOf(null, null, null, SOME_PRISON_NOMS_CODE))
+                .body(createPrisonOffenderManagerJsonOf("", "", "", SOME_PRISON_NOMS_CODE))
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
@@ -161,7 +161,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     public void requestMissingOfficerNames_returnsBadRequest() throws JsonProcessingException {
         given()
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(createPrisonOffenderManagerJsonOfMissingBothNames())
+                .body(createPrisonOffenderManagerJsonMissingBothNames())
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
@@ -172,7 +172,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     public void requestMissingOfficerNames_mentionsMissingParametersInErrorMessage() throws JsonProcessingException {
         given()
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(createPrisonOffenderManagerJsonOfMissingBothNames())
+                .body(createPrisonOffenderManagerJsonMissingBothNames())
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
@@ -216,7 +216,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     public void requestMissingOfficerForenames_mentionsMissingParametersInErrorMessage() throws JsonProcessingException {
         given()
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(createPrisonOffenderManagerJsonOf(null, "", SOME_OFFICER_SURNAME, SOME_PRISON_NOMS_CODE))
+                .body(createPrisonOffenderManagerJsonOf(null, null, SOME_OFFICER_SURNAME, SOME_PRISON_NOMS_CODE))
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
@@ -238,7 +238,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     public void requestWithEmptyOfficerForenames_mentionsEmptyParametersInErrorMessage() throws JsonProcessingException {
         given()
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(createPrisonOffenderManagerJsonOf(null, null, SOME_OFFICER_SURNAME, SOME_PRISON_NOMS_CODE))
+                .body(createPrisonOffenderManagerJsonOf(null, "", SOME_OFFICER_SURNAME, SOME_PRISON_NOMS_CODE))
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
@@ -249,7 +249,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     public void requestMissingOfficerSurname_returnsBadRequest() throws JsonProcessingException {
         given()
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(createPrisonOffenderManagerJsonOf(null, SOME_OFFICER_FORENAMES, "", SOME_PRISON_NOMS_CODE))
+                .body(createPrisonOffenderManagerJsonOf(null, SOME_OFFICER_FORENAMES, null, SOME_PRISON_NOMS_CODE))
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
@@ -260,7 +260,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     public void requestMissingOfficerSurname_mentionsMissingParametersInErrorMessage() throws JsonProcessingException {
         given()
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(createPrisonOffenderManagerJsonOf(null, SOME_OFFICER_FORENAMES, "", SOME_PRISON_NOMS_CODE))
+                .body(createPrisonOffenderManagerJsonOf(null, SOME_OFFICER_FORENAMES, null, SOME_PRISON_NOMS_CODE))
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
@@ -271,7 +271,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     public void requestWithEmptyOfficerSurname_returnsBadRequest() throws JsonProcessingException {
         given()
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(createPrisonOffenderManagerJsonOf(null, SOME_OFFICER_FORENAMES, null, SOME_PRISON_NOMS_CODE))
+                .body(createPrisonOffenderManagerJsonOf(null, SOME_OFFICER_FORENAMES, "", SOME_PRISON_NOMS_CODE))
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
@@ -282,7 +282,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     public void requestWithEmptyOfficerSurname_mentionsEmptyParametersInErrorMessage() throws JsonProcessingException {
         given()
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(createPrisonOffenderManagerJsonOf(null, SOME_OFFICER_FORENAMES, null, SOME_PRISON_NOMS_CODE))
+                .body(createPrisonOffenderManagerJsonOf(null, SOME_OFFICER_FORENAMES, "", SOME_PRISON_NOMS_CODE))
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
@@ -359,7 +359,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
         return objectMapper.writeValueAsString(createPrisonOffenderManagerOf(officerCode, officerForenames, officerSurname, prisonCode));
     }
 
-    private String createPrisonOffenderManagerJsonOfMissingBothNames() throws JsonProcessingException {
+    private String createPrisonOffenderManagerJsonMissingBothNames() throws JsonProcessingException {
         return objectMapper.writeValueAsString(
                 CreatePrisonOffenderManager
                         .builder()
