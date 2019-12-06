@@ -153,7 +153,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
-                .body("developerMessage", containsString("either officer or officer code"));
+                .body("developerMessage", containsString("either officer OR officer code"));
     }
 
     @Test
