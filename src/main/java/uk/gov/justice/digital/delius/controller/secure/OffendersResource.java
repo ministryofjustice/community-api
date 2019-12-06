@@ -24,8 +24,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.util.Objects.isNull;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -234,51 +232,23 @@ public class OffendersResource {
     public CommunityOrPrisonOffenderManager allocatePrisonOffenderManagerByNomsNumber(final @PathVariable String nomsNumber,
                                                                  final @RequestBody CreatePrisonOffenderManager prisonOffenderManager) {
         log.info("Request to allocate a prison offender manager to {} at prison with code {}", nomsNumber, prisonOffenderManager.getNomsPrisonInstitutionCode());
-        validateCreatePrisonOffenderManager(prisonOffenderManager);
+
+        String errorMessage = prisonOffenderManager.validate();
+        if (!errorMessage.isBlank()) {
+            throw new InvalidAllocatePOMRequestException(prisonOffenderManager, errorMessage);
+        }
+
         return Optional.ofNullable(prisonOffenderManager.getOfficerCode())
                 .map(staffCode -> offenderManagerService.allocatePrisonOffenderManagerByStaffCode(nomsNumber, staffCode, prisonOffenderManager))
                 .orElseGet(() -> offenderManagerService.allocatePrisonOffenderManagerByName(nomsNumber, prisonOffenderManager))
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with noms number %s not found", nomsNumber)));
     }
 
-    private void validateCreatePrisonOffenderManager(CreatePrisonOffenderManager createPrisonOffenderManager) {
-        final var prisonCodeExists = !isNullOrEmpty(createPrisonOffenderManager.getNomsPrisonInstitutionCode());
-        final var officerCodeExists = !isNullOrEmpty(createPrisonOffenderManager.getOfficerCode());
-        final var officerExists = !isNull(createPrisonOffenderManager.getOfficer());
-        final var officerForenamesExist = officerExists && !isNullOrEmpty(createPrisonOffenderManager.getOfficer().getForenames());
-        final var officerSurnamesExist = officerExists && !isNullOrEmpty(createPrisonOffenderManager.getOfficer().getSurname());
-
-        var expectedToContain = "";
-        if (!prisonCodeExists) {
-            expectedToContain = "a NOMS prison institution code";
-        }
-        else if (!officerCodeExists && !officerExists) {
-            expectedToContain =  "either officer or officer code";
-        }
-        else if (officerCodeExists && officerExists) {
-            expectedToContain = "either officer OR officer code";
-        }
-        else if (officerExists && !officerForenamesExist && !officerSurnamesExist) {
-            expectedToContain = "both officer names";
-        }
-        else if (officerExists && !officerForenamesExist) {
-            expectedToContain = "an officer with forenames";
-        }
-        else if (officerExists && !officerSurnamesExist) {
-            expectedToContain = "an officer with a surname";
-        }
-
-        if (!expectedToContain.isBlank()) {
-            throw new InvalidAllocatePOMRequestException(createPrisonOffenderManager, "Expected createPrisonOffenderManager to contain " + expectedToContain);
-        }
-
-    }
-
     class InvalidAllocatePOMRequestException extends BadRequestException {
-         InvalidAllocatePOMRequestException(CreatePrisonOffenderManager createPrisonOffenderManager, String message) {
-             super(message);
-             log.info("Bad request: " + createPrisonOffenderManager);
-         }
+        InvalidAllocatePOMRequestException(CreatePrisonOffenderManager createPrisonOffenderManager, String message) {
+            super(message);
+            log.info("Bad request: " + createPrisonOffenderManager);
+        }
     }
 
 }

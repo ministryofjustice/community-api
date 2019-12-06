@@ -6,11 +6,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.Objects.isNull;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Slf4j
 @ApiModel(value = "Request body for assigning an offender manager to an offender. Must pass exactly one of office / officerCode (not both)")
 public class CreatePrisonOffenderManager {
     @ApiModelProperty(value = "Name of offender manager. If passed then must contain both forename(s) and surname", example = "officer: {\"forenames\": \"John\", \"surname\": \"Smith\" }")
@@ -19,4 +24,42 @@ public class CreatePrisonOffenderManager {
     private String officerCode;
     @ApiModelProperty(value = "Prison institution code in NOMIS", required = true, example = "MDI")
     private String nomsPrisonInstitutionCode;
+
+    /**
+     * This is tested in the API @see OffenderResources_AllocatePrisonOffenderManagerAPITest
+     */
+    public String validate() {
+        final var prisonCodeExists = !isNullOrEmpty(getNomsPrisonInstitutionCode());
+        final var officerCodeExists = !isNullOrEmpty(getOfficerCode());
+        final var officerExists = !isNull(getOfficer());
+        final var officerForenamesExist = officerExists && !isNullOrEmpty(getOfficer().getForenames());
+        final var officerSurnamesExist = officerExists && !isNullOrEmpty(getOfficer().getSurname());
+
+        var expectedToContain = "";
+        if (!prisonCodeExists) {
+            expectedToContain = "a NOMS prison institution code";
+        }
+        else if (!officerCodeExists && !officerExists) {
+            expectedToContain =  "either officer or officer code";
+        }
+        else if (officerCodeExists && officerExists) {
+            expectedToContain = "either officer OR officer code";
+        }
+        else if (officerExists && !officerForenamesExist && !officerSurnamesExist) {
+            expectedToContain = "both officer names";
+        }
+        else if (officerExists && !officerForenamesExist) {
+            expectedToContain = "an officer with forenames";
+        }
+        else if (officerExists && !officerSurnamesExist) {
+            expectedToContain = "an officer with a surname";
+        }
+
+        if (!expectedToContain.isBlank()) {
+            expectedToContain = "Expected createPrisonOffenderManager to contain " + expectedToContain;
+        }
+
+        return expectedToContain;
+    }
+
 }
