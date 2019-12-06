@@ -304,6 +304,48 @@ public class OffendersResource_AllocatePrisonOffenderManagerIT {
                 .statusCode(404);
     }
 
+    @Test
+    public void shouldRespondWith404WhenAllocatingPrisonOffenderManagersAndOffenderNotFound() throws JsonProcessingException {
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .contentType("application/json")
+                .body(createPrisonOffenderManagerOf("BWIA010"))
+                .when()
+                .put("/offenders/nomsNumber/DOESNOTEXIST/prisonOffenderManager")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void shouldRespondWith404WhenAllocatingPrisonOffenderManagersAndPrisonInstitutionNotFound() throws JsonProcessingException {
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .contentType("application/json")
+                .body(createPrisonOffenderManagerOf("BWIA010", "DOESNOTEXIST"))
+                .when()
+                .put("/offenders/nomsNumber/G9542VP/prisonOffenderManager")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void shouldRespondWith400WhenStaffMemberNotInThePrisonInstitutionProbationArea() throws JsonProcessingException {
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .contentType("application/json")
+                .body(createPrisonOffenderManagerOf("BWIA010", "WWI"))
+                .when()
+                .put("/offenders/nomsNumber/G9542VP/prisonOffenderManager")
+                .then()
+                .statusCode(400);
+    }
+
     private String createPrisonOffenderManagerOf(String staffCode) throws JsonProcessingException {
         return objectMapper.writeValueAsString(CreatePrisonOffenderManager
                 .builder()
