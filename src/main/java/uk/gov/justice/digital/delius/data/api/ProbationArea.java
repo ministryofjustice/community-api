@@ -17,7 +17,7 @@ public class ProbationArea {
     private Long probationAreaId;
     @ApiModelProperty(value = "area code", example = "N01")
     private String code;
-    @ApiModelProperty(value = "area code", example = "N01")
+    @ApiModelProperty(value = "description", example = "NPS North West")
     private String description;
     @ApiModelProperty(value = "True if NPS else CRC", example = "true")
     private Boolean nps;
