@@ -83,6 +83,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                     .build());
         });
         when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
+        when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
         when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
 
     }
@@ -399,7 +400,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
             return newPOM;
         });
 
-        offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+        var newPrisonOffenderManager = offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
                 "G9542VP",
                 "N01A12345",
                 CreatePrisonOffenderManager
@@ -410,6 +411,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
 
         verify(responsibleOfficerRepository).save(responsibleOfficerArgumentCaptor.capture());
         assertThat(responsibleOfficerArgumentCaptor.getValue().getPrisonOffenderManagerId()).isEqualTo(99L);
+        assertThat(newPrisonOffenderManager.orElseThrow().getIsResponsibleOfficer()).isTrue();
     }
 
     @Test
