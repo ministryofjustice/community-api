@@ -15,8 +15,11 @@ import java.util.List;
 public class ProbationArea {
     @ApiModelProperty(required = true)
     private Long probationAreaId;
+    @ApiModelProperty(value = "area code", example = "N01")
     private String code;
+    @ApiModelProperty(value = "area code", example = "N01")
     private String description;
+    @ApiModelProperty(value = "True if NPS else CRC", example = "true")
     private Boolean nps;
     private KeyValue organisation;
     private Institution institution;
