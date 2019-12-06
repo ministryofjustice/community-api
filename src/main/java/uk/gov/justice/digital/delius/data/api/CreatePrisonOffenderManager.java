@@ -44,7 +44,7 @@ public class CreatePrisonOffenderManager {
             expectedToContain =  "either officer or officer code";
         }
         else if (officerCodeExists && officerExists) {
-            expectedToContain = "either officer OR officer code";
+            expectedToContain = "either officer OR officer code, not both";
         }
         else if (officerExists && officerForenamesMissing && officerSurnamesMissing) {
             expectedToContain = "both officer names";
