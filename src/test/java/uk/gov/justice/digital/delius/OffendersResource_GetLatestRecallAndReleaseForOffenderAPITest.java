@@ -21,7 +21,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-public class OffendersResource_GetLatestRecallAndReleaseForOffenderApiTest {
+public class OffendersResource_GetLatestRecallAndReleaseForOffenderAPITest {
 
     private static final Long SOME_OFFENDER_ID = 456L;
     private static final String SOME_NOMS_NUMBER = "G9542VP";

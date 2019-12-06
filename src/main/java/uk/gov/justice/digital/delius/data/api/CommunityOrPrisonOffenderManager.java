@@ -27,6 +27,6 @@ public class CommunityOrPrisonOffenderManager {
     private Team team;
     @ApiModelProperty(value = "Probation area / prison institution for this OM")
     private ProbationArea probationArea;
-    @ApiModelProperty(value = "Date since the offender manager was assigned")
+    @ApiModelProperty(value = "Date since the offender manager was assigned", example = "2019-12-04")
     private LocalDate fromDate;
 }
