@@ -1,10 +1,10 @@
-# Delius API
-New Tech Delius: Offender API.
+# Community API
+Probation Community API.
 
 The service provides REST access to the  Delius Oracle DB offender information.
 
 ## Continuous Integration
-https://circleci.com/gh/noms-digital-studio/delius-offender-api
+https://circleci.com/gh/noms-digital-studio/community-api
 
 ## Gradle commands
 
@@ -25,19 +25,19 @@ Without additional configuration this mode uses an in memory H2 (empty) database
 references a file resource in the JAR (schema.ldif).
 
 ```
-java -jar build/libs/delius-offender-api.jar
+java -jar build/libs/community-api.jar
 ```
 
 ### Start the application with Delius Oracle db
 
 set SPRING_PROFILES_ACTIVE=oracle
 ```
-SPRING_DATASOURCE_URL=jdbc:oracle:thin:@<VM Oracle IP address>:1521:DNDA SPRING_PROFILES_ACTIVE=oracle java -jar build/libs/delius-offender-api.jar
+SPRING_DATASOURCE_URL=jdbc:oracle:thin:@<VM Oracle IP address>:1521:DNDA SPRING_PROFILES_ACTIVE=oracle java -jar build/libs/community-api.jar
 ```
 
 ### Start the application with real LDAP
 ```
-SPRING_LDAP_URLS=ldap://<ldap_addr>:<ldap_port> SPRING_LDAP_USERNAME=cn=orcladmin SPRING_LDAP_PASSWORD=<secret> java -jar build/libs/delius-offender-api.jar
+SPRING_LDAP_URLS=ldap://<ldap_addr>:<ldap_port> SPRING_LDAP_USERNAME=cn=orcladmin SPRING_LDAP_PASSWORD=<secret> java -jar build/libs/community-api.jar
 ```
 
 ### Start the app with the DEV profile. In this mode the H2 database contains a small data set
