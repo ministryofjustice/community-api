@@ -24,17 +24,17 @@ all:
 gradle-dependencies:
 	$(info Running gradle dependencies task for patch version $(build_version) from tag ${offenderapi_version})
 	# Build container runs as root - need to fix up perms at end so jenkins can clear up the workspace
-	docker run --rm -v $(build_dir):/delius-offender-api -w /delius-offender-api $(gradle_builder_image) bash -c "./gradlew --no-daemon -b $(gradle_build_file) clean dependencies"
+	docker run --rm -v $(build_dir):/community-api -w /community-api $(gradle_builder_image) bash -c "./gradlew --no-daemon -b $(gradle_build_file) clean dependencies"
 
 gradle-test:
 	$(info Running gradle test task for patch version $(build_version) from tag ${offenderapi_version})
 	# Build container runs as root - need to fix up perms at end so jenkins can clear up the workspace
-	docker run --rm -v $(build_dir):/delius-offender-api -w /delius-offender-api -e JAVA_TOOL_OPTS="JAVA_TOOL_OPTIONS: -Xmx1024m -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2" $(gradle_builder_image) bash -c "./gradlew --no-daemon -b $(gradle_build_file) test"
+	docker run --rm -v $(build_dir):/community-api -w /community-api -e JAVA_TOOL_OPTS="JAVA_TOOL_OPTIONS: -Xmx1024m -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2" $(gradle_builder_image) bash -c "./gradlew --no-daemon -b $(gradle_build_file) test"
 
 gradle-assemble:
 	$(info Running gradle assemble task for patch version $(build_version) from tag ${offenderapi_version})
 	# Build container runs as root - need to fix up perms at end so jenkins can clear up the workspace
-	docker run --rm -v $(build_dir):/delius-offender-api -e CI=true -e CIRCLE_BUILD_NUM=${offenderapi_version} -w /delius-offender-api $(gradle_builder_image) bash -c "./gradlew --no-daemon assemble; chmod -R 0777 build/ .gradle/"
+	docker run --rm -v $(build_dir):/community-api -e CI=true -e CIRCLE_BUILD_NUM=${offenderapi_version} -w /community-api $(gradle_builder_image) bash -c "./gradlew --no-daemon assemble; chmod -R 0777 build/ .gradle/"
 
 ecr-login:
 	$(shell aws ecr get-login --no-include-email --region ${aws_region})
@@ -64,4 +64,4 @@ clean-local:
 	-docker rmi ${ecr_repo}:latest
 	-docker rmi ${ecr_repo}:${offenderapi_version}
 	-rm -f ./ecr.repo
-	-rm -f build/libs/delius-offender-api-*.jar
+	-rm -f build/libs/community-api-*.jar

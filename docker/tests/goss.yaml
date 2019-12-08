@@ -2,8 +2,8 @@ package:
   openjdk8-jre:
     installed: true
 file:
-  # Check for presence of delius-offender-api jar file
-  /home/tools/delius-offender-api.jar:
+  # Check for presence of community-api jar file
+  /home/tools/community-api.jar:
     exists: true
     filetype: file
     mode: "0777"
