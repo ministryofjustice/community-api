@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.Contact;
@@ -231,10 +232,23 @@ public class OffendersResource {
     public CommunityOrPrisonOffenderManager allocatePrisonOffenderManagerByNomsNumber(final @PathVariable String nomsNumber,
                                                                  final @RequestBody CreatePrisonOffenderManager prisonOffenderManager) {
         log.info("Request to allocate a prison offender manager to {} at prison with code {}", nomsNumber, prisonOffenderManager.getNomsPrisonInstitutionCode());
+
+        Optional<String> errorMessage = prisonOffenderManager.validate();
+        if (errorMessage.isPresent()) {
+            throw new InvalidAllocatePOMRequestException(prisonOffenderManager, errorMessage.get());
+        }
+
         return Optional.ofNullable(prisonOffenderManager.getOfficerCode())
                 .map(staffCode -> offenderManagerService.allocatePrisonOffenderManagerByStaffCode(nomsNumber, staffCode, prisonOffenderManager))
                 .orElseGet(() -> offenderManagerService.allocatePrisonOffenderManagerByName(nomsNumber, prisonOffenderManager))
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with noms number %s not found", nomsNumber)));
+    }
+
+    public static class InvalidAllocatePOMRequestException extends BadRequestException {
+        InvalidAllocatePOMRequestException(CreatePrisonOffenderManager createPrisonOffenderManager, String message) {
+            super(message);
+            log.warn("Bad request: " + createPrisonOffenderManager);
+        }
     }
 
     @RequestMapping(value = "/offenders/crn/{crn}", method = RequestMethod.GET)
