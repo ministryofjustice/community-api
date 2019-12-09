@@ -71,7 +71,7 @@ jobs:
           command: |
             APP_VERSION=$(cat ./app_version.txt)
             docker build -f docker/Dockerfile.aws --rm=false . \
-               --tag "mojdigitalstudio/deliusapi:$APP_VERSION" \
+               --tag "mojdigitalstudio/community-api:$APP_VERSION" \
                --label "maintainer=info@digital.justice.gov.uk" \
                --label "app.version=$APP_VERSION" \
                --label "build.version=$APP_VERSION" \
@@ -81,9 +81,9 @@ jobs:
 
             # publish to docker hub as the tag
             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-            docker tag mojdigitalstudio/deliusapi:$APP_VERSION mojdigitalstudio/deliusapi:latest
-            docker push mojdigitalstudio/deliusapi:$APP_VERSION
-            docker push mojdigitalstudio/deliusapi:latest
+            docker tag mojdigitalstudio/community-api:$APP_VERSION mojdigitalstudio/community-api:latest
+            docker push mojdigitalstudio/community-api:$APP_VERSION
+            docker push mojdigitalstudio/community-api:latest
 
 workflows:
   version: 2
