@@ -233,9 +233,9 @@ public class OffendersResource {
                                                                  final @RequestBody CreatePrisonOffenderManager prisonOffenderManager) {
         log.info("Request to allocate a prison offender manager to {} at prison with code {}", nomsNumber, prisonOffenderManager.getNomsPrisonInstitutionCode());
 
-        String errorMessage = prisonOffenderManager.validate();
-        if (!errorMessage.isBlank()) {
-            throw new InvalidAllocatePOMRequestException(prisonOffenderManager, errorMessage);
+        Optional<String> errorMessage = prisonOffenderManager.validate();
+        if (errorMessage.isPresent()) {
+            throw new InvalidAllocatePOMRequestException(prisonOffenderManager, errorMessage.get());
         }
 
         return Optional.ofNullable(prisonOffenderManager.getOfficerCode())

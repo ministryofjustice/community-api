@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Optional;
+
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Objects.isNull;
 
@@ -29,7 +31,7 @@ public class CreatePrisonOffenderManager {
     /**
      * This is tested in the API @see OffenderResources_AllocatePrisonOffenderManagerAPITest
      */
-    public String validate() {
+    public Optional<String> validate() {
         final var prisonCodeMissing = isNullOrEmpty(getNomsPrisonInstitutionCode());
         final var officerCodeExists = !isNullOrEmpty(getOfficerCode());
         final var officerExists = !isNull(getOfficer());
@@ -57,10 +59,10 @@ public class CreatePrisonOffenderManager {
         }
 
         if (!expectedToContain.isBlank()) {
-            expectedToContain = "Expected createPrisonOffenderManager to contain " + expectedToContain;
+            return Optional.of("Expected createPrisonOffenderManager to contain " + expectedToContain);
         }
 
-        return expectedToContain;
+        return Optional.empty();
     }
 
 }
