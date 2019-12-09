@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.util.EntityHelper.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ContactServiceTest {
+public class ContactService_addContactForPOMAllocationTest {
 
     private ContactService contactService;
 

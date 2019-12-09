@@ -99,7 +99,7 @@ public class OffenderManagerTransformer {
     private boolean isResponsibleOfficer(ResponsibleOfficer responsibleOfficer) {
         return Optional
                 .ofNullable(responsibleOfficer)
-                .filter(officer -> officer.getEndDate() == null)
+                .filter(officer -> officer.getEndDateTime() == null)
                 .isPresent();
     }
 }

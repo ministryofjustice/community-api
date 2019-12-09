@@ -579,6 +579,7 @@ public class EntityHelper {
                 .toBuilder()
                 .activeFlag(1L)
                 .endDate(null)
+                .responsibleOfficer(aResponsibleOfficer())
                 .build();
     }
 
@@ -651,7 +652,7 @@ public class EntityHelper {
         return ResponsibleOfficer
                 .builder()
                 .offenderId(1L)
-                .startDate(LocalDate.now())
+                .startDateTime(LocalDateTime.now())
                 .responsibleOfficerId(1L)
                 .build();
     }

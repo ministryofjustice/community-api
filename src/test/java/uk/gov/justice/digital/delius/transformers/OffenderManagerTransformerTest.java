@@ -5,6 +5,7 @@ import org.junit.Test;
 import uk.gov.justice.digital.delius.data.api.Human;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.digital.delius.util.EntityHelper.*;
@@ -214,7 +215,7 @@ public class OffenderManagerTransformerTest {
                         .responsibleOfficer(
                                 aResponsibleOfficer()
                                         .toBuilder()
-                                        .endDate(null)
+                                        .endDateTime(null)
                                         .build())
                         .build()
         ).getIsResponsibleOfficer()).isTrue();
@@ -225,7 +226,7 @@ public class OffenderManagerTransformerTest {
                         .responsibleOfficer(
                                 aResponsibleOfficer()
                                         .toBuilder()
-                                        .endDate(LocalDate.now())
+                                        .endDateTime(LocalDateTime.now())
                                         .build())
                         .build()
         ).getIsResponsibleOfficer()).isFalse();
@@ -246,7 +247,7 @@ public class OffenderManagerTransformerTest {
                         .responsibleOfficer(
                                 aResponsibleOfficer()
                                         .toBuilder()
-                                        .endDate(null)
+                                        .endDateTime(null)
                                         .build())
                         .build()
         ).getIsResponsibleOfficer()).isTrue();
@@ -257,7 +258,7 @@ public class OffenderManagerTransformerTest {
                         .responsibleOfficer(
                                 aResponsibleOfficer()
                                         .toBuilder()
-                                        .endDate(LocalDate.now())
+                                        .endDateTime(LocalDateTime.now())
                                         .build())
                         .build()
         ).getIsResponsibleOfficer()).isFalse();
