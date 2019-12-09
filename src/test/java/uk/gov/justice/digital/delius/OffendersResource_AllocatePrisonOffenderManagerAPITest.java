@@ -53,19 +53,8 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
-                .statusCode(400);
-    }
-
-    @Test
-    public void requestMissingPrisonCode_mentionsPrisonCodeInErrorMessage() throws JsonProcessingException {
-        given()
-                .contentType(APPLICATION_JSON_VALUE)
-                .body(createPrisonOffenderManagerJsonOf(SOME_OFFICER_CODE, null, null, null))
-                .when()
-                .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
-                .then()
+                .statusCode(400)
                 .body("developerMessage", containsString("NOMS prison institution code"));
-
     }
 
     @Test
@@ -76,19 +65,8 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
-                .statusCode(400);
-    }
-
-    @Test
-    public void requestWithEmptyPrisonCode_mentionsPrisonCodeInErrorMessage() throws JsonProcessingException {
-        given()
-                .contentType(APPLICATION_JSON_VALUE)
-                .body(createPrisonOffenderManagerJsonOf(SOME_OFFICER_CODE, null, null, ""))
-                .when()
-                .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
-                .then()
+                .statusCode(400)
                 .body("developerMessage", containsString("NOMS prison institution code"));
-
     }
 
     @Test
@@ -99,17 +77,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
-                .statusCode(400);
-    }
-
-    @Test
-    public void requestMissingOfficerCodeAndNames_mentionsMissingParametersInErrorMessage() throws JsonProcessingException {
-        given()
-                .contentType(APPLICATION_JSON_VALUE)
-                .body(createPrisonOffenderManagerJsonOf(null, null, null, SOME_PRISON_NOMS_CODE))
-                .when()
-                .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
-                .then()
+                .statusCode(400)
                 .body("developerMessage", containsString("either officer or officer code"));
     }
 
@@ -121,18 +89,8 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
-                .statusCode(400);
-    }
-
-    @Test
-    public void requestWithEmptyOfficerCodeAndNames_mentionsMissingParametersInErrorMessage() throws JsonProcessingException {
-        given()
-                .contentType(APPLICATION_JSON_VALUE)
-                .body(createPrisonOffenderManagerJsonOf("", "", "", SOME_PRISON_NOMS_CODE))
-                .when()
-                .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
-                .then()
-                .body("developerMessage", containsString("either officer or officer code"));
+                .statusCode(400)
+                .body("developerMessage", containsString("both officer names"));
     }
 
     @Test
@@ -143,17 +101,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
-                .statusCode(400);
-    }
-
-    @Test
-    public void requestWithBothOfficerCodeAndNames_mentionsExtraneousParametersInErrorMessage() throws JsonProcessingException {
-        given()
-                .contentType(APPLICATION_JSON_VALUE)
-                .body(createPrisonOffenderManagerJsonOf(SOME_OFFICER_CODE, SOME_OFFICER_FORENAMES, SOME_OFFICER_SURNAME, SOME_PRISON_NOMS_CODE))
-                .when()
-                .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
-                .then()
+                .statusCode(400)
                 .body("developerMessage", containsString("either officer OR officer code"));
     }
 
@@ -165,17 +113,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
-                .statusCode(400);
-    }
-
-    @Test
-    public void requestMissingOfficerNames_mentionsMissingParametersInErrorMessage() throws JsonProcessingException {
-        given()
-                .contentType(APPLICATION_JSON_VALUE)
-                .body(createPrisonOffenderManagerJsonMissingBothNames())
-                .when()
-                .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
-                .then()
+                .statusCode(400)
                 .body("developerMessage", containsString("both officer names"));
     }
 
@@ -187,17 +125,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
-                .statusCode(400);
-    }
-
-    @Test
-    public void requestWithEmptyOfficerNames_mentionsEmptyParametersInErrorMessage() throws JsonProcessingException {
-        given()
-                .contentType(APPLICATION_JSON_VALUE)
-                .body(createPrisonOffenderManagerJsonOf(null, "", "", SOME_PRISON_NOMS_CODE))
-                .when()
-                .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
-                .then()
+                .statusCode(400)
                 .body("developerMessage", containsString("both officer names"));
     }
 
@@ -205,21 +133,11 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     public void requestMissingOfficerForenames_returnsBadRequest() throws JsonProcessingException {
         given()
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(createPrisonOffenderManagerJsonOf(null, "", SOME_OFFICER_SURNAME, SOME_PRISON_NOMS_CODE))
-                .when()
-                .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
-                .then()
-                .statusCode(400);
-    }
-
-    @Test
-    public void requestMissingOfficerForenames_mentionsMissingParametersInErrorMessage() throws JsonProcessingException {
-        given()
-                .contentType(APPLICATION_JSON_VALUE)
                 .body(createPrisonOffenderManagerJsonOf(null, null, SOME_OFFICER_SURNAME, SOME_PRISON_NOMS_CODE))
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
+                .statusCode(400)
                 .body("developerMessage", containsString("forenames"));
     }
 
@@ -227,21 +145,11 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     public void requestWithEmptyOfficerForenames_returnsBadRequest() throws JsonProcessingException {
         given()
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(createPrisonOffenderManagerJsonOf(null, null, SOME_OFFICER_SURNAME, SOME_PRISON_NOMS_CODE))
-                .when()
-                .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
-                .then()
-                .statusCode(400);
-    }
-
-    @Test
-    public void requestWithEmptyOfficerForenames_mentionsEmptyParametersInErrorMessage() throws JsonProcessingException {
-        given()
-                .contentType(APPLICATION_JSON_VALUE)
                 .body(createPrisonOffenderManagerJsonOf(null, "", SOME_OFFICER_SURNAME, SOME_PRISON_NOMS_CODE))
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
+                .statusCode(400)
                 .body("developerMessage", containsString("forenames"));
     }
 
@@ -253,17 +161,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
-                .statusCode(400);
-    }
-
-    @Test
-    public void requestMissingOfficerSurname_mentionsMissingParametersInErrorMessage() throws JsonProcessingException {
-        given()
-                .contentType(APPLICATION_JSON_VALUE)
-                .body(createPrisonOffenderManagerJsonOf(null, SOME_OFFICER_FORENAMES, null, SOME_PRISON_NOMS_CODE))
-                .when()
-                .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
-                .then()
+                .statusCode(400)
                 .body("developerMessage", containsString("surname"));
     }
 
@@ -275,17 +173,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
                 .when()
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
-                .statusCode(400);
-    }
-
-    @Test
-    public void requestWithEmptyOfficerSurname_mentionsEmptyParametersInErrorMessage() throws JsonProcessingException {
-        given()
-                .contentType(APPLICATION_JSON_VALUE)
-                .body(createPrisonOffenderManagerJsonOf(null, SOME_OFFICER_FORENAMES, "", SOME_PRISON_NOMS_CODE))
-                .when()
-                .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
-                .then()
+                .statusCode(400)
                 .body("developerMessage", containsString("surname"));
     }
 
