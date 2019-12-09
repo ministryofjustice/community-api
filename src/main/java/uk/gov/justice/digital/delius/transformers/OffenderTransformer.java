@@ -456,7 +456,7 @@ public class OffenderTransformer {
 
     private boolean isCurrentRo(uk.gov.justice.digital.delius.jpa.standard.entity.ResponsibleOfficer ro) {
         boolean result = false;
-        if (ro != null && ro.getEndDate() == null) {
+        if (ro != null && ro.getEndDateTime() == null) {
             result = true;
         }
         return result;

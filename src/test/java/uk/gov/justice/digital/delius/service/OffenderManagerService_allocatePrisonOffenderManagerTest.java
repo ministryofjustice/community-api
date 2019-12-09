@@ -350,7 +350,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
     public void existingResponsibleOfficerIsDeactivatedWhenActivePOM() {
         final ResponsibleOfficer existingPOMResponsibleOfficer = aResponsibleOfficer()
                 .toBuilder()
-                .endDate(null)
+                .endDateTime(null)
                 .build();
         var existingPOM  = anActivePrisonOffenderManager()
                 .toBuilder()
@@ -373,14 +373,14 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                         .build());
 
 
-        assertThat(existingPOMResponsibleOfficer.getEndDate()).isNotNull();
+        assertThat(existingPOMResponsibleOfficer.getEndDateTime()).isNotNull();
     }
 
     @Test
     public void newPrisonerOffenderManagerIsMadeResponsibleOfficerWhenExistingPOMIsAlsoCurrentRO() {
         final ResponsibleOfficer existingPOMResponsibleOfficer = aResponsibleOfficer()
                 .toBuilder()
-                .endDate(null)
+                .endDateTime(null)
                 .build();
         var existingPOM  = anActivePrisonOffenderManager()
                 .toBuilder()
@@ -453,6 +453,41 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
 
 
         verify(contactService).addContactForPOMAllocation(isA(PrisonOffenderManager.class), eq(existingPOM));
+    }
+
+    @Test
+    public void shouldAddAResponsibleOfficeMoveContactNotingOldPOM() {
+        final ResponsibleOfficer existingPOMResponsibleOfficer = aResponsibleOfficer()
+                .toBuilder()
+                .endDateTime(null)
+                .build();
+        var existingPOM  = anActivePrisonOffenderManager()
+                .toBuilder()
+                .responsibleOfficer(existingPOMResponsibleOfficer)
+                .build();
+
+        when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
+                anOffender()
+                        .toBuilder()
+                        .prisonOffenderManagers(List.of(existingPOM))
+                        .build()
+        ));
+
+        when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> {
+            final PrisonOffenderManager newPOM = args.getArgument(0);
+            newPOM.setPrisonOffenderManagerId(99L);
+            return newPOM;
+        });
+
+        offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+                "G9542VP",
+                "N01A12345",
+                CreatePrisonOffenderManager
+                        .builder()
+                        .nomsPrisonInstitutionCode("N01")
+                        .build());
+
+        verify(contactService).addContactForResponsibleOfficerChange(isA(PrisonOffenderManager.class), eq(existingPOM));
     }
 
 }

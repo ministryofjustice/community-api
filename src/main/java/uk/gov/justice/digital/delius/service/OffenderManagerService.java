@@ -12,6 +12,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.*;
 import uk.gov.justice.digital.delius.transformers.OffenderManagerTransformer;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -122,10 +123,10 @@ public class OffenderManagerService {
             existingPOM.setActiveFlag(0L);
 
             Optional.ofNullable(existingPOM.getResponsibleOfficer())
-                    .filter(ro -> ro.getEndDate() == null)
+                    .filter(ro -> ro.getEndDateTime() == null)
                     .ifPresent(activeRo -> {
                         // deactivate old RO and add a new one
-                        activeRo.setEndDate(LocalDate.now());
+                        activeRo.setEndDateTime(LocalDateTime.now());
                         newPrisonOffenderManager.setResponsibleOfficer(responsibleOfficerRepository.save(
                                 ResponsibleOfficer
                                         .builder()
@@ -133,6 +134,7 @@ public class OffenderManagerService {
                                         .prisonOffenderManagerId(newPrisonOffenderManager.getPrisonOffenderManagerId())
                                         .build()
                         ));
+                        contactService.addContactForResponsibleOfficerChange(newPrisonOffenderManager, existingPOM);
                     });
         }, () -> contactService.addContactForPOMAllocation(newPrisonOffenderManager));
 

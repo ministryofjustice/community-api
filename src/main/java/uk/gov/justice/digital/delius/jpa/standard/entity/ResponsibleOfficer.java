@@ -48,10 +48,10 @@ public class ResponsibleOfficer implements Serializable {
 
     @Column(name = "START_DATE")
     @Builder.Default
-    private LocalDate startDate = LocalDate.now();
+    private LocalDateTime startDateTime = LocalDateTime.now();
 
     @Column(name = "END_DATE")
-    private LocalDate endDate;
+    private LocalDateTime endDateTime;
 
     @Column(name = "ROW_VERSION")
     @Builder.Default

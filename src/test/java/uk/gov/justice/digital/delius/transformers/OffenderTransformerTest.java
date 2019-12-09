@@ -5,6 +5,7 @@ import org.junit.Test;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -259,7 +260,7 @@ public class OffenderTransformerTest {
     private ResponsibleOfficer aResponsibleOfficer() {
         return ResponsibleOfficer
                 .builder()
-                .startDate(LocalDate.parse("2018-01-01"))
+                .startDateTime(LocalDateTime.parse("2018-01-01T00:00:00"))
                 .offenderId(1L)
                 .offenderManagerId(2L)
                 .build();

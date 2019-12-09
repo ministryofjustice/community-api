@@ -23,6 +23,7 @@ public class ContactService {
     private static final String PRISONER_OFFENDER_MANAGER_ALLOCATION_CONTACT_TYPE = "EPOMAT";
     private static final String PRISONER_OFFENDER_MANAGER_INTERNAL_ALLOCATION_CONTACT_TYPE = "EPOMIN";
     private static final String PRISONER_OFFENDER_MANAGER_EXTERNAL_ALLOCATION_CONTACT_TYPE = "EPOMEX";
+    private static final String RESPONSIBLE_OFFICER_CHANGE_CONTACT_TYPE = "ROC";
     private final ContactRepository contactRepository;
     private final ContactTypeRepository contactTypeRepository;
     private final ContactTransformer contactTransformer;
@@ -54,6 +55,25 @@ public class ContactService {
                 .build());
     }
 
+    @Transactional
+    public void addContactForResponsibleOfficerChange(PrisonOffenderManager newPrisonOffenderManager, PrisonOffenderManager existingPrisonOffenderManager) {
+        final ContactType contactType = contactTypeForResponsibleOfficerChange();
+        contactRepository.save(uk.gov.justice.digital.delius.jpa.standard.entity.Contact
+                .builder()
+                .contactDate(newPrisonOffenderManager.getAllocationDate())
+                .offenderId(newPrisonOffenderManager.getOffenderId())
+                .notes(notesForResponsibleManager(newPrisonOffenderManager, existingPrisonOffenderManager))
+                .team(newPrisonOffenderManager.getTeam())
+                .staff(newPrisonOffenderManager.getStaff())
+                .probationArea(newPrisonOffenderManager.getProbationArea())
+                .staffEmployeeId(newPrisonOffenderManager.getStaff().getStaffId())
+                .teamProviderId(newPrisonOffenderManager.getTeam().getTeamId())
+                .contactType(contactType)
+                .alertActive(contactType.getAlertFlag())
+                .build());
+    }
+
+
     private uk.gov.justice.digital.delius.jpa.standard.entity.Contact contactForPOMAllocation(PrisonOffenderManager newPrisonOffenderManager) {
         final ContactType contactType = contactTypeForPOMAllocationOf(newPrisonOffenderManager.getAllocationReason());
         return uk.gov.justice.digital.delius.jpa.standard.entity.Contact
@@ -84,6 +104,10 @@ public class ContactService {
         }
     }
 
+    private ContactType contactTypeForResponsibleOfficerChange() {
+         return contactTypeRepository.findByCode(RESPONSIBLE_OFFICER_CHANGE_CONTACT_TYPE).orElseThrow();
+    }
+
     private String notesForPOMAllocation(PrisonOffenderManager newPrisonOffenderManager) {
         return "Transfer Reason: " +
                 newPrisonOffenderManager.getAllocationReason().getCodeDescription() +
@@ -91,6 +115,36 @@ public class ContactService {
                 "Transfer Date: " +
                 newPrisonOffenderManager.getAllocationDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) +
                 "\n";
+    }
+
+    private String notesForResponsibleManager(PrisonOffenderManager newPrisonOffenderManager, PrisonOffenderManager existingPrisonOffenderManager) {
+        return String.format(
+                "New Details:\n" +
+                "%s\n" +
+                "Previous Details:\n" +
+                "%s\n",
+                notesForResponsibleManagerOf(newPrisonOffenderManager),
+                notesForResponsibleManagerOf(existingPrisonOffenderManager));
+    }
+
+    private String notesForResponsibleManagerOf(PrisonOffenderManager prisonOffenderManager) {
+        return String.format(
+                "Responsible Officer Type: Prison Offender Manager\n" +
+                "Responsible Officer: %s\n" +
+                "Start Date: %s\n" +
+                "%s" +
+                "Allocation Reason: %s\n",
+                responsibleOfficerOf(prisonOffenderManager),
+                prisonOffenderManager.getResponsibleOfficer().getStartDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")),
+                Optional.ofNullable(prisonOffenderManager.getResponsibleOfficer().getEndDateTime()).map(dateTime -> dateTime.format(DateTimeFormatter.ofPattern("'End Date: 'dd/MM/yyyy HH:mm:ss'\n'"))).orElse(""),
+                prisonOffenderManager.getAllocationReason().getCodeDescription())
+        ;
+    }
+
+    private String responsibleOfficerOf(PrisonOffenderManager pom) {
+        return Optional.ofNullable(pom.getStaff()).map(staff ->
+                String.format("%s (%s, %s)", displayNameOf(staff), pom.getTeam().getDescription(), pom.getProbationArea().getDescription()))
+                .orElse("");
     }
 
 
