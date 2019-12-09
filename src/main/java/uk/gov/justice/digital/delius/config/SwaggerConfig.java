@@ -84,6 +84,6 @@ public class SwaggerConfig {
                 getVersion().getVersion(),
                 "https://gateway.nomis-api.service.justice.gov.uk/auth/terms",
                 contactInfo(),
-                "MIT", "https://opensource.org/licenses/MIT", vendorExtensions);
+                "Open Government Licence v3.0", "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/", vendorExtensions);
     }
 }

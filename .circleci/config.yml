@@ -33,7 +33,7 @@ jobs:
       - run:
           name: Record the Application Version
           command: |
-            jar xvf build/libs/delius-offender-api-*.jar BOOT-INF/classes/META-INF/build-info.properties
+            jar xvf build/libs/community-api-*.jar BOOT-INF/classes/META-INF/build-info.properties
             APP_VERSION=$(grep 'build.version=' BOOT-INF/classes/META-INF/build-info.properties | awk -F= '{print $2}')
             rm BOOT-INF/classes/META-INF/build-info.properties
 
