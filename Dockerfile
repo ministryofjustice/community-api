@@ -13,7 +13,7 @@ RUN addgroup --gid 2000 --system appgroup && \
 
 WORKDIR /app
 
-COPY --chown=appuser:appgroup build/libs/delius-offender*.jar /app/app.jar
+COPY --chown=appuser:appgroup build/libs/community-api-*.jar /app/app.jar
 COPY --chown=appuser:appgroup build/libs/applicationinsights-agent*.jar /app/agent.jar
 COPY --chown=appuser:appgroup AI-Agent.xml /app
 
