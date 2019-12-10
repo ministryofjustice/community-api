@@ -319,7 +319,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerIT {
     }
 
     @Test
-    public void shouldRespondWith404WhenAllocatingPrisonOffenderManagersAndPrisonInstitutionNotFound() throws JsonProcessingException {
+    public void shouldRespondWith400WhenAllocatingPrisonOffenderManagersAndPrisonInstitutionNotFound() throws JsonProcessingException {
         given()
                 .auth()
                 .oauth2(validOauthToken)
@@ -329,7 +329,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerIT {
                 .when()
                 .put("/offenders/nomsNumber/G9542VP/prisonOffenderManager")
                 .then()
-                .statusCode(404);
+                .statusCode(400);
     }
 
     @Test
