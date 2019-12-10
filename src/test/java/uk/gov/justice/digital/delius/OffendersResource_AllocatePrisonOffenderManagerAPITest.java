@@ -230,6 +230,25 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
                 .statusCode(400);
     }
 
+    @Test
+    public void requestWithPrisonNomsCodeNotFound_returnsBadRequest() throws JsonProcessingException {
+        given(offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+                SOME_OFFENDER_NOMS_NUMBER,
+                SOME_OFFICER_CODE,
+                createPrisonOffenderManagerOf(SOME_OFFICER_CODE, null, null, SOME_PRISON_NOMS_CODE))
+        )
+                .willThrow(new InvalidRequestException(String.format("Prison NOMS code %s not found", SOME_PRISON_NOMS_CODE)));
+
+        given()
+                .contentType(APPLICATION_JSON_VALUE)
+                .body(createPrisonOffenderManagerJsonOf(SOME_OFFICER_CODE, null, null, SOME_PRISON_NOMS_CODE))
+                .when()
+                .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
+                .then()
+                .statusCode(400);
+    }
+
+
     private CreatePrisonOffenderManager createPrisonOffenderManagerOf(String officerCode, String officerForenames, String officerSurname, String prisonCode) {
         Human officer = null;
         if(officerForenames != null || officerSurname != null) {

@@ -131,21 +131,22 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
     }
 
     @Test
-    public void willReturnEmptyWhenPrisonProbationAreaNotFound() {
+    public void willThrowInvalidRequestWhenPrisonProbationAreaNotFound() {
         when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.of(anOffender()));
         when(staffService.findByOfficerCode("N01A12345")).thenReturn(Optional.of(aStaff()));
         when(probationAreaRepository.findByInstitutionByNomsCDECode("BWI")).thenReturn(Optional.empty());
 
-        assertThat(offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+        assertThatThrownBy(() -> offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
                 "G9542VP",
                 "N01A12345",
                 CreatePrisonOffenderManager
                         .builder()
                         .nomsPrisonInstitutionCode("BWI")
                         .build()))
-                .isNotPresent();
+                .isInstanceOf(InvalidRequestException.class)
+                .hasMessageContaining("Prison NOMS code BWI not found");
 
-        assertThat(offenderManagerService.allocatePrisonOffenderManagerByName(
+        assertThatThrownBy(() -> offenderManagerService.allocatePrisonOffenderManagerByName(
                 "G9542VP",
                 CreatePrisonOffenderManager
                         .builder()
@@ -154,8 +155,8 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                                 .builder()
                                 .build())
                         .build()))
-                .isNotPresent();
-
+                .isInstanceOf(InvalidRequestException.class)
+                .hasMessageContaining("Prison NOMS code BWI not found");
     }
 
     @Test

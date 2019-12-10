@@ -69,27 +69,26 @@ public class OffenderManagerService {
     public Optional<CommunityOrPrisonOffenderManager> allocatePrisonOffenderManagerByStaffCode(String nomsNumber, String staffCode, CreatePrisonOffenderManager prisonOffenderManager) {
         final var maybeStaff = staffService.findByOfficerCode(staffCode);
         final var maybeOffender = offenderRepository.findByNomsNumber(nomsNumber);
-        final var maybeProbationArea = probationAreaRepository.findByInstitutionByNomsCDECode(prisonOffenderManager.getNomsPrisonInstitutionCode());
+        final var probationArea = probationAreaRepository.findByInstitutionByNomsCDECode(prisonOffenderManager.getNomsPrisonInstitutionCode())
+                .orElseThrow(() -> new InvalidRequestException(String.format("Prison NOMS code %s not found", prisonOffenderManager.getNomsPrisonInstitutionCode())));
 
-        return maybeProbationArea
-                .flatMap(probationArea ->
-                        maybeStaff.flatMap(staff ->
-                            maybeOffender.map(offender -> allocatePrisonOffenderManager(probationArea, staff, offender))));
+        return maybeStaff
+                .flatMap(staff -> maybeOffender
+                        .map(offender -> allocatePrisonOffenderManager(probationArea, staff, offender)));
     }
 
     @Transactional
     public Optional<CommunityOrPrisonOffenderManager> allocatePrisonOffenderManagerByName(String nomsNumber, CreatePrisonOffenderManager prisonOffenderManager) {
 
         final var maybeOffender = offenderRepository.findByNomsNumber(nomsNumber);
-        final var maybeProbationArea = probationAreaRepository.findByInstitutionByNomsCDECode(prisonOffenderManager.getNomsPrisonInstitutionCode());
+        final var probationArea = probationAreaRepository.findByInstitutionByNomsCDECode(prisonOffenderManager.getNomsPrisonInstitutionCode())
+                .orElseThrow(() -> new InvalidRequestException(String.format("Prison NOMS code %s not found", prisonOffenderManager.getNomsPrisonInstitutionCode())));
 
-        return maybeProbationArea
-                .flatMap(probationArea ->
-                        maybeOffender.map(offender ->
-                                allocatePrisonOffenderManager(
-                                        probationArea,
-                                        staffService.findOrCreateStaffInArea(prisonOffenderManager.getOfficer(), probationArea),
-                                        offender)));
+         return maybeOffender.map(offender ->
+                    allocatePrisonOffenderManager(
+                            probationArea,
+                            staffService.findOrCreateStaffInArea(prisonOffenderManager.getOfficer(), probationArea),
+                            offender));
     }
 
 
