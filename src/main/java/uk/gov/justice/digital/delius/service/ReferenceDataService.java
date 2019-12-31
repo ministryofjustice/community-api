@@ -2,7 +2,10 @@ package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
+import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.filters.ProbationAreaFilter;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
@@ -12,6 +15,9 @@ import uk.gov.justice.digital.delius.transformers.ProbationAreaTransformer;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 @Service
 public class ReferenceDataService {
@@ -46,7 +52,7 @@ public class ReferenceDataService {
         return probationAreaTransformer.probationAreasOf(probationAreaRepository.findAll(probationAreaFilter));
     }
 
-    public  StandardReference pomAllocationAutoTransferReason() {
+    public StandardReference pomAllocationAutoTransferReason() {
         return pomAllocationTransferReason(POM_AUTO_TRANSFER_ALLOCATION_REASON_CODE);
     }
 
@@ -61,5 +67,20 @@ public class ReferenceDataService {
     private StandardReference pomAllocationTransferReason(String reason) {
         return standardReferenceRepository.findByCodeAndCodeSetName(reason, POM_ALLOCATION_REASON_DATASET)
                 .orElseThrow(() -> new RuntimeException(String.format("No pom allocation reason found for %s", reason)));
+    }
+
+    public Page<KeyValue> getProbationAreasCodes(boolean restrictActive) {
+        final var filter = ProbationAreaFilter.builder().restrictActive(restrictActive).build();
+
+        return probationAreaRepository.findAll(filter).stream()
+                .map(area -> new KeyValue(area.getCode(), area.getDescription()))
+                .collect(collectingAndThen(toList(), PageImpl::new));
+    }
+
+    public Page<KeyValue> getLocalDeliveryUnitsForProbationArea(String code) {
+        return probationAreaRepository.findByCode(code).stream()
+                .flatMap(probationArea -> probationArea.getLocalDeliveryUnits().stream())
+                .map(unit -> new KeyValue(unit.getCode(), unit.getDescription()))
+                .collect(collectingAndThen(toList(), PageImpl::new));
     }
 }
