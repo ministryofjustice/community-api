@@ -519,12 +519,15 @@ public class EntityHelper {
                         .description("Borough description")
                         .build())
                 .build();
-     }   
+     }
 
-     public static LocalDeliveryUnit aLocalDeliveryUnit() {
+    public static LocalDeliveryUnit aLocalDeliveryUnit() {
+        return aLocalDeliveryUnit("LDU");
+    }
+    public static LocalDeliveryUnit aLocalDeliveryUnit(String code) {
         return LocalDeliveryUnit
                 .builder()
-                .code("LDU")
+                .code(code)
                 .description("LDU description")
                 .build();
      }
