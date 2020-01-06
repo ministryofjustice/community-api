@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.ldap.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.ContextMapper;
@@ -23,13 +24,19 @@ import static org.springframework.ldap.query.LdapQueryBuilder.query;
 public class LdapRepository {
 
     private final LdapTemplate ldapTemplate;
+    private final LdapTemplate authenticationTemplate;
     private final ContextMapper<Map<String, String>> contextMapper;
     @Value("${delius.ldap.users.base}")
     private String ldapUserBase;
 
     @Autowired
-    public LdapRepository(final LdapTemplate ldapTemplate) {
+    public LdapRepository(
+            @Qualifier(value = "ldapTemplate")
+            final LdapTemplate ldapTemplate,
+            @Qualifier(value = "authenticationTemplate")
+            final LdapTemplate authenticationTemplate) {
         this.ldapTemplate = ldapTemplate;
+        this.authenticationTemplate = authenticationTemplate;
         contextMapper = getContextMapper();
     }
 
@@ -56,16 +63,12 @@ public class LdapRepository {
         };
     }
 
-    public List<Map<String, String>> searchByFieldAndValue(final String field, final String value) {
-        return ldapTemplate.search(query().where(field).is(value), contextMapper);
-    }
-
     public boolean authenticateUser(final String user, final String password) {
-        return ldapTemplate.authenticate(ldapUserBase, "(uid=" + user + ")", password);
+        return authenticationTemplate.authenticate(ldapUserBase, "(uid=" + user + ")", password);
     }
 
     public Optional<NDeliusUser> getDeliusUser(final String username) {
-        final var nDeliusUser = ldapTemplate.find(byUsername(username), NDeliusUser.class).stream().findAny();
+        final var nDeliusUser = authenticationTemplate.find(byUsername(username), NDeliusUser.class).stream().findAny();
 
         return nDeliusUser.map(user -> {
             final var roles = ldapTemplate
@@ -86,11 +89,11 @@ public class LdapRepository {
     }
 
     public boolean changePassword(final String username, final String password) {
-        final var context = ldapTemplate.searchForContext(byUsername(username));
+        final var context = authenticationTemplate.searchForContext(byUsername(username));
 
         context.setAttributeValue("userpassword", password);
 
-        ldapTemplate.modifyAttributes(context);
+        authenticationTemplate.modifyAttributes(context);
         return true;
     }
 
@@ -99,7 +102,7 @@ public class LdapRepository {
     }
 
     public String getEmail(final String username) {
-        final var nDeliusUser = ldapTemplate.find(byUsername(username), NDeliusUser.class).stream().findAny();
+        final var nDeliusUser = authenticationTemplate.find(byUsername(username), NDeliusUser.class).stream().findAny();
 
         return nDeliusUser.map(NDeliusUser::getMail).orElse(null);
     }
