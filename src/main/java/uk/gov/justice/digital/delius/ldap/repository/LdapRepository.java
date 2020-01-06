@@ -63,10 +63,6 @@ public class LdapRepository {
         };
     }
 
-    public List<Map<String, String>> searchByFieldAndValue(final String field, final String value) {
-        return ldapTemplate.search(query().where(field).is(value), contextMapper);
-    }
-
     public boolean authenticateUser(final String user, final String password) {
         return authenticationTemplate.authenticate(ldapUserBase, "(uid=" + user + ")", password);
     }
