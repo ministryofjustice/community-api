@@ -12,11 +12,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "BOROUGH")
@@ -63,4 +64,9 @@ public class Borough {
     @JoinColumn(name = "PROBATION_AREA_ID")
     @OneToOne
     private ProbationArea probationArea;
+
+    @OneToMany
+    @JoinColumn(name = "BOROUGH_ID")
+    private List<District> districts;
+
 }

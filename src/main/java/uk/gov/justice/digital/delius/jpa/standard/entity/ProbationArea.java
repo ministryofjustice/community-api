@@ -41,12 +41,12 @@ public class ProbationArea {
     private List<Team> teams;
 
     @OneToMany
-    @JoinColumn(name = "PROBATION_AREA_ID", referencedColumnName = "PROBATION_AREA_ID")
-    private List<ProviderTeam> providerTeams;
+    @JoinColumn(name = "PROBATION_AREA_ID")
+    private List<Borough> boroughs;
 
     @OneToMany
     @JoinColumn(name = "PROBATION_AREA_ID", referencedColumnName = "PROBATION_AREA_ID")
-    private List<LocalDeliveryUnit> localDeliveryUnits;
+    private List<ProviderTeam> providerTeams;
 
     @Column(name = "END_DATE")
     private LocalDate endDate;

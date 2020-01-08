@@ -510,14 +510,21 @@ public class EntityHelper {
         return aTeam("TEAM-1");
     }
 
+    public static Borough aBorough() {
+        return aBorough("BB");
+    }
+    public static Borough aBorough(String code) {
+        return Borough.builder()
+                .code(code)
+                .description("Borough description")
+                .build();
+    }
+
      public static District aDistrict() {
         return District.builder()
                 .code("XX")
                 .description("DD description")
-                .borough(Borough.builder()
-                        .code("BB")
-                        .description("Borough description")
-                        .build())
+                .borough(aBorough())
                 .build();
      }
 
