@@ -250,6 +250,10 @@ public class OffenderTransformer {
     }
 
     private Team teamOf(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager offenderManager) {
+        /**
+         * This only populates a subset of team data - this is currently indexed in elasticsearch so if this is modified
+         * then it will lead to inconsistent data and the index will need to be rebuilt.
+         */
         return Optional.ofNullable(offenderManager.getTrustProviderTeam())
                 .map(tpt -> Team.builder()
                         .description(tpt.getDescription())

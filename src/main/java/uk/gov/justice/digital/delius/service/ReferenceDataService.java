@@ -79,7 +79,8 @@ public class ReferenceDataService {
 
     public Page<KeyValue> getLocalDeliveryUnitsForProbationArea(String code) {
         return probationAreaRepository.findByCode(code).stream()
-                .flatMap(probationArea -> probationArea.getLocalDeliveryUnits().stream())
+                .flatMap(probationArea -> probationArea.getBoroughs().stream())
+                .flatMap(borough -> borough.getDistricts().stream())
                 .map(unit -> new KeyValue(unit.getCode(), unit.getDescription()))
                 .collect(collectingAndThen(toList(), PageImpl::new));
     }

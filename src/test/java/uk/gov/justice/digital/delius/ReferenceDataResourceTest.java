@@ -110,7 +110,7 @@ public class ReferenceDataResourceTest {
                 .when()
                 .auth()
                 .oauth2(validOauthToken)
-                .get("/probationAreas/code/A_MISSING_LDU/localDeliveryUnits")
+                .get("/probationAreas/code/A_MISSING_PROBATION_AREA/localDeliveryUnits")
                 .then()
                 .statusCode(404)
                 .extract()
@@ -119,7 +119,7 @@ public class ReferenceDataResourceTest {
 
         assertThat(response).isEqualTo(ErrorResponse.builder()
                 .status(404)
-                .developerMessage("Probation area with code A_MISSING_LDU")
+                .developerMessage("Probation area with code A_MISSING_PROBATION_AREA")
                 .build());
     }
 

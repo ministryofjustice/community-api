@@ -49,14 +49,26 @@ public class TeamTransformerTest {
     }
 
     @Test
-    public void willCopyLocalDeliveryUnit() {
+    public void willCopyDistrictAcrossAsLocalDeliveryUnit() {
+        assertThat(teamTransformer
+                .teamOf(aTeam().toBuilder()
+                        .district(aDistrict().toBuilder()
+                                .code("LL")
+                                .description("My Description").build())
+                        .build())
+                .getLocalDeliveryUnit()).isEqualTo(
+                KeyValue.builder().code("LL").description("My Description").build());
+    }
+
+    @Test
+    public void willCopyLduAcrossAsTeamType() {
         assertThat(teamTransformer
                 .teamOf(aTeam().toBuilder()
                         .localDeliveryUnit(LocalDeliveryUnit.builder().code("LL")
                                 .description("My Description").build())
                         .build())
-                .getLocalDeliveryUnit()).isEqualTo(
-                        KeyValue.builder().code("LL").description("My Description").build());
+                .getTeamType()).isEqualTo(
+                KeyValue.builder().code("LL").description("My Description").build());
     }
 
     @Test

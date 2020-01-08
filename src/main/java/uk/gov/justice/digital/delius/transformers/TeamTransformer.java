@@ -14,7 +14,10 @@ public class TeamTransformer {
                 .telephone(team.getTelephone())
                 .borough(keyValueOf(team.getDistrict().getBorough()))
                 .district(keyValueOf(team.getDistrict()))
-                .localDeliveryUnit(keyValueOf(team.getLocalDeliveryUnit()))
+                // Delius exposes districts as local delivery units.
+                .localDeliveryUnit(keyValueOf(team.getDistrict()))
+                // Delius repurposes LDUs to represent a logical grouping of teams which it describes as "team types"
+                .teamType(keyValueOf(team.getLocalDeliveryUnit()))
                 .build();
     }
 

@@ -80,10 +80,16 @@ public class ReferenceDataServiceTest {
         when(probationAreaRepository.findByCode(aProbationArea().getCode())).thenReturn(
                 Optional.of(
                         aProbationArea().toBuilder()
-                                .localDeliveryUnits(List.of(
-                                        aLocalDeliveryUnit("LDU-1"),
-                                        aLocalDeliveryUnit("LDU-2"),
-                                        aLocalDeliveryUnit("LDU-3")))
+                                .boroughs(List.of(
+                                        aBorough("BB-1").toBuilder()
+                                                .districts(List.of(
+                                                        aDistrict().toBuilder().code("LDU-1").build()))
+                                                .build(),
+                                        aBorough("BB-2").toBuilder()
+                                                .districts(List.of(
+                                                        aDistrict().toBuilder().code("LDU-2").build(),
+                                                        aDistrict().toBuilder().code("LDU-3").build()))
+                                        .build()))
                                 .build()));
 
         assertThat(referenceDataService.getLocalDeliveryUnitsForProbationArea(aProbationArea().getCode()).getContent())
