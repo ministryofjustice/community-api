@@ -206,7 +206,38 @@ public class AuthenticationAPITest {
         assertThat(userDetails.getFirstName()).isEqualTo("Bernard");
         assertThat(userDetails.getSurname()).isEqualTo("Beaks");
         assertThat(userDetails.getEmail()).isEqualTo("bernard.beaks@justice.gov.uk");
-        assertThat(userDetails.getRoles()).hasSize(1).contains(UserRole.builder().name("UWBT060").description("UPW Admin (national)").build());
+        assertThat(userDetails.getRoles()).hasSize(1).contains(UserRole.builder().name("UWBT060").build());
+    }
+
+    @Test
+    public void usersDetails_addRole() {
+
+        given()
+                .auth().oauth2(validOauthToken)
+                .contentType("text/plain")
+                .when()
+                .put("/users/bernard.beaks/roles/CWBT001")
+                .then()
+                .statusCode(200);
+
+
+        final var userDetails = given()
+                .auth().oauth2(validOauthToken)
+                .contentType("text/plain")
+                .when()
+                .get("/users/bernard.beaks/details")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(UserDetails.class);
+
+        assertThat(userDetails.getFirstName()).isEqualTo("Bernard");
+        assertThat(userDetails.getSurname()).isEqualTo("Beaks");
+        assertThat(userDetails.getEmail()).isEqualTo("bernard.beaks@justice.gov.uk");
+        assertThat(userDetails.getRoles()).hasSize(2).contains(
+                UserRole.builder().name("CWBT001").build(),
+                UserRole.builder().name("UWBT060").build());
     }
 
     @Test

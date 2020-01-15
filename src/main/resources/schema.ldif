@@ -1,8 +1,8 @@
+
 dn: dc=moj,dc=com
 objectclass: top
 objectclass: domain
 objectclass: extensibleObject
-dc: memorynotfound
 
 # Organizational Units
 dn: ou=groups,dc=moj,dc=com
@@ -15,8 +15,58 @@ objectclass: top
 objectclass: organizationalUnit
 ou: people
 
+# Role catalogue
+dn:cn=ndRoleCatalogue,ou=Users,dc=moj,dc=com
+description:RBAC v4.2.2
+objectclass: Top
+objectclass: person
+sn: ndRoleCatalogue
+cn: ndRoleCatalogue
+
+# Roles
+
+dn:cn=CWBT001,cn=ndRoleCatalogue,ou=Users,dc=moj,dc=com
+description:Manage Court Appearance Details
+sector:public
+level1:true
+level2:true
+level3:false
+uibusinessinteractioncollection:CWBI006
+uibusinessinteractioncollection:CWBI007
+uibusinessinteractioncollection:CWBI010
+uibusinessinteractioncollection:CWBI008
+uibusinessinteractioncollection:CWBI012
+objectclass:NDRole
+objectclass:top
+cn:CWBT001
+
+dn:cn=CWBT001a,cn=ndRoleCatalogue,ou=Users,dc=moj,dc=com
+description:Manage Court Appearance at Level 3
+sector:public
+level1:true
+level2:true
+level3:true
+uibusinessinteractioncollection:CWBI006
+uibusinessinteractioncollection:CWBI007
+uibusinessinteractioncollection:CWBI010
+objectclass:NDRole
+objectclass:top
+cn:CWBT001a
+
+dn:cn=UWBT060,cn=ndRoleCatalogue,ou=Users,dc=moj,dc=com
+description:UPW Admin (national)
+sector:public
+adminlevel:national
+level1:false
+level2:false
+level3:true
+uibusinessinteractioncollection:UWBI190
+objectclass:NDRole
+objectclass:top
+cn:UWBT060
+
 # Create People
-dn: uid=oliver.connolly,ou=Users,dc=moj,dc=com
+dn: cn=oliver.connolly,ou=Users,dc=moj,dc=com
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
@@ -26,7 +76,7 @@ sn: Oliver
 uid: OlIvEr.cOnNoLlY
 userPassword: secret
 
-dn: uid=jihn,ou=Users,dc=moj,dc=com
+dn: cn=jihn,ou=Users,dc=moj,dc=com
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
@@ -35,7 +85,7 @@ cn: Jihn Die
 sn: Jihn
 uid: Jihndie1
 
-dn: uid=jahn,ou=Users,dc=moj,dc=com
+dn: cn=jahn,ou=Users,dc=moj,dc=com
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
@@ -44,7 +94,7 @@ cn: Jahn Dae
 sn: Jahn
 uid: jahn
 
-dn: uid=bernard.beaks,ou=Users,dc=moj,dc=com
+dn: cn=bernard.beaks,ou=Users,dc=moj,dc=com
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
@@ -58,7 +108,7 @@ uid: bernard.beaks
 userPassword: secret
 
 # Delius would actually use and alias to link to role
-dn: cn=UWBT060,uid=bernard.beaks,ou=Users,dc=moj,dc=com
+dn: cn=UWBT060,cn=bernard.beaks,ou=Users,dc=moj,dc=com
 objectclass: top
 objectclass: NDRole
 cn: UWBT060
@@ -69,6 +119,32 @@ level2: false
 level3: true
 sector: public
 uibusinessinteractioncollection: UWBI190
+
+
+dn: cn=SheilaHancockNPS,ou=Users,dc=moj,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: NDUser
+cn: SheilaHancockNPS
+sn: Hancock
+givenname: Sheila
+mail: sheila.hancock@justice.gov.uk
+uid: SheilaHancockNPS
+userPassword: secret
+
+dn: cn=EmailNotPresentNPS,ou=Users,dc=moj,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: NDUser
+cn: EmailNotPresentNPS
+sn: Email
+givenname: No
+uid: EmailNotPresentNPS
+userPassword: secret
 
 # Create Groups
 dn: cn=developers,ou=groups,dc=moj,dc=com
@@ -86,27 +162,3 @@ cn: managers
 ou: manager
 uniqueMember: uid=jahn,ou=Users,dc=moj,dc=com
 
-dn: uid=SheilaHancockNPS,ou=Users,dc=moj,dc=com
-objectclass: top
-objectclass: person
-objectclass: organizationalPerson
-objectclass: inetOrgPerson
-objectclass: NDUser
-cn: SheilaHancockNPS
-sn: Hancock
-givenname: Sheila
-mail: sheila.hancock@justice.gov.uk
-uid: SheilaHancockNPS
-userPassword: secret
-
-dn: uid=EmailNotPresentNPS,ou=Users,dc=moj,dc=com
-objectclass: top
-objectclass: person
-objectclass: organizationalPerson
-objectclass: inetOrgPerson
-objectclass: NDUser
-cn: EmailNotPresentNPS
-sn: Email
-givenname: No
-uid: EmailNotPresentNPS
-userPassword: secret

@@ -4,11 +4,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
+import static org.springframework.test.annotation.DirtiesContext.MethodMode.AFTER_METHOD;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = NONE)
 @RunWith(SpringRunner.class)
 public class LdapRepositoryTest {
     @Autowired
@@ -19,15 +24,50 @@ public class LdapRepositoryTest {
         assertThat(ldapRepository.getEmail("SheilaHancockNPS"))
                 .isEqualTo("sheila.hancock@justice.gov.uk");
     }
+
     @Test
     public void shouldReturnNullForUserFoundButNoEmail() {
         assertThat(ldapRepository.getEmail("UserWithNoEmail"))
                 .isNull();
     }
+
     @Test
     public void shouldReturnNullForUserNotFound() {
         assertThat(ldapRepository.getEmail("EmailNotPresentNPS"))
                 .isNull();
     }
-    
+
+    @Test
+    @DirtiesContext(methodMode = AFTER_METHOD)
+    public void shouldBeAbleToAddARole() {
+        assertThat(ldapRepository.getDeliusUser("bernard.beaks").get().getRoles())
+                .extracting(NDeliusRole::getCn)
+                .containsExactly("UWBT060");
+
+        ldapRepository.addRole("bernard.beaks", "CWBT001");
+
+        assertThat(ldapRepository.getDeliusUser("bernard.beaks").get().getRoles())
+                .extracting(NDeliusRole::getCn)
+                .containsExactly("CWBT001", "UWBT060");
+    }
+
+    @Test
+    public void canRetrieveAllRoles() {
+        assertThat(ldapRepository.getAllRoles()).containsOnly("CWBT001", "CWBT001a", "UWBT060");
+    }
+
+    @Test
+    @DirtiesContext(methodMode = AFTER_METHOD)
+    public void cannotAddTheSameRoleTwice() {
+        assertThat(ldapRepository.getDeliusUser("bernard.beaks").get().getRoles())
+                .extracting(NDeliusRole::getCn)
+                .containsExactly("UWBT060");
+
+        ldapRepository.addRole("bernard.beaks", "CWBT001");
+        ldapRepository.addRole("bernard.beaks", "CWBT001");
+
+        assertThat(ldapRepository.getDeliusUser("bernard.beaks").get().getRoles())
+                .extracting(NDeliusRole::getCn)
+                .containsExactly("CWBT001", "UWBT060");
+    }
 }
