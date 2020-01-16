@@ -60,7 +60,7 @@ public class AuthenticationController {
     }
 
     @ApiOperation(
-            value = "Find user details of a user held in Delius Identity (LDAP)",
+            value = "Add a role to a user held in Delius Identity (LDAP)",
             authorizations = {@Authorization("ROLE_AUTH_DELIUS_LDAP")})
     @ApiResponses(
             value = {
