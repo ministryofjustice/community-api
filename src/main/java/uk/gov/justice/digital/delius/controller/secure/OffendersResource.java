@@ -27,7 +27,7 @@ import java.util.Optional;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
-@Api(tags = "Offender resources protected by OAUTH2", authorizations = {@Authorization("ROLE_COMMUNITY")})
+@Api(tags = "Offender resources (Secure)", authorizations = {@Authorization("ROLE_COMMUNITY")})
 @RestController
 @Slf4j
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -85,7 +85,7 @@ public class LogonAPITest {
     @Test
     public void logonWithKnownDistinguishedNameGivesTokenContainingOracleUser() {
         String token = given()
-                .body("uid=jihn,ou=Users,dc=moj,dc=com")
+                .body("cn=jihn,ou=Users,dc=moj,dc=com")
                 .when()
                 .post("/logon")
                 .then()

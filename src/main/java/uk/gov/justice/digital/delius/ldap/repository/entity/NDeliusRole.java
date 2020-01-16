@@ -7,5 +7,4 @@ import lombok.Data;
 @Data
 public class NDeliusRole {
     private String cn;
-    private String description;
 }

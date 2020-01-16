@@ -1,8 +1,10 @@
 package uk.gov.justice.digital.delius.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.jpa.national.entity.ProbationArea;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
@@ -14,6 +16,7 @@ import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
+@Slf4j
 @Service
 public class UserService {
     private final UserRepositoryWrapper userRepositoryWrapper;
@@ -86,7 +89,7 @@ public class UserService {
         return ldapRepository.getDeliusUser(username).map(user ->
                 UserDetails
                         .builder()
-                        .roles(user.getRoles().stream().map(role -> UserRole.builder().name(role.getCn()).description(role.getDescription()).build()).collect(toList()))
+                        .roles(user.getRoles().stream().map(role -> UserRole.builder().name(role.getCn()).build()).collect(toList()))
                         .firstName(user.getGivenname())
                         .surname(user.getSn())
                         .email(user.getMail())
@@ -101,5 +104,14 @@ public class UserService {
 
     public boolean changePassword(final String username, final String password) {
         return ldapRepository.changePassword(username, password);
+    }
+
+    public void addRole(final String username, final String roleId) {
+        var allRoles = ldapRepository.getAllRoles();
+        if (!allRoles.contains(roleId)) {
+            log.info("Could not add role with id: '{}' in {}", roleId, allRoles);
+            throw new BadRequestException(String.format("Could not find role with id: '%s'", roleId));
+        }
+        ldapRepository.addRole(username, roleId);
     }
 }

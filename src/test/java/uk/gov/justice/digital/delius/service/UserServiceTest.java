@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.UserDetails;
 import uk.gov.justice.digital.delius.data.api.UserRole;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -299,7 +301,6 @@ public class UserServiceTest {
                                 NDeliusRole
                                         .builder()
                                         .cn("ROLE1")
-                                        .description("The role one")
                                         .build()))
                         .build()));
         when(userRepositoryWrapper.getUser(any())).thenReturn(User.builder().userId(12345L).build());
@@ -311,7 +312,7 @@ public class UserServiceTest {
                         .email("john.bean@justice.gov.uk")
                         .surname("Bean")
                         .firstName("John")
-                        .roles(List.of(UserRole.builder().name("ROLE1").description("The role one").build()))
+                        .roles(List.of(UserRole.builder().name("ROLE1").build()))
                         .enabled(true)
                         .userId(12345L)
                         .build());
@@ -324,7 +325,25 @@ public class UserServiceTest {
         final var userDetails = userService.getUserDetails("john.bean");
 
         assertThat(userDetails.isPresent()).isFalse();
-
     }
 
+    @Test
+    public void canAddRoleToUser() {
+        when(ldapRepository.getAllRoles()).thenReturn(List.of("CWBT001", "UWBT060"));
+
+        userService.addRole("john.bean", "UWBT060");
+
+        verify(ldapRepository).addRole("john.bean", "UWBT060");
+    }
+
+    @Test
+    public void cannotAddRoleThatDoesNotExistToUser() {
+        when(ldapRepository.getAllRoles()).thenReturn(List.of("CWBT001"));
+
+        assertThatThrownBy(() -> userService.addRole("john.bean", "UWBT060"))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("Could not find role with id: 'UWBT060'");
+
+        verify(ldapRepository, never()).addRole(any(), any());
+    }
 }

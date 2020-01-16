@@ -17,6 +17,4 @@ import lombok.NoArgsConstructor;
 public class UserRole {
     @ApiModelProperty(value = "Code/Name of the Role", example = "TEST_ROLE", required = true, position = 1)
     private String name;
-    @ApiModelProperty(value = "Description the Role", example = "A Test Role", position = 2)
-    private String description;
 }

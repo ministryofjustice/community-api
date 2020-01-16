@@ -60,6 +60,24 @@ public class AuthenticationController {
     }
 
     @ApiOperation(
+            value = "Add a role to a user held in Delius Identity (LDAP)",
+            authorizations = {@Authorization("ROLE_AUTH_DELIUS_LDAP")})
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "OK", response = UserDetails.class),
+                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+                    @ApiResponse(code = 404, message = "Not Found", response = ErrorResponse.class)
+            })
+    @RequestMapping(value = "/users/{username}/roles/{roleId}", method = RequestMethod.PUT)
+    public void addRole(
+            @ApiParam(name = "username", value = "LDAP username", example = "TESTUSERNPS", required = true) @NotNull final @PathVariable("username") String username,
+            @ApiParam(name = "roleId", value = "Delius Role ID", example = "CWBT001", required = true) @NotNull final @PathVariable("roleId") String roleId
+    ) {
+        userService.addRole(username, roleId);
+    }
+
+    @ApiOperation(
             value = "Change password a users (LDAP) account",
             authorizations = {@Authorization("ROLE_AUTH_DELIUS_LDAP")})
     @ApiResponses(
