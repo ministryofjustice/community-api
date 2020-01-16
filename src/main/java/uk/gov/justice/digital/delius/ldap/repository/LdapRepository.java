@@ -81,7 +81,7 @@ public class LdapRepository {
                 .build().toString();
 
         Attributes attributes = new BasicAttributes(true);
-        attributes.put(attribute("objectclass", "NDRoleAssociation", "Alias"));
+        attributes.put(attribute("objectclass", "NDRoleAssociation", "Alias", "top"));
         attributes.put(attribute("aliasedObjectName", roleContext));
         attributes.put(attribute("cn", roleId));
 
