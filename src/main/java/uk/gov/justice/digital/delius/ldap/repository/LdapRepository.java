@@ -15,12 +15,14 @@ import org.springframework.stereotype.Repository;
 import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusRole;
 import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusUser;
 
+import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.ldap.LdapName;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkState;
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
@@ -79,9 +81,9 @@ public class LdapRepository {
                 .build().toString();
 
         Attributes attributes = new BasicAttributes(true);
-        attributes.put(new BasicAttribute("objectclass", "NDRoleAssociation"));
-        attributes.put(new BasicAttribute("aliasedObjectName", roleContext));
-        attributes.put(new BasicAttribute("cn", roleId));
+        attributes.put(attribute("objectclass", "NDRoleAssociation", "Alias"));
+        attributes.put(attribute("aliasedObjectName", roleContext));
+        attributes.put(attribute("cn", roleId));
 
         LdapName newRoleAssociationContext = LdapNameBuilder.newInstance(ldapUserBase)
                 .add("cn", username)
@@ -89,6 +91,12 @@ public class LdapRepository {
                 .build();
 
         authenticationTemplate.rebind(newRoleAssociationContext, null, attributes);
+    }
+
+    private Attribute attribute(String id, String... values) {
+        Attribute attribute = new BasicAttribute(id);
+        Stream.of(values).forEach(attribute::add);
+        return attribute;
     }
 
     public List<String> getAllRoles() {
