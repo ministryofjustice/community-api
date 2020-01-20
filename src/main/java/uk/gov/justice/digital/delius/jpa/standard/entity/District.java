@@ -9,10 +9,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @EqualsAndHashCode(of = "districtId")
 @Data
 @NoArgsConstructor
+@ToString(exclude = {"teams"})
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Entity
@@ -63,4 +65,7 @@ public class District {
     @LastModifiedDate
     private LocalDateTime lastUpdatedDatetime;
 
+    @OneToMany
+    @JoinColumn(name = "DISTRICT_ID")
+    private List<Team> teams;
 }
