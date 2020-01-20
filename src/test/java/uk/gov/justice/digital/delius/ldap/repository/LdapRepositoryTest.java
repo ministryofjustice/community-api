@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.ldap.NameNotFoundException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusRole;
@@ -69,5 +70,11 @@ public class LdapRepositoryTest {
         assertThat(ldapRepository.getDeliusUser("bernard.beaks").get().getRoles())
                 .extracting(NDeliusRole::getCn)
                 .containsExactly("CWBT001", "UWBT060");
+    }
+
+    @Test
+    public void addingRoleToNonExistentUserThrowsNamingException() {
+        assertThatThrownBy(() -> ldapRepository.addRole("does not exist", "CWBT001"))
+            .isInstanceOf(NameNotFoundException.class);
     }
 }
