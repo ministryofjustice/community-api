@@ -37,7 +37,7 @@ public class ReferenceDataResource {
             notes = "Accepts filtering to only return active areas")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "OK", response = KeyValue.class, responseContainer = "PAge"),
+                    @ApiResponse(code = 200, message = "OK"),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
                     @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
@@ -57,7 +57,7 @@ public class ReferenceDataResource {
             notes = "Accepts a probation area code")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "OK", response = KeyValue.class, responseContainer = "Page"),
+                    @ApiResponse(code = 200, message = "OK"),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
                     @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
@@ -76,5 +76,28 @@ public class ReferenceDataResource {
             throw new NotFoundException(String.format("Probation area with code %s", code));
         }
         return ldus;
+    }
+
+    @ApiOperation(
+            value = "Return teams for a local delivery unit within a probation area",
+            notes = "Accepts a probation area code and local delivery unit code")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "OK"),
+                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+                    @ApiResponse(code = 404, message = "Not found", response = ErrorResponse.class),
+                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            })
+    @GetMapping(value = "/probationAreas/code/{code}/localDeliveryUnits/code/{lduCode}/teams")
+    public Page<KeyValue> getTeamsForLdu(
+            @ApiParam(name = "code", value = "Probation area code", example = "NO2", required = true)
+            final @PathVariable String code,
+            @ApiParam(name = "lduCode", value = "Local delivery unit code", example = "NO2NPSA", required = true)
+            final @PathVariable String lduCode) {
+
+        log.info("Call to getTeamsForLdu");
+        return referenceDataService.getTeamsForLocalDeliveryUnit(code, lduCode);
     }
 }
