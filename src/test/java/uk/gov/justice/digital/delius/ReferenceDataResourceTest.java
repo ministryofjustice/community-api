@@ -15,8 +15,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
-import uk.gov.justice.digital.delius.data.api.ProbationArea;
-import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
 
 import java.util.List;
 
@@ -28,8 +26,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("dev-seed")
 public class ReferenceDataResourceTest {
 
-    public static final String ACTIVE_PROBATION_AREA = "TES";
-    public static final String INACTIVE_PROBATION_AREA = "BED";
+    private static final String ACTIVE_PROBATION_AREA = "TES";
+    private static final String INACTIVE_PROBATION_AREA = "BED";
+    private static final String EXISTING_LDU = "TESUAT";
+    private static final String MISSING_LDU = "NOT_EXISTING";
+
     @LocalServerPort
     int port;
 
@@ -123,4 +124,38 @@ public class ReferenceDataResourceTest {
                 .build());
     }
 
+    @Test
+    public void canGetTeamsForDeliveryUnit() {
+        List<KeyValue> localDeliveryUnits = given()
+                .when()
+                .auth()
+                .oauth2(validOauthToken)
+                .get(String.format("/probationAreas/code/%s/localDeliveryUnits/code/%s/teams", ACTIVE_PROBATION_AREA, EXISTING_LDU))
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .jsonPath().getList("content", KeyValue.class);
+
+        assertThat(localDeliveryUnits).extracting("code").containsOnly("TESUAT", "TESPRC");
+    }
+
+    @Test
+    public void canGetTeamsForDeliveryUnit_missingLocalDeliveryUnit() {
+        ErrorResponse response = given()
+                .when()
+                .auth()
+                .oauth2(validOauthToken)
+                .get(String.format("/probationAreas/code/%s/localDeliveryUnits/code/%s/teams", ACTIVE_PROBATION_AREA, MISSING_LDU))
+                .then()
+                .statusCode(404)
+                .extract()
+                .body()
+                .as(ErrorResponse.class);
+
+        assertThat(response).isEqualTo(ErrorResponse.builder()
+                .status(404)
+                .developerMessage(String.format("Could not find local delivery unit in probation area: '%s', with code: '%s'", ACTIVE_PROBATION_AREA, MISSING_LDU))
+                .build());
+    }
 }

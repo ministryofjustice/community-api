@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.filters.ProbationAreaFilter;
@@ -82,6 +83,20 @@ public class ReferenceDataService {
                 .flatMap(probationArea -> probationArea.getBoroughs().stream())
                 .flatMap(borough -> borough.getDistricts().stream())
                 .map(unit -> new KeyValue(unit.getCode(), unit.getDescription()))
+                .collect(collectingAndThen(toList(), PageImpl::new));
+    }
+
+    public Page<KeyValue> getTeamsForLocalDeliveryUnit(String code, String lduCode) {
+        var localDeliveryUnit = probationAreaRepository.findByCode(code).stream()
+                .flatMap(probationArea -> probationArea.getBoroughs().stream())
+                .flatMap(borough -> borough.getDistricts().stream())
+                .filter(district -> district.getCode().equals(lduCode))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("Could not find local delivery unit in probation area: '%s', with code: '%s'", code, lduCode)));
+
+        return localDeliveryUnit.getTeams().stream()
+                .map(team -> new KeyValue(team.getCode(), team.getDescription()))
                 .collect(collectingAndThen(toList(), PageImpl::new));
     }
 }
