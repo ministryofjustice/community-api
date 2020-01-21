@@ -2,9 +2,11 @@ package uk.gov.justice.digital.delius.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ldap.NameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.jpa.national.entity.ProbationArea;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
@@ -112,6 +114,10 @@ public class UserService {
             log.info("Could not add role with id: '{}' in {}", roleId, allRoles);
             throw new BadRequestException(String.format("Could not find role with id: '%s'", roleId));
         }
-        ldapRepository.addRole(username, roleId);
+        try {
+            ldapRepository.addRole(username, roleId);
+        } catch (NameNotFoundException e) {
+            throw new NotFoundException(String.format("Could not find user with username: '%s'", username));
+        }
     }
 }

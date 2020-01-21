@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.AuthPassword;
 import uk.gov.justice.digital.delius.data.api.AuthUser;
 import uk.gov.justice.digital.delius.data.api.UserDetails;
@@ -210,7 +212,19 @@ public class AuthenticationAPITest {
     }
 
     @Test
-    public void usersDetails_addRole() {
+    public void usersDetails_returns404WhenUserNotFound() {
+        given()
+                .auth().oauth2(validOauthToken)
+                .contentType("text/plain")
+                .when()
+                .get("/users/john.smith/details")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    @DirtiesContext
+    public void addRole() {
 
         given()
                 .auth().oauth2(validOauthToken)
@@ -241,14 +255,21 @@ public class AuthenticationAPITest {
     }
 
     @Test
-    public void usersDetails_returns404WhenUserNotFound() {
-        given()
+    public void addRole_whenUserDoesNotExist() {
+
+        ErrorResponse response = given()
                 .auth().oauth2(validOauthToken)
                 .contentType("text/plain")
                 .when()
-                .get("/users/john.smith/details")
+                .put("/users/usernoexist/roles/CWBT001")
                 .then()
-                .statusCode(404);
-    }
+                .statusCode(404)
+                .extract()
+                .as(ErrorResponse.class);
 
+        assertThat(response).isEqualTo(ErrorResponse.builder()
+                .status(404)
+                .developerMessage("Could not find user with username: 'usernoexist'")
+                .build());;
+    }
 }
