@@ -104,8 +104,10 @@ public class ReferenceDataService {
     }
 
     private Stream<District> getSelectableLdusForProbationArea(String code) {
-        return probationAreaRepository.findByCode(code).stream()
-                .flatMap(probationArea -> probationArea.getBoroughs().stream())
+        var probationArea = probationAreaRepository.findByCode(code).orElseThrow(() ->
+                new NotFoundException(format("Could not find probation area with code: '%s'", code)));
+
+        return probationArea.getBoroughs().stream()
                 // LDUs are represented as districts in the delius schema
                 .flatMap(borough -> borough.getDistricts().stream())
                 .filter(district -> ynToBoolean(district.getSelectable()));

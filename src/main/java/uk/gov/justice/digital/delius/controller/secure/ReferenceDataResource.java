@@ -70,12 +70,7 @@ public class ReferenceDataResource {
             final @PathVariable String code) {
 
         log.info("Call to getLdusForProbationCode");
-        final var ldus = referenceDataService.getLocalDeliveryUnitsForProbationArea(code);
-
-        if (ldus.isEmpty()) {
-            throw new NotFoundException(String.format("Probation area with code %s", code));
-        }
-        return ldus;
+        return referenceDataService.getLocalDeliveryUnitsForProbationArea(code);
     }
 
     @ApiOperation(

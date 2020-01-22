@@ -26,9 +26,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("dev-seed")
 public class ReferenceDataResourceTest {
 
-    private static final String ACTIVE_PROBATION_AREA = "TES";
+    private static final String ACTIVE_PROBATION_AREA = "N02";
     private static final String INACTIVE_PROBATION_AREA = "BED";
-    private static final String EXISTING_LDU = "TESUAT";
+    private static final String EXISTING_LDU = "YSS_SHF";
     private static final String MISSING_LDU = "NOT_EXISTING";
 
     @LocalServerPort
@@ -102,7 +102,7 @@ public class ReferenceDataResourceTest {
                 .body()
                 .jsonPath().getList("content", KeyValue.class);
 
-        assertThat(localDeliveryUnits).extracting("code").containsOnly("TESMIG", "TESUAT", "TESSPG");
+        assertThat(localDeliveryUnits).extracting("code").contains(EXISTING_LDU, "N02LEE", "N02NNT", "N02SDL");
     }
 
     @Test
@@ -120,7 +120,7 @@ public class ReferenceDataResourceTest {
 
         assertThat(response).isEqualTo(ErrorResponse.builder()
                 .status(404)
-                .developerMessage("Probation area with code A_MISSING_PROBATION_AREA")
+                .developerMessage("Could not find probation area with code: 'A_MISSING_PROBATION_AREA'")
                 .build());
     }
 
@@ -137,7 +137,7 @@ public class ReferenceDataResourceTest {
                 .body()
                 .jsonPath().getList("content", KeyValue.class);
 
-        assertThat(localDeliveryUnits).extracting("code").containsOnly("TESUAT", "TESPRC");
+        assertThat(localDeliveryUnits).extracting("code").containsOnly("N02N30", "N02N21");
     }
 
     @Test

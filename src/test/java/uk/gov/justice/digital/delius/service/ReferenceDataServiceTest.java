@@ -205,6 +205,8 @@ public class ReferenceDataServiceTest {
     @Test
     public void getLocalDeliveryUnits_missingProbationArea() {
         when(probationAreaRepository.findByCode(aProbationArea().getCode())).thenReturn(Optional.empty());
-        assertThat(referenceDataService.getLocalDeliveryUnitsForProbationArea(aProbationArea().getCode()).getContent()).isEmpty();
+        assertThatThrownBy(() -> referenceDataService.getLocalDeliveryUnitsForProbationArea(aProbationArea().getCode()))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("Could not find probation area with code: 'NO2'");
     }
 }
