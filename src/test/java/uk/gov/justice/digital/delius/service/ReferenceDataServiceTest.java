@@ -12,6 +12,7 @@ import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.jpa.filters.ProbationAreaFilter;
+import uk.gov.justice.digital.delius.jpa.standard.entity.District;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
@@ -146,6 +147,60 @@ public class ReferenceDataServiceTest {
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("Could not find local delivery unit in probation area: 'NO2', with code: 'LDU-2'");
     }
+
+    @Test
+    public void getTeamsForLocalDeliveryUnit_unselectableLdusAreNotReturned() {
+        when(probationAreaRepository.findByCode(aProbationArea().getCode())).thenReturn(
+                Optional.of(
+                        aProbationArea().toBuilder()
+                                .boroughs(List.of(
+                                        aBorough("BB-1").toBuilder()
+                                                .districts(List.of(
+                                                        aDistrict().toBuilder()
+                                                                .code("LDU-1")
+                                                                .selectable("N")
+                                                                .teams(List.of(
+                                                                        aTeam("TEAM-1"),
+                                                                        aTeam("TEAM-2")
+                                                                ))
+                                                                .build()))
+                                                .build()))
+                                .build()));
+
+        assertThatThrownBy(() -> referenceDataService.getTeamsForLocalDeliveryUnit(aProbationArea().getCode(), "LDU-1"))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("Could not find local delivery unit in probation area: 'NO2', with code: 'LDU-1'");
+    }
+
+    @Test
+    public void getTeamsForLocalDeliveryUnit_teamsFromMultipleLdusWithTheSameCodeAreAllReturned() {
+        when(probationAreaRepository.findByCode(aProbationArea().getCode())).thenReturn(
+                Optional.of(
+                        aProbationArea().toBuilder()
+                                .boroughs(List.of(
+                                        aBorough("BB-1").toBuilder()
+                                                .districts(List.of(
+                                                        aDistrict().toBuilder()
+                                                                .code("LDU-1")
+                                                                .teams(List.of(
+                                                                        aTeam("TEAM-1"),
+                                                                        aTeam("TEAM-2")
+                                                                ))
+                                                                .build(),
+                                                        aDistrict().toBuilder()
+                                                                .code("LDU-1")
+                                                                .teams(List.of(
+                                                                        aTeam("TEAM-3")
+                                                                ))
+                                                                .build()))
+                                                .build()))
+                                .build()));
+
+        assertThat(referenceDataService.getTeamsForLocalDeliveryUnit(aProbationArea().getCode(), "LDU-1").getContent())
+                .extracting(KeyValue::getCode)
+                .containsExactly("TEAM-1", "TEAM-2", "TEAM-3");
+    }
+
 
     @Test
     public void getLocalDeliveryUnits_missingProbationArea() {

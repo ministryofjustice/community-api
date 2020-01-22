@@ -9,6 +9,7 @@ import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.filters.ProbationAreaFilter;
+import uk.gov.justice.digital.delius.jpa.standard.entity.District;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StandardReferenceRepository;
@@ -16,9 +17,11 @@ import uk.gov.justice.digital.delius.transformers.ProbationAreaTransformer;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.lang.String.*;
 import static java.util.stream.Collectors.*;
+import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
 
 @Service
 public class ReferenceDataService {
@@ -67,7 +70,7 @@ public class ReferenceDataService {
 
     private StandardReference pomAllocationTransferReason(String reason) {
         return standardReferenceRepository.findByCodeAndCodeSetName(reason, POM_ALLOCATION_REASON_DATASET)
-                .orElseThrow(() -> new RuntimeException(String.format("No pom allocation reason found for %s", reason)));
+                .orElseThrow(() -> new RuntimeException(format("No pom allocation reason found for %s", reason)));
     }
 
     public Page<KeyValue> getProbationAreasCodes(boolean restrictActive) {
@@ -79,24 +82,32 @@ public class ReferenceDataService {
     }
 
     public Page<KeyValue> getLocalDeliveryUnitsForProbationArea(String code) {
-        return probationAreaRepository.findByCode(code).stream()
-                .flatMap(probationArea -> probationArea.getBoroughs().stream())
-                .flatMap(borough -> borough.getDistricts().stream())
-                .map(unit -> new KeyValue(unit.getCode(), unit.getDescription()))
+        return getSelectableLdusForProbationArea(code)
+                .map(ldu -> new KeyValue(ldu.getCode(), ldu.getDescription()))
                 .collect(collectingAndThen(toList(), PageImpl::new));
     }
 
     public Page<KeyValue> getTeamsForLocalDeliveryUnit(String code, String lduCode) {
-        var localDeliveryUnit = probationAreaRepository.findByCode(code).stream()
-                .flatMap(probationArea -> probationArea.getBoroughs().stream())
-                .flatMap(borough -> borough.getDistricts().stream())
-                .filter(district -> district.getCode().equals(lduCode))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException(
-                        String.format("Could not find local delivery unit in probation area: '%s', with code: '%s'", code, lduCode)));
+        var ldus = getSelectableLdusForProbationArea(code)
+                // ldu code is not primary key so duplicates can exist - this returns all teams that are linked to LDUs with the provided code
+                .filter(ldu -> ldu.getCode().equals(lduCode))
+                .collect(toList());
 
-        return localDeliveryUnit.getTeams().stream()
+        if (ldus.isEmpty()) {
+            throw new NotFoundException(format("Could not find local delivery unit in probation area: '%s', with code: '%s'", code, lduCode));
+        }
+
+        return ldus.stream()
+                .flatMap(ldu -> ldu.getTeams().stream())
                 .map(team -> new KeyValue(team.getCode(), team.getDescription()))
                 .collect(collectingAndThen(toList(), PageImpl::new));
+    }
+
+    private Stream<District> getSelectableLdusForProbationArea(String code) {
+        return probationAreaRepository.findByCode(code).stream()
+                .flatMap(probationArea -> probationArea.getBoroughs().stream())
+                // LDUs are represented as districts in the delius schema
+                .flatMap(borough -> borough.getDistricts().stream())
+                .filter(district -> ynToBoolean(district.getSelectable()));
     }
 }
