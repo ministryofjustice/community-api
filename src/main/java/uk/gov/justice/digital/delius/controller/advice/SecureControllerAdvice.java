@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.RestClientException;
@@ -86,6 +87,18 @@ public class SecureControllerAdvice {
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorResponse> handleException(final BadRequestException e) {
+        log.debug("Bad request (400) returned", e);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse
+                        .builder()
+                        .status(HttpStatus.BAD_REQUEST.value())
+                        .developerMessage(e.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleException(final MethodArgumentNotValidException e) {
         log.debug("Bad request (400) returned", e);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
