@@ -117,6 +117,22 @@ public class ConvictionService {
         }
     }
 
+    public Optional<Event> getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(Long offenderId, String prisonBookingNumber) throws DuplicateConvictionsForBookingNumberException {
+        val events = eventRepository.findByOffenderIdAndPrisonBookingNumber(offenderId, prisonBookingNumber)
+                .stream()
+                .filter(event -> event.getActiveFlag() == 1L)
+                .collect(toList());
+
+        switch (events.size()) {
+            case 0:
+                return Optional.empty();
+            case 1:
+                return events.stream().findFirst();
+            default:
+                throw new DuplicateConvictionsForBookingNumberException(events.size());
+        }
+    }
+
     @Transactional
     public CustodyKeyDate addOrReplaceCustodyKeyDateByOffenderId(Long offenderId, String typeCode, CreateCustodyKeyDate custodyKeyDate) throws CustodyTypeCodeIsNotValidException {
         return addOrReplaceCustodyKeyDate(getActiveCustodialEvent(offenderId), typeCode, custodyKeyDate);

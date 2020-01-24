@@ -39,10 +39,17 @@ public class EntityHelper {
                         .builder()
                         .codeDescription("PAROM1")
                         .build())
-                .institution(RInstitution
-                        .builder()
-                        .institutionName("Windsor Prison")
-                        .build())
+                .institution(anInstitution())
+                .build();
+    }
+
+    public static RInstitution anInstitution() {
+        return RInstitution
+                .builder()
+                .code("MDIHMP")
+                .institutionName("Moorland (HMP & YOI)")
+                .establishment("Y")
+                .nomisCdeCode("MDI")
                 .build();
     }
 
