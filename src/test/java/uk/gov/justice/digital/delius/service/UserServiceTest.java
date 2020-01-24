@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
+import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -21,6 +22,7 @@ import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusUser;
 import uk.gov.justice.digital.delius.service.wrapper.UserRepositoryWrapper;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +38,9 @@ public class UserServiceTest {
 
     @MockBean
     private LdapRepository ldapRepository;
+
+    @MockBean
+    private TelemetryClient telemetryClient;
 
     @Autowired
     private UserService userService;
@@ -334,6 +339,8 @@ public class UserServiceTest {
         userService.addRole("john.bean", "UWBT060");
 
         verify(ldapRepository).addRole("john.bean", "UWBT060");
+        verify(telemetryClient).trackEvent("RoleAssigned", Map.of("username", "john.bean", "roleId", "UWBT060"), null);
+
     }
 
     @Test
@@ -345,5 +352,6 @@ public class UserServiceTest {
                 .hasMessage("Could not find role with id: 'UWBT060'");
 
         verify(ldapRepository, never()).addRole(any(), any());
+        verifyNoInteractions(telemetryClient);
     }
 }
