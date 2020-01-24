@@ -99,7 +99,7 @@ public class ConvictionTransformer {
                 .build();
     }
 
-    private Custody custodyOf(uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody) {
+    public Custody custodyOf(uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody) {
         return Custody
                 .builder()
                 .bookingNumber(custody.getPrisonerNumber())
