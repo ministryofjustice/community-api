@@ -13,9 +13,9 @@ import javax.validation.Valid;
 
 @RestController
 @Slf4j
-@Api(tags = {"Custody resource"}, authorizations = {@Authorization("ROLE_COMMUNITY")})
+@Api(tags = {"Custody resource"}, authorizations = {@Authorization("ROLE_COMMUNITY_CUSTODY_UPDATE")})
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
-@PreAuthorize("hasRole('ROLE_COMMUNITY')")
+@PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
 public class CustodyResource {
     private final CustodyService custodyService;
 
