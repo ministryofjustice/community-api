@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -20,6 +19,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
+import uk.gov.justice.digital.delius.jwt.JwtAuthenticationHelper;
+
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.mockito.ArgumentMatchers.*;
@@ -41,8 +45,8 @@ public class CustodyUpdateAPITest {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    @Value("${test.token.good}")
-    private String validOauthToken;
+    @Autowired
+    protected JwtAuthenticationHelper jwtAuthenticationHelper;
 
     @MockBean
     private TelemetryClient telemetryClient;
@@ -56,10 +60,25 @@ public class CustodyUpdateAPITest {
     }
 
     @Test
-    public void updatePrisonInstitution() throws JsonProcessingException {
+    public void mustHaveUpdateRole() throws JsonProcessingException {
+        final var token = createJwt("ROLE_COMMUNITY");
 
-        final var custody = given()
-                .auth().oauth2(validOauthToken)
+        given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .body(createUpdateCustody("MDI"))
+                .when()
+                .put(String.format("offenders/nomsNumber/%s/custody/bookingNumber/%s",  NOMS_NUMBER, PRISON_BOOKING_NUMBER))
+                .then()
+                .statusCode(403);
+    }
+
+    @Test
+    public void updatePrisonInstitution() throws JsonProcessingException {
+        final var token = createJwt("ROLE_COMMUNITY_CUSTODY_UPDATE");
+
+        given()
+                .auth().oauth2(token)
                 .contentType("application/json")
                 .body(createUpdateCustody("MDI"))
                 .when()
@@ -83,5 +102,14 @@ public class CustodyUpdateAPITest {
                 .nomsPrisonInstitutionCode(prisonCode)
                 .build());
     }
+    private String createJwt(final String ...roles ) {
+        return jwtAuthenticationHelper.createJwt(JwtAuthenticationHelper.JwtParameters.builder()
+                .username("APIUser")
+                .roles(List.of(roles))
+                .scope(Arrays.asList("read", "write"))
+                .expiryTime(Duration.ofDays(1))
+                .build());
+    }
+
 
 }
