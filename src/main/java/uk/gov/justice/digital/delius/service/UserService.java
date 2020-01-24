@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import com.microsoft.applicationinsights.TelemetryClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.NameNotFoundException;
@@ -14,6 +15,7 @@ import uk.gov.justice.digital.delius.service.wrapper.UserRepositoryWrapper;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
@@ -23,11 +25,13 @@ import static java.util.stream.Collectors.toList;
 public class UserService {
     private final UserRepositoryWrapper userRepositoryWrapper;
     private final LdapRepository ldapRepository;
+    private final TelemetryClient telemetryClient;
 
     @Autowired
-    public UserService(final UserRepositoryWrapper userRepositoryWrapper, final LdapRepository ldapRepository) {
+    public UserService(final UserRepositoryWrapper userRepositoryWrapper, final LdapRepository ldapRepository, final TelemetryClient telemetryClient) {
         this.userRepositoryWrapper = userRepositoryWrapper;
         this.ldapRepository = ldapRepository;
+        this.telemetryClient = telemetryClient;
     }
 
     @Transactional(readOnly = true)
@@ -119,5 +123,6 @@ public class UserService {
         } catch (NameNotFoundException e) {
             throw new NotFoundException(String.format("Could not find user with username: '%s'", username));
         }
+        telemetryClient.trackEvent("RoleAssigned", Map.of("username", username, "roleId", roleId), null);
     }
 }
