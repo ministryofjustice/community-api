@@ -82,3 +82,6 @@ azure:
   application-insights:
     web:
       enable-W3C: true
+
+features:
+   noms.update.custody: false
