@@ -48,6 +48,7 @@ public class EntityHelper {
                 .builder()
                 .code("MDIHMP")
                 .institutionName("Moorland (HMP & YOI)")
+                .description("Moorland (HMP & YOI)")
                 .establishment("Y")
                 .nomisCdeCode("MDI")
                 .build();
@@ -141,6 +142,7 @@ public class EntityHelper {
                 .disposal(disposal)
                 .custodyId(9999L)
                 .keyDates(keyDates)
+                .institution(anInstitution())
                 .build();
     }
 

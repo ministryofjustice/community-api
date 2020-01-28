@@ -1,31 +1,47 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.microsoft.applicationinsights.TelemetryClient;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
-import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionalRepository;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
+import uk.gov.justice.digital.delius.jpa.standard.entity.RInstitution;
+import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionRepository;
 import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
 
 import java.util.Map;
 
 @Service
+@Slf4j
 public class CustodyService {
+    private final Boolean updateCustodyFeatureSwitch;
     private final TelemetryClient telemetryClient;
     private final OffenderService offenderService;
     private final ConvictionService convictionService;
-    private final InstitutionalRepository institutionalRepository;
+    private final InstitutionRepository institutionRepository;
     private final ConvictionTransformer convictionTransformer;
 
-    public CustodyService(TelemetryClient telemetryClient, OffenderService offenderService, ConvictionService convictionService, InstitutionalRepository institutionalRepository, ConvictionTransformer convictionTransformer) {
+    public CustodyService(
+            @Value("${features.noms.update.custody}")
+            Boolean updateCustodyFeatureSwitch,
+            TelemetryClient telemetryClient,
+            OffenderService offenderService,
+            ConvictionService convictionService,
+            InstitutionRepository institutionRepository,
+            ConvictionTransformer convictionTransformer) {
+        this.updateCustodyFeatureSwitch = updateCustodyFeatureSwitch;
         this.telemetryClient = telemetryClient;
         this.offenderService = offenderService;
         this.convictionService = convictionService;
-        this.institutionalRepository = institutionalRepository;
+        this.institutionRepository = institutionRepository;
         this.convictionTransformer = convictionTransformer;
     }
 
+    @Transactional
     public Custody updateCustody(final String nomsNumber,
                                  final String bookingNumber,
                                  final UpdateCustody updateCustody) {
@@ -38,10 +54,10 @@ public class CustodyService {
             try {
                 final var maybeEvent = convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(offender.getOffenderId(), bookingNumber);
                 return maybeEvent.map(event -> {
-                    final var maybeInstitution = institutionalRepository.findByNomisCdeCode(updateCustody.getNomsPrisonInstitutionCode());
+                    final var maybeInstitution = institutionRepository.findByNomisCdeCode(updateCustody.getNomsPrisonInstitutionCode());
                     return maybeInstitution.map(institution -> {
                         telemetryClient.trackEvent("P2PTransferPrisonUpdated", telemetryProperties, null);
-                        return convictionTransformer.custodyOf(event.getDisposal().getCustody());
+                        return convictionTransformer.custodyOf(updateInstitutionOnEvent(event, institution).getDisposal().getCustody());
                     }).orElseThrow(() -> {
                         telemetryClient.trackEvent("P2PTransferPrisonNotFound", telemetryProperties, null);
                         return new NotFoundException(String.format("prison institution with nomis code  %s not found", updateCustody.getNomsPrisonInstitutionCode()));
@@ -58,5 +74,15 @@ public class CustodyService {
             telemetryClient.trackEvent("P2PTransferOffenderNotFound", telemetryProperties, null);
             return new NotFoundException(String.format("offender with nomsNumber %s not found", nomsNumber));
         });
+    }
+
+    private Event updateInstitutionOnEvent(Event event, RInstitution institution) {
+        if (updateCustodyFeatureSwitch) {
+            event.getDisposal().getCustody().setInstitution(institution);
+            return event;
+        } else {
+            log.warn("Update institution will be ignored, this feature is switched off ");
+            return event;
+        }
     }
 }

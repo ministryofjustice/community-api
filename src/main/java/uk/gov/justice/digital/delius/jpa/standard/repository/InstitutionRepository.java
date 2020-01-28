@@ -5,6 +5,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.RInstitution;
 
 import java.util.Optional;
 
-public interface InstitutionalRepository extends JpaRepository<RInstitution, Long> {
+public interface InstitutionRepository extends JpaRepository<RInstitution, Long> {
     Optional<RInstitution> findByNomisCdeCode(String nomisCdeCode);
 }

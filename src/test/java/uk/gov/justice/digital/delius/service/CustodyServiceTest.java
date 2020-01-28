@@ -7,13 +7,14 @@ import org.mockito.ArgumentMatcher;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
-import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionalRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionRepository;
 import uk.gov.justice.digital.delius.transformers.*;
 import uk.gov.justice.digital.delius.util.EntityHelper;
 
 import java.util.Map;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -24,23 +25,25 @@ public class CustodyServiceTest {
     private TelemetryClient telemetryClient = mock(TelemetryClient.class);
     private OffenderService offenderService = mock(OffenderService.class);
     private ConvictionService convictionService = mock(ConvictionService.class);
-    private InstitutionalRepository institutionalRepository = mock(InstitutionalRepository.class);
+    private InstitutionRepository institutionRepository = mock(InstitutionRepository.class);
     private LookupSupplier lookupSupplier = mock(LookupSupplier.class);
     private ArgumentMatcher<Map<String, String>> standardTelemetryAttributes =
             attributes -> Optional.ofNullable(attributes.get("offenderNo")).filter(value -> value.equals("G9542VP")).isPresent() &&
             Optional.ofNullable(attributes.get("bookingNumber")).filter(value -> value.equals("44463B")).isPresent() &&
             Optional.ofNullable(attributes.get("toAgency")).filter(value -> value.equals("MDI")).isPresent();
+    private final ConvictionTransformer convictionTransformer = new ConvictionTransformer(
+            new MainOffenceTransformer(lookupSupplier),
+            new AdditionalOffenceTransformer(lookupSupplier),
+            new CourtAppearanceTransformer(new CourtReportTransformer(new CourtTransformer()), new CourtTransformer(), lookupSupplier),
+            lookupSupplier,
+            new InstitutionTransformer());
 
     @Before
-    public void setup() {
-        final var convictionTransformer = new ConvictionTransformer(
-                new MainOffenceTransformer(lookupSupplier),
-                new AdditionalOffenceTransformer(lookupSupplier),
-                new CourtAppearanceTransformer(new CourtReportTransformer(new CourtTransformer()), new CourtTransformer(), lookupSupplier),
-                lookupSupplier,
-                new InstitutionTransformer());
-        custodyService = new CustodyService(telemetryClient, offenderService, convictionService, institutionalRepository, convictionTransformer);
-        when(offenderService.getOffenderByNomsNumber(anyString())).thenReturn(Optional.of(OffenderDetail.builder().build()));
+    public void setup() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
+        custodyService = new CustodyService(true, telemetryClient, offenderService, convictionService, institutionRepository, convictionTransformer);
+        when(offenderService.getOffenderByNomsNumber(anyString())).thenReturn(Optional.of(OffenderDetail.builder().offenderId(99L).build()));
+        when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+                .thenReturn(Optional.of(EntityHelper.aCustodyEvent()));
     }
 
     @Test
@@ -65,8 +68,7 @@ public class CustodyServiceTest {
 
     @Test
     public void willCreateTelemetryEventWhenConvictionNotFound() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-        when(offenderService.getOffenderByNomsNumber("G9542VP")).thenReturn(Optional.of(OffenderDetail.builder().offenderId(99L).build()));
-        when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(99L, "G9542VP")).thenReturn(Optional.empty());
+        when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(99L, "44463B")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() ->
             custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()));
@@ -76,7 +78,6 @@ public class CustodyServiceTest {
 
     @Test
     public void willThrowExceptionWhenBookingNumberNotFound() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-        when(offenderService.getOffenderByNomsNumber("G9542VP")).thenReturn(Optional.of(OffenderDetail.builder().offenderId(99L).build()));
         when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(99L, "44463B")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() ->
@@ -87,7 +88,6 @@ public class CustodyServiceTest {
 
     @Test
     public void willCreateTelemetryEventWhenDuplicateConvictionsFound() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-        when(offenderService.getOffenderByNomsNumber("G9542VP")).thenReturn(Optional.of(OffenderDetail.builder().offenderId(99L).build()));
         when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(99L, "44463B"))
                 .thenThrow(new ConvictionService.DuplicateConvictionsForBookingNumberException(2));
 
@@ -99,7 +99,6 @@ public class CustodyServiceTest {
 
     @Test
     public void willThrowExceptionWhenDuplicateConvictionsFound() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-        when(offenderService.getOffenderByNomsNumber("G9542VP")).thenReturn(Optional.of(OffenderDetail.builder().offenderId(99L).build()));
         when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(99L, "44463B"))
                 .thenThrow(new ConvictionService.DuplicateConvictionsForBookingNumberException(2));
 
@@ -109,11 +108,8 @@ public class CustodyServiceTest {
     }
 
     @Test
-    public void willCreateTelemetryEventWhenPrisonNotFound() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-        when(offenderService.getOffenderByNomsNumber("G9542VP")).thenReturn(Optional.of(OffenderDetail.builder().offenderId(99L).build()));
-        when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(99L, "44463B"))
-                .thenReturn(Optional.of(EntityHelper.aCustodyEvent()));
-        when(institutionalRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.empty());
+    public void willCreateTelemetryEventWhenPrisonNotFound() {
+        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() ->
                 custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()));
@@ -122,11 +118,8 @@ public class CustodyServiceTest {
     }
 
     @Test
-    public void willThrowExceptionWhenPrisonNotFound() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-        when(offenderService.getOffenderByNomsNumber("G9542VP")).thenReturn(Optional.of(OffenderDetail.builder().offenderId(99L).build()));
-        when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(99L, "44463B"))
-                .thenReturn(Optional.of(EntityHelper.aCustodyEvent()));
-        when(institutionalRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.empty());
+    public void willThrowExceptionWhenPrisonNotFound() {
+        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() ->
                 custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()))
@@ -134,15 +127,34 @@ public class CustodyServiceTest {
     }
 
     @Test
-    public void willCreateTelemetryEventWhenPrisonLocationChanges() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-        when(offenderService.getOffenderByNomsNumber("G9542VP")).thenReturn(Optional.of(OffenderDetail.builder().offenderId(99L).build()));
-        when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(99L, "44463B"))
-                .thenReturn(Optional.of(EntityHelper.aCustodyEvent()));
-        when(institutionalRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(EntityHelper.anInstitution()));
+    public void willCreateTelemetryEventWhenPrisonLocationChanges() {
+        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(EntityHelper.anInstitution()));
 
         custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
         verify(telemetryClient).trackEvent(eq("P2PTransferPrisonUpdated"), argThat(standardTelemetryAttributes), isNull());
+    }
+
+    @Test
+    public void willUpdatePrisonInstitutionWillBeUpdatedWhenFeatureSwitchedOn() {
+        custodyService = new CustodyService(true, telemetryClient, offenderService, convictionService, institutionRepository, convictionTransformer);
+
+        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(EntityHelper.anInstitution().toBuilder().description("HMP Highland").build()));
+
+        final var updatedCustody = custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+
+        assertThat(updatedCustody.getInstitution().getDescription()).isEqualTo("HMP Highland");
+    }
+
+    @Test
+    public void willNotUpdatePrisonInstitutionWillBeUpdatedWhenFeatureSwitchedOff() {
+        custodyService = new CustodyService(false, telemetryClient, offenderService, convictionService, institutionRepository, convictionTransformer);
+
+        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(EntityHelper.anInstitution().toBuilder().description("HMP Highland").build()));
+
+        final var updatedCustody = custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+
+        assertThat(updatedCustody.getInstitution().getDescription()).isNotEqualTo("HMP Highland");
     }
 
 }
