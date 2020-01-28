@@ -54,14 +54,19 @@ public class CustodyService {
             try {
                 final var maybeEvent = convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(offender.getOffenderId(), bookingNumber);
                 return maybeEvent.map(event -> {
-                    final var maybeInstitution = institutionRepository.findByNomisCdeCode(updateCustody.getNomsPrisonInstitutionCode());
-                    return maybeInstitution.map(institution -> {
-                        telemetryClient.trackEvent("P2PTransferPrisonUpdated", telemetryProperties, null);
-                        return convictionTransformer.custodyOf(updateInstitutionOnEvent(event, institution).getDisposal().getCustody());
-                    }).orElseThrow(() -> {
-                        telemetryClient.trackEvent("P2PTransferPrisonNotFound", telemetryProperties, null);
-                        return new NotFoundException(String.format("prison institution with nomis code  %s not found", updateCustody.getNomsPrisonInstitutionCode()));
-                    });
+                    if ( isInCustodyOrAboutToStartACustodySentence(event.getDisposal().getCustody())) {
+                        final var maybeInstitution = institutionRepository.findByNomisCdeCode(updateCustody.getNomsPrisonInstitutionCode());
+                        return maybeInstitution.map(institution -> {
+                            telemetryClient.trackEvent("P2PTransferPrisonUpdated", telemetryProperties, null);
+                            return convictionTransformer.custodyOf(updateInstitutionOnEvent(event, institution).getDisposal().getCustody());
+                        }).orElseThrow(() -> {
+                            telemetryClient.trackEvent("P2PTransferPrisonNotFound", telemetryProperties, null);
+                            return new NotFoundException(String.format("prison institution with nomis code  %s not found", updateCustody.getNomsPrisonInstitutionCode()));
+                        });
+                    } else {
+                        telemetryClient.trackEvent("P2PTransferPrisonUpdateIgnored", telemetryProperties, null);
+                        throw new NotFoundException(String.format("conviction with custodial status of In Custody or Sentenced Custody not found. Status was %s", event.getDisposal().getCustody().getCustodialStatus()));
+                    }
                 }).orElseThrow(() -> {
                     telemetryClient.trackEvent("P2PTransferBookingNumberNotFound", telemetryProperties, null);
                     return new NotFoundException(String.format("conviction with bookingNumber %s not found", bookingNumber));
@@ -74,6 +79,10 @@ public class CustodyService {
             telemetryClient.trackEvent("P2PTransferOffenderNotFound", telemetryProperties, null);
             return new NotFoundException(String.format("offender with nomsNumber %s not found", nomsNumber));
         });
+    }
+
+    private boolean isInCustodyOrAboutToStartACustodySentence(uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody) {
+        return custody.isAboutToEnterCustody() || custody.isInCustody();
     }
 
     private Event updateInstitutionOnEvent(Event event, RInstitution institution) {

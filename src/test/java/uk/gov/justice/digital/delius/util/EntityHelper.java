@@ -113,6 +113,10 @@ public class EntityHelper {
         return aCustodyEvent(100L, 99L, new ArrayList<>());
     }
 
+    public static Event aCustodyEvent(StandardReference custodialStatus) {
+        return aCustodyEvent(100L, 99L, new ArrayList<>(), custodialStatus);
+    }
+
     public static Event aCustodyEvent(Long eventId, List<KeyDate> keyDates) {
         return aCustodyEvent(eventId, 99L, keyDates);
     }
@@ -121,28 +125,37 @@ public class EntityHelper {
         val disposal = aDisposal(eventId);
         return anEvent(eventId, offenderId)
                 .toBuilder()
-                .disposal(aCustodialDisposal(keyDates, disposal))
+                .disposal(aCustodialDisposal(keyDates, disposal, StandardReference.builder().codeValue("D").codeDescription("In Custody").build()))
                 .build();
     }
 
-    private static Disposal aCustodialDisposal(List<KeyDate> keyDates, Disposal disposal) {
+    private static Event aCustodyEvent(Long eventId, Long offenderId, List<KeyDate> keyDates, StandardReference custodialStatus) {
+        val disposal = aDisposal(eventId);
+        return anEvent(eventId, offenderId)
+                .toBuilder()
+                .disposal(aCustodialDisposal(keyDates, disposal, custodialStatus))
+                .build();
+    }
+
+    private static Disposal aCustodialDisposal(List<KeyDate> keyDates, Disposal disposal, StandardReference custodialStatus) {
         return disposal
                 .toBuilder()
                 .disposalType(DisposalType
                         .builder()
                         .sentenceType("NC")
                         .build())
-                .custody(aCustody(disposal, keyDates))
+                .custody(aCustody(disposal, keyDates, custodialStatus))
                 .build();
     }
 
-    private static Custody aCustody(Disposal disposal, List<KeyDate> keyDates) {
+    private static Custody aCustody(Disposal disposal, List<KeyDate> keyDates, StandardReference custodialStatus) {
         return Custody
                 .builder()
                 .disposal(disposal)
                 .custodyId(9999L)
                 .keyDates(keyDates)
                 .institution(anInstitution())
+                .custodialStatus(custodialStatus)
                 .build();
     }
 
