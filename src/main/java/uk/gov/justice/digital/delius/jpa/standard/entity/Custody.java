@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +18,29 @@ import static java.util.function.Predicate.not;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "CUSTODY")
-public class Custody {
+public class Custody extends AuditableEntity {
+    enum CustodialStatus {
+        SENTENCED_IN_CUSTODY("A"),
+        IN_CUSTODY("D"),
+        RELEASED_ON_LICENCE("B"),
+        RECALLED("C"),
+        TERMINATED("T"),
+        POST_SENTENCE_SUPERVISION("P"),
+        MIGRATED_DATA("-1"),
+        IN_CUSTODY_RoTL("R"),
+        IN_CUSTODY_IRC("I"),
+        AUTO_TERMINATED("AT");
+
+        private final String code;
+
+        CustodialStatus(String code) {
+            this.code = code;
+        }
+        public String getCode() {
+            return code;
+        }
+    }
+
     @Id
     @Column(name = "CUSTODY_ID")
     private Long custodyId;
@@ -48,6 +71,16 @@ public class Custody {
     @JoinColumn(name = "CUSTODY_ID")
     private List<Release> releases;
 
+    @Column(name = "STATUS_CHANGE_DATE")
+    private LocalDateTime statusChangeDate;
+
+    @Column(name = "LOCATION_CHANGE_DATE")
+    private LocalDateTime locationChangeDate;
+
+    @JoinColumn(name = "CUSTODIAL_STATUS_ID")
+    @ManyToOne
+    private StandardReference custodialStatus;
+
     public Optional<Release> findLatestRelease() {
         return this.getReleases().stream()
                 .filter(not(Release::isSoftDeleted))
@@ -56,6 +89,17 @@ public class Custody {
 
     public boolean isSoftDeleted() {
         return this.softDeleted != 0L;
+    }
+
+    public boolean isInCustody() {
+        return Optional.ofNullable(custodialStatus)
+                .map(status -> status.getCodeValue().equals(CustodialStatus.IN_CUSTODY.getCode()) )
+                .orElse(false);
+    }
+    public boolean isAboutToEnterCustody() {
+        return Optional.ofNullable(custodialStatus)
+                .map(status -> status.getCodeValue().equals(CustodialStatus.SENTENCED_IN_CUSTODY.getCode()) )
+                .orElse(false);
     }
 
 }

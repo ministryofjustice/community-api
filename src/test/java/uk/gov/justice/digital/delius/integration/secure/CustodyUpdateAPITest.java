@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -22,10 +23,15 @@ import uk.gov.justice.digital.delius.data.api.UpdateCustody;
 import uk.gov.justice.digital.delius.jwt.JwtAuthenticationHelper;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 
@@ -77,12 +83,12 @@ public class CustodyUpdateAPITest {
     public void updatePrisonInstitution() throws JsonProcessingException {
         final var token = createJwt("ROLE_COMMUNITY_CUSTODY_UPDATE");
 
-        given()
+        final var custody = given()
                 .auth().oauth2(token)
                 .contentType("application/json")
                 .body(createUpdateCustody("MDI"))
                 .when()
-                .put(String.format("offenders/nomsNumber/%s/custody/bookingNumber/%s",  NOMS_NUMBER, PRISON_BOOKING_NUMBER))
+                .put(String.format("offenders/nomsNumber/%s/custody/bookingNumber/%s", NOMS_NUMBER, PRISON_BOOKING_NUMBER))
                 .then()
                 .statusCode(200)
                 .extract()
@@ -90,10 +96,14 @@ public class CustodyUpdateAPITest {
                 .as(Custody.class);
 
 
-        // when we actually do the update this can be asserted
-        // assertThat(custody.getInstitution().getNomsPrisonInstitutionCode()).isEqualTo("MDI");
+        assertThat(custody.getInstitution().getNomsPrisonInstitutionCode()).isEqualTo("MDI");
         verify(telemetryClient).trackEvent(eq("P2PTransferPrisonUpdated"), any(), isNull());
 
+        final var custodyRecord = jdbcTemplate.query(
+                "SELECT * from CUSTODY where PRISONER_NUMBER = ?",
+                List.of(PRISON_BOOKING_NUMBER).toArray(),
+                new ColumnMapRowMapper()).get(0);
+        assertThat(toLocalDateTime(custodyRecord.get("LAST_UPDATED_DATETIME"))).isCloseTo(LocalDateTime.now(), within(10, ChronoUnit.SECONDS));
     }
 
     private String createUpdateCustody(String prisonCode) throws JsonProcessingException {
@@ -109,6 +119,10 @@ public class CustodyUpdateAPITest {
                 .scope(Arrays.asList("read", "write"))
                 .expiryTime(Duration.ofDays(1))
                 .build());
+    }
+
+    private LocalDateTime toLocalDateTime(Object columnValue) {
+        return LocalDateTime.parse(columnValue.toString().replace(' ', 'T'), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 
 
