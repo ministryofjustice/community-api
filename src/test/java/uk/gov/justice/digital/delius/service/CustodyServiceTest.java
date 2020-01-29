@@ -3,15 +3,20 @@ package uk.gov.justice.digital.delius.service;
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
+import uk.gov.justice.digital.delius.jpa.standard.entity.CustodyHistory;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.repository.CustodyHistoryRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.*;
 import uk.gov.justice.digital.delius.util.EntityHelper;
 
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 
@@ -24,10 +29,12 @@ public class CustodyServiceTest {
     private CustodyService custodyService;
 
     private TelemetryClient telemetryClient = mock(TelemetryClient.class);
-    private OffenderService offenderService = mock(OffenderService.class);
+    private OffenderRepository offenderRepository = mock(OffenderRepository.class);
     private ConvictionService convictionService = mock(ConvictionService.class);
     private InstitutionRepository institutionRepository = mock(InstitutionRepository.class);
+    private CustodyHistoryRepository custodyHistoryRepository = mock(CustodyHistoryRepository.class);
     private LookupSupplier lookupSupplier = mock(LookupSupplier.class);
+    private ReferenceDataService referenceDataService = mock(ReferenceDataService.class);
     private ArgumentMatcher<Map<String, String>> standardTelemetryAttributes =
             attributes -> Optional.ofNullable(attributes.get("offenderNo")).filter(value -> value.equals("G9542VP")).isPresent() &&
             Optional.ofNullable(attributes.get("bookingNumber")).filter(value -> value.equals("44463B")).isPresent() &&
@@ -38,18 +45,20 @@ public class CustodyServiceTest {
             new CourtAppearanceTransformer(new CourtReportTransformer(new CourtTransformer()), new CourtTransformer(), lookupSupplier),
             lookupSupplier,
             new InstitutionTransformer());
+    private ArgumentCaptor<CustodyHistory> custodyHistoryArgumentCaptor = ArgumentCaptor.forClass(CustodyHistory.class);
 
     @Before
     public void setup() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-        custodyService = new CustodyService(true, telemetryClient, offenderService, convictionService, institutionRepository, convictionTransformer);
-        when(offenderService.getOffenderByNomsNumber(anyString())).thenReturn(Optional.of(OffenderDetail.builder().offenderId(99L).build()));
+        custodyService = new CustodyService(true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService);
+        when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
         when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                 .thenReturn(Optional.of(EntityHelper.aCustodyEvent()));
+        when(referenceDataService.getPrisonLocationChangeCustodyEvent()).thenReturn(StandardReference.builder().codeValue("CPL").codeDescription("Change prison location").build());
     }
 
     @Test
     public void willCreateTelemetryEventWhenOffenderNotFound() {
-        when(offenderService.getOffenderByNomsNumber("G9542VP")).thenReturn(Optional.empty());
+        when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() ->
             custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()));
@@ -59,7 +68,7 @@ public class CustodyServiceTest {
 
     @Test
     public void willThrowExceptionWhenOffenderNotFound() {
-        when(offenderService.getOffenderByNomsNumber("G9542VP")).thenReturn(Optional.empty());
+        when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() ->
             custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()))
@@ -137,6 +146,20 @@ public class CustodyServiceTest {
     }
 
     @Test
+    public void willCreateCustodyHistoryChangeLocationEvent() {
+        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(EntityHelper.anInstitution().toBuilder().description("HMP Highland").build()));
+        custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+
+        verify(custodyHistoryRepository).save(custodyHistoryArgumentCaptor.capture());
+
+        final var custodyHistoryEvent = custodyHistoryArgumentCaptor.getValue();
+
+        assertThat(custodyHistoryEvent.getCustodyEventType().getCodeValue()).isEqualTo("CPL");
+        assertThat(custodyHistoryEvent.getDetail()).isEqualTo("HMP Highland");
+        assertThat(custodyHistoryEvent.getWhen()).isEqualTo(LocalDate.now());
+    }
+
+    @Test
     public void willCreateTelemetryEventWhenPrisonLocationChangesButStatusNotCurrentlyInPrison() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
         when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                 .thenReturn(Optional.of(EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("B").codeDescription("Released on Licence").build())));
@@ -152,7 +175,7 @@ public class CustodyServiceTest {
 
     @Test
     public void willUpdatePrisonInstitutionWillBeUpdatedWhenFeatureSwitchedOn() {
-        custodyService = new CustodyService(true, telemetryClient, offenderService, convictionService, institutionRepository, convictionTransformer);
+        custodyService = new CustodyService(true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService);
 
         when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(EntityHelper.anInstitution().toBuilder().description("HMP Highland").build()));
 
@@ -163,7 +186,7 @@ public class CustodyServiceTest {
 
     @Test
     public void willNotUpdatePrisonInstitutionWillBeUpdatedWhenFeatureSwitchedOff() {
-        custodyService = new CustodyService(false, telemetryClient, offenderService, convictionService, institutionRepository, convictionTransformer);
+        custodyService = new CustodyService(false, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService);
 
         when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(EntityHelper.anInstitution().toBuilder().description("HMP Highland").build()));
 

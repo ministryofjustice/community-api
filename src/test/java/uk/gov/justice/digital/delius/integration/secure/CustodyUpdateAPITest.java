@@ -22,11 +22,13 @@ import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
 import uk.gov.justice.digital.delius.jwt.JwtAuthenticationHelper;
 
+import java.sql.Timestamp;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
@@ -41,6 +43,7 @@ import static org.mockito.Mockito.verify;
 @DirtiesContext
 public class CustodyUpdateAPITest {
     private static final String NOMS_NUMBER = "G9542VP";
+    private static final String OFFENDER_ID = "2500343964";
     private static final String PRISON_BOOKING_NUMBER = "V74111";
 
     @LocalServerPort
@@ -99,11 +102,22 @@ public class CustodyUpdateAPITest {
         assertThat(custody.getInstitution().getNomsPrisonInstitutionCode()).isEqualTo("MDI");
         verify(telemetryClient).trackEvent(eq("P2PTransferPrisonUpdated"), any(), isNull());
 
+        //custody record should have been updated
         final var custodyRecord = jdbcTemplate.query(
                 "SELECT * from CUSTODY where PRISONER_NUMBER = ?",
                 List.of(PRISON_BOOKING_NUMBER).toArray(),
                 new ColumnMapRowMapper()).get(0);
         assertThat(toLocalDateTime(custodyRecord.get("LAST_UPDATED_DATETIME"))).isCloseTo(LocalDateTime.now(), within(10, ChronoUnit.SECONDS));
+        assertThat(toLocalDateTime(custodyRecord.get("LOCATION_CHANGE_DATE")).toLocalDate()).isEqualTo(LocalDate.now());
+
+        // at least one custody history record should be inserted
+        final var latestCustodyHistoryRecord = jdbcTemplate.query(
+                "SELECT * from CUSTODY_HISTORY where OFFENDER_ID = ?",
+                List.of(OFFENDER_ID).toArray(),
+                new ColumnMapRowMapper()).stream().max(Comparator.comparing(record -> toLocalDateTime(record.get("HISTORICAL_DATE")))).orElseThrow();
+        assertThat(toLocalDateTime(latestCustodyHistoryRecord.get("HISTORICAL_DATE")).toLocalDate()).isEqualTo(LocalDate.now());
+        assertThat(latestCustodyHistoryRecord.get("DETAIL")).isEqualTo("Moorland (HMP & YOI)");
+
     }
 
     private String createUpdateCustody(String prisonCode) throws JsonProcessingException {
@@ -122,7 +136,7 @@ public class CustodyUpdateAPITest {
     }
 
     private LocalDateTime toLocalDateTime(Object columnValue) {
-        return LocalDateTime.parse(columnValue.toString().replace(' ', 'T'), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        return ((Timestamp)columnValue).toLocalDateTime();
     }
 
 

@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -72,10 +72,10 @@ public class Custody extends AuditableEntity {
     private List<Release> releases;
 
     @Column(name = "STATUS_CHANGE_DATE")
-    private LocalDateTime statusChangeDate;
+    private LocalDate statusChangeDate;
 
     @Column(name = "LOCATION_CHANGE_DATE")
-    private LocalDateTime locationChangeDate;
+    private LocalDate locationChangeDate;
 
     @JoinColumn(name = "CUSTODIAL_STATUS_ID")
     @ManyToOne

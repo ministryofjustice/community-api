@@ -8,11 +8,16 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
+import uk.gov.justice.digital.delius.jpa.standard.entity.CustodyHistory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RInstitution;
+import uk.gov.justice.digital.delius.jpa.standard.repository.CustodyHistoryRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @Service
@@ -20,32 +25,38 @@ import java.util.Map;
 public class CustodyService {
     private final Boolean updateCustodyFeatureSwitch;
     private final TelemetryClient telemetryClient;
-    private final OffenderService offenderService;
+    private final OffenderRepository offenderRepository;
     private final ConvictionService convictionService;
     private final InstitutionRepository institutionRepository;
     private final ConvictionTransformer convictionTransformer;
+    private final CustodyHistoryRepository custodyHistoryRepository;
+    private final ReferenceDataService referenceDataService;
 
     public CustodyService(
             @Value("${features.noms.update.custody}")
-            Boolean updateCustodyFeatureSwitch,
+                    Boolean updateCustodyFeatureSwitch,
             TelemetryClient telemetryClient,
-            OffenderService offenderService,
+            OffenderRepository offenderRepository,
             ConvictionService convictionService,
             InstitutionRepository institutionRepository,
-            ConvictionTransformer convictionTransformer) {
+            ConvictionTransformer convictionTransformer,
+            CustodyHistoryRepository custodyHistoryRepository,
+            ReferenceDataService referenceDataService) {
         this.updateCustodyFeatureSwitch = updateCustodyFeatureSwitch;
         this.telemetryClient = telemetryClient;
-        this.offenderService = offenderService;
+        this.offenderRepository = offenderRepository;
         this.convictionService = convictionService;
         this.institutionRepository = institutionRepository;
         this.convictionTransformer = convictionTransformer;
+        this.custodyHistoryRepository = custodyHistoryRepository;
+        this.referenceDataService = referenceDataService;
     }
 
     @Transactional
     public Custody updateCustody(final String nomsNumber,
                                  final String bookingNumber,
                                  final UpdateCustody updateCustody) {
-        final var maybeOffender = offenderService.getOffenderByNomsNumber(nomsNumber);
+        final var maybeOffender = offenderRepository.findByNomsNumber(nomsNumber);
         final var telemetryProperties = Map.of("offenderNo", nomsNumber,
                 "bookingNumber", bookingNumber,
                 "toAgency", updateCustody.getNomsPrisonInstitutionCode());
@@ -58,7 +69,7 @@ public class CustodyService {
                         final var maybeInstitution = institutionRepository.findByNomisCdeCode(updateCustody.getNomsPrisonInstitutionCode());
                         return maybeInstitution.map(institution -> {
                             telemetryClient.trackEvent("P2PTransferPrisonUpdated", telemetryProperties, null);
-                            return convictionTransformer.custodyOf(updateInstitutionOnEvent(event, institution).getDisposal().getCustody());
+                            return convictionTransformer.custodyOf(updateInstitutionOnEvent(offender, event, institution).getDisposal().getCustody());
                         }).orElseThrow(() -> {
                             telemetryClient.trackEvent("P2PTransferPrisonNotFound", telemetryProperties, null);
                             return new NotFoundException(String.format("prison institution with nomis code  %s not found", updateCustody.getNomsPrisonInstitutionCode()));
@@ -85,13 +96,29 @@ public class CustodyService {
         return custody.isAboutToEnterCustody() || custody.isInCustody();
     }
 
-    private Event updateInstitutionOnEvent(Event event, RInstitution institution) {
+    private Event updateInstitutionOnEvent(Offender offender, Event event, RInstitution institution) {
         if (updateCustodyFeatureSwitch) {
-            event.getDisposal().getCustody().setInstitution(institution);
+            final var custody = event.getDisposal().getCustody();
+            custody.setInstitution(institution);
+            custody.setLocationChangeDate(LocalDate.now());
+            savePrisonLocationChangeCustodyHistoryEvent(offender, custody, institution);
             return event;
         } else {
             log.warn("Update institution will be ignored, this feature is switched off ");
             return event;
         }
+    }
+
+    private void savePrisonLocationChangeCustodyHistoryEvent(Offender offender, uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody, RInstitution institution) {
+        final var history = CustodyHistory
+                .builder()
+                .custody(custody)
+                .offender(offender)
+                .detail(institution.getDescription())
+                .when(LocalDate.now())
+                .custodyEventType(referenceDataService.getPrisonLocationChangeCustodyEvent())
+                .build();
+        custodyHistoryRepository.save(history);
+
     }
 }

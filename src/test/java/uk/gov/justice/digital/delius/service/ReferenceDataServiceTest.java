@@ -3,42 +3,31 @@ package uk.gov.justice.digital.delius.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
-import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
-import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.jpa.filters.ProbationAreaFilter;
-import uk.gov.justice.digital.delius.jpa.standard.entity.District;
-import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
-import uk.gov.justice.digital.delius.jpa.standard.repository.StaffHelperRepository;
-import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StandardReferenceRepository;
-import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
-import uk.gov.justice.digital.delius.transformers.*;
-import uk.gov.justice.digital.delius.util.EntityHelper;
+import uk.gov.justice.digital.delius.transformers.InstitutionTransformer;
+import uk.gov.justice.digital.delius.transformers.ProbationAreaTransformer;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.util.EntityHelper.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReferenceDataServiceTest {
 
     private ReferenceDataService referenceDataService;
-
-    @Mock
-    private StaffRepository staffRepository;
 
     @Mock
     private StandardReferenceRepository standardReferenceRepository;
@@ -201,12 +190,28 @@ public class ReferenceDataServiceTest {
                 .containsExactly("TEAM-1", "TEAM-2", "TEAM-3");
     }
 
-
     @Test
     public void getLocalDeliveryUnits_missingProbationArea() {
         when(probationAreaRepository.findByCode(aProbationArea().getCode())).thenReturn(Optional.empty());
         assertThatThrownBy(() -> referenceDataService.getLocalDeliveryUnitsForProbationArea(aProbationArea().getCode()))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("Could not find probation area with code: 'NO2'");
+    }
+
+
+    @Test
+    public void  getCustodyEventType_WillUseTheCorrectDataSet() {
+        when(standardReferenceRepository.findByCodeAndCodeSetName(anyString(), anyString())).thenReturn(Optional.of(StandardReference
+                .builder()
+                .codeValue("CPL")
+                .codeDescription("Change Prison Location")
+                .build()));
+
+        final var custodyEvent = referenceDataService.getPrisonLocationChangeCustodyEvent();
+
+        assertThat(custodyEvent.getCodeValue()).isEqualTo("CPL");
+        assertThat(custodyEvent.getCodeDescription()).isEqualTo("Change Prison Location");
+
+        verify(standardReferenceRepository).findByCodeAndCodeSetName("CPL", "CUSTODY EVENT TYPE");
     }
 }
