@@ -33,6 +33,8 @@ public class ReferenceDataService {
     private static final String CUSTODY_EVENT_DATASET = "CUSTODY EVENT TYPE";
     private static final String CUSTODY_EVENT_PRISON_LOCATION_CHANGE_CODE = "CPL";
     private static final String CUSTODY_EVENT_CUSTODY_STATUS_CHANGE_CODE = "TSC";
+    private static final String CUSTODY_STATUS_DATASET = "THROUGHCARE STATUS";
+    private static final String CUSTODY_STATUS_IN_CUSTODY_CODE = "D";
     private final ProbationAreaTransformer probationAreaTransformer;
     private final ProbationAreaRepository probationAreaRepository;
     private final StandardReferenceRepository standardReferenceRepository;
@@ -106,6 +108,15 @@ public class ReferenceDataService {
 
     public StandardReference getPrisonLocationChangeCustodyEvent() {
         return getCustodyEventTypeFor(CUSTODY_EVENT_PRISON_LOCATION_CHANGE_CODE);
+    }
+
+    public StandardReference getCustodyStatusChangeCustodyEvent() {
+        return getCustodyEventTypeFor(CUSTODY_EVENT_CUSTODY_STATUS_CHANGE_CODE);
+    }
+
+
+    public StandardReference getInCustodyCustodyStatus() {
+        return standardReferenceRepository.findByCodeAndCodeSetName(CUSTODY_STATUS_IN_CUSTODY_CODE, CUSTODY_STATUS_DATASET).orElseThrow();
     }
 
     private StandardReference getCustodyEventTypeFor(String code) {

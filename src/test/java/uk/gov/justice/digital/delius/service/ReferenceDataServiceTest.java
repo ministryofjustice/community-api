@@ -200,7 +200,7 @@ public class ReferenceDataServiceTest {
 
 
     @Test
-    public void  getCustodyEventType_WillUseTheCorrectDataSet() {
+    public void  getPrisonLocationChangeCustodyEvent_WillUseTheCorrectDataSet() {
         when(standardReferenceRepository.findByCodeAndCodeSetName(anyString(), anyString())).thenReturn(Optional.of(StandardReference
                 .builder()
                 .codeValue("CPL")
@@ -213,5 +213,35 @@ public class ReferenceDataServiceTest {
         assertThat(custodyEvent.getCodeDescription()).isEqualTo("Change Prison Location");
 
         verify(standardReferenceRepository).findByCodeAndCodeSetName("CPL", "CUSTODY EVENT TYPE");
+    }
+    @Test
+    public void  getCustodyStatusChangeCustodyEvent_WillUseTheCorrectDataSet() {
+        when(standardReferenceRepository.findByCodeAndCodeSetName(anyString(), anyString())).thenReturn(Optional.of(StandardReference
+                .builder()
+                .codeValue("TSC")
+                .codeDescription("Custody status change")
+                .build()));
+
+        final var custodyEvent = referenceDataService.getCustodyStatusChangeCustodyEvent();
+
+        assertThat(custodyEvent.getCodeValue()).isEqualTo("TSC");
+        assertThat(custodyEvent.getCodeDescription()).isEqualTo("Custody status change");
+
+        verify(standardReferenceRepository).findByCodeAndCodeSetName("TSC", "CUSTODY EVENT TYPE");
+    }
+    @Test
+    public void  getInCustodyCustodyStatus_WillUseTheCorrectDataSet() {
+        when(standardReferenceRepository.findByCodeAndCodeSetName(anyString(), anyString())).thenReturn(Optional.of(StandardReference
+                .builder()
+                .codeValue("D")
+                .codeDescription("In Custody")
+                .build()));
+
+        final var custodyEvent = referenceDataService.getInCustodyCustodyStatus();
+
+        assertThat(custodyEvent.getCodeValue()).isEqualTo("D");
+        assertThat(custodyEvent.getCodeDescription()).isEqualTo("In Custody");
+
+        verify(standardReferenceRepository).findByCodeAndCodeSetName("D", "THROUGHCARE STATUS");
     }
 }

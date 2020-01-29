@@ -102,6 +102,11 @@ public class CustodyService {
             custody.setInstitution(institution);
             custody.setLocationChangeDate(LocalDate.now());
             savePrisonLocationChangeCustodyHistoryEvent(offender, custody, institution);
+            if (custody.isAboutToEnterCustody()) {
+                custody.setStatusChangeDate(LocalDate.now());
+                custody.setCustodialStatus(referenceDataService.getInCustodyCustodyStatus());
+                saveCustodyStatusChangeCustodyHistoryEvent(offender, custody, institution);
+            }
             return event;
         } else {
             log.warn("Update institution will be ignored, this feature is switched off ");
@@ -119,6 +124,16 @@ public class CustodyService {
                 .custodyEventType(referenceDataService.getPrisonLocationChangeCustodyEvent())
                 .build();
         custodyHistoryRepository.save(history);
-
+    }
+    private void saveCustodyStatusChangeCustodyHistoryEvent(Offender offender, uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody, RInstitution institution) {
+        final var history = CustodyHistory
+                .builder()
+                .custody(custody)
+                .offender(offender)
+                .detail("DSS auto update in custody")
+                .when(LocalDate.now())
+                .custodyEventType(referenceDataService.getCustodyStatusChangeCustodyEvent())
+                .build();
+        custodyHistoryRepository.save(history);
     }
 }
