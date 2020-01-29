@@ -54,6 +54,8 @@ public class CustodyServiceTest {
         when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                 .thenReturn(Optional.of(EntityHelper.aCustodyEvent()));
         when(referenceDataService.getPrisonLocationChangeCustodyEvent()).thenReturn(StandardReference.builder().codeValue("CPL").codeDescription("Change prison location").build());
+        when(referenceDataService.getCustodyStatusChangeCustodyEvent()).thenReturn(StandardReference.builder().codeValue("TSC").codeDescription("Custody status change").build());
+        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(EntityHelper.anInstitution().toBuilder().description("HMP Highland").build()));
     }
 
     @Test
@@ -157,6 +159,35 @@ public class CustodyServiceTest {
         assertThat(custodyHistoryEvent.getCustodyEventType().getCodeValue()).isEqualTo("CPL");
         assertThat(custodyHistoryEvent.getDetail()).isEqualTo("HMP Highland");
         assertThat(custodyHistoryEvent.getWhen()).isEqualTo(LocalDate.now());
+    }
+
+    @Test
+    public void willCreateCustodyHistoryChangeCustodyStatusWhenCurrentlyOnlySentenced() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
+        when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+                .thenReturn(Optional.of(EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("A").codeDescription("Sentenced in custody").build())));
+
+        custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+
+        verify(custodyHistoryRepository, times(2)).save(custodyHistoryArgumentCaptor.capture());
+
+        final var custodyHistoryEvent = custodyHistoryArgumentCaptor.getAllValues()
+                .stream()
+                .filter(history -> history.getCustodyEventType().getCodeValue().equals("TSC"))
+                .findAny()
+                .orElseThrow();
+
+        assertThat(custodyHistoryEvent.getCustodyEventType().getCodeValue()).isEqualTo("TSC");
+        assertThat(custodyHistoryEvent.getDetail()).isEqualTo("DSS auto update in custody");
+        assertThat(custodyHistoryEvent.getWhen()).isEqualTo(LocalDate.now());
+    }
+    @Test
+    public void willGetInCustodyStatusWhenCurrentlyOnlySentenced() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
+        when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+                .thenReturn(Optional.of(EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("A").codeDescription("Sentenced in custody").build())));
+
+        custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+
+        verify(referenceDataService).getInCustodyCustodyStatus();
     }
 
     @Test
