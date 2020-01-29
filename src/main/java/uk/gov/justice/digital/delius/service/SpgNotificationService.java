@@ -34,11 +34,13 @@ public class SpgNotificationService {
 
     enum NotificationEvents {
         INSERT_EVENT("CWBI006"),
+        AMEND_EVENT("SEBI014"),
         INSERT_COURT_APPEARANCE("CWBI007"),
         UPDATE_OFFENDER("OIBI027"),
         INSERT_CUSTODY_KEY_DATE("SPOBI010"),
         UPDATE_CUSTODY_KEY_DATE("SPOBI011"),
-        DELETE_CUSTODY_KEY_DATE("TCBI037");
+        DELETE_CUSTODY_KEY_DATE("TCBI037"),
+        UPDATE_CUSTODY("TCBI001");
 
 
         private final String notificationCode;
@@ -73,6 +75,14 @@ public class SpgNotificationService {
 
     public void notifyDeletedCustodyKeyDate(KeyDate deletedKeyDate, Event event) {
         createNotificationsFor(DELETE_CUSTODY_KEY_DATE, event.getOffenderId(), deletedKeyDate.getKeyDateId(), event.getEventId());
+    }
+
+    public void notifyUpdateOfCustodyStatus(Offender offender, Event event) {
+        createNotificationsFor(AMEND_EVENT, offender.getOffenderId(), event.getEventId());
+    }
+
+    public void notifyUpdateOfCustody(Offender offender, Event event) {
+        createNotificationsFor(UPDATE_CUSTODY, offender.getOffenderId(), event.getEventId());
     }
 
     private void createNotificationsFor(NotificationEvents notificationEvent, Long offenderId) {

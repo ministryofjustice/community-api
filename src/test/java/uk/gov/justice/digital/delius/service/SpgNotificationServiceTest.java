@@ -19,8 +19,7 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static uk.gov.justice.digital.delius.util.EntityHelper.aCustodyEvent;
-import static uk.gov.justice.digital.delius.util.EntityHelper.aKeyDate;
+import static uk.gov.justice.digital.delius.util.EntityHelper.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SpgNotificationServiceTest {
@@ -445,6 +444,42 @@ public class SpgNotificationServiceTest {
         assertThat(findFor(SpgNotificationService.NotificationEvents.DELETE_CUSTODY_KEY_DATE.getNotificationCode())).hasSize(2);
         assertThat(findFor(SpgNotificationService.NotificationEvents.DELETE_CUSTODY_KEY_DATE.getNotificationCode()).stream().anyMatch(notification -> notification.getReceiverIdentity().getCode().equals("AA"))).isTrue();
         assertThat(findFor(SpgNotificationService.NotificationEvents.DELETE_CUSTODY_KEY_DATE.getNotificationCode()).stream().anyMatch(notification -> notification.getReceiverIdentity().getCode().equals("AB"))).isTrue();
+    }
+
+    @Test
+    public void keyInformationAboutTheUpdateCustodyStatusIsSaved() {
+        when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of(ProbationArea
+                .builder()
+                .code("AA")
+                .build()));
+
+        final var event = aCustodyEvent(99L, ImmutableList.of());
+        final var offender = anOffender().toBuilder().offenderId(77L).build();
+        spgNotificationService.notifyUpdateOfCustodyStatus(offender, event);
+
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+        val notification = findFor(SpgNotificationService.NotificationEvents.AMEND_EVENT.getNotificationCode()).get(0);
+        assertThat(notification.getUniqueId()).isEqualTo(99L);
+        assertThat(notification.getOffenderId()).isEqualTo(77L);
+    }
+
+    @Test
+    public void keyInformationAboutTheUpdateCustodyIsSaved() {
+        when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of(ProbationArea
+                .builder()
+                .code("AA")
+                .build()));
+
+        final var event = aCustodyEvent(99L, ImmutableList.of());
+        final var offender = anOffender().toBuilder().offenderId(77L).build();
+        spgNotificationService.notifyUpdateOfCustody(offender, event);
+
+        verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+        val notification = findFor(SpgNotificationService.NotificationEvents.UPDATE_CUSTODY.getNotificationCode()).get(0);
+        assertThat(notification.getUniqueId()).isEqualTo(99L);
+        assertThat(notification.getOffenderId()).isEqualTo(77L);
     }
 
 

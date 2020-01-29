@@ -31,6 +31,7 @@ public class CustodyService {
     private final ConvictionTransformer convictionTransformer;
     private final CustodyHistoryRepository custodyHistoryRepository;
     private final ReferenceDataService referenceDataService;
+    private final SpgNotificationService spgNotificationService;
 
     public CustodyService(
             @Value("${features.noms.update.custody}")
@@ -41,7 +42,8 @@ public class CustodyService {
             InstitutionRepository institutionRepository,
             ConvictionTransformer convictionTransformer,
             CustodyHistoryRepository custodyHistoryRepository,
-            ReferenceDataService referenceDataService) {
+            ReferenceDataService referenceDataService,
+            SpgNotificationService spgNotificationService) {
         this.updateCustodyFeatureSwitch = updateCustodyFeatureSwitch;
         this.telemetryClient = telemetryClient;
         this.offenderRepository = offenderRepository;
@@ -50,6 +52,7 @@ public class CustodyService {
         this.convictionTransformer = convictionTransformer;
         this.custodyHistoryRepository = custodyHistoryRepository;
         this.referenceDataService = referenceDataService;
+        this.spgNotificationService = spgNotificationService;
     }
 
     @Transactional
@@ -106,7 +109,9 @@ public class CustodyService {
                 custody.setStatusChangeDate(LocalDate.now());
                 custody.setCustodialStatus(referenceDataService.getInCustodyCustodyStatus());
                 saveCustodyStatusChangeCustodyHistoryEvent(offender, custody, institution);
+                spgNotificationService.notifyUpdateOfCustodyStatus(offender, event);
             }
+            spgNotificationService.notifyUpdateOfCustody(offender, event);
             return event;
         } else {
             log.warn("Update institution will be ignored, this feature is switched off ");
