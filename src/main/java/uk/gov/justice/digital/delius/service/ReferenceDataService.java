@@ -26,12 +26,13 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBo
 @Service
 public class ReferenceDataService {
 
-    private static final String POM_ALLOCATION_REASON_DATASET = "POM ALLOCATION REASON";
     public static final String POM_AUTO_TRANSFER_ALLOCATION_REASON_CODE = "AUT";
     public static final String POM_INTERNAL_TRANSFER_ALLOCATION_REASON_CODE = "INA";
     public static final String POM_EXTERNAL_TRANSFER_ALLOCATION_REASON_CODE = "EXT";
-
-
+    private static final String POM_ALLOCATION_REASON_DATASET = "POM ALLOCATION REASON";
+    private static final String CUSTODY_EVENT_DATASET = "CUSTODY EVENT TYPE";
+    private static final String CUSTODY_EVENT_PRISON_LOCATION_CHANGE_CODE = "CPL";
+    private static final String CUSTODY_EVENT_CUSTODY_STATUS_CHANGE_CODE = "TSC";
     private final ProbationAreaTransformer probationAreaTransformer;
     private final ProbationAreaRepository probationAreaRepository;
     private final StandardReferenceRepository standardReferenceRepository;
@@ -101,6 +102,14 @@ public class ReferenceDataService {
                 .flatMap(ldu -> ldu.getTeams().stream())
                 .map(team -> new KeyValue(team.getCode(), team.getDescription()))
                 .collect(collectingAndThen(toList(), PageImpl::new));
+    }
+
+    public StandardReference getPrisonLocationChangeCustodyEvent() {
+        return getCustodyEventTypeFor(CUSTODY_EVENT_PRISON_LOCATION_CHANGE_CODE);
+    }
+
+    private StandardReference getCustodyEventTypeFor(String code) {
+        return standardReferenceRepository.findByCodeAndCodeSetName(code, CUSTODY_EVENT_DATASET).orElseThrow();
     }
 
     private Stream<District> getSelectableLdusForProbationArea(String code) {
