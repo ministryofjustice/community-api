@@ -63,6 +63,19 @@ public class TeamServiceTest {
     }
 
     @Test
+    public void findUnallocatedTeamInAreaWillLookupBaseOnALLCode() {
+        when(teamRepository.findByCode(any())).thenReturn(Optional.of(aTeam()));
+
+        assertThat(teamService.findUnallocatedTeam(
+                aProbationArea()
+                        .toBuilder()
+                        .code("N01")
+                        .build())).isNotNull();
+
+        verify(teamRepository).findByCode("N01ALL");
+    }
+
+    @Test
     public void findOrCreatePrisonOffenderManagerTeamInAreaWillCreateNewPOMTeamWhenNotFound() {
         when(teamRepository.findByCode(any())).thenReturn(Optional.empty());
         when(districtRepository.findByCode(any())).thenReturn(Optional.of(aDistrict()));

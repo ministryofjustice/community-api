@@ -92,14 +92,41 @@ public class OffenderManagerService {
     }
 
 
+    boolean isPrisonOffenderManagerAtInstitution(Offender offender, RInstitution institution) {
+        return offender.getPrisonOffenderManagers()
+                .stream()
+                .filter(uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager::isActive)
+                .findFirst()
+                .flatMap(pom -> Optional.ofNullable(pom.getProbationArea()))
+                .map(ProbationArea::getInstitution)
+                .map(pomInstitution -> pomInstitution.getCode().equals(institution.getCode()))
+                .orElse(false);
+    }
+
+    CommunityOrPrisonOffenderManager autoAllocatePrisonOffenderManagerAtInstitution(Offender offender, RInstitution institution) {
+        final var allocationReason = referenceDataService.pomAllocationAutoTransferReason();
+        final var probationArea = probationAreaRepository.findByInstitutionByNomsCDECode(institution.getNomisCdeCode()).orElseThrow();
+        final var team = teamService.findUnallocatedTeam(probationArea).orElseThrow();
+        final var staff = staffService.findUnallocatedForTeam(team).orElseThrow();
+
+        return allocatePrisonOffenderManager(probationArea, staff, offender, team, allocationReason);
+    }
 
     private CommunityOrPrisonOffenderManager allocatePrisonOffenderManager(ProbationArea probationArea, Staff staff, Offender offender) {
+        return allocatePrisonOffenderManager(
+                probationArea,
+                staff,
+                offender,
+                teamService.findOrCreatePrisonOffenderManagerTeamInArea(probationArea),
+                getAllocationReason(probationArea, findExistingPrisonOffenderManager(offender)));
+    }
+
+    private CommunityOrPrisonOffenderManager allocatePrisonOffenderManager(ProbationArea probationArea, Staff staff, Offender offender, Team team, StandardReference allocationReason) {
         if (!probationArea.getProbationAreaId().equals(staff.getProbationArea().getProbationAreaId())) {
             throw new InvalidRequestException(
                     String.format("Staff with code %s is in probation area %s but was expected to be in prison area of %s", staff.getOfficerCode(), staff.getProbationArea().getDescription(), probationArea.getDescription()));
         }
 
-        final var team = teamService.findOrCreatePrisonOffenderManagerTeamInArea(probationArea);
         if (!isStaffInTeam(team, staff)) {
             teamService.addStaffToTeam(staff, team);
         }
@@ -109,7 +136,7 @@ public class OffenderManagerService {
                 .probationArea(probationArea)
                 .staff(staff)
                 .team(team)
-                .allocationReason(getAllocationReason(probationArea, findExistingPrisonOffenderManager(offender)))
+                .allocationReason(allocationReason)
                 .managedOffender(offender)
                 .offenderId(offender.getOffenderId())
                 .build());

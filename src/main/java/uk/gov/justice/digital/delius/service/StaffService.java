@@ -8,6 +8,7 @@ import uk.gov.justice.digital.delius.data.api.ManagedOffender;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffHelperRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
@@ -71,6 +72,10 @@ public class StaffService {
     @Transactional
     public Optional<Staff> findByOfficerCode(String officerCode) {
         return staffRepository.findByOfficerCode(officerCode);
+    }
+
+    Optional<Staff> findUnallocatedForTeam(Team team) {
+        return staffRepository.findByUnallocatedByTeam(team.getTeamId());
     }
 
     private Staff createStaffInArea(String surname, String forename, ProbationArea probationArea) {

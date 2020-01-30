@@ -32,6 +32,7 @@ public class CustodyService {
     private final CustodyHistoryRepository custodyHistoryRepository;
     private final ReferenceDataService referenceDataService;
     private final SpgNotificationService spgNotificationService;
+    private final OffenderManagerService offenderManagerService;
 
     public CustodyService(
             @Value("${features.noms.update.custody}")
@@ -43,7 +44,8 @@ public class CustodyService {
             ConvictionTransformer convictionTransformer,
             CustodyHistoryRepository custodyHistoryRepository,
             ReferenceDataService referenceDataService,
-            SpgNotificationService spgNotificationService) {
+            SpgNotificationService spgNotificationService,
+            OffenderManagerService offenderManagerService) {
         this.updateCustodyFeatureSwitch = updateCustodyFeatureSwitch;
         this.telemetryClient = telemetryClient;
         this.offenderRepository = offenderRepository;
@@ -53,6 +55,7 @@ public class CustodyService {
         this.custodyHistoryRepository = custodyHistoryRepository;
         this.referenceDataService = referenceDataService;
         this.spgNotificationService = spgNotificationService;
+        this.offenderManagerService = offenderManagerService;
     }
 
     @Transactional
@@ -112,10 +115,17 @@ public class CustodyService {
                 spgNotificationService.notifyUpdateOfCustodyStatus(offender, event);
             }
             spgNotificationService.notifyUpdateOfCustody(offender, event);
+            updatePrisonOffenderManager(offender, institution);
             return event;
         } else {
             log.warn("Update institution will be ignored, this feature is switched off ");
             return event;
+        }
+    }
+
+    private void updatePrisonOffenderManager(Offender offender, RInstitution institution) {
+        if (!offenderManagerService.isPrisonOffenderManagerAtInstitution(offender, institution)) {
+            offenderManagerService.autoAllocatePrisonOffenderManagerAtInstitution(offender, institution);
         }
     }
 
