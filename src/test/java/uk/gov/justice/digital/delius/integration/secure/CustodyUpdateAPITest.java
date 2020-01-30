@@ -6,6 +6,8 @@ import com.microsoft.applicationinsights.TelemetryClient;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
+import org.flywaydb.core.Flyway;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +20,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
 import uk.gov.justice.digital.delius.jwt.JwtAuthenticationHelper;
@@ -30,12 +33,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -51,6 +56,10 @@ public class CustodyUpdateAPITest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private Flyway flyway;
+
     @Autowired
     JdbcTemplate jdbcTemplate;
 
@@ -66,6 +75,12 @@ public class CustodyUpdateAPITest {
         RestAssured.basePath = "/secure";
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
                 new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
+    }
+
+    @After
+    public void after() {
+        flyway.clean();
+        flyway.migrate();
     }
 
     @Test
@@ -84,7 +99,7 @@ public class CustodyUpdateAPITest {
 
     @Test
     public void updatePrisonInstitution() throws JsonProcessingException {
-        final var token = createJwt("ROLE_COMMUNITY_CUSTODY_UPDATE");
+        final var token = createJwt("ROLE_COMMUNITY_CUSTODY_UPDATE", "ROLE_COMMUNITY");
 
         final var custody = given()
                 .auth().oauth2(token)
@@ -117,6 +132,27 @@ public class CustodyUpdateAPITest {
                 new ColumnMapRowMapper()).stream().max(Comparator.comparing(record -> toLocalDateTime(record.get("HISTORICAL_DATE")))).orElseThrow();
         assertThat(toLocalDateTime(latestCustodyHistoryRecord.get("HISTORICAL_DATE")).toLocalDate()).isEqualTo(LocalDate.now());
         assertThat(latestCustodyHistoryRecord.get("DETAIL")).isEqualTo("Moorland (HMP & YOI)");
+
+
+        // should have allocated a new "unallocated POM" at the prison probation area
+        final var offenderManagers = given()
+                .auth().oauth2(token)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/nomsNumber/G9542VP/allOffenderManagers")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(CommunityOrPrisonOffenderManager[].class);
+
+        assertThat(offenderManagers).hasSize(2);
+
+        final var prisonOffenderManager = Stream.of(offenderManagers).filter(CommunityOrPrisonOffenderManager::getIsPrisonOffenderManager).findAny().orElseThrow();
+
+        assertThat(prisonOffenderManager.getIsUnallocated()).isTrue();
+        assertThat(prisonOffenderManager.getProbationArea().getInstitution().getNomsPrisonInstitutionCode()).isEqualTo("MDI");
+        assertThat(prisonOffenderManager.getStaffCode()).isEqualTo("MDIALLU");
 
     }
 

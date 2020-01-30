@@ -6,10 +6,13 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 import uk.gov.justice.digital.delius.jpa.standard.repository.*;
 
+import java.util.Optional;
+
 @Service
 @AllArgsConstructor
 public class TeamService {
     private static final String POM_TEAM_SUFFIX = "POM";
+    private static final String UNALLOCATED_TEAM_SUFFIX = "ALL";
     private static final String POM_DESCRIPTION_SUFFIX = "Prison Offender Managers";
 
     private final TeamRepository teamRepository;
@@ -24,6 +27,11 @@ public class TeamService {
         final String teamCode = String.format("%s%s", probationArea.getCode(), POM_TEAM_SUFFIX);
         return teamRepository.findByCode(teamCode)
                 .orElseGet(() -> createPOMTeamInArea(teamCode, probationArea));
+    }
+
+    Optional<Team> findUnallocatedTeam(uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea probationArea) {
+        final String teamCode = String.format("%s%s", probationArea.getCode(), UNALLOCATED_TEAM_SUFFIX);
+        return teamRepository.findByCode(teamCode);
     }
 
     @Transactional

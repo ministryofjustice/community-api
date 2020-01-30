@@ -676,6 +676,7 @@ public class EntityHelper {
                 .establishment("Yes")
                 .privateFlag(0L)
                 .code("WWIHMP")
+                .nomisCdeCode("WWI")
                 .description("HMP Wandsworth")
                 .build();
     }

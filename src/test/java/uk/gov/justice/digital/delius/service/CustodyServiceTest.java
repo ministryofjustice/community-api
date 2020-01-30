@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anInstitution;
 
 public class CustodyServiceTest {
     private CustodyService custodyService;
@@ -47,16 +48,17 @@ public class CustodyServiceTest {
             lookupSupplier,
             new InstitutionTransformer());
     private ArgumentCaptor<CustodyHistory> custodyHistoryArgumentCaptor = ArgumentCaptor.forClass(CustodyHistory.class);
+    private OffenderManagerService offenderManagerService = mock(OffenderManagerService.class);
 
     @Before
     public void setup() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-        custodyService = new CustodyService(true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService);
+        custodyService = new CustodyService(true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService);
         when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
         when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                 .thenReturn(Optional.of(EntityHelper.aCustodyEvent()));
         when(referenceDataService.getPrisonLocationChangeCustodyEvent()).thenReturn(StandardReference.builder().codeValue("CPL").codeDescription("Change prison location").build());
         when(referenceDataService.getCustodyStatusChangeCustodyEvent()).thenReturn(StandardReference.builder().codeValue("TSC").codeDescription("Custody status change").build());
-        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(EntityHelper.anInstitution().toBuilder().description("HMP Highland").build()));
+        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
     }
 
     @Test
@@ -141,7 +143,7 @@ public class CustodyServiceTest {
 
     @Test
     public void willCreateTelemetryEventWhenPrisonLocationChanges() {
-        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(EntityHelper.anInstitution()));
+        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution()));
 
         custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
@@ -150,7 +152,7 @@ public class CustodyServiceTest {
 
     @Test
     public void willCreateCustodyHistoryChangeLocationEvent() {
-        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(EntityHelper.anInstitution().toBuilder().description("HMP Highland").build()));
+        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
         custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
         verify(custodyHistoryRepository).save(custodyHistoryArgumentCaptor.capture());
@@ -164,11 +166,36 @@ public class CustodyServiceTest {
 
     @Test
     public void willNotifySPGOfCustodyChange() {
-        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(EntityHelper.anInstitution().toBuilder().description("HMP Highland").build()));
+        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
 
         custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
         verify(spgNotificationService).notifyUpdateOfCustody(any(), any());
+    }
+
+    @Test
+    public void willCreateNewPrisonOffenderManagerWhenExistingPOMAtDifferentPrison() {
+        final var offender = Offender.builder().offenderId(99L).build();
+        final var institution = anInstitution();
+
+        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(institution));
+        when(offenderManagerService.isPrisonOffenderManagerAtInstitution(any(), any())).thenReturn(false);
+
+        custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+
+        verify(offenderManagerService).autoAllocatePrisonOffenderManagerAtInstitution(offender, institution);
+    }
+
+    @Test
+    public void willNotCreateNewPrisonOffenderManagerWhenExistingPOMAtSamePrison() {
+        final var institution = anInstitution();
+
+        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(institution));
+        when(offenderManagerService.isPrisonOffenderManagerAtInstitution(any(), any())).thenReturn(true);
+
+        custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+
+        verify(offenderManagerService, never()).autoAllocatePrisonOffenderManagerAtInstitution(any(), any());
     }
 
     @Test
@@ -215,7 +242,7 @@ public class CustodyServiceTest {
         when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                 .thenReturn(Optional.of(EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("B").codeDescription("Released on Licence").build())));
 
-        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(EntityHelper.anInstitution().toBuilder().description("HMP Highland").build()));
+        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
 
         assertThatThrownBy(() ->
                 custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()))
@@ -226,9 +253,9 @@ public class CustodyServiceTest {
 
     @Test
     public void willUpdatePrisonInstitutionWillBeUpdatedWhenFeatureSwitchedOn() {
-        custodyService = new CustodyService(true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService);
+        custodyService = new CustodyService(true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService);
 
-        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(EntityHelper.anInstitution().toBuilder().description("HMP Highland").build()));
+        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
 
         final var updatedCustody = custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
@@ -237,9 +264,9 @@ public class CustodyServiceTest {
 
     @Test
     public void willNotUpdatePrisonInstitutionWillBeUpdatedWhenFeatureSwitchedOff() {
-        custodyService = new CustodyService(false, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService);
+        custodyService = new CustodyService(false, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService);
 
-        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(EntityHelper.anInstitution().toBuilder().description("HMP Highland").build()));
+        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
 
         final var updatedCustody = custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
