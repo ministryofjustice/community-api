@@ -19,6 +19,7 @@ import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -77,8 +78,13 @@ public class CustodyService {
                     if ( isInCustodyOrAboutToStartACustodySentence(event.getDisposal().getCustody())) {
                         final var maybeInstitution = institutionRepository.findByNomisCdeCode(updateCustody.getNomsPrisonInstitutionCode());
                         return maybeInstitution.map(institution -> {
-                            telemetryClient.trackEvent("P2PTransferPrisonUpdated", telemetryProperties, null);
-                            return convictionTransformer.custodyOf(updateInstitutionOnEvent(offender, event, institution).getDisposal().getCustody());
+                            if (currentlyAtDifferentInstitution(event, institution)) {
+                                telemetryClient.trackEvent("P2PTransferPrisonUpdated", telemetryProperties, null);
+                                return convictionTransformer.custodyOf(updateInstitutionOnEvent(offender, event, institution).getDisposal().getCustody());
+                            } else {
+                                telemetryClient.trackEvent("P2PTransferPrisonUpdateIgnored", telemetryProperties, null);
+                                return convictionTransformer.custodyOf(event.getDisposal().getCustody());
+                            }
                         }).orElseThrow(() -> {
                             telemetryClient.trackEvent("P2PTransferPrisonNotFound", telemetryProperties, null);
                             return new NotFoundException(String.format("prison institution with nomis code  %s not found", updateCustody.getNomsPrisonInstitutionCode()));
@@ -99,6 +105,12 @@ public class CustodyService {
             telemetryClient.trackEvent("P2PTransferOffenderNotFound", telemetryProperties, null);
             return new NotFoundException(String.format("offender with nomsNumber %s not found", nomsNumber));
         });
+    }
+
+    private boolean currentlyAtDifferentInstitution(Event event, RInstitution institution) {
+        return Optional.ofNullable(event.getDisposal().getCustody().getInstitution())
+                .map(currentInstitution -> !currentInstitution.equals(institution))
+                .orElse(true);
     }
 
     private boolean isInCustodyOrAboutToStartACustodySentence(uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody) {

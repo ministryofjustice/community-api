@@ -143,6 +143,28 @@ public class CustodyServiceTest {
     }
 
     @Test
+    public void willCreateTelemetryEventAndNothingElseWhenPrisonAlreadySet() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
+        final var newInstitution = aPrisonInstitution();
+        final var currentInstitution = aPrisonInstitution();
+        final var event = EntityHelper.aCustodyEvent();
+        event.getDisposal().getCustody().setInstitution(currentInstitution);
+        when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+                .thenReturn(Optional.of(event));
+        when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(newInstitution));
+
+
+        final var custody = custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+
+        verify(telemetryClient).trackEvent(eq("P2PTransferPrisonUpdateIgnored"), argThat(standardTelemetryAttributes), isNull());
+
+        verify(spgNotificationService, never()).notifyUpdateOfCustody(any(), any());
+        verify(contactService, never()).addContactForPrisonLocationChange(any(), any());
+        verify(offenderManagerService, never()).autoAllocatePrisonOffenderManagerAtInstitution(any(), any());
+
+        assertThat(custody).isNotNull();
+    }
+
+    @Test
     public void willCreateTelemetryEventWhenPrisonLocationChanges() {
         when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution()));
 
