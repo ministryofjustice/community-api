@@ -33,6 +33,7 @@ public class CustodyService {
     private final ReferenceDataService referenceDataService;
     private final SpgNotificationService spgNotificationService;
     private final OffenderManagerService offenderManagerService;
+    private final ContactService contactService;
 
     public CustodyService(
             @Value("${features.noms.update.custody}")
@@ -45,7 +46,8 @@ public class CustodyService {
             CustodyHistoryRepository custodyHistoryRepository,
             ReferenceDataService referenceDataService,
             SpgNotificationService spgNotificationService,
-            OffenderManagerService offenderManagerService) {
+            OffenderManagerService offenderManagerService,
+            ContactService contactService) {
         this.updateCustodyFeatureSwitch = updateCustodyFeatureSwitch;
         this.telemetryClient = telemetryClient;
         this.offenderRepository = offenderRepository;
@@ -56,6 +58,7 @@ public class CustodyService {
         this.referenceDataService = referenceDataService;
         this.spgNotificationService = spgNotificationService;
         this.offenderManagerService = offenderManagerService;
+        this.contactService = contactService;
     }
 
     @Transactional
@@ -116,6 +119,7 @@ public class CustodyService {
             }
             spgNotificationService.notifyUpdateOfCustody(offender, event);
             updatePrisonOffenderManager(offender, institution);
+            contactService.addContactForPrisonLocationChange(offender, event);
             return event;
         } else {
             log.warn("Update institution will be ignored, this feature is switched off ");

@@ -154,6 +154,19 @@ public class CustodyUpdateAPITest {
         assertThat(prisonOffenderManager.getProbationArea().getInstitution().getNomsPrisonInstitutionCode()).isEqualTo("MDI");
         assertThat(prisonOffenderManager.getStaffCode()).isEqualTo("MDIALLU");
 
+
+        final var contact = jdbcTemplate.query(
+                "SELECT * from CONTACT where OFFENDER_ID = ?",
+                List.of(OFFENDER_ID).toArray(),
+                new ColumnMapRowMapper())
+                .stream()
+                .filter(record -> toLocalDateTime(record.get("CONTACT_DATE")).toLocalDate().equals(LocalDate.now()))
+                .filter(record -> record.get("EVENT_ID") != null)
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(contact.get("NOTES").toString()).contains("Custodial Establishment: Moorland (HMP & YOI)");
+
     }
 
     private String createUpdateCustody(String prisonCode) throws JsonProcessingException {

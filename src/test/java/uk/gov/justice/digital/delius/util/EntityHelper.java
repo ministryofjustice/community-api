@@ -106,6 +106,7 @@ public class EntityHelper {
                 .cpsSoftDeleted(0L)
                 .softDeleted(0L)
                 .activeFlag(1L)
+                .orderManagers(List.of(anOrderManager()))
                 .build();
     }
 
@@ -698,4 +699,15 @@ public class EntityHelper {
                 .alertFlag("N")
                 .build();
     }
+
+
+    public static OrderManager anOrderManager() {
+        return OrderManager
+                .builder()
+                .team(aTeam())
+                .staff(aStaff())
+                .probationArea(aProbationArea())
+                .build();
+    }
+
 }
