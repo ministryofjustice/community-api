@@ -155,7 +155,7 @@ public class EntityHelper {
                 .disposal(disposal)
                 .custodyId(9999L)
                 .keyDates(keyDates)
-                .institution(anInstitution())
+                .institution(aPrisonInstitution())
                 .custodialStatus(custodialStatus)
                 .build();
     }
