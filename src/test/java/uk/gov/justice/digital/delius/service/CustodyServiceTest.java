@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static uk.gov.justice.digital.delius.util.EntityHelper.anInstitution;
+import static uk.gov.justice.digital.delius.util.EntityHelper.*;
 
 public class CustodyServiceTest {
     private CustodyService custodyService;
@@ -49,10 +49,11 @@ public class CustodyServiceTest {
             new InstitutionTransformer());
     private ArgumentCaptor<CustodyHistory> custodyHistoryArgumentCaptor = ArgumentCaptor.forClass(CustodyHistory.class);
     private OffenderManagerService offenderManagerService = mock(OffenderManagerService.class);
+    private ContactService contactService = mock(ContactService.class);
 
     @Before
     public void setup() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-        custodyService = new CustodyService(true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService);
+        custodyService = new CustodyService(true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService);
         when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
         when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                 .thenReturn(Optional.of(EntityHelper.aCustodyEvent()));
@@ -174,6 +175,19 @@ public class CustodyServiceTest {
     }
 
     @Test
+    public void willCreateContactAboutPrisonLocationChange() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
+        final var offender = anOffender();
+        final var event = aCustodyEvent();
+        when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(offender));
+        when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+                .thenReturn(Optional.of(event));
+
+        custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+
+        verify(contactService).addContactForPrisonLocationChange(offender, event);
+    }
+
+    @Test
     public void willCreateNewPrisonOffenderManagerWhenExistingPOMAtDifferentPrison() {
         final var offender = Offender.builder().offenderId(99L).build();
         final var institution = anInstitution();
@@ -253,7 +267,7 @@ public class CustodyServiceTest {
 
     @Test
     public void willUpdatePrisonInstitutionWillBeUpdatedWhenFeatureSwitchedOn() {
-        custodyService = new CustodyService(true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService);
+        custodyService = new CustodyService(true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService);
 
         when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
 
@@ -264,7 +278,7 @@ public class CustodyServiceTest {
 
     @Test
     public void willNotUpdatePrisonInstitutionWillBeUpdatedWhenFeatureSwitchedOff() {
-        custodyService = new CustodyService(false, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService);
+        custodyService = new CustodyService(false, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService);
 
         when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
 

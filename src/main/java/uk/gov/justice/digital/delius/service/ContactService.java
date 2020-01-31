@@ -5,17 +5,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
-import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
-import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
-import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 import uk.gov.justice.digital.delius.transformers.ContactTransformer;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+
+import static uk.gov.justice.digital.delius.jpa.standard.entity.Contact.*;
 
 @Service
 public class ContactService {
@@ -24,6 +24,7 @@ public class ContactService {
     private static final String PRISONER_OFFENDER_MANAGER_INTERNAL_ALLOCATION_CONTACT_TYPE = "EPOMIN";
     private static final String PRISONER_OFFENDER_MANAGER_EXTERNAL_ALLOCATION_CONTACT_TYPE = "EPOMEX";
     private static final String RESPONSIBLE_OFFICER_CHANGE_CONTACT_TYPE = "ROC";
+    private static final String PRISON_LOCATION_CHANGE_CONTACT_TYPE = "ETCP";
     private final ContactRepository contactRepository;
     private final ContactTypeRepository contactTypeRepository;
     private final ContactTransformer contactTransformer;
@@ -58,8 +59,7 @@ public class ContactService {
     @Transactional
     public void addContactForResponsibleOfficerChange(PrisonOffenderManager newPrisonOffenderManager, PrisonOffenderManager existingPrisonOffenderManager) {
         final ContactType contactType = contactTypeForResponsibleOfficerChange();
-        contactRepository.save(uk.gov.justice.digital.delius.jpa.standard.entity.Contact
-                .builder()
+        contactRepository.save(builder()
                 .contactDate(newPrisonOffenderManager.getAllocationDate())
                 .offenderId(newPrisonOffenderManager.getOffenderId())
                 .notes(notesForResponsibleManager(newPrisonOffenderManager, existingPrisonOffenderManager))
@@ -73,11 +73,31 @@ public class ContactService {
                 .build());
     }
 
+    @Transactional
+    public void addContactForPrisonLocationChange(Offender offender, Event event) {
+        final var contactType = contactTypeForPrisonLocationChange();
+        // same as Delius get first Order manager
+        final var mayBeOrderManager = event.getOrderManagers().stream().findFirst();
+
+        contactRepository.save(builder()
+                .contactDate(LocalDate.now())
+                .offenderId(offender.getOffenderId())
+                .notes(notesForPrisonLocationChange(event))
+                .team(mayBeOrderManager.map(OrderManager::getTeam).orElse(null))
+                .staff(mayBeOrderManager.map(OrderManager::getStaff).orElse(null))
+                .probationArea(mayBeOrderManager.map(OrderManager::getProbationArea).orElse(null))
+                .staffEmployeeId(mayBeOrderManager.flatMap(orderManager -> Optional.ofNullable(orderManager.getStaff())).map(Staff::getStaffId).orElse(null))
+                .teamProviderId(mayBeOrderManager.flatMap(orderManager -> Optional.ofNullable(orderManager.getTeam())).map(Team::getTeamId).orElse(null))
+                .contactType(contactType)
+                .alertActive(contactType.getAlertFlag())
+                .event(event)
+                .build());
+
+    }
 
     private uk.gov.justice.digital.delius.jpa.standard.entity.Contact contactForPOMAllocation(PrisonOffenderManager newPrisonOffenderManager) {
         final ContactType contactType = contactTypeForPOMAllocationOf(newPrisonOffenderManager.getAllocationReason());
-        return uk.gov.justice.digital.delius.jpa.standard.entity.Contact
-                .builder()
+        return builder()
                 .contactDate(newPrisonOffenderManager.getAllocationDate())
                 .offenderId(newPrisonOffenderManager.getOffenderId())
                 .notes(notesForPOMAllocation(newPrisonOffenderManager))
@@ -106,6 +126,10 @@ public class ContactService {
 
     private ContactType contactTypeForResponsibleOfficerChange() {
          return contactTypeRepository.findByCode(RESPONSIBLE_OFFICER_CHANGE_CONTACT_TYPE).orElseThrow();
+    }
+
+    private ContactType contactTypeForPrisonLocationChange() {
+         return contactTypeRepository.findByCode(PRISON_LOCATION_CHANGE_CONTACT_TYPE).orElseThrow();
     }
 
     private String notesForPOMAllocation(PrisonOffenderManager newPrisonOffenderManager) {
@@ -176,5 +200,13 @@ public class ContactService {
                 staff.getForename() +
                 " " +
                 Optional.ofNullable(staff.getForname2()).orElse("");
+    }
+
+    private String notesForPrisonLocationChange(Event event) {
+        final var custody = event.getDisposal().getCustody();
+        return String.format("%s%s%s-------------------------------",
+                Optional.ofNullable(custody.getCustodialStatus()).map(status -> String.format("Custodial Status: %s\n", status.getCodeDescription())).orElse(""),
+                Optional.ofNullable(custody.getInstitution()).map(institution -> String.format("Custodial Establishment: %s\n", institution.getDescription())).orElse(""),
+                Optional.ofNullable(custody.getLocationChangeDate()).map(date -> String.format("Location Change Date: %s\n", date.format(DateTimeFormatter.ISO_LOCAL_DATE))).orElse(""));
     }
 }

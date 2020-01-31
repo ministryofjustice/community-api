@@ -54,12 +54,12 @@ public class OffenderManagerService {
                 offender -> combine(
                         offender.getOffenderManagers()
                                 .stream()
-                                .filter(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager::isActive)
+                                .filter(OffenderManager::isActive)
                                 .map(offenderManagerTransformer::offenderManagerOf)
                                 .collect(Collectors.toList()),
                         offender.getPrisonOffenderManagers()
                                 .stream()
-                                .filter(uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager::isActive)
+                                .filter(PrisonOffenderManager::isActive)
                                 .map(offenderManagerTransformer::offenderManagerOf)
                                 .collect(Collectors.toList())
                 ) );
@@ -95,7 +95,7 @@ public class OffenderManagerService {
     boolean isPrisonOffenderManagerAtInstitution(Offender offender, RInstitution institution) {
         return offender.getPrisonOffenderManagers()
                 .stream()
-                .filter(uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager::isActive)
+                .filter(PrisonOffenderManager::isActive)
                 .findFirst()
                 .flatMap(pom -> Optional.ofNullable(pom.getProbationArea()))
                 .map(ProbationArea::getInstitution)
@@ -183,7 +183,7 @@ public class OffenderManagerService {
     private Optional<PrisonOffenderManager> findExistingPrisonOffenderManager(Offender offender) {
         return offender.getPrisonOffenderManagers()
                 .stream()
-                .filter(uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager::isActive)
+                .filter(PrisonOffenderManager::isActive)
                 .findFirst();
     }
 
