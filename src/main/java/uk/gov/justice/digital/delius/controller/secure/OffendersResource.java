@@ -277,5 +277,18 @@ public class OffendersResource {
         Optional<OffenderDetail> offender = offenderService.getOffenderByCrn(crn);
         return offender.orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
+
+    @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/all", method = RequestMethod.GET)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "The offender details", response = OffenderDetail.class),
+            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "The offender is not found")
+    })
+    @ApiOperation(value = "Returns the full offender detail for the given nomsNumber")
+    public OffenderDetail getOffenderDetailByNomsNumber(final @PathVariable("nomsNumber") String nomsNumber) {
+        Optional<OffenderDetail> offender = offenderService.getOffenderByNomsNumber(nomsNumber);
+        return offender.orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
+    }
 }
 
