@@ -455,7 +455,7 @@ public class SpgNotificationServiceTest {
 
         final var event = aCustodyEvent(99L, ImmutableList.of());
         final var offender = anOffender().toBuilder().offenderId(77L).build();
-        spgNotificationService.notifyUpdateOfCustodyStatus(offender, event);
+        spgNotificationService.notifyUpdateOfCustodyLocationChange(offender, event);
 
         verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
 

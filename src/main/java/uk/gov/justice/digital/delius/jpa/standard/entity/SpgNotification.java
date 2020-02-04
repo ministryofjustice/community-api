@@ -58,7 +58,8 @@ public class SpgNotification {
     @Column(name = "SPG_INTERCHANGE_STATUS_ID")
     private Long spgInterchangeStatusId;
     @Column(name = "ROW_VERSION")
-    private Long rowVersion;
+    @Builder.Default
+    private Long rowVersion = 1L;
     @Column(name = "REGENERATED_NOTIFICATION_ID")
     private Long regeneratedNotificationId;
     @Column(name = "MT_COMPONENT_ID")
