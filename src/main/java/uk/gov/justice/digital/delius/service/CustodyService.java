@@ -127,8 +127,8 @@ public class CustodyService {
                 custody.setStatusChangeDate(LocalDate.now());
                 custody.setCustodialStatus(referenceDataService.getInCustodyCustodyStatus());
                 saveCustodyStatusChangeCustodyHistoryEvent(offender, custody, institution);
-                spgNotificationService.notifyUpdateOfCustodyStatus(offender, event);
             }
+            spgNotificationService.notifyUpdateOfCustodyLocationChange(offender, event);
             spgNotificationService.notifyUpdateOfCustody(offender, event);
             updatePrisonOffenderManager(offender, institution);
             contactService.addContactForPrisonLocationChange(offender, event);

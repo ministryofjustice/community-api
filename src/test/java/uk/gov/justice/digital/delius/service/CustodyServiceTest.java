@@ -264,13 +264,23 @@ public class CustodyServiceTest {
     }
 
     @Test
-    public void willNotifySPGOfCustodyStatusChangeWhenCurrentlyOnlySentenced() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
+    public void willNotifySPGOfCustodyLocationChangeWhenCurrentlyOnlySentenced() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
         when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                 .thenReturn(Optional.of(EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("A").codeDescription("Sentenced in custody").build())));
 
         custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
-        verify(spgNotificationService).notifyUpdateOfCustodyStatus(any(), any());
+        verify(spgNotificationService).notifyUpdateOfCustodyLocationChange(any(), any());
+    }
+
+    @Test
+    public void willNotifySPGOfCustodyLocationChangeWhenCurrentlyInCustody() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
+        when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+                .thenReturn(Optional.of(EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("D").codeDescription("In Custody").build())));
+
+        custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+
+        verify(spgNotificationService).notifyUpdateOfCustodyLocationChange(any(), any());
     }
 
     @Test

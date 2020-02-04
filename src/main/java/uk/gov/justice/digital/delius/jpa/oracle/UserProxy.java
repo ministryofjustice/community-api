@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.jpa.oracle;
 
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -19,7 +18,6 @@ import java.sql.SQLException;
 @Component
 @Profile("oracle")
 @Aspect
-@Slf4j
 public class UserProxy {
 
     private final Advisor closeConnectionAdvisor;
@@ -40,8 +38,6 @@ public class UserProxy {
     }
 
     private Connection getConnection(Connection connection, String uid) {
-        log.info("Doing oracle vpd thing using uid {}", uid);
-
         ProxyFactory proxyFactory = new ProxyFactory(connection);
         proxyFactory.addAdvisor(closeConnectionAdvisor);
 

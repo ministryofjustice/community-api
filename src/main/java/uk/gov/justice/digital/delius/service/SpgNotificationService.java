@@ -77,7 +77,7 @@ public class SpgNotificationService {
         createNotificationsFor(DELETE_CUSTODY_KEY_DATE, event.getOffenderId(), deletedKeyDate.getKeyDateId(), event.getEventId());
     }
 
-    public void notifyUpdateOfCustodyStatus(Offender offender, Event event) {
+    public void notifyUpdateOfCustodyLocationChange(Offender offender, Event event) {
         createNotificationsFor(AMEND_EVENT, offender.getOffenderId(), event.getEventId());
     }
 
@@ -123,7 +123,6 @@ public class SpgNotificationService {
                                         .processedFlag(0L)
                                         .errorFlag(0L)
                                         .messageDirection("O")
-                                        .rowVersion(0L)
                                         .exportToFileFlag(0L)
                                         .build();
                         }).collect(toList()));
