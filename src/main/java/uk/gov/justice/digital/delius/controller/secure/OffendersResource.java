@@ -290,5 +290,25 @@ public class OffendersResource {
         Optional<OffenderDetail> offender = offenderService.getOffenderByNomsNumber(nomsNumber);
         return offender.orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
     }
+
+    @ApiOperation(value = "Return the convictions (AKA Delius Event) for an offender")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "OK", response = Conviction.class, responseContainer = "List"),
+                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+                    @ApiResponse(code = 404, message = "The offender is not found", response = ErrorResponse.class),
+                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            })
+    @GetMapping(path = "/offenders/crn/{crn}/convictions")
+    public ResponseEntity<List<Conviction>> getConvictionsForOffenderByCrn(
+            @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
+            @NotNull @PathVariable(value = "crn") final String crn) {
+
+        return offenderService.offenderIdOfCrn(crn)
+                .map(offenderId -> new ResponseEntity<>(convictionService.convictionsFor(offenderId), HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
 }
 
