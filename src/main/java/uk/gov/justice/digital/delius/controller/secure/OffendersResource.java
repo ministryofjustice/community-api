@@ -302,12 +302,12 @@ public class OffendersResource {
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(path = "/offenders/crn/{crn}/convictions")
-    public ResponseEntity<List<Conviction>> getConvictionsForOffenderByCrn(
+    public List<Conviction> getConvictionsForOffenderByCrn(
             @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
             @NotNull @PathVariable(value = "crn") final String crn) {
 
         return offenderService.offenderIdOfCrn(crn)
-                .map(offenderId -> new ResponseEntity<>(convictionService.convictionsFor(offenderId), HttpStatus.OK))
+                .map(convictionService::convictionsFor)
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 }
