@@ -308,7 +308,7 @@ public class OffendersResource {
 
         return offenderService.offenderIdOfCrn(crn)
                 .map(offenderId -> new ResponseEntity<>(convictionService.convictionsFor(offenderId), HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 }
 
