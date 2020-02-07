@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Data
 @NoArgsConstructor
@@ -102,6 +103,10 @@ public class OrderManager {
 
     @Column(name = "ORDER_TRANSFER_ID")
     private Long orderTransferId;
+
+    public boolean isActive() {
+        return Optional.ofNullable(activeFlag).orElse(0L) == 1L && endDate == null;
+    }
 
 
 }

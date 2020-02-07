@@ -706,6 +706,7 @@ public class EntityHelper {
                 .builder()
                 .team(aTeam())
                 .staff(aStaff())
+                .activeFlag(1L)
                 .probationArea(aProbationArea())
                 .build();
     }
