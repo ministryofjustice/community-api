@@ -28,6 +28,7 @@ public class ReferenceDataResourceTest {
 
     private static final String ACTIVE_PROBATION_AREA = "N02";
     private static final String INACTIVE_PROBATION_AREA = "BED";
+    private static final String ACTIVE_PRISON = "MDI";
     private static final String EXISTING_LDU = "YSS_SHF";
     private static final String MISSING_LDU = "NOT_EXISTING";
 
@@ -85,9 +86,64 @@ public class ReferenceDataResourceTest {
         assertThat(probationAreas)
                 .hasSize(208)
                 .extracting("code")
-                .contains(ACTIVE_PROBATION_AREA)
+                .contains(ACTIVE_PROBATION_AREA, ACTIVE_PRISON)
                 .doesNotContain(INACTIVE_PROBATION_AREA);
     }
+
+    @Test
+    public void canGetOnlyActiveProbationAreasExcludingPrisons() {
+        var probationAreas = given()
+                .when()
+                .auth()
+                .oauth2(validOauthToken)
+                .param("active", true)
+                .param("excludeEstablishments", true)
+                .get("/probationAreas")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .jsonPath().getList("content", KeyValue.class);
+
+        assertThat(probationAreas)
+                .hasSize(73)
+                .extracting("code")
+                .contains(ACTIVE_PROBATION_AREA)
+                .doesNotContain(INACTIVE_PROBATION_AREA, ACTIVE_PRISON);
+    }
+
+    @Test
+    public void willDefaultToNotExcludePrisonsProbationAreas() {
+        var allProbationAreas = given()
+                .when()
+                .auth()
+                .oauth2(validOauthToken)
+                .get("/probationAreas")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .jsonPath().getList("content", KeyValue.class);
+
+        var allProbationAreasIncludingEstablishments = given()
+                .when()
+                .auth()
+                .oauth2(validOauthToken)
+                .param("excludeEstablishments", false)
+                .get("/probationAreas")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .jsonPath().getList("content", KeyValue.class);
+
+        assertThat(allProbationAreas)
+                .isEqualTo(allProbationAreasIncludingEstablishments)
+                .hasSize(248)
+                .extracting("code")
+                .contains(ACTIVE_PROBATION_AREA, ACTIVE_PRISON, INACTIVE_PROBATION_AREA);
+    }
+
 
     @Test
     public void canGetLocalDeliveryUnits() {

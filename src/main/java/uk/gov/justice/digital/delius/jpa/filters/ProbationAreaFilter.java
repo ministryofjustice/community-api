@@ -23,6 +23,9 @@ public class ProbationAreaFilter implements Specification<ProbationArea> {
     @Builder.Default
     private Boolean restrictActive = false;
 
+    @Builder.Default
+    private Boolean excludeEstablishments = false;
+
     @Override
     public Predicate toPredicate(Root<ProbationArea> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
         ImmutableList.Builder<Predicate> predicateBuilder = ImmutableList.builder();
@@ -31,6 +34,10 @@ public class ProbationAreaFilter implements Specification<ProbationArea> {
 
         if (restrictActive) {
             predicateBuilder.add(cb.isNull(root.get("endDate")));
+        }
+
+        if (excludeEstablishments) {
+            predicateBuilder.add(cb.isNull(root.get("establishment")));
         }
 
         ImmutableList<Predicate> predicates = predicateBuilder.build();
