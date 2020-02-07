@@ -76,8 +76,10 @@ public class ContactService {
     @Transactional
     public void addContactForPrisonLocationChange(Offender offender, Event event) {
         final var contactType = contactTypeForPrisonLocationChange();
-        // same as Delius get first Order manager
-        final var mayBeOrderManager = event.getOrderManagers().stream().findFirst();
+        final var mayBeOrderManager = event.getOrderManagers()
+                .stream()
+                .filter(OrderManager::isActive)
+                .findFirst();
 
         contactRepository.save(builder()
                 .contactDate(LocalDate.now())

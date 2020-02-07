@@ -14,6 +14,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeReposito
 import uk.gov.justice.digital.delius.transformers.ContactTransformer;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -98,27 +99,49 @@ public class ContactService_addContactForPrisonLocationChangeTest {
 
     @Test
     public void willUseFirstOrderManagerForOrganisationLinks() {
-        final var team = aTeam().toBuilder().teamId(88L).build();
-        final var staff = aStaff().toBuilder().staffId(77L).build();
+        final var teamForActiveOM = aTeam().toBuilder().teamId(88L).build();
+        final var staffForActiveOM = aStaff().toBuilder().staffId(77L).build();
+        final var teamForInactiveOM1 = aTeam().toBuilder().teamId(66L).build();
+        final var staffForInactiveOM1 = aStaff().toBuilder().staffId(55L).build();
+        final var teamForInactiveOM2 = aTeam().toBuilder().teamId(44L).build();
+        final var staffForInactiveOM2 = aStaff().toBuilder().staffId(33L).build();
         final var probationArea = aProbationArea();
-        final var orderManager = anOrderManager()
+        final var activeOrderManager = anOrderManager()
                 .toBuilder()
-                .team(team)
-                .staff(staff)
+                .team(teamForActiveOM)
+                .staff(staffForActiveOM)
                 .probationArea(probationArea)
+                .endDate(null)
+                .activeFlag(1L)
+                .build();
+        final var inactiveOrderManager1 = anOrderManager()
+                .toBuilder()
+                .team(teamForInactiveOM1)
+                .staff(staffForInactiveOM1)
+                .probationArea(probationArea)
+                .endDate(LocalDateTime.now())
+                .activeFlag(0L)
+                .build();
+        final var inactiveOrderManager2 = anOrderManager()
+                .toBuilder()
+                .team(teamForInactiveOM2)
+                .staff(staffForInactiveOM2)
+                .probationArea(probationArea)
+                .endDate(LocalDateTime.now())
+                .activeFlag(0L)
                 .build();
         final var event = aCustodyEvent()
                 .toBuilder()
-                .orderManagers(List.of(orderManager, anOrderManager()))
+                .orderManagers(List.of(inactiveOrderManager1, activeOrderManager, inactiveOrderManager2))
                 .build();
 
         contactService.addContactForPrisonLocationChange(anOffender(), event);
 
         verify(contactRepository).save(contactArgumentCaptor.capture());
-        assertThat(contactArgumentCaptor.getValue().getTeam()).isEqualTo(team);
-        assertThat(contactArgumentCaptor.getValue().getTeamProviderId()).isEqualTo(team.getTeamId());
-        assertThat(contactArgumentCaptor.getValue().getStaff()).isEqualTo(staff);
-        assertThat(contactArgumentCaptor.getValue().getStaffEmployeeId()).isEqualTo(staff.getStaffId());
+        assertThat(contactArgumentCaptor.getValue().getTeam()).isEqualTo(teamForActiveOM);
+        assertThat(contactArgumentCaptor.getValue().getTeamProviderId()).isEqualTo(teamForActiveOM.getTeamId());
+        assertThat(contactArgumentCaptor.getValue().getStaff()).isEqualTo(staffForActiveOM);
+        assertThat(contactArgumentCaptor.getValue().getStaffEmployeeId()).isEqualTo(staffForActiveOM.getStaffId());
         assertThat(contactArgumentCaptor.getValue().getProbationArea()).isEqualTo(probationArea);
     }
 
