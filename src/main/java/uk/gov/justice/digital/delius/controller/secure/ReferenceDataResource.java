@@ -45,11 +45,13 @@ public class ReferenceDataResource {
             })
     @GetMapping("/probationAreas")
     public Page<KeyValue> getProbationAreaCodes(
-            @ApiParam(name = "active", value = "Restricts to active areas only", example = "true", required = false)
-            final @RequestParam(name = "active", required = false) boolean restrictActive) {
+            @ApiParam(name = "active", value = "Restricts to active areas only", example = "true")
+            final @RequestParam(name = "active", required = false) boolean restrictActive,
+            @ApiParam(name = "excludeEstablishments", value = "Restricts to areas that are providers, no prisons wil be returned", example = "true")
+            final @RequestParam(name = "excludeEstablishments", required = false) boolean excludeEstablishments) {
 
         log.info("Call to getProbationAreaCodes");
-        return referenceDataService.getProbationAreasCodes(restrictActive);
+        return referenceDataService.getProbationAreasCodes(restrictActive, excludeEstablishments);
     }
 
     @ApiOperation(

@@ -49,7 +49,7 @@ public class ReferenceDataServiceTest {
 
         when(probationAreaRepository.findAll(filter)).thenReturn(List.of(aProbationArea()));
 
-        assertThat(referenceDataService.getProbationAreasCodes(false).getContent())
+        assertThat(referenceDataService.getProbationAreasCodes(false, false).getContent())
                 .hasSize(1)
                 .first()
                 .isEqualTo(new KeyValue(aProbationArea().getCode(), aProbationArea().getDescription()));
@@ -61,7 +61,7 @@ public class ReferenceDataServiceTest {
 
         when(probationAreaRepository.findAll(filter)).thenReturn(List.of(aProbationArea()));
 
-        assertThat(referenceDataService.getProbationAreasCodes(true).getContent())
+        assertThat(referenceDataService.getProbationAreasCodes(true, false).getContent())
                 .hasSize(1)
                 .first()
                 .isEqualTo(new KeyValue(aProbationArea().getCode(), aProbationArea().getDescription()));

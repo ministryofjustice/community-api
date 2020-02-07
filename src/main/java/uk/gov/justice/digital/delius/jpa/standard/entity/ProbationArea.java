@@ -54,4 +54,7 @@ public class ProbationArea {
     @Column(name = "PRIVATE")
     private Long privateSector;
 
+    @Column(name = "ESTABLISHMENT", updatable = false, insertable = false)
+    private String establishment;
+
 }

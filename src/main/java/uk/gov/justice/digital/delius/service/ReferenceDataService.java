@@ -76,8 +76,11 @@ public class ReferenceDataService {
                 .orElseThrow(() -> new RuntimeException(format("No pom allocation reason found for %s", reason)));
     }
 
-    public Page<KeyValue> getProbationAreasCodes(boolean restrictActive) {
-        final var filter = ProbationAreaFilter.builder().restrictActive(restrictActive).build();
+    public Page<KeyValue> getProbationAreasCodes(boolean restrictActive, boolean excludeEstablishments) {
+        final var filter = ProbationAreaFilter
+                .builder()
+                .restrictActive(restrictActive)
+                .excludeEstablishments(excludeEstablishments).build();
 
         return probationAreaRepository.findAll(filter).stream()
                 .map(area -> new KeyValue(area.getCode(), area.getDescription()))
