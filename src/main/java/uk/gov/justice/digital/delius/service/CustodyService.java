@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
+import uk.gov.justice.digital.delius.data.api.UpdateCustodyBookingNumber;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CustodyHistory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
@@ -107,6 +108,16 @@ public class CustodyService {
         });
     }
 
+
+    public Custody updateCustodyBookingNumber(String nomsNumber, UpdateCustodyBookingNumber updateCustodyBookingNumber) {
+        log.info("Request to update booking number for {}", nomsNumber);
+        return Custody
+                .builder()
+                .bookingNumber(updateCustodyBookingNumber.getBookingNumber())
+                .build();
+    }
+
+
     private boolean currentlyAtDifferentInstitution(Event event, RInstitution institution) {
         return Optional.ofNullable(event.getDisposal().getCustody().getInstitution())
                 .map(currentInstitution -> !currentInstitution.equals(institution))
@@ -126,7 +137,7 @@ public class CustodyService {
             if (custody.isAboutToEnterCustody()) {
                 custody.setStatusChangeDate(LocalDate.now());
                 custody.setCustodialStatus(referenceDataService.getInCustodyCustodyStatus());
-                saveCustodyStatusChangeCustodyHistoryEvent(offender, custody, institution);
+                saveCustodyStatusChangeCustodyHistoryEvent(offender, custody);
             }
             spgNotificationService.notifyUpdateOfCustodyLocationChange(offender, event);
             spgNotificationService.notifyUpdateOfCustody(offender, event);
@@ -156,7 +167,7 @@ public class CustodyService {
                 .build();
         custodyHistoryRepository.save(history);
     }
-    private void saveCustodyStatusChangeCustodyHistoryEvent(Offender offender, uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody, RInstitution institution) {
+    private void saveCustodyStatusChangeCustodyHistoryEvent(Offender offender, uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody) {
         final var history = CustodyHistory
                 .builder()
                 .custody(custody)
