@@ -15,12 +15,14 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
 import uk.gov.justice.digital.delius.transformers.CustodyKeyDateTransformer;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
 
@@ -43,6 +45,18 @@ public class ConvictionService {
         private final int convictionCount;
 
         DuplicateConvictionsForBookingNumberException(int convictionCount) {
+            super(String.format("duplicate active custody conviction count was %d, should be 1", convictionCount));
+            this.convictionCount = convictionCount;
+        }
+
+        public int getConvictionCount() {
+            return convictionCount;
+        }
+    }
+    public static class DuplicateConvictionsForSentenceDateException extends Exception {
+        private final int convictionCount;
+
+        DuplicateConvictionsForSentenceDateException(int convictionCount) {
             super(String.format("duplicate active custody conviction count was %d, should be 1", convictionCount));
             this.convictionCount = convictionCount;
         }
@@ -132,6 +146,28 @@ public class ConvictionService {
                 throw new DuplicateConvictionsForBookingNumberException(events.size());
         }
     }
+    public Optional<Event> getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(Long offenderId, LocalDate sentenceStartDate) throws DuplicateConvictionsForSentenceDateException {
+        val events = eventRepository.findByOffenderIdWithCustody(offenderId)
+                .stream()
+                .filter(event -> event.getActiveFlag() == 1L)
+                .filter(event -> didSentenceStartAroundDate(event, sentenceStartDate))
+                .collect(toList());
+
+        switch (events.size()) {
+            case 0:
+                return Optional.empty();
+            case 1:
+                return events.stream().findFirst();
+            default:
+                throw new DuplicateConvictionsForSentenceDateException(events.size());
+        }
+    }
+
+    private boolean didSentenceStartAroundDate(Event event, LocalDate sentenceStartDate) {
+        // typically used to match start dates in NOMIS and Delius which may be out by a few days
+        return DAYS.between(event.getDisposal().getStartDate(), sentenceStartDate) <= 7;
+    }
+
 
     @Transactional
     public CustodyKeyDate addOrReplaceCustodyKeyDateByOffenderId(Long offenderId, String typeCode, CreateCustodyKeyDate custodyKeyDate) throws CustodyTypeCodeIsNotValidException {
