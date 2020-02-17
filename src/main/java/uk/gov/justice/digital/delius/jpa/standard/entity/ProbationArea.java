@@ -57,4 +57,7 @@ public class ProbationArea {
     @Column(name = "ESTABLISHMENT", updatable = false, insertable = false)
     private String establishment;
 
+    @Column(name = "SELECTABLE")
+    private String selectable;
+
 }

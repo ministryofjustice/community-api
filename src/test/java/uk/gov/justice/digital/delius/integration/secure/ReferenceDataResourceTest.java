@@ -84,7 +84,7 @@ public class ReferenceDataResourceTest {
                 .jsonPath().getList("content", KeyValue.class);
 
         assertThat(probationAreas)
-                .hasSize(208)
+                .hasSize(176)
                 .extracting("code")
                 .contains(ACTIVE_PROBATION_AREA, ACTIVE_PRISON)
                 .doesNotContain(INACTIVE_PROBATION_AREA);
@@ -106,7 +106,7 @@ public class ReferenceDataResourceTest {
                 .jsonPath().getList("content", KeyValue.class);
 
         assertThat(probationAreas)
-                .hasSize(73)
+                .hasSize(45)
                 .extracting("code")
                 .contains(ACTIVE_PROBATION_AREA)
                 .doesNotContain(INACTIVE_PROBATION_AREA, ACTIVE_PRISON);

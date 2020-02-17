@@ -33,7 +33,7 @@ public class ProbationAreaFilter implements Specification<ProbationArea> {
         probationAreaCodes.ifPresent(strings -> predicateBuilder.add(root.get("code").in(strings)));
 
         if (restrictActive) {
-            predicateBuilder.add(cb.isNull(root.get("endDate")));
+            predicateBuilder.add(cb.equal(root.get("selectable"), "Y"));
         }
 
         if (excludeEstablishments) {
