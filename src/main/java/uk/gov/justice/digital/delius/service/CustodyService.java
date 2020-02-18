@@ -19,6 +19,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Optional;
 
@@ -76,7 +77,7 @@ public class CustodyService {
             try {
                 final var maybeEvent = convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(offender.getOffenderId(), bookingNumber);
                 return maybeEvent.map(event -> {
-                    if ( isInCustodyOrAboutToStartACustodySentence(event.getDisposal().getCustody())) {
+                    if (isInCustodyOrAboutToStartACustodySentence(event.getDisposal().getCustody())) {
                         final var maybeInstitution = institutionRepository.findByNomisCdeCode(updateCustody.getNomsPrisonInstitutionCode());
                         return maybeInstitution.map(institution -> {
                             if (currentlyAtDifferentInstitution(event, institution)) {
@@ -108,13 +109,43 @@ public class CustodyService {
         });
     }
 
-
+    @Transactional
     public Custody updateCustodyBookingNumber(String nomsNumber, UpdateCustodyBookingNumber updateCustodyBookingNumber) {
-        log.info("Request to update booking number for {}", nomsNumber);
-        return Custody
-                .builder()
-                .bookingNumber(updateCustodyBookingNumber.getBookingNumber())
-                .build();
+        final var maybeOffender = offenderRepository.findByNomsNumber(nomsNumber);
+        final var telemetryProperties = Map.of("offenderNo", nomsNumber,
+                "bookingNumber", updateCustodyBookingNumber.getBookingNumber(),
+                "sentenceStartDate", updateCustodyBookingNumber.getSentenceStartDate().format(DateTimeFormatter.ISO_DATE));
+
+        return maybeOffender.map(offender -> {
+            try {
+                final var maybeEvent = convictionService.getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(offender.getOffenderId(), updateCustodyBookingNumber.getSentenceStartDate());
+                return maybeEvent.map(event -> {
+                    // update booking Number
+
+                    // update offender latest booking number
+
+                    // send SPG
+
+                    // add contact
+                    telemetryClient.trackEvent("P2PImprisonmentStatusBookingNumberUpdated", telemetryProperties, null);
+
+                    return Custody
+                            .builder()
+                            .bookingNumber(updateCustodyBookingNumber.getBookingNumber())
+                            .build();
+                }).orElseThrow(() -> {
+                    telemetryClient.trackEvent("P2PImprisonmentStatusCustodyEventNotFound", telemetryProperties, null);
+                    return new NotFoundException(String.format("conviction with sentence date close to  %s not found", updateCustodyBookingNumber.getSentenceStartDate().format(DateTimeFormatter.ISO_LOCAL_DATE)));
+                });
+
+            } catch (ConvictionService.DuplicateConvictionsForSentenceDateException e) {
+                telemetryClient.trackEvent("P2PImprisonmentStatusCustodyEventsHasDuplicates", telemetryProperties, null);
+                throw new NotFoundException(String.format("no single conviction with sentence date around %s found, instead %d duplicates found", updateCustodyBookingNumber.getSentenceStartDate().format(DateTimeFormatter.ISO_LOCAL_DATE), e.getConvictionCount()));
+            }
+        }).orElseThrow(() -> {
+            telemetryClient.trackEvent("P2PImprisonmentStatusOffenderNotFound", telemetryProperties, null);
+            return new NotFoundException(String.format("offender with nomsNumber %s not found", nomsNumber));
+        });
     }
 
 
@@ -167,6 +198,7 @@ public class CustodyService {
                 .build();
         custodyHistoryRepository.save(history);
     }
+
     private void saveCustodyStatusChangeCustodyHistoryEvent(Offender offender, uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody) {
         final var history = CustodyHistory
                 .builder()

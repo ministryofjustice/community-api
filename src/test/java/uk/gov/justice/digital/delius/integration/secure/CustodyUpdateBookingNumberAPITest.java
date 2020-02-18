@@ -32,6 +32,8 @@ import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -79,7 +81,7 @@ public class CustodyUpdateBookingNumberAPITest {
         final var custody = given()
                 .auth().oauth2(token)
                 .contentType("application/json")
-                .body(createUpdateCustodyBookingNumber("V74999", LocalDate.of(2019, 9, 14)))
+                .body(createUpdateCustodyBookingNumber("V74999", LocalDate.of(2019, 9, 5)))
                 .when()
                 .put(String.format("offenders/nomsNumber/%s/custody/bookingNumber", NOMS_NUMBER))
                 .then()
@@ -90,6 +92,7 @@ public class CustodyUpdateBookingNumberAPITest {
 
 
         assertThat(custody.getBookingNumber()).isEqualTo("V74999");
+        verify(telemetryClient).trackEvent(eq("P2PImprisonmentStatusBookingNumberUpdated"), any(), isNull());
     }
 
     private String createUpdateCustodyBookingNumber(String bookingNumber, LocalDate sentenceStartDate) throws JsonProcessingException {

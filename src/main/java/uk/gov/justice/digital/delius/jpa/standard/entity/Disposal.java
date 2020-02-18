@@ -61,6 +61,9 @@ public class Disposal {
     @Column(name = "TERMINATION_DATE")
     private LocalDate terminationDate;
 
+    @Column(name = "DISPOSAL_DATE")
+    private LocalDate startDate;
+
     public boolean isSoftDeleted() {
         return this.softDeleted != 0L;
     }
