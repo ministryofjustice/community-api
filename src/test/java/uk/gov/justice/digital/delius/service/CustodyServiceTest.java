@@ -370,9 +370,9 @@ public class CustodyServiceTest {
         @Nested
         class WhenDuplicateConvictionsFound {
             @BeforeEach
-            public void setup() throws ConvictionService.DuplicateConvictionsForSentenceDateException {
+            public void setup() {
                 when(convictionService.getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(anyLong(), any()))
-                        .thenThrow(new ConvictionService.DuplicateConvictionsForSentenceDateException(2));
+                        .thenReturn(Result.ofError(new ConvictionService.DuplicateConvictionsForSentenceDateException(2)));
             }
 
             @Test
@@ -395,9 +395,9 @@ public class CustodyServiceTest {
         @Nested
         class WhenConvictionNotFound {
             @BeforeEach
-            public void setup() throws ConvictionService.DuplicateConvictionsForSentenceDateException {
+            public void setup() {
                 when(convictionService.getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(anyLong(), any()))
-                        .thenReturn(Optional.empty());
+                        .thenReturn(Result.of(Optional.empty()));
             }
 
             @Test

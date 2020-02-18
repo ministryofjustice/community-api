@@ -28,6 +28,7 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.conver
 
 @Service
 public class ConvictionService {
+    public static final int SENTENCE_START_DATE_LENIENT_DAYS = 7;
     private final EventRepository eventRepository;
     private final ConvictionTransformer convictionTransformer;
     private final CustodyKeyDateTransformer custodyKeyDateTransformer;
@@ -146,7 +147,8 @@ public class ConvictionService {
                 throw new DuplicateConvictionsForBookingNumberException(events.size());
         }
     }
-    public Optional<Event> getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(Long offenderId, LocalDate sentenceStartDate) throws DuplicateConvictionsForSentenceDateException {
+
+    public Result<Optional<Event>, DuplicateConvictionsForSentenceDateException> getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(Long offenderId, LocalDate sentenceStartDate) {
         val events = eventRepository.findByOffenderIdWithCustody(offenderId)
                 .stream()
                 .filter(event -> event.getActiveFlag() == 1L)
@@ -155,17 +157,17 @@ public class ConvictionService {
 
         switch (events.size()) {
             case 0:
-                return Optional.empty();
+                return Result.of(Optional.empty());
             case 1:
-                return events.stream().findFirst();
+                return Result.of(events.stream().findFirst());
             default:
-                throw new DuplicateConvictionsForSentenceDateException(events.size());
+                return Result.ofError(new DuplicateConvictionsForSentenceDateException(events.size()));
         }
     }
 
     private boolean didSentenceStartAroundDate(Event event, LocalDate sentenceStartDate) {
         // typically used to match start dates in NOMIS and Delius which may be out by a few days
-        return DAYS.between(event.getDisposal().getStartDate(), sentenceStartDate) <= 7;
+        return DAYS.between(event.getDisposal().getStartDate(), sentenceStartDate) <= SENTENCE_START_DATE_LENIENT_DAYS;
     }
 
 
@@ -274,7 +276,7 @@ public class ConvictionService {
             spgNotificationService.notifyUpdateOfCustodyKeyDate(typeCode, event);
         });
 
-        if (!maybeExistingKeyDate.isPresent()) {
+        if (maybeExistingKeyDate.isEmpty()) {
             val keyDate = custodyKeyDateTransformer.keyDateOf(event.getDisposal().getCustody(), custodyKeyDateType, custodyKeyDate.getDate());
             event.getDisposal()
                     .getCustody()
