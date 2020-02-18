@@ -111,41 +111,38 @@ public class CustodyService {
 
     @Transactional
     public Custody updateCustodyBookingNumber(String nomsNumber, UpdateCustodyBookingNumber updateCustodyBookingNumber) {
-        final var maybeOffender = offenderRepository.findByNomsNumber(nomsNumber);
         final var telemetryProperties = Map.of("offenderNo", nomsNumber,
                 "bookingNumber", updateCustodyBookingNumber.getBookingNumber(),
                 "sentenceStartDate", updateCustodyBookingNumber.getSentenceStartDate().format(DateTimeFormatter.ISO_DATE));
 
-        return maybeOffender.map(offender -> {
-            try {
-                final var maybeEvent = convictionService.getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(offender.getOffenderId(), updateCustodyBookingNumber.getSentenceStartDate());
-                return maybeEvent.map(event -> {
-                    // update booking Number
-
-                    // update offender latest booking number
-
-                    // send SPG
-
-                    // add contact
-                    telemetryClient.trackEvent("P2PImprisonmentStatusBookingNumberUpdated", telemetryProperties, null);
-
-                    return Custody
-                            .builder()
-                            .bookingNumber(updateCustodyBookingNumber.getBookingNumber())
-                            .build();
+        final var offender = offenderRepository.findByNomsNumber(nomsNumber).orElseThrow(() -> {
+            telemetryClient.trackEvent("P2PImprisonmentStatusOffenderNotFound", telemetryProperties, null);
+            return new NotFoundException(String.format("offender with nomsNumber %s not found", nomsNumber));
+        });
+        final var event = convictionService.getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(offender.getOffenderId(), updateCustodyBookingNumber.getSentenceStartDate())
+                .onError(error -> {
+                    telemetryClient.trackEvent("P2PImprisonmentStatusCustodyEventsHasDuplicates", telemetryProperties, null);
+                    return new NotFoundException(String.format("no single conviction with sentence date around %s found, instead %d duplicates found", updateCustodyBookingNumber.getSentenceStartDate().format(DateTimeFormatter.ISO_LOCAL_DATE), error.getConvictionCount()));
                 }).orElseThrow(() -> {
                     telemetryClient.trackEvent("P2PImprisonmentStatusCustodyEventNotFound", telemetryProperties, null);
                     return new NotFoundException(String.format("conviction with sentence date close to  %s not found", updateCustodyBookingNumber.getSentenceStartDate().format(DateTimeFormatter.ISO_LOCAL_DATE)));
                 });
 
-            } catch (ConvictionService.DuplicateConvictionsForSentenceDateException e) {
-                telemetryClient.trackEvent("P2PImprisonmentStatusCustodyEventsHasDuplicates", telemetryProperties, null);
-                throw new NotFoundException(String.format("no single conviction with sentence date around %s found, instead %d duplicates found", updateCustodyBookingNumber.getSentenceStartDate().format(DateTimeFormatter.ISO_LOCAL_DATE), e.getConvictionCount()));
-            }
-        }).orElseThrow(() -> {
-            telemetryClient.trackEvent("P2PImprisonmentStatusOffenderNotFound", telemetryProperties, null);
-            return new NotFoundException(String.format("offender with nomsNumber %s not found", nomsNumber));
-        });
+        // TODO update booking Number
+
+        // TODO update offender latest booking number
+
+        // TODO send SPG
+
+        // TODO add contact
+
+        telemetryClient.trackEvent("P2PImprisonmentStatusBookingNumberUpdated", telemetryProperties, null);
+
+        // TODO no need to manually update booking number once event is updated
+        return convictionTransformer.custodyOf(event.getDisposal().getCustody())
+                .toBuilder()
+                .bookingNumber(updateCustodyBookingNumber.getBookingNumber())
+                .build();
     }
 
 
