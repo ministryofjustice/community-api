@@ -422,6 +422,7 @@ public class EntityHelper {
                                 .sentenceType("SC")
                                 .build())
                 .event(anEvent(eventId))
+                .startDate(LocalDate.now())
                 .build();
     }
 

@@ -25,6 +25,7 @@ public class ContactService {
     private static final String PRISONER_OFFENDER_MANAGER_EXTERNAL_ALLOCATION_CONTACT_TYPE = "EPOMEX";
     private static final String RESPONSIBLE_OFFICER_CHANGE_CONTACT_TYPE = "ROC";
     private static final String PRISON_LOCATION_CHANGE_CONTACT_TYPE = "ETCP";
+    private static final String CUSTODY_AUTO_UPDATE_CONTACT_TYPE = "EDSS";
     private final ContactRepository contactRepository;
     private final ContactTypeRepository contactTypeRepository;
     private final ContactTransformer contactTransformer;
@@ -75,7 +76,22 @@ public class ContactService {
 
     @Transactional
     public void addContactForPrisonLocationChange(Offender offender, Event event) {
-        final var contactType = contactTypeForPrisonLocationChange();
+        addContactForCustodyChange(offender,
+                event,
+                contactTypeForPrisonLocationChange(),
+                notesForPrisonLocationChange(event));
+    }
+
+
+    @Transactional
+    public void addContactForBookingNumberUpdate(Offender offender, Event event) {
+        addContactForCustodyChange(offender,
+                event,
+                contactTypeForCustodyAutoUpdate(),
+                notesForBookingNumbUpdate(event));
+    }
+
+    private void addContactForCustodyChange(Offender offender, Event event, ContactType contactType, String notes) {
         final var mayBeOrderManager = event.getOrderManagers()
                 .stream()
                 .filter(OrderManager::isActive)
@@ -84,7 +100,7 @@ public class ContactService {
         contactRepository.save(builder()
                 .contactDate(LocalDate.now())
                 .offenderId(offender.getOffenderId())
-                .notes(notesForPrisonLocationChange(event))
+                .notes(notes)
                 .team(mayBeOrderManager.map(OrderManager::getTeam).orElse(null))
                 .staff(mayBeOrderManager.map(OrderManager::getStaff).orElse(null))
                 .probationArea(mayBeOrderManager.map(OrderManager::getProbationArea).orElse(null))
@@ -94,7 +110,6 @@ public class ContactService {
                 .alertActive(contactType.getAlertFlag())
                 .event(event)
                 .build());
-
     }
 
     private uk.gov.justice.digital.delius.jpa.standard.entity.Contact contactForPOMAllocation(PrisonOffenderManager newPrisonOffenderManager) {
@@ -132,6 +147,10 @@ public class ContactService {
 
     private ContactType contactTypeForPrisonLocationChange() {
          return contactTypeRepository.findByCode(PRISON_LOCATION_CHANGE_CONTACT_TYPE).orElseThrow();
+    }
+
+    private ContactType contactTypeForCustodyAutoUpdate() {
+        return contactTypeRepository.findByCode(CUSTODY_AUTO_UPDATE_CONTACT_TYPE).orElseThrow();
     }
 
     private String notesForPOMAllocation(PrisonOffenderManager newPrisonOffenderManager) {
@@ -210,5 +229,9 @@ public class ContactService {
                 Optional.ofNullable(custody.getCustodialStatus()).map(status -> String.format("Custodial Status: %s\n", status.getCodeDescription())).orElse(""),
                 Optional.ofNullable(custody.getInstitution()).map(institution -> String.format("Custodial Establishment: %s\n", institution.getDescription())).orElse(""),
                 Optional.ofNullable(custody.getLocationChangeDate()).map(date -> String.format("Location Change Date: %s\n", date.format(DateTimeFormatter.ISO_LOCAL_DATE))).orElse(""));
+    }
+
+    private String notesForBookingNumbUpdate(Event event) {
+        return String.format("Prison Number: %s\n", event.getDisposal().getCustody().getPrisonerNumber());
     }
 }
