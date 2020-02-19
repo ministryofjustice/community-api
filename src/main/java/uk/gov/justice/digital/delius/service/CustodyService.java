@@ -27,6 +27,7 @@ import java.util.Optional;
 @Slf4j
 public class CustodyService {
     private final Boolean updateCustodyFeatureSwitch;
+    private final Boolean updateBookingNumberFeatureSwitch;
     private final TelemetryClient telemetryClient;
     private final OffenderRepository offenderRepository;
     private final ConvictionService convictionService;
@@ -41,6 +42,8 @@ public class CustodyService {
     public CustodyService(
             @Value("${features.noms.update.custody}")
                     Boolean updateCustodyFeatureSwitch,
+            @Value("${features.noms.update.booking.number}")
+                    Boolean updateBookingNumberFeatureSwitch,
             TelemetryClient telemetryClient,
             OffenderRepository offenderRepository,
             ConvictionService convictionService,
@@ -52,6 +55,7 @@ public class CustodyService {
             OffenderManagerService offenderManagerService,
             ContactService contactService) {
         this.updateCustodyFeatureSwitch = updateCustodyFeatureSwitch;
+        this.updateBookingNumberFeatureSwitch = updateBookingNumberFeatureSwitch;
         this.telemetryClient = telemetryClient;
         this.offenderRepository = offenderRepository;
         this.convictionService = convictionService;
@@ -62,6 +66,8 @@ public class CustodyService {
         this.spgNotificationService = spgNotificationService;
         this.offenderManagerService = offenderManagerService;
         this.contactService = contactService;
+        log.info("NOMIS update custody location feature is {}", updateCustodyFeatureSwitch ? "ON" : "OFF");
+        log.info("NOMIS update booking number feature is {}", updateBookingNumberFeatureSwitch ? "ON" : "OFF");
     }
 
     @Transactional
@@ -128,21 +134,24 @@ public class CustodyService {
                     return new NotFoundException(String.format("conviction with sentence date close to  %s not found", updateCustodyBookingNumber.getSentenceStartDate().format(DateTimeFormatter.ISO_LOCAL_DATE)));
                 });
 
-        // TODO update booking Number
-
-        // TODO update offender latest booking number
-
-        // TODO send SPG
-
-        // TODO add contact
-
         telemetryClient.trackEvent("P2PImprisonmentStatusBookingNumberUpdated", telemetryProperties, null);
+        return convictionTransformer.custodyOf(updateBookingNumberFor(offender, event, updateCustodyBookingNumber.getBookingNumber()).getDisposal().getCustody());
+    }
 
-        // TODO no need to manually update booking number once event is updated
-        return convictionTransformer.custodyOf(event.getDisposal().getCustody())
-                .toBuilder()
-                .bookingNumber(updateCustodyBookingNumber.getBookingNumber())
-                .build();
+    private Event updateBookingNumberFor(Offender offender, Event event, String bookingNumber) {
+        if (updateBookingNumberFeatureSwitch) {
+            event.getDisposal().getCustody().setPrisonerNumber(bookingNumber);
+
+            // TODO update offender latest booking number
+
+            // TODO send SPG
+
+            // TODO add contact
+
+        } else {
+            log.warn("Update booking number will be ignored, this feature is switched off ");
+        }
+        return event;
     }
 
 

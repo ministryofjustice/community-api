@@ -84,4 +84,7 @@ azure:
       enable-W3C: true
 
 features:
-   noms.update.custody: false
+  noms:
+    update:
+      custody: false
+      booking.number: false
