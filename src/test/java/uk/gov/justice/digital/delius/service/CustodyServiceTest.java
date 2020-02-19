@@ -51,7 +51,7 @@ public class CustodyServiceTest {
 
     @BeforeEach
     public void setup() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-        custodyService = new CustodyService(true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService);
+        custodyService = new CustodyService(true, true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService);
         when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
         when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                 .thenReturn(Optional.of(EntityHelper.aCustodyEvent()));
@@ -310,7 +310,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willUpdatePrisonInstitutionWillBeUpdatedWhenFeatureSwitchedOn() {
-            custodyService = new CustodyService(true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService);
+            custodyService = new CustodyService(true, true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService);
 
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
 
@@ -321,7 +321,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willNotUpdatePrisonInstitutionWillBeUpdatedWhenFeatureSwitchedOff() {
-            custodyService = new CustodyService(false, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService);
+            custodyService = new CustodyService(false, true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService);
 
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
 
