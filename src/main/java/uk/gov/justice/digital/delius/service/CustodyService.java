@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius.service;
 
 import com.microsoft.applicationinsights.TelemetryClient;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 @Service
 @Slf4j
@@ -136,8 +138,17 @@ public class CustodyService {
                     return new NotFoundException(String.format("conviction with sentence date close to  %s not found", updateCustodyBookingNumber.getSentenceStartDate().format(DateTimeFormatter.ISO_LOCAL_DATE)));
                 });
 
-        telemetryClient.trackEvent("P2PImprisonmentStatusBookingNumberUpdated", telemetryProperties, null);
-        return convictionTransformer.custodyOf(updateBookingNumberFor(offender, event, updateCustodyBookingNumber.getBookingNumber()).getDisposal().getCustody());
+        final var maybeExistingBookingNumber = Optional.ofNullable(event.getDisposal().getCustody().getPrisonerNumber()).filter(StringUtils::isNotBlank);
+        final Predicate<String> sameAsNewBookingNumber = existingBookingNumber -> existingBookingNumber.equals(updateCustodyBookingNumber.getBookingNumber());
+
+        if (maybeExistingBookingNumber.filter(sameAsNewBookingNumber).isPresent()) {
+            telemetryClient.trackEvent("P2PImprisonmentStatusBookingNumberAlreadySet", telemetryProperties, null);
+            return convictionTransformer.custodyOf(event.getDisposal().getCustody());
+        } else {
+            final var eventName = maybeExistingBookingNumber.isPresent() ? "P2PImprisonmentStatusBookingNumberUpdated" : "P2PImprisonmentStatusBookingNumberInserted";
+            telemetryClient.trackEvent(eventName, telemetryProperties, null);
+            return convictionTransformer.custodyOf(updateBookingNumberFor(offender, event, updateCustodyBookingNumber.getBookingNumber()).getDisposal().getCustody());
+        }
     }
 
     private Event updateBookingNumberFor(Offender offender, Event event, String bookingNumber) {

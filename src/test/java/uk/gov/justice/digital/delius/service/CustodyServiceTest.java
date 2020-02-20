@@ -482,6 +482,68 @@ public class CustodyServiceTest {
                     assertThat(custody.getBookingNumber()).isNotEqualTo("44463B");
                 }
             }
+            @Nested
+            class WhenBookingNumberAlreadySet {
+                @BeforeEach
+                void setup() {
+                    final var custody = aCustodyEvent().getDisposal().getCustody().toBuilder().prisonerNumber("44463B").build();
+                    final var disposal = aCustodyEvent().getDisposal().toBuilder().custody(custody).build();
+                    when(convictionService.getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(anyLong(), any()))
+                            .thenReturn(Result.of(Optional.of(aCustodyEvent().toBuilder().disposal(disposal).build())));
+                }
+
+                @Test
+                void nothingWillBeUpdated() {
+                    var custody = custodyService.updateCustodyBookingNumber("G9542VP", updateCustodyBookingNumber);
+
+                    verify(offenderPrisonerService, never()).refreshOffenderPrisonersFor(any());
+                    verify(spgNotificationService, never()).notifyUpdateOfCustody(any(), any());
+                    verify(contactService, never()).addContactForBookingNumberUpdate(any(), any());
+
+                    assertThat(custody.getBookingNumber()).isEqualTo("44463B");
+                }
+
+                @Test
+                public void willCreateTelemetryEventStatingAlreadySet() {
+                    custodyService.updateCustodyBookingNumber("G9542VP", updateCustodyBookingNumber);
+
+                    verify(telemetryClient).trackEvent(eq("P2PImprisonmentStatusBookingNumberAlreadySet"), argThat(standardTelemetryAttributes), isNull());
+                }
+            }
+            @Nested
+            class WhenBookingNumberOverwritten {
+                @BeforeEach
+                void setup() {
+                    final var custody = aCustodyEvent().getDisposal().getCustody().toBuilder().prisonerNumber("99999X").build();
+                    final var disposal = aCustodyEvent().getDisposal().toBuilder().custody(custody).build();
+                    when(convictionService.getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(anyLong(), any()))
+                            .thenReturn(Result.of(Optional.of(aCustodyEvent().toBuilder().disposal(disposal).build())));
+                }
+
+                @Test
+                public void willCreateTelemetryEventStatingItIsHasBeenUpdated() {
+                    custodyService.updateCustodyBookingNumber("G9542VP", updateCustodyBookingNumber);
+
+                    verify(telemetryClient).trackEvent(eq("P2PImprisonmentStatusBookingNumberUpdated"), argThat(standardTelemetryAttributes), isNull());
+                }
+            }
+            @Nested
+            class WhenBookingNumberInserted {
+                @BeforeEach
+                void setup() {
+                    final var custody = aCustodyEvent().getDisposal().getCustody().toBuilder().prisonerNumber(null).build();
+                    final var disposal = aCustodyEvent().getDisposal().toBuilder().custody(custody).build();
+                    when(convictionService.getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(anyLong(), any()))
+                            .thenReturn(Result.of(Optional.of(aCustodyEvent().toBuilder().disposal(disposal).build())));
+                }
+
+                @Test
+                public void willCreateTelemetryEventStatingNewOneHasBeenInserted() {
+                    custodyService.updateCustodyBookingNumber("G9542VP", updateCustodyBookingNumber);
+
+                    verify(telemetryClient).trackEvent(eq("P2PImprisonmentStatusBookingNumberInserted"), argThat(standardTelemetryAttributes), isNull());
+                }
+            }
         }
     }
 }
