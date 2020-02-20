@@ -10,6 +10,7 @@ import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustodyBookingNumber;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CustodyHistory;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CustodyHistoryRepository;
@@ -27,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static uk.gov.justice.digital.delius.util.EntityHelper.*;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anOffender;
 
 public class CustodyServiceTest {
     private CustodyService custodyService;
@@ -48,10 +50,11 @@ public class CustodyServiceTest {
     private ArgumentCaptor<CustodyHistory> custodyHistoryArgumentCaptor = ArgumentCaptor.forClass(CustodyHistory.class);
     private OffenderManagerService offenderManagerService = mock(OffenderManagerService.class);
     private ContactService contactService = mock(ContactService.class);
+    private OffenderPrisonerService offenderPrisonerService = mock(OffenderPrisonerService.class);
 
     @BeforeEach
     public void setup() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-        custodyService = new CustodyService(true, true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService);
+        custodyService = new CustodyService(true, true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService);
         when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
         when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                 .thenReturn(Optional.of(EntityHelper.aCustodyEvent()));
@@ -310,7 +313,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willUpdatePrisonInstitutionWillBeUpdatedWhenFeatureSwitchedOn() {
-            custodyService = new CustodyService(true, true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService);
+            custodyService = new CustodyService(true, true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService);
 
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
 
@@ -321,7 +324,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willNotUpdatePrisonInstitutionWillBeUpdatedWhenFeatureSwitchedOff() {
-            custodyService = new CustodyService(false, true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService);
+            custodyService = new CustodyService(false, true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService);
 
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
 
@@ -413,6 +416,71 @@ public class CustodyServiceTest {
                 assertThatThrownBy(() ->
                         custodyService.updateCustodyBookingNumber("G9542VP", updateCustodyBookingNumber))
                         .isInstanceOf(NotFoundException.class);
+            }
+        }
+
+        @Nested
+        class WhenCanUpdateBooking {
+            private UpdateCustodyBookingNumber updateCustodyBookingNumber = UpdateCustodyBookingNumber
+                    .builder()
+                    .sentenceStartDate(LocalDate.of(2020, 2, 28))
+                    .bookingNumber("44463B")
+                    .build();
+            private Offender offender = anOffender();
+            private Event event = aCustodyEvent();
+
+            @BeforeEach
+            void setup() {
+                when(convictionService.getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(anyLong(), any()))
+                        .thenReturn(Result.of(Optional.of(event)));
+                when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.of(offender));
+            }
+
+            @Test
+            void bookingNumberWillBeUpdated() {
+                var custody = custodyService.updateCustodyBookingNumber("G9542VP", updateCustodyBookingNumber);
+
+                assertThat(custody.getBookingNumber()).isEqualTo("44463B");
+            }
+
+            @Test
+            void offenderPrisonersWillBeRefreshedForOffender() {
+                custodyService.updateCustodyBookingNumber("G9542VP", updateCustodyBookingNumber);
+
+                verify(offenderPrisonerService).refreshOffenderPrisonersFor(offender);
+            }
+
+            @Test
+            void spgWillBeNotifiedOfEventChange() {
+                custodyService.updateCustodyBookingNumber("G9542VP", updateCustodyBookingNumber);
+
+                verify(spgNotificationService).notifyUpdateOfCustody(offender, event);
+            }
+
+            @Test
+            void contactWillBeAddedToNotifiedOfBookingNumberChange() {
+                custodyService.updateCustodyBookingNumber("G9542VP", updateCustodyBookingNumber);
+
+                verify(contactService).addContactForBookingNumberUpdate(offender, event);
+            }
+
+            @Nested
+            class WhenFeatureSwitchedOff {
+                @BeforeEach
+                void setup() {
+                    custodyService = new CustodyService(true, false, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService);
+                }
+
+                @Test
+                void nothingWillBeUpdated() {
+                    var custody = custodyService.updateCustodyBookingNumber("G9542VP", updateCustodyBookingNumber);
+
+                    verify(offenderPrisonerService, never()).refreshOffenderPrisonersFor(any());
+                    verify(spgNotificationService, never()).notifyUpdateOfCustody(any(), any());
+                    verify(contactService, never()).addContactForBookingNumberUpdate(any(), any());
+
+                    assertThat(custody.getBookingNumber()).isNotEqualTo("44463B");
+                }
             }
         }
     }

@@ -38,6 +38,7 @@ public class CustodyService {
     private final SpgNotificationService spgNotificationService;
     private final OffenderManagerService offenderManagerService;
     private final ContactService contactService;
+    private final OffenderPrisonerService offenderPrisonerService;
 
     public CustodyService(
             @Value("${features.noms.update.custody}")
@@ -53,7 +54,7 @@ public class CustodyService {
             ReferenceDataService referenceDataService,
             SpgNotificationService spgNotificationService,
             OffenderManagerService offenderManagerService,
-            ContactService contactService) {
+            ContactService contactService, OffenderPrisonerService offenderPrisonerService) {
         this.updateCustodyFeatureSwitch = updateCustodyFeatureSwitch;
         this.updateBookingNumberFeatureSwitch = updateBookingNumberFeatureSwitch;
         this.telemetryClient = telemetryClient;
@@ -66,6 +67,7 @@ public class CustodyService {
         this.spgNotificationService = spgNotificationService;
         this.offenderManagerService = offenderManagerService;
         this.contactService = contactService;
+        this.offenderPrisonerService = offenderPrisonerService;
         log.info("NOMIS update custody location feature is {}", updateCustodyFeatureSwitch ? "ON" : "OFF");
         log.info("NOMIS update booking number feature is {}", updateBookingNumberFeatureSwitch ? "ON" : "OFF");
     }
@@ -141,13 +143,9 @@ public class CustodyService {
     private Event updateBookingNumberFor(Offender offender, Event event, String bookingNumber) {
         if (updateBookingNumberFeatureSwitch) {
             event.getDisposal().getCustody().setPrisonerNumber(bookingNumber);
-
-            // TODO update offender latest booking number
-
-            // TODO send SPG
-
-            // TODO add contact
-
+            offenderPrisonerService.refreshOffenderPrisonersFor(offender);
+            spgNotificationService.notifyUpdateOfCustody(offender, event);
+            contactService.addContactForBookingNumberUpdate(offender, event);
         } else {
             log.warn("Update booking number will be ignored, this feature is switched off ");
         }

@@ -7,19 +7,21 @@ import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import org.flywaydb.core.Flyway;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.digital.delius.data.api.Custody;
+import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.UpdateCustodyBookingNumber;
 import uk.gov.justice.digital.delius.jwt.JwtAuthenticationHelper;
 
@@ -34,13 +36,15 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("dev-seed")
 @DirtiesContext
 public class CustodyUpdateBookingNumberAPITest {
     private static final String NOMS_NUMBER = "G9542VP";
+    private static final String OFFENDER_ID = "2500343964";
 
     @LocalServerPort
     int port;
@@ -60,7 +64,7 @@ public class CustodyUpdateBookingNumberAPITest {
     @MockBean
     private TelemetryClient telemetryClient;
 
-    @Before
+    @BeforeEach
     public void setup() {
         RestAssured.port = port;
         RestAssured.basePath = "/secure";
@@ -68,7 +72,7 @@ public class CustodyUpdateBookingNumberAPITest {
                 new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
     }
 
-    @After
+    @AfterEach
     public void after() {
         flyway.clean();
         flyway.migrate();
@@ -91,8 +95,48 @@ public class CustodyUpdateBookingNumberAPITest {
                 .as(Custody.class);
 
 
+        // booking number should be updated on event
         assertThat(custody.getBookingNumber()).isEqualTo("V74999");
         verify(telemetryClient).trackEvent(eq("P2PImprisonmentStatusBookingNumberUpdated"), any(), isNull());
+
+        // booking number should also be updated on Offender
+        final var offender = given()
+                .auth().oauth2(token)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/nomsNumber/G9542VP")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(OffenderDetailSummary.class);
+        assertThat(offender.getOtherIds().getMostRecentPrisonerNumber()).isEqualTo("V74999");
+
+        // contact should be created with booking number
+        final var contact = jdbcTemplate.query(
+                "SELECT * from CONTACT where OFFENDER_ID = ?",
+                List.of(OFFENDER_ID).toArray(),
+                new ColumnMapRowMapper())
+                .stream()
+                .filter(record -> toLocalDateTime(record.get("CONTACT_DATE")).toLocalDate().equals(LocalDate.now()))
+                .filter(record -> record.get("EVENT_ID") != null)
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(contact.get("NOTES").toString()).contains("Prison Number: V74999");
+
+        // offender prisoner record should be created with booking number
+        final var offenderPrisoner = jdbcTemplate.query(
+                "SELECT * FROM OFFENDER_PRISONER where OFFENDER_ID = ?",
+                List.of(OFFENDER_ID).toArray(),
+                new ColumnMapRowMapper())
+                .stream()
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(offenderPrisoner.get("PRISONER_NUMBER")).isEqualTo("V74999");
+
+
     }
 
     private String createUpdateCustodyBookingNumber(String bookingNumber, LocalDate sentenceStartDate) throws JsonProcessingException {
