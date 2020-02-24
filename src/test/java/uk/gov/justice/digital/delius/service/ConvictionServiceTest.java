@@ -257,7 +257,7 @@ public class ConvictionServiceTest {
 
     }
     @Nested
-    class GetSingleActiveCloseToSentenceData {
+    class GetSingleActiveCloseToSentenceDate {
         @Test
         public void convictionReturnedWhenSingleConvictionMatchedForOffenderIdAndSentenceDate() {
             when(convictionRepository.findByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
@@ -283,7 +283,7 @@ public class ConvictionServiceTest {
             assertThat(maybeConviction.get()).isPresent();
         }
         @Test
-        public void convictionReturnedWhenSingleConvictionMatchedForOffenderIdButNotCloseToSentenceDate() {
+        public void convictionNotReturnedWhenSingleConvictionMatchedForOffenderIdButNotCloseToSentenceDateAfter() {
             when(convictionRepository.findByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
                     anActiveEvent(LocalDate.of(2020, 1, 30))
                             .toBuilder()
@@ -292,7 +292,19 @@ public class ConvictionServiceTest {
 
             final var maybeConviction = convictionService.getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(99L, LocalDate.of(2020, 1, 21));
 
-            assertThat(maybeConviction.get()).isPresent();
+            assertThat(maybeConviction.get()).isEmpty();
+        }
+        @Test
+        public void convictionNotReturnedWhenSingleConvictionMatchedForOffenderIdButNotCloseToSentenceDateBefore() {
+            when(convictionRepository.findByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+                    anActiveEvent(LocalDate.of(2020, 1, 21))
+                            .toBuilder()
+                            .eventId(999L)
+                            .build()));
+
+            final var maybeConviction = convictionService.getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(99L, LocalDate.of(2020, 1, 30));
+
+            assertThat(maybeConviction.get()).isEmpty();
         }
         @Test
         public void exceptionThrownWhenMultipleActiveConvictionsMatchedForOffenderIdAndSentenceDate() {
@@ -308,12 +320,12 @@ public class ConvictionServiceTest {
             );
 
             assertThatThrownBy(
-                    () -> convictionService.getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(99L, LocalDate.of(2020, 1, 30)))
+                    () -> { throw convictionService.getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(99L, LocalDate.of(2020, 1, 30)).getError(); })
                     .isInstanceOf(ConvictionService.DuplicateConvictionsForSentenceDateException.class);
         }
 
         @Test
-        public void convictionReturnedWhenSingleActiveConvictionMatchedAmoungstDuplicatesForOffenderIdAndSentenceDate() throws ConvictionService.DuplicateConvictionsForSentenceDateException {
+        public void convictionReturnedWhenSingleActiveConvictionMatchedAmongstDuplicatesForOffenderIdAndSentenceDate() {
             when(convictionRepository.findByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
                     anActiveEvent(LocalDate.of(2020, 1, 30))
                             .toBuilder()
@@ -334,7 +346,7 @@ public class ConvictionServiceTest {
 
         }
         @Test
-        public void emptyReturnedWhenNoConvictionsMatchedForOffenderIdAndSentenceDate() throws ConvictionService.DuplicateConvictionsForSentenceDateException {
+        public void emptyReturnedWhenNoConvictionsMatchedForOffenderIdAndSentenceDate() {
             when(convictionRepository.findByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of());
 
             final var maybeConviction = convictionService.getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(99L, LocalDate.of(2020, 1, 30));

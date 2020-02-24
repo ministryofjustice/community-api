@@ -15,6 +15,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
 import uk.gov.justice.digital.delius.transformers.CustodyKeyDateTransformer;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -167,7 +168,7 @@ public class ConvictionService {
 
     private boolean didSentenceStartAroundDate(Event event, LocalDate sentenceStartDate) {
         // typically used to match start dates in NOMIS and Delius which may be out by a few days
-        return DAYS.between(event.getDisposal().getStartDate(), sentenceStartDate) <= SENTENCE_START_DATE_LENIENT_DAYS;
+        return Math.abs(DAYS.between(event.getDisposal().getStartDate(), sentenceStartDate)) <= SENTENCE_START_DATE_LENIENT_DAYS;
     }
 
 
