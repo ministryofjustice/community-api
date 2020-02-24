@@ -35,4 +35,11 @@ public class Result<T, X extends Throwable> {
             throw new NoSuchElementException("Result contains no value, did you call get() instead of onError?");
         }
     }
+    public X getError() {
+        if (error != null) {
+            return error;
+        } else {
+            throw new NoSuchElementException("Result contains no error, did you call getError() instead of onError?");
+        }
+    }
 }
