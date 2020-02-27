@@ -8,13 +8,14 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import uk.gov.justice.digital.delius.data.api.ReplaceCustodyKeyDates;
 import uk.gov.justice.digital.delius.data.api.CreateCustodyKeyDate;
+import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.CustodyKeyDate;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.ConvictionService.CustodyTypeCodeIsNotValidException;
 import uk.gov.justice.digital.delius.service.ConvictionService.DuplicateConvictionsForBookingNumberException;
-import uk.gov.justice.digital.delius.service.ConvictionService.SingleActiveCustodyConvictionNotFoundException;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
 import java.util.List;
@@ -64,6 +65,21 @@ public class CustodyKeyDatesController {
                                                         final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
         log.info("Call to putCustodyKeyDateByNomsNumber for {} code {}", nomsNumber, typeCode);
         return addOrReplaceCustodyKeyDate(offenderService.offenderIdOfNomsNumber(nomsNumber), typeCode, custodyKeyDate);
+    }
+
+    @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/bookingNumber/{bookingNumber}/custody//keyDates", method = RequestMethod.POST, consumes = "application/json")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "The new or updated custody key dates", response = Custody.class),
+            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 404, message = "The requested offender or conviction was not found.")
+    })
+    @ApiOperation(value = "Replaces all key dates specified in body. Key dates are either added or replaced or deleted if absent (see ReplaceCustodyKeyDates for the list). The the custodial conviction must be active")
+    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
+    public Custody replaceAllCustodyKeyDateByNomsNumberAndBookingNumber(final @PathVariable String nomsNumber,
+                                                                        final @PathVariable String bookingNumber,
+                                                                        final @RequestBody ReplaceCustodyKeyDates replaceCustodyKeyDates) {
+        log.info("Call to replaceAllCustodyKeyDateByNomsNumberAndBookingNumber for {} booking {} with dates {}", nomsNumber, bookingNumber, replaceCustodyKeyDates);
+        return Custody.builder().build();
     }
 
     @RequestMapping(value = "offenders/offenderId/{offenderId}/custody/keyDates/{typeCode}", method = RequestMethod.PUT, consumes = "application/json")
@@ -346,14 +362,14 @@ public class CustodyKeyDatesController {
     }
 
     private void deleteCustodyKeyDate(Optional<Long> maybeOffenderId, String typeCode) {
-        if (!maybeOffenderId.isPresent()) {
+        if (maybeOffenderId.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Offender not found");
         }
         maybeOffenderId.ifPresent(offenderId -> convictionService.deleteCustodyKeyDateByOffenderId(offenderId, typeCode));
     }
 
     private void deleteCustodyKeyDateByConvictionId(Optional<Long> maybeConvictionId, String typeCode) {
-        if (!maybeConvictionId.isPresent()) {
+        if (maybeConvictionId.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Offender not found");
         }
         maybeConvictionId.ifPresent(convictionId -> convictionService.deleteCustodyKeyDateByConvictionId(convictionId, typeCode));
