@@ -6,9 +6,10 @@ import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.path.json.JsonPath;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,18 +17,23 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.digital.delius.data.api.CreateCustodyKeyDate;
 import uk.gov.justice.digital.delius.data.api.CustodyKeyDate;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
+import uk.gov.justice.digital.delius.data.api.ReplaceCustodyKeyDates;
+import uk.gov.justice.digital.delius.jwt.JwtAuthenticationHelper;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("dev-seed")
 @DirtiesContext
 public class CustodyKeyDatesAPITest {
@@ -45,16 +51,19 @@ public class CustodyKeyDatesAPITest {
     private ObjectMapper objectMapper;
     @Autowired
     JdbcTemplate jdbcTemplate;
+    @Autowired
+    protected JwtAuthenticationHelper jwtAuthenticationHelper;
 
     @Value("${test.token.good}")
     private String validOauthToken;
 
-    @Before
+    @BeforeEach
     public void setup() {
         RestAssured.port = port;
         RestAssured.basePath = "/secure";
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
                 new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
+        //noinspection SqlWithoutWhere
         jdbcTemplate.execute("DELETE FROM KEY_DATE");
     }
 
@@ -578,6 +587,58 @@ public class CustodyKeyDatesAPITest {
                 .body()
                 .jsonPath();
 
-        assertThat(errorMessage.getString("developerMessage")).isEqualTo(String.format("Expected offender 31 to have a single custody related event but found 0 events", OFFENDER_ID_NO_EVENTS));
+        assertThat(errorMessage.getString("developerMessage")).isEqualTo(String.format("Expected offender %s to have a single custody related event but found 0 events", OFFENDER_ID_NO_EVENTS));
+    }
+
+    @Nested
+    class PostAllKeyDates {
+        @Test
+        void withoutUpdateRoleAccessWillBeDenied() {
+            final var token = createJwt("ROLE_COMMUNITY");
+
+            given()
+                    .auth().oauth2(token)
+                    .contentType("application/json")
+                    .body(createReplaceCustodyKeyDates())
+                    .when()
+                    .post(String.format("offenders/nomsNumber/%s/bookingNumber/%s/custody/keyDates",  NOMS_NUMBER, PRISON_BOOKING_NUMBER))
+                    .then()
+                    .statusCode(403);
+
+        }
+        @Test
+        void withUpdateRoleAccessWillBeAllowed() {
+            final var token = createJwt("ROLE_COMMUNITY_CUSTODY_UPDATE");
+
+            given()
+                    .auth().oauth2(token)
+                    .contentType("application/json")
+                    .body(createReplaceCustodyKeyDates())
+                    .when()
+                    .post(String.format("offenders/nomsNumber/%s/bookingNumber/%s/custody/keyDates",  NOMS_NUMBER, PRISON_BOOKING_NUMBER))
+                    .then()
+                    .statusCode(200);
+
+        }
+
+        private String createReplaceCustodyKeyDates() {
+            try {
+                return objectMapper.writeValueAsString(ReplaceCustodyKeyDates
+                        .builder()
+                        .sentenceExpiryDate(LocalDate.now())
+                        .build());
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private String createJwt(final String ...roles ) {
+        return jwtAuthenticationHelper.createJwt(JwtAuthenticationHelper.JwtParameters.builder()
+                .username("APIUser")
+                .roles(List.of(roles))
+                .scope(Arrays.asList("read", "write"))
+                .expiryTime(Duration.ofDays(1))
+                .build());
     }
 }
