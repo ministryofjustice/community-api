@@ -120,6 +120,18 @@ level3: true
 sector: public
 uibusinessinteractioncollection: UWBI190
 
+dn: cn=TestLdapUser,ou=Users,dc=moj,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: NDUser
+cn: TestLdapUser
+sn: LdapUser
+givenname: Test
+mail: ldap.user@justice.gov.uk
+uid: TestLdapUser
+userPassword: secret
 
 dn: cn=SheilaHancockNPS,ou=Users,dc=moj,dc=com
 objectclass: top

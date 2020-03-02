@@ -5,8 +5,9 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.justice.digital.delius.util.EntityHelper.*;
 
-import java.util.Optional;
+import java.util.*;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -178,6 +179,46 @@ public class StaffServiceTest {
         when(ldapRepository.getEmail("sandrasmith")).thenReturn(null);
 
         assertThat(staffService.getStaffDetailsByUsername("sandrasmith")).get().extracting(StaffDetails::getEmail).isNull();
+    }
+
+    @Test
+    public void willReturnCorrectDetailsForMultipleUsernames_getStaffDetailsByUsernames() {
+        Set usernames = Set.of("joefrazier", "georgeforeman");
+
+        when(staffRepository.findByUsernames(any()))
+                .thenReturn(ImmutableList.of(
+                        aStaff()
+                                .toBuilder()
+                                .user(
+                                        aUser()
+                                                .toBuilder()
+                                                .distinguishedName("joefrazier")
+                                                .build())
+                                .build(),
+                        aStaff()
+                                .toBuilder()
+                                .user(
+                                        aUser()
+                                                .toBuilder()
+                                                .distinguishedName("georgeforeman")
+                                                .build())
+                                .build()
+                ));
+
+        when(ldapRepository.getEmail("joefrazier")).thenReturn("joefrazier@service.com");
+        when(ldapRepository.getEmail("georgeforeman")).thenReturn("georgeforeman@service.com");
+
+
+        List<StaffDetails> staffDetailsList = staffService.getStaffDetailsByUsernames(usernames);
+
+        StaffDetails frazierUserDetails = staffDetailsList.stream().filter(s -> s.getUsername().equals("joefrazier")).findFirst().get();
+        StaffDetails foremanUserDetails = staffDetailsList.stream().filter(s -> s.getUsername().equals("georgeforeman")).findFirst().get();
+
+        assertThat(staffDetailsList.size()).isEqualTo(2);
+        assertThat(frazierUserDetails.getEmail()).isEqualTo("joefrazier@service.com");
+        assertThat(foremanUserDetails.getEmail()).isEqualTo("georgeforeman@service.com");
+        assertThat(frazierUserDetails.getUsername()).isEqualTo("joefrazier");
+        assertThat(foremanUserDetails.getUsername()).isEqualTo("georgeforeman");
     }
 
     @Test
