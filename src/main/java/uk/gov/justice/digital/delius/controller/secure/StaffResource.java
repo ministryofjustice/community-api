@@ -94,6 +94,7 @@ public class StaffResource {
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
     @PostMapping(path="/staff/list", consumes = "application/json")
     public ResponseEntity<List<StaffDetails>> getUserDetailsList(final @RequestBody Set<String> usernames){
+        log.info("getUserDetailsList called with {}", usernames);
         return new ResponseEntity<>(staffService.getStaffDetailsByUsernames(usernames), OK);
     }
 }

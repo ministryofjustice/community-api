@@ -156,15 +156,23 @@ public class StaffResource_StaffDetailsAPITest {
                 .body()
                 .as(StaffDetails[].class);
 
-        assertThat(staffDetails.length).isEqualTo(2);
-        StaffDetails ldapTestUserDetails = Arrays.stream(staffDetails).filter(s -> s.getUsername().equals("TestLdapUser")).findFirst().get();
+        StaffDetails jimSnowUserDetails = Arrays.stream(staffDetails).filter(s -> s.getUsername().equals("JimSnowLdap")).findFirst().get();
         StaffDetails sheilaHancockUserDetails = Arrays.stream(staffDetails).filter(s -> s.getUsername().equals("SheilaHancockNPS")).findFirst().get();
-        assertThat(ldapTestUserDetails.getEmail()).isEqualTo("ldap.user@justice.gov.uk");
+
+        assertThat(staffDetails.length).isEqualTo(2);
+
+        assertThat(jimSnowUserDetails.getEmail()).isEqualTo("jim.snow@justice.gov.uk");
+        assertThat(jimSnowUserDetails.getStaff().getForenames()).isEqualTo("JIM");
+        assertThat(jimSnowUserDetails.getStaff().getSurname()).isEqualTo("SNOW");
+
         assertThat(sheilaHancockUserDetails.getEmail()).isEqualTo("sheila.hancock@justice.gov.uk");
+        assertThat(sheilaHancockUserDetails.getStaff().getForenames()).isEqualTo("SHEILA LINDA");
+        assertThat(sheilaHancockUserDetails.getStaff().getSurname()).isEqualTo("HANCOCK");
+
     }
     private String getUsernames() {
         try {
-            return objectMapper.writeValueAsString(Set.of("sheilahancocknps", "TestLdapUser"));
+            return objectMapper.writeValueAsString(Set.of("sheilahancocknps", "JimSnowLdap"));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
