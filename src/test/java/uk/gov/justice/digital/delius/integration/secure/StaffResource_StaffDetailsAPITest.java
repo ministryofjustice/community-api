@@ -156,8 +156,8 @@ public class StaffResource_StaffDetailsAPITest {
                 .body()
                 .as(StaffDetails[].class);
 
-        StaffDetails jimSnowUserDetails = Arrays.stream(staffDetails).filter(s -> s.getUsername().equals("JimSnowLdap")).collect(Collectors.toList()).get(0);
-        StaffDetails sheilaHancockUserDetails = Arrays.stream(staffDetails).filter(s -> s.getUsername().equals("SheilaHancockNPS")).collect(Collectors.toList()).get(0);
+        var jimSnowUserDetails = Arrays.stream(staffDetails).filter(s -> s.getUsername().equals("JimSnowLdap")).findFirst().get();
+        var sheilaHancockUserDetails = Arrays.stream(staffDetails).filter(s -> s.getUsername().equals("SheilaHancockNPS")).findFirst().get();
 
         assertThat(staffDetails.length).isEqualTo(2);
 
