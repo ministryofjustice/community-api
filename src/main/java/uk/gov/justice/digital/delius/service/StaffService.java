@@ -15,8 +15,9 @@ import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 import uk.gov.justice.digital.delius.transformers.StaffTransformer;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -56,11 +57,18 @@ public class StaffService {
     public Optional<StaffDetails> getStaffDetailsByUsername(String username) {
         return staffRepository.findByUsername(username)
                 .map(staffTransformer::staffDetailsOf)
-                .map(staffDetails ->
-                        staffDetails
-                                .toBuilder()
-                                .email(ldapRepository.getEmail(username))
-                                .build());
+                .map(addEmailFromLdap());
+    }
+
+    @Transactional(readOnly = true)
+    public List<StaffDetails> getStaffDetailsByUsernames(Set<String> usernames) {
+        Set<String> capitalisedUsernames = usernames.stream().map(String::toUpperCase).collect(Collectors.toSet());
+
+        return staffRepository.findByUsernames(capitalisedUsernames)
+                .stream()
+                .map(staffTransformer::staffDetailsOf)
+                .map(addEmailFromLdap())
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -76,6 +84,14 @@ public class StaffService {
 
     Optional<Staff> findUnallocatedForTeam(Team team) {
         return staffRepository.findByUnallocatedByTeam(team.getTeamId());
+    }
+
+    private Function<StaffDetails, StaffDetails> addEmailFromLdap() {
+        return staffDetails ->
+                staffDetails
+                        .toBuilder()
+                        .email(ldapRepository.getEmail(staffDetails.getUsername()))
+                        .build();
     }
 
     private Staff createStaffInArea(String surname, String forename, ProbationArea probationArea) {
