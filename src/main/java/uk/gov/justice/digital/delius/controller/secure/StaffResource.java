@@ -3,24 +3,18 @@ package uk.gov.justice.digital.delius.controller.secure;
 import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
-import uk.gov.justice.digital.delius.data.api.DocumentLink;
 import uk.gov.justice.digital.delius.data.api.ManagedOffender;
-import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
-import uk.gov.justice.digital.delius.jpa.dao.OffenderDelta;
 import uk.gov.justice.digital.delius.service.StaffService;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Set;
-import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
 @Api(tags = "Staff (Secure)", authorizations = {@Authorization("ROLE_COMMUNITY")})
