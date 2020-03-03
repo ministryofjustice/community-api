@@ -141,13 +141,13 @@ public class StaffResource_StaffDetailsAPITest {
     }
 
     @Test
-    public void getStaffList() {
+    public void retrieveStaffDetailsForMultipleUsers() {
 
         val staffDetails = given()
                 .auth()
                 .oauth2(validOauthToken)
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(getUsernames())
+                .body(getUsernames(Set.of("sheilahancocknps", "JimSnowLdap")))
                 .when()
                 .post("staff/list")
                 .then()
@@ -168,11 +168,43 @@ public class StaffResource_StaffDetailsAPITest {
         assertThat(sheilaHancockUserDetails.getEmail()).isEqualTo("sheila.hancock@justice.gov.uk");
         assertThat(sheilaHancockUserDetails.getStaff().getForenames()).isEqualTo("SHEILA LINDA");
         assertThat(sheilaHancockUserDetails.getStaff().getSurname()).isEqualTo("HANCOCK");
-
     }
-    private String getUsernames() {
+
+    @Test
+    public void retrieveDetailsWhenUsersDoNotExist() {
+
+        val staffDetails = given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .body(getUsernames(Set.of("xxxppp1ps", "dddiiiyyyLdap")))
+                .when()
+                .post("staff/list")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(StaffDetails[].class);
+
+        assertThat(staffDetails).isEmpty();
+    }
+
+    @Test
+    public void retrieveMultipleUserDetailsWithNoBodyContentReturn400() {
+
+            given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .post("staff/list")
+                .then()
+                .statusCode(400);
+    }
+
+    private String getUsernames(Set <String> usernames) {
         try {
-            return objectMapper.writeValueAsString(Set.of("sheilahancocknps", "JimSnowLdap"));
+            return objectMapper.writeValueAsString(usernames);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
