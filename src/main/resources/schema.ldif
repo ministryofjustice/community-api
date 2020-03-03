@@ -128,7 +128,7 @@ objectclass: inetOrgPerson
 objectclass: NDUser
 cn: JimSnowLdap
 sn: Snow
-givenname: Test
+givenname: Jim
 mail: jim.snow@justice.gov.uk
 uid: JimSnowLdap
 userPassword: secret
