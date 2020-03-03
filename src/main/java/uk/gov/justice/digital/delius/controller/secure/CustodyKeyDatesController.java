@@ -67,7 +67,7 @@ public class CustodyKeyDatesController {
         return addOrReplaceCustodyKeyDate(offenderService.offenderIdOfNomsNumber(nomsNumber), typeCode, custodyKeyDate);
     }
 
-    @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/bookingNumber/{bookingNumber}/custody//keyDates", method = RequestMethod.POST, consumes = "application/json")
+    @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/bookingNumber/{bookingNumber}/custody/keyDates", method = RequestMethod.POST, consumes = "application/json")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "The new or updated custody key dates", response = Custody.class),
             @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
