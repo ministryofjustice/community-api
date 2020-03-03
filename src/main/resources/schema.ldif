@@ -120,6 +120,18 @@ level3: true
 sector: public
 uibusinessinteractioncollection: UWBI190
 
+dn: cn=JimSnowLdap,ou=Users,dc=moj,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: NDUser
+cn: JimSnowLdap
+sn: Snow
+givenname: Jim
+mail: jim.snow@justice.gov.uk
+uid: JimSnowLdap
+userPassword: secret
 
 dn: cn=SheilaHancockNPS,ou=Users,dc=moj,dc=com
 objectclass: top

@@ -6,7 +6,9 @@ import org.springframework.data.repository.query.Param;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface StaffRepository extends JpaRepository<Staff, Long> {
     Optional<Staff> findByStaffId(Long staffId);
@@ -15,6 +17,9 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
 
     @Query("select u.staff from User u where upper(u.distinguishedName) = upper(:username)")
     Optional<Staff> findByUsername(@Param("username") String username);
+
+    @Query("select u.staff from User u where upper(u.distinguishedName) in (:usernames)")
+    List<Staff> findByUsernames(@Param("usernames") Set<String> usernames);
 
     Optional<Staff> findBySurnameAndForenameAndProbationArea(String surname, String forename, ProbationArea probationArea);
 
