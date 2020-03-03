@@ -127,7 +127,7 @@ objectclass: organizationalPerson
 objectclass: inetOrgPerson
 objectclass: NDUser
 cn: JimSnowLdap
-sn: Norton
+sn: Snow
 givenname: Test
 mail: jim.snow@justice.gov.uk
 uid: JimSnowLdap
