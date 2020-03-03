@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import static uk.gov.justice.digital.delius.util.EntityHelper.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
@@ -211,8 +212,8 @@ public class StaffServiceTest {
 
         List<StaffDetails> staffDetailsList = staffService.getStaffDetailsByUsernames(usernames);
 
-        StaffDetails frazierUserDetails = staffDetailsList.stream().filter(s -> s.getUsername().equals("joefrazier")).findFirst().get();
-        StaffDetails foremanUserDetails = staffDetailsList.stream().filter(s -> s.getUsername().equals("georgeforeman")).findFirst().get();
+        StaffDetails frazierUserDetails = staffDetailsList.stream().filter(s -> s.getUsername().equals("joefrazier")).collect(Collectors.toList()).get(0);
+        StaffDetails foremanUserDetails = staffDetailsList.stream().filter(s -> s.getUsername().equals("georgeforeman")).collect(Collectors.toList()).get(0);
 
         assertThat(staffDetailsList.size()).isEqualTo(2);
         assertThat(frazierUserDetails.getEmail()).isEqualTo("joefrazier@service.com");
