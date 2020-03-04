@@ -51,7 +51,7 @@ public class UserAPITest {
 
     @Test
     public void retrieveUserDetailsForMultipleUsers() throws JsonProcessingException {
-        JsonNode staffDetails = given()
+        JsonNode userDetails = given()
                 .auth()
                 .oauth2(validOauthToken)
                 .contentType(APPLICATION_JSON_VALUE)
@@ -64,11 +64,11 @@ public class UserAPITest {
                 .body()
                 .as(JsonNode.class);
 
-        Map<String, UserDetails> m = objectMapper.convertValue(staffDetails, new TypeReference<>() {});
-        UserDetails jimSnowUserDetails = m.get("JimSnowLdap");
-        UserDetails sheilaHancockUserDetails = m.get("sheilahancocknps");
+        Map<String, UserDetails> userDetailsMap = objectMapper.convertValue(userDetails, new TypeReference<>() {});
+        UserDetails jimSnowUserDetails = userDetailsMap.get("JimSnowLdap");
+        UserDetails sheilaHancockUserDetails = userDetailsMap.get("sheilahancocknps");
 
-        assertThat(staffDetails.size()).isEqualTo(2);
+        assertThat(userDetails.size()).isEqualTo(2);
 
         assertThat(jimSnowUserDetails.getEmail()).isEqualTo("jim.snow@justice.gov.uk");
         assertThat(jimSnowUserDetails.getFirstName()).isEqualTo("Jim");
@@ -81,7 +81,7 @@ public class UserAPITest {
 
     @Test
     public void retrieveDetailsWhenUsersDoNotExist() throws JsonProcessingException {
-        val staffDetails = given()
+        val userDetails = given()
                 .auth()
                 .oauth2(validOauthToken)
                 .contentType(APPLICATION_JSON_VALUE)
@@ -94,12 +94,12 @@ public class UserAPITest {
                 .body()
                 .as(JsonNode.class);
 
-        assertThat(staffDetails).isEmpty();
+        assertThat(userDetails).isEmpty();
     }
 
     @Test
     public void retrieveDetailsWhenUsersExistAndDoNotExist() throws JsonProcessingException {
-        val staffDetails = given()
+        val userDetails = given()
                 .auth()
                 .oauth2(validOauthToken)
                 .contentType(APPLICATION_JSON_VALUE)
@@ -112,10 +112,10 @@ public class UserAPITest {
                 .body()
                 .as(JsonNode.class);
 
-        Map<String, UserDetails> m = objectMapper.convertValue(staffDetails, new TypeReference<>() {});
-        UserDetails jimSnowUserDetails = m.get("JimSnowLdap");
+        Map<String, UserDetails> userDetailsMap = objectMapper.convertValue(userDetails, new TypeReference<>() {});
+        UserDetails jimSnowUserDetails = userDetailsMap.get("JimSnowLdap");
 
-        assertThat(staffDetails.size()).isEqualTo(1);
+        assertThat(userDetails.size()).isEqualTo(1);
 
         assertThat(jimSnowUserDetails.getEmail()).isEqualTo("jim.snow@justice.gov.uk");
         assertThat(jimSnowUserDetails.getFirstName()).isEqualTo("Jim");
