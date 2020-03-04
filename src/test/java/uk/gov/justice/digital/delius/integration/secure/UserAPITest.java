@@ -2,6 +2,8 @@ package uk.gov.justice.digital.delius.integration.secure;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
@@ -53,7 +55,7 @@ public class UserAPITest {
     @Test
     public void retrieveStaffDetailsForMultipleUsers() throws JsonProcessingException {
 
-        Map<?,?> staffDetails = given()
+        JsonNode staffDetails = given()
                 .auth()
                 .oauth2(validOauthToken)
                 .contentType(APPLICATION_JSON_VALUE)
@@ -64,12 +66,12 @@ public class UserAPITest {
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(Map.class);
+                .as(JsonNode.class);
 
         System.out.println(staffDetails);
         objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-
-        UserDetails jimSnowUserDetails = (UserDetails) staffDetails.get("JimSnowLdap");
+        Map<String, UserDetails> m = objectMapper.convertValue(staffDetails, new TypeReference<Map<String, UserDetails>>() {});
+        UserDetails jimSnowUserDetails = m.get("JimSnowLdap");
         //var sheilaHancockUserDetails = Arrays.stream(staffDetails).filter(s -> s.getUsername().equals("SheilaHancockNPS")).findFirst().get();
 
         assertThat(staffDetails.size()).isEqualTo(2);
