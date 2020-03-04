@@ -8,11 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import uk.gov.justice.digital.delius.data.api.ReplaceCustodyKeyDates;
-import uk.gov.justice.digital.delius.data.api.CreateCustodyKeyDate;
-import uk.gov.justice.digital.delius.data.api.Custody;
-import uk.gov.justice.digital.delius.data.api.CustodyKeyDate;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.ConvictionService.CustodyTypeCodeIsNotValidException;
 import uk.gov.justice.digital.delius.service.ConvictionService.DuplicateConvictionsForBookingNumberException;
@@ -79,7 +75,19 @@ public class CustodyKeyDatesController {
                                                                         final @PathVariable String bookingNumber,
                                                                         final @RequestBody ReplaceCustodyKeyDates replaceCustodyKeyDates) {
         log.info("Call to replaceAllCustodyKeyDateByNomsNumberAndBookingNumber for {} booking {} with dates {}", nomsNumber, bookingNumber, replaceCustodyKeyDates);
-        return Custody.builder().build();
+        return Custody
+                .builder()
+                .keyDates(CustodyRelatedKeyDates
+                        .builder()
+                        .conditionalReleaseDate(replaceCustodyKeyDates.getConditionalReleaseDate())
+                        .expectedReleaseDate(replaceCustodyKeyDates.getExpectedReleaseDate())
+                        .hdcEligibilityDate(replaceCustodyKeyDates.getHdcEligibilityDate())
+                        .licenceExpiryDate(replaceCustodyKeyDates.getLicenceExpiryDate())
+                        .paroleEligibilityDate(replaceCustodyKeyDates.getParoleEligibilityDate())
+                        .postSentenceSupervisionEndDate(replaceCustodyKeyDates.getPostSentenceSupervisionEndDate())
+                        .sentenceExpiryDate(replaceCustodyKeyDates.getSentenceExpiryDate())
+                        .build())
+                .build();
     }
 
     @RequestMapping(value = "offenders/offenderId/{offenderId}/custody/keyDates/{typeCode}", method = RequestMethod.PUT, consumes = "application/json")
@@ -188,7 +196,7 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
     @ApiOperation(value = "Gets a all custody key dates for the active custodial conviction")
-    public  List<CustodyKeyDate> getAllCustodyKeyDateByCrn(final @PathVariable String crn) {
+    public List<CustodyKeyDate> getAllCustodyKeyDateByCrn(final @PathVariable String crn) {
         log.info("Call to getAllCustodyKeyDateByCrn for {}", crn);
         return getCustodyKeyDates(offenderService.offenderIdOfCrn(crn));
     }
@@ -201,7 +209,7 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
     @ApiOperation(value = "Gets a all custody key dates for the active custodial conviction")
-    public  List<CustodyKeyDate> getAllCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber) {
+    public List<CustodyKeyDate> getAllCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber) {
         log.info("Call to getAllCustodyKeyDateByNomsNumber for {}", nomsNumber);
         return getCustodyKeyDates(offenderService.offenderIdOfNomsNumber(nomsNumber));
     }
@@ -215,7 +223,7 @@ public class CustodyKeyDatesController {
     })
     @ApiOperation(value = "Gets a all custody key dates for the active custodial conviction")
 
-    public  List<CustodyKeyDate> getAllCustodyKeyDateByOffenderId(final @PathVariable Long offenderId) {
+    public List<CustodyKeyDate> getAllCustodyKeyDateByOffenderId(final @PathVariable Long offenderId) {
         log.info("Call to getAllCustodyKeyDateByOffenderId for {}", offenderId);
         return getCustodyKeyDates(offenderService.getOffenderByOffenderId(offenderId).map(OffenderDetail::getOffenderId));
     }
