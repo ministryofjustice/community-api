@@ -11,12 +11,10 @@ import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.jpa.national.entity.ProbationArea;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
+import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusUser;
 import uk.gov.justice.digital.delius.service.wrapper.UserRepositoryWrapper;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -83,6 +81,24 @@ public class UserService {
                         .staffId(user.getStaffId())
                         .probationAreaCodes(probationAreaCodesOf(user.getProbationAreas()))
                         .build()).collect(toList());
+    }
+
+    public Map<String, UserDetails> getUserDetailsMap(final Set<String> usernames) {
+        Map<String, UserDetails> userDetailsMapByUsername = new HashMap<>();
+
+        usernames.stream().forEach(username-> {
+                    NDeliusUser deliusUser = ldapRepository.getDeliusUser(username).get();
+                    UserDetails userDetails = UserDetails
+                            .builder()
+                            .roles(deliusUser.getRoles().stream().map(role -> UserRole.builder().name(role.getCn()).build()).collect(toList()))
+                            .firstName(deliusUser.getGivenname())
+                            .surname(deliusUser.getSn())
+                            .email(deliusUser.getMail())
+                            .enabled(deliusUser.isEnabled())
+                            .build();
+                    userDetailsMapByUsername.put(username, userDetails);
+                });
+        return userDetailsMapByUsername;
     }
 
     private List<String> probationAreaCodesOf(final List<ProbationArea> probationAreas) {
