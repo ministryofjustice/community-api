@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.integration.secure;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,10 +17,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.data.api.UserDetails;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
@@ -53,8 +50,7 @@ public class UserAPITest {
 
 
     @Test
-    public void retrieveStaffDetailsForMultipleUsers() throws JsonProcessingException {
-
+    public void retrieveUserDetailsForMultipleUsers() throws JsonProcessingException {
         JsonNode staffDetails = given()
                 .auth()
                 .oauth2(validOauthToken)
@@ -68,51 +64,73 @@ public class UserAPITest {
                 .body()
                 .as(JsonNode.class);
 
-        System.out.println(staffDetails);
-        objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-        Map<String, UserDetails> m = objectMapper.convertValue(staffDetails, new TypeReference<Map<String, UserDetails>>() {});
+        Map<String, UserDetails> m = objectMapper.convertValue(staffDetails, new TypeReference<>() {});
         UserDetails jimSnowUserDetails = m.get("JimSnowLdap");
-        //var sheilaHancockUserDetails = Arrays.stream(staffDetails).filter(s -> s.getUsername().equals("SheilaHancockNPS")).findFirst().get();
+        UserDetails sheilaHancockUserDetails = m.get("sheilahancocknps");
 
         assertThat(staffDetails.size()).isEqualTo(2);
 
         assertThat(jimSnowUserDetails.getEmail()).isEqualTo("jim.snow@justice.gov.uk");
-//
-//        assertThat(sheilaHancockUserDetails.getEmail()).isEqualTo("sheila.hancock@justice.gov.uk");
-//        assertThat(sheilaHancockUserDetails.getStaff().getForenames()).isEqualTo("SHEILA LINDA");
-//        assertThat(sheilaHancockUserDetails.getStaff().getSurname()).isEqualTo("HANCOCK");
+        assertThat(jimSnowUserDetails.getFirstName()).isEqualTo("Jim");
+        assertThat(jimSnowUserDetails.getSurname()).isEqualTo("Snow");
+
+        assertThat(sheilaHancockUserDetails.getEmail()).isEqualTo("sheila.hancock@justice.gov.uk");
+        assertThat(sheilaHancockUserDetails.getFirstName()).isEqualTo("Sheila");
+        assertThat(sheilaHancockUserDetails.getSurname()).isEqualTo("Hancock");
     }
 
-//    @Test
-//    public void retrieveDetailsWhenUsersDoNotExist() {
-//
-//        val staffDetails = given()
-//                .auth()
-//                .oauth2(validOauthToken)
-//                .contentType(APPLICATION_JSON_VALUE)
-//                .body(getUsernames(Set.of("xxxppp1ps", "dddiiiyyyLdap")))
-//                .when()
-//                .post("staff/list")
-//                .then()
-//                .statusCode(200)
-//                .extract()
-//                .body()
-//                .as(StaffDetails[].class);
-//
-//        assertThat(staffDetails).isEmpty();
-//    }
-//
-//    @Test
-//    public void retrieveMultipleUserDetailsWithNoBodyContentReturn400() {
-//
-//            given()
-//                .auth()
-//                .oauth2(validOauthToken)
-//                .contentType(APPLICATION_JSON_VALUE)
-//                .when()
-//                .post("staff/list")
-//                .then()
-//                .statusCode(400);
-//    }
+    @Test
+    public void retrieveDetailsWhenUsersDoNotExist() throws JsonProcessingException {
+        val staffDetails = given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .body(objectMapper.writeValueAsString(Set.of("xxxyyyzzzuser", "aaabbbcccuser")))
+                .when()
+                .post("users/list/detail")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(JsonNode.class);
 
+        assertThat(staffDetails).isEmpty();
+    }
+
+    @Test
+    public void retrieveDetailsWhenUsersExistAndDoNotExist() throws JsonProcessingException {
+        val staffDetails = given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .body(objectMapper.writeValueAsString(Set.of("xxxyyyzzzuser", "JimSnowLdap")))
+                .when()
+                .post("users/list/detail")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(JsonNode.class);
+
+        Map<String, UserDetails> m = objectMapper.convertValue(staffDetails, new TypeReference<>() {});
+        UserDetails jimSnowUserDetails = m.get("JimSnowLdap");
+
+        assertThat(staffDetails.size()).isEqualTo(1);
+
+        assertThat(jimSnowUserDetails.getEmail()).isEqualTo("jim.snow@justice.gov.uk");
+        assertThat(jimSnowUserDetails.getFirstName()).isEqualTo("Jim");
+        assertThat(jimSnowUserDetails.getSurname()).isEqualTo("Snow");
+    }
+
+    @Test
+    public void retrieveMultipleUserDetailsWithNoBodyContentReturn400() {
+            given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .post("users/list/detail")
+                .then()
+                .statusCode(400);
+    }
 }

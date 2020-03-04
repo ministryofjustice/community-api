@@ -15,6 +15,7 @@ import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusUser;
 import uk.gov.justice.digital.delius.service.wrapper.UserRepositoryWrapper;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -84,20 +85,15 @@ public class UserService {
     }
 
     public Map getUserDetailsMap(final Set<String> usernames) {
-        var map = new HashMap<>();
-
-        usernames.stream().forEach(username-> {
-                    map.put(username, ldapRepository.getDeliusUser(username).map(user ->
-                            UserDetails
-                                    .builder()
-                                    .roles(user.getRoles().stream().map(role -> UserRole.builder().name(role.getCn()).build()).collect(toList()))
-                                    .firstName(user.getGivenname())
-                                    .surname(user.getSn())
-                                    .email(user.getMail())
-                                    .enabled(user.isEnabled())
-                                    .build()));
-                });
-        return map;
+        return usernames.stream().collect(Collectors.toMap(username -> username, username -> ldapRepository.getDeliusUser(username).map(user ->
+                UserDetails
+                        .builder()
+                        .roles(user.getRoles().stream().map(role -> UserRole.builder().name(role.getCn()).build()).collect(toList()))
+                        .firstName(user.getGivenname())
+                        .surname(user.getSn())
+                        .email(user.getMail())
+                        .enabled(user.isEnabled())
+                        .build()), (a, b) -> b, HashMap::new));
     }
 
     private List<String> probationAreaCodesOf(final List<ProbationArea> probationAreas) {

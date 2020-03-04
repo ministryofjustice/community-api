@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
+import uk.gov.justice.digital.delius.data.api.UserDetails;
 import uk.gov.justice.digital.delius.service.UserService;
 
 import java.util.Map;
