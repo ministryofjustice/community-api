@@ -7,6 +7,7 @@ import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.path.json.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -68,7 +69,7 @@ public class CustodyKeyDatesAPITest {
     }
 
     @Test
-    public void anAddedKeyDateCanBeRetrievedByCRN() throws JsonProcessingException {
+    public void anAddedKeyDateCanBeRetrievedByCRN()  {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         given()
@@ -95,15 +96,19 @@ public class CustodyKeyDatesAPITest {
         assertThat(addedKeyDate.getType().getDescription()).isEqualTo("POM Handover expected start date");
     }
 
-    private String createCustodyKeyDateOf(LocalDate tomorrow) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(CreateCustodyKeyDate
-                .builder()
-                .date(tomorrow)
-                .build());
+    private String createCustodyKeyDateOf(LocalDate tomorrow) {
+        try {
+            return objectMapper.writeValueAsString(CreateCustodyKeyDate
+                    .builder()
+                    .date(tomorrow)
+                    .build());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
-    public void anAddedKeyDateCanBeRetrievedByNOMSNumber() throws JsonProcessingException {
+    public void anAddedKeyDateCanBeRetrievedByNOMSNumber() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         given()
@@ -130,7 +135,7 @@ public class CustodyKeyDatesAPITest {
         assertThat(addedKeyDate.getType().getDescription()).isEqualTo("POM Handover expected start date");
     }
     @Test
-    public void anAddedKeyDateCanBeRetrievedByOffenderId() throws JsonProcessingException {
+    public void anAddedKeyDateCanBeRetrievedByOffenderId() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         given()
@@ -157,7 +162,7 @@ public class CustodyKeyDatesAPITest {
         assertThat(addedKeyDate.getType().getDescription()).isEqualTo("POM Handover expected start date");
     }
     @Test
-    public void anAddedKeyDateCanBeRetrievedByBookingNumber() throws JsonProcessingException {
+    public void anAddedKeyDateCanBeRetrievedByBookingNumber()  {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         given()
@@ -185,7 +190,7 @@ public class CustodyKeyDatesAPITest {
     }
 
     @Test
-    public void allKeyDatesCanBeRetrievedForAnOffender() throws JsonProcessingException {
+    public void allKeyDatesCanBeRetrievedForAnOffender()  {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         given()
@@ -272,7 +277,7 @@ public class CustodyKeyDatesAPITest {
     }
 
     @Test
-    public void anExistingKeyDateCanBeUpdated() throws JsonProcessingException {
+    public void anExistingKeyDateCanBeUpdated()  {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         LocalDate dayAfterNext = LocalDate.now().plusDays(2);
 
@@ -310,7 +315,7 @@ public class CustodyKeyDatesAPITest {
     }
 
     @Test
-    public void anExistingKeyDateCanBeDeletedByCRN() throws JsonProcessingException {
+    public void anExistingKeyDateCanBeDeletedByCRN()  {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         LocalDate dayAfterNext = LocalDate.now().plusDays(2);
 
@@ -347,7 +352,7 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(404);
     }
     @Test
-    public void anExistingKeyDateCanBeDeletedByNOMSNumber() throws JsonProcessingException {
+    public void anExistingKeyDateCanBeDeletedByNOMSNumber()  {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         LocalDate dayAfterNext = LocalDate.now().plusDays(2);
 
@@ -385,7 +390,7 @@ public class CustodyKeyDatesAPITest {
     }
 
     @Test
-    public void anExistingKeyDateCanBeDeletedByOffenderId() throws JsonProcessingException {
+    public void anExistingKeyDateCanBeDeletedByOffenderId()  {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         LocalDate dayAfterNext = LocalDate.now().plusDays(2);
 
@@ -422,7 +427,7 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(404);
     }
     @Test
-    public void anExistingKeyDateCanBeDeletedByBookingNumber() throws JsonProcessingException {
+    public void anExistingKeyDateCanBeDeletedByBookingNumber()  {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         LocalDate dayAfterNext = LocalDate.now().plusDays(2);
 
@@ -460,7 +465,7 @@ public class CustodyKeyDatesAPITest {
     }
 
     @Test
-    public void shouldRespond404WhenOffenderNotFound() throws JsonProcessingException {
+    public void shouldRespond404WhenOffenderNotFound()  {
         given()
                 .auth().oauth2(validOauthToken)
                 .contentType("application/json")
@@ -557,7 +562,7 @@ public class CustodyKeyDatesAPITest {
     }
 
     @Test
-    public void shouldRespond400WhenAddingKeyDateThatIsNotValid() throws JsonProcessingException {
+    public void shouldRespond400WhenAddingKeyDateThatIsNotValid()  {
         JsonPath  errorMessage = given()
                 .auth().oauth2(validOauthToken)
                 .contentType("application/json")
@@ -574,7 +579,7 @@ public class CustodyKeyDatesAPITest {
     }
 
     @Test
-    public void shouldRespond400WhenOffenderHasInvalidActiveCustodyEvents() throws JsonProcessingException {
+    public void shouldRespond400WhenOffenderHasInvalidActiveCustodyEvents()  {
         JsonPath errorMessage = given()
                 .auth().oauth2(validOauthToken)
                 .contentType("application/json")
@@ -621,12 +626,156 @@ public class CustodyKeyDatesAPITest {
 
         }
 
+        @Test
+        @Disabled("Waiting for implementation")
+        void custodyKeyDatesCanBeInsertedAndUpdatedAndDeletedWhilePOMKeyDatesRemainUnchanged() {
+
+            // WHEN I add new sentence dates
+            var conditionalReleaseDate = LocalDate.of(2030, 1, 1);
+            var licenceExpiryDate = LocalDate.of(2030, 1, 2);
+            var hdcEligibilityDate = LocalDate.of(2030, 1, 3);
+            var paroleEligibilityDate = LocalDate.of(2030, 1, 4);
+            var sentenceExpiryDate = LocalDate.of(2030, 1, 5);
+            var expectedReleaseDate = LocalDate.of(2030, 1, 6);
+            var postSentenceSupervisionEndDate = LocalDate.of(2030, 1, 7);
+
+
+            var custodyJson = given()
+                    .auth().oauth2(createJwt("ROLE_COMMUNITY_CUSTODY_UPDATE"))
+                    .contentType("application/json")
+                    .body(createReplaceCustodyKeyDates(ReplaceCustodyKeyDates
+                            .builder()
+                            .conditionalReleaseDate(conditionalReleaseDate)
+                            .licenceExpiryDate(licenceExpiryDate)
+                            .hdcEligibilityDate(hdcEligibilityDate)
+                            .paroleEligibilityDate(paroleEligibilityDate)
+                            .sentenceExpiryDate(sentenceExpiryDate)
+                            .expectedReleaseDate(expectedReleaseDate)
+                            .postSentenceSupervisionEndDate(postSentenceSupervisionEndDate)
+                            .build()))
+                    .when()
+                    .post(String.format("offenders/nomsNumber/%s/bookingNumber/%s/custody/keyDates",  NOMS_NUMBER, PRISON_BOOKING_NUMBER))
+                    .then()
+                    .statusCode(200)
+                    .extract()
+                    .body()
+                    .jsonPath();
+
+            // THEN the new dates will be returned from service
+            assertThat(custodyJson.getString("keyDates.conditionalReleaseDate")).isEqualTo("2030-01-01");
+            assertThat(custodyJson.getString("keyDates.licenceExpiryDate")).isEqualTo("2030-01-02");
+            assertThat(custodyJson.getString("keyDates.hdcEligibilityDate")).isEqualTo("2030-01-03");
+            assertThat(custodyJson.getString("keyDates.paroleEligibilityDate")).isEqualTo("2030-01-04");
+            assertThat(custodyJson.getString("keyDates.sentenceExpiryDate")).isEqualTo("2030-01-05");
+            assertThat(custodyJson.getString("keyDates.expectedReleaseDate")).isEqualTo("2030-01-06");
+            assertThat(custodyJson.getString("keyDates.postSentenceSupervisionEndDate")).isEqualTo("2030-01-07");
+
+            assertThat(custodyJson.getString("keyDates.expectedPrisonOffenderManagerHandoverStartDate")).isNull();
+            assertThat(custodyJson.getString("keyDates.expectedPrisonOffenderManagerHandoverDate")).isNull();
+
+            // GIVEN I hae added some POM key dates from OMiC
+            given()
+                    .auth().oauth2(validOauthToken)
+                    .contentType("application/json")
+                    .body(createCustodyKeyDateOf(LocalDate.of(2030, 1, 8)))
+                    .when()
+                    .put(String.format("offenders/nomsNumber/%s/custody/keyDates/POM1",  NOMS_NUMBER))
+                    .then()
+                    .statusCode(200);
+
+            given()
+                    .auth().oauth2(validOauthToken)
+                    .contentType("application/json")
+                    .body(createCustodyKeyDateOf(LocalDate.of(2030, 1, 9)))
+                    .when()
+                    .put(String.format("offenders/nomsNumber/%s/custody/keyDates/POM2",  NOMS_NUMBER))
+                    .then()
+                    .statusCode(200);
+
+
+            conditionalReleaseDate = LocalDate.of(2031, 1, 1);
+            licenceExpiryDate = LocalDate.of(2031, 1, 2);
+            hdcEligibilityDate = LocalDate.of(2031, 1, 3);
+            paroleEligibilityDate = LocalDate.of(2031, 1, 4);
+            sentenceExpiryDate = LocalDate.of(2031, 1, 5);
+            expectedReleaseDate = LocalDate.of(2031, 1, 6);
+            postSentenceSupervisionEndDate = LocalDate.of(2031, 1, 7);
+
+            // WHEN I Update the other custody key dates
+            custodyJson = given()
+                    .auth().oauth2(createJwt("ROLE_COMMUNITY_CUSTODY_UPDATE"))
+                    .contentType("application/json")
+                    .body(createReplaceCustodyKeyDates(ReplaceCustodyKeyDates
+                            .builder()
+                            .conditionalReleaseDate(conditionalReleaseDate)
+                            .licenceExpiryDate(licenceExpiryDate)
+                            .hdcEligibilityDate(hdcEligibilityDate)
+                            .paroleEligibilityDate(paroleEligibilityDate)
+                            .sentenceExpiryDate(sentenceExpiryDate)
+                            .expectedReleaseDate(expectedReleaseDate)
+                            .postSentenceSupervisionEndDate(postSentenceSupervisionEndDate)
+                            .build()))
+                    .when()
+                    .post(String.format("offenders/nomsNumber/%s/bookingNumber/%s/custody/keyDates",  NOMS_NUMBER, PRISON_BOOKING_NUMBER))
+                    .then()
+                    .statusCode(200)
+                    .extract()
+                    .body()
+                    .jsonPath();
+
+            // THEN the updated dates should be returned from the service
+            assertThat(custodyJson.getString("keyDates.conditionalReleaseDate")).isEqualTo("2031-01-01");
+            assertThat(custodyJson.getString("keyDates.licenceExpiryDate")).isEqualTo("2031-01-02");
+            assertThat(custodyJson.getString("keyDates.hdcEligibilityDate")).isEqualTo("2031-01-03");
+            assertThat(custodyJson.getString("keyDates.paroleEligibilityDate")).isEqualTo("2031-01-04");
+            assertThat(custodyJson.getString("keyDates.sentenceExpiryDate")).isEqualTo("2031-01-05");
+            assertThat(custodyJson.getString("keyDates.expectedReleaseDate")).isEqualTo("2031-01-06");
+            assertThat(custodyJson.getString("keyDates.postSentenceSupervisionEndDate")).isEqualTo("2031-01-07");
+
+            // AND also the POM dates that were updated separately
+            assertThat(custodyJson.getString("keyDates.expectedPrisonOffenderManagerHandoverStartDate")).isEqualTo("2030-01-08");
+            assertThat(custodyJson.getString("keyDates.expectedPrisonOffenderManagerHandoverDate")).isEqualTo("2030-01-09");
+
+
+            // WHEN I remove the key custody dates
+            custodyJson = given()
+                    .auth().oauth2(createJwt("ROLE_COMMUNITY_CUSTODY_UPDATE"))
+                    .contentType("application/json")
+                    .body(createReplaceCustodyKeyDates(ReplaceCustodyKeyDates
+                            .builder()
+                            .build()))
+                    .when()
+                    .post(String.format("offenders/nomsNumber/%s/bookingNumber/%s/custody/keyDates",  NOMS_NUMBER, PRISON_BOOKING_NUMBER))
+                    .then()
+                    .statusCode(200)
+                    .extract()
+                    .body()
+                    .jsonPath();
+
+            // THEN the return custody dates show be nul
+            assertThat(custodyJson.getString("keyDates.conditionalReleaseDate")).isNull();
+            assertThat(custodyJson.getString("keyDates.licenceExpiryDate")).isNull();
+            assertThat(custodyJson.getString("keyDates.hdcEligibilityDate")).isNull();
+            assertThat(custodyJson.getString("keyDates.paroleEligibilityDate")).isNull();
+            assertThat(custodyJson.getString("keyDates.sentenceExpiryDate")).isNull();
+            assertThat(custodyJson.getString("keyDates.expectedReleaseDate")).isNull();
+            assertThat(custodyJson.getString("keyDates.postSentenceSupervisionEndDate")).isNull();
+
+            // AND the existing POM key dates should remain
+            assertThat(custodyJson.getString("keyDates.expectedPrisonOffenderManagerHandoverStartDate")).isEqualTo("2030-01-08");
+            assertThat(custodyJson.getString("keyDates.expectedPrisonOffenderManagerHandoverDate")).isEqualTo("2030-01-09");
+
+        }
+
         private String createReplaceCustodyKeyDates() {
+            return createReplaceCustodyKeyDates(ReplaceCustodyKeyDates
+                    .builder()
+                    .sentenceExpiryDate(LocalDate.now())
+                    .build());
+        }
+        private String createReplaceCustodyKeyDates(ReplaceCustodyKeyDates replaceCustodyKeyDates) {
             try {
-                return objectMapper.writeValueAsString(ReplaceCustodyKeyDates
-                        .builder()
-                        .sentenceExpiryDate(LocalDate.now())
-                        .build());
+                return objectMapper.writeValueAsString(replaceCustodyKeyDates);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
