@@ -15,6 +15,7 @@ import uk.gov.justice.digital.delius.data.api.UserDetails;
 import uk.gov.justice.digital.delius.service.UserService;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -36,7 +37,7 @@ public class UserController {
             @ApiResponse(code = 404, message = "Not found", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
     @PostMapping(path="/users/list/detail", consumes = "application/json")
-    public Map getUserDetailsMap(final @RequestBody Set<String> usernames){
+    public Map<String, Optional<UserDetails>> getUserDetailsMap(final @RequestBody Set<String> usernames){
         log.info("getUserDetailsMap called with {}", usernames);
         return userService.getUserDetailsMap(usernames);
     }

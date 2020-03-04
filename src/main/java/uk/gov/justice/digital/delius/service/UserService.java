@@ -84,7 +84,7 @@ public class UserService {
                         .build()).collect(toList());
     }
 
-    public Map getUserDetailsMap(final Set<String> usernames) {
+    public Map<String, Optional<UserDetails>> getUserDetailsMap(final Set<String> usernames) {
         return usernames.stream().collect(Collectors.toMap(username -> username, username -> ldapRepository.getDeliusUser(username).map(user ->
                 UserDetails
                         .builder()
