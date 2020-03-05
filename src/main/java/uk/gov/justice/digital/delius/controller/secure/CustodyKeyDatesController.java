@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.ConvictionService.CustodyTypeCodeIsNotValidException;
@@ -75,19 +76,15 @@ public class CustodyKeyDatesController {
                                                                         final @PathVariable String bookingNumber,
                                                                         final @RequestBody ReplaceCustodyKeyDates replaceCustodyKeyDates) {
         log.info("Call to replaceAllCustodyKeyDateByNomsNumberAndBookingNumber for {} booking {} with dates {}", nomsNumber, bookingNumber, replaceCustodyKeyDates);
-        return Custody
-                .builder()
-                .keyDates(CustodyRelatedKeyDates
-                        .builder()
-                        .conditionalReleaseDate(replaceCustodyKeyDates.getConditionalReleaseDate())
-                        .expectedReleaseDate(replaceCustodyKeyDates.getExpectedReleaseDate())
-                        .hdcEligibilityDate(replaceCustodyKeyDates.getHdcEligibilityDate())
-                        .licenceExpiryDate(replaceCustodyKeyDates.getLicenceExpiryDate())
-                        .paroleEligibilityDate(replaceCustodyKeyDates.getParoleEligibilityDate())
-                        .postSentenceSupervisionEndDate(replaceCustodyKeyDates.getPostSentenceSupervisionEndDate())
-                        .sentenceExpiryDate(replaceCustodyKeyDates.getSentenceExpiryDate())
-                        .build())
-                .build();
+
+        var offenderId = offenderService.offenderIdOfNomsNumber(nomsNumber).orElseThrow(() -> new NotFoundException(String.format("Offender with NOMS number %s not found", nomsNumber)));
+        try {
+            var convictionId = convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(offenderId, bookingNumber).orElseThrow(() -> new NotFoundException(String.format("Conviction with bookingNumber %s not found for offender with NOMS number %s", bookingNumber, nomsNumber)));
+            return convictionService.addOrReplaceOrDeleteCustodyKeyDates(offenderId, convictionId, replaceCustodyKeyDates);
+        } catch (DuplicateConvictionsForBookingNumberException e) {
+            log.warn("Multiple active custodial convictions found for {} for offender {}", bookingNumber, nomsNumber);
+            throw new NotFoundException(String.format("Single active conviction for %s with booking number %s not found. Instead has %d convictions", nomsNumber, bookingNumber, e.getConvictionCount()));
+        }
     }
 
     @RequestMapping(value = "offenders/offenderId/{offenderId}/custody/keyDates/{typeCode}", method = RequestMethod.PUT, consumes = "application/json")

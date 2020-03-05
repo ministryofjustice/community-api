@@ -1,21 +1,19 @@
 package uk.gov.justice.digital.delius.service;
 
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
-import uk.gov.justice.digital.delius.data.api.Conviction;
-import uk.gov.justice.digital.delius.data.api.CourtCase;
-import uk.gov.justice.digital.delius.data.api.CreateCustodyKeyDate;
-import uk.gov.justice.digital.delius.data.api.CustodyKeyDate;
+import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.KeyDate;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
 import uk.gov.justice.digital.delius.transformers.CustodyKeyDateTransformer;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -28,8 +26,10 @@ import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
 
 @Service
+@Slf4j
 public class ConvictionService {
     public static final int SENTENCE_START_DATE_LENIENT_DAYS = 7;
+    private final Boolean updateCustodyKeyDatesFeatureSwitch;
     private final EventRepository eventRepository;
     private final ConvictionTransformer convictionTransformer;
     private final CustodyKeyDateTransformer custodyKeyDateTransformer;
@@ -46,7 +46,7 @@ public class ConvictionService {
     public static class DuplicateConvictionsForBookingNumberException extends Exception {
         private final int convictionCount;
 
-        DuplicateConvictionsForBookingNumberException(int convictionCount) {
+        public DuplicateConvictionsForBookingNumberException(int convictionCount) {
             super(String.format("duplicate active custody conviction count was %d, should be 1", convictionCount));
             this.convictionCount = convictionCount;
         }
@@ -75,18 +75,22 @@ public class ConvictionService {
     }
     @Autowired
     public ConvictionService(
+            @Value("${features.noms.update.keydates}")
+            Boolean updateCustodyKeyDatesFeatureSwitch,
             EventRepository eventRepository,
             ConvictionTransformer convictionTransformer,
             SpgNotificationService spgNotificationService,
             LookupSupplier lookupSupplier,
             CustodyKeyDateTransformer custodyKeyDateTransformer,
             IAPSNotificationService iapsNotificationService) {
+        this.updateCustodyKeyDatesFeatureSwitch = updateCustodyKeyDatesFeatureSwitch;
         this.eventRepository = eventRepository;
         this.convictionTransformer = convictionTransformer;
         this.spgNotificationService = spgNotificationService;
         this.lookupSupplier = lookupSupplier;
         this.custodyKeyDateTransformer = custodyKeyDateTransformer;
         this.iapsNotificationService = iapsNotificationService;
+        log.info("NOMIS update custody key dates feature is {}", updateCustodyKeyDatesFeatureSwitch ? "ON" : "OFF");
     }
 
     @Transactional(readOnly = true)
@@ -133,7 +137,7 @@ public class ConvictionService {
         }
     }
 
-    public Optional<Event> getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(Long offenderId, String prisonBookingNumber) throws DuplicateConvictionsForBookingNumberException {
+    public Optional<Event> getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(Long offenderId, String prisonBookingNumber) throws DuplicateConvictionsForBookingNumberException {
         val events = eventRepository.findByOffenderIdAndPrisonBookingNumber(offenderId, prisonBookingNumber)
                 .stream()
                 .filter(event -> event.getActiveFlag() == 1L)
@@ -147,6 +151,11 @@ public class ConvictionService {
             default:
                 throw new DuplicateConvictionsForBookingNumberException(events.size());
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Long> getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(Long offenderId, String prisonBookingNumber) throws DuplicateConvictionsForBookingNumberException {
+        return getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(offenderId, prisonBookingNumber).map(Event::getEventId);
     }
 
     public Result<Optional<Event>, DuplicateConvictionsForSentenceDateException> getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(Long offenderId, LocalDate sentenceStartDate) {
@@ -220,6 +229,21 @@ public class ConvictionService {
             throw new SingleActiveCustodyConvictionNotFoundException(offenderId, activeCustodyConvictions.size());
         }
         return activeCustodyConvictions.get(0);
+    }
+
+    @SuppressWarnings("unused")
+    @Transactional
+    public Custody addOrReplaceOrDeleteCustodyKeyDates(Long offenderId, Long convictionId, ReplaceCustodyKeyDates replaceCustodyKeyDates) {
+        var event = eventRepository.findById(convictionId).orElseThrow();
+
+        //noinspection StatementWithEmptyBody
+        if (updateCustodyKeyDatesFeatureSwitch) {
+            // TODO the actual update
+        } else {
+            log.warn("Update custody key dates will be ignored, this feature is switched off ");
+        }
+
+        return convictionTransformer.custodyOf(event.getDisposal().getCustody());
     }
 
     private String calculateNextEventNumber(Long offenderId) {

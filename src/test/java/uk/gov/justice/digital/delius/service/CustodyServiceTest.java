@@ -56,7 +56,7 @@ public class CustodyServiceTest {
     public void setup() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
         custodyService = new CustodyService(true, true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService);
         when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
-        when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+        when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                 .thenReturn(Optional.of(EntityHelper.aCustodyEvent()));
     }
 
@@ -97,7 +97,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willCreateTelemetryEventWhenConvictionNotFound() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-            when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(99L, "44463B")).thenReturn(Optional.empty());
+            when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(99L, "44463B")).thenReturn(Optional.empty());
 
             assertThatThrownBy(() ->
                     custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()));
@@ -107,7 +107,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willThrowExceptionWhenBookingNumberNotFound() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-            when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(99L, "44463B")).thenReturn(Optional.empty());
+            when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(99L, "44463B")).thenReturn(Optional.empty());
 
             assertThatThrownBy(() ->
                     custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()))
@@ -117,7 +117,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willCreateTelemetryEventWhenDuplicateConvictionsFound() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-            when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(99L, "44463B"))
+            when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(99L, "44463B"))
                     .thenThrow(new ConvictionService.DuplicateConvictionsForBookingNumberException(2));
 
             assertThatThrownBy(() ->
@@ -128,7 +128,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willThrowExceptionWhenDuplicateConvictionsFound() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-            when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(99L, "44463B"))
+            when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(99L, "44463B"))
                     .thenThrow(new ConvictionService.DuplicateConvictionsForBookingNumberException(2));
 
             assertThatThrownBy(() ->
@@ -161,7 +161,7 @@ public class CustodyServiceTest {
             final var currentInstitution = aPrisonInstitution();
             final var event = EntityHelper.aCustodyEvent();
             event.getDisposal().getCustody().setInstitution(currentInstitution);
-            when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+            when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                     .thenReturn(Optional.of(event));
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(newInstitution));
 
@@ -214,7 +214,7 @@ public class CustodyServiceTest {
             final var offender = anOffender();
             final var event = aCustodyEvent();
             when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(offender));
-            when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+            when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                     .thenReturn(Optional.of(event));
 
             custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
@@ -249,7 +249,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willCreateCustodyHistoryChangeCustodyStatusWhenCurrentlyOnlySentenced() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-            when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+            when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                     .thenReturn(Optional.of(EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("A").codeDescription("Sentenced in custody").build())));
 
             custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
@@ -269,7 +269,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willGetInCustodyStatusWhenCurrentlyOnlySentenced() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-            when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+            when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                     .thenReturn(Optional.of(EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("A").codeDescription("Sentenced in custody").build())));
 
             custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
@@ -279,7 +279,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willNotifySPGOfCustodyLocationChangeWhenCurrentlyOnlySentenced() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-            when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+            when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                     .thenReturn(Optional.of(EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("A").codeDescription("Sentenced in custody").build())));
 
             custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
@@ -289,7 +289,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willNotifySPGOfCustodyLocationChangeWhenCurrentlyInCustody() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-            when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+            when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                     .thenReturn(Optional.of(EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("D").codeDescription("In Custody").build())));
 
             custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
@@ -299,7 +299,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willCreateTelemetryEventWhenPrisonLocationChangesButStatusNotCurrentlyInPrison() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-            when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+            when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                     .thenReturn(Optional.of(EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("B").codeDescription("Released on Licence").build())));
 
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
