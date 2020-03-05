@@ -87,7 +87,6 @@ public class UserService {
         return usernames.stream().collect(Collectors.toMap(username -> username, username -> ldapRepository.getDeliusUser(username).map(user ->
                 UserDetails
                         .builder()
-                        .roles(user.getRoles().stream().map(role -> UserRole.builder().name(role.getCn()).build()).collect(toList()))
                         .firstName(user.getGivenname())
                         .surname(user.getSn())
                         .email(user.getMail())

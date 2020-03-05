@@ -393,7 +393,6 @@ public class UserServiceTest {
                         .email("john.bean@justice.gov.uk")
                         .firstName("John")
                         .surname("Bean")
-                        .roles(List.of(UserRole.builder().name("ROLE1").build()))
                         .enabled(true)
                         .build());
 
@@ -402,7 +401,6 @@ public class UserServiceTest {
                         .email("rocky.balboa@justice.gov.uk")
                         .firstName("Rocky")
                         .surname("Balboa")
-                        .roles(List.of(UserRole.builder().name("ROLE1").build()))
                         .enabled(true)
                         .build());
     }
