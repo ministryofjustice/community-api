@@ -24,6 +24,7 @@ import uk.gov.justice.digital.delius.service.wrapper.UserRepositoryWrapper;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -353,5 +354,54 @@ public class UserServiceTest {
 
         verify(ldapRepository, never()).addRole(any(), any());
         verifyNoInteractions(telemetryClient);
+    }
+
+    @Test
+    public void userDetailsMapIsCorrectForMultipleUsernames() {
+        when(ldapRepository.getDeliusUser("john.bean")).thenReturn(
+                Optional.of(NDeliusUser
+                        .builder()
+                        .givenname("John")
+                        .sn("Bean")
+                        .mail("john.bean@justice.gov.uk")
+                        .roles(ImmutableList.of(
+                                NDeliusRole
+                                        .builder()
+                                        .cn("ROLE1")
+                                        .build()))
+                        .build()));
+        when(ldapRepository.getDeliusUser("rocky.balboa")).thenReturn(
+                Optional.of(NDeliusUser
+                        .builder()
+                        .givenname("Rocky")
+                        .sn("Balboa")
+                        .mail("rocky.balboa@justice.gov.uk")
+                        .roles(ImmutableList.of(
+                                NDeliusRole
+                                        .builder()
+                                        .cn("ROLE1")
+                                        .build()))
+                        .build()));
+
+        final var userDetails = userService.getUserDetailsMap(Set.of("john.bean", "rocky.balboa"));
+
+        assertThat(userDetails.get("john.bean").isPresent()).isTrue();
+        assertThat(userDetails.get("rocky.balboa").isPresent()).isTrue();
+
+        assertThat(userDetails.get("john.bean").get()).isEqualTo(
+                UserDetails.builder()
+                        .email("john.bean@justice.gov.uk")
+                        .firstName("John")
+                        .surname("Bean")
+                        .enabled(true)
+                        .build());
+
+        assertThat(userDetails.get("rocky.balboa").get()).isEqualTo(
+                UserDetails.builder()
+                        .email("rocky.balboa@justice.gov.uk")
+                        .firstName("Rocky")
+                        .surname("Balboa")
+                        .enabled(true)
+                        .build());
     }
 }

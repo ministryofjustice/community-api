@@ -13,10 +13,8 @@ import uk.gov.justice.digital.delius.jpa.national.entity.ProbationArea;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
 import uk.gov.justice.digital.delius.service.wrapper.UserRepositoryWrapper;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -83,6 +81,17 @@ public class UserService {
                         .staffId(user.getStaffId())
                         .probationAreaCodes(probationAreaCodesOf(user.getProbationAreas()))
                         .build()).collect(toList());
+    }
+
+    public Map<String, Optional<UserDetails>> getUserDetailsMap(final Set<String> usernames) {
+        return usernames.stream().collect(Collectors.toMap(username -> username, username -> ldapRepository.getDeliusUser(username).map(user ->
+                UserDetails
+                        .builder()
+                        .firstName(user.getGivenname())
+                        .surname(user.getSn())
+                        .email(user.getMail())
+                        .enabled(user.isEnabled())
+                        .build()), (a, b) -> b, HashMap::new));
     }
 
     private List<String> probationAreaCodesOf(final List<ProbationArea> probationAreas) {
