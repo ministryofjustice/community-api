@@ -20,9 +20,9 @@ import java.util.Set;
 
 @RestController
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
-@Api(tags = "User API", authorizations = {@Authorization("ROLE_COMMUNITY")})
+@Api(tags = "User API", authorizations = {@Authorization("ROLE_AUTH_DELIUS_LDAP")})
 @AllArgsConstructor
-@PreAuthorize("hasRole('ROLE_COMMUNITY')")
+@PreAuthorize("hasRole('ROLE_AUTH_DELIUS_LDAP')")
 @Slf4j
 public class UserController {
 
