@@ -204,7 +204,7 @@ public class ConvictionServiceTest {
                             .eventId(999L)
                             .build()));
 
-            Optional<Event> maybeConviction = convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(99L, "A12345");
+            Optional<Event> maybeConviction = convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(99L, "A12345");
 
             assertThat(maybeConviction).isPresent();
         }
@@ -222,11 +222,11 @@ public class ConvictionServiceTest {
             );
 
             assertThatThrownBy(
-                    () -> convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(99L, "A12345"))
+                    () -> convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(99L, "A12345"))
                     .isInstanceOf(DuplicateConvictionsForBookingNumberException.class);
         }
         @Test
-        public void convictionReturnedWhenSingleActiveConvictionMatchedAmoungstDuplicatesForOffenderIdPrisonBookingNumber() throws DuplicateConvictionsForBookingNumberException {
+        public void convictionReturnedWhenSingleActiveConvictionMatchedAmongstDuplicatesForOffenderIdPrisonBookingNumber() throws DuplicateConvictionsForBookingNumberException {
             when(convictionRepository.findByOffenderIdAndPrisonBookingNumber(99L, "A12345")).thenReturn(ImmutableList.of(
                     aEvent()
                             .toBuilder()
@@ -240,7 +240,7 @@ public class ConvictionServiceTest {
                             .build()
             ));
 
-            Optional<Event> maybeConviction = convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(99L, "A12345");
+            Optional<Event> maybeConviction = convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(99L, "A12345");
 
             assertThat(maybeConviction.orElseThrow().getEventId())
                     .isEqualTo(999L);
@@ -250,11 +250,33 @@ public class ConvictionServiceTest {
         public void emptyReturnedWhenNoConvictionsMatchedForOffenderIdAndPrisonBookingNumber() throws DuplicateConvictionsForBookingNumberException {
             when(convictionRepository.findByOffenderIdAndPrisonBookingNumber(99L, "A12345")).thenReturn(ImmutableList.of());
 
-            Optional<Event> maybeConviction = convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(99L, "A12345");
+            Optional<Event> maybeConviction = convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(99L, "A12345");
 
             assertThat(maybeConviction).isNotPresent();
         }
 
+
+        @Test
+        public void convictionIdReturnedWhenSingleActiveConvictionMatchedAmongstDuplicatesForOffenderIdPrisonBookingNumber() throws DuplicateConvictionsForBookingNumberException {
+            when(convictionRepository.findByOffenderIdAndPrisonBookingNumber(99L, "A12345")).thenReturn(ImmutableList.of(
+                    aEvent()
+                            .toBuilder()
+                            .eventId(998L)
+                            .activeFlag(0L)
+                            .build(),
+                    aEvent()
+                            .toBuilder()
+                            .eventId(999L)
+                            .activeFlag(1L)
+                            .build()
+            ));
+
+            Optional<Long> maybeConviction = convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(99L, "A12345");
+
+            assertThat(maybeConviction.orElseThrow())
+                    .isEqualTo(999L);
+
+        }
     }
     @Nested
     class GetSingleActiveCloseToSentenceDate {

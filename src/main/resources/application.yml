@@ -88,3 +88,4 @@ features:
     update:
       custody: false
       booking.number: false
+      keydates: false

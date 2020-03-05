@@ -85,7 +85,7 @@ public class CustodyService {
 
         return maybeOffender.map(offender -> {
             try {
-                final var maybeEvent = convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(offender.getOffenderId(), bookingNumber);
+                final var maybeEvent = convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(offender.getOffenderId(), bookingNumber);
                 return maybeEvent.map(event -> {
                     if (isInCustodyOrAboutToStartACustodySentence(event.getDisposal().getCustody())) {
                         final var maybeInstitution = institutionRepository.findByNomisCdeCode(updateCustody.getNomsPrisonInstitutionCode());

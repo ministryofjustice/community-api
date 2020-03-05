@@ -127,7 +127,6 @@ public class CustodyController_updateCustodyBookingNumberTest {
     }
 
     private String json(UpdateCustodyBookingNumber custody) throws JsonProcessingException {
-        System.err.println(objectMapper.writeValueAsString(custody));
         return objectMapper.writeValueAsString(custody);
     }
 
