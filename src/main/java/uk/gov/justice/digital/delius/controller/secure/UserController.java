@@ -28,7 +28,8 @@ public class UserController {
 
     private final UserService userService;
 
-    @ApiOperation(value = "Returns a map of user details for supplied usernames - POST version to allow large user lists.", notes = "user details for supplied usernames", nickname = "getUserDetailsMap")
+    @ApiOperation(value = "Returns a map of user details for supplied usernames - POST version to allow large user lists.", notes = "user details for supplied usernames",
+                  nickname = "getUserDetailsMap")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = StaffDetails.class, responseContainer = "List"),
             @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),

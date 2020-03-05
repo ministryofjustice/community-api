@@ -37,7 +37,7 @@ public class UserAPITest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Value("${test.token.good}")
+    @Value("${test.token.auth}")
     private String validOauthToken;
 
     @Before
