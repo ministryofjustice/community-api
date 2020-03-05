@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustodyRelatedKeyDates {
+    @ApiModelProperty(value = "Conditional release date", example = "2020-06-23")
     private LocalDate conditionalReleaseDate;
     @ApiModelProperty(value = "Licence expiry date", example = "2020-06-23")
     private LocalDate licenceExpiryDate;
