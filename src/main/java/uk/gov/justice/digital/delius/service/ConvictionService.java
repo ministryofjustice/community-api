@@ -10,6 +10,7 @@ import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.KeyDate;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
 import uk.gov.justice.digital.delius.transformers.CustodyKeyDateTransformer;
@@ -23,6 +24,7 @@ import java.util.function.Predicate;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.stream.Collectors.toList;
+import static uk.gov.justice.digital.delius.service.CustodyKeyDatesMapper.*;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
 
 @Service
@@ -231,20 +233,36 @@ public class ConvictionService {
         return activeCustodyConvictions.get(0);
     }
 
-    @SuppressWarnings("unused")
     @Transactional
-    public Custody addOrReplaceOrDeleteCustodyKeyDates(Long offenderId, Long convictionId, ReplaceCustodyKeyDates replaceCustodyKeyDates) {
+    public Custody addOrReplaceOrDeleteCustodyKeyDates(@SuppressWarnings("unused") Long offenderId, Long convictionId, ReplaceCustodyKeyDates replaceCustodyKeyDates) {
         var event = eventRepository.findById(convictionId).orElseThrow();
 
-        //noinspection StatementWithEmptyBody
         if (updateCustodyKeyDatesFeatureSwitch) {
-            // TODO the actual update
+            final var custodyManagedKeyDates = custodyManagedKeyDates();
+            final var missingKeyDateTypesCodes = missingKeyDateTypesCodes(replaceCustodyKeyDates);
+            event
+                    .getDisposal()
+                    .getCustody()
+                    .getKeyDates()
+                    .stream()
+                    .map(KeyDate::getKeyDateType)
+                    .map(StandardReference::getCodeValue)
+                    .filter(custodyManagedKeyDates::contains)  // all key dates managed by this service
+                    .filter(missingKeyDateTypesCodes::contains) // all ones missing from request
+                    .collect(toList()) // collect into new list so we can start deleting
+                    .forEach(keyDate -> deleteCustodyKeyDate(event, keyDate));
+
+            keyDatesOf(replaceCustodyKeyDates).forEach((key, value) -> addOrReplaceCustodyKeyDate(event, key, value));
+
         } else {
             log.warn("Update custody key dates will be ignored, this feature is switched off ");
         }
 
-        return convictionTransformer.custodyOf(event.getDisposal().getCustody());
+        return convictionTransformer.custodyOf(event
+                .getDisposal()
+                .getCustody());
     }
+
 
     private String calculateNextEventNumber(Long offenderId) {
         return String.valueOf(eventRepository.findByOffenderId(offenderId).size() + 1);
@@ -283,6 +301,13 @@ public class ConvictionService {
         return keyDate -> keyDate.getKeyDateType().getCodeValue().equals(typeCode);
     }
 
+    private void addOrReplaceCustodyKeyDate(Event event, String typeCode, LocalDate date)  {
+        try {
+            addOrReplaceCustodyKeyDate(event, typeCode, CreateCustodyKeyDate.builder().date(date).build());
+        } catch (CustodyTypeCodeIsNotValidException e) {
+            throw new RuntimeException(e);
+        }
+    }
     private CustodyKeyDate addOrReplaceCustodyKeyDate(Event event, String typeCode, CreateCustodyKeyDate custodyKeyDate) throws CustodyTypeCodeIsNotValidException {
         val custodyKeyDateType = lookupSupplier.custodyKeyDateTypeSupplier().apply(typeCode)
                 .orElseThrow(() -> new CustodyTypeCodeIsNotValidException(String.format("%s is not a valid custody key date", typeCode)));
