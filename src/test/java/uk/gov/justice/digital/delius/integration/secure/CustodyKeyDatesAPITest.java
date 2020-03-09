@@ -7,7 +7,6 @@ import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.path.json.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -627,7 +626,6 @@ public class CustodyKeyDatesAPITest {
         }
 
         @Test
-        @Disabled("Waiting for implementation")
         void custodyKeyDatesCanBeInsertedAndUpdatedAndDeletedWhilePOMKeyDatesRemainUnchanged() {
 
             // WHEN I add new sentence dates

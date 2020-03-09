@@ -1,24 +1,31 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.justice.digital.delius.data.api.CourtCase;
 import uk.gov.justice.digital.delius.data.api.Institution;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 import uk.gov.justice.digital.delius.service.LookupSupplier;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aKeyDate;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class ConvictionTransformerTest {
     @Mock
     private LookupSupplier lookupSupplier;
@@ -32,7 +39,7 @@ public class ConvictionTransformerTest {
     private InstitutionTransformer institutionTransformer;
     private ConvictionTransformer transformer;
 
-    @Before
+    @BeforeEach
     public void before() {
         transformer = new ConvictionTransformer(
                 mainOffenceTransformer,
@@ -316,6 +323,71 @@ public class ConvictionTransformerTest {
         assertThat(event.getOrderManagers()).hasSize(1);
         assertThat(event.getOrderManagers().get(0).getAllocationReason().getCodeValue()).isEqualTo("IN1");
 
+    }
+
+    @Nested
+    class CustodyRelatedKeyDatesOf {
+        @Test
+        void willSetNothingIfNoneExist() {
+            final var keyDates = transformer.custodyOf(aCustody().toBuilder().keyDates(List.of()).build())
+                    .getKeyDates();
+
+            assertThat(keyDates.getConditionalReleaseDate()).isNull();
+            assertThat(keyDates.getExpectedPrisonOffenderManagerHandoverDate()).isNull();
+            assertThat(keyDates.getExpectedPrisonOffenderManagerHandoverStartDate()).isNull();
+            assertThat(keyDates.getExpectedReleaseDate()).isNull();
+            assertThat(keyDates.getHdcEligibilityDate()).isNull();
+            assertThat(keyDates.getLicenceExpiryDate()).isNull();
+            assertThat(keyDates.getParoleEligibilityDate()).isNull();
+            assertThat(keyDates.getPostSentenceSupervisionEndDate()).isNull();
+            assertThat(keyDates.getSentenceExpiryDate()).isNull();
+        }
+
+        @Test
+        void willSetNothingIfNoneOfTheOnesWeAreInterestedInExist() {
+            final var keyDates = transformer.custodyOf(aCustody().toBuilder()
+                    .keyDates(List.of(aKeyDate("XX", "Whatever", LocalDate
+                            .now()))).build())
+                    .getKeyDates();
+
+            assertThat(keyDates.getConditionalReleaseDate()).isNull();
+            assertThat(keyDates.getExpectedPrisonOffenderManagerHandoverDate()).isNull();
+            assertThat(keyDates.getExpectedPrisonOffenderManagerHandoverStartDate()).isNull();
+            assertThat(keyDates.getExpectedReleaseDate()).isNull();
+            assertThat(keyDates.getHdcEligibilityDate()).isNull();
+            assertThat(keyDates.getLicenceExpiryDate()).isNull();
+            assertThat(keyDates.getParoleEligibilityDate()).isNull();
+            assertThat(keyDates.getPostSentenceSupervisionEndDate()).isNull();
+            assertThat(keyDates.getSentenceExpiryDate()).isNull();
+        }
+
+        @Test
+        void willSetAllIfAllAreSet() {
+            final var keyDates = transformer.custodyOf(aCustody().toBuilder()
+                    .keyDates(List.of(
+                            aKeyDate("LED", "LicenceExpiryDate", LocalDate.of(2030, 1, 1)),
+                            aKeyDate("POM2", "ExpectedPrisonOffenderManagerHandoverDate", LocalDate.of(2030, 1, 2)),
+                            aKeyDate("POM1", "ExpectedPrisonOffenderManagerHandoverStartDate", LocalDate.of(2030, 1, 3)),
+                            aKeyDate("ACR", "ConditionalReleaseDate", LocalDate.of(2030, 1, 4)),
+                            aKeyDate("EXP", "ExpectedReleaseDate", LocalDate.of(2030, 1, 5)),
+                            aKeyDate("HDE", "HdcEligibilityDate", LocalDate.of(2030, 1, 6)),
+                            aKeyDate("PSSED", "PostSentenceSupervisionEndDate", LocalDate.of(2030, 1, 7)),
+                            aKeyDate("PED", "ParoleEligibilityDate", LocalDate.of(2030, 1, 8)),
+                            aKeyDate("SED", "SentenceExpiryDate", LocalDate.of(2030, 1, 9)),
+                            aKeyDate("XX", "Whatever", LocalDate.now())
+                    )).build())
+                    .getKeyDates();
+
+            assertThat(keyDates.getLicenceExpiryDate()).isEqualTo(LocalDate.of(2030, 1, 1));
+            assertThat(keyDates.getExpectedPrisonOffenderManagerHandoverDate()).isEqualTo(LocalDate.of(2030, 1, 2));
+            assertThat(keyDates.getExpectedPrisonOffenderManagerHandoverStartDate()).isEqualTo(LocalDate.of(2030, 1, 3));
+            assertThat(keyDates.getConditionalReleaseDate()).isEqualTo(LocalDate.of(2030, 1, 4));
+            assertThat(keyDates.getExpectedReleaseDate()).isEqualTo(LocalDate.of(2030, 1, 5));
+            assertThat(keyDates.getHdcEligibilityDate()).isEqualTo(LocalDate.of(2030, 1, 6));
+            assertThat(keyDates.getPostSentenceSupervisionEndDate()).isEqualTo(LocalDate.of(2030, 1, 7));
+            assertThat(keyDates.getParoleEligibilityDate()).isEqualTo(LocalDate.of(2030, 1, 8));
+            assertThat(keyDates.getSentenceExpiryDate()).isEqualTo(LocalDate.of(2030, 1, 9));
+        }
     }
 
     private CourtAppearance aCourtAppearance(String outcomeDescription, String outcomeCode, LocalDateTime appearanceDate) {

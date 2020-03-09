@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.val;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.Custody;
+import uk.gov.justice.digital.delius.data.api.CustodyRelatedKeyDates.CustodyRelatedKeyDatesBuilder;
 import uk.gov.justice.digital.delius.data.api.Offence;
 import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance;
@@ -12,12 +13,16 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.OrderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 import uk.gov.justice.digital.delius.service.LookupSupplier;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.helpers.FluentHelper.not;
 import static uk.gov.justice.digital.delius.service.LookupSupplier.INITIAL_ORDER_ALLOCATION;
 import static uk.gov.justice.digital.delius.service.LookupSupplier.TRANSFER_CASE_INITIAL_REASON;
@@ -30,6 +35,48 @@ public class ConvictionTransformer {
     private final CourtAppearanceTransformer courtAppearanceTransformer;
     private final LookupSupplier lookupSupplier;
     private final InstitutionTransformer institutionTransformer;
+
+    enum KeyDateTypes {
+        LICENCE_EXPIRY_DATE("LED", CustodyRelatedKeyDatesBuilder::licenceExpiryDate),
+        AUTOMATIC_CONDITIONAL_RELEASE_DATE("ACR", CustodyRelatedKeyDatesBuilder::conditionalReleaseDate),
+        PAROLE_ELIGIBILITY_DATE("PED", CustodyRelatedKeyDatesBuilder::paroleEligibilityDate),
+        SENTENCE_EXPIRY_DATE("SED", CustodyRelatedKeyDatesBuilder::sentenceExpiryDate),
+        EXPECTED_RELEASE_DATE("EXP", CustodyRelatedKeyDatesBuilder::expectedReleaseDate),
+        HDC_EXPECTED_DATE("HDE", CustodyRelatedKeyDatesBuilder::hdcEligibilityDate),
+        POST_SENTENCE_SUPERVISION_END_DATE("PSSED", CustodyRelatedKeyDatesBuilder::postSentenceSupervisionEndDate),
+        POM_HANDOVER_START_DATE("POM1", CustodyRelatedKeyDatesBuilder::expectedPrisonOffenderManagerHandoverStartDate),
+        RO_HANDOVER_DATE("POM2", CustodyRelatedKeyDatesBuilder::expectedPrisonOffenderManagerHandoverDate);
+
+        private final BiConsumer<CustodyRelatedKeyDatesBuilder, LocalDate> consumer;
+        private String code;
+
+        KeyDateTypes(String code, BiConsumer<CustodyRelatedKeyDatesBuilder, LocalDate> consumer) {
+            this.code = code;
+            this.consumer = consumer;
+        }
+
+        void set(CustodyRelatedKeyDatesBuilder custodyRelatedKeyDates, LocalDate date) {
+            consumer.accept(custodyRelatedKeyDates, date);
+        }
+        public static List<String> custodyRelatedKeyDates() {
+            return Stream
+                    .of(values())
+                    .map(KeyDateTypes::getCode)
+                    .collect(toList());
+        }
+
+        static KeyDateTypes of(String code) {
+            return Stream
+                    .of(values())
+                    .filter(keyDate -> keyDate.code.equals(code))
+                    .findAny()
+                    .orElseThrow();
+        }
+
+        public String getCode() {
+            return code;
+        }
+    }
 
     public ConvictionTransformer(MainOffenceTransformer mainOffenceTransformer, AdditionalOffenceTransformer additionalOffenceTransformer, CourtAppearanceTransformer courtAppearanceTransformer, LookupSupplier lookupSupplier, InstitutionTransformer institutionTransformer) {
         this.mainOffenceTransformer = mainOffenceTransformer;
@@ -100,13 +147,29 @@ public class ConvictionTransformer {
     }
 
     public Custody custodyOf(uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody) {
-        return Custody
-                .builder()
-                .bookingNumber(custody.getPrisonerNumber())
-                .institution(Optional
-                        .ofNullable(custody.getInstitution())
-                        .map(institutionTransformer::institutionOf).orElse(null) )
-                .build();
+        return Custody.builder().bookingNumber(custody.getPrisonerNumber())
+                .institution(Optional.ofNullable(custody.getInstitution()).map(institutionTransformer::institutionOf)
+                        .orElse(null))
+                .keyDates(Optional.ofNullable(custody.getKeyDates()).map(this::custodyRelatedKeyDatesOf)
+                        .orElse(CustodyRelatedKeyDates.builder().build())).build();
+    }
+
+    private CustodyRelatedKeyDates custodyRelatedKeyDatesOf(List<KeyDate> keyDates) {
+        final var allCustodyRelatedKeyDates = KeyDateTypes.custodyRelatedKeyDates();
+        final var custodyRelatedKeyDates = CustodyRelatedKeyDates.builder();
+
+        keyDates
+                .stream()
+                .filter(keyDate -> allCustodyRelatedKeyDates.contains(keyDate
+                        .getKeyDateType()
+                        .getCodeValue()))
+                .forEach(keyDate -> {
+                    var keyDateType = KeyDateTypes.of(keyDate
+                            .getKeyDateType()
+                            .getCodeValue());
+                    keyDateType.set(custodyRelatedKeyDates, keyDate.getKeyDate());
+                });
+        return custodyRelatedKeyDates.build();
     }
 
     public Event eventOf(
