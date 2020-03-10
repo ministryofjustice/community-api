@@ -12,6 +12,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.KeyDate;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
 import uk.gov.justice.digital.delius.transformers.CustodyKeyDateTransformer;
 
@@ -19,8 +20,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.stream.Collectors.toList;
@@ -33,11 +36,13 @@ public class ConvictionService {
     public static final int SENTENCE_START_DATE_LENIENT_DAYS = 7;
     private final Boolean updateCustodyKeyDatesFeatureSwitch;
     private final EventRepository eventRepository;
+    private final OffenderRepository offenderRepository;
     private final ConvictionTransformer convictionTransformer;
     private final CustodyKeyDateTransformer custodyKeyDateTransformer;
     private final IAPSNotificationService iapsNotificationService;
     private final SpgNotificationService spgNotificationService;
     private final LookupSupplier lookupSupplier;
+    private final ContactService contactService;
 
     public static class SingleActiveCustodyConvictionNotFoundException extends BadRequestException {
         public SingleActiveCustodyConvictionNotFoundException(Long offenderId, int activeCustodyConvictionCount) {
@@ -78,20 +83,23 @@ public class ConvictionService {
     @Autowired
     public ConvictionService(
             @Value("${features.noms.update.keydates}")
-            Boolean updateCustodyKeyDatesFeatureSwitch,
+                    Boolean updateCustodyKeyDatesFeatureSwitch,
             EventRepository eventRepository,
-            ConvictionTransformer convictionTransformer,
+            OffenderRepository offenderRepository, ConvictionTransformer convictionTransformer,
             SpgNotificationService spgNotificationService,
             LookupSupplier lookupSupplier,
             CustodyKeyDateTransformer custodyKeyDateTransformer,
-            IAPSNotificationService iapsNotificationService) {
+            IAPSNotificationService iapsNotificationService,
+            ContactService contactService) {
         this.updateCustodyKeyDatesFeatureSwitch = updateCustodyKeyDatesFeatureSwitch;
         this.eventRepository = eventRepository;
+        this.offenderRepository = offenderRepository;
         this.convictionTransformer = convictionTransformer;
         this.spgNotificationService = spgNotificationService;
         this.lookupSupplier = lookupSupplier;
         this.custodyKeyDateTransformer = custodyKeyDateTransformer;
         this.iapsNotificationService = iapsNotificationService;
+        this.contactService = contactService;
         log.info("NOMIS update custody key dates feature is {}", updateCustodyKeyDatesFeatureSwitch ? "ON" : "OFF");
     }
 
@@ -234,25 +242,27 @@ public class ConvictionService {
     }
 
     @Transactional
-    public Custody addOrReplaceOrDeleteCustodyKeyDates(@SuppressWarnings("unused") Long offenderId, Long convictionId, ReplaceCustodyKeyDates replaceCustodyKeyDates) {
+    public Custody addOrReplaceOrDeleteCustodyKeyDates(Long offenderId, Long convictionId, ReplaceCustodyKeyDates replaceCustodyKeyDates) {
         var event = eventRepository.findById(convictionId).orElseThrow();
 
         if (updateCustodyKeyDatesFeatureSwitch) {
             final var custodyManagedKeyDates = custodyManagedKeyDates();
             final var missingKeyDateTypesCodes = missingKeyDateTypesCodes(replaceCustodyKeyDates);
-            event
+            final var currentKeyDates = event
                     .getDisposal()
                     .getCustody()
-                    .getKeyDates()
-                    .stream()
-                    .map(KeyDate::getKeyDateType)
-                    .map(StandardReference::getCodeValue)
-                    .filter(custodyManagedKeyDates::contains)  // all key dates managed by this service
-                    .filter(missingKeyDateTypesCodes::contains) // all ones missing from request
-                    .collect(toList()) // collect into new list so we can start deleting
+                    .getKeyDates();
+
+            final var keyDatesToDelete = keyDatesToDelete(custodyManagedKeyDates, missingKeyDateTypesCodes, currentKeyDates);
+            final var keyDatesToBeAddedOrUpdated = keyDatesToBeAddedOrUpdated(replaceCustodyKeyDates, currentKeyDates);
+
+            addContactForBulkCustodyKeyDateUpdate(offenderId, event, currentKeyDates, keyDatesToDelete, keyDatesToBeAddedOrUpdated);
+
+            keyDatesToDelete
                     .forEach(keyDate -> deleteCustodyKeyDate(event, keyDate));
 
-            keyDatesOf(replaceCustodyKeyDates).forEach((key, value) -> addOrReplaceCustodyKeyDate(event, key, value));
+            keyDatesToBeAddedOrUpdated
+                    .forEach((key, value) -> addOrReplaceCustodyKeyDate(event, key, value));
 
         } else {
             log.warn("Update custody key dates will be ignored, this feature is switched off ");
@@ -263,6 +273,52 @@ public class ConvictionService {
                 .getCustody());
     }
 
+    private void addContactForBulkCustodyKeyDateUpdate(Long offenderId, Event event, List<KeyDate> currentKeyDates, List<String> keyDatesToDelete, Map<String, LocalDate> keyDatesToBeAddedOrUpdated) {
+        final var datesAmendedOrUpdated = datesAmendedOrUpdated(keyDatesToBeAddedOrUpdated);
+        final var datesRemoved = datesRemoved(currentKeyDates, keyDatesToDelete);
+
+
+        if (!keyDatesToDelete.isEmpty() || !keyDatesToBeAddedOrUpdated.isEmpty()) {
+            contactService.addContactForBulkCustodyKeyDateUpdate(offenderRepository.findByOffenderId(offenderId)
+                    .orElseThrow(), event, datesAmendedOrUpdated, datesRemoved);
+        }
+    }
+
+    private Map<String, LocalDate> datesAmendedOrUpdated(Map<String, LocalDate> keyDatesToBeAddedOrUpdated) {
+        return keyDatesToBeAddedOrUpdated.entrySet().stream()
+                .collect(Collectors.toMap(entry -> descriptionOf(entry.getKey()), Map.Entry::getValue));
+    }
+
+    private Map<String, LocalDate> datesRemoved(List<KeyDate> currentKeyDates, List<String> keyDatesToDelete) {
+        return keyDatesToDelete.stream().map(keyDateCode -> currentKeyDates.stream()
+                .filter(keyDate -> keyDate.getKeyDateType().getCodeValue().equals(keyDateCode)).findAny()
+                .orElseThrow())
+                .collect(Collectors.toMap(keyDate -> descriptionOf(keyDate.getKeyDateType()
+                        .getCodeValue()), KeyDate::getKeyDate));
+    }
+
+    private Map<String, LocalDate> keyDatesToBeAddedOrUpdated(ReplaceCustodyKeyDates replaceCustodyKeyDates, List<KeyDate> currentKeyDates) {
+        return keyDatesOf(replaceCustodyKeyDates).entrySet().stream()
+                .filter(entry -> hasChangedOrIsNew(currentKeyDates, entry))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    private List<String> keyDatesToDelete(List<String> custodyManagedKeyDates, List<String> missingKeyDateTypesCodes, List<KeyDate> currentKeyDates) {
+        return currentKeyDates
+                .stream()
+                .map(KeyDate::getKeyDateType)
+                .map(StandardReference::getCodeValue)
+                .filter(custodyManagedKeyDates::contains)  // all key dates managed by this service
+                .filter(missingKeyDateTypesCodes::contains) // all ones missing from request
+                .collect(toList());
+    }
+
+    private boolean hasChangedOrIsNew(List<KeyDate> currentKeyDates, Map.Entry<String, LocalDate> entry) {
+        // if can't find item with matching code and date then must be new or changed
+        return currentKeyDates.stream()
+                .filter(keyDate -> keyDate.getKeyDateType().getCodeValue().equals(entry.getKey()))
+                .filter(keyDate -> keyDate.getKeyDate().equals(entry.getValue())).findAny().isEmpty();
+    }
 
     private String calculateNextEventNumber(Long offenderId) {
         return String.valueOf(eventRepository.findByOffenderId(offenderId).size() + 1);

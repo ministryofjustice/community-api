@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.service.ConvictionService.SingleActiveCustodyConvictionNotFoundException;
 import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
 import uk.gov.justice.digital.delius.transformers.CustodyKeyDateTransformer;
@@ -34,6 +35,9 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
     private EventRepository eventRepository;
 
     @Mock
+    private OffenderRepository offenderRepository;
+
+    @Mock
     private ConvictionTransformer convictionTransformer;
 
     @Mock
@@ -48,9 +52,13 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
     @Mock
     private IAPSNotificationService iapsNotificationService;
 
+    @Mock
+    private ContactService contactService;
+
+
     @Before
     public void setUp() {
-        convictionService = new ConvictionService(true, eventRepository, convictionTransformer, spgNotificationService, lookupSupplier, new CustodyKeyDateTransformer(lookupSupplier), iapsNotificationService);
+        convictionService = new ConvictionService(true, eventRepository, offenderRepository, convictionTransformer, spgNotificationService, lookupSupplier, new CustodyKeyDateTransformer(lookupSupplier), iapsNotificationService, contactService);
     }
 
 

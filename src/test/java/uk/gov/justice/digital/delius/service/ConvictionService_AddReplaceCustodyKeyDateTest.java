@@ -14,6 +14,7 @@ import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.service.ConvictionService.CustodyTypeCodeIsNotValidException;
 import uk.gov.justice.digital.delius.service.ConvictionService.SingleActiveCustodyConvictionNotFoundException;
 import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
@@ -39,6 +40,9 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
     private EventRepository eventRepository;
 
     @Mock
+    private OffenderRepository offenderRepository;
+
+    @Mock
     private ConvictionTransformer convictionTransformer;
 
     @Mock
@@ -50,12 +54,15 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
     @Mock
     private LookupSupplier lookupSupplier;
 
+    @Mock
+    private ContactService contactService;
+
     @Captor
     private ArgumentCaptor<Event> eventArgumentCaptor;
 
     @Before
     public void setUp() {
-        convictionService = new ConvictionService(true, eventRepository, convictionTransformer, spgNotificationService, lookupSupplier, new CustodyKeyDateTransformer(lookupSupplier), iapsNotificationService);
+        convictionService = new ConvictionService(true, eventRepository, offenderRepository, convictionTransformer, spgNotificationService, lookupSupplier, new CustodyKeyDateTransformer(lookupSupplier), iapsNotificationService, contactService);
         when(lookupSupplier.userSupplier()).thenReturn(() -> User.builder().userId(88L).build());
         when(eventRepository.findByOffenderId(anyLong())).thenReturn(ImmutableList.of(aCustodyEvent()));
         when(lookupSupplier.custodyKeyDateTypeSupplier()).thenReturn(code -> Optional.of(StandardReference
