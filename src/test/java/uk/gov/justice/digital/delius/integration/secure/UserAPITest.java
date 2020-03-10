@@ -65,8 +65,8 @@ public class UserAPITest {
                 .body()
                 .as(UserDetails[].class);
 
-        UserDetails jimSnowUserDetails = Stream.of(userDetails).filter(u -> u.getUsername().equals("JimSnowLdap")).findFirst().orElse(null);
-        UserDetails sheilaHancockUserDetails = Stream.of(userDetails).filter(u -> u.getUsername().equals("sheilahancocknps")).findFirst().orElse(null);
+        UserDetails jimSnowUserDetails = Stream.of(userDetails).filter(u -> u.getUsername().equals("JimSnowLdap")).findFirst().orElseThrow();
+        UserDetails sheilaHancockUserDetails = Stream.of(userDetails).filter(u -> u.getUsername().equals("sheilahancocknps")).findFirst().orElseThrow();
 
         assertThat(userDetails.length).isEqualTo(2);
 
@@ -114,7 +114,7 @@ public class UserAPITest {
                 .body()
                 .as(UserDetails[].class);
 
-        UserDetails jimSnowUserDetails = Stream.of(userDetails).filter(u -> u.getUsername().equals("JimSnowLdap")).findFirst().orElse(null);
+        UserDetails jimSnowUserDetails = Stream.of(userDetails).filter(u -> u.getUsername().equals("JimSnowLdap")).findFirst().orElseThrow();
 
         assertThat(userDetails.length).isEqualTo(1);
 

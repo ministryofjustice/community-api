@@ -390,7 +390,7 @@ public class UserServiceTest {
 
         assertThat(userDetails.stream()
                 .filter(u -> u.get().getUsername().equals("john.bean"))
-                .findFirst().orElse(null)
+                .findFirst().orElseThrow()
                 .get()).isEqualTo(
                     UserDetails.builder()
                         .email("john.bean@justice.gov.uk")
@@ -402,7 +402,7 @@ public class UserServiceTest {
 
         assertThat(userDetails.stream()
                 .filter(u -> u.get().getUsername().equals("rocky.balboa"))
-                .findFirst().orElse(null)
+                .findFirst().orElseThrow()
                 .get()).isEqualTo(
                     UserDetails.builder()
                         .email("rocky.balboa@justice.gov.uk")
