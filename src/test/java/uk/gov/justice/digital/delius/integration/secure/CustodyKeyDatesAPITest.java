@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,6 +25,7 @@ import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.ReplaceCustodyKeyDates;
 import uk.gov.justice.digital.delius.jwt.JwtAuthenticationHelper;
 
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -65,6 +67,7 @@ public class CustodyKeyDatesAPITest {
                 new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
         //noinspection SqlWithoutWhere
         jdbcTemplate.execute("DELETE FROM KEY_DATE");
+        jdbcTemplate.execute("DELETE FROM CONTACT");
     }
 
     @Test
@@ -671,6 +674,28 @@ public class CustodyKeyDatesAPITest {
             assertThat(custodyJson.getString("keyDates.expectedPrisonOffenderManagerHandoverStartDate")).isNull();
             assertThat(custodyJson.getString("keyDates.expectedPrisonOffenderManagerHandoverDate")).isNull();
 
+
+            // AND contact should be created with new dates
+            var contact = jdbcTemplate.query(
+                    "SELECT * from CONTACT where OFFENDER_ID = ?",
+                    List.of(OFFENDER_ID).toArray(),
+                    new ColumnMapRowMapper())
+                    .stream()
+                    .filter(record -> toLocalDate(record.get("CONTACT_DATE")).equals(LocalDate.now()))
+                    .filter(record -> record.get("EVENT_ID") != null)
+                    .findFirst()
+                    .orElseThrow();
+
+            assertThat(contact.get("NOTES").toString())
+                    .contains("Conditional Release Date: 01/01/2030")
+                    .contains("Licence Expiry Date: 02/01/2030")
+                    .contains("HDC Eligibility Date: 03/01/2030")
+                    .contains("Parole Eligibility Date: 04/01/2030")
+                    .contains("Sentence Expiry Date: 05/01/2030")
+                    .contains("Expected Release Date: 06/01/2030")
+                    .contains("PSS End Date: 07/01/2030");
+
+
             // GIVEN I hae added some POM key dates from OMiC
             given()
                     .auth().oauth2(validOauthToken)
@@ -734,6 +759,8 @@ public class CustodyKeyDatesAPITest {
             assertThat(custodyJson.getString("keyDates.expectedPrisonOffenderManagerHandoverStartDate")).isEqualTo("2030-01-08");
             assertThat(custodyJson.getString("keyDates.expectedPrisonOffenderManagerHandoverDate")).isEqualTo("2030-01-09");
 
+            jdbcTemplate.execute("DELETE FROM CONTACT");
+
 
             // WHEN I remove the key custody dates
             custodyJson = given()
@@ -763,6 +790,26 @@ public class CustodyKeyDatesAPITest {
             assertThat(custodyJson.getString("keyDates.expectedPrisonOffenderManagerHandoverStartDate")).isEqualTo("2030-01-08");
             assertThat(custodyJson.getString("keyDates.expectedPrisonOffenderManagerHandoverDate")).isEqualTo("2030-01-09");
 
+            // AND contact should be created with removed items
+            contact = jdbcTemplate.query(
+                    "SELECT * from CONTACT where OFFENDER_ID = ?",
+                    List.of(OFFENDER_ID).toArray(),
+                    new ColumnMapRowMapper())
+                    .stream()
+                    .filter(record -> toLocalDate(record.get("CONTACT_DATE")).equals(LocalDate.now()))
+                    .filter(record -> record.get("EVENT_ID") != null)
+                    .findFirst()
+                    .orElseThrow();
+
+            assertThat(contact.get("NOTES").toString())
+                    .contains("Removed Conditional Release Date: 01/01/2031")
+                    .contains("Removed Licence Expiry Date: 02/01/2031")
+                    .contains("Removed HDC Eligibility Date: 03/01/2031")
+                    .contains("Removed Parole Eligibility Date: 04/01/2031")
+                    .contains("Removed Sentence Expiry Date: 05/01/2031")
+                    .contains("Removed Expected Release Date: 06/01/2031")
+                    .contains("Removed PSS End Date: 07/01/2031");
+
         }
 
         private String createReplaceCustodyKeyDates() {
@@ -788,4 +835,9 @@ public class CustodyKeyDatesAPITest {
                 .expiryTime(Duration.ofDays(1))
                 .build());
     }
+
+    private LocalDate toLocalDate(Object columnValue) {
+        return ((Timestamp)columnValue).toLocalDateTime().toLocalDate();
+    }
+
 }
