@@ -13,6 +13,7 @@ import uk.gov.justice.digital.delius.transformers.ContactTransformer;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.justice.digital.delius.jpa.standard.entity.Contact.*;
@@ -89,6 +90,27 @@ public class ContactService {
                 event,
                 contactTypeForCustodyAutoUpdate(),
                 notesForBookingNumbUpdate(event));
+    }
+
+
+    @Transactional
+    public void addContactForBulkCustodyKeyDateUpdate(Offender offender, Event event, Map<String, LocalDate> datesAmendedOrUpdated, Map<String, LocalDate> datesRemoved) {
+        addContactForCustodyChange(offender,
+                event,
+                contactTypeForCustodyAutoUpdate(),
+                notesForKeyDatesUpdate(datesAmendedOrUpdated, datesRemoved));
+    }
+
+    private String notesForKeyDatesUpdate(Map<String, LocalDate> datesAmendedOrUpdated, Map<String, LocalDate> datesRemoved) {
+        var notes = datesAmendedOrUpdated.entrySet().stream().map(entry -> String
+                .format("%s: %s\n", entry.getKey(), entry.getValue()
+                        .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))))
+                .reduce("", (original, it) -> original + it);
+
+        return datesRemoved.entrySet().stream().map(entry -> String
+                .format("Removed %s: %s\n", entry.getKey(), entry.getValue()
+                        .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))))
+                .reduce(notes, (original, it) -> original + it);
     }
 
     private void addContactForCustodyChange(Offender offender, Event event, ContactType contactType, String notes) {
