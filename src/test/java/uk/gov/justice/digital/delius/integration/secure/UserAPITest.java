@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.integration.secure;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
@@ -15,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.justice.digital.delius.data.api.UserDetails;
 import uk.gov.justice.digital.delius.data.api.UserDetailsWrapper;
 
 import java.util.Set;
@@ -60,23 +60,26 @@ public class UserAPITest {
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(UserDetailsWrapper.class)
-                .getUserDetailsList();
+                .as(JsonNode.class)
+                .toString();
 
-        UserDetails jimSnowUserDetails = userDetails.stream().filter(u -> u.getUsername().equals("JimSnowLdap")).findFirst().orElseThrow();
-        UserDetails sheilaHancockUserDetails = userDetails.stream().filter(u -> u.getUsername().equals("sheilahancocknps")).findFirst().orElseThrow();
+        String expectedJson = "{" +
+                        "\"userDetailsList\":[{" +
+                           "\"firstName\":\"Jim\"," +
+                           "\"surname\":\"Snow\"," +
+                           "\"email\":\"jim.snow@justice.gov.uk\"," +
+                           "\"enabled\":true," +
+                           "\"username\":\"JimSnowLdap\"" +
+                       "},{" +
+                           "\"firstName\":\"Sheila\"," +
+                           "\"surname\":\"Hancock\"," +
+                           "\"email\":\"sheila.hancock@justice.gov.uk\"," +
+                           "\"enabled\":true," +
+                           "\"username\":\"sheilahancocknps\"" +
+                       "}]" +
+                       "}";
 
-        assertThat(userDetails.size()).isEqualTo(2);
-
-        assertThat(jimSnowUserDetails).isNotNull();
-        assertThat(jimSnowUserDetails.getEmail()).isEqualTo("jim.snow@justice.gov.uk");
-        assertThat(jimSnowUserDetails.getFirstName()).isEqualTo("Jim");
-        assertThat(jimSnowUserDetails.getSurname()).isEqualTo("Snow");
-
-        assertThat(sheilaHancockUserDetails).isNotNull();
-        assertThat(sheilaHancockUserDetails.getEmail()).isEqualTo("sheila.hancock@justice.gov.uk");
-        assertThat(sheilaHancockUserDetails.getFirstName()).isEqualTo("Sheila");
-        assertThat(sheilaHancockUserDetails.getSurname()).isEqualTo("Hancock");
+        assertThat(userDetails).isEqualTo(expectedJson);
     }
 
     @Test
@@ -111,17 +114,20 @@ public class UserAPITest {
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(UserDetailsWrapper.class)
-                .getUserDetailsList();
+                .as(JsonNode.class)
+                .toString();
 
-        UserDetails jimSnowUserDetails = userDetails.stream().filter(u -> u.getUsername().equals("JimSnowLdap")).findFirst().orElseThrow();
+        String expectedJson = "{" +
+                "\"userDetailsList\":[{" +
+                "\"firstName\":\"Jim\"," +
+                "\"surname\":\"Snow\"," +
+                "\"email\":\"jim.snow@justice.gov.uk\"," +
+                "\"enabled\":true," +
+                "\"username\":\"JimSnowLdap\"" +
+                "}]" +
+                "}";
 
-        assertThat(userDetails.size()).isEqualTo(1);
-
-        assertThat(jimSnowUserDetails).isNotNull();
-        assertThat(jimSnowUserDetails.getEmail()).isEqualTo("jim.snow@justice.gov.uk");
-        assertThat(jimSnowUserDetails.getFirstName()).isEqualTo("Jim");
-        assertThat(jimSnowUserDetails.getSurname()).isEqualTo("Snow");
+        assertThat(userDetails).isEqualTo(expectedJson);
     }
 
     @Test
