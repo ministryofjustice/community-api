@@ -383,15 +383,14 @@ public class UserServiceTest {
                                         .build()))
                         .build()));
 
-        final var userDetails = userService.getUserDetailsList(Set.of("john.bean", "rocky.balboa"));
+        final var userDetails = userService.getUserDetailsList(Set.of("john.bean", "rocky.balboa")).getUserDetailsList();
 
-        assertThat(userDetails.stream().anyMatch( userDetail -> userDetail.orElse(null).getUsername().equals("john.bean"))).isTrue();
-        assertThat(userDetails.stream().anyMatch( userDetail -> userDetail.orElse(null).getUsername().equals("rocky.balboa"))).isTrue();
+        assertThat(userDetails.stream().anyMatch( userDetail -> userDetail.getUsername().equals("john.bean"))).isTrue();
+        assertThat(userDetails.stream().anyMatch( userDetail -> userDetail.getUsername().equals("rocky.balboa"))).isTrue();
 
         assertThat(userDetails.stream()
-                .filter(u -> u.get().getUsername().equals("john.bean"))
-                .findFirst().orElseThrow()
-                .get()).isEqualTo(
+                .filter(u -> u.getUsername().equals("john.bean"))
+                .findFirst().orElseThrow()).isEqualTo(
                     UserDetails.builder()
                         .email("john.bean@justice.gov.uk")
                         .firstName("John")
@@ -401,9 +400,8 @@ public class UserServiceTest {
                         .build());
 
         assertThat(userDetails.stream()
-                .filter(u -> u.get().getUsername().equals("rocky.balboa"))
-                .findFirst().orElseThrow()
-                .get()).isEqualTo(
+                .filter(u -> u.getUsername().equals("rocky.balboa"))
+                .findFirst().orElseThrow()).isEqualTo(
                     UserDetails.builder()
                         .email("rocky.balboa@justice.gov.uk")
                         .firstName("Rocky")

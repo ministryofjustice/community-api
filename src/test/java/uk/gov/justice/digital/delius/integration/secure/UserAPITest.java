@@ -1,8 +1,6 @@
 package uk.gov.justice.digital.delius.integration.secure;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
@@ -18,10 +16,9 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.data.api.UserDetails;
+import uk.gov.justice.digital.delius.data.api.UserDetailsWrapper;
 
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,12 +60,13 @@ public class UserAPITest {
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(UserDetails[].class);
+                .as(UserDetailsWrapper.class)
+                .getUserDetailsList();
 
-        UserDetails jimSnowUserDetails = Stream.of(userDetails).filter(u -> u.getUsername().equals("JimSnowLdap")).findFirst().orElseThrow();
-        UserDetails sheilaHancockUserDetails = Stream.of(userDetails).filter(u -> u.getUsername().equals("sheilahancocknps")).findFirst().orElseThrow();
+        UserDetails jimSnowUserDetails = userDetails.stream().filter(u -> u.getUsername().equals("JimSnowLdap")).findFirst().orElseThrow();
+        UserDetails sheilaHancockUserDetails = userDetails.stream().filter(u -> u.getUsername().equals("sheilahancocknps")).findFirst().orElseThrow();
 
-        assertThat(userDetails.length).isEqualTo(2);
+        assertThat(userDetails.size()).isEqualTo(2);
 
         assertThat(jimSnowUserDetails).isNotNull();
         assertThat(jimSnowUserDetails.getEmail()).isEqualTo("jim.snow@justice.gov.uk");
@@ -94,7 +92,8 @@ public class UserAPITest {
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(UserDetails[].class);
+                .as(UserDetailsWrapper.class)
+                .getUserDetailsList();
 
         assertThat(userDetails).isEmpty();
     }
@@ -112,11 +111,12 @@ public class UserAPITest {
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(UserDetails[].class);
+                .as(UserDetailsWrapper.class)
+                .getUserDetailsList();
 
-        UserDetails jimSnowUserDetails = Stream.of(userDetails).filter(u -> u.getUsername().equals("JimSnowLdap")).findFirst().orElseThrow();
+        UserDetails jimSnowUserDetails = userDetails.stream().filter(u -> u.getUsername().equals("JimSnowLdap")).findFirst().orElseThrow();
 
-        assertThat(userDetails.length).isEqualTo(1);
+        assertThat(userDetails.size()).isEqualTo(1);
 
         assertThat(jimSnowUserDetails).isNotNull();
         assertThat(jimSnowUserDetails.getEmail()).isEqualTo("jim.snow@justice.gov.uk");
