@@ -357,7 +357,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void userDetailsMapIsCorrectForMultipleUsernames() {
+    public void userDetailsListIsCorrectForMultipleUsernames() {
         when(ldapRepository.getDeliusUser("john.bean")).thenReturn(
                 Optional.of(NDeliusUser
                         .builder()
@@ -383,25 +383,33 @@ public class UserServiceTest {
                                         .build()))
                         .build()));
 
-        final var userDetails = userService.getUserDetailsMap(Set.of("john.bean", "rocky.balboa"));
+        final var userDetails = userService.getUserDetailsList(Set.of("john.bean", "rocky.balboa"));
 
-        assertThat(userDetails.get("john.bean").isPresent()).isTrue();
-        assertThat(userDetails.get("rocky.balboa").isPresent()).isTrue();
+        assertThat(userDetails.stream().anyMatch( userDetail -> userDetail.orElse(null).getUsername().equals("john.bean"))).isTrue();
+        assertThat(userDetails.stream().anyMatch( userDetail -> userDetail.orElse(null).getUsername().equals("rocky.balboa"))).isTrue();
 
-        assertThat(userDetails.get("john.bean").get()).isEqualTo(
-                UserDetails.builder()
+        assertThat(userDetails.stream()
+                .filter(u -> u.get().getUsername().equals("john.bean"))
+                .findFirst().orElse(null)
+                .get()).isEqualTo(
+                    UserDetails.builder()
                         .email("john.bean@justice.gov.uk")
                         .firstName("John")
                         .surname("Bean")
                         .enabled(true)
+                        .username("john.bean")
                         .build());
 
-        assertThat(userDetails.get("rocky.balboa").get()).isEqualTo(
-                UserDetails.builder()
+        assertThat(userDetails.stream()
+                .filter(u -> u.get().getUsername().equals("rocky.balboa"))
+                .findFirst().orElse(null)
+                .get()).isEqualTo(
+                    UserDetails.builder()
                         .email("rocky.balboa@justice.gov.uk")
                         .firstName("Rocky")
                         .surname("Balboa")
                         .enabled(true)
+                        .username("rocky.balboa")
                         .build());
     }
 }

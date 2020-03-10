@@ -19,8 +19,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.data.api.UserDetails;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,7 +52,7 @@ public class UserAPITest {
 
     @Test
     public void retrieveUserDetailsForMultipleUsers() throws JsonProcessingException {
-        JsonNode userDetails = given()
+        var userDetails = given()
                 .auth()
                 .oauth2(validOauthToken)
                 .contentType(APPLICATION_JSON_VALUE)
@@ -62,18 +63,19 @@ public class UserAPITest {
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(JsonNode.class);
+                .as(UserDetails[].class);
 
-        Map<String, UserDetails> userDetailsMap = objectMapper.convertValue(userDetails, new TypeReference<>() {});
-        UserDetails jimSnowUserDetails = userDetailsMap.get("JimSnowLdap");
-        UserDetails sheilaHancockUserDetails = userDetailsMap.get("sheilahancocknps");
+        UserDetails jimSnowUserDetails = Stream.of(userDetails).filter(u -> u.getUsername().equals("JimSnowLdap")).findFirst().orElse(null);
+        UserDetails sheilaHancockUserDetails = Stream.of(userDetails).filter(u -> u.getUsername().equals("sheilahancocknps")).findFirst().orElse(null);
 
-        assertThat(userDetails.size()).isEqualTo(2);
+        assertThat(userDetails.length).isEqualTo(2);
 
+        assertThat(jimSnowUserDetails).isNotNull();
         assertThat(jimSnowUserDetails.getEmail()).isEqualTo("jim.snow@justice.gov.uk");
         assertThat(jimSnowUserDetails.getFirstName()).isEqualTo("Jim");
         assertThat(jimSnowUserDetails.getSurname()).isEqualTo("Snow");
 
+        assertThat(sheilaHancockUserDetails).isNotNull();
         assertThat(sheilaHancockUserDetails.getEmail()).isEqualTo("sheila.hancock@justice.gov.uk");
         assertThat(sheilaHancockUserDetails.getFirstName()).isEqualTo("Sheila");
         assertThat(sheilaHancockUserDetails.getSurname()).isEqualTo("Hancock");
@@ -92,7 +94,7 @@ public class UserAPITest {
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(JsonNode.class);
+                .as(UserDetails[].class);
 
         assertThat(userDetails).isEmpty();
     }
@@ -110,13 +112,13 @@ public class UserAPITest {
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(JsonNode.class);
+                .as(UserDetails[].class);
 
-        Map<String, UserDetails> userDetailsMap = objectMapper.convertValue(userDetails, new TypeReference<>() {});
-        UserDetails jimSnowUserDetails = userDetailsMap.get("JimSnowLdap");
+        UserDetails jimSnowUserDetails = Stream.of(userDetails).filter(u -> u.getUsername().equals("JimSnowLdap")).findFirst().orElse(null);
 
-        assertThat(userDetails.size()).isEqualTo(1);
+        assertThat(userDetails.length).isEqualTo(1);
 
+        assertThat(jimSnowUserDetails).isNotNull();
         assertThat(jimSnowUserDetails.getEmail()).isEqualTo("jim.snow@justice.gov.uk");
         assertThat(jimSnowUserDetails.getFirstName()).isEqualTo("Jim");
         assertThat(jimSnowUserDetails.getSurname()).isEqualTo("Snow");
