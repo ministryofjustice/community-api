@@ -193,12 +193,12 @@ public class ConvictionService {
 
     @Transactional
     public CustodyKeyDate addOrReplaceCustodyKeyDateByOffenderId(Long offenderId, String typeCode, CreateCustodyKeyDate custodyKeyDate) throws CustodyTypeCodeIsNotValidException {
-        return addOrReplaceCustodyKeyDate(getActiveCustodialEvent(offenderId), typeCode, custodyKeyDate);
+        return addOrReplaceCustodyKeyDate(getActiveCustodialEvent(offenderId), typeCode, custodyKeyDate, true);
     }
 
     @Transactional
     public CustodyKeyDate addOrReplaceCustodyKeyDateByConvictionId(Long convictionId, String typeCode, CreateCustodyKeyDate custodyKeyDate) throws CustodyTypeCodeIsNotValidException {
-        return addOrReplaceCustodyKeyDate(eventRepository.getOne(convictionId), typeCode, custodyKeyDate);
+        return addOrReplaceCustodyKeyDate(eventRepository.getOne(convictionId), typeCode, custodyKeyDate, true);
     }
 
     @Transactional(readOnly = true)
@@ -359,12 +359,12 @@ public class ConvictionService {
 
     private void addOrReplaceCustodyKeyDate(Event event, String typeCode, LocalDate date)  {
         try {
-            addOrReplaceCustodyKeyDate(event, typeCode, CreateCustodyKeyDate.builder().date(date).build());
+            addOrReplaceCustodyKeyDate(event, typeCode, CreateCustodyKeyDate.builder().date(date).build(), false);
         } catch (CustodyTypeCodeIsNotValidException e) {
             throw new RuntimeException(e);
         }
     }
-    private CustodyKeyDate addOrReplaceCustodyKeyDate(Event event, String typeCode, CreateCustodyKeyDate custodyKeyDate) throws CustodyTypeCodeIsNotValidException {
+    private CustodyKeyDate addOrReplaceCustodyKeyDate(Event event, String typeCode, CreateCustodyKeyDate custodyKeyDate, boolean shouldNotifyIAPS) throws CustodyTypeCodeIsNotValidException {
         val custodyKeyDateType = lookupSupplier.custodyKeyDateTypeSupplier().apply(typeCode)
                 .orElseThrow(() -> new CustodyTypeCodeIsNotValidException(String.format("%s is not a valid custody key date", typeCode)));
 
@@ -393,7 +393,8 @@ public class ConvictionService {
             spgNotificationService.notifyNewCustodyKeyDate(typeCode, event);
         }
 
-        if (KeyDate.isSentenceExpiryKeyDate(typeCode)) {
+        // Delius does not notify IAPS when the update comes from NOMIS only when done by probation - no idea why so this behaviour but it must be replicated given we have no user needs defined
+        if (shouldNotifyIAPS && KeyDate.isSentenceExpiryKeyDate(typeCode)) {
             iapsNotificationService.notifyEventUpdated(event);
         }
 
