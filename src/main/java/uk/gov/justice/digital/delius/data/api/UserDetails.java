@@ -29,4 +29,6 @@ public class UserDetails {
     private boolean enabled;
     @ApiModelProperty(value = "Roles For this User", position = 6, allowEmptyValue = true)
     private List<UserRole> roles;
+    @ApiModelProperty(value = "The username of the user", example = "test.user", allowEmptyValue = true, position = 7)
+    private String username;
 }

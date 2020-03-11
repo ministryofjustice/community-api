@@ -83,15 +83,21 @@ public class UserService {
                         .build()).collect(toList());
     }
 
-    public Map<String, Optional<UserDetails>> getUserDetailsMap(final Set<String> usernames) {
-        return usernames.stream().collect(Collectors.toMap(username -> username, username -> ldapRepository.getDeliusUser(username).map(user ->
-                UserDetails
-                        .builder()
-                        .firstName(user.getGivenname())
-                        .surname(user.getSn())
-                        .email(user.getMail())
-                        .enabled(user.isEnabled())
-                        .build()), (a, b) -> b, HashMap::new));
+    public UserDetailsWrapper getUserDetailsList(final Set<String> usernames) {
+        return UserDetailsWrapper.builder().userDetailsList(usernames.stream()
+                .map(username -> ldapRepository.getDeliusUser(username)
+                        .map(user ->
+                        UserDetails
+                            .builder()
+                            .firstName(user.getGivenname())
+                            .surname(user.getSn())
+                            .email(user.getMail())
+                            .enabled(user.isEnabled())
+                            .username(username)
+                            .build()))
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .collect(Collectors.toList())).build();
     }
 
     private List<String> probationAreaCodesOf(final List<ProbationArea> probationAreas) {

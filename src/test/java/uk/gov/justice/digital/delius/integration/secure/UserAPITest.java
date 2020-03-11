@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.delius.integration.secure;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
@@ -17,9 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.justice.digital.delius.data.api.UserDetails;
+import uk.gov.justice.digital.delius.data.api.UserDetailsWrapper;
 
-import java.util.Map;
 import java.util.Set;
 
 import static io.restassured.RestAssured.given;
@@ -51,7 +49,7 @@ public class UserAPITest {
 
     @Test
     public void retrieveUserDetailsForMultipleUsers() throws JsonProcessingException {
-        JsonNode userDetails = given()
+        var userDetails = given()
                 .auth()
                 .oauth2(validOauthToken)
                 .contentType(APPLICATION_JSON_VALUE)
@@ -62,21 +60,26 @@ public class UserAPITest {
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(JsonNode.class);
+                .as(JsonNode.class)
+                .toString();
 
-        Map<String, UserDetails> userDetailsMap = objectMapper.convertValue(userDetails, new TypeReference<>() {});
-        UserDetails jimSnowUserDetails = userDetailsMap.get("JimSnowLdap");
-        UserDetails sheilaHancockUserDetails = userDetailsMap.get("sheilahancocknps");
+        String expectedJson = "{" +
+                        "\"userDetailsList\":[{" +
+                           "\"firstName\":\"Jim\"," +
+                           "\"surname\":\"Snow\"," +
+                           "\"email\":\"jim.snow@justice.gov.uk\"," +
+                           "\"enabled\":true," +
+                           "\"username\":\"JimSnowLdap\"" +
+                       "},{" +
+                           "\"firstName\":\"Sheila\"," +
+                           "\"surname\":\"Hancock\"," +
+                           "\"email\":\"sheila.hancock@justice.gov.uk\"," +
+                           "\"enabled\":true," +
+                           "\"username\":\"sheilahancocknps\"" +
+                       "}]" +
+                       "}";
 
-        assertThat(userDetails.size()).isEqualTo(2);
-
-        assertThat(jimSnowUserDetails.getEmail()).isEqualTo("jim.snow@justice.gov.uk");
-        assertThat(jimSnowUserDetails.getFirstName()).isEqualTo("Jim");
-        assertThat(jimSnowUserDetails.getSurname()).isEqualTo("Snow");
-
-        assertThat(sheilaHancockUserDetails.getEmail()).isEqualTo("sheila.hancock@justice.gov.uk");
-        assertThat(sheilaHancockUserDetails.getFirstName()).isEqualTo("Sheila");
-        assertThat(sheilaHancockUserDetails.getSurname()).isEqualTo("Hancock");
+        assertThat(userDetails).isEqualTo(expectedJson);
     }
 
     @Test
@@ -92,7 +95,8 @@ public class UserAPITest {
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(JsonNode.class);
+                .as(UserDetailsWrapper.class)
+                .getUserDetailsList();
 
         assertThat(userDetails).isEmpty();
     }
@@ -110,16 +114,20 @@ public class UserAPITest {
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(JsonNode.class);
+                .as(JsonNode.class)
+                .toString();
 
-        Map<String, UserDetails> userDetailsMap = objectMapper.convertValue(userDetails, new TypeReference<>() {});
-        UserDetails jimSnowUserDetails = userDetailsMap.get("JimSnowLdap");
+        String expectedJson = "{" +
+                "\"userDetailsList\":[{" +
+                "\"firstName\":\"Jim\"," +
+                "\"surname\":\"Snow\"," +
+                "\"email\":\"jim.snow@justice.gov.uk\"," +
+                "\"enabled\":true," +
+                "\"username\":\"JimSnowLdap\"" +
+                "}]" +
+                "}";
 
-        assertThat(userDetails.size()).isEqualTo(1);
-
-        assertThat(jimSnowUserDetails.getEmail()).isEqualTo("jim.snow@justice.gov.uk");
-        assertThat(jimSnowUserDetails.getFirstName()).isEqualTo("Jim");
-        assertThat(jimSnowUserDetails.getSurname()).isEqualTo("Snow");
+        assertThat(userDetails).isEqualTo(expectedJson);
     }
 
     @Test
