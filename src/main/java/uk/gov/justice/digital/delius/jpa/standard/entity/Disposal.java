@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Builder(toBuilder = true)
@@ -63,6 +64,9 @@ public class Disposal {
 
     @Column(name = "DISPOSAL_DATE")
     private LocalDate startDate;
+
+    @OneToMany(targetEntity = Requirement.class, mappedBy = "disposal")
+    private List<Requirement> requirements;
 
     public boolean isSoftDeleted() {
         return this.softDeleted != 0L;

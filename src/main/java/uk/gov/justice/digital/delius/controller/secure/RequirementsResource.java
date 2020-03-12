@@ -42,6 +42,6 @@ public class RequirementsResource {
             @PathVariable(value = "crn") String crn,
             @PathVariable(value = "convictionId") String convictionId
     ) {
-        return requirementsService.getRequirementsByConvictionId(convictionId);
+        return requirementsService.getRequirementsByConvictionId(crn, convictionId);
     }
 }

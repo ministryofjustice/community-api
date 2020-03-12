@@ -5,12 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Data
@@ -62,5 +57,7 @@ public class Requirement {
     @OneToOne
     private RequirementTypeMainCategory requirementTypeMainCategory;
 
-
+    @JoinColumn(name = "DISPOSAL_ID", referencedColumnName = "DISPOSAL_ID")
+    @ManyToOne
+    private Disposal disposal;
 }
