@@ -46,7 +46,7 @@ public class AppointmentTransformer {
                 .linkedContactId(contact.getLinkedContactId())
                 .notes(contact.getNotes())
                 .nsi(contactTransformer.nsiOf(contact.getNsi()))
-                .requirement(contactTransformer.requirementOf(contact.getRequirement()))
+                .requirement(contactTransformer.requirementTransformer.requirementOf(contact.getRequirement()))
                 .probationArea(contactTransformer.probationAreaOf(contact.getProbationArea()))
                 .providerEmployee(contactTransformer.providerEmployeeOf(contact.getProviderEmployee()))
                 .officeLocation(officeLocationOf(contact.getOfficeLocation()))

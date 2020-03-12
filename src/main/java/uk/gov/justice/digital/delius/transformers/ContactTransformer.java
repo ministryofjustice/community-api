@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
-import uk.gov.justice.digital.delius.jpa.standard.entity.AdRequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactOutcomeType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
@@ -20,8 +19,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderEmployee;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderLocation;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderTeam;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
-import uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
@@ -37,6 +34,8 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOn
 
 @Component
 public class ContactTransformer {
+
+    RequirementTransformer requirementTransformer = new RequirementTransformer();
 
     public List<Contact> contactsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.Contact> contacts) {
         return contacts.stream()
@@ -61,7 +60,7 @@ public class ContactTransformer {
                 .linkedContactId(contact.getLinkedContactId())
                 .notes(contact.getNotes())
                 .nsi(nsiOf(contact.getNsi()))
-                .requirement(requirementOf(contact.getRequirement()))
+                .requirement(requirementTransformer.requirementOf(contact.getRequirement()))
                 .softDeleted(zeroOneToBoolean(contact.getSoftDeleted()))
                 .probationArea(probationAreaOf(contact.getProbationArea()))
                 .partitionArea(partitionAreaOf(contact.getPartitionArea()))
@@ -134,60 +133,10 @@ public class ContactTransformer {
         ).orElse(null);
     }
 
-    protected uk.gov.justice.digital.delius.data.api.Requirement requirementOf(Requirement requirement) {
-        return Optional.ofNullable(requirement).map(req -> uk.gov.justice.digital.delius.data.api.Requirement.builder()
-                .active(zeroOneToBoolean(req.getActiveFlag()))
-                .adRequirementTypeMainCategory(adRequirementMainCategoryOf(req.getAdRequirementTypeMainCategory()))
-                .adRequirementTypeSubCategory(adRequirementSubCategoryOf(req.getAdRequirementTypeSubCategory()))
-                .commencementDate(req.getCommencementDate())
-                .expectedEndDate(req.getExpectedEndDate())
-                .expectedStartDate(req.getExpectedStartDate())
-                .requirementId(req.getRequirementId())
-                .requirementNotes(req.getRequirementNotes())
-                .requirementTypeMainCategory(requirementTypeMainCategoryOf(req.getRequirementTypeMainCategory()))
-                .requirementTypeSubCategory(requirementTypeSubCategoryOf(req.getRequirementTypeSubCategory()))
-                .startDate(req.getStartDate())
-                .terminationDate(req.getTerminationDate())
-                .build()).orElse(null);
-    }
-
-    private KeyValue adRequirementMainCategoryOf(AdRequirementTypeMainCategory adRequirementTypeMainCategory) {
-        return Optional.ofNullable(adRequirementTypeMainCategory).map(mainCat ->
-                KeyValue.builder()
-                        .code(mainCat.getCode())
-                        .description(mainCat.getDescription())
-                        .build()).orElse(null);
-
-    }
-
-    private KeyValue requirementTypeSubCategoryOf(StandardReference requirementTypeSubCategory) {
-        return Optional.ofNullable(requirementTypeSubCategory).map(subCat ->
-                KeyValue.builder()
-                        .code(subCat.getCodeValue())
-                        .description(subCat.getCodeDescription())
-                        .build()).orElse(null);
-    }
-
-    private KeyValue requirementTypeMainCategoryOf(RequirementTypeMainCategory requirementTypeMainCategory) {
-        return Optional.ofNullable(requirementTypeMainCategory).map(mainCat ->
-                KeyValue.builder()
-                        .code(mainCat.getCode())
-                        .description(mainCat.getDescription())
-                        .build()).orElse(null);
-    }
-
-    private KeyValue adRequirementSubCategoryOf(StandardReference adRequirementTypeSubCategory) {
-        return Optional.ofNullable(adRequirementTypeSubCategory).map(adSubCat ->
-                KeyValue.builder()
-                        .code(adSubCat.getCodeValue())
-                        .description(adSubCat.getCodeDescription())
-                        .build()).orElse(null);
-    }
-
     protected uk.gov.justice.digital.delius.data.api.Nsi nsiOf(Nsi nsi) {
         return Optional.ofNullable(nsi).map(n ->
                 uk.gov.justice.digital.delius.data.api.Nsi.builder()
-                        .requirement(requirementOf(n.getRqmnt()))
+                        .requirement(requirementTransformer.requirementOf(n.getRqmnt()))
                         .nsiType(nsiTypeOf(n.getNsiType()))
                         .nsiSubType(nsiSubtypeOf(n.getNsiSubType()))
                         .nsiStatus(nsiStatusOf(n.getNsiStatus()))
