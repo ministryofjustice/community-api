@@ -28,7 +28,16 @@ public class RequirementTransformer {
                 .requirementTypeSubCategory(requirementTypeSubCategoryOf(req.getRequirementTypeSubCategory()))
                 .startDate(req.getStartDate())
                 .terminationDate(req.getTerminationDate())
+                .length(req.getLength())
+                .terminationReason(terminationReasonOf(req.getTerminationReason()))
                 .build()).orElse(null);
+    }
+
+    private KeyValue terminationReasonOf(StandardReference terminationReason) {
+        return Optional.ofNullable(terminationReason).map( reason -> KeyValue.builder()
+                    .description(reason.getCodeDescription())
+                    .code(reason.getCodeValue()).build())
+        .orElse(null);
     }
 
     private KeyValue requirementTypeMainCategoryOf(RequirementTypeMainCategory requirementTypeMainCategory) {

@@ -60,4 +60,11 @@ public class Requirement {
     @JoinColumn(name = "DISPOSAL_ID", referencedColumnName = "DISPOSAL_ID")
     @ManyToOne
     private Disposal disposal;
+
+    @JoinColumn(name = "RQMNT_TERMINATION_REASON_ID")
+    @OneToOne()
+    private StandardReference terminationReason;
+
+    @Column(name = "LENGTH")
+    private Long length;
 }
