@@ -15,19 +15,19 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.RequirementTransformer;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RequirementServiceTest {
-    private static final String CONVICTION_ID = "CONVICTION_ID";
+    private static final Long CONVICTION_ID = 987654321L;
     private static final String CRN = "CRN";
-    public static final Long OFFENDER_ID = 12345678L;
+    public static final Long OFFENDER_ID = 123456789L;
 
     @Mock
     private RequirementTransformer transformer;
@@ -39,6 +39,8 @@ public class RequirementServiceTest {
     private Offender offender;
     @Mock
     private Event event;
+    @Mock
+    private Event badEvent;
     @Mock
     private Disposal disposal;
     @Mock
@@ -59,6 +61,7 @@ public class RequirementServiceTest {
         when(offender.getOffenderId()).thenReturn(OFFENDER_ID);
         when(eventRepository.findByOffenderId(OFFENDER_ID)).thenReturn(Collections.singletonList(event));
         when(event.getDisposal()).thenReturn(disposal);
+        when(event.getEventId()).thenReturn(CONVICTION_ID);
         when(disposal.getRequirements()).thenReturn(Collections.singletonList(requirementEntity));
         when(transformer.requirementOf(requirementEntity)).thenReturn(requirement);
     }
@@ -66,6 +69,7 @@ public class RequirementServiceTest {
     @Test
     public void whenGetRequirementsByConvictionId_thenReturnRequirements() {
         ConvictionRequirements requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID);
+        assertThat(requirements.getRequirements()).hasSize(1);
         assertThat(requirements.getRequirements()).isEqualTo(expectedRequirements);
     }
 
@@ -76,6 +80,14 @@ public class RequirementServiceTest {
         assertThatExceptionOfType(NotFoundException.class)
             .isThrownBy(() -> requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID))
             .withMessage("Offender with CRN 'CRN' not found");
+    }
 
+    @Test
+    public void givenMultipleEventsReturnedForOffender_whenGetRequirementsByConvictionId_thenFilterByConvictionId() {
+        when(eventRepository.findByOffenderId(OFFENDER_ID)).thenReturn(Arrays.asList(event, badEvent));
+
+        ConvictionRequirements requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID);
+        assertThat(requirements.getRequirements()).hasSize(1);
+        assertThat(requirements.getRequirements()).isEqualTo(expectedRequirements);
     }
 }

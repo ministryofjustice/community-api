@@ -24,16 +24,18 @@ public class RequirementService {
     @Autowired
     private RequirementTransformer requirementTransformer;
 
-    public ConvictionRequirements getRequirementsByConvictionId(String crn, String convictionId) {
+    public ConvictionRequirements getRequirementsByConvictionId(String crn, Long convictionId) {
         var offender = offenderRepository.findByCrn(crn)
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN '%s' not found", crn)));
 
         var requirements = eventRepository.findByOffenderId(offender.getOffenderId())
                 .stream()
+                .filter(event -> convictionId.equals(event.getEventId()))
                 .map(Event::getDisposal)
                 .flatMap(disposal -> disposal.getRequirements().stream())
                 .map(requirement -> requirementTransformer.requirementOf(requirement))
                 .collect(Collectors.toList());
+
         return new ConvictionRequirements(requirements);
     }
 }

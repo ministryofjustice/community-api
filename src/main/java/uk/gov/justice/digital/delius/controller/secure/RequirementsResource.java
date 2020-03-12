@@ -40,7 +40,7 @@ public class RequirementsResource {
     @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/requirements")
     public ConvictionRequirements getRequirementsByConvictionId(
             @PathVariable(value = "crn") String crn,
-            @PathVariable(value = "convictionId") String convictionId
+            @PathVariable(value = "convictionId") Long convictionId
     ) {
         return requirementsService.getRequirementsByConvictionId(crn, convictionId);
     }
