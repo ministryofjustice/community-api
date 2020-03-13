@@ -146,6 +146,9 @@ public class Contact {
     @Column(name = "COMPLIED")
     private String complied;
 
+    @Column(name = "ENFORCEMENT")
+    private String enforcement;
+
     @Column(name = "DOCUMENT_LINKED")
     private String documentLinked;
 
@@ -171,5 +174,7 @@ public class Contact {
     @Column(name = "LAST_UPDATED_DATETIME")
     @LastModifiedDate
     private LocalDateTime lastUpdatedDateTime;
+
+
 
 }
