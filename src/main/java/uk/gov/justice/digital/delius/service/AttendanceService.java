@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.delius.service;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +25,8 @@ public class AttendanceService {
         this.contactRepository = contactRepository;
     }
 
-    public Optional<List<Contact>> getContactsForEvent(final Long offenderId, final Long eventId, final LocalDate localDate) {
-        final List<Contact> contacts = contactRepository.findByOffenderAndEventIdEnforcement(offenderId, eventId, localDate);
-        return contacts.isEmpty() ? Optional.empty() : Optional.of(contacts);
+    public List<Contact> getContactsForEvent(final Long offenderId, final Long eventId, final LocalDate localDate) {
+        return contactRepository.findByOffenderAndEventIdEnforcement(offenderId, eventId, localDate);
     }
 
     static boolean forEntityBoolean(final String booleanStr) {
@@ -34,10 +35,15 @@ public class AttendanceService {
         return booleanStr.trim().equals("1");
     }
 
-    public static List<Attendance> attendancesFor(List<Contact> contacts) {
+    public static List<Attendance> attendancesFor(final List<Contact> contacts) {
+
+        if (contacts == null) {
+            return Collections.emptyList();
+        }
 
         return contacts
             .stream()
+            .filter(Objects::nonNull)
             .map(contactEntity -> Attendance.builder()
                 .attended(forEntityBoolean(contactEntity.getAttended()))
                 .complied(forEntityBoolean(contactEntity.getComplied()))
@@ -45,8 +51,8 @@ public class AttendanceService {
                 .contactId(contactEntity.getContactId())
                 .outcome(contactEntity.getContactOutcomeType() != null ? contactEntity.getContactOutcomeType().getDescription() : null)
                 .contactType(ContactTypeDetail.builder()
-                    .code(contactEntity.getContactType() != null ? contactEntity.getContactType().getCode() : "")
-                    .description(contactEntity.getContactType() != null ? contactEntity.getContactType().getDescription(): "")
+                    .code(contactEntity.getContactType() != null ? contactEntity.getContactType().getCode() : null)
+                    .description(contactEntity.getContactType() != null ? contactEntity.getContactType().getDescription(): null)
                     .build())
                 .build())
             .collect(Collectors.toList());

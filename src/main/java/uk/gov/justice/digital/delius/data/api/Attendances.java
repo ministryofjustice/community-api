@@ -13,8 +13,9 @@ import lombok.NoArgsConstructor;
 @ApiModel(description = "Attendance Wrapper")
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Attendances {
     @ApiModelProperty(value = "List of Attendances")
     private List<Attendance> attendances;

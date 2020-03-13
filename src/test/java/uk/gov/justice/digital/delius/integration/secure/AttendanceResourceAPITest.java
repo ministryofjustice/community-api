@@ -2,14 +2,13 @@ package uk.gov.justice.digital.delius.integration.secure;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
-import io.restassured.http.ContentType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +19,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.justice.digital.delius.controller.secure.AttendanceResource;
 import uk.gov.justice.digital.delius.data.api.Attendances;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -80,19 +78,21 @@ public class AttendanceResourceAPITest {
     }
 
     @Test
-    public void getKnownCrnButEventIdNotFound404() {
+    public void getKnownCrnButEventIdNotFound200() {
         final String eventId = "923213723";
-        final String expectedMsg = String.format(AttendanceResource.MSG_ATTENDANCES_NOT_FOUND, eventId);
-        given()
+        final Attendances attendances = given()
             .auth()
             .oauth2(validOauthToken)
             .contentType(APPLICATION_JSON_VALUE)
             .when()
             .get(String.format(PATH_FORMAT, KNOWN_CRN, eventId))
             .then()
-            .statusCode(HttpStatus.NOT_FOUND.value())
-            .contentType(ContentType.JSON)
-            .body("developerMessage", containsString(expectedMsg));
+            .statusCode(HttpStatus.OK.value())
+            .extract()
+            .body()
+            .as(Attendances.class);
+
+        assertTrue(attendances.getAttendances().isEmpty());
     }
 
 }
