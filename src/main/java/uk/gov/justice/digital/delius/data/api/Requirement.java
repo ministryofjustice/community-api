@@ -26,5 +26,6 @@ public class Requirement {
     private KeyValue requirementTypeMainCategory;
     private KeyValue adRequirementTypeMainCategory;
     private KeyValue adRequirementTypeSubCategory;
-
+    private KeyValue terminationReason;
+    private Long length;
 }
