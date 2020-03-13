@@ -29,6 +29,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 public class AttendanceServiceTest {
 
     public static final Long SOME_CONTACT_ID = 1234L;
+    public static final Long SOME_OFFENDER_ID = 5435L;
     public static final Long SOME_EVENT_ID = 5435L;
     public static final String CONTACT_TYPE_CODE = "CT-CODE";
     public static final String CONTACT_TYPE_DESC = "CT Description";
@@ -43,11 +44,12 @@ public class AttendanceServiceTest {
     @Test
     public void getAttendancesForEventNoneAvailable() {
 
-        when(contactRepository.findByEventIdEnforcement(eq(SOME_EVENT_ID), any(LocalDate.class))).thenReturn(Collections.emptyList());
+        when(contactRepository.findByOffenderAndEventIdEnforcement(eq(SOME_OFFENDER_ID), eq(SOME_EVENT_ID), any(LocalDate.class)))
+            .thenReturn(Collections.emptyList());
 
-        assertTrue(attendanceService.getContactsForEvent(SOME_EVENT_ID, LocalDate.now()).isEmpty());
+        assertTrue(attendanceService.getContactsForEvent(SOME_OFFENDER_ID, SOME_EVENT_ID, LocalDate.now()).isEmpty());
 
-        verify(contactRepository).findByEventIdEnforcement(eq(SOME_EVENT_ID), any(LocalDate.class));
+        verify(contactRepository).findByOffenderAndEventIdEnforcement(eq(SOME_OFFENDER_ID), eq(SOME_EVENT_ID), any(LocalDate.class));
         verifyNoMoreInteractions(contactRepository);
     }
 
@@ -56,15 +58,15 @@ public class AttendanceServiceTest {
     public void getAttendancesForEventMultipleAvailable() {
 
         final Contact contact = getContactEntity(SOME_CONTACT_ID, LocalDate.now(), "1", "1");
-        when(contactRepository.findByEventIdEnforcement(eq(SOME_EVENT_ID), any(LocalDate.class))).thenReturn(singletonList(contact));
+        when(contactRepository.findByOffenderAndEventIdEnforcement(eq(SOME_OFFENDER_ID), eq(SOME_EVENT_ID), any(LocalDate.class))).thenReturn(singletonList(contact));
 
         // Act
-        final List<Contact> contacts = attendanceService.getContactsForEvent(SOME_EVENT_ID, LocalDate.now()).get();
+        final List<Contact> contacts = attendanceService.getContactsForEvent(SOME_OFFENDER_ID, SOME_EVENT_ID, LocalDate.now()).get();
 
         // Assert
         assertThat(contacts).hasSize(1);
         assertThat(contacts.get(0)).isSameAs(contact);
-        verify(contactRepository).findByEventIdEnforcement(eq(SOME_EVENT_ID), any(LocalDate.class));
+        verify(contactRepository).findByOffenderAndEventIdEnforcement(eq(SOME_OFFENDER_ID), eq(SOME_EVENT_ID), any(LocalDate.class));
         verifyNoMoreInteractions(contactRepository);
     }
 

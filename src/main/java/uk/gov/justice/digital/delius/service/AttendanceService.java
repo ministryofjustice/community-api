@@ -23,8 +23,8 @@ public class AttendanceService {
         this.contactRepository = contactRepository;
     }
 
-    public Optional<List<Contact>> getContactsForEvent(final Long eventId, final LocalDate localDate) {
-        final List<Contact> contacts = contactRepository.findByEventIdEnforcement(eventId, localDate);
+    public Optional<List<Contact>> getContactsForEvent(final Long offenderId, final Long eventId, final LocalDate localDate) {
+        final List<Contact> contacts = contactRepository.findByOffenderAndEventIdEnforcement(offenderId, eventId, localDate);
         return contacts.isEmpty() ? Optional.empty() : Optional.of(contacts);
     }
 

@@ -30,22 +30,30 @@ import uk.gov.justice.digital.delius.data.api.Attendances;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.service.AttendanceService;
 import uk.gov.justice.digital.delius.service.AttendanceServiceTest;
+import uk.gov.justice.digital.delius.service.OffenderService;
 
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 @RunWith(MockitoJUnitRunner.class)
 public class AttendanceResourceAPITest {
 
     private static final Long SOME_EVENT_ID = 12342L;
+    private static final Long SOME_OFFENDER_ID = 2500343964L;
+    private static final String SOME_CRN = "X320741";
     private static final Long SOME_CONTACT_ID_1 = 7856L;
     private static final Long SOME_CONTACT_ID_2 = 8756L;
+    private static final String PATH_FORMAT = "/secure/offenders/crn/%s/convictions/%s/attendances";
+    private static final String PATH = String.format(PATH_FORMAT, SOME_CRN, SOME_EVENT_ID);
 
     @Mock
     private AttendanceService attendanceService;
 
+    @Mock
+    private OffenderService offenderService;
+
     @Before
     public void setup() {
         RestAssuredMockMvc.standaloneSetup(
-                new AttendanceResource(attendanceService),
+                new AttendanceResource(attendanceService, offenderService),
                 new SecureControllerAdvice()
         );
     }
@@ -54,18 +62,39 @@ public class AttendanceResourceAPITest {
     public void givenNoMatchingEventThenRespondWithStatusNotFound() {
         final Long nonMatchingEventId = 99L;
         final String expectedMsg = String.format(AttendanceResource.MSG_ATTENDANCES_NOT_FOUND, nonMatchingEventId);
-        when(attendanceService.getContactsForEvent(eq(nonMatchingEventId), any(LocalDate.class))).thenReturn(Optional.empty());
+
+        when(offenderService.offenderIdOfCrn(SOME_CRN)).thenReturn(Optional.of(SOME_OFFENDER_ID));
+        when(attendanceService.getContactsForEvent(eq(SOME_OFFENDER_ID), eq(nonMatchingEventId), any(LocalDate.class))).thenReturn(Optional.empty());
 
         given()
             .when()
-            .get("/secure/contacts/" + nonMatchingEventId + "/attendances/")
+            .get(String.format(PATH_FORMAT, SOME_CRN, nonMatchingEventId))
             .then()
             .log().ifValidationFails()
             .statusCode(HttpStatus.NOT_FOUND.value())
             .body("developerMessage", containsString(expectedMsg));
 
-        verify(attendanceService).getContactsForEvent(eq(nonMatchingEventId), any(LocalDate.class));
-        verifyNoMoreInteractions(attendanceService);
+        verify(offenderService).offenderIdOfCrn(SOME_CRN);
+        verify(attendanceService).getContactsForEvent(eq(SOME_OFFENDER_ID), eq(nonMatchingEventId), any(LocalDate.class));
+        verifyNoMoreInteractions(attendanceService, offenderService);
+    }
+
+    @Test
+    public void givenNoOffenderIdForCrnThenRespondWithStatusNotFound() {
+        final String expectedMsg = String.format(AttendanceResource.MSG_OFFENDER_NOT_FOUND, SOME_CRN);
+
+        when(offenderService.offenderIdOfCrn(SOME_CRN)).thenReturn(Optional.empty());
+
+        given()
+            .when()
+            .get(PATH)
+            .then()
+            .log().ifValidationFails()
+            .statusCode(HttpStatus.NOT_FOUND.value())
+            .body("developerMessage", containsString(expectedMsg));
+
+        verify(offenderService).offenderIdOfCrn(SOME_CRN);
+        verifyNoMoreInteractions(attendanceService, offenderService);
     }
 
     @Test
@@ -77,14 +106,15 @@ public class AttendanceResourceAPITest {
         final Contact contact2 = AttendanceServiceTest.getContactEntity(SOME_CONTACT_ID_2, attendanceDate2, "1", "1");
         final List<Contact> contacts = Arrays.asList(contact1, contact2);
 
-        when(attendanceService.getContactsForEvent(eq(SOME_EVENT_ID), any(LocalDate.class)))
+        when(offenderService.offenderIdOfCrn(SOME_CRN)).thenReturn(Optional.of(SOME_OFFENDER_ID));
+        when(attendanceService.getContactsForEvent(eq(SOME_OFFENDER_ID), eq(SOME_EVENT_ID), any(LocalDate.class)))
             .thenReturn(Optional.of(contacts));
 
         // Act
         final Attendances actual = given()
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get(String.format("/secure/contacts/%s/attendances/", SOME_EVENT_ID))
+            .get(PATH)
             .then()
             .statusCode(HttpStatus.OK.value())
             .extract()
@@ -100,8 +130,10 @@ public class AttendanceResourceAPITest {
         final Attendance attendance2 = actual.getAttendances().stream().filter(att -> SOME_CONTACT_ID_2.equals(att.getContactId())).findFirst().get();
         assertTrue(attendance2.isAttended());
         assertTrue(attendance2.isComplied());
-        verify(attendanceService).getContactsForEvent(eq(SOME_EVENT_ID), any(LocalDate.class));
-        verifyNoMoreInteractions(attendanceService);
+
+        verify(offenderService).offenderIdOfCrn(SOME_CRN);
+        verify(attendanceService).getContactsForEvent(eq(SOME_OFFENDER_ID), eq(SOME_EVENT_ID), any(LocalDate.class));
+        verifyNoMoreInteractions(attendanceService, offenderService);
     }
 
     @Test
@@ -111,7 +143,7 @@ public class AttendanceResourceAPITest {
         given()
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get("/secure/contacts/XX/attendances/")
+            .get(String.format(PATH_FORMAT, SOME_CRN, "XXXXX"))
             .then()
             .statusCode(HttpStatus.BAD_REQUEST.value());
     }

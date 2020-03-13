@@ -29,6 +29,10 @@ import uk.gov.justice.digital.delius.data.api.Attendances;
 public class AttendanceResourceAPITest {
 
     private static final Long KNOWN_EVENT_ID = 2500295343L;
+//    private static final Long KNOWN_OFFENDER_ID = 2500343964L;
+    private static final String KNOWN_CRN = "X320741";
+    private static final String PATH_FORMAT = "/offenders/crn/%s/convictions/%s/attendances";
+    private static final String PATH = String.format(PATH_FORMAT, KNOWN_CRN, KNOWN_EVENT_ID);
 
     @LocalServerPort
     int port;
@@ -54,7 +58,7 @@ public class AttendanceResourceAPITest {
                 .oauth2(validOauthToken)
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .get("/contacts/" + KNOWN_EVENT_ID + "/attendances/")
+                .get(PATH)
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
@@ -71,13 +75,13 @@ public class AttendanceResourceAPITest {
                 .oauth2(validOauthToken)
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .get("/contacts/XX/attendances")
+                .get(String.format(PATH_FORMAT, "XXX", "XXX"))
                 .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
-    public void getNotFound404() {
+    public void getKnownCrnButEventIdNotFound404() {
         final String eventId = "923213723";
         final String expectedMsg = String.format(AttendanceResource.MSG_ATTENDANCES_NOT_FOUND, eventId);
         given()
@@ -85,7 +89,7 @@ public class AttendanceResourceAPITest {
             .oauth2(validOauthToken)
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get("/contacts/" + eventId + "/attendances")
+            .get(String.format(PATH_FORMAT, KNOWN_CRN, eventId))
             .then()
             .statusCode(HttpStatus.NOT_FOUND.value())
             .contentType(ContentType.JSON)

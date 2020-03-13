@@ -10,6 +10,12 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 
 public interface ContactRepository extends JpaRepository<Contact, Long>, JpaSpecificationExecutor<Contact> {
 
-    @Query("select contact from Contact contact where contact.event.eventId = :eventId and contact.contactDate <= :toDate and contact.enforcement = '1'")
-    List<Contact> findByEventIdEnforcement(@Param("eventId") Long offenderId, @Param("toDate") LocalDate toDate);
+    @Query("SELECT contact FROM Contact contact "
+        + "WHERE contact.offenderId = :offenderId "
+        + "AND contact.event.eventId = :eventId "
+        + "AND contact.contactDate <= :toDate "
+        + "AND contact.enforcement = '1'")
+    List<Contact> findByOffenderAndEventIdEnforcement(@Param("offenderId") Long offenderId,
+                                                    @Param("eventId") Long eventId,
+                                                    @Param("toDate") LocalDate toDate);
 }
