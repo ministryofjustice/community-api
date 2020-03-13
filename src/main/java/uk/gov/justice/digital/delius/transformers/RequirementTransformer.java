@@ -7,7 +7,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
@@ -15,21 +14,23 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOn
 @Component
 public class RequirementTransformer {
 
+    private KeyValueTransformer keyValueTransformer = new KeyValueTransformer();
+
     public uk.gov.justice.digital.delius.data.api.Requirement requirementOf(Requirement requirement) {
         return Optional.ofNullable(requirement).map(req -> uk.gov.justice.digital.delius.data.api.Requirement.builder()
                 .active(zeroOneToBoolean(req.getActiveFlag()))
                 .adRequirementTypeMainCategory(adRequirementMainCategoryOf(req.getAdRequirementTypeMainCategory()))
-                .adRequirementTypeSubCategory(adRequirementSubCategoryOf(req.getAdRequirementTypeSubCategory()))
+                .adRequirementTypeSubCategory(keyValueTransformer.keyValueOf(req.getAdRequirementTypeSubCategory()))
                 .commencementDate(req.getCommencementDate())
                 .expectedEndDate(req.getExpectedEndDate())
                 .expectedStartDate(req.getExpectedStartDate())
                 .requirementId(req.getRequirementId())
                 .requirementNotes(req.getRequirementNotes())
                 .requirementTypeMainCategory(requirementTypeMainCategoryOf(req.getRequirementTypeMainCategory()))
-                .requirementTypeSubCategory(requirementTypeSubCategoryOf(req.getRequirementTypeSubCategory()))
+                .requirementTypeSubCategory(keyValueTransformer.keyValueOf(req.getRequirementTypeSubCategory()))
                 .startDate(req.getStartDate())
                 .terminationDate(req.getTerminationDate())
-                .terminationReason(terminationReasonOf(req.getTerminationReason()))
+                .terminationReason(keyValueTransformer.keyValueOf(req.getTerminationReason()))
                 .length(req.getLength())
                 .lengthUnit(lengthUnitOf(req))
                 .build()).orElse(null);
@@ -42,34 +43,11 @@ public class RequirementTransformer {
                 .orElse(null);
     }
 
-    private KeyValue terminationReasonOf(StandardReference terminationReason) {
-        return Optional.ofNullable(terminationReason).map( reason -> KeyValue.builder()
-                    .description(reason.getCodeDescription())
-                    .code(reason.getCodeValue()).build())
-        .orElse(null);
-    }
-
     private KeyValue requirementTypeMainCategoryOf(RequirementTypeMainCategory requirementTypeMainCategory) {
         return Optional.ofNullable(requirementTypeMainCategory).map(mainCat ->
                 KeyValue.builder()
                         .code(mainCat.getCode())
                         .description(mainCat.getDescription())
-                        .build()).orElse(null);
-    }
-
-    private KeyValue adRequirementSubCategoryOf(StandardReference adRequirementTypeSubCategory) {
-        return Optional.ofNullable(adRequirementTypeSubCategory).map(adSubCat ->
-                KeyValue.builder()
-                        .code(adSubCat.getCodeValue())
-                        .description(adSubCat.getCodeDescription())
-                        .build()).orElse(null);
-    }
-
-    private KeyValue requirementTypeSubCategoryOf(StandardReference requirementTypeSubCategory) {
-        return Optional.ofNullable(requirementTypeSubCategory).map(subCat ->
-                KeyValue.builder()
-                        .code(subCat.getCodeValue())
-                        .description(subCat.getCodeDescription())
                         .build()).orElse(null);
     }
 
