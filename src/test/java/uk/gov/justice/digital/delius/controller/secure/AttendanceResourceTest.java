@@ -34,7 +34,7 @@ import uk.gov.justice.digital.delius.service.OffenderService;
 
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 @RunWith(MockitoJUnitRunner.class)
-public class AttendanceResourceAPITest {
+public class AttendanceResourceTest {
 
     private static final Long SOME_EVENT_ID = 12342L;
     private static final Long SOME_OFFENDER_ID = 2500343964L;

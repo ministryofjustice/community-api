@@ -29,7 +29,6 @@ import uk.gov.justice.digital.delius.data.api.Attendances;
 public class AttendanceResourceAPITest {
 
     private static final Long KNOWN_EVENT_ID = 2500295343L;
-//    private static final Long KNOWN_OFFENDER_ID = 2500343964L;
     private static final String KNOWN_CRN = "X320741";
     private static final String PATH_FORMAT = "/offenders/crn/%s/convictions/%s/attendances";
     private static final String PATH = String.format(PATH_FORMAT, KNOWN_CRN, KNOWN_EVENT_ID);

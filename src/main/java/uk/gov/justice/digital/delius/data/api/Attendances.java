@@ -8,19 +8,15 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @ApiModel(description = "Attendance Wrapper")
 @Data
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Attendances {
     @ApiModelProperty(value = "List of Attendances")
-    private final List<Attendance> attendances;
+    private List<Attendance> attendances;
 
-    // Needed for serialisation to keep final field
-    private Attendances () {
-        super();
-        this.attendances = new ArrayList<>();
-    }
 }
