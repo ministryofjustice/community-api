@@ -11,12 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.ConvictionRequirements;
-import uk.gov.justice.digital.delius.data.api.Contact;
-import uk.gov.justice.digital.delius.data.api.Requirement;
 import uk.gov.justice.digital.delius.service.RequirementService;
-
-import javax.validation.constraints.NotNull;
-import java.util.Collections;
 
 
 @Api(tags = "Requirements resources (Secure)", authorizations = {@Authorization("ROLE_COMMUNITY")})
@@ -31,7 +26,7 @@ public class RequirementsResource {
     @ApiOperation(value = "Returns the requirements for a conviction")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "OK", response = Contact.class, responseContainer = "List"),
+                    @ApiResponse(code = 200, message = "OK", response = ConvictionRequirements.class, responseContainer = "List"),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
                     @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
