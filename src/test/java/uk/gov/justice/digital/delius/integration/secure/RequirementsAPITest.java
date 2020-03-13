@@ -53,6 +53,7 @@ public class RequirementsAPITest {
                 .body("requirements[0].startDate", equalTo("2017-06-01"))
                 .body("requirements[0].terminationDate", equalTo("2017-12-01"))
                 .body("requirements[0].length", equalTo(60))
+                .body("requirements[0].lengthUnit", equalTo("Hours"))
                 .body("requirements[0].terminationReason.description", equalTo("Hours Completed Outside 12 months (UPW only)"))
 
                 .body("requirements[1].requirementId", equalTo(2500007925L))

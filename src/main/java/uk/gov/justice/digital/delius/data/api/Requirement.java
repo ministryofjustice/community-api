@@ -13,19 +13,24 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Requirement {
-    @ApiModelProperty(required = true)
+    @ApiModelProperty(value = "Unique identifier for the requirement", required = true)
     private Long requirementId;
+    @ApiModelProperty(value = "Notes added by probation relating to the requirement")
     private String requirementNotes;
     private LocalDate commencementDate;
     private LocalDate startDate;
     private LocalDate terminationDate;
     private LocalDate expectedStartDate;
     private LocalDate expectedEndDate;
+    @ApiModelProperty(value = "Is the requirement currently active")
     private Boolean active;
     private KeyValue requirementTypeSubCategory;
     private KeyValue requirementTypeMainCategory;
     private KeyValue adRequirementTypeMainCategory;
     private KeyValue adRequirementTypeSubCategory;
     private KeyValue terminationReason;
+    @ApiModelProperty(value = "The number of temporal units to complete the requirement (see lengthUnit field for unit)")
     private Long length;
+    @ApiModelProperty(value = "The temporal unit corresponding to the length field")
+    private String lengthUnit;
 }

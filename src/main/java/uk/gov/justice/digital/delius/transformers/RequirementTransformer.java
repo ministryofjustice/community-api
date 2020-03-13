@@ -7,6 +7,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
@@ -28,9 +29,17 @@ public class RequirementTransformer {
                 .requirementTypeSubCategory(requirementTypeSubCategoryOf(req.getRequirementTypeSubCategory()))
                 .startDate(req.getStartDate())
                 .terminationDate(req.getTerminationDate())
-                .length(req.getLength())
                 .terminationReason(terminationReasonOf(req.getTerminationReason()))
+                .length(req.getLength())
+                .lengthUnit(lengthUnitOf(req))
                 .build()).orElse(null);
+    }
+
+    private String lengthUnitOf(Requirement req) {
+        return Optional.ofNullable(req.getRequirementTypeMainCategory())
+                .map(RequirementTypeMainCategory::getUnits)
+                .map(StandardReference::getCodeDescription)
+                .orElse(null);
     }
 
     private KeyValue terminationReasonOf(StandardReference terminationReason) {
