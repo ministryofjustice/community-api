@@ -166,6 +166,22 @@ public class ConvictionService_AddOrReplaceOrDeleteCustodyKeyDatesTest {
     }
 
     @Test
+    void willNotNotifyIAPSWhenSentenceExpiryDateChangesUpdateExistingKeyDates() {
+        when(eventRepository.findById(88L)).thenReturn(Optional.of(aCustodyEvent(88L, new ArrayList<>(List.of(
+                aKeyDate("SED", "sentenceExpiryDate", LocalDate.of(2039, 9, 30))
+        )))));
+
+        convictionService.addOrReplaceOrDeleteCustodyKeyDates(99L, 88L, ReplaceCustodyKeyDates
+                .builder()
+                .sentenceExpiryDate(LocalDate.of(2030, 1, 1))
+                .build());
+
+        verify(convictionTransformer).custodyOf(custodyArgumentCaptor.capture());
+
+        verify(iapsNotificationService, never()).notifyEventUpdated(any());
+    }
+
+    @Test
     void willAddContactWithUpdatedRemovedAndDeletedDates() {
         final var event = aCustodyEvent(88L, new ArrayList<>(List.of(
                 aKeyDate("XX", "whatever", LocalDate.of(1995, 1, 1)),
