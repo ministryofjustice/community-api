@@ -8,7 +8,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import java.time.LocalDate;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -33,7 +32,6 @@ import uk.gov.justice.digital.delius.service.OffenderService;
 @PreAuthorize("hasRole('ROLE_COMMUNITY')")
 public class AttendanceResource {
 
-    public static final String MSG_ATTENDANCES_NOT_FOUND = "Attendances with event ID %s not found";
     public static final String MSG_OFFENDER_NOT_FOUND = "Offender ID not found for CRN %s";
 
     private final AttendanceService attendanceService;
@@ -64,11 +62,7 @@ public class AttendanceResource {
         final Long offenderId = offenderService.offenderIdOfCrn(crn)
             .orElseThrow(() -> new NotFoundException(String.format(MSG_OFFENDER_NOT_FOUND, crn)));
 
-        final List<Attendance> attendances = attendanceService.getContactsForEvent(offenderId, convictionId, localDate)
-            .map(AttendanceService::attendancesFor)
-            .orElseThrow(() -> new NotFoundException(String.format(MSG_ATTENDANCES_NOT_FOUND, convictionId)));
-
-        return new Attendances(attendances);
+        return new Attendances(AttendanceService.attendancesFor(attendanceService.getContactsForEvent(offenderId, convictionId, localDate)));
     }
 
 }

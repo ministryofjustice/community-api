@@ -16,6 +16,7 @@ import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Before;
@@ -34,7 +35,7 @@ import uk.gov.justice.digital.delius.service.OffenderService;
 
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 @RunWith(MockitoJUnitRunner.class)
-public class AttendanceResourceAPITest {
+public class AttendanceResourceTest {
 
     private static final Long SOME_EVENT_ID = 12342L;
     private static final Long SOME_OFFENDER_ID = 2500343964L;
@@ -59,20 +60,24 @@ public class AttendanceResourceAPITest {
     }
 
     @Test
-    public void givenNoMatchingEventThenRespondWithStatusNotFound() {
+    public void givenNoMatchingEventThenRespondWithEmptyList() {
         final Long nonMatchingEventId = 99L;
-        final String expectedMsg = String.format(AttendanceResource.MSG_ATTENDANCES_NOT_FOUND, nonMatchingEventId);
 
         when(offenderService.offenderIdOfCrn(SOME_CRN)).thenReturn(Optional.of(SOME_OFFENDER_ID));
-        when(attendanceService.getContactsForEvent(eq(SOME_OFFENDER_ID), eq(nonMatchingEventId), any(LocalDate.class))).thenReturn(Optional.empty());
+        when(attendanceService.getContactsForEvent(eq(SOME_OFFENDER_ID), eq(nonMatchingEventId), any(LocalDate.class)))
+            .thenReturn(Collections.emptyList());
 
-        given()
+        final Attendances attendances = given()
             .when()
             .get(String.format(PATH_FORMAT, SOME_CRN, nonMatchingEventId))
             .then()
             .log().ifValidationFails()
-            .statusCode(HttpStatus.NOT_FOUND.value())
-            .body("developerMessage", containsString(expectedMsg));
+            .statusCode(HttpStatus.OK.value())
+            .extract()
+            .body()
+            .as(Attendances.class);
+
+        assertThat(attendances.getAttendances().stream()).isEmpty();
 
         verify(offenderService).offenderIdOfCrn(SOME_CRN);
         verify(attendanceService).getContactsForEvent(eq(SOME_OFFENDER_ID), eq(nonMatchingEventId), any(LocalDate.class));
@@ -108,7 +113,7 @@ public class AttendanceResourceAPITest {
 
         when(offenderService.offenderIdOfCrn(SOME_CRN)).thenReturn(Optional.of(SOME_OFFENDER_ID));
         when(attendanceService.getContactsForEvent(eq(SOME_OFFENDER_ID), eq(SOME_EVENT_ID), any(LocalDate.class)))
-            .thenReturn(Optional.of(contacts));
+            .thenReturn(contacts);
 
         // Act
         final Attendances actual = given()

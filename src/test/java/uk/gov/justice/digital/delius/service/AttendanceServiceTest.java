@@ -53,7 +53,6 @@ public class AttendanceServiceTest {
         verifyNoMoreInteractions(contactRepository);
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Test
     public void getAttendancesForEventMultipleAvailable() {
 
@@ -61,7 +60,7 @@ public class AttendanceServiceTest {
         when(contactRepository.findByOffenderAndEventIdEnforcement(eq(SOME_OFFENDER_ID), eq(SOME_EVENT_ID), any(LocalDate.class))).thenReturn(singletonList(contact));
 
         // Act
-        final List<Contact> contacts = attendanceService.getContactsForEvent(SOME_OFFENDER_ID, SOME_EVENT_ID, LocalDate.now()).get();
+        final List<Contact> contacts = attendanceService.getContactsForEvent(SOME_OFFENDER_ID, SOME_EVENT_ID, LocalDate.now());
 
         // Assert
         assertThat(contacts).hasSize(1);
