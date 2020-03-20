@@ -18,4 +18,5 @@ public class Sentence {
     private Long defaultLength;
     private Long effectiveLength;
     private Long lengthInDays;
+    private UnpaidWork unpaidWork;
 }

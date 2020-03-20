@@ -16,7 +16,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.Offence;
 
-import java.time.LocalDate;
 import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
@@ -75,14 +74,13 @@ public class OffendersResource_getOffenderConvictionsByCrn {
                 .get("/offenders/crn/X320741/convictions")
                 .then()
                 .statusCode(200)
-                .body("[2].sentence.unpaidWork.unpaidWork.minutesOrdered", equalTo(12*60))
-                .body("[2].sentence.unpaidWork.unpaidWork.minutesCompleted", equalTo(4*60))
-                .body("[2].sentence.unpaidWork.unpaidWork.appointments.total", equalTo(10))
-                .body("[2].sentence.unpaidWork.unpaidWork.appointments.attended", equalTo(4))
-                .body("[2].sentence.unpaidWork.unpaidWork.appointments.acceptableAbsences", equalTo(3))
-                .body("[2].sentence.unpaidWork.unpaidWork.appointments.unacceptableAbsences", equalTo(2))
-                .body("[2].sentence.unpaidWork.unpaidWork.appointments.noOutcomeRecorded", equalTo(1))
-                .body("[2].sentence.unpaidWork.unpaidWork.asOf", equalTo(LocalDate.now()));
+                .body("[2].sentence.unpaidWork.minutesOrdered", equalTo(3600))
+                .body("[2].sentence.unpaidWork.minutesCompleted", equalTo(360))
+                .body("[2].sentence.unpaidWork.appointments.total", equalTo(5))
+                .body("[2].sentence.unpaidWork.appointments.attended", equalTo(2))
+                .body("[2].sentence.unpaidWork.appointments.acceptableAbsences", equalTo(1))
+                .body("[2].sentence.unpaidWork.appointments.unacceptableAbsences", equalTo(1))
+                .body("[2].sentence.unpaidWork.appointments.noOutcomeRecorded", equalTo(1));
     }
 
     @Test

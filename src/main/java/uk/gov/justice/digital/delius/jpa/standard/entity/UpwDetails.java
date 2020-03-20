@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -62,6 +63,9 @@ public class UpwDetails {
     private Long lastUpdatedUserId;
     @Column(name = "LAST_UPDATED_DATETIME")
     private LocalDateTime lastUpdatedDatetime;
+    @OneToMany(mappedBy = "upwDetails")
+    private List<UpwAppointment> appointments;
+
 
 
 }
