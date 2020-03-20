@@ -13,13 +13,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.justice.digital.delius.data.api.*;
+import uk.gov.justice.digital.delius.data.api.Conviction;
+import uk.gov.justice.digital.delius.data.api.Offence;
 
+import java.time.LocalDate;
 import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
-import static java.util.function.Predicate.not;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -61,6 +63,26 @@ public class OffendersResource_getOffenderConvictionsByCrn {
         final var conviction = Stream.of(convictions).filter(Conviction::getActive).findAny().orElseThrow();
         final var offence = conviction.getOffences().stream().filter(Offence::getMainOffence).findAny().orElseThrow();
         assertThat(offence.getDetail().getCode()).isEqualTo("00102");
+    }
+
+    @Test
+    public void convictionsHaveAssociatedUnpaidWorkData() {
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/crn/X320741/convictions")
+                .then()
+                .statusCode(200)
+                .body("[2].sentence.unpaidWork.unpaidWork.minutesOrdered", equalTo(12*60))
+                .body("[2].sentence.unpaidWork.unpaidWork.minutesCompleted", equalTo(4*60))
+                .body("[2].sentence.unpaidWork.unpaidWork.appointments.total", equalTo(10))
+                .body("[2].sentence.unpaidWork.unpaidWork.appointments.attended", equalTo(4))
+                .body("[2].sentence.unpaidWork.unpaidWork.appointments.acceptableAbsences", equalTo(3))
+                .body("[2].sentence.unpaidWork.unpaidWork.appointments.unacceptableAbsences", equalTo(2))
+                .body("[2].sentence.unpaidWork.unpaidWork.appointments.noOutcomeRecorded", equalTo(1))
+                .body("[2].sentence.unpaidWork.unpaidWork.asOf", equalTo(LocalDate.now()));
     }
 
     @Test
