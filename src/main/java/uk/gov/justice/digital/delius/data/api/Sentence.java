@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,5 +19,6 @@ public class Sentence {
     private Long defaultLength;
     private Long effectiveLength;
     private Long lengthInDays;
+    @ApiModelProperty(value = "Unpaid Work to date associated with this sentence")
     private UnpaidWork unpaidWork;
 }
