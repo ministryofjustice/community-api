@@ -68,6 +68,9 @@ public class Disposal {
     @OneToMany(targetEntity = Requirement.class, mappedBy = "disposal")
     private List<Requirement> requirements;
 
+    @OneToOne(mappedBy = "disposal")
+    private UpwDetails unpaidWorkDetails;
+
     public boolean isSoftDeleted() {
         return this.softDeleted != 0L;
     }

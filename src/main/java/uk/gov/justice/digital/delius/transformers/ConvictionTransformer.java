@@ -4,9 +4,9 @@ import com.google.common.collect.ImmutableList;
 import lombok.val;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.Custody;
-import uk.gov.justice.digital.delius.data.api.CustodyRelatedKeyDates.CustodyRelatedKeyDatesBuilder;
-import uk.gov.justice.digital.delius.data.api.Offence;
 import uk.gov.justice.digital.delius.data.api.*;
+import uk.gov.justice.digital.delius.data.api.Offence;
+import uk.gov.justice.digital.delius.data.api.CustodyRelatedKeyDates.CustodyRelatedKeyDatesBuilder;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OrderManager;
@@ -17,11 +17,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.helpers.FluentHelper.not;
 import static uk.gov.justice.digital.delius.service.LookupSupplier.INITIAL_ORDER_ALLOCATION;
@@ -143,6 +145,39 @@ public class ConvictionTransformer {
                 .description(Optional.ofNullable(disposal.getDisposalType())
                         .map(DisposalType::getDescription)
                         .orElse(null))
+                .unpaidWork(Optional.ofNullable(disposal.getUnpaidWorkDetails())
+                        .map(this::unpaidWorkOf)
+                        .orElse(null))
+                .build();
+    }
+
+    private UnpaidWork unpaidWorkOf(UpwDetails upwDetails) {
+        return UnpaidWork.builder()
+                .minutesOrdered(upwDetails.getUpwLengthMinutes())
+                .minutesCompleted(upwDetails.getAppointments().stream()
+                        .filter(l -> Objects.nonNull(l.getMinutesCredited()))
+                        .mapToLong(UpwAppointment::getMinutesCredited)
+                        .sum()
+                )
+                .appointments(appointmentsOf(upwDetails.getAppointments()))
+                .build();
+    }
+
+    private Appointments appointmentsOf(List<UpwAppointment> appointments) {
+        return Appointments.builder()
+                .total((long) appointments.size())
+                .attended(appointments.stream()
+                        .filter(upwAppointment -> "Y".equals(upwAppointment.getAttended()))
+                        .count())
+                .acceptableAbsences(appointments.stream()
+                        .filter(upwAppointment -> "N".equals(upwAppointment.getAttended()) && "Y".equals(upwAppointment.getComplied()))
+                        .count())
+                .unacceptableAbsences(appointments.stream()
+                        .filter(upwAppointment -> "N".equals(upwAppointment.getAttended()) && "N".equals(upwAppointment.getComplied()))
+                        .count())
+                .noOutcomeRecorded(appointments.stream()
+                        .filter(upwAppointment -> isNull(upwAppointment.getAttended()) && isNull(upwAppointment.getComplied()))
+                        .count())
                 .build();
     }
 

@@ -9,14 +9,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.CourtCase;
 import uk.gov.justice.digital.delius.data.api.Institution;
+import uk.gov.justice.digital.delius.data.api.UnpaidWork;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 import uk.gov.justice.digital.delius.service.LookupSupplier;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -323,6 +326,69 @@ public class ConvictionTransformerTest {
         assertThat(event.getOrderManagers()).hasSize(1);
         assertThat(event.getOrderManagers().get(0).getAllocationReason().getCodeValue()).isEqualTo("IN1");
 
+    }
+
+    @Test
+    public void unpaidWorkMappedWherePresent() {
+        Event event = Event.builder()
+                .disposal(Disposal.builder()
+                        .unpaidWorkDetails(UpwDetails.builder()
+                                .upwLengthMinutes(120L)
+                                .appointments(Arrays.asList(
+                                        UpwAppointment.builder()
+                                                .attended("Y")
+                                                .complied("Y")
+                                                .minutesCredited(60L)
+                                        .build(),
+                                        UpwAppointment.builder()
+                                                .attended("Y")
+                                                .complied("Y")
+                                                .minutesCredited(10L)
+                                        .build(),
+                                        UpwAppointment.builder()
+                                                .attended("Y")
+                                                .complied("Y")
+                                                .minutesCredited(20L)
+                                        .build(),
+                                        UpwAppointment.builder()
+                                                .attended("N")
+                                                .complied("Y")
+                                                .build(),
+                                        UpwAppointment.builder()
+                                                .attended("N")
+                                                .complied("N")
+                                                .build(),
+                                        UpwAppointment.builder()
+                                                .attended(null)
+                                                .complied(null)
+                                                .build()
+                                        ))
+                                .build())
+                        .build())
+                .build();
+        UnpaidWork unpaidWork = transformer.convictionOf(event)
+                .getSentence()
+                .getUnpaidWork();
+
+        assertThat(unpaidWork).isNotNull();
+        assertThat(unpaidWork.getMinutesOrdered()).isEqualTo(120L);
+        assertThat(unpaidWork.getMinutesCompleted()).isEqualTo(90L);
+        assertThat(unpaidWork.getAppointments().getTotal()).isEqualTo(6);
+        assertThat(unpaidWork.getAppointments().getAcceptableAbsences()).isEqualTo(1);
+        assertThat(unpaidWork.getAppointments().getUnacceptableAbsences()).isEqualTo(1);
+        assertThat(unpaidWork.getAppointments().getNoOutcomeRecorded()).isEqualTo(1);
+    }
+
+    @Test
+    public void unpaidWorkIsNullWhereNonePresent() {
+        Event event = Event.builder()
+                .disposal(Disposal.builder()
+                        .unpaidWorkDetails(null)
+                        .build())
+                .build();
+        Conviction conviction = transformer.convictionOf(event);
+        UnpaidWork unpaidWork = conviction.getSentence().getUnpaidWork();
+        assertThat(unpaidWork).isNull();
     }
 
     @Nested
