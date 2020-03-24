@@ -341,6 +341,16 @@ public class ConvictionTransformerTest {
                                                 .minutesCredited(60L)
                                         .build(),
                                         UpwAppointment.builder()
+                                                .attended("Y")
+                                                .complied("Y")
+                                                .minutesCredited(10L)
+                                        .build(),
+                                        UpwAppointment.builder()
+                                                .attended("Y")
+                                                .complied("Y")
+                                                .minutesCredited(20L)
+                                        .build(),
+                                        UpwAppointment.builder()
                                                 .attended("N")
                                                 .complied("Y")
                                                 .build(),
@@ -362,8 +372,8 @@ public class ConvictionTransformerTest {
 
         assertThat(unpaidWork).isNotNull();
         assertThat(unpaidWork.getMinutesOrdered()).isEqualTo(120L);
-        assertThat(unpaidWork.getMinutesCompleted()).isEqualTo(60L);
-        assertThat(unpaidWork.getAppointments().getTotal()).isEqualTo(4);
+        assertThat(unpaidWork.getMinutesCompleted()).isEqualTo(90L);
+        assertThat(unpaidWork.getAppointments().getTotal()).isEqualTo(6);
         assertThat(unpaidWork.getAppointments().getAcceptableAbsences()).isEqualTo(1);
         assertThat(unpaidWork.getAppointments().getUnacceptableAbsences()).isEqualTo(1);
         assertThat(unpaidWork.getAppointments().getNoOutcomeRecorded()).isEqualTo(1);
