@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -154,9 +155,7 @@ public class ConvictionTransformer {
         return UnpaidWork.builder()
                 .minutesOrdered(upwDetails.getUpwLengthMinutes())
                 .minutesCompleted(upwDetails.getAppointments().stream()
-                        .peek(foo -> {
-
-                        })
+                        .filter(l -> Objects.nonNull(l.getMinutesCredited()))
                         .mapToLong(UpwAppointment::getMinutesCredited)
                         .sum()
                 )
