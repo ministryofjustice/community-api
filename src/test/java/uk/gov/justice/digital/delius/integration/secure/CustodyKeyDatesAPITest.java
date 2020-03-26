@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("dev-seed")
 @DirtiesContext
-@Disabled
+@Disabled("Disabled until CI memory issues are addressed")
 public class CustodyKeyDatesAPITest {
     private static final String OFFENDER_ID = "2500343964";
     private static final String CRN = "X320741";
