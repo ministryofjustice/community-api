@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.CourtCase;
@@ -15,6 +16,7 @@ import uk.gov.justice.digital.delius.data.api.OffenceDetail;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.service.ConvictionService.DuplicateConvictionsForBookingNumberException;
 import uk.gov.justice.digital.delius.transformers.*;
 
@@ -32,6 +34,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @Import({ConvictionService.class, ConvictionTransformer.class, MainOffenceTransformer.class, AdditionalOffenceTransformer.class, CourtAppearanceTransformer.class, CourtReportTransformer.class, CourtTransformer.class, InstitutionTransformer.class, CustodyKeyDateTransformer.class})
+@TestPropertySource(properties = "features.noms.update.keydates=true")
 public class ConvictionServiceTest {
 
     private static final Long ANY_OFFENDER_ID = 123L;
@@ -41,6 +44,12 @@ public class ConvictionServiceTest {
 
     @MockBean
     private EventRepository convictionRepository;
+
+    @MockBean
+    private OffenderRepository offenderRepository;
+
+    @MockBean
+    private ContactService contactService;
 
     @MockBean
     private LookupSupplier lookupSupplier;
