@@ -1,11 +1,25 @@
 package uk.gov.justice.digital.delius.integration.secure;
 
+import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.verify;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.applicationinsights.TelemetryClient;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
+import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,23 +39,11 @@ import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.UpdateCustodyBookingNumber;
 import uk.gov.justice.digital.delius.jwt.JwtAuthenticationHelper;
 
-import java.sql.Timestamp;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
-import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("dev-seed")
 @DirtiesContext
+@Disabled
 public class CustodyUpdateBookingNumberAPITest {
     private static final String NOMS_NUMBER = "G9542VP";
     private static final String OFFENDER_ID = "2500343964";

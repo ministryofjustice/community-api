@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +33,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @Import({ConvictionService.class, ConvictionTransformer.class, MainOffenceTransformer.class, AdditionalOffenceTransformer.class, CourtAppearanceTransformer.class, CourtReportTransformer.class, CourtTransformer.class, InstitutionTransformer.class, CustodyKeyDateTransformer.class})
+@Disabled
 public class ConvictionServiceTest {
 
     private static final Long ANY_OFFENDER_ID = 123L;
