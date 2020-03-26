@@ -2,11 +2,13 @@ package uk.gov.justice.digital.delius.integration.secure;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.digital.delius.jwt.JwtAuthenticationHelper;
@@ -40,6 +42,7 @@ public class RequirementsAPITest {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
+    @DisplayName("Known CRN and conviction ID returns full set of data")
     @Test
     public void getRequirementsByConvictionId_convictionsFound_returnsOk() {
 
@@ -57,7 +60,7 @@ public class RequirementsAPITest {
                 .when()
                 .get(String.format("/offenders/crn/%s/convictions/%s/requirements", "X320741", "2500295343"))
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.OK.value())
                 .body("requirements", hasSize(2))
                 .body("requirements[0].requirementId", equalTo(2500083652L))
                 .body("requirements[0].requirementTypeMainCategory.description", equalTo("Unpaid Work"))
@@ -71,6 +74,51 @@ public class RequirementsAPITest {
                 .body("requirements[1].requirementId", equalTo(2500007925L))
                 .body("requirements[1].adRequirementTypeMainCategory.description", equalTo("Court - Accredited Programme"))
                 .body("requirements[1].adRequirementTypeSubCategory.description", equalTo("ASRO"))
+        ;
+    }
+
+    @DisplayName("Unknown CRN gets a 404")
+    @Test
+    public void getRequirementsByUnknownCrn_returns404() {
+
+        var jwt = jwtAuthenticationHelper.createJwt(JwtAuthenticationHelper.JwtParameters.builder()
+            .username("APIUser")
+            .roles(List.of("ROLE_COMMUNITY"))
+            .scope(Arrays.asList("read", "write"))
+            .expiryTime(Duration.ofDays(1))
+            .build());
+
+        given()
+            .auth()
+            .oauth2(jwt)
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get(String.format("/offenders/crn/%s/convictions/%s/requirements", "XX?XX!", "2500295343"))
+            .then()
+            .statusCode(HttpStatus.NOT_FOUND.value())
+        ;
+    }
+
+    @DisplayName("Known CRN with non-matching conviction ID gives 200 with empty requirements list")
+    @Test
+    public void getRequirementsByConvictionId_crnFound_noConvictionsFound_returnsOk() {
+
+        var jwt = jwtAuthenticationHelper.createJwt(JwtAuthenticationHelper.JwtParameters.builder()
+            .username("APIUser")
+            .roles(List.of("ROLE_COMMUNITY"))
+            .scope(Arrays.asList("read", "write"))
+            .expiryTime(Duration.ofDays(1))
+            .build());
+
+        given()
+            .auth()
+            .oauth2(jwt)
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get(String.format("/offenders/crn/%s/convictions/%s/requirements", "X320741", "0"))
+            .then()
+            .statusCode(HttpStatus.OK.value())
+            .body("requirements", hasSize(0))
         ;
     }
 }
