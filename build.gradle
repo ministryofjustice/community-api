@@ -128,7 +128,6 @@ task copyAgent(type: Copy) {
 assemble.dependsOn copyAgent
 
 test {
-    useJUnitPlatform()
     timeout = Duration.ofMinutes(15)
     useJUnitPlatform ()
     testLogging {
