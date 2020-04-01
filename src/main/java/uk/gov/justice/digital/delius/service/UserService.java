@@ -119,6 +119,17 @@ public class UserService {
                         .build());
     }
 
+    @Transactional
+    public Optional<UserAreas> getUserAreas(final String username) {
+        final var userWithAreas = userRepositoryWrapper.getUser(username);
+        return ldapRepository.getDeliusUser(username).map(user ->
+                UserAreas
+                        .builder()
+                        .homeProbationArea(user.getUserHomeArea())
+                        .probationAreas(userWithAreas.getProbationAreas().stream().map(ProbationArea::getCode).collect(toList()))
+                        .build());
+    }
+
     public boolean authenticateUser(final String user, final String password) {
         return ldapRepository.authenticateUser(user, password);
     }

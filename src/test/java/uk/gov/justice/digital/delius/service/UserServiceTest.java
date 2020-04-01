@@ -14,6 +14,7 @@ import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.UserDetails;
 import uk.gov.justice.digital.delius.data.api.UserRole;
 import uk.gov.justice.digital.delius.jpa.national.entity.Exclusion;
+import uk.gov.justice.digital.delius.jpa.national.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.national.entity.Restriction;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
@@ -409,5 +410,42 @@ public class UserServiceTest {
                         .enabled(true)
                         .username("rocky.balboa")
                         .build());
+    }
+    @Test
+    public void userAreasPopulatedFromUserAndLDAP() {
+        when(ldapRepository.getDeliusUser("john.bean")).thenReturn(
+                Optional.of(NDeliusUser
+                        .builder()
+                        .givenname("John")
+                        .sn("Bean")
+                        .mail("john.bean@justice.gov.uk")
+                        .userHomeArea("N02")
+                        .roles(ImmutableList.of(
+                                NDeliusRole
+                                        .builder()
+                                        .cn("ROLE1")
+                                        .build()))
+                        .build()));
+        when(userRepositoryWrapper.getUser("john.bean")).thenReturn(
+                User
+                        .builder()
+                        .probationAreas(List.of(
+                                ProbationArea
+                                        .builder()
+                                        .code("N01")
+                                        .build(),
+                                ProbationArea
+                                        .builder()
+                                        .code("N02")
+                                        .build()
+
+                        ))
+                        .build()
+        );
+
+        final var userAreas = userService.getUserAreas("john.bean");
+
+        assertThat(userAreas.orElseThrow().getHomeProbationArea()).isEqualTo("N02");
+        assertThat(userAreas.orElseThrow().getProbationAreas()).containsExactlyInAnyOrder("N01", "N02");
     }
 }
