@@ -148,6 +148,7 @@ public class ConvictionTransformer {
                 .unpaidWork(Optional.ofNullable(disposal.getUnpaidWorkDetails())
                         .map(this::unpaidWorkOf)
                         .orElse(null))
+                .startDate(disposal.getStartDate())
                 .build();
     }
 
