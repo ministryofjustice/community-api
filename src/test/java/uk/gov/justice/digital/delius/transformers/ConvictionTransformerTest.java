@@ -391,6 +391,17 @@ public class ConvictionTransformerTest {
         assertThat(unpaidWork).isNull();
     }
 
+    @Test
+    public void sentenceStartDateCopiedWhenPresent() {
+        Event event = Event.builder()
+                .disposal(Disposal.builder()
+                        .startDate(LocalDate.of(2020, 2, 22))
+                        .build())
+                .build();
+        final var conviction = transformer.convictionOf(event);
+        assertThat(conviction.getSentence().getStartDate()).isEqualTo(LocalDate.of(2020, 2, 22));
+    }
+
     @Nested
     class CustodyRelatedKeyDatesOf {
         @Test

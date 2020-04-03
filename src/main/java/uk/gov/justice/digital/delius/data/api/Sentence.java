@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -21,4 +23,6 @@ public class Sentence {
     private Long lengthInDays;
     @ApiModelProperty(value = "Unpaid Work to date associated with this sentence")
     private UnpaidWork unpaidWork;
+    @ApiModelProperty(value = "Date sentence started")
+    private LocalDate startDate;
 }
