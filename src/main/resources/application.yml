@@ -89,3 +89,4 @@ features:
       custody: false
       booking.number: false
       keydates: false
+      noms.number: false
