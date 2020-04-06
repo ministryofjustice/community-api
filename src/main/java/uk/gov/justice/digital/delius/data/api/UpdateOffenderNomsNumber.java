@@ -13,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateOffenderNomsNumber {
-    @ApiModelProperty(value = "NOMS number to be set on the conviction. AKA offenderNo", example = "G5555TT")
+    @ApiModelProperty(value = "NOMS number to be set on the offender. AKA offenderNo", example = "G5555TT")
     @NotBlank(message = "Missing a NOMS number")
     private String nomsNumber;
 }

@@ -18,8 +18,9 @@ public class OffenderIdentifierService {
     private final OffenderRepository offenderRepository;
 
     public OffenderIdentifierService(
-            @Value("${features.noms.update.noms.number}")
-                    Boolean updateNomsNumberFeatureSwitch, OffenderTransformer offenderTransformer, OffenderRepository offenderRepository) {
+            @Value("${features.noms.update.noms.number}") Boolean updateNomsNumberFeatureSwitch,
+            OffenderTransformer offenderTransformer,
+            OffenderRepository offenderRepository) {
         this.updateNomsNumberFeatureSwitch = updateNomsNumberFeatureSwitch;
         this.offenderTransformer = offenderTransformer;
         this.offenderRepository = offenderRepository;
