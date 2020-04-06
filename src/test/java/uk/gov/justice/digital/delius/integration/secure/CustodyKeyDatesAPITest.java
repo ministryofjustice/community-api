@@ -69,6 +69,7 @@ public class CustodyKeyDatesAPITest {
                 new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
         //noinspection SqlWithoutWhere
         jdbcTemplate.execute("DELETE FROM KEY_DATE");
+        //noinspection SqlWithoutWhere
         jdbcTemplate.execute("DELETE FROM CONTACT");
     }
 
@@ -761,6 +762,7 @@ public class CustodyKeyDatesAPITest {
             assertThat(custodyJson.getString("keyDates.expectedPrisonOffenderManagerHandoverStartDate")).isEqualTo("2030-01-08");
             assertThat(custodyJson.getString("keyDates.expectedPrisonOffenderManagerHandoverDate")).isEqualTo("2030-01-09");
 
+            //noinspection SqlWithoutWhere
             jdbcTemplate.execute("DELETE FROM CONTACT");
 
 

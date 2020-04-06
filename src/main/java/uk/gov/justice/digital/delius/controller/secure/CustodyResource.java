@@ -5,10 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.justice.digital.delius.data.api.Custody;
-import uk.gov.justice.digital.delius.data.api.UpdateCustody;
-import uk.gov.justice.digital.delius.data.api.UpdateCustodyBookingNumber;
+import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.service.CustodyService;
+import uk.gov.justice.digital.delius.service.OffenderIdentifierService;
 
 import javax.validation.Valid;
 
@@ -19,9 +18,11 @@ import javax.validation.Valid;
 @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
 public class CustodyResource {
     private final CustodyService custodyService;
+    private final OffenderIdentifierService offenderIdentifierService;
 
-    public CustodyResource(CustodyService custodyService) {
+    public CustodyResource(CustodyService custodyService, OffenderIdentifierService offenderIdentifierService) {
         this.custodyService = custodyService;
+        this.offenderIdentifierService = offenderIdentifierService;
     }
 
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/custody/bookingNumber/{bookingNumber}", method = RequestMethod.PUT, consumes = "application/json")
@@ -54,6 +55,20 @@ public class CustodyResource {
         log.info("Call to updateCustodyBookingNumber for {}", nomsNumber);
 
         return custodyService.updateCustodyBookingNumber(nomsNumber, updateCustodyBookingNumber);
+    }
+
+    @RequestMapping(value = "offenders/crn/{crn}/nomsNumber", method = RequestMethod.PUT, consumes = "application/json")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "The offender record was updated", response = IDs.class),
+            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 404, message = "The requested offender was not found")
+    })
+    @ApiOperation(value = "Updates the offender record with the NOMS number in UpdateOffenderNomsNumber")
+    public IDs updateOffenderNomsNumber(final @PathVariable String crn,
+                                              final @RequestBody @Valid UpdateOffenderNomsNumber updateOffenderNomsNumber) {
+        log.info("Call to updateOffenderNomsNumber for {}", crn);
+
+        return offenderIdentifierService.updateNomsNumber(crn, updateOffenderNomsNumber);
     }
 
 

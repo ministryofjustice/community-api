@@ -7,9 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
-import uk.gov.justice.digital.delius.data.api.Custody;
-import uk.gov.justice.digital.delius.data.api.Institution;
-import uk.gov.justice.digital.delius.data.api.UpdateCustody;
+import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.service.CustodyService;
 import uk.gov.justice.digital.delius.service.OffenderIdentifierService;
 
@@ -22,11 +20,11 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-public class CustodyController_updateCustodyTest {
+public class CustodyController_updateNomsNumberTest {
 
     private CustodyService custodyService = mock(CustodyService.class);
     private OffenderIdentifierService offenderIdentifierService = mock(OffenderIdentifierService.class);
-    private ArgumentCaptor<UpdateCustody> updateCustodyArgumentCaptor = ArgumentCaptor.forClass(UpdateCustody.class);
+    private ArgumentCaptor<UpdateOffenderNomsNumber> updateOffenderNomsNumberArgumentCaptor = ArgumentCaptor.forClass(UpdateOffenderNomsNumber.class);
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -37,79 +35,75 @@ public class CustodyController_updateCustodyTest {
                 new SecureControllerAdvice()
         );
 
-        when(custodyService.updateCustody(anyString(), anyString(), any())).thenReturn(Custody.builder().build());
+        when(offenderIdentifierService.updateNomsNumber(anyString(), any())).thenReturn(IDs.builder().build());
     }
 
     @Test
-    public void requestMissingPrisonCode_returnsBadRequest() throws JsonProcessingException {
+    public void requestMissingNomsNumber_returnsBadRequest() throws JsonProcessingException {
         given()
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(json(createUpdateCustodyManagerOf(null)))
+                .body(json(createUpdateOffenderNomsNumberOf(null)))
                 .when()
-                .put(String.format("/secure/offenders/nomsNumber/%s/custody/bookingNumber/%s", "G9542VP", "44463B"))
+                .put("/secure/offenders/crn/X12345/nomsNumber")
                 .then()
                 .statusCode(400)
-                .body("developerMessage", containsString("NOMS prison institution code"));
+                .body("developerMessage", containsString("Missing a NOMS number"));
     }
 
     @Test
     public void requestAllPresent_returnsOK() throws JsonProcessingException {
         given()
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(json(createUpdateCustodyManagerOf("MDI")))
+                .body(json(createUpdateOffenderNomsNumberOf("G5555TT")))
                 .when()
-                .put(String.format("/secure/offenders/nomsNumber/%s/custody/bookingNumber/%s", "G9542VP", "44463B"))
+                .put("/secure/offenders/crn/X12345/nomsNumber")
                 .then()
                 .statusCode(200);
     }
 
     @Test
-    public void requestReturnsUpdatedCustody() throws JsonProcessingException {
-        when(custodyService.updateCustody(anyString(), anyString(), any())).thenReturn(Custody
+    public void requestReturnsUpdatedOffenderIDs() throws JsonProcessingException {
+        when(offenderIdentifierService.updateNomsNumber(anyString(), any())).thenReturn(IDs
                 .builder()
-                .institution(Institution
-                        .builder()
-                        .nomsPrisonInstitutionCode("MDI")
-                        .build())
-                .bookingNumber("1234")
+                .nomsNumber("G5555TT")
+                .crn("X12345")
                 .build());
 
         given()
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(json(createUpdateCustodyManagerOf("MDI")))
+                .body(json(createUpdateOffenderNomsNumberOf("G5555TT")))
                 .when()
-                .put(String.format("/secure/offenders/nomsNumber/%s/custody/bookingNumber/%s", "G9542VP", "44463B"))
+                .put("/secure/offenders/crn/X12345/nomsNumber")
                 .then()
                 .statusCode(200)
-                .body("bookingNumber", equalTo("1234"))
-                .body("institution.nomsPrisonInstitutionCode", equalTo("MDI"));
+                .body("nomsNumber", equalTo("G5555TT"))
+                .body("crn", equalTo("X12345"));
     }
 
     @Test
     public void requestWillCallUpdateCustodyService() throws JsonProcessingException {
         given()
                 .contentType(APPLICATION_JSON_VALUE)
-                .body(json(createUpdateCustodyManagerOf("MDI")))
+                .body(json(createUpdateOffenderNomsNumberOf("G5555TT")))
                 .when()
-                .put(String.format("/secure/offenders/nomsNumber/%s/custody/bookingNumber/%s", "G9542VP", "44463B"))
+                .put("/secure/offenders/crn/X12345/nomsNumber")
                 .then()
                 .statusCode(200);
 
 
-        verify(custodyService).updateCustody(eq("G9542VP"), eq("44463B"), updateCustodyArgumentCaptor.capture());
-        assertThat(updateCustodyArgumentCaptor.getValue().getNomsPrisonInstitutionCode()).isEqualTo("MDI");
+        verify(offenderIdentifierService).updateNomsNumber(eq("X12345"), updateOffenderNomsNumberArgumentCaptor.capture());
+        assertThat(updateOffenderNomsNumberArgumentCaptor.getValue().getNomsNumber()).isEqualTo("G5555TT");
     }
 
-    private UpdateCustody createUpdateCustodyManagerOf(String prisonCode) {
-        return UpdateCustody
+    private UpdateOffenderNomsNumber createUpdateOffenderNomsNumberOf(String nomsNumber) {
+        return UpdateOffenderNomsNumber
                 .builder()
-                .nomsPrisonInstitutionCode(prisonCode)
+                .nomsNumber(nomsNumber)
                 .build();
     }
 
-    private String json(UpdateCustody custody) throws JsonProcessingException {
+    private String json(UpdateOffenderNomsNumber custody) throws JsonProcessingException {
         return objectMapper.writeValueAsString(custody);
     }
-
 
 }
