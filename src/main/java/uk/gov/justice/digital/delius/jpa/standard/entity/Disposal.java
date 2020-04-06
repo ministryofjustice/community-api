@@ -59,6 +59,10 @@ public class Disposal {
     @OneToOne(mappedBy = "disposal")
     private Custody custody;
 
+    @ManyToOne
+    @JoinColumn(name = "DISPOSAL_TERMINATION_REASON_ID")
+    private StandardReference terminationReason;
+
     @Column(name = "TERMINATION_DATE")
     private LocalDate terminationDate;
 
