@@ -1,8 +1,6 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import com.google.common.collect.ImmutableList;
-import javax.persistence.Column;
-import javax.persistence.Id;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
