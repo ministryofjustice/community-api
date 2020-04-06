@@ -149,6 +149,10 @@ public class ConvictionTransformer {
                         .map(this::unpaidWorkOf)
                         .orElse(null))
                 .startDate(disposal.getStartDate())
+                .terminationDate(disposal.getTerminationDate())
+                .terminationReason(Optional.ofNullable(disposal.getTerminationReason())
+                        .map(StandardReference::getCodeDescription)
+                        .orElse(null))
                 .build();
     }
 
@@ -222,7 +226,7 @@ public class ConvictionTransformer {
                 .rowVersion(1L)
                 .softDeleted(0L)
                 .convictionDate(courtCase.getConvictionDate())
-                .inBreach(0L) 
+                .inBreach(0L)
                 .eventNumber(eventNumber)
                 .createdByUserId(lookupSupplier.userSupplier().get().getUserId())
                 .createdDatetime(LocalDateTime.now())

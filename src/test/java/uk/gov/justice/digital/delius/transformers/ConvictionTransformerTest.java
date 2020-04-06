@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import com.google.common.collect.ImmutableList;
+import javax.persistence.Column;
+import javax.persistence.Id;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -400,6 +402,26 @@ public class ConvictionTransformerTest {
                 .build();
         final var conviction = transformer.convictionOf(event);
         assertThat(conviction.getSentence().getStartDate()).isEqualTo(LocalDate.of(2020, 2, 22));
+    }
+
+    @Test
+    public void sentenceTerminationDetailsCopiedWhenPresent() {
+
+        final StandardReference standardReference = StandardReference.builder()
+                                                    .standardReferenceListId(3758L)
+                                                    .codeValue("DT02")
+                                                    .codeDescription("Auto Terminated")
+                                                    .build();
+
+        Event event = Event.builder()
+            .disposal(Disposal.builder()
+                .terminationDate(LocalDate.of(2020, 2, 22))
+                .terminationReason(standardReference)
+                .build())
+            .build();
+        final var conviction = transformer.convictionOf(event);
+        assertThat(conviction.getSentence().getTerminationDate()).isEqualTo(LocalDate.of(2020, 2, 22));
+        assertThat(conviction.getSentence().getTerminationReason()).isEqualTo("Auto Terminated");
     }
 
     @Nested

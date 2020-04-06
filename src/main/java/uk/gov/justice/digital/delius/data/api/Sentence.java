@@ -25,4 +25,6 @@ public class Sentence {
     private UnpaidWork unpaidWork;
     @ApiModelProperty(value = "Date sentence started")
     private LocalDate startDate;
+    private LocalDate terminationDate;
+    private String terminationReason;
 }
