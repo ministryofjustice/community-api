@@ -51,6 +51,18 @@ public class CustodyController_updateNomsNumberTest {
     }
 
     @Test
+    public void requestBlankNomsNumber_returnsBadRequest() throws JsonProcessingException {
+        given()
+                .contentType(APPLICATION_JSON_VALUE)
+                .body(json(createUpdateOffenderNomsNumberOf("")))
+                .when()
+                .put("/secure/offenders/crn/X12345/nomsNumber")
+                .then()
+                .statusCode(400)
+                .body("developerMessage", containsString("Missing a NOMS number"));
+    }
+
+    @Test
     public void requestAllPresent_returnsOK() throws JsonProcessingException {
         given()
                 .contentType(APPLICATION_JSON_VALUE)
