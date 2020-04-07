@@ -34,9 +34,8 @@ public class OffenderIdentifierService {
         if (updateNomsNumberFeatureSwitch) {
             // TODO replace with real update
             return offenderTransformer.idsOf(offender).toBuilder().nomsNumber(updateOffenderNomsNumber.getNomsNumber()).build();
-        } else {
-            log.warn("Update NOMS number will be ignored, this feature is switched off ");
-            return offenderTransformer.idsOf(offender);
         }
+        log.warn("Update NOMS number will be ignored, this feature is switched off ");
+        return offenderTransformer.idsOf(offender);
     }
 }
