@@ -71,7 +71,7 @@ public class OffenderTransformer {
                 .build();
     }
 
-    private IDs idsOf(Offender offender) {
+    public IDs idsOf(Offender offender) {
         return IDs.builder()
                 .crn(offender.getCrn())
                 .croNumber(offender.getCroNumber())

@@ -6,17 +6,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+
 @Data
-@Builder(toBuilder = true)
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class IDs {
-    @ApiModelProperty(required = true)
-    private String crn;
-    private String pncNumber;
-    private String croNumber;
-    private String niNumber;
+public class UpdateOffenderNomsNumber {
+    @ApiModelProperty(value = "NOMS number to be set on the offender. AKA offenderNo", example = "G5555TT")
+    @NotBlank(message = "Missing a NOMS number")
     private String nomsNumber;
-    private String immigrationNumber;
-    private String mostRecentPrisonerNumber;
 }

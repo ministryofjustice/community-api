@@ -15,6 +15,7 @@ import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
 import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustodyBookingNumber;
 import uk.gov.justice.digital.delius.service.CustodyService;
+import uk.gov.justice.digital.delius.service.OffenderIdentifierService;
 
 import java.time.LocalDate;
 
@@ -30,6 +31,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class CustodyController_updateCustodyBookingNumberTest {
 
     private CustodyService custodyService = mock(CustodyService.class);
+    private OffenderIdentifierService offenderIdentifierService = mock(OffenderIdentifierService.class);
     private ArgumentCaptor<UpdateCustodyBookingNumber> updateCustodyArgumentCaptor = ArgumentCaptor.forClass(UpdateCustodyBookingNumber.class);
 
     private ObjectMapper objectMapper = new ObjectMapper()
@@ -43,7 +45,7 @@ public class CustodyController_updateCustodyBookingNumberTest {
     @Before
     public void setup() {
         RestAssuredMockMvc.standaloneSetup(
-                new CustodyResource(custodyService),
+                new CustodyResource(custodyService, offenderIdentifierService),
                 new SecureControllerAdvice()
         );
 
