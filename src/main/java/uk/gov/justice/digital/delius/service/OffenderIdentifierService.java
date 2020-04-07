@@ -16,14 +16,17 @@ public class OffenderIdentifierService {
     private final boolean updateNomsNumberFeatureSwitch;
     private final OffenderTransformer offenderTransformer;
     private final OffenderRepository offenderRepository;
+    private final SpgNotificationService spgNotificationService;
 
     public OffenderIdentifierService(
             @Value("${features.noms.update.noms.number}") Boolean updateNomsNumberFeatureSwitch,
             OffenderTransformer offenderTransformer,
-            OffenderRepository offenderRepository) {
+            OffenderRepository offenderRepository,
+            SpgNotificationService spgNotificationService) {
         this.updateNomsNumberFeatureSwitch = updateNomsNumberFeatureSwitch;
         this.offenderTransformer = offenderTransformer;
         this.offenderRepository = offenderRepository;
+        this.spgNotificationService = spgNotificationService;
         log.info("NOMIS update NOMS number feature is {}", this.updateNomsNumberFeatureSwitch ? "ON" : "OFF");
     }
 
@@ -32,10 +35,14 @@ public class OffenderIdentifierService {
         final var offender = offenderRepository.findByCrn(crn).orElseThrow(() -> new NotFoundException(String
                 .format("Offender with crn %s not found ", crn)));
         if (updateNomsNumberFeatureSwitch) {
-            // TODO replace with real update
-            return offenderTransformer.idsOf(offender).toBuilder().nomsNumber(updateOffenderNomsNumber.getNomsNumber()).build();
+            if (!updateOffenderNomsNumber.getNomsNumber().equals(offender.getNomsNumber())) {
+                offender.setNomsNumber(updateOffenderNomsNumber.getNomsNumber());
+                offenderRepository.save(offender);
+                spgNotificationService.notifyUpdateOfOffender(offender);
+            }
+        } else {
+            log.warn("Update NOMS number will be ignored, this feature is switched off ");
         }
-        log.warn("Update NOMS number will be ignored, this feature is switched off ");
         return offenderTransformer.idsOf(offender);
     }
 }

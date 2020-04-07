@@ -85,6 +85,10 @@ public class SpgNotificationService {
         createNotificationsFor(UPDATE_CUSTODY, offender.getOffenderId(), event.getEventId());
     }
 
+    public void notifyUpdateOfOffender(Offender offender) {
+        createNotificationsFor(UPDATE_OFFENDER, offender.getOffenderId());
+    }
+
     private void createNotificationsFor(NotificationEvents notificationEvent, Long offenderId) {
         createNotificationsFor(notificationEvent, offenderId, offenderId);
     }
