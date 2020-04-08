@@ -56,27 +56,37 @@ public class OffenderIdentifierService {
     private void doUpdateNomsNumber(String nomsNumber, Offender offender) {
         offenderRepository.findAllByNomsNumber(nomsNumber).forEach(duplicateOffender -> {
             duplicateOffender.setNomsNumber(null);
-            duplicateOffender.getAdditionalIdentifiers().add(AdditionalIdentifier
+            final var additionalIdentifier = AdditionalIdentifier
                     .builder()
                     .identifier(nomsNumber)
                     .offender(offender)
                     .identifierName(referenceDataService.duplicateNomsNumberAdditionalIdentifier())
-                    .build());
+                    .build();
+            duplicateOffender.getAdditionalIdentifiers().add(additionalIdentifier);
             // required to force order of updates that could break NOMS_NUMBER unique constraint
             offenderRepository.flush();
             spgNotificationService.notifyUpdateOfOffender(duplicateOffender);
+            spgNotificationService.notifyInsertOfOffenderAdditionalIdentifier(duplicateOffender, additionalIdentifier);
         });
 
-        Optional.ofNullable(offender.getNomsNumber()).ifPresent(
-                existingNomsNumber -> offender.getAdditionalIdentifiers().add(AdditionalIdentifier
-                        .builder()
-                        .identifier(existingNomsNumber)
-                        .offender(offender)
-                        .identifierName(referenceDataService.formerNomsNumberAdditionalIdentifier())
-                        .build())
+        var maybeExistingNomsNumber = Optional.ofNullable(offender.getNomsNumber());
+        offender.setNomsNumber(nomsNumber);
+        maybeExistingNomsNumber.ifPresent(
+                existingNomsNumber -> {
+                    final var additionalIdentifier = AdditionalIdentifier
+                            .builder()
+                            .identifier(existingNomsNumber)
+                            .offender(offender)
+                            .identifierName(referenceDataService.formerNomsNumberAdditionalIdentifier())
+                            .build();
+                    offender.getAdditionalIdentifiers().add(additionalIdentifier);
+                    // force additional identifier to generate ID
+                    offenderRepository.flush();
+                    spgNotificationService
+                            .notifyInsertOfOffenderAdditionalIdentifier(offender, additionalIdentifier);
+                }
 
         );
-        offender.setNomsNumber(nomsNumber);
         spgNotificationService.notifyUpdateOfOffender(offender);
     }
 }
