@@ -244,4 +244,35 @@ public class ReferenceDataServiceTest {
 
         verify(standardReferenceRepository).findByCodeAndCodeSetName("D", "THROUGHCARE STATUS");
     }
+
+    @Test
+    public void  duplicateNomsNumberAdditionalIdentifier_WillUseTheCorrectDataSet() {
+        when(standardReferenceRepository.findByCodeAndCodeSetName(anyString(), anyString())).thenReturn(Optional.of(StandardReference
+                .builder()
+                .codeValue("DNOMS")
+                .codeDescription("Duplicate NOMIS Number")
+                .build()));
+
+        final var identifier = referenceDataService.duplicateNomsNumberAdditionalIdentifier();
+
+        assertThat(identifier.getCodeValue()).isEqualTo("DNOMS");
+        assertThat(identifier.getCodeDescription()).isEqualTo("Duplicate NOMIS Number");
+
+        verify(standardReferenceRepository).findByCodeAndCodeSetName("DNOMS", "ADDITIONAL IDENTIFIER TYPE");
+    }
+    @Test
+    public void  formerNomsNumberAdditionalIdentifier_WillUseTheCorrectDataSet() {
+        when(standardReferenceRepository.findByCodeAndCodeSetName(anyString(), anyString())).thenReturn(Optional.of(StandardReference
+                .builder()
+                .codeValue("XNOMS")
+                .codeDescription("Former NOMS Number")
+                .build()));
+
+        final var identifier = referenceDataService.formerNomsNumberAdditionalIdentifier();
+
+        assertThat(identifier.getCodeValue()).isEqualTo("XNOMS");
+        assertThat(identifier.getCodeDescription()).isEqualTo("Former NOMS Number");
+
+        verify(standardReferenceRepository).findByCodeAndCodeSetName("XNOMS", "ADDITIONAL IDENTIFIER TYPE");
+    }
 }

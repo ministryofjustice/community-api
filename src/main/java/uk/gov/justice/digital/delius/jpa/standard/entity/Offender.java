@@ -205,4 +205,8 @@ public class Offender {
     // Only select PRISON_OFFENDER_MANAGER rows where the ACTIVE_FLAG = 1 AND SOFT_DELETED= != 1
     @Where(clause = "ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
     private List<PrisonOffenderManager> prisonOffenderManagers;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "OFFENDER_ID")
+    private List<AdditionalIdentifier> additionalIdentifiers;
 }
