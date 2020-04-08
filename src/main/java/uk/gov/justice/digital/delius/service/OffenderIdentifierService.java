@@ -12,6 +12,8 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 
+import java.util.Optional;
+
 @Service
 @Slf4j
 public class OffenderIdentifierService {
@@ -64,6 +66,16 @@ public class OffenderIdentifierService {
             offenderRepository.flush();
             spgNotificationService.notifyUpdateOfOffender(duplicateOffender);
         });
+
+        Optional.ofNullable(offender.getNomsNumber()).ifPresent(
+                existingNomsNumber -> offender.getAdditionalIdentifiers().add(AdditionalIdentifier
+                        .builder()
+                        .identifier(existingNomsNumber)
+                        .offender(offender)
+                        .identifierName(referenceDataService.formerNomsNumberAdditionalIdentifier())
+                        .build())
+
+        );
         offender.setNomsNumber(nomsNumber);
         spgNotificationService.notifyUpdateOfOffender(offender);
     }

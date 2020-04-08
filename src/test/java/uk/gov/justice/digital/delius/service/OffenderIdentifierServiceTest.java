@@ -117,7 +117,7 @@ class OffenderIdentifierServiceTest {
 
             @Test
             void willNotifySPGOfOffenderChanges() {
-                var offender = Offender
+                final var offender = Offender
                         .builder()
                         .crn("X12345")
                         .pncNumber("2018/0012345X")
@@ -138,7 +138,7 @@ class OffenderIdentifierServiceTest {
 
             @Test
             void willNotNotifySPG() {
-                final Offender offender = Offender
+                final var offender = Offender
                         .builder()
                         .crn("X12345")
                         .pncNumber("2018/0012345X")
@@ -192,7 +192,7 @@ class OffenderIdentifierServiceTest {
                 verify(spgNotificationService, times(2)).notifyUpdateOfOffender(offenderCaptor.capture());
 
                 // can only test this via spg call since this is a side affect
-                final Offender duplicateOffender = offenderCaptor.getAllValues().get(0);
+                final var duplicateOffender = offenderCaptor.getAllValues().get(0);
                 assertThat(duplicateOffender.getOffenderId()).isEqualTo(88L);
                 assertThat(duplicateOffender.getNomsNumber()).isNull();
                 assertThat(duplicateOffender.getAdditionalIdentifiers()).hasSize(1);
@@ -202,8 +202,50 @@ class OffenderIdentifierServiceTest {
             @Test
             void willNotifySPGForDuplicateOffender() {
                 verify(spgNotificationService, times(2)).notifyUpdateOfOffender(offenderCaptor.capture());
-                final Offender duplicateOffender = offenderCaptor.getAllValues().get(0);
+                final var duplicateOffender = offenderCaptor.getAllValues().get(0);
                 assertThat(duplicateOffender.getOffenderId()).isEqualTo(88L);
+            }
+        }
+        @Nested
+        class AnotherNOMSAlreadyAssignedToOffender {
+            private IDs iDs;
+
+            @BeforeEach
+            void setUp() {
+                when(offenderRepository.findAllByNomsNumber(any())).thenReturn(List.of());
+                when(offenderRepository.findByCrn("X12345")).thenReturn(Optional.of(
+                        Offender
+                                .builder()
+                                .offenderId(99L)
+                                .crn("X12345")
+                                .nomsNumber("A7777TT")
+                                .additionalIdentifiers(new ArrayList<>())
+                                .build()
+                ));
+                when(referenceDataService.formerNomsNumberAdditionalIdentifier()).thenReturn(StandardReference
+                        .builder()
+                        .codeValue("XNOMS")
+                        .codeDescription("Former NOMIS Number")
+                        .build());
+                iDs = service.updateNomsNumber("X12345", UpdateOffenderNomsNumber.builder().nomsNumber("G5555TT").build());
+            }
+
+            @Test
+            void willUpdateOffender() {
+                assertThat(iDs.getNomsNumber()).isEqualTo("G5555TT");
+            }
+
+            @Test
+            void willAddAdditionalIdentifier() {
+                verify(spgNotificationService).notifyUpdateOfOffender(offenderCaptor.capture());
+
+                // can only test this via spg call since this is a side affect
+                final var offender = offenderCaptor.getAllValues().get(0);
+                assertThat(offender.getOffenderId()).isEqualTo(99L);
+                assertThat(offender.getNomsNumber()).isEqualTo("G5555TT");
+                assertThat(offender.getAdditionalIdentifiers()).hasSize(1);
+                assertThat(offender.getAdditionalIdentifiers().get(0).getIdentifierName().getCodeValue()).isEqualTo("XNOMS");
+                assertThat(offender.getAdditionalIdentifiers().get(0).getIdentifier()).isEqualTo("A7777TT");
             }
         }
     }

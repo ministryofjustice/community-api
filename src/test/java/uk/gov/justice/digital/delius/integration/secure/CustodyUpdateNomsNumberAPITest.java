@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("dev-seed")
 @DirtiesContext
-@Disabled("Disabled until CI memory issues are addressed")
+@Disabled("Disabled until CI memory issues are addressed see https://dsdmoj.atlassian.net/browse/PIC-368")
 public class CustodyUpdateNomsNumberAPITest {
 
     @Autowired
@@ -101,6 +101,20 @@ public class CustodyUpdateNomsNumberAPITest {
         assertThat(additionalIdentifier.get("IDENTIFIER")).isEqualTo("G9542VP");
         assertThat(additionalIdentifier.get("CODE_VALUE")).isEqualTo("DNOMS");
         assertThat(additionalIdentifier.get("NOMS_NUMBER")).isNull();
+
+        // AND formar NOMS number will moved to an additional identifier
+        final var newAdditionalIdentifier = jdbcTemplate.query(
+                "SELECT ad.IDENTIFIER, o.NOMS_NUMBER, srl.CODE_VALUE from ADDITIONAL_IDENTIFIER ad, OFFENDER o, R_STANDARD_REFERENCE_LIST srl  where o.CRN = ? and o.OFFENDER_ID = ad.OFFENDER_ID and ad.IDENTIFIER_NAME_ID = srl.STANDARD_REFERENCE_LIST_ID order by ad.CREATED_DATETIME desc",
+                List.of("CRN11").toArray(),
+                new ColumnMapRowMapper())
+                .stream()
+                .findFirst()
+                .orElseThrow();
+
+
+        // from initial seed data
+        assertThat(newAdditionalIdentifier.get("IDENTIFIER")).isEqualTo("G0560UO");
+        assertThat(newAdditionalIdentifier.get("CODE_VALUE")).isEqualTo("XNOMS");
     }
 
     private String createUpdateNomsNumber(String nomsNumber) throws JsonProcessingException {
