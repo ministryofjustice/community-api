@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.IDs;
 import uk.gov.justice.digital.delius.data.api.UpdateOffenderNomsNumber;
+import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalIdentifier;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
@@ -31,6 +32,7 @@ class OffenderIdentifierServiceTest {
     private OffenderRepository offenderRepository = mock(OffenderRepository.class);
     private SpgNotificationService spgNotificationService = mock(SpgNotificationService.class);
     private ArgumentCaptor<Offender> offenderCaptor = ArgumentCaptor.forClass(Offender.class);
+    private ArgumentCaptor<AdditionalIdentifier> additionalIdentifierCaptor = ArgumentCaptor.forClass(AdditionalIdentifier.class);
     private ReferenceDataService referenceDataService = mock(ReferenceDataService.class);
 
     @Nested
@@ -205,6 +207,15 @@ class OffenderIdentifierServiceTest {
                 final var duplicateOffender = offenderCaptor.getAllValues().get(0);
                 assertThat(duplicateOffender.getOffenderId()).isEqualTo(88L);
             }
+
+            @Test
+            void willNotifySPGForDuplicateOffenderAdditionalIdentifier() {
+                verify(spgNotificationService).notifyInsertOfOffenderAdditionalIdentifier(offenderCaptor.capture(), additionalIdentifierCaptor.capture());
+
+                assertThat(offenderCaptor.getValue().getOffenderId()).isEqualTo(88L);
+                assertThat(additionalIdentifierCaptor.getValue().getIdentifierName().getCodeValue()).isEqualTo("DNOMS");
+            }
+
         }
         @Nested
         class AnotherNOMSAlreadyAssignedToOffender {
@@ -247,6 +258,15 @@ class OffenderIdentifierServiceTest {
                 assertThat(offender.getAdditionalIdentifiers().get(0).getIdentifierName().getCodeValue()).isEqualTo("XNOMS");
                 assertThat(offender.getAdditionalIdentifiers().get(0).getIdentifier()).isEqualTo("A7777TT");
             }
+
+            @Test
+            void willNotifySPGForOffenderAdditionalIdentifier() {
+                verify(spgNotificationService).notifyInsertOfOffenderAdditionalIdentifier(offenderCaptor.capture(), additionalIdentifierCaptor.capture());
+
+                assertThat(offenderCaptor.getValue().getOffenderId()).isEqualTo(99L);
+                assertThat(additionalIdentifierCaptor.getValue().getIdentifierName().getCodeValue()).isEqualTo("XNOMS");
+            }
+
         }
     }
 }

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,6 +19,7 @@ import javax.persistence.Table;
 
 @Data
 @EqualsAndHashCode(exclude = {"offender"}, callSuper = true)
+@ToString(exclude = {"offender"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
