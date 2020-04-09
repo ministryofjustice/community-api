@@ -120,7 +120,7 @@ public class OffendersResource {
                 offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(new ResponseEntity<>(OffenderDetailSummary.builder().build(), NOT_FOUND));
     }
 
-    @ApiOperation(value = "Returns all document's meta data for an offender CRN")
+    @ApiOperation(value = "Returns all document's meta data for an offender by NOMS number")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 200, message = "OK", response = OffenderDocuments.class),
