@@ -47,4 +47,7 @@ public class OffenderDocumentDetail {
     private String extendedDescription;
     private LocalDateTime lastModifiedAt;
     private LocalDateTime createdAt;
+
+    private KeyValue subType;
+    private ReportDocumentDates reportDocumentDates;
 }

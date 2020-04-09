@@ -1,8 +1,10 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import org.springframework.stereotype.Component;
+import uk.gov.justice.digital.delius.data.api.ReportDocumentDates;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail;
+import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail.Type;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 
 import java.time.LocalDate;
@@ -135,7 +137,7 @@ public class DocumentTransformer {
     }
 
     public OffenderDocumentDetail offenderDocumentDetailsOfPreviousConvictions(Offender offender) {
-        
+
         return OffenderDocumentDetail
                 .builder()
                 .author(Optional.ofNullable(offender.getPreviousConvictionsCreatedByUser())
@@ -185,6 +187,20 @@ public class DocumentTransformer {
                         .code(OffenderDocumentDetail.Type.COURT_REPORT_DOCUMENT.name())
                         .description(OffenderDocumentDetail.Type.COURT_REPORT_DOCUMENT.getDescription())
                         .build())
+                .subType(KeyValue
+                        .builder()
+                        .code(document.getCourtReport().getCourtReportType().getCode())
+                        .description(document.getCourtReport().getCourtReportType().getDescription())
+                    .build())
+                .reportDocumentDates(ReportDocumentDates.builder()
+                                                .requestedDate(Optional.ofNullable(document.getCourtReport().getDateRequested())
+                                                    .map(LocalDateTime::toLocalDate)
+                                                    .orElse(null))
+                                                .requiredDate(Optional.ofNullable(document.getCourtReport().getDateRequired())
+                                                    .map(LocalDateTime::toLocalDate)
+                                                    .orElse(null))
+                                                .completedDate(document.getCourtReport().getCompletedDate())
+                                                .build())
                 .build();
     }
 
@@ -341,6 +357,14 @@ public class DocumentTransformer {
                         .code(OffenderDocumentDetail.Type.INSTITUTION_REPORT_DOCUMENT.name())
                         .description(OffenderDocumentDetail.Type.INSTITUTION_REPORT_DOCUMENT.getDescription())
                         .build())
+                .subType(KeyValue
+                        .builder()
+                        .code(document.getInstitutionalReport().getInstitutionalReportType().getCodeValue())
+                        .description(document.getInstitutionalReport().getInstitutionalReportType().getCodeDescription())
+                        .build())
+                .reportDocumentDates(ReportDocumentDates.builder()
+                    .requestedDate(document.getInstitutionalReport().getDateRequested().toLocalDate())
+                    .build())
                 .build();
     }
 
