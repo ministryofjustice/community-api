@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static uk.gov.justice.digital.delius.util.EntityHelper.*;
 
 public class DocumentTransformerTest {
@@ -152,7 +153,6 @@ public class DocumentTransformerTest {
     public void courtReportDescriptionsSet() {
         final CourtReportDocument document = aCourtReportDocument();
 
-        document.getCourtReport().getCourtReportType().setDescription("Pre Sentence Report");
         document.getCourtReport().setDateRequested(LocalDateTime.of(1965, 7, 19, 0, 0));
         document.getCourtReport().getCourtAppearance().getCourt().setCourtName("Sheffield Crown Court");
 
@@ -162,15 +162,14 @@ public class DocumentTransformerTest {
 
         assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("COURT_REPORT_DOCUMENT");
         assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Court report");
-        assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Pre Sentence Report requested by Sheffield Crown Court on 19/07/1965");
-
+        assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Pre-Sentence Report - Standard requested by Sheffield Crown Court on 19/07/1965");
+        assertThat(offenderDocumentDetail.getSubType().getCode()).isEqualTo("CJS");
+        assertThat(offenderDocumentDetail.getSubType().getDescription()).isEqualTo("Pre-Sentence Report - Standard");
     }
 
     @Test
     public void institutionReportDescriptionsSet() {
         final InstitutionalReportDocument document = anInstitutionalReportDocument();
-
-        document.getInstitutionalReport().getInstitutionalReportType().setCodeDescription("Parole");
         document.getInstitutionalReport().setDateRequested(LocalDateTime.of(1965, 7, 19, 0, 0));
         document.getInstitutionalReport().getInstitution().setInstitutionName("Sheffield jail");
 
@@ -180,7 +179,10 @@ public class DocumentTransformerTest {
 
         assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("INSTITUTION_REPORT_DOCUMENT");
         assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Institution report");
-        assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Parole at Sheffield jail requested on 19/07/1965");
+        assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Parole Assessment Report at Sheffield jail requested on 19/07/1965");
+        assertThat(offenderDocumentDetail.getSubType().getCode()).isEqualTo("PAR");
+        assertThat(offenderDocumentDetail.getSubType().getDescription()).isEqualTo("Parole Assessment Report");
+        assertNotNull(offenderDocumentDetail.getReportDocumentDates().getRequestedDate());
     }
 
     @Test

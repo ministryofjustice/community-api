@@ -37,7 +37,8 @@ public class EntityHelper {
                 .dateRequested(LocalDateTime.now())
                 .institutionalReportType(StandardReference
                         .builder()
-                        .codeDescription("PAROM1")
+                        .codeValue("PAR")
+                        .codeDescription("Parole Assessment Report")
                         .build())
                 .institution(anInstitution())
                 .build();
@@ -186,7 +187,8 @@ public class EntityHelper {
                 .dateRequested(LocalDateTime.now())
                 .courtReportType(RCourtReportType
                         .builder()
-                        .description("Pre Sentence Report")
+                        .description("Pre-Sentence Report - Standard")
+                        .code("CJS")
                         .build())
                 .courtAppearance(CourtAppearance
                         .builder()

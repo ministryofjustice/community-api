@@ -120,7 +120,7 @@ public class OffendersResource {
                 offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(new ResponseEntity<>(OffenderDetailSummary.builder().build(), NOT_FOUND));
     }
 
-    @ApiOperation(value = "Returns all document's meta data for an offender")
+    @ApiOperation(value = "Returns all document's meta data for an offender by NOMS number")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 200, message = "OK", response = OffenderDocuments.class),
@@ -137,6 +137,26 @@ public class OffendersResource {
         return offenderService.offenderIdOfNomsNumber(nomsNumber)
                 .map(offenderId -> new ResponseEntity<>(documentService.offenderDocumentsFor(offenderId), HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @ApiOperation(value = "Returns all documents' meta data for an offender by CRN")
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 200, message = "OK", response = OffenderDocuments.class),
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "Not Found. For example if the CRN is not known.", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+    @GetMapping(path = "/offenders/crn/{crn}/documents/grouped")
+    public ResponseEntity<OffenderDocuments> getOffenderDocumentsByCrn(
+        @ApiParam(name = "crn", value = "CRN for the offender", example = "X340906", required = true)
+        @NotNull @PathVariable(value = "crn") final String crn) {
+
+        return offenderService.offenderIdOfCrn(crn)
+            .map(offenderId -> new ResponseEntity<>(documentService.offenderDocumentsFor(offenderId), HttpStatus.OK))
+            .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @ApiOperation(value = "Returns the document contents meta data for a given document associated with an offender")

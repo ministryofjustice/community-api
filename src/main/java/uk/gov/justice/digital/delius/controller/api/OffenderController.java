@@ -32,7 +32,7 @@ import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @Slf4j
-@Api(description = "Offender resources", tags = "Offenders")
+@Api(tags = "Offenders resources")
 @RequestMapping(value = "api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OffenderController {
 
@@ -172,44 +172,6 @@ public class OffenderController {
         return maybeDocumentMetasOf(offenderService.crnOf(nomsNumber))
                 .map(documentMetas -> new ResponseEntity<>(documentMetas, OK))
                 .orElse(new ResponseEntity<>(NOT_FOUND));
-    }
-
-    @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/documents/grouped", method = RequestMethod.GET)
-    @ApiOperation(
-            value = "Returns all offender related documents grouped e.g by conviction for a given nomsNumber",
-            notes = "This uses the database as it's source of information",
-            nickname = "getOffenderGroupedDocumentByNomsNumber")
-    @JwtValidation
-    public ResponseEntity<OffenderDocuments> getOffenderGroupedDocumentByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                                    final @PathVariable("nomsNumber") String nomsNumber) {
-        log.info("Call to getOffenderGroupedDocumentByNomsNumber");
-        return offenderDocumentsResponseEntityOf(offenderService.offenderIdOfNomsNumber(nomsNumber));
-    }
-
-    @RequestMapping(value = "/offenders/offenderId/{offenderId}/documents/grouped", method = RequestMethod.GET)
-    @ApiOperation(
-            value = "Returns all offender related documents grouped e.g by conviction for a given offenderId",
-            notes = "This uses the database as it's source of information",
-            nickname = "getOffenderGroupedDocumentByOffendeerId")
-    @JwtValidation
-    public ResponseEntity<OffenderDocuments> getOffenderGroupedDocumentByOffendeerId(final @RequestHeader HttpHeaders httpHeaders,
-                                                                                     final @PathVariable("offenderId") Long offenderId) {
-        log.info("Call to getOffenderGroupedDocumentByOffendeerId");
-        Optional<OffenderDetail> maybeOffender = offenderService.getOffenderByOffenderId(offenderId);
-
-        return offenderDocumentsResponseEntityOf(maybeOffender.map(OffenderDetail::getOffenderId));
-    }
-
-    @RequestMapping(value = "/offenders/crn/{crn}/documents/grouped", method = RequestMethod.GET)
-    @ApiOperation(
-            value = "Returns all offender related documents grouped e.g by conviction for a given CRN",
-            notes = "This uses the database as it's source of information",
-            nickname = "getOffenderGroupedDocumentByCrn")
-    @JwtValidation
-    public ResponseEntity<OffenderDocuments> getOffenderGroupedDocumentByCrn(final @RequestHeader HttpHeaders httpHeaders,
-                                                                             final @PathVariable("crn") String crn) {
-        log.info("Call to getOffenderGroupedDocumentByCrn");
-        return offenderDocumentsResponseEntityOf(offenderService.offenderIdOfCrn(crn));
     }
 
     @RequestMapping(value = "/offenders/crn/{crn}/documents/{documentId}/detail", method = RequestMethod.GET)
@@ -425,12 +387,6 @@ public class OffenderController {
 
     private ResponseEntity<OffenderDetailSummary> offenderDetailSummaryNotFound() {
         return new ResponseEntity<>(OffenderDetailSummary.builder().build(), NOT_FOUND);
-    }
-
-    private ResponseEntity<OffenderDocuments> offenderDocumentsResponseEntityOf(Optional<Long> maybeOffenderId) {
-        return maybeOffenderId
-                .map(offenderId -> new ResponseEntity<>(documentService.offenderDocumentsFor(offenderId), HttpStatus.OK))
-                .orElseGet(this::notFoundOffenderDocuments);
     }
 
     private ResponseEntity<OffenderDocuments> notFoundOffenderDocuments() {
