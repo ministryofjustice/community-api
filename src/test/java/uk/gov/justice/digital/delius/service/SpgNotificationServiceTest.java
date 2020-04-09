@@ -2,15 +2,31 @@ package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
-import uk.gov.justice.digital.delius.jpa.standard.repository.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalIdentifier;
+import uk.gov.justice.digital.delius.jpa.standard.entity.BusinessInteraction;
+import uk.gov.justice.digital.delius.jpa.standard.entity.BusinessInteractionXmlMap;
+import uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.SpgNotification;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.repository.BusinessInteractionRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.BusinessInteractionXmlMapRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.SpgNotificationHelperRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.SpgNotificationRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.StandardReferenceRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,10 +34,14 @@ import java.util.Optional;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static uk.gov.justice.digital.delius.util.EntityHelper.*;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aCustodyEvent;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aKeyDate;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anOffender;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class SpgNotificationServiceTest {
     @Mock
     private BusinessInteractionRepository businessInteractionRepository;
@@ -42,7 +62,7 @@ public class SpgNotificationServiceTest {
     private SpgNotificationService spgNotificationService;
 
 
-    @Before
+    @BeforeEach
     public void before() {
         when(businessInteractionRepository.findByBusinessInteractionCode(any())).thenAnswer(
                 params -> Optional.of(
@@ -66,6 +86,7 @@ public class SpgNotificationServiceTest {
     }
 
     @Test
+    @MockitoSettings(strictness = Strictness.LENIENT)
     public void whenNoInterestedCRCsThenNothingIsSaved() {
         when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of());
 
@@ -245,6 +266,7 @@ public class SpgNotificationServiceTest {
 
 
     @Test
+    @MockitoSettings(strictness = Strictness.LENIENT)
     public void withNoInterestedCRCsNothingInsertedForNewCustodyKeyDateNotification() {
         when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of());
 
@@ -312,6 +334,7 @@ public class SpgNotificationServiceTest {
     }
 
     @Test
+    @MockitoSettings(strictness = Strictness.LENIENT)
     public void withNoInterestedCRCsNothingInsertedForUpdatedCustodyKeyDateNotification() {
         when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of());
 
@@ -380,6 +403,7 @@ public class SpgNotificationServiceTest {
     }
 
     @Test
+    @MockitoSettings(strictness = Strictness.LENIENT)
     public void withNoInterestedCRCsNothingInsertedForDeletedCustodyKeyDateNotification() {
         when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of());
 
@@ -482,6 +506,188 @@ public class SpgNotificationServiceTest {
         assertThat(notification.getOffenderId()).isEqualTo(77L);
     }
 
+    @Nested
+    class UpdateOffender {
+        @Test
+        public void withOneInterestedCRCOffenderUpdateNotificationIsSaved() {
+            when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of(ProbationArea
+                    .builder()
+                    .code("AA")
+                    .build()));
+
+            spgNotificationService.notifyUpdateOfOffender(Offender
+                    .builder()
+                    .offenderId(99L)
+                    .build());
+
+            verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+            assertThat(findFor("OIBI027")).hasSize(1);
+        }
+
+        @Test
+        public void withMultipleInterestedCRCOffenderUpdateNotificationIsSavedForAllOfThem() {
+            when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of(ProbationArea
+                            .builder()
+                            .code("AA")
+                            .build(),
+                    ProbationArea
+                            .builder()
+                            .code("BB")
+                            .build(),
+                    ProbationArea
+                            .builder()
+                            .code("CC")
+                            .build()));
+
+            spgNotificationService.notifyUpdateOfOffender(Offender
+                    .builder()
+                    .offenderId(99L)
+                    .build());
+
+            verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+            assertThat(findFor("OIBI027")).hasSize(3);
+        }
+
+        @Test
+        @MockitoSettings(strictness = Strictness.LENIENT)
+        public void witNoInterestedCRCOffenderUpdateNotificationIsNotSaved() {
+            when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of());
+
+            spgNotificationService.notifyUpdateOfOffender(Offender
+                    .builder()
+                    .offenderId(99L)
+                    .build());
+
+            verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+            assertThat(findFor("OIBI027")).hasSize(0);
+        }
+
+        @Test
+        public void offenderIdIsSavedWithNotification() {
+            when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of(ProbationArea
+                    .builder()
+                    .code("AA")
+                    .build()));
+
+            spgNotificationService.notifyUpdateOfOffender(Offender
+                    .builder()
+                    .offenderId(99L)
+                    .build());
+
+            verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+            var notification = findFor("OIBI027").get(0);
+
+            assertThat(notification.getOffenderId()).isEqualTo(99L);
+            assertThat(notification.getUniqueId()).isEqualTo(99L);
+            assertThat(notification.getParentEntityId()).isNull();
+        }
+
+    }
+    @Nested
+    class InsertAdditionalOffenderIdentifier {
+        @Test
+        public void withOneInterestedCRCNotificationIsSaved() {
+            when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of(ProbationArea
+                    .builder()
+                    .code("AA")
+                    .build()));
+
+            spgNotificationService.notifyInsertOfOffenderAdditionalIdentifier(
+                    Offender
+                            .builder()
+                            .offenderId(99L)
+                            .build(),
+                    AdditionalIdentifier
+                            .builder()
+                            .additionalIdentifierId(88L)
+                            .build());
+
+            verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+            assertThat(findFor("OIBI070")).hasSize(1);
+        }
+
+        @Test
+        public void withMultipleInterestedCRCNotificationIsSavedForAllOfThem() {
+            when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of(ProbationArea
+                            .builder()
+                            .code("AA")
+                            .build(),
+                    ProbationArea
+                            .builder()
+                            .code("BB")
+                            .build(),
+                    ProbationArea
+                            .builder()
+                            .code("CC")
+                            .build()));
+
+            spgNotificationService.notifyInsertOfOffenderAdditionalIdentifier(
+                    Offender
+                            .builder()
+                            .offenderId(99L)
+                            .build(),
+                    AdditionalIdentifier
+                            .builder()
+                            .additionalIdentifierId(88L)
+                            .build());
+
+            verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+            assertThat(findFor("OIBI070")).hasSize(3);
+        }
+
+        @Test
+        @MockitoSettings(strictness = Strictness.LENIENT)
+        public void witNoInterestedCRCNotificationIsNotSaved() {
+            when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of());
+
+            spgNotificationService.notifyInsertOfOffenderAdditionalIdentifier(
+                    Offender
+                            .builder()
+                            .offenderId(99L)
+                            .build(),
+                    AdditionalIdentifier
+                            .builder()
+                            .additionalIdentifierId(88L)
+                            .build());
+
+            verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+            assertThat(findFor("OIBI070")).hasSize(0);
+        }
+
+        @Test
+        public void offenderIdIsSavedWithNotification() {
+            when(spgNotificationHelperRepository.getInterestedCRCs(any())).thenReturn(ImmutableList.of(ProbationArea
+                    .builder()
+                    .code("AA")
+                    .build()));
+
+            spgNotificationService.notifyInsertOfOffenderAdditionalIdentifier(
+                    Offender
+                            .builder()
+                            .offenderId(99L)
+                            .build(),
+                    AdditionalIdentifier
+                            .builder()
+                            .additionalIdentifierId(88L)
+                            .build());
+
+            verify(spgNotificationRepository, atLeastOnce()).saveAll(spgNotificationsCaptor.capture());
+
+            var notification = findFor("OIBI070").get(0);
+
+            assertThat(notification.getOffenderId()).isEqualTo(99L);
+            assertThat(notification.getUniqueId()).isEqualTo(88L);
+            assertThat(notification.getParentEntityId()).isNull();
+        }
+
+    }
 
     private List<SpgNotification> findFor(String businessInteraction) {
         return spgNotificationsCaptor

@@ -35,6 +35,9 @@ public class ReferenceDataService {
     private static final String CUSTODY_EVENT_CUSTODY_STATUS_CHANGE_CODE = "TSC";
     private static final String CUSTODY_STATUS_DATASET = "THROUGHCARE STATUS";
     private static final String CUSTODY_STATUS_IN_CUSTODY_CODE = "D";
+    private static final String ADDITIONAL_IDENTIFIER_DATASET = "ADDITIONAL IDENTIFIER TYPE";
+    private static final String DUPLICATE_NOMS_NUMBER_CODE = "DNOMS";
+    private static final String FORMER_NOMS_NUMBER_CODE = "XNOMS";
     private final ProbationAreaTransformer probationAreaTransformer;
     private final ProbationAreaRepository probationAreaRepository;
     private final StandardReferenceRepository standardReferenceRepository;
@@ -120,6 +123,15 @@ public class ReferenceDataService {
 
     public StandardReference getInCustodyCustodyStatus() {
         return standardReferenceRepository.findByCodeAndCodeSetName(CUSTODY_STATUS_IN_CUSTODY_CODE, CUSTODY_STATUS_DATASET).orElseThrow();
+    }
+
+
+    public StandardReference duplicateNomsNumberAdditionalIdentifier() {
+        return standardReferenceRepository.findByCodeAndCodeSetName(DUPLICATE_NOMS_NUMBER_CODE, ADDITIONAL_IDENTIFIER_DATASET).orElseThrow();
+    }
+
+    public StandardReference formerNomsNumberAdditionalIdentifier() {
+        return standardReferenceRepository.findByCodeAndCodeSetName(FORMER_NOMS_NUMBER_CODE, ADDITIONAL_IDENTIFIER_DATASET).orElseThrow();
     }
 
     private StandardReference getCustodyEventTypeFor(String code) {

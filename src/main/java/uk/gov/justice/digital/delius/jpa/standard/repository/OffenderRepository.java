@@ -19,6 +19,11 @@ public interface OffenderRepository extends JpaRepository<Offender, Long> {
     @Query("select o from Offender o where o.softDeleted = 0 and o.nomsNumber = :nomsNumber")
     Optional<Offender> findByNomsNumber(@Param("nomsNumber") String nomsNumber);
 
+    // there are a small number of offenders (100 as of April 2020) that have duplicate NOMS numbers
+    // this allows features that can deal with duplicates to access all offenders with the same number
+    @Query("select o from Offender o where o.softDeleted = 0 and o.nomsNumber = :nomsNumber")
+    List<Offender> findAllByNomsNumber(@Param("nomsNumber") String nomsNumber);
+
     @Query(value = "SELECT OFFENDER_ID FROM (SELECT QRY_PAG.*, ROWNUM rnum FROM (SELECT OFFENDER_ID FROM OFFENDER) QRY_PAG WHERE ROWNUM <= ?2) WHERE rnum >= ?1", nativeQuery = true)
     List<BigDecimal> listOffenderIds(int lower, int upper);
 }

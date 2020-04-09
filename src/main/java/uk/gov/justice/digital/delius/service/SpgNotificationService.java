@@ -37,6 +37,7 @@ public class SpgNotificationService {
         AMEND_EVENT("SEBI014"),
         INSERT_COURT_APPEARANCE("CWBI007"),
         UPDATE_OFFENDER("OIBI027"),
+        INSERT_ADDITIONAL_OFFENDER_IDENTIFIER("OIBI070"),
         INSERT_CUSTODY_KEY_DATE("SPOBI010"),
         UPDATE_CUSTODY_KEY_DATE("SPOBI011"),
         DELETE_CUSTODY_KEY_DATE("TCBI037"),
@@ -84,6 +85,15 @@ public class SpgNotificationService {
     public void notifyUpdateOfCustody(Offender offender, Event event) {
         createNotificationsFor(UPDATE_CUSTODY, offender.getOffenderId(), event.getEventId());
     }
+
+    public void notifyUpdateOfOffender(Offender offender) {
+        createNotificationsFor(UPDATE_OFFENDER, offender.getOffenderId());
+    }
+
+    public void notifyInsertOfOffenderAdditionalIdentifier(Offender offender, AdditionalIdentifier additionalIdentifier) {
+        createNotificationsFor(INSERT_ADDITIONAL_OFFENDER_IDENTIFIER, offender.getOffenderId(), additionalIdentifier.getAdditionalIdentifierId());
+    }
+
 
     private void createNotificationsFor(NotificationEvents notificationEvent, Long offenderId) {
         createNotificationsFor(notificationEvent, offenderId, offenderId);
