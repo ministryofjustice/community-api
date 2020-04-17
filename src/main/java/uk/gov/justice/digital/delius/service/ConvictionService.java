@@ -114,6 +114,17 @@ public class ConvictionService {
                 .collect(toList());
     }
 
+    @Transactional(readOnly = true)
+    public Optional<Conviction> convictionFor(Long offenderId, Long eventId) {
+        List<uk.gov.justice.digital.delius.jpa.standard.entity.Event> events = eventRepository.findByEventId(eventId);
+        return events
+            .stream()
+            .filter(event -> offenderId.equals(event.getOffenderId()))
+            .filter(event -> !convertToBoolean(event.getSoftDeleted()))
+            .map(convictionTransformer::convictionOf)
+            .findFirst();
+    }
+
     @Transactional
     public Conviction addCourtCaseFor(Long offenderId, CourtCase courtCase) {
         val event = convictionTransformer.eventOf(
