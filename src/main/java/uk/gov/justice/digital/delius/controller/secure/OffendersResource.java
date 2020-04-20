@@ -330,5 +330,28 @@ public class OffendersResource {
                 .map(convictionService::convictionsFor)
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
+
+    @ApiOperation(value = "Return the conviction (AKA Delius Event) for a conviction ID and a CRN")
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 200, message = "OK", response = Conviction.class),
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "The offender CRN or conviction ID is not found", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+    @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}")
+    public Conviction getConvictionForOffenderByCrnAndConvictionId(
+        @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
+        @NotNull @PathVariable(value = "crn") final String crn,
+        @ApiParam(name = "crn", value = "ID for the conviction / event", example = "2500295345", required = true)
+        @NotNull @PathVariable(value = "convictionId") final Long convictionId) {
+
+        return offenderService.offenderIdOfCrn(crn)
+            .map((offenderId) -> convictionService.convictionFor(offenderId, convictionId))
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)))
+            .orElseThrow(() -> new NotFoundException(String.format("Conviction with ID %s for Offender with crn %s not found", convictionId, crn)));
+    }
 }
 

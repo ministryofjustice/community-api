@@ -65,6 +65,24 @@ public class OffendersResource_getOffenderConvictionsByCrn {
     }
 
     @Test
+    public void canGetOffenderConvictionByCrnAndConvictionId() {
+        final var conviction = given()
+            .auth()
+            .oauth2(validOauthToken)
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get("/offenders/crn/X320741/convictions/2500295343")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(Conviction.class);
+
+        final var offence = conviction.getOffences().stream().filter(Offence::getMainOffence).findAny().orElseThrow();
+        assertThat(offence.getDetail().getCode()).isEqualTo("05600");
+    }
+
+    @Test
     public void convictionsHaveAssociatedUnpaidWorkData() {
         given()
                 .auth()

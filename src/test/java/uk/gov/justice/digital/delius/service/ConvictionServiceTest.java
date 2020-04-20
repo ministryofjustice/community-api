@@ -45,9 +45,11 @@ public class ConvictionServiceTest {
     @MockBean
     private EventRepository convictionRepository;
 
+    @SuppressWarnings("unused")
     @MockBean
     private OffenderRepository offenderRepository;
 
+    @SuppressWarnings("unused")
     @MockBean
     private ContactService contactService;
 
@@ -57,6 +59,7 @@ public class ConvictionServiceTest {
     @MockBean
     private SpgNotificationService spgNotificationService;
 
+    @SuppressWarnings("unused")
     @MockBean
     private IAPSNotificationService iapsNotificationService;
 
@@ -74,6 +77,26 @@ public class ConvictionServiceTest {
                 .collect(Collectors.toList()))
                 .containsSequence(999L, 99L, 9L);
 
+    }
+
+    @Test
+    public void convictionForEventIdButIsSoftDeleted() {
+        Mockito.when(convictionRepository.findById(99L))
+            .thenReturn(Optional.of(
+                aEvent().toBuilder().eventId(99L).softDeleted(1L).referralDate(LocalDate.now().minusDays(1)).build()
+            ));
+
+        assertThat(convictionService.convictionFor(1L, 99L)).isEmpty();
+    }
+
+    @Test
+    public void convictionForEventId() {
+        Mockito.when(convictionRepository.findById(99L))
+            .thenReturn(Optional.of(
+                aEvent().toBuilder().eventId(99L).offenderId(1L).build()
+            ));
+
+        assertThat(convictionService.convictionFor(1L, 99L)).isPresent();
     }
 
     @Test

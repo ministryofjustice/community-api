@@ -114,6 +114,15 @@ public class ConvictionService {
                 .collect(toList());
     }
 
+    @Transactional(readOnly = true)
+    public Optional<Conviction> convictionFor(Long offenderId, Long eventId) {
+        val event = eventRepository.findById(eventId);
+        return event
+            .filter(e ->  offenderId.equals(e.getOffenderId()))
+            .filter(e -> !convertToBoolean(e.getSoftDeleted()))
+            .map(convictionTransformer::convictionOf);
+    }
+
     @Transactional
     public Conviction addCourtCaseFor(Long offenderId, CourtCase courtCase) {
         val event = convictionTransformer.eventOf(
