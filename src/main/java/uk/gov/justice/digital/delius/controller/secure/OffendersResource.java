@@ -334,7 +334,7 @@ public class OffendersResource {
     @ApiOperation(value = "Return the conviction (AKA Delius Event) for a conviction ID and a CRN")
     @ApiResponses(
         value = {
-            @ApiResponse(code = 200, message = "OK", response = Conviction.class, responseContainer = "List"),
+            @ApiResponse(code = 200, message = "OK", response = Conviction.class),
             @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
             @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
             @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),

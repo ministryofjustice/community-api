@@ -10,8 +10,6 @@ import java.util.List;
 public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByOffenderId(Long offenderId);
 
-    List<Event> findByEventId(Long eventId);
-
     @Query("select event from Event event join DISPOSAL disposal on disposal.event = event join CUSTODY custody on custody.disposal = disposal where custody.prisonerNumber = :prisonBookingNumber")
     List<Event> findByPrisonBookingNumber(@Param("prisonBookingNumber") String prisonBookingNumber);
     @Query("select event from Event event join DISPOSAL disposal on disposal.event = event join CUSTODY custody on custody.disposal = disposal where custody.prisonerNumber = :prisonBookingNumber and event.offenderId  = :offenderId")

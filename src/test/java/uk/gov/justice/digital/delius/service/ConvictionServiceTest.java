@@ -81,8 +81,8 @@ public class ConvictionServiceTest {
 
     @Test
     public void convictionForEventIdButIsSoftDeleted() {
-        Mockito.when(convictionRepository.findByEventId(99L))
-            .thenReturn(ImmutableList.of(
+        Mockito.when(convictionRepository.findById(99L))
+            .thenReturn(Optional.of(
                 aEvent().toBuilder().eventId(99L).softDeleted(1L).referralDate(LocalDate.now().minusDays(1)).build()
             ));
 
@@ -91,8 +91,8 @@ public class ConvictionServiceTest {
 
     @Test
     public void convictionForEventId() {
-        Mockito.when(convictionRepository.findByEventId(99L))
-            .thenReturn(ImmutableList.of(
+        Mockito.when(convictionRepository.findById(99L))
+            .thenReturn(Optional.of(
                 aEvent().toBuilder().eventId(99L).offenderId(1L).build()
             ));
 
