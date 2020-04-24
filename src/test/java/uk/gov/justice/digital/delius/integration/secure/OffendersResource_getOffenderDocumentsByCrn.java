@@ -1,14 +1,9 @@
 package uk.gov.justice.digital.delius.integration.secure;
 
-import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
-import java.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,12 +18,19 @@ import uk.gov.justice.digital.delius.data.api.ConvictionDocuments;
 import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
 
+import java.time.LocalDate;
+
+import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev-seed")
 @RunWith(SpringJUnit4ClassRunner.class)
 public class OffendersResource_getOffenderDocumentsByCrn {
 
-    private static final String PATH_FORMAT = "/offenders/crn/%s/documents/grouped";
+    private static final String GROUPED_DOCS_PATH_FORMAT = "/offenders/crn/%s/documents/grouped";
+    private static final String SINGLE_DOC_PATH_FORMAT = "/offenders/crn/%s/documents/document-id/%s";
 
     @LocalServerPort
     int port;
@@ -48,13 +50,49 @@ public class OffendersResource_getOffenderDocumentsByCrn {
     }
 
     @Test
+    public void singleDocument_givenUnknownCrnThenReturn404() {
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get(String.format(SINGLE_DOC_PATH_FORMAT, "CRNXXX", "anydocumentid"))
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    public void singleDocument_givenUnknownDocumentIdThenReturn404() {
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get(String.format(SINGLE_DOC_PATH_FORMAT, "CRN12", "anydocumentid"))
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    public void singleDocument_givenExistingDocumentIdThenReturn200() {
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get(String.format(SINGLE_DOC_PATH_FORMAT, "CRN12", "e6cf2802-32d5-4a91-a7a9-00064d27bb19"))
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
     public void givenUnknownCrnThenReturn404() {
         given()
             .auth()
             .oauth2(validOauthToken)
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get(String.format(PATH_FORMAT, "CRNXXX"))
+            .get(String.format(GROUPED_DOCS_PATH_FORMAT, "CRNXXX"))
             .then()
             .statusCode(HttpStatus.NOT_FOUND.value());
     }
@@ -66,7 +104,7 @@ public class OffendersResource_getOffenderDocumentsByCrn {
             .oauth2(validOauthToken)
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get(String.format(PATH_FORMAT, "CRN12"))
+            .get(String.format(GROUPED_DOCS_PATH_FORMAT, "CRN12"))
             .then()
             .statusCode(HttpStatus.OK.value())
             .extract()
@@ -84,7 +122,7 @@ public class OffendersResource_getOffenderDocumentsByCrn {
                 .oauth2(validOauthToken)
                 .contentType(APPLICATION_JSON_VALUE)
             .when()
-                .get(String.format(PATH_FORMAT, "X320741"))
+                .get(String.format(GROUPED_DOCS_PATH_FORMAT, "X320741"))
             .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
