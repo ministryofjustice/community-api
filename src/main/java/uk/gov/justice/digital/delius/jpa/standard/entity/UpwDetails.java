@@ -33,8 +33,9 @@ public class UpwDetails {
     private Long partitionAreaId;
     @Column(name = "ROW_VERSION")
     private Long rowVersion;
-    @Column(name = "UPW_STATUS_ID")
-    private Long upwStatusId;
+    @ManyToOne
+    @JoinColumn(name = "UPW_STATUS_ID")
+    private StandardReference status;
     @Column(name = "WORKED_INTENSIVELY")
     private String workedIntensively;
     @Column(name = "TRAINING_SESSION_ID")

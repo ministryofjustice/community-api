@@ -13,4 +13,6 @@ public class UnpaidWork {
     private Long minutesCompleted;
     @ApiModelProperty(value = "Details of appointment history to date")
     private Appointments appointments;
+    @ApiModelProperty(value = "Status description")
+    private String status;
 }

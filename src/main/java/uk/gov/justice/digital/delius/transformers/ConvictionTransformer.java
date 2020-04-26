@@ -165,6 +165,9 @@ public class ConvictionTransformer {
                         .sum()
                 )
                 .appointments(appointmentsOf(upwDetails.getAppointments()))
+                .status(Optional.ofNullable(upwDetails.getStatus())
+                    .map(StandardReference::getCodeDescription)
+                    .orElse(null))
                 .build();
     }
 
