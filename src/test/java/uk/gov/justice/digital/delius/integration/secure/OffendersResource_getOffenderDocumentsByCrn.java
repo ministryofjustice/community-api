@@ -1,15 +1,12 @@
 package uk.gov.justice.digital.delius.integration.secure;
 
-import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
-import java.time.LocalDate;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +20,23 @@ import uk.gov.justice.digital.delius.data.api.ConvictionDocuments;
 import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
 
+import java.time.LocalDate;
+
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev-seed")
 @RunWith(SpringJUnit4ClassRunner.class)
 public class OffendersResource_getOffenderDocumentsByCrn {
+    @Rule
+    public WireMockRule wireMock = new WireMockRule(wireMockConfig().port(8088).jettyStopTimeout(10000L));
 
-    private static final String PATH_FORMAT = "/offenders/crn/%s/documents/grouped";
+    private static final String GROUPED_DOCS_PATH_FORMAT = "/offenders/crn/%s/documents/grouped";
+    private static final String SINGLE_DOC_PATH_FORMAT = "/offenders/crn/%s/documents/%s";
+    public static final String EXISTING_DOCUMENT_ID = "fa63c379-8b31-4e36-a152-2a57dfe251c4";
 
     @LocalServerPort
     int port;
@@ -48,13 +56,50 @@ public class OffendersResource_getOffenderDocumentsByCrn {
     }
 
     @Test
+    public void singleDocument_givenCrnDoesNotMatchMetadataThenReturn404() {
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get(String.format(SINGLE_DOC_PATH_FORMAT, "CRNXXX", "fa63c379-8b31-4e36-a152-2a57dfe251c5"))
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    public void singleDocument_givenUnknownDocumentIdThenReturn404() {
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get(String.format(SINGLE_DOC_PATH_FORMAT, "crn123", "fa63c379-8b31-4e36-a152-2a57dfe251c5"))
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    public void singleDocument_givenExistingDocumentIdThenReturn200() {
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get(String.format(SINGLE_DOC_PATH_FORMAT, "crn123", EXISTING_DOCUMENT_ID))
+                .then()
+                .contentType("application/msword;charset=UTF-8")
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
     public void givenUnknownCrnThenReturn404() {
         given()
             .auth()
             .oauth2(validOauthToken)
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get(String.format(PATH_FORMAT, "CRNXXX"))
+            .get(String.format(GROUPED_DOCS_PATH_FORMAT, "CRNXXX"))
             .then()
             .statusCode(HttpStatus.NOT_FOUND.value());
     }
@@ -66,7 +111,7 @@ public class OffendersResource_getOffenderDocumentsByCrn {
             .oauth2(validOauthToken)
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get(String.format(PATH_FORMAT, "CRN12"))
+            .get(String.format(GROUPED_DOCS_PATH_FORMAT, "CRN12"))
             .then()
             .statusCode(HttpStatus.OK.value())
             .extract()
@@ -84,7 +129,7 @@ public class OffendersResource_getOffenderDocumentsByCrn {
                 .oauth2(validOauthToken)
                 .contentType(APPLICATION_JSON_VALUE)
             .when()
-                .get(String.format(PATH_FORMAT, "X320741"))
+                .get(String.format(GROUPED_DOCS_PATH_FORMAT, "X320741"))
             .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
