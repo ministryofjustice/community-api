@@ -88,6 +88,7 @@ public class OffendersResource_getOffenderDocumentsByCrn {
                 .when()
                 .get(String.format(SINGLE_DOC_PATH_FORMAT, "crn123", EXISTING_DOCUMENT_ID))
                 .then()
+                .contentType("application/msword;charset=UTF-8")
                 .statusCode(HttpStatus.OK.value());
     }
 
