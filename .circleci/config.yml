@@ -83,7 +83,7 @@ jobs:
       - mem/recall:
           env_var: APP_VERSION
       - run:
-          name: Build container and publish to docker hub
+          name: Build docker image
           command: |
             docker build -f docker/Dockerfile.aws --rm=false . \
                --tag "mojdigitalstudio/community-api:$APP_VERSION" \
