@@ -170,6 +170,16 @@ public class OffendersResource {
                 .orElse(new ResponseEntity<>(NOT_FOUND));
     }
 
+    @ApiOperation(value = "Returns the document contents meta data for a given document associated with an offender")
+    @GetMapping(value = "/offenders/crn/{crn}/documents/{documentId}")
+    public HttpEntity<Resource> getOffenderDocumentByCrn(
+            @ApiParam(name = "crn", value = "CRN for the offender", example = "G9542VP", required = true) @NotNull final @PathVariable("crn") String crn,
+            @ApiParam(name = "documentId", value = "Document Id", example = "12312322", required = true) @NotNull final @PathVariable("documentId") String documentId) {
+
+        return Optional.ofNullable(alfrescoService.getDocument(documentId, crn))
+                .orElse(new ResponseEntity<>(NOT_FOUND));
+    }
+
     @ApiOperation(value = "Returns the contact details for an offender")
     @ApiResponses(
             value = {
