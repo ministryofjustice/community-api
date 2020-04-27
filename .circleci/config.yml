@@ -54,6 +54,7 @@ jobs:
             - gradle-{{ checksum "build.gradle" }}
             - gradle-
       - run: ./gradlew build
+      - set_app_version
       - save_cache:
           paths:
             - ~/.gradle
