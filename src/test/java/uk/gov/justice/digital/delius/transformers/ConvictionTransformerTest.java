@@ -330,10 +330,16 @@ public class ConvictionTransformerTest {
 
     @Test
     public void unpaidWorkMappedWherePresent() {
+
         Event event = Event.builder()
                 .disposal(Disposal.builder()
                         .unpaidWorkDetails(UpwDetails.builder()
                                 .upwLengthMinutes(120L)
+                                .status(StandardReference.builder()
+                                    .standardReferenceListId(3503L)
+                                    .codeValue("IGNORED")
+                                    .codeDescription("Being worked")
+                                    .build())
                                 .appointments(Arrays.asList(
                                         UpwAppointment.builder()
                                                 .attended("Y")
@@ -377,6 +383,8 @@ public class ConvictionTransformerTest {
         assertThat(unpaidWork.getAppointments().getAcceptableAbsences()).isEqualTo(1);
         assertThat(unpaidWork.getAppointments().getUnacceptableAbsences()).isEqualTo(1);
         assertThat(unpaidWork.getAppointments().getNoOutcomeRecorded()).isEqualTo(1);
+        assertThat(unpaidWork.getStatus()).isEqualTo("Being worked");
+
     }
 
     @Test
