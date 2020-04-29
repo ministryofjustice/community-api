@@ -8,29 +8,4 @@ ignore:
         reason: h2 used only in local dev environment
         expires: 2021-04-27T00:00:00.000Z
 
-  SNYK-JAVA-COMMONSBEANUTILS-30077:
-    - 'org.codehaus.groovy.modules.http-builder:http-builder':
-        reason: http-builder is a test dependency
-        expires: 2021-04-27T00:00:00.000Z
-
-  SNYK-JAVA-COMMONSCOLLECTIONS-30078:
-    - 'org.codehaus.groovy.modules.http-builder:http-builder':
-        reason: http-builder is a test dependency
-        expires: 2021-04-27T00:00:00.000Z
-
-  SNYK-JAVA-COMMONSCOLLECTIONS-472711:
-      - 'org.codehaus.groovy.modules.http-builder:http-builder':
-        reason: http-builder is a test dependency
-        expires: 2021-04-27T00:00:00.000Z
-
-  SNYK-JAVA-XERCES-30183:
-      - 'org.codehaus.groovy.modules.http-builder:http-builder':
-        reason: http-builder is a test dependency
-        expires: 2021-04-27T00:00:00.000Z
-
-  SNYK-JAVA-XERCES-31585:
-      - 'org.codehaus.groovy.modules.http-builder:http-builder':
-        reason: http-builder is a test dependency
-        expires: 2021-04-27T00:00:00.000Z
-
 patch: {}
