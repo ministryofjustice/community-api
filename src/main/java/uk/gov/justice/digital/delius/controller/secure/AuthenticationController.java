@@ -1,11 +1,21 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.UnauthorisedException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
@@ -28,11 +38,9 @@ public class AuthenticationController {
     private final UserService userService;
 
     @ApiOperation(
-            value = "Authenticate a username and password against Delius Identity (LDAP)",
-            authorizations = {@Authorization("ROLE_AUTH_DELIUS_LDAP")})
+            value = "Authenticate a username and password against Delius Identity (LDAP)")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "OK"),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class)
             })
@@ -44,11 +52,9 @@ public class AuthenticationController {
     }
 
     @ApiOperation(
-            value = "Find user details of a user held in Delius Identity (LDAP)",
-            authorizations = {@Authorization("ROLE_AUTH_DELIUS_LDAP")})
+            value = "Find user details of a user held in Delius Identity (LDAP)")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "OK", response = UserDetails.class),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
                     @ApiResponse(code = 404, message = "Not Found", response = ErrorResponse.class)
@@ -60,11 +66,9 @@ public class AuthenticationController {
     }
 
     @ApiOperation(
-            value = "Add a role to a user held in Delius Identity (LDAP)",
-            authorizations = {@Authorization("ROLE_AUTH_DELIUS_LDAP")})
+            value = "Add a role to a user held in Delius Identity (LDAP)")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "OK", response = UserDetails.class),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
                     @ApiResponse(code = 404, message = "Not Found", response = ErrorResponse.class)
@@ -78,8 +82,7 @@ public class AuthenticationController {
     }
 
     @ApiOperation(
-            value = "Change password a users (LDAP) account",
-            authorizations = {@Authorization("ROLE_AUTH_DELIUS_LDAP")})
+            value = "Change password a users (LDAP) account")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 200, message = "Password Changed"),

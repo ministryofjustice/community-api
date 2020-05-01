@@ -19,6 +19,6 @@ import java.util.List;
 public class UserAreas {
     @ApiModelProperty(value = "The home area for this user", example = "N02")
     private String homeProbationArea;
-    @ApiModelProperty(value = "All probation areas the user can access AKA dataset", dataType="List", example = "[N01,N02]")
+    @ApiModelProperty(value = "All probation areas the user can access AKA dataset", dataType = "List", example = "[\"N01\", \"N02\"]")
     private List<String> probationAreas;
 }
