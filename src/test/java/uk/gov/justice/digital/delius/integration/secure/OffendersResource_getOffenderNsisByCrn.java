@@ -25,9 +25,13 @@ import uk.gov.justice.digital.delius.data.api.NsiWrapper;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class OffendersResource_getOffenderNsisByCrn {
 
-    private static final String OFFENDERS_PATH = "/offenders/crn/%s/convictions/%s/nsis/%s";
+    private static final String OFFENDERS_PATH = "/offenders/crn/%s/convictions/%s/nsis?";
+
+    private static final String QUERY_PARAM_NAME = "nsiCodes";
 
     private static final Long KNOWN_CONVICTION_ID = 2500295345L;
+
+    private static final Long KNOWN_CONVICTION_ID_NO_BREACH = 2500295343L;
 
     private static final String KNOWN_OFFENDER = "X320741";
 
@@ -50,12 +54,14 @@ public class OffendersResource_getOffenderNsisByCrn {
 
     @Test
     public void getGetOffenderNsisByCrnAndConvictionId() {
+        final StringBuilder sb = new StringBuilder(String.format(OFFENDERS_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID))
+            .append(QUERY_PARAM_NAME).append("=").append("BRE").append("&").append(QUERY_PARAM_NAME).append("=").append("BRES");
         final var nsiWrapper = given()
                 .auth()
                 .oauth2(validOauthToken)
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .get(String.format(OFFENDERS_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID, "BRES,BRE"))
+                .get(sb.toString())
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
@@ -66,13 +72,36 @@ public class OffendersResource_getOffenderNsisByCrn {
     }
 
     @Test
-    public void getGetOffenderNsisByCrnAndConvictionIdLimitCode() {
+    public void getGetOffenderNsisByCrnAndConvictionIdWithNoNsiBreaches() {
+        final StringBuilder sb = new StringBuilder(String.format(OFFENDERS_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID_NO_BREACH))
+            .append(QUERY_PARAM_NAME).append("=").append("BRE").append("&").append(QUERY_PARAM_NAME).append("=").append("BRES");
         final var nsiWrapper = given()
             .auth()
             .oauth2(validOauthToken)
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get(String.format(OFFENDERS_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID, "BRES"))
+            .get(sb.toString())
+            .then()
+            .statusCode(HttpStatus.OK.value())
+            .extract()
+            .body()
+            .as(NsiWrapper.class);
+
+        assertThat(nsiWrapper.getNsis()).hasSize(0);
+    }
+
+    @Test
+    public void getGetOffenderNsisByCrnAndConvictionIdLimitCode() {
+
+        final StringBuilder sb = new StringBuilder(String.format(OFFENDERS_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID))
+            .append(QUERY_PARAM_NAME).append("=").append("BRES");
+
+        final var nsiWrapper = given()
+            .auth()
+            .oauth2(validOauthToken)
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get(sb.toString())
             .then()
             .statusCode(HttpStatus.OK.value())
             .extract()
@@ -84,12 +113,15 @@ public class OffendersResource_getOffenderNsisByCrn {
 
     @Test
     public void getGetOffenderNsisByCrnAndUnknownConvictionId_ReturnsEmptyCollection() {
+        final StringBuilder sb = new StringBuilder(String.format(OFFENDERS_PATH, KNOWN_OFFENDER, "0"))
+            .append(QUERY_PARAM_NAME).append("=").append("BRE").append("&").append(QUERY_PARAM_NAME).append("=").append("BRES");
+
         final var nsiWrapper = given()
             .auth()
             .oauth2(validOauthToken)
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get(String.format(OFFENDERS_PATH, KNOWN_OFFENDER, "0", "BRES,BRE"))
+            .get(sb.toString())
             .then()
             .statusCode(HttpStatus.OK.value())
             .extract()
@@ -101,13 +133,18 @@ public class OffendersResource_getOffenderNsisByCrn {
 
     @Test
     public void getOffenderNsisByCrn_offenderNotFound_returnsNotFound() {
+        final StringBuilder sb = new StringBuilder(String.format(OFFENDERS_PATH, "X777777", KNOWN_CONVICTION_ID))
+            .append(QUERY_PARAM_NAME).append("=").append("BRE").append("&").append(QUERY_PARAM_NAME).append("=").append("BRES");
+
         given()
             .auth()
             .oauth2(validOauthToken)
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get(String.format(OFFENDERS_PATH, "X777777", KNOWN_CONVICTION_ID, "BRES,BRE"))
+            .get(sb.toString())
             .then()
             .statusCode(HttpStatus.NOT_FOUND.value());
     }
+
+
 }

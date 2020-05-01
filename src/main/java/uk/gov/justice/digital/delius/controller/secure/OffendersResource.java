@@ -375,14 +375,14 @@ public class OffendersResource {
             @ApiResponse(code = 404, message = "The offender CRN is not found", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
         })
-    @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/nsis/{nsiCodes}")
+    @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/nsis")
     public NsiWrapper getNsiForOffenderByCrnAndConvictionId(
         @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
         @NotNull @PathVariable(value = "crn") final String crn,
         @ApiParam(name = "convictionId", value = "ID for the conviction / event", example = "2500295345", required = true)
         @NotNull @PathVariable(value = "convictionId") final Long convictionId,
         @ApiParam(name = "nsiCodes", value = "list of NSI codes to constrain by", example = "BRE,BRES", required = true)
-        @NotEmpty @PathVariable(value = "nsiCodes") final List<String> nsiCodes) {
+        @NotEmpty @RequestParam(value = "nsiCodes") final List<String> nsiCodes) {
 
         return offenderService.offenderIdOfCrn(crn)
             .map((offenderId) -> new NsiWrapper(nsiService.getNsiByCodes(offenderId, convictionId, nsiCodes)))
