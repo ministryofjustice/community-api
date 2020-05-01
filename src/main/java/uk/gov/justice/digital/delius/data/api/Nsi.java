@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Nsi {
+    private Long nsiId;
     private KeyValue nsiType;
     private KeyValue nsiSubType;
     private Requirement requirement;

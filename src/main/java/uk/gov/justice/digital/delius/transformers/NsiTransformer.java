@@ -21,6 +21,7 @@ public class NsiTransformer {
     public uk.gov.justice.digital.delius.data.api.Nsi nsiOf(Nsi nsi) {
         return Optional.ofNullable(nsi).map(n ->
             uk.gov.justice.digital.delius.data.api.Nsi.builder()
+                .nsiId(n.getNsiId())
                 .requirement(requirementTransformer.requirementOf(n.getRqmnt()))
                 .nsiType(nsiTypeOf(n.getNsiType()))
                 .nsiSubType(nsiSubtypeOf(n.getNsiSubType()))

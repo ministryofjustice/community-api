@@ -29,6 +29,8 @@ class NsiTransformerTest {
             .rqmnt(uk.gov.justice.digital.delius.jpa.standard.entity.Requirement.builder().activeFlag(1L).build()).build();
 
         final Nsi nsi = TRANSFORMER.nsiOf(nsiEntity);
+
+        assertThat(nsi.getNsiId()).isEqualTo(100L);
         assertThat(nsi.getActualStartDate()).isEqualTo(actualStartDate);
         assertThat(nsi.getExpectedStartDate()).isEqualTo(expectedStartDate);
         assertThat(nsi.getNsiStatus().getCode()).isEqualTo("STX");
