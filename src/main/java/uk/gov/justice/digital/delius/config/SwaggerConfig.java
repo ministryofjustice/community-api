@@ -33,7 +33,7 @@ public class SwaggerConfig {
 
     @Bean
     public Docket offenderApi() {
-        final var docket = new Docket(DocumentationType.SWAGGER_2)
+        return new Docket(DocumentationType.SWAGGER_2)
                 .useDefaultResponseMessages(false)
                 .apiInfo(apiInfo())
                 .select()
@@ -44,13 +44,11 @@ public class SwaggerConfig {
                         regex("(\\/health.*)"),
                         regex("(\\/api/.*)"),
                         regex("(\\/secure/.*)"))))
-                .build();
-
-        docket.genericModelSubstitutes(Optional.class);
-        docket.directModelSubstitute(ZonedDateTime.class, java.util.Date.class);
-        docket.directModelSubstitute(LocalDateTime.class, java.util.Date.class);
-
-        return docket;
+                .build()
+                .genericModelSubstitutes(Optional.class)
+                .directModelSubstitute(ZonedDateTime.class, java.util.Date.class)
+                .directModelSubstitute(LocalDateTime.class, java.util.Date.class)
+                .forCodeGeneration(true);
     }
 
     private Contact contactInfo() {

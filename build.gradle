@@ -1,4 +1,3 @@
-import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 import java.time.Instant
 import java.time.LocalDate
@@ -79,7 +78,7 @@ springBoot {
 
 dependencyManagement {
     imports {
-        mavenBom(SpringBootPlugin.BOM_COORDINATES)
+        mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
     }
 }
 

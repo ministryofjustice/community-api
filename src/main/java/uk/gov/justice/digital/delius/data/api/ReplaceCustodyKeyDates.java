@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel(value = "Any dates not supplied will be removed from the associated conviction")
+@ApiModel(description = "Any dates not supplied will be removed from the associated conviction")
 public class ReplaceCustodyKeyDates {
     @ApiModelProperty(value = "Conditional release date", example = "2020-06-23")
     private LocalDate conditionalReleaseDate;
