@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
 import io.swagger.annotations.*;
+import javax.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -356,7 +357,7 @@ public class OffendersResource {
     public Conviction getConvictionForOffenderByCrnAndConvictionId(
         @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
         @NotNull @PathVariable(value = "crn") final String crn,
-        @ApiParam(name = "crn", value = "ID for the conviction / event", example = "2500295345", required = true)
+        @ApiParam(name = "convictionId", value = "ID for the conviction / event", example = "2500295345", required = true)
         @NotNull @PathVariable(value = "convictionId") final Long convictionId) {
 
         return offenderService.offenderIdOfCrn(crn)
@@ -368,7 +369,6 @@ public class OffendersResource {
     @ApiOperation(value = "Return the NSIs for a conviction ID and a CRN, filtering by NSI codes")
     @ApiResponses(
         value = {
-            @ApiResponse(code = 200, message = "OK", response = Conviction.class),
             @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
             @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
             @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
@@ -379,10 +379,10 @@ public class OffendersResource {
     public NsiWrapper getNsiForOffenderByCrnAndConvictionId(
         @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
         @NotNull @PathVariable(value = "crn") final String crn,
-        @ApiParam(name = "crn", value = "ID for the conviction / event", example = "2500295345", required = true)
+        @ApiParam(name = "convictionId", value = "ID for the conviction / event", example = "2500295345", required = true)
         @NotNull @PathVariable(value = "convictionId") final Long convictionId,
         @ApiParam(name = "nsiCodes", value = "list of NSI codes to constrain by", example = "BRE,BRES", required = true)
-        @NotNull @PathVariable(value = "nsiCodes") final List<String> nsiCodes) {
+        @NotEmpty @PathVariable(value = "nsiCodes") final List<String> nsiCodes) {
 
         return offenderService.offenderIdOfCrn(crn)
             .map((offenderId) -> new NsiWrapper(nsiService.getNsiByCodes(offenderId, convictionId, nsiCodes)))
