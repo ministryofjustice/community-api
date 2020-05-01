@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.jsonwebtoken.Claims;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +15,21 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import uk.gov.justice.digital.delius.data.api.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import uk.gov.justice.digital.delius.data.api.AccessLimitation;
+import uk.gov.justice.digital.delius.data.api.Count;
+import uk.gov.justice.digital.delius.data.api.DocumentMeta;
+import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
+import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
+import uk.gov.justice.digital.delius.data.api.OffenderIdsResource;
+import uk.gov.justice.digital.delius.data.api.OffenderManager;
+import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
 import uk.gov.justice.digital.delius.service.AlfrescoService;
@@ -28,7 +42,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @Slf4j
@@ -244,7 +260,7 @@ public class OffenderController {
     @JwtValidation
     public ResponseEntity<OffenderIdsResource> getOffenderIds(
             final @RequestHeader HttpHeaders httpHeaders,
-            final @RequestParam(name = "pageSize", required = false, defaultValue = "${offender.ids.pagesize:1000}") int pageSize,
+            @ApiParam(defaultValue = "1000") final @RequestParam(name = "pageSize", required = false, defaultValue = "${offender.ids.pagesize:1000}") int pageSize,
             final @RequestParam(defaultValue = "1") int page) {
 
         final var offenderIds = offenderService.allOffenderIds(pageSize, page);

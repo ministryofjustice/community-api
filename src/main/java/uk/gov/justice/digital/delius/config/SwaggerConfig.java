@@ -2,40 +2,38 @@ package uk.gov.justice.digital.delius.config;
 
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.util.ReferenceSerializationConfigurer;
+import lombok.AllArgsConstructor;
 import org.springframework.boot.info.BuildProperties;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
-import springfox.documentation.service.StringVendorExtension;
-import springfox.documentation.service.VendorExtension;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.json.JacksonModuleRegistrar;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 
 import static springfox.documentation.builders.PathSelectors.regex;
 
 @Configuration
 @EnableSwagger2
+@AllArgsConstructor
+@Import(BeanValidatorPluginsConfiguration.class)
 public class SwaggerConfig {
-
-    @Autowired
-    private ApplicationContext applicationContext;
+    private final BuildProperties buildProperties;
 
     @Bean
     public Docket offenderApi() {
-        Docket docket = new Docket(DocumentationType.SWAGGER_2)
+        final var docket = new Docket(DocumentationType.SWAGGER_2)
                 .useDefaultResponseMessages(false)
                 .apiInfo(apiInfo())
                 .select()
@@ -55,16 +53,6 @@ public class SwaggerConfig {
         return docket;
     }
 
-    private BuildProperties getVersion() {
-        try {
-            return (BuildProperties) applicationContext.getBean("buildProperties");
-        } catch (BeansException be) {
-            Properties properties = new Properties();
-            properties.put("version", "?");
-            return new BuildProperties(properties);
-        }
-    }
-
     private Contact contactInfo() {
         return new Contact(
                 "HMPPS Digital Studio",
@@ -72,18 +60,18 @@ public class SwaggerConfig {
                 "dps-hmpps@digital.justice.gov.uk");
     }
 
-    @SuppressWarnings("rawtypes")
-        private ApiInfo apiInfo() {
-        final StringVendorExtension vendorExtension = new StringVendorExtension("", "");
-        final Collection<VendorExtension> vendorExtensions = new ArrayList<>();
-        vendorExtensions.add(vendorExtension);
-
+    private ApiInfo apiInfo() {
         return new ApiInfo(
                 "Community API Documentation",
                 "REST service for accessing community information",
-                getVersion().getVersion(),
+                buildProperties.getVersion(),
                 "https://gateway.nomis-api.service.justice.gov.uk/auth/terms",
                 contactInfo(),
-                "Open Government Licence v3.0", "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/", vendorExtensions);
+                "Open Government Licence v3.0", "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/", List.of());
+    }
+
+    @Bean
+    public JacksonModuleRegistrar swaggerJacksonModuleRegistrar() {
+        return ReferenceSerializationConfigurer::serializeAsComputedRef;
     }
 }
