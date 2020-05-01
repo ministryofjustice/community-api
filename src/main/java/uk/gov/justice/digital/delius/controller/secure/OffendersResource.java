@@ -409,7 +409,7 @@ public class OffendersResource {
             @ApiParam(name = "convictionId", value = "ID for the conviction / event", example = "2500295345", required = true)
             @NotNull @PathVariable(value = "convictionId") final Long convictionId,
             @ApiParam(name = "nsiId", value = "ID for the nsi", example="123456", required = true)
-            @NotNull @PathVariable(value = "nsiId") String nsiId){
+            @PathVariable(value = "nsiId") Long nsiId){
         return offenderService.getOffenderByCrn(crn)
                 .map((offender) -> convictionService.convictionsFor(offender.getOffenderId())
                         .stream()
@@ -421,4 +421,5 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 }
+
 

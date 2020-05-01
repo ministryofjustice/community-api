@@ -36,7 +36,10 @@ public class OffendersResource_getOffenderNsisByCrn {
 
     private static final String KNOWN_OFFENDER = "X320741";
     private static final String GET_NSI_PATH = "/offenders/crn/%s/convictions/%s/nsis/%s";
-    private static final String KNOWN_NSI_ID = "KNOWN_NSI_ID";
+    private static final Long KNOWN_NSI_ID = 2500018597L;
+    public static final int UNKNOWN_NSI_ID = 12234566;
+    private static final long KNOWN_CONVICTION_ID_FOR_NSI = 2500295345L;
+    private static final String KNOWN_CRN_FOR_NSI = "X320741";
 
     @LocalServerPort
     private int port;
@@ -57,7 +60,7 @@ public class OffendersResource_getOffenderNsisByCrn {
 
     @Test
     public void getNsiByCrnNsiId() {
-        String path = String.format(GET_NSI_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID, KNOWN_NSI_ID);
+        String path = String.format(GET_NSI_PATH, KNOWN_CRN_FOR_NSI, KNOWN_CONVICTION_ID_FOR_NSI, KNOWN_NSI_ID);
 
         Nsi nsi = given()
                 .auth()
@@ -76,7 +79,7 @@ public class OffendersResource_getOffenderNsisByCrn {
 
     @Test
     public void givenNonExistentOffender_whenGetNsiByCrnNsiId_then404() {
-        String path = String.format(GET_NSI_PATH, "UNKNOWN_OFFENDER", KNOWN_CONVICTION_ID, KNOWN_NSI_ID);
+        String path = String.format(GET_NSI_PATH, "UNKNOWN_OFFENDER", KNOWN_CONVICTION_ID_FOR_NSI, KNOWN_NSI_ID);
 
         given()
                 .auth()
@@ -90,7 +93,7 @@ public class OffendersResource_getOffenderNsisByCrn {
 
     @Test
     public void givenNonExistentConviction_whenGetNsiByCrnNsiId_then404() {
-        String path = String.format(GET_NSI_PATH, KNOWN_OFFENDER, 123435789L, KNOWN_NSI_ID);
+        String path = String.format(GET_NSI_PATH, KNOWN_CRN_FOR_NSI, 123435789L, KNOWN_NSI_ID);
 
         given()
                 .auth()
@@ -104,7 +107,7 @@ public class OffendersResource_getOffenderNsisByCrn {
 
     @Test
     public void givenNonExistentNsi_whenGetNsiByCrnNsiId_then404() {
-        String path = String.format(GET_NSI_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID, "UNKNOWN_NSI");
+        String path = String.format(GET_NSI_PATH, KNOWN_CRN_FOR_NSI, KNOWN_CONVICTION_ID_FOR_NSI, UNKNOWN_NSI_ID);
 
         given()
                 .auth()

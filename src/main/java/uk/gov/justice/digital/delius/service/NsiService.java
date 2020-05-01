@@ -49,10 +49,8 @@ public class NsiService {
             .map(NsiWrapper::new);
     }
 
-    public Optional<Nsi> getNsiById(String nsiId) {
-        return Optional.empty();
+    public Optional<Nsi> getNsiById(Long nsiId) {
+        var nsi = nsiRepository.getByNsiId(nsiId);
+        return Optional.ofNullable(nsiTransformer.nsiOf(nsi));
     }
-
-    // TODO: 01/05/2020 Create get NSI by nsiId
-
 }
