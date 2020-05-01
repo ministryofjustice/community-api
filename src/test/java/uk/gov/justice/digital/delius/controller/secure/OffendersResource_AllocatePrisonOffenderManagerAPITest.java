@@ -34,13 +34,14 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     private ContactService contactService = mock(ContactService.class);
     private ConvictionService convictionService = mock(ConvictionService.class);
     private OffenderManagerService offenderManagerService = mock(OffenderManagerService.class);
+    private NsiService nsiService = mock(NsiService.class);
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
     public void setup() {
         RestAssuredMockMvc.standaloneSetup(
-                new OffendersResource(offenderService, alfrescoService, documentService, contactService, convictionService, offenderManagerService),
+                new OffendersResource(offenderService, alfrescoService, documentService, contactService, convictionService, nsiService, offenderManagerService),
                 new SecureControllerAdvice()
         );
     }

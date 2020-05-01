@@ -5,22 +5,19 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
+import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactOutcomeType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Explanation;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceCondition;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceConditionTypeMainCat;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Nsi;
-import uk.gov.justice.digital.delius.jpa.standard.entity.NsiStatus;
-import uk.gov.justice.digital.delius.jpa.standard.entity.NsiType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PartitionArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderEmployee;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderLocation;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderTeam;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
-import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 
 import java.util.List;
@@ -35,13 +32,19 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOn
 @Component
 public class ContactTransformer {
 
-    RequirementTransformer requirementTransformer = new RequirementTransformer();
+    final RequirementTransformer requirementTransformer = new RequirementTransformer();
+
+    private final NsiTransformer nsiTransformer = new NsiTransformer(requirementTransformer);
 
     public List<Contact> contactsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.Contact> contacts) {
         return contacts.stream()
                 .sorted(comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Contact::getCreatedDateTime))
                 .map(this::contactOf)
                 .collect(Collectors.toList());
+    }
+
+    public Nsi nsiOf(uk.gov.justice.digital.delius.jpa.standard.entity.Nsi nsi) {
+        return nsiTransformer.nsiOf(nsi);
     }
 
     private uk.gov.justice.digital.delius.data.api.Contact contactOf(uk.gov.justice.digital.delius.jpa.standard.entity.Contact contact) {
@@ -59,7 +62,7 @@ public class ContactTransformer {
                 .licenceCondition(licenceConditionOf(contact.getLicenceCondition()))
                 .linkedContactId(contact.getLinkedContactId())
                 .notes(contact.getNotes())
-                .nsi(nsiOf(contact.getNsi()))
+                .nsi(nsiTransformer.nsiOf(contact.getNsi()))
                 .requirement(requirementTransformer.requirementOf(contact.getRequirement()))
                 .softDeleted(zeroOneToBoolean(contact.getSoftDeleted()))
                 .probationArea(probationAreaOf(contact.getProbationArea()))
@@ -133,38 +136,6 @@ public class ContactTransformer {
         ).orElse(null);
     }
 
-    protected uk.gov.justice.digital.delius.data.api.Nsi nsiOf(Nsi nsi) {
-        return Optional.ofNullable(nsi).map(n ->
-                uk.gov.justice.digital.delius.data.api.Nsi.builder()
-                        .requirement(requirementTransformer.requirementOf(n.getRqmnt()))
-                        .nsiType(nsiTypeOf(n.getNsiType()))
-                        .nsiSubType(nsiSubtypeOf(n.getNsiSubType()))
-                        .nsiStatus(nsiStatusOf(n.getNsiStatus()))
-                        .build()).orElse(null);
-    }
-
-    private KeyValue nsiStatusOf(NsiStatus nsiStatus) {
-        return Optional.ofNullable(nsiStatus).map(nsis ->
-                KeyValue.builder().code(nsis.getCode())
-                        .description(nsis.getDescription())
-                        .build()).orElse(null);
-    }
-
-    private KeyValue nsiSubtypeOf(StandardReference nsiSubType) {
-        return Optional.ofNullable(nsiSubType).map(nsist ->
-                KeyValue.builder()
-                        .code(nsist.getCodeValue())
-                        .description(nsist.getCodeDescription())
-                        .build()).orElse(null);
-    }
-
-    private KeyValue nsiTypeOf(NsiType nsiType) {
-        return Optional.ofNullable(nsiType).map(nsit -> KeyValue.builder()
-                .code(nsit.getCode())
-                .description(nsit.getDescription())
-                .build()).orElse(null);
-    }
-
     protected uk.gov.justice.digital.delius.data.api.LicenceCondition licenceConditionOf(LicenceCondition licenceCondition) {
         return Optional.ofNullable(licenceCondition).map(lc -> uk.gov.justice.digital.delius.data.api.LicenceCondition.builder()
                 .active(zeroOneToBoolean(lc.getActiveFlag()))
@@ -210,6 +181,5 @@ public class ContactTransformer {
                         .description(cot.getDescription())
                         .build()).orElse(null);
     }
-
 
 }

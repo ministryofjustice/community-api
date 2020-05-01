@@ -30,6 +30,12 @@ public class Nsi {
     @Column(name = "REFERRAL_DATE")
     private LocalDate referralDate;
 
+    @Column(name = "ACTUAL_START_DATE")
+    private LocalDate actualStartDate;
+
+    @Column(name = "EXPECTED_START_DATE")
+    private LocalDate expectedStartDate;
+
     @JoinColumn(name = "NSI_TYPE_ID")
     @OneToOne
     private NsiType nsiType;
