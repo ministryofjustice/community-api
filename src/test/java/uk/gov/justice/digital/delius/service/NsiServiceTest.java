@@ -47,7 +47,7 @@ public class NsiServiceTest {
         when(nsiRepository.findByEventIdAndOffenderId(EVENT_ID, OFFENDER_ID)).thenReturn(singletonList(nsiEntity));
         when(nsiTransformer.nsiOf(nsiEntity)).thenReturn(nsi);
 
-        final List<Nsi> nsis = nsiService.getNsiByCodes(OFFENDER_ID, EVENT_ID, Set.of("BRE", "APCUS"));
+        final var nsis = nsiService.getNsiByCodes(OFFENDER_ID, EVENT_ID, Set.of("BRE", "APCUS"));
 
         assertThat(nsis).hasSize(1);
         assertThat(nsis).contains(nsi);
@@ -65,7 +65,7 @@ public class NsiServiceTest {
         final uk.gov.justice.digital.delius.jpa.standard.entity.Nsi nsiEntity2 = buildNsi(EVENT, "SPX");
         when(nsiRepository.findByEventIdAndOffenderId(EVENT_ID, OFFENDER_ID)).thenReturn(asList(nsiEntity1, nsiEntity2));
 
-        final List<Nsi> nsis = nsiService.getNsiByCodes(OFFENDER_ID, EVENT_ID, Set.of("BRE", "BRZ"));
+        final var nsis = nsiService.getNsiByCodes(OFFENDER_ID, EVENT_ID, Set.of("BRE", "BRZ"));
 
         assertThat(nsis).hasSize(0);
 
@@ -78,7 +78,7 @@ public class NsiServiceTest {
     void whenFetchNsisAllFilterBySoftDeleted() {
 
         final Event deletedEvent = Event.builder().softDeleted(1L).build();
-        final uk.gov.justice.digital.delius.jpa.standard.entity.Nsi nsiEntity = buildNsi(deletedEvent, "BRE");
+        final var nsiEntity = buildNsi(deletedEvent, "BRE");
         when(nsiRepository.findByEventIdAndOffenderId(EVENT_ID, OFFENDER_ID)).thenReturn(singletonList(nsiEntity));
 
         final List<Nsi> nsis = nsiService.getNsiByCodes(OFFENDER_ID, EVENT_ID, Set.of("BRE"));
@@ -95,7 +95,7 @@ public class NsiServiceTest {
 
         when(nsiRepository.findByEventIdAndOffenderId(EVENT_ID, OFFENDER_ID)).thenReturn(Collections.emptyList());
 
-        final List<Nsi> nsis = nsiService.getNsiByCodes(OFFENDER_ID, EVENT_ID, Set.of("BRE"));
+        final var nsis = nsiService.getNsiByCodes(OFFENDER_ID, EVENT_ID, Set.of("BRE"));
 
         assertThat(nsis).hasSize(0);
 
