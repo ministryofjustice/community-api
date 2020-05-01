@@ -25,16 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
-import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
-import uk.gov.justice.digital.delius.data.api.Contact;
-import uk.gov.justice.digital.delius.data.api.Conviction;
-import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
-import uk.gov.justice.digital.delius.data.api.NsiWrapper;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
-import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
-import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
-import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
-import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
+import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
 import uk.gov.justice.digital.delius.service.AlfrescoService;
 import uk.gov.justice.digital.delius.service.ContactService;
@@ -411,6 +402,23 @@ public class OffendersResource {
             .orElseThrow(() -> new NotFoundException(String.format("Conviction with ID %s for Offender with crn %s not found", convictionId, crn)));
     }
 
-    // TODO: 01/05/2020 Create new NSI resource by id endpoint
+    @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/nsis/{nsiId}")
+    public Nsi getNsiByNsiId(
+            @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
+            @NotNull @PathVariable(value = "crn") final String crn,
+            @ApiParam(name = "convictionId", value = "ID for the conviction / event", example = "2500295345", required = true)
+            @NotNull @PathVariable(value = "convictionId") final Long convictionId,
+            @ApiParam(name = "nsiId", value = "ID for the nsi", example="123456", required = true)
+            @NotNull @PathVariable(value = "nsiId") String nsiId){
+        return offenderService.getOffenderByCrn(crn)
+                .map((offender) -> convictionService.convictionsFor(offender.getOffenderId())
+                        .stream()
+                        .filter(conviction -> convictionId.equals(conviction.getConvictionId()))
+                        .findAny()
+                        .orElseThrow(() -> new NotFoundException(String.format("Conviction with convictionId %s not found for offender with crn %s", convictionId, crn)))
+                ).map(conviction -> nsiService.getNsiById(nsiId))
+                .orElseThrow(() -> new NotFoundException(String.format("NSI with id %s not found", nsiId)))
+                .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
+    }
 }
 

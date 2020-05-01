@@ -75,7 +75,7 @@ public class OffendersResource_getOffenderNsisByCrn {
     }
 
     @Test
-    public void givenNonExistantOffender_whenGetNsiByCrnNsiId_then404() {
+    public void givenNonExistentOffender_whenGetNsiByCrnNsiId_then404() {
         String path = String.format(GET_NSI_PATH, "UNKNOWN_OFFENDER", KNOWN_CONVICTION_ID, KNOWN_NSI_ID);
 
         given()
@@ -89,8 +89,8 @@ public class OffendersResource_getOffenderNsisByCrn {
     }
 
     @Test
-    public void givenNonExistantConviction_whenGetNsiByCrnNsiId_then404() {
-        String path = String.format(GET_NSI_PATH, KNOWN_OFFENDER, "UNKNOWN_CONVICTION", KNOWN_NSI_ID);
+    public void givenNonExistentConviction_whenGetNsiByCrnNsiId_then404() {
+        String path = String.format(GET_NSI_PATH, KNOWN_OFFENDER, 123435789L, KNOWN_NSI_ID);
 
         given()
                 .auth()
@@ -103,7 +103,7 @@ public class OffendersResource_getOffenderNsisByCrn {
     }
 
     @Test
-    public void givenNonExistantNsi_whenGetNsiByCrnNsiId_then404() {
+    public void givenNonExistentNsi_whenGetNsiByCrnNsiId_then404() {
         String path = String.format(GET_NSI_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID, "UNKNOWN_NSI");
 
         given()

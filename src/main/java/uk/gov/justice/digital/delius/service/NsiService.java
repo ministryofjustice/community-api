@@ -10,9 +10,16 @@ import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.data.api.NsiWrapper;
 import uk.gov.justice.digital.delius.jpa.standard.repository.NsiRepository;
 import uk.gov.justice.digital.delius.transformers.NsiTransformer;
+
+import java.util.Collection;
+import java.util.Optional;
+
+import static java.util.stream.Collectors.toList;
+import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
 
 @Service
 @Slf4j
@@ -40,6 +47,10 @@ public class NsiService {
                 .map(nsiTransformer::nsiOf)
                 .collect(Collectors.toList()))
             .map(NsiWrapper::new);
+    }
+
+    public Optional<Nsi> getNsiById(String nsiId) {
+        return Optional.empty();
     }
 
     // TODO: 01/05/2020 Create get NSI by nsiId
