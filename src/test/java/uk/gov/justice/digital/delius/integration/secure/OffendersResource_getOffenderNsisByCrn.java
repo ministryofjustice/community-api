@@ -1,9 +1,5 @@
 package uk.gov.justice.digital.delius.integration.secure;
 
-import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
@@ -18,7 +14,12 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.data.api.NsiWrapper;
+
+import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev-seed")
@@ -34,6 +35,8 @@ public class OffendersResource_getOffenderNsisByCrn {
     private static final Long KNOWN_CONVICTION_ID_NO_BREACH = 2500295343L;
 
     private static final String KNOWN_OFFENDER = "X320741";
+    private static final String GET_NSI_PATH = "/offenders/crn/%s/convictions/%s/nsis/%s";
+    private static final String KNOWN_NSI_ID = "KNOWN_NSI_ID";
 
     @LocalServerPort
     private int port;
@@ -50,6 +53,67 @@ public class OffendersResource_getOffenderNsisByCrn {
         RestAssured.basePath = "/secure";
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
                 new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
+    }
+
+    @Test
+    public void getNsiByCrnNsiId() {
+        String path = String.format(GET_NSI_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID, KNOWN_NSI_ID);
+
+        Nsi nsi = given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get(path)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .body()
+                .as(Nsi.class);
+
+        assertThat(nsi.getNsiId()).isEqualTo(KNOWN_NSI_ID);
+    }
+
+    @Test
+    public void givenNonExistantOffender_whenGetNsiByCrnNsiId_then404() {
+        String path = String.format(GET_NSI_PATH, "UNKNOWN_OFFENDER", KNOWN_CONVICTION_ID, KNOWN_NSI_ID);
+
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get(path)
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    public void givenNonExistantConviction_whenGetNsiByCrnNsiId_then404() {
+        String path = String.format(GET_NSI_PATH, KNOWN_OFFENDER, "UNKNOWN_CONVICTION", KNOWN_NSI_ID);
+
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get(path)
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    public void givenNonExistantNsi_whenGetNsiByCrnNsiId_then404() {
+        String path = String.format(GET_NSI_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID, "UNKNOWN_NSI");
+
+        given()
+                .auth()
+                .oauth2(validOauthToken)
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get(path)
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value());
     }
 
     @Test

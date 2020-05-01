@@ -410,5 +410,7 @@ public class OffendersResource {
             .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)))
             .orElseThrow(() -> new NotFoundException(String.format("Conviction with ID %s for Offender with crn %s not found", convictionId, crn)));
     }
+
+    // TODO: 01/05/2020 Create new NSI resource by id endpoint
 }
 

@@ -16,6 +16,8 @@ import java.time.LocalDate;
 @Table(name = "NSI")
 public class Nsi {
 
+    // TODO: 01/05/2020 Add foreign key NSI_MANAGER to retrieve probation area, team and officer 
+
     @Id
     @Column(name = "NSI_ID")
     private Long nsiId;
