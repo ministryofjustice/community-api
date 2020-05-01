@@ -8,7 +8,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.jpa.dao.OffenderDelta;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
 import uk.gov.justice.digital.delius.service.OffenderDeltaService;
@@ -19,7 +24,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@Api( description = "Low level API for propagating significant events", tags = "Offender deltas")
+@Api(value = "Low level API for propagating significant events", tags = "Offender deltas")
 @RequestMapping(value = "api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OffenderDeltaController {
 

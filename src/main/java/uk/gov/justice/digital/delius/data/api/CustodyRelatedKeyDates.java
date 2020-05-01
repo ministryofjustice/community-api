@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-@ApiModel("Key sentence dates that are related to their time in custody")
+@ApiModel(description = "Key sentence dates that are related to their time in custody")
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
