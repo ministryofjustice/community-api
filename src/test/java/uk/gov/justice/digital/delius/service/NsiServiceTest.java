@@ -9,7 +9,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,10 +46,10 @@ public class NsiServiceTest {
         when(nsiRepository.findByEventIdAndOffenderId(EVENT_ID, OFFENDER_ID)).thenReturn(singletonList(nsiEntity));
         when(nsiTransformer.nsiOf(nsiEntity)).thenReturn(nsi);
 
-        final var nsis = nsiService.getNsiByCodes(OFFENDER_ID, EVENT_ID, Set.of("BRE", "APCUS"));
+        final var nsiWrapper = nsiService.getNsiByCodes(OFFENDER_ID, EVENT_ID, Set.of("BRE", "APCUS"));
 
-        assertThat(nsis).hasSize(1);
-        assertThat(nsis).contains(nsi);
+        assertThat(nsiWrapper.get().getNsis()).hasSize(1);
+        assertThat(nsiWrapper.get().getNsis()).contains(nsi);
 
         verify(nsiTransformer).nsiOf(nsiEntity);
         verify(nsiRepository).findByEventIdAndOffenderId(EVENT_ID, OFFENDER_ID);
@@ -65,9 +64,9 @@ public class NsiServiceTest {
         final uk.gov.justice.digital.delius.jpa.standard.entity.Nsi nsiEntity2 = buildNsi(EVENT, "SPX");
         when(nsiRepository.findByEventIdAndOffenderId(EVENT_ID, OFFENDER_ID)).thenReturn(asList(nsiEntity1, nsiEntity2));
 
-        final var nsis = nsiService.getNsiByCodes(OFFENDER_ID, EVENT_ID, Set.of("BRE", "BRZ"));
+        final var nsiWrapper = nsiService.getNsiByCodes(OFFENDER_ID, EVENT_ID, Set.of("BRE", "BRZ"));
 
-        assertThat(nsis).hasSize(0);
+        assertThat(nsiWrapper.get().getNsis()).hasSize(0);
 
         verify(nsiRepository).findByEventIdAndOffenderId(EVENT_ID, OFFENDER_ID);
         verifyNoMoreInteractions(nsiRepository, nsiTransformer);
@@ -81,26 +80,23 @@ public class NsiServiceTest {
         final var nsiEntity = buildNsi(deletedEvent, "BRE");
         when(nsiRepository.findByEventIdAndOffenderId(EVENT_ID, OFFENDER_ID)).thenReturn(singletonList(nsiEntity));
 
-        final List<Nsi> nsis = nsiService.getNsiByCodes(OFFENDER_ID, EVENT_ID, Set.of("BRE"));
+        final var nsiWrapper = nsiService.getNsiByCodes(OFFENDER_ID, EVENT_ID, Set.of("BRE"));
 
-        assertThat(nsis).hasSize(0);
+        assertThat(nsiWrapper.get().getNsis()).hasSize(0);
 
         verify(nsiRepository).findByEventIdAndOffenderId(EVENT_ID, OFFENDER_ID);
         verifyNoMoreInteractions(nsiRepository, nsiTransformer);
     }
 
-    @DisplayName("Repo returns empty list, so does the service")
+    @DisplayName("Repo returns empty list, return empty optional")
     @Test
-    void whenFetchNsisRepoReturnsEmptyList() {
+    void whenFetchNsisRepoReturnsEmptyOptional() {
 
         when(nsiRepository.findByEventIdAndOffenderId(EVENT_ID, OFFENDER_ID)).thenReturn(Collections.emptyList());
 
-        final var nsis = nsiService.getNsiByCodes(OFFENDER_ID, EVENT_ID, Set.of("BRE"));
+        final var nsiWrapper = nsiService.getNsiByCodes(OFFENDER_ID, EVENT_ID, Set.of("BRE"));
 
-        assertThat(nsis).hasSize(0);
-
-        verify(nsiRepository).findByEventIdAndOffenderId(EVENT_ID, OFFENDER_ID);
-        verifyNoMoreInteractions(nsiRepository, nsiTransformer);
+        assertThat(nsiWrapper).isNotPresent();
     }
 
     public static uk.gov.justice.digital.delius.jpa.standard.entity.Nsi buildNsi(final Event event, final String typeCode) {

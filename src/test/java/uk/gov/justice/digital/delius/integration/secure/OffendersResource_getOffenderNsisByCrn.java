@@ -72,9 +72,9 @@ public class OffendersResource_getOffenderNsisByCrn {
     }
 
     @Test
-    public void getGetOffenderNsisByCrnAndConvictionIdWithNoNsiBreaches() {
-        final StringBuilder sb = new StringBuilder(String.format(OFFENDERS_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID_NO_BREACH))
-            .append(QUERY_PARAM_NAME).append("=").append("BRE").append("&").append(QUERY_PARAM_NAME).append("=").append("BRES");
+    public void getGetOffenderNsisByCrnAndKnownConvictionIdButNoMatchToFilter() {
+        final StringBuilder sb = new StringBuilder(String.format(OFFENDERS_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID))
+            .append(QUERY_PARAM_NAME).append("=").append("XXX");
         final var nsiWrapper = given()
             .auth()
             .oauth2(validOauthToken)
@@ -88,6 +88,20 @@ public class OffendersResource_getOffenderNsisByCrn {
             .as(NsiWrapper.class);
 
         assertThat(nsiWrapper.getNsis()).hasSize(0);
+    }
+
+    @Test
+    public void getGetOffenderNsisByCrnAndConvictionIdWithNoNsiBreaches() {
+        final StringBuilder sb = new StringBuilder(String.format(OFFENDERS_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID_NO_BREACH))
+            .append(QUERY_PARAM_NAME).append("=").append("BRE").append("&").append(QUERY_PARAM_NAME).append("=").append("BRES");
+        given()
+            .auth()
+            .oauth2(validOauthToken)
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get(sb.toString())
+            .then()
+            .statusCode(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -112,23 +126,18 @@ public class OffendersResource_getOffenderNsisByCrn {
     }
 
     @Test
-    public void getGetOffenderNsisByCrnAndUnknownConvictionId_ReturnsEmptyCollection() {
+    public void getGetOffenderNsisByCrnAndUnknownConvictionId_Returns404() {
         final StringBuilder sb = new StringBuilder(String.format(OFFENDERS_PATH, KNOWN_OFFENDER, "0"))
             .append(QUERY_PARAM_NAME).append("=").append("BRE").append("&").append(QUERY_PARAM_NAME).append("=").append("BRES");
 
-        final var nsiWrapper = given()
+        given()
             .auth()
             .oauth2(validOauthToken)
             .contentType(APPLICATION_JSON_VALUE)
             .when()
             .get(sb.toString())
             .then()
-            .statusCode(HttpStatus.OK.value())
-            .extract()
-            .body()
-            .as(NsiWrapper.class);
-
-        assertThat(nsiWrapper.getNsis()).hasSize(0);
+            .statusCode(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -145,6 +154,5 @@ public class OffendersResource_getOffenderNsisByCrn {
             .then()
             .statusCode(HttpStatus.NOT_FOUND.value());
     }
-
 
 }

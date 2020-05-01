@@ -385,8 +385,9 @@ public class OffendersResource {
         @NotEmpty @RequestParam(value = "nsiCodes") final List<String> nsiCodes) {
 
         return offenderService.offenderIdOfCrn(crn)
-            .map((offenderId) -> new NsiWrapper(nsiService.getNsiByCodes(offenderId, convictionId, nsiCodes)))
-            .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
+            .map((offenderId) -> nsiService.getNsiByCodes(offenderId, convictionId, nsiCodes))
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)))
+            .orElseThrow(() -> new NotFoundException(String.format("Conviction with ID %s for Offender with crn %s not found", convictionId, crn)));
     }
 }
 
