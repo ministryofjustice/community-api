@@ -365,7 +365,7 @@ public class OffendersResource {
             .orElseThrow(() -> new NotFoundException(String.format("Conviction with ID %s for Offender with crn %s not found", convictionId, crn)));
     }
 
-    @ApiOperation(value = "Return the breaches for a conviction ID and a CRN")
+    @ApiOperation(value = "Return the NSIs for a conviction ID and a CRN, filtering by NSI codes")
     @ApiResponses(
         value = {
             @ApiResponse(code = 200, message = "OK", response = Conviction.class),
