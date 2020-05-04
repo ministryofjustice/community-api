@@ -58,4 +58,7 @@ public class Nsi {
     @OneToOne
     private NsiStatus nsiStatus;
 
+    @Column(name = "LENGTH")
+    private Long length;
+
 }

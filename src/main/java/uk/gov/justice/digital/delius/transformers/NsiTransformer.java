@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
@@ -9,9 +8,12 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.NsiStatus;
 import uk.gov.justice.digital.delius.jpa.standard.entity.NsiType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
+import java.util.Optional;
+
 @Component
 public class NsiTransformer {
 
+    public static final String NSI_LENGTH_UNIT = "Months";
     private final RequirementTransformer requirementTransformer;
 
     public NsiTransformer (@Autowired final RequirementTransformer requirementTransformer) {
@@ -29,6 +31,8 @@ public class NsiTransformer {
                 .actualStartDate(n.getActualStartDate())
                 .expectedStartDate(n.getExpectedStartDate())
                 .referralDate(n.getReferralDate())
+                .length(n.getLength())
+                .lengthUnit(NSI_LENGTH_UNIT)
                 .build()).orElse(null);
     }
 

@@ -1,13 +1,14 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
-import java.time.Month;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+
+import java.time.LocalDate;
+import java.time.Month;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class NsiTransformerTest {
 
@@ -26,6 +27,7 @@ class NsiTransformerTest {
             .actualStartDate(actualStartDate)
             .expectedStartDate(expectedStartDate)
             .referralDate(referralDate)
+                .length(12L)
             .rqmnt(uk.gov.justice.digital.delius.jpa.standard.entity.Requirement.builder().activeFlag(1L).build()).build();
 
         final Nsi nsi = TRANSFORMER.nsiOf(nsiEntity);
@@ -38,5 +40,17 @@ class NsiTransformerTest {
         assertThat(nsi.getNsiType()).isEqualTo(KeyValue.builder().code("TYPE").description("Type Desc").build());
         assertThat(nsi.getNsiSubType()).isEqualTo(KeyValue.builder().code("STC").description("Sub Type Desc").build());
         assertThat(nsi.getRequirement().getActive()).isEqualTo(true);
+
+        assertThat(nsi.getLength()).isEqualTo(12L);
+        assertThat(nsi.getLengthUnit()).isEqualTo("Months");
+//        assertThat(nsi.getCourt?)
+//
+//        court | Harrogate Magistrates' Court
+//
+//        provider| NPS North East
+//
+//        team | Enforcement hub - Sheffield and Rotherham
+//
+//        officer | Unallocated
     }
 }
