@@ -18,6 +18,9 @@ public class StaffTransformer {
     public StaffTransformer(TeamTransformer teamTransformer) {
         this.teamTransformer = teamTransformer;
     }
+    public StaffTransformer() {
+        this.teamTransformer = new TeamTransformer();
+    }
 
     public StaffDetails staffDetailsOf(Staff staff) {                    
         return StaffDetails.builder()

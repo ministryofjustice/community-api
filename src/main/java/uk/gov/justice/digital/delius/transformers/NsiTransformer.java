@@ -21,15 +21,18 @@ public class NsiTransformer {
     private final ProbationAreaTransformer probationAreaTransformer;
     private final CourtTransformer courtTransformer;
     private final TeamTransformer teamTransformer;
+    private final StaffTransformer staffTransformer;
 
     public NsiTransformer(@Autowired final RequirementTransformer requirementTransformer,
                           @Autowired ProbationAreaTransformer probationAreaTransformer,
                           @Autowired CourtTransformer courtTransformer,
-                          @Autowired TeamTransformer teamTransformer) {
+                          @Autowired TeamTransformer teamTransformer,
+                          @Autowired StaffTransformer staffTransformer) {
         this.requirementTransformer = requirementTransformer;
         this.probationAreaTransformer = probationAreaTransformer;
         this.courtTransformer = courtTransformer;
         this.teamTransformer = teamTransformer;
+        this.staffTransformer = staffTransformer;
     }
 
     public NsiTransformer() {
@@ -37,6 +40,7 @@ public class NsiTransformer {
         this.probationAreaTransformer = new ProbationAreaTransformer();
         this.courtTransformer = new CourtTransformer();
         this.teamTransformer = new TeamTransformer();
+        this.staffTransformer = new StaffTransformer();
     }
 
     public uk.gov.justice.digital.delius.data.api.Nsi nsiOf(Nsi nsi) {
@@ -64,6 +68,7 @@ public class NsiTransformer {
                         .endDate(nsiManager.getEndDate())
                         .probationArea(probationAreaTransformer.probationAreaOf(nsiManager.getProbationArea()))
                         .team(teamTransformer.teamOf(nsiManager.getTeam()))
+                        .staff(staffTransformer.staffDetailsOf(nsiManager.getStaff()))
                         .build())
                 .collect(Collectors.toList());
     }

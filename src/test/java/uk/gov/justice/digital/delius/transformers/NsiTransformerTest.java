@@ -18,7 +18,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class NsiTransformerTest {
 
-
     @Mock
     private uk.gov.justice.digital.delius.data.api.ProbationArea probationArea1;
     @Mock
@@ -29,6 +28,10 @@ class NsiTransformerTest {
     private uk.gov.justice.digital.delius.data.api.Team mockTeam1;
     @Mock
     private uk.gov.justice.digital.delius.data.api.Team mockTeam2;
+    @Mock
+    private uk.gov.justice.digital.delius.data.api.StaffDetails mockStaff1;
+    @Mock
+    private uk.gov.justice.digital.delius.data.api.StaffDetails mockStaff2;
 
     @Mock
     private ProbationAreaTransformer probationAreaTransformer;
@@ -36,10 +39,12 @@ class NsiTransformerTest {
     private CourtTransformer courtTransformer;
     @Mock
     private TeamTransformer teamTransformer;
+    @Mock
+    private StaffTransformer staffTransformer;
 
     @Test
     void testTransform() {
-        NsiTransformer transformer = new NsiTransformer(new RequirementTransformer(), probationAreaTransformer, courtTransformer, teamTransformer);
+        NsiTransformer transformer = new NsiTransformer(new RequirementTransformer(), probationAreaTransformer, courtTransformer, teamTransformer, staffTransformer);
         final LocalDate expectedStartDate = LocalDate.of(2020, Month.APRIL, 1);
         final LocalDate actualStartDate = LocalDate.of(2020, Month.APRIL, 1);
         final LocalDate referralDate = LocalDate.of(2020, Month.FEBRUARY, 1);
@@ -49,23 +54,32 @@ class NsiTransformerTest {
         Team expectedTeam1 = Team.builder()
                 .teamId(1L)
                 .build();
+        Staff expectedStaff1 = Staff.builder()
+                .staffId(1L)
+                .build();
         NsiManager nsiManager1 = NsiManager.builder()
                 .startDate(LocalDate.of(2020,5,4))
                 .endDate(LocalDate.of(2021,5,4))
                 .probationArea(expectedProbationArea1)
                 .team(expectedTeam1)
+                .staff(expectedStaff1)
                 .build();
+
         ProbationArea expectedProbationArea2 = ProbationArea.builder()
                 .probationAreaId(2L)
                 .build();
         Team expectedTeam2 = Team.builder()
                 .teamId(2L)
                 .build();
+        Staff expectedStaff2 = Staff.builder()
+                .staffId(2L)
+                .build();
         NsiManager nsiManager2 = NsiManager.builder()
                 .startDate(LocalDate.of(2019,5,4))
                 .endDate(LocalDate.of(2020,5,3))
                 .probationArea(expectedProbationArea2)
                 .team(expectedTeam2)
+                .staff(expectedStaff2)
                 .build();
 
         Court court = Court.builder().build();
@@ -74,6 +88,8 @@ class NsiTransformerTest {
         when(courtTransformer.courtOf(court)).thenReturn(mockCourt);
         when(teamTransformer.teamOf(expectedTeam1)).thenReturn(mockTeam1);
         when(teamTransformer.teamOf(expectedTeam2)).thenReturn(mockTeam2);
+        when(staffTransformer.staffDetailsOf(expectedStaff1)).thenReturn(mockStaff1);
+        when(staffTransformer.staffDetailsOf(expectedStaff2)).thenReturn(mockStaff2);
 
         final var nsiEntity = uk.gov.justice.digital.delius.jpa.standard.entity.Nsi.builder()
             .nsiId(100L)
@@ -111,6 +127,7 @@ class NsiTransformerTest {
         assertThat(manager1.getEndDate()).isEqualTo(LocalDate.of(2021, 5, 4));
         assertThat(manager1.getProbationArea()).isEqualTo(probationArea1);
         assertThat(manager1.getTeam()).isEqualTo(mockTeam1);
+        assertThat(manager1.getStaff()).isEqualTo(mockStaff1);
 
         var manager2 = nsi.getNsiManagers().get(1);
         assertThat(manager2.getStartDate()).isEqualTo(LocalDate.of(2019, 5, 4));
@@ -119,14 +136,7 @@ class NsiTransformerTest {
         assertThat(nsi.getCourt()).isNotNull();
         assertThat(nsi.getCourt()).isEqualTo(mockCourt);
         assertThat(manager2.getTeam()).isEqualTo(mockTeam2);
-
-//
-//        court | Harrogate Magistrates' Court
-//
-//        provider| NPS North East
-//
-//        team | Enforcement hub - Sheffield and Rotherham
-//
+        assertThat(manager2.getStaff()).isEqualTo(mockStaff2);
 //        officer | Unallocated
     }
 }

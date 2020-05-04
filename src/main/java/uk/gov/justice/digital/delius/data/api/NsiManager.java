@@ -12,6 +12,7 @@ import java.time.LocalDate;
 public class NsiManager {
     private ProbationArea probationArea;
     private Team team;
+    private StaffDetails staff;
     private LocalDate startDate;
     private LocalDate endDate;
 }

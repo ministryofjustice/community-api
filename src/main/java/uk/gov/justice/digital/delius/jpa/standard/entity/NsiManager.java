@@ -32,6 +32,10 @@ public class NsiManager {
     @OneToOne
     private Team team;
 
+    @JoinColumn(name = "STAFF_ID")
+    @OneToOne
+    private Staff staff;
+
     @Column(name = "START_DATE")
     private LocalDate startDate;
 
