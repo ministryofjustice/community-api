@@ -28,6 +28,10 @@ public class NsiManager {
     @OneToOne
     private ProbationArea probationArea;
 
+    @JoinColumn(name = "TEAM_ID")
+    @OneToOne
+    private Team team;
+
     @Column(name = "START_DATE")
     private LocalDate startDate;
 

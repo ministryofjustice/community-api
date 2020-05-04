@@ -25,39 +25,55 @@ class NsiTransformerTest {
     private uk.gov.justice.digital.delius.data.api.ProbationArea probationArea2;
     @Mock
     private uk.gov.justice.digital.delius.data.api.Court mockCourt;
+    @Mock
+    private uk.gov.justice.digital.delius.data.api.Team mockTeam1;
+    @Mock
+    private uk.gov.justice.digital.delius.data.api.Team mockTeam2;
 
     @Mock
     private ProbationAreaTransformer probationAreaTransformer;
     @Mock
     private CourtTransformer courtTransformer;
+    @Mock
+    private TeamTransformer teamTransformer;
 
     @Test
     void testTransform() {
-        NsiTransformer transformer = new NsiTransformer(new RequirementTransformer(), probationAreaTransformer, courtTransformer);
+        NsiTransformer transformer = new NsiTransformer(new RequirementTransformer(), probationAreaTransformer, courtTransformer, teamTransformer);
         final LocalDate expectedStartDate = LocalDate.of(2020, Month.APRIL, 1);
         final LocalDate actualStartDate = LocalDate.of(2020, Month.APRIL, 1);
         final LocalDate referralDate = LocalDate.of(2020, Month.FEBRUARY, 1);
         ProbationArea expectedProbationArea1 = ProbationArea.builder()
                 .probationAreaId(1L)
                 .build();
+        Team expectedTeam1 = Team.builder()
+                .teamId(1L)
+                .build();
         NsiManager nsiManager1 = NsiManager.builder()
                 .startDate(LocalDate.of(2020,5,4))
                 .endDate(LocalDate.of(2021,5,4))
                 .probationArea(expectedProbationArea1)
+                .team(expectedTeam1)
                 .build();
         ProbationArea expectedProbationArea2 = ProbationArea.builder()
                 .probationAreaId(2L)
+                .build();
+        Team expectedTeam2 = Team.builder()
+                .teamId(2L)
                 .build();
         NsiManager nsiManager2 = NsiManager.builder()
                 .startDate(LocalDate.of(2019,5,4))
                 .endDate(LocalDate.of(2020,5,3))
                 .probationArea(expectedProbationArea2)
+                .team(expectedTeam2)
                 .build();
 
         Court court = Court.builder().build();
         when(probationAreaTransformer.probationAreaOf(expectedProbationArea1)).thenReturn(probationArea1);
         when(probationAreaTransformer.probationAreaOf(expectedProbationArea2)).thenReturn(probationArea2);
         when(courtTransformer.courtOf(court)).thenReturn(mockCourt);
+        when(teamTransformer.teamOf(expectedTeam1)).thenReturn(mockTeam1);
+        when(teamTransformer.teamOf(expectedTeam2)).thenReturn(mockTeam2);
 
         final var nsiEntity = uk.gov.justice.digital.delius.jpa.standard.entity.Nsi.builder()
             .nsiId(100L)
@@ -94,6 +110,7 @@ class NsiTransformerTest {
         assertThat(manager1.getStartDate()).isEqualTo(LocalDate.of(2020, 5, 4));
         assertThat(manager1.getEndDate()).isEqualTo(LocalDate.of(2021, 5, 4));
         assertThat(manager1.getProbationArea()).isEqualTo(probationArea1);
+        assertThat(manager1.getTeam()).isEqualTo(mockTeam1);
 
         var manager2 = nsi.getNsiManagers().get(1);
         assertThat(manager2.getStartDate()).isEqualTo(LocalDate.of(2019, 5, 4));
@@ -101,6 +118,7 @@ class NsiTransformerTest {
         assertThat(manager2.getProbationArea()).isEqualTo(probationArea2);
         assertThat(nsi.getCourt()).isNotNull();
         assertThat(nsi.getCourt()).isEqualTo(mockCourt);
+        assertThat(manager2.getTeam()).isEqualTo(mockTeam2);
 
 //
 //        court | Harrogate Magistrates' Court

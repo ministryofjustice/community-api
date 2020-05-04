@@ -59,7 +59,7 @@ public class OffendersResource_getOffenderNsisByCrn {
     }
 
     @Test
-    public void getNsiByCrnNsiId() {
+    public void getNsiByCrnAndNsiId() {
         String path = String.format(GET_NSI_PATH, KNOWN_CRN_FOR_NSI, KNOWN_CONVICTION_ID_FOR_NSI, KNOWN_NSI_ID);
 
         Nsi nsi = given()
@@ -80,14 +80,9 @@ public class OffendersResource_getOffenderNsisByCrn {
         assertThat(nsi.getNsiManagers().get(0).getProbationArea().getCode()).isEqualTo("N02");
         assertThat(nsi.getCourt().getCode()).isEqualTo("SHEFMC");
         assertThat(nsi.getCourt().getCourtName()).isEqualTo("Sheffield Magistrates Court");
-//
-//        court | Harrogate Magistrates' Court
-//
-//        provider| NPS North East
-//
-//        team | Enforcement hub - Sheffield and Rotherham
-//
-//        officer | Unallocated
+        assertThat(nsi.getNsiManagers().get(0).getTeam().getDescription()).isEqualTo("Unallocated Team(N02)");
+        assertThat(nsi.getNsiManagers().get(0).getTeam().getCode()).isEqualTo("N02UAT");
+//        officer | Unallocated Staff(N07)
 
     }
 
