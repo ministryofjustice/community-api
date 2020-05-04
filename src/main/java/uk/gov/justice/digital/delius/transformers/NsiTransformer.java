@@ -25,6 +25,11 @@ public class NsiTransformer {
         this.probationAreaTransformer = probationAreaTransformer;
     }
 
+    public NsiTransformer() {
+        this.requirementTransformer = new RequirementTransformer();
+        this.probationAreaTransformer = new ProbationAreaTransformer();
+    }
+
     public uk.gov.justice.digital.delius.data.api.Nsi nsiOf(Nsi nsi) {
         return Optional.ofNullable(nsi).map(n ->
             uk.gov.justice.digital.delius.data.api.Nsi.builder()

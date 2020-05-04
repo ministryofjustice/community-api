@@ -1,6 +1,9 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.jpa.standard.entity.NsiManager;
@@ -10,40 +13,49 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class NsiTransformerTest {
 
-    private static final NsiTransformer TRANSFORMER = new NsiTransformer(new RequirementTransformer(), new ProbationAreaTransformer(new InstitutionTransformer()));
+
+    @Mock
+    private uk.gov.justice.digital.delius.data.api.ProbationArea probationArea1;
+    @Mock
+    private uk.gov.justice.digital.delius.data.api.ProbationArea probationArea2;
+
+    @Mock
+    private ProbationAreaTransformer probationAreaTransformer;
 
     @Test
     void testTransform() {
+        NsiTransformer transformer = new NsiTransformer(new RequirementTransformer(), probationAreaTransformer);
         final LocalDate expectedStartDate = LocalDate.of(2020, Month.APRIL, 1);
         final LocalDate actualStartDate = LocalDate.of(2020, Month.APRIL, 1);
         final LocalDate referralDate = LocalDate.of(2020, Month.FEBRUARY, 1);
+        ProbationArea expectedProbationArea1 = ProbationArea.builder()
+                .probationAreaId(1L)
+                .build();
         NsiManager nsiManager1 = NsiManager.builder()
                 .startDate(LocalDate.of(2020,5,4))
                 .endDate(LocalDate.of(2021,5,4))
-                .probationArea(ProbationArea.builder()
-                        .description("NPS London")
-                        .code("N07")
-                        .teams(Collections.emptyList())
-                        .providerTeams(Collections.emptyList())
-                        .build())
+                .probationArea(expectedProbationArea1)
+                .build();
+        ProbationArea expectedProbationArea2 = ProbationArea.builder()
+                .probationAreaId(2L)
                 .build();
         NsiManager nsiManager2 = NsiManager.builder()
                 .startDate(LocalDate.of(2019,5,4))
                 .endDate(LocalDate.of(2020,5,3))
-                .probationArea(ProbationArea.builder()
-                        .description("NPS Sheffield")
-                        .code("N04")
-                        .teams(Collections.emptyList())
-                        .providerTeams(Collections.emptyList())
-                        .build())
+                .probationArea(expectedProbationArea2)
                 .build();
-        final uk.gov.justice.digital.delius.jpa.standard.entity.Nsi nsiEntity = uk.gov.justice.digital.delius.jpa.standard.entity.Nsi.builder()
+
+        when(probationAreaTransformer.probationAreaOf(expectedProbationArea1)).thenReturn(probationArea1);
+        when(probationAreaTransformer.probationAreaOf(expectedProbationArea2)).thenReturn(probationArea2);
+
+        final var nsiEntity = uk.gov.justice.digital.delius.jpa.standard.entity.Nsi.builder()
             .nsiId(100L)
             .nsiStatus(uk.gov.justice.digital.delius.jpa.standard.entity.NsiStatus.builder().code("STX").description("").build())
             .nsiSubType(StandardReference.builder().codeDescription("Sub Type Desc").codeValue("STC").build())
@@ -55,7 +67,7 @@ class NsiTransformerTest {
             .length(12L)
             .rqmnt(uk.gov.justice.digital.delius.jpa.standard.entity.Requirement.builder().activeFlag(1L).build()).build();
 
-        final Nsi nsi = TRANSFORMER.nsiOf(nsiEntity);
+        final Nsi nsi = transformer.nsiOf(nsiEntity);
 
         assertThat(nsi.getNsiId()).isEqualTo(100L);
         assertThat(nsi.getActualStartDate()).isEqualTo(actualStartDate);
@@ -70,14 +82,16 @@ class NsiTransformerTest {
         assertThat(nsi.getLengthUnit()).isEqualTo("Months");
         assertThat(nsi.getNsiManagers()).isNotNull();
         assertThat(nsi.getNsiManagers()).hasSize(2);
-        assertThat(nsi.getNsiManagers().get(0).getStartDate()).isEqualTo(LocalDate.of(2020, 5, 4));
-        assertThat(nsi.getNsiManagers().get(0).getEndDate()).isEqualTo(LocalDate.of(2021, 5, 4));
-        assertThat(nsi.getNsiManagers().get(0).getProbationArea().getCode()).isEqualTo("N07");
-        assertThat(nsi.getNsiManagers().get(0).getProbationArea().getDescription()).isEqualTo("NPS London");
-        assertThat(nsi.getNsiManagers().get(1).getStartDate()).isEqualTo(LocalDate.of(2019, 5, 4));
-        assertThat(nsi.getNsiManagers().get(1).getEndDate()).isEqualTo(LocalDate.of(2020, 5, 3));
-        assertThat(nsi.getNsiManagers().get(1).getProbationArea().getCode()).isEqualTo("N04");
-        assertThat(nsi.getNsiManagers().get(1).getProbationArea().getDescription()).isEqualTo("NPS Sheffield");
+
+        var manager1 = nsi.getNsiManagers().get(0);
+        assertThat(manager1.getStartDate()).isEqualTo(LocalDate.of(2020, 5, 4));
+        assertThat(manager1.getEndDate()).isEqualTo(LocalDate.of(2021, 5, 4));
+        assertThat(manager1.getProbationArea()).isEqualTo(probationArea1);
+
+        var manager2 = nsi.getNsiManagers().get(1);
+        assertThat(manager2.getStartDate()).isEqualTo(LocalDate.of(2019, 5, 4));
+        assertThat(manager2.getEndDate()).isEqualTo(LocalDate.of(2020, 5, 3));
+        assertThat(manager2.getProbationArea()).isEqualTo(probationArea2);
 //        assertThat(nsi.getCourt()).isNotNull();
 //        assertThat(nsi.getCourt().getCourtName()).isEqualTo(("Somethign"));
 //        assertThat(nsi.getCourt?)

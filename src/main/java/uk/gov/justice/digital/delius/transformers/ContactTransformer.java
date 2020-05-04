@@ -11,7 +11,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Comparator.comparing;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
@@ -20,9 +19,9 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOn
 @Component
 public class ContactTransformer {
 
-    final RequirementTransformer requirementTransformer = new RequirementTransformer();
+    private final RequirementTransformer requirementTransformer = new RequirementTransformer();
 
-    private final NsiTransformer nsiTransformer = new NsiTransformer(requirementTransformer, new ProbationAreaTransformer(new InstitutionTransformer()));
+    private final NsiTransformer nsiTransformer = new NsiTransformer();
 
     public List<Contact> contactsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.Contact> contacts) {
         return contacts.stream()
@@ -110,7 +109,7 @@ public class ContactTransformer {
 
         return ImmutableList.of(maybeSecondName, maybeThirdName)
                 .stream()
-                .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty))
+                .flatMap(Optional::stream)
                 .collect(Collectors.joining(" "));
     }
 

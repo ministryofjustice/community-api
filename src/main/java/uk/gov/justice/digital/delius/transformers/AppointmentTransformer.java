@@ -17,6 +17,7 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBo
 @Component
 public class AppointmentTransformer {
     private final ContactTransformer contactTransformer;
+    private final RequirementTransformer requirementTransformer = new RequirementTransformer();
 
     public AppointmentTransformer(ContactTransformer contactTransformer) {
         this.contactTransformer = contactTransformer;
@@ -46,7 +47,7 @@ public class AppointmentTransformer {
                 .linkedContactId(contact.getLinkedContactId())
                 .notes(contact.getNotes())
                 .nsi(contactTransformer.nsiOf(contact.getNsi()))
-                .requirement(contactTransformer.requirementTransformer.requirementOf(contact.getRequirement()))
+                .requirement(requirementTransformer.requirementOf(contact.getRequirement()))
                 .probationArea(contactTransformer.probationAreaOf(contact.getProbationArea()))
                 .providerEmployee(contactTransformer.providerEmployeeOf(contact.getProviderEmployee()))
                 .officeLocation(officeLocationOf(contact.getOfficeLocation()))

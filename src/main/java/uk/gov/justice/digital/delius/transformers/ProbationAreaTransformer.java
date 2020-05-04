@@ -21,6 +21,10 @@ public class ProbationAreaTransformer {
         this.institutionTransformer = institutionTransformer;
     }
 
+    public ProbationAreaTransformer() {
+        this.institutionTransformer = new InstitutionTransformer();
+    }
+
     public List<ProbationArea> probationAreasOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea> probationAreas) {
         return probationAreas.stream().map(this::probationAreaOf).collect(Collectors.toList());
     }
@@ -86,7 +90,7 @@ public class ProbationAreaTransformer {
     }
 
     private KeyValue boroughOf(District district) {
-        Optional<Borough> maybeBorough = Optional.ofNullable(district).map(d -> d.getBorough());
+        Optional<Borough> maybeBorough = Optional.ofNullable(district).map(District::getBorough);
         return maybeBorough
                 .map(b -> KeyValue.builder()
                         .code(b.getCode())
