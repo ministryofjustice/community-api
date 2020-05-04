@@ -6,19 +6,7 @@ import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Nsi;
-import uk.gov.justice.digital.delius.jpa.standard.entity.ContactOutcomeType;
-import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Explanation;
-import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceCondition;
-import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceConditionTypeMainCat;
-import uk.gov.justice.digital.delius.jpa.standard.entity.PartitionArea;
-import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
-import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderEmployee;
-import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderLocation;
-import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderTeam;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
+import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +22,7 @@ public class ContactTransformer {
 
     final RequirementTransformer requirementTransformer = new RequirementTransformer();
 
-    private final NsiTransformer nsiTransformer = new NsiTransformer(requirementTransformer);
+    private final NsiTransformer nsiTransformer = new NsiTransformer(requirementTransformer, new ProbationAreaTransformer(new InstitutionTransformer()));
 
     public List<Contact> contactsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.Contact> contacts) {
         return contacts.stream()

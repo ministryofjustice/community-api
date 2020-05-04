@@ -3,21 +3,26 @@ package uk.gov.justice.digital.delius.transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
+import uk.gov.justice.digital.delius.data.api.NsiManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Nsi;
 import uk.gov.justice.digital.delius.jpa.standard.entity.NsiStatus;
 import uk.gov.justice.digital.delius.jpa.standard.entity.NsiType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class NsiTransformer {
 
     public static final String NSI_LENGTH_UNIT = "Months";
     private final RequirementTransformer requirementTransformer;
+    private final ProbationAreaTransformer probationAreaTransformer;
 
-    public NsiTransformer (@Autowired final RequirementTransformer requirementTransformer) {
+    public NsiTransformer(@Autowired final RequirementTransformer requirementTransformer, @Autowired ProbationAreaTransformer probationAreaTransformer) {
         this.requirementTransformer = requirementTransformer;
+        this.probationAreaTransformer = probationAreaTransformer;
     }
 
     public uk.gov.justice.digital.delius.data.api.Nsi nsiOf(Nsi nsi) {
@@ -33,7 +38,18 @@ public class NsiTransformer {
                 .referralDate(n.getReferralDate())
                 .length(n.getLength())
                 .lengthUnit(NSI_LENGTH_UNIT)
+                .nsiManagers(nsiManagersOf(n.getNsiManagers()))
                 .build()).orElse(null);
+    }
+
+    private List<NsiManager> nsiManagersOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.NsiManager> nsiManagers) {
+        return nsiManagers.stream()
+                .map(nsiManager -> NsiManager.builder()
+                        .startDate(nsiManager.getStartDate())
+                        .endDate(nsiManager.getEndDate())
+                        .probationArea(probationAreaTransformer.probationAreaOf(nsiManager.getProbationArea()))
+                        .build())
+                .collect(Collectors.toList());
     }
 
     private KeyValue nsiStatusOf(final NsiStatus nsiStatus) {

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -60,5 +61,8 @@ public class Nsi {
 
     @Column(name = "LENGTH")
     private Long length;
+
+    @OneToMany(mappedBy = "nsi")
+    private List<NsiManager> nsiManagers;
 
 }

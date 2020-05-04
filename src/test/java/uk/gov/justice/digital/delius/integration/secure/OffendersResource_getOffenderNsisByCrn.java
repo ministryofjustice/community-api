@@ -75,6 +75,18 @@ public class OffendersResource_getOffenderNsisByCrn {
                 .as(Nsi.class);
 
         assertThat(nsi.getNsiId()).isEqualTo(KNOWN_NSI_ID);
+        assertThat(nsi.getLength()).isEqualTo(20L);
+        assertThat(nsi.getNsiManagers().get(0).getProbationArea().getDescription()).isEqualTo("NPS North East");
+        assertThat(nsi.getNsiManagers().get(0).getProbationArea().getCode()).isEqualTo("N02");
+//
+//        court | Harrogate Magistrates' Court
+//
+//        provider| NPS North East
+//
+//        team | Enforcement hub - Sheffield and Rotherham
+//
+//        officer | Unallocated
+
     }
 
     @Test

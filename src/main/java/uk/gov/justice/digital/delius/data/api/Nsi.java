@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Builder
@@ -22,5 +23,6 @@ public class Nsi {
     private LocalDate referralDate;
     private Long length;
     private String lengthUnit;
+    private List<NsiManager> nsiManagers;
 
 }
