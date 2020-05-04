@@ -20,8 +20,6 @@ import java.util.Optional;
 @Table(name = "EVENT")
 public class Event {
 
-    // TODO: 01/05/2020 Add court COURT_ID
-
     @Id
     @SequenceGenerator(name = "EVENT_ID_GENERATOR", sequenceName = "EVENT_ID_SEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EVENT_ID_GENERATOR")
@@ -109,6 +107,10 @@ public class Event {
 
     @Column(name = "CPS_SOFT_DELETED")
     private Long cpsSoftDeleted;
+
+    @JoinColumn(name = "COURT_ID")
+    @OneToOne
+    private Court court;
 
     public boolean hasCpsPack() {
         return !StringUtils.isEmpty(cpsAlfrescoDocumentId)

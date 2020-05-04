@@ -6,9 +6,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Nsi;
-import uk.gov.justice.digital.delius.jpa.standard.entity.NsiManager;
-import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
-import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -25,13 +23,17 @@ class NsiTransformerTest {
     private uk.gov.justice.digital.delius.data.api.ProbationArea probationArea1;
     @Mock
     private uk.gov.justice.digital.delius.data.api.ProbationArea probationArea2;
+    @Mock
+    private uk.gov.justice.digital.delius.data.api.Court mockCourt;
 
     @Mock
     private ProbationAreaTransformer probationAreaTransformer;
+    @Mock
+    private CourtTransformer courtTransformer;
 
     @Test
     void testTransform() {
-        NsiTransformer transformer = new NsiTransformer(new RequirementTransformer(), probationAreaTransformer);
+        NsiTransformer transformer = new NsiTransformer(new RequirementTransformer(), probationAreaTransformer, courtTransformer);
         final LocalDate expectedStartDate = LocalDate.of(2020, Month.APRIL, 1);
         final LocalDate actualStartDate = LocalDate.of(2020, Month.APRIL, 1);
         final LocalDate referralDate = LocalDate.of(2020, Month.FEBRUARY, 1);
@@ -52,20 +54,25 @@ class NsiTransformerTest {
                 .probationArea(expectedProbationArea2)
                 .build();
 
+        Court court = Court.builder().build();
         when(probationAreaTransformer.probationAreaOf(expectedProbationArea1)).thenReturn(probationArea1);
         when(probationAreaTransformer.probationAreaOf(expectedProbationArea2)).thenReturn(probationArea2);
+        when(courtTransformer.courtOf(court)).thenReturn(mockCourt);
 
         final var nsiEntity = uk.gov.justice.digital.delius.jpa.standard.entity.Nsi.builder()
             .nsiId(100L)
-            .nsiStatus(uk.gov.justice.digital.delius.jpa.standard.entity.NsiStatus.builder().code("STX").description("").build())
+            .nsiStatus(NsiStatus.builder().code("STX").description("").build())
             .nsiSubType(StandardReference.builder().codeDescription("Sub Type Desc").codeValue("STC").build())
-            .nsiType(uk.gov.justice.digital.delius.jpa.standard.entity.NsiType.builder().code("TYPE").description("Type Desc").build())
+            .nsiType(NsiType.builder().code("TYPE").description("Type Desc").build())
             .actualStartDate(actualStartDate)
             .expectedStartDate(expectedStartDate)
             .referralDate(referralDate)
             .nsiManagers(Arrays.asList(nsiManager1, nsiManager2))
             .length(12L)
-            .rqmnt(uk.gov.justice.digital.delius.jpa.standard.entity.Requirement.builder().activeFlag(1L).build()).build();
+            .event(Event.builder()
+                    .court(court)
+                    .build())
+            .rqmnt(Requirement.builder().activeFlag(1L).build()).build();
 
         final Nsi nsi = transformer.nsiOf(nsiEntity);
 
@@ -92,9 +99,9 @@ class NsiTransformerTest {
         assertThat(manager2.getStartDate()).isEqualTo(LocalDate.of(2019, 5, 4));
         assertThat(manager2.getEndDate()).isEqualTo(LocalDate.of(2020, 5, 3));
         assertThat(manager2.getProbationArea()).isEqualTo(probationArea2);
-//        assertThat(nsi.getCourt()).isNotNull();
-//        assertThat(nsi.getCourt().getCourtName()).isEqualTo(("Somethign"));
-//        assertThat(nsi.getCourt?)
+        assertThat(nsi.getCourt()).isNotNull();
+        assertThat(nsi.getCourt()).isEqualTo(mockCourt);
+
 //
 //        court | Harrogate Magistrates' Court
 //

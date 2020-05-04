@@ -24,5 +24,6 @@ public class Nsi {
     private Long length;
     private String lengthUnit;
     private List<NsiManager> nsiManagers;
+    private Court court;
 
 }

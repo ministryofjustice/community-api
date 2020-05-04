@@ -19,15 +19,20 @@ public class NsiTransformer {
     public static final String NSI_LENGTH_UNIT = "Months";
     private final RequirementTransformer requirementTransformer;
     private final ProbationAreaTransformer probationAreaTransformer;
+    private final CourtTransformer courtTransformer;
 
-    public NsiTransformer(@Autowired final RequirementTransformer requirementTransformer, @Autowired ProbationAreaTransformer probationAreaTransformer) {
+    public NsiTransformer(@Autowired final RequirementTransformer requirementTransformer,
+                          @Autowired ProbationAreaTransformer probationAreaTransformer,
+                          @Autowired CourtTransformer courtTransformer) {
         this.requirementTransformer = requirementTransformer;
         this.probationAreaTransformer = probationAreaTransformer;
+        this.courtTransformer = courtTransformer;
     }
 
     public NsiTransformer() {
         this.requirementTransformer = new RequirementTransformer();
         this.probationAreaTransformer = new ProbationAreaTransformer();
+        this.courtTransformer = new CourtTransformer();
     }
 
     public uk.gov.justice.digital.delius.data.api.Nsi nsiOf(Nsi nsi) {
@@ -44,6 +49,7 @@ public class NsiTransformer {
                 .length(n.getLength())
                 .lengthUnit(NSI_LENGTH_UNIT)
                 .nsiManagers(nsiManagersOf(n.getNsiManagers()))
+                .court(courtTransformer.courtOf(nsi.getEvent().getCourt()))
                 .build()).orElse(null);
     }
 
