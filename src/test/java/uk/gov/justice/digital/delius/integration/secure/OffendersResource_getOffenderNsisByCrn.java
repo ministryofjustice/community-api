@@ -62,7 +62,7 @@ public class OffendersResource_getOffenderNsisByCrn {
     public void getNsiByCrnAndNsiId() {
         String path = String.format(GET_NSI_PATH, KNOWN_CRN_FOR_NSI, KNOWN_CONVICTION_ID_FOR_NSI, KNOWN_NSI_ID);
 
-        Nsi nsi = given()
+        final var nsi = given()
                 .auth()
                 .oauth2(validOauthToken)
                 .contentType(APPLICATION_JSON_VALUE)

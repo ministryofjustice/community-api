@@ -390,7 +390,6 @@ public class OffendersResource {
     @ApiOperation(value = "Return an NSI by crn, convictionId and nsiId")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "NSI", response = Nsi.class),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
                     @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),

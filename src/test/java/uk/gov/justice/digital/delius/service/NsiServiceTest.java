@@ -1,15 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +11,15 @@ import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.repository.NsiRepository;
 import uk.gov.justice.digital.delius.transformers.NsiTransformer;
+
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Set;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class NsiServiceTest {
@@ -133,7 +132,7 @@ public class NsiServiceTest {
     @Test
     public void givenNsiExistsReturnIt() {
         var nsiEntity = buildNsi(EVENT, "BRE");
-        when(nsiRepository.getByNsiId(NSI_ID)).thenReturn(nsiEntity);
+        when(nsiRepository.findById(NSI_ID)).thenReturn(Optional.of(nsiEntity));
         when(nsiTransformer.nsiOf(nsiEntity)).thenReturn(nsi);
 
         Optional<Nsi> actual = nsiService.getNsiById(NSI_ID);
@@ -146,7 +145,7 @@ public class NsiServiceTest {
     @Test
     public void givenNsiDoesNotExistReturnNull() {
         var nsiEntity = buildNsi(EVENT, "BRE");
-        when(nsiRepository.getByNsiId(NSI_ID)).thenReturn(null);
+        when(nsiRepository.findById(NSI_ID)).thenReturn(Optional.empty());
 
         Optional<Nsi> actual = nsiService.getNsiById(NSI_ID);
 
