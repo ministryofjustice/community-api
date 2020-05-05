@@ -42,47 +42,26 @@ class NsiTransformerTest {
     @Mock
     private StaffTransformer staffTransformer;
 
+    private NsiManager nsiManager2;
+    private Staff expectedStaff2;
+    private Team expectedTeam2;
+    private ProbationArea expectedProbationArea2;
+    private NsiManager nsiManager1;
+    private Staff expectedStaff1;
+    private Team expectedTeam1;
+    private ProbationArea expectedProbationArea1;
+    private Court court;
+
     @Test
     void testTransform() {
         NsiTransformer transformer = new NsiTransformer(new RequirementTransformer(), probationAreaTransformer, courtTransformer, teamTransformer, staffTransformer);
         final LocalDate expectedStartDate = LocalDate.of(2020, Month.APRIL, 1);
         final LocalDate actualStartDate = LocalDate.of(2020, Month.APRIL, 1);
         final LocalDate referralDate = LocalDate.of(2020, Month.FEBRUARY, 1);
-        ProbationArea expectedProbationArea1 = ProbationArea.builder()
-                .probationAreaId(1L)
-                .build();
-        Team expectedTeam1 = Team.builder()
-                .teamId(1L)
-                .build();
-        Staff expectedStaff1 = Staff.builder()
-                .staffId(1L)
-                .build();
-        NsiManager nsiManager1 = NsiManager.builder()
-                .startDate(LocalDate.of(2020,5,4))
-                .endDate(LocalDate.of(2021,5,4))
-                .probationArea(expectedProbationArea1)
-                .team(expectedTeam1)
-                .staff(expectedStaff1)
-                .build();
 
-        ProbationArea expectedProbationArea2 = ProbationArea.builder()
-                .probationAreaId(2L)
-                .build();
-        Team expectedTeam2 = Team.builder()
-                .teamId(2L)
-                .build();
-        Staff expectedStaff2 = Staff.builder()
-                .staffId(2L)
-                .build();
-        NsiManager nsiManager2 = NsiManager.builder()
-                .startDate(LocalDate.of(2019,5,4))
-                .endDate(LocalDate.of(2020,5,3))
-                .probationArea(expectedProbationArea2)
-                .team(expectedTeam2)
-                .staff(expectedStaff2)
-                .build();
+        buildNsiManagers();
 
-        Court court = Court.builder().build();
+        court = Court.builder().build();
         when(probationAreaTransformer.probationAreaOf(expectedProbationArea1)).thenReturn(probationArea1);
         when(probationAreaTransformer.probationAreaOf(expectedProbationArea2)).thenReturn(probationArea2);
         when(courtTransformer.courtOf(court)).thenReturn(mockCourt);
@@ -91,20 +70,7 @@ class NsiTransformerTest {
         when(staffTransformer.staffDetailsOf(expectedStaff1)).thenReturn(mockStaff1);
         when(staffTransformer.staffDetailsOf(expectedStaff2)).thenReturn(mockStaff2);
 
-        final var nsiEntity = uk.gov.justice.digital.delius.jpa.standard.entity.Nsi.builder()
-            .nsiId(100L)
-            .nsiStatus(NsiStatus.builder().code("STX").description("").build())
-            .nsiSubType(StandardReference.builder().codeDescription("Sub Type Desc").codeValue("STC").build())
-            .nsiType(NsiType.builder().code("TYPE").description("Type Desc").build())
-            .actualStartDate(actualStartDate)
-            .expectedStartDate(expectedStartDate)
-            .referralDate(referralDate)
-            .nsiManagers(Arrays.asList(nsiManager1, nsiManager2))
-            .length(12L)
-            .event(Event.builder()
-                    .court(court)
-                    .build())
-            .rqmnt(Requirement.builder().activeFlag(1L).build()).build();
+        final var nsiEntity = buildNsiEntity(expectedStartDate, actualStartDate, referralDate);
 
         final Nsi nsi = transformer.nsiOf(nsiEntity);
 
@@ -116,9 +82,11 @@ class NsiTransformerTest {
         assertThat(nsi.getNsiType()).isEqualTo(KeyValue.builder().code("TYPE").description("Type Desc").build());
         assertThat(nsi.getNsiSubType()).isEqualTo(KeyValue.builder().code("STC").description("Sub Type Desc").build());
         assertThat(nsi.getRequirement().getActive()).isEqualTo(true);
-
         assertThat(nsi.getLength()).isEqualTo(12L);
         assertThat(nsi.getLengthUnit()).isEqualTo("Months");
+        assertThat(nsi.getCourt()).isNotNull();
+        assertThat(nsi.getCourt()).isEqualTo(mockCourt);
+
         assertThat(nsi.getNsiManagers()).isNotNull();
         assertThat(nsi.getNsiManagers()).hasSize(2);
 
@@ -133,10 +101,61 @@ class NsiTransformerTest {
         assertThat(manager2.getStartDate()).isEqualTo(LocalDate.of(2019, 5, 4));
         assertThat(manager2.getEndDate()).isEqualTo(LocalDate.of(2020, 5, 3));
         assertThat(manager2.getProbationArea()).isEqualTo(probationArea2);
-        assertThat(nsi.getCourt()).isNotNull();
-        assertThat(nsi.getCourt()).isEqualTo(mockCourt);
         assertThat(manager2.getTeam()).isEqualTo(mockTeam2);
         assertThat(manager2.getStaff()).isEqualTo(mockStaff2);
-//        officer | Unallocated
+
+    }
+
+    private uk.gov.justice.digital.delius.jpa.standard.entity.Nsi buildNsiEntity(LocalDate expectedStartDate, LocalDate actualStartDate, LocalDate referralDate) {
+        return uk.gov.justice.digital.delius.jpa.standard.entity.Nsi.builder()
+                .nsiId(100L)
+                .nsiStatus(NsiStatus.builder().code("STX").description("").build())
+                .nsiSubType(StandardReference.builder().codeDescription("Sub Type Desc").codeValue("STC").build())
+                .nsiType(NsiType.builder().code("TYPE").description("Type Desc").build())
+                .actualStartDate(actualStartDate)
+                .expectedStartDate(expectedStartDate)
+                .referralDate(referralDate)
+                .nsiManagers(Arrays.asList(nsiManager1, nsiManager2))
+                .length(12L)
+                .event(Event.builder()
+                        .court(court)
+                        .build())
+                .rqmnt(Requirement.builder().activeFlag(1L).build()).build();
+    }
+
+    private void buildNsiManagers() {
+        expectedProbationArea1 = ProbationArea.builder()
+                .probationAreaId(1L)
+                .build();
+        expectedTeam1 = Team.builder()
+                .teamId(1L)
+                .build();
+        expectedStaff1 = Staff.builder()
+                .staffId(1L)
+                .build();
+        nsiManager1 = NsiManager.builder()
+                .startDate(LocalDate.of(2020,5,4))
+                .endDate(LocalDate.of(2021,5,4))
+                .probationArea(expectedProbationArea1)
+                .team(expectedTeam1)
+                .staff(expectedStaff1)
+                .build();
+
+        expectedProbationArea2 = ProbationArea.builder()
+                .probationAreaId(2L)
+                .build();
+        expectedTeam2 = Team.builder()
+                .teamId(2L)
+                .build();
+        expectedStaff2 = Staff.builder()
+                .staffId(2L)
+                .build();
+        nsiManager2 = NsiManager.builder()
+                .startDate(LocalDate.of(2019,5,4))
+                .endDate(LocalDate.of(2020,5,3))
+                .probationArea(expectedProbationArea2)
+                .team(expectedTeam2)
+                .staff(expectedStaff2)
+                .build();
     }
 }
