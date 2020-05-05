@@ -78,8 +78,6 @@ public class OffendersResource_getOffenderNsisByCrn {
         assertThat(nsi.getLength()).isEqualTo(20L);
         assertThat(nsi.getNsiManagers().get(0).getProbationArea().getDescription()).isEqualTo("NPS North East");
         assertThat(nsi.getNsiManagers().get(0).getProbationArea().getCode()).isEqualTo("N02");
-        assertThat(nsi.getCourt().getCode()).isEqualTo("SHEFMC");
-        assertThat(nsi.getCourt().getCourtName()).isEqualTo("Sheffield Magistrates Court");
         assertThat(nsi.getNsiManagers().get(0).getTeam().getDescription()).isEqualTo("Unallocated Team(N02)");
         assertThat(nsi.getNsiManagers().get(0).getTeam().getCode()).isEqualTo("N02UAT");
         assertThat(nsi.getNsiManagers().get(0).getStaff().getStaff().getForenames()).isEqualTo("Unallocated Staff(N02)");

@@ -20,18 +20,15 @@ public class NsiTransformer {
     public static final boolean INCLUDE_PROBATION_AREA_TEAMS = false;
     private final RequirementTransformer requirementTransformer;
     private final ProbationAreaTransformer probationAreaTransformer;
-    private final CourtTransformer courtTransformer;
     private final TeamTransformer teamTransformer;
     private final StaffTransformer staffTransformer;
 
     public NsiTransformer(@Autowired final RequirementTransformer requirementTransformer,
                           @Autowired ProbationAreaTransformer probationAreaTransformer,
-                          @Autowired CourtTransformer courtTransformer,
                           @Autowired TeamTransformer teamTransformer,
                           @Autowired StaffTransformer staffTransformer) {
         this.requirementTransformer = requirementTransformer;
         this.probationAreaTransformer = probationAreaTransformer;
-        this.courtTransformer = courtTransformer;
         this.teamTransformer = teamTransformer;
         this.staffTransformer = staffTransformer;
     }
@@ -39,7 +36,6 @@ public class NsiTransformer {
     public NsiTransformer() {
         this.requirementTransformer = new RequirementTransformer();
         this.probationAreaTransformer = new ProbationAreaTransformer();
-        this.courtTransformer = new CourtTransformer();
         this.teamTransformer = new TeamTransformer();
         this.staffTransformer = new StaffTransformer();
     }
@@ -58,7 +54,6 @@ public class NsiTransformer {
                 .length(n.getLength())
                 .lengthUnit(NSI_LENGTH_UNIT)
                 .nsiManagers(nsiManagersOf(n.getNsiManagers()))
-                .court(courtTransformer.courtOf(nsi.getEvent().getCourt()))
                 .build()).orElse(null);
     }
 

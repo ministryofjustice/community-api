@@ -23,8 +23,6 @@ class NsiTransformerTest {
     @Mock
     private uk.gov.justice.digital.delius.data.api.ProbationArea probationArea2;
     @Mock
-    private uk.gov.justice.digital.delius.data.api.Court mockCourt;
-    @Mock
     private uk.gov.justice.digital.delius.data.api.Team mockTeam1;
     @Mock
     private uk.gov.justice.digital.delius.data.api.Team mockTeam2;
@@ -35,8 +33,6 @@ class NsiTransformerTest {
 
     @Mock
     private ProbationAreaTransformer probationAreaTransformer;
-    @Mock
-    private CourtTransformer courtTransformer;
     @Mock
     private TeamTransformer teamTransformer;
     @Mock
@@ -50,21 +46,18 @@ class NsiTransformerTest {
     private Staff expectedStaff1;
     private Team expectedTeam1;
     private ProbationArea expectedProbationArea1;
-    private Court court;
 
     @Test
     void testTransform() {
-        NsiTransformer transformer = new NsiTransformer(new RequirementTransformer(), probationAreaTransformer, courtTransformer, teamTransformer, staffTransformer);
+        NsiTransformer transformer = new NsiTransformer(new RequirementTransformer(), probationAreaTransformer, teamTransformer, staffTransformer);
         final LocalDate expectedStartDate = LocalDate.of(2020, Month.APRIL, 1);
         final LocalDate actualStartDate = LocalDate.of(2020, Month.APRIL, 1);
         final LocalDate referralDate = LocalDate.of(2020, Month.FEBRUARY, 1);
 
         buildNsiManagers();
 
-        court = Court.builder().build();
         when(probationAreaTransformer.probationAreaOf(expectedProbationArea1, false)).thenReturn(probationArea1);
         when(probationAreaTransformer.probationAreaOf(expectedProbationArea2, false)).thenReturn(probationArea2);
-        when(courtTransformer.courtOf(court)).thenReturn(mockCourt);
         when(teamTransformer.teamOf(expectedTeam1)).thenReturn(mockTeam1);
         when(teamTransformer.teamOf(expectedTeam2)).thenReturn(mockTeam2);
         when(staffTransformer.staffDetailsOf(expectedStaff1)).thenReturn(mockStaff1);
@@ -84,8 +77,6 @@ class NsiTransformerTest {
         assertThat(nsi.getRequirement().getActive()).isEqualTo(true);
         assertThat(nsi.getLength()).isEqualTo(12L);
         assertThat(nsi.getLengthUnit()).isEqualTo("Months");
-        assertThat(nsi.getCourt()).isNotNull();
-        assertThat(nsi.getCourt()).isEqualTo(mockCourt);
 
         assertThat(nsi.getNsiManagers()).isNotNull();
         assertThat(nsi.getNsiManagers()).hasSize(2);
@@ -117,9 +108,6 @@ class NsiTransformerTest {
                 .referralDate(referralDate)
                 .nsiManagers(Arrays.asList(nsiManager1, nsiManager2))
                 .length(12L)
-                .event(Event.builder()
-                        .court(court)
-                        .build())
                 .rqmnt(Requirement.builder().activeFlag(1L).build()).build();
     }
 
