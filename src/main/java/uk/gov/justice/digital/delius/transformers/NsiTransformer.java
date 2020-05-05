@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public class NsiTransformer {
 
     public static final String NSI_LENGTH_UNIT = "Months";
+    public static final boolean INCLUDE_PROBATION_AREA_TEAMS = false;
     private final RequirementTransformer requirementTransformer;
     private final ProbationAreaTransformer probationAreaTransformer;
     private final CourtTransformer courtTransformer;
@@ -66,7 +67,7 @@ public class NsiTransformer {
                 .map(nsiManager -> NsiManager.builder()
                         .startDate(nsiManager.getStartDate())
                         .endDate(nsiManager.getEndDate())
-                        .probationArea(probationAreaTransformer.probationAreaOf(nsiManager.getProbationArea()))
+                        .probationArea(probationAreaTransformer.probationAreaOf(nsiManager.getProbationArea(), INCLUDE_PROBATION_AREA_TEAMS))
                         .team(teamTransformer.teamOf(nsiManager.getTeam()))
                         .staff(staffTransformer.staffDetailsOf(nsiManager.getStaff()))
                         .build())

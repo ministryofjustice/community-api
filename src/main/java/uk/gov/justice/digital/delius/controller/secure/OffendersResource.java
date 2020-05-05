@@ -1,11 +1,6 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
+import io.swagger.annotations.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -15,25 +10,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
+import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
-import uk.gov.justice.digital.delius.service.AlfrescoService;
-import uk.gov.justice.digital.delius.service.ContactService;
-import uk.gov.justice.digital.delius.service.ConvictionService;
-import uk.gov.justice.digital.delius.service.DocumentService;
-import uk.gov.justice.digital.delius.service.NsiService;
-import uk.gov.justice.digital.delius.service.OffenderManagerService;
-import uk.gov.justice.digital.delius.service.OffenderService;
+import uk.gov.justice.digital.delius.service.*;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -402,13 +386,24 @@ public class OffendersResource {
             .orElseThrow(() -> new NotFoundException(String.format("Conviction with ID %s for Offender with crn %s not found", convictionId, crn)));
     }
 
+
+    @ApiOperation(value = "Return an NSI by crn, convictionId and nsiId")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "NSI", response = Nsi.class),
+                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+                    @ApiResponse(code = 404, message = "The offender CRN is not found", response = ErrorResponse.class),
+                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            })
     @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/nsis/{nsiId}")
     public Nsi getNsiByNsiId(
             @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
             @NotNull @PathVariable(value = "crn") final String crn,
             @ApiParam(name = "convictionId", value = "ID for the conviction / event", example = "2500295345", required = true)
             @NotNull @PathVariable(value = "convictionId") final Long convictionId,
-            @ApiParam(name = "nsiId", value = "ID for the nsi", example="123456", required = true)
+            @ApiParam(name = "nsiId", value = "ID for the nsi", example="2500295123", required = true)
             @PathVariable(value = "nsiId") Long nsiId){
         return offenderService.getOffenderByCrn(crn)
                 .map((offender) -> convictionService.convictionsFor(offender.getOffenderId())

@@ -62,8 +62,8 @@ class NsiTransformerTest {
         buildNsiManagers();
 
         court = Court.builder().build();
-        when(probationAreaTransformer.probationAreaOf(expectedProbationArea1)).thenReturn(probationArea1);
-        when(probationAreaTransformer.probationAreaOf(expectedProbationArea2)).thenReturn(probationArea2);
+        when(probationAreaTransformer.probationAreaOf(expectedProbationArea1, false)).thenReturn(probationArea1);
+        when(probationAreaTransformer.probationAreaOf(expectedProbationArea2, false)).thenReturn(probationArea2);
         when(courtTransformer.courtOf(court)).thenReturn(mockCourt);
         when(teamTransformer.teamOf(expectedTeam1)).thenReturn(mockTeam1);
         when(teamTransformer.teamOf(expectedTeam2)).thenReturn(mockTeam2);

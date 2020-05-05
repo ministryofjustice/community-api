@@ -30,13 +30,17 @@ public class ProbationAreaTransformer {
     }
 
     public ProbationArea probationAreaOf(uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea probationArea) {
+        return probationAreaOf(probationArea, true);
+    }
+
+    public ProbationArea probationAreaOf(uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea probationArea, boolean includeTeams) {
         return ProbationArea.builder()
                 .code(probationArea.getCode())
                 .description(probationArea.getDescription())
                 .organisation(organisationOf(probationArea.getOrganisation()))
                 .institution(institutionTransformer.institutionOf(probationArea.getInstitution()))
                 .probationAreaId(probationArea.getProbationAreaId())
-                .teams(teamsOf(probationArea))
+                .teams(includeTeams ? teamsOf(probationArea) : null)
                 .build();
     }
 
