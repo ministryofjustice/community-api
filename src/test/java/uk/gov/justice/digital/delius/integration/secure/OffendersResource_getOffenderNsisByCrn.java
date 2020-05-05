@@ -54,14 +54,14 @@ public class OffendersResource_getOffenderNsisByCrn {
 
     @Test
     public void getGetOffenderNsisByCrnAndConvictionId() {
-        final StringBuilder sb = new StringBuilder(String.format(OFFENDERS_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID))
-            .append(QUERY_PARAM_NAME).append("=").append("BRE").append("&").append(QUERY_PARAM_NAME).append("=").append("BRES");
+        final String path = String.format(OFFENDERS_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID)
+                + QUERY_PARAM_NAME + "=BRE&" + QUERY_PARAM_NAME + "=BRES";
         final var nsiWrapper = given()
                 .auth()
                 .oauth2(validOauthToken)
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .get(sb.toString())
+                .get(path)
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
@@ -73,49 +73,70 @@ public class OffendersResource_getOffenderNsisByCrn {
 
     @Test
     public void getGetOffenderNsisByCrnAndKnownConvictionIdButNoMatchToFilter() {
-        final StringBuilder sb = new StringBuilder(String.format(OFFENDERS_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID))
-            .append(QUERY_PARAM_NAME).append("=").append("XXX");
+        final String path = String.format(OFFENDERS_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID) + QUERY_PARAM_NAME + "=XXX";
         final var nsiWrapper = given()
             .auth()
             .oauth2(validOauthToken)
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get(sb.toString())
+            .get(path)
             .then()
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
             .as(NsiWrapper.class);
 
-        assertThat(nsiWrapper.getNsis()).hasSize(0);
+        assertThat(nsiWrapper.getNsis()).isEmpty();
     }
 
     @Test
-    public void getGetOffenderNsisByCrnAndConvictionIdWithNoNsiBreaches() {
-        final StringBuilder sb = new StringBuilder(String.format(OFFENDERS_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID_NO_BREACH))
-            .append(QUERY_PARAM_NAME).append("=").append("BRE").append("&").append(QUERY_PARAM_NAME).append("=").append("BRES");
-        given()
-            .auth()
-            .oauth2(validOauthToken)
-            .contentType(APPLICATION_JSON_VALUE)
-            .when()
-            .get(sb.toString())
-            .then()
-            .statusCode(HttpStatus.NOT_FOUND.value());
-    }
-
-    @Test
-    public void getGetOffenderNsisByCrnAndConvictionIdLimitCode() {
-
-        final StringBuilder sb = new StringBuilder(String.format(OFFENDERS_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID))
-            .append(QUERY_PARAM_NAME).append("=").append("BRES");
-
+    public void getGetOffenderNsisByCrnAndKnownConvictionIdForOffenderButNotNsi() {
+        final String path = String.format(OFFENDERS_PATH, KNOWN_OFFENDER, "2500297061")
+            + QUERY_PARAM_NAME + "=BRE&" + QUERY_PARAM_NAME + "=BRES";
         final var nsiWrapper = given()
             .auth()
             .oauth2(validOauthToken)
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get(sb.toString())
+            .get(path)
+            .then()
+            .statusCode(HttpStatus.OK.value())
+            .extract()
+            .body()
+            .as(NsiWrapper.class);
+
+        assertThat(nsiWrapper.getNsis()).isEmpty();
+    }
+
+    @Test
+    public void getGetOffenderNsisByCrnAndConvictionIdWithNoNsi() {
+        final String path = String.format(OFFENDERS_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID_NO_BREACH)
+            + QUERY_PARAM_NAME + "=BRE&" + QUERY_PARAM_NAME + "=BRES";
+        final var nsiWrapper = given()
+            .auth()
+            .oauth2(validOauthToken)
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get(path)
+            .then()
+            .statusCode(HttpStatus.OK.value())
+            .extract()
+            .body()
+            .as(NsiWrapper.class);
+
+        assertThat(nsiWrapper.getNsis()).isEmpty();
+    }
+
+    @Test
+    public void getGetOffenderNsisByCrnAndConvictionIdLimitCodeFetchOneOfTwo() {
+
+        final String path = String.format(OFFENDERS_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID) + QUERY_PARAM_NAME + "=BRES";
+        final var nsiWrapper = given()
+            .auth()
+            .oauth2(validOauthToken)
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get(path)
             .then()
             .statusCode(HttpStatus.OK.value())
             .extract()
@@ -127,30 +148,30 @@ public class OffendersResource_getOffenderNsisByCrn {
 
     @Test
     public void getGetOffenderNsisByCrnAndUnknownConvictionId_Returns404() {
-        final StringBuilder sb = new StringBuilder(String.format(OFFENDERS_PATH, KNOWN_OFFENDER, "0"))
-            .append(QUERY_PARAM_NAME).append("=").append("BRE").append("&").append(QUERY_PARAM_NAME).append("=").append("BRES");
 
+        final String path = String.format(OFFENDERS_PATH, KNOWN_OFFENDER, "0")
+            + QUERY_PARAM_NAME + "=BRE&" + QUERY_PARAM_NAME + "=BRES";
         given()
             .auth()
             .oauth2(validOauthToken)
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get(sb.toString())
+            .get(path)
             .then()
             .statusCode(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
     public void getOffenderNsisByCrn_offenderNotFound_returnsNotFound() {
-        final StringBuilder sb = new StringBuilder(String.format(OFFENDERS_PATH, "X777777", KNOWN_CONVICTION_ID))
-            .append(QUERY_PARAM_NAME).append("=").append("BRE").append("&").append(QUERY_PARAM_NAME).append("=").append("BRES");
 
+        final String path = String.format(OFFENDERS_PATH, "X777777", KNOWN_CONVICTION_ID)
+            + QUERY_PARAM_NAME + "=BRE&" + QUERY_PARAM_NAME + "=BRES";
         given()
             .auth()
             .oauth2(validOauthToken)
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get(sb.toString())
+            .get(path)
             .then()
             .statusCode(HttpStatus.NOT_FOUND.value());
     }

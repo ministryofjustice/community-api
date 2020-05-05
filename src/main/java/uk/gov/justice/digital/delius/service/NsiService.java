@@ -1,10 +1,10 @@
 package uk.gov.justice.digital.delius.service;
 
-import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,25 +20,26 @@ public class NsiService {
     private final NsiRepository nsiRepository;
 
     private final NsiTransformer nsiTransformer;
+    private final ConvictionService convictionService;
 
     @Autowired
-    public NsiService(final NsiRepository nsiRepository, final NsiTransformer nsiTransformer) {
+    public NsiService(final NsiRepository nsiRepository, final NsiTransformer nsiTransformer, final ConvictionService convictionService) {
         this.nsiRepository = nsiRepository;
         this.nsiTransformer = nsiTransformer;
+        this.convictionService = convictionService;
     }
 
     @Transactional(readOnly = true)
     public Optional<NsiWrapper> getNsiByCodes(final Long offenderId, final Long eventId, final Collection<String> nsiCodes) {
 
-        val nsi = nsiRepository.findByEventIdAndOffenderId(eventId, offenderId);
-        if (nsi.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(new NsiWrapper(nsi.stream()
-            .filter(e -> !convertToBoolean(e.getEvent().getSoftDeleted()))
-            .filter(e -> nsiCodes.contains(e.getNsiType().getCode()))
-            .map(nsiTransformer::nsiOf)
-            .collect(toList())));
+        return convictionService.convictionFor(offenderId, eventId)
+            .map(conv -> nsiRepository.findByEventIdAndOffenderId(eventId, offenderId))
+            .map(nsis -> nsis.stream()
+                .filter(e -> !convertToBoolean(e.getEvent().getSoftDeleted()))
+                .filter(e -> nsiCodes.contains(e.getNsiType().getCode()))
+                .map(nsiTransformer::nsiOf)
+                .collect(Collectors.toList()))
+            .map(NsiWrapper::new);
     }
 
 
