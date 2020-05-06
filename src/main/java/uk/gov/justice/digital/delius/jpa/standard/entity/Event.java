@@ -109,7 +109,7 @@ public class Event {
     private Long cpsSoftDeleted;
 
     @JoinColumn(name = "COURT_ID")
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Court court;
 
     public boolean hasCpsPack() {
