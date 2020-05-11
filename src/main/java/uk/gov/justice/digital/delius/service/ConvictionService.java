@@ -232,12 +232,12 @@ public class ConvictionService {
 
     @Transactional
     public void deleteCustodyKeyDateByOffenderId(Long offenderId, String typeCode) {
-        deleteCustodyKeyDate(getActiveCustodialEvent(offenderId), typeCode);
+        deleteCustodyKeyDate(getActiveCustodialEvent(offenderId), typeCode, true);
     }
 
     @Transactional
     public void deleteCustodyKeyDateByConvictionId(Long convictionId, String typeCode) {
-        deleteCustodyKeyDate(eventRepository.getOne(convictionId), typeCode);
+        deleteCustodyKeyDate(eventRepository.getOne(convictionId), typeCode, true);
     }
 
     @Transactional(readOnly = true)
@@ -268,7 +268,7 @@ public class ConvictionService {
             addContactForBulkCustodyKeyDateUpdate(offenderId, event, currentKeyDates, keyDatesToDelete, keyDatesToBeAddedOrUpdated);
 
             keyDatesToDelete
-                    .forEach(keyDate -> deleteCustodyKeyDate(event, keyDate));
+                    .forEach(keyDate -> deleteCustodyKeyDate(event, keyDate, false));
 
             keyDatesToBeAddedOrUpdated
                     .forEach((key, value) -> addOrReplaceCustodyKeyDate(event, key, value));
@@ -417,7 +417,7 @@ public class ConvictionService {
                 .collect(toList());
     }
 
-    private void deleteCustodyKeyDate(Event event, String typeCode) {
+    private void deleteCustodyKeyDate(Event event, String typeCode, boolean shouldNotifyIAPS) {
         val keyDates = event.getDisposal().getCustody().getKeyDates();
         val maybeKeyDateToRemove =  keyDates
                .stream()
@@ -428,7 +428,7 @@ public class ConvictionService {
            keyDates.remove(keyDateToRemove);
            eventRepository.save(event);
            spgNotificationService.notifyDeletedCustodyKeyDate(keyDateToRemove, event);
-           if (KeyDate.isSentenceExpiryKeyDate(typeCode)) {
+           if (shouldNotifyIAPS && KeyDate.isSentenceExpiryKeyDate(typeCode)) {
                iapsNotificationService.notifyEventUpdated(event);
            }
        });
