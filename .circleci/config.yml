@@ -7,6 +7,7 @@ version: 2.1
 
 orbs:
   owasp: entur/owasp@0.0.6
+  hmpps: ministryofjustice/hmpps@1.0.0
 
 executors:
   builder:
@@ -25,25 +26,12 @@ jobs:
     executor: builder
     steps:
       - checkout
+      - hmpps/create_app_version
       - restore_cache:
           keys:
             - gradle-{{ checksum "build.gradle" }}
             - gradle-
       - run: ./gradlew build
-      - run:
-          name: Record the Application Version
-          command: |
-            jar xvf build/libs/community-api-*.jar BOOT-INF/classes/META-INF/build-info.properties
-            APP_VERSION=$(grep 'build.version=' BOOT-INF/classes/META-INF/build-info.properties | awk -F= '{print $2}')
-            rm BOOT-INF/classes/META-INF/build-info.properties
-
-            # make up a good version name
-            TAG=${APP_VERSION}.${CIRCLE_BRANCH}
-            if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
-              TAG=${APP_VERSION}
-            fi
-            echo $TAG > ./app_version.txt
-
       - save_cache:
           paths:
             - ~/.gradle
@@ -57,7 +45,6 @@ jobs:
           paths:
             - build/libs
             - build.gradle
-            - app_version.txt
   build_docker:
     executor: deployer
     steps:
@@ -66,10 +53,11 @@ jobs:
           at: ~/app
       - setup_remote_docker:
           docker_layer_caching: true
+      - mem/recall:
+          env_var: APP_VERSION
       - run:
           name: Build container and publish to docker hub
           command: |
-            APP_VERSION=$(cat ./app_version.txt)
             docker build -f docker/Dockerfile.aws --rm=false . \
                --tag "mojdigitalstudio/community-api:$APP_VERSION" \
                --label "maintainer=info@digital.justice.gov.uk" \
