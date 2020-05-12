@@ -1,18 +1,19 @@
 package uk.gov.justice.digital.delius.service;
 
-import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import uk.gov.justice.digital.delius.data.api.Nsi;
+import uk.gov.justice.digital.delius.data.api.NsiWrapper;
+import uk.gov.justice.digital.delius.jpa.standard.repository.NsiRepository;
+import uk.gov.justice.digital.delius.transformers.NsiTransformer;
 
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import uk.gov.justice.digital.delius.data.api.NsiWrapper;
-import uk.gov.justice.digital.delius.jpa.standard.repository.NsiRepository;
-import uk.gov.justice.digital.delius.transformers.NsiTransformer;
+
+import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
 
 @Service
 @Slf4j
@@ -42,5 +43,8 @@ public class NsiService {
             .map(NsiWrapper::new);
     }
 
-
+    public Optional<Nsi> getNsiById(Long nsiId) {
+        return nsiRepository.findById(nsiId)
+                .map(nsiTransformer::nsiOf);
+    }
 }

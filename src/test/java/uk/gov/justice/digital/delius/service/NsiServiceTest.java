@@ -1,16 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,18 +12,31 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.repository.NsiRepository;
 import uk.gov.justice.digital.delius.transformers.NsiTransformer;
 
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Set;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
 public class NsiServiceTest {
 
     private static final Long OFFENDER_ID = 123L;
     private static final Long EVENT_ID = 124L;
     private static final Event EVENT = Event.builder().softDeleted(0L).build();
+    public static final long NSI_ID = 12345L;
 
     @Mock
     private ConvictionService convictionService;
 
     @Mock
     private NsiRepository nsiRepository;
+
+    @Mock
+    private Nsi nsi;
 
     @Mock
     private NsiTransformer nsiTransformer;
@@ -47,7 +49,6 @@ public class NsiServiceTest {
     void whenFetchNsisNoneFilterByCodeOrSoftDeleted() {
 
         final uk.gov.justice.digital.delius.jpa.standard.entity.Nsi nsiEntity = buildNsi(EVENT, "BRE");
-        final Nsi nsi = mock(Nsi.class);
         when(nsiRepository.findByEventIdAndOffenderId(EVENT_ID, OFFENDER_ID)).thenReturn(singletonList(nsiEntity));
         when(convictionService.convictionFor(OFFENDER_ID, EVENT_ID)).thenReturn(Optional.of(Conviction.builder().build()));
         when(nsiTransformer.nsiOf(nsiEntity)).thenReturn(nsi);
@@ -125,6 +126,30 @@ public class NsiServiceTest {
         assertThat(nsiWrapper).isEmpty();
         verify(convictionService).convictionFor(OFFENDER_ID, EVENT_ID);
         verifyNoMoreInteractions(nsiRepository, nsiTransformer, convictionService);
+    }
+
+    @DisplayName("When repo returns NSI return mapped NSI")
+    @Test
+    public void givenNsiExistsReturnIt() {
+        var nsiEntity = buildNsi(EVENT, "BRE");
+        when(nsiRepository.findById(NSI_ID)).thenReturn(Optional.of(nsiEntity));
+        when(nsiTransformer.nsiOf(nsiEntity)).thenReturn(nsi);
+
+        Optional<Nsi> actual = nsiService.getNsiById(NSI_ID);
+
+        assertThat(actual).isPresent();
+        assertThat(actual.get()).isEqualTo(nsi);
+    }
+
+    @DisplayName("When repo returns null return empty")
+    @Test
+    public void givenNsiDoesNotExistReturnNull() {
+        var nsiEntity = buildNsi(EVENT, "BRE");
+        when(nsiRepository.findById(NSI_ID)).thenReturn(Optional.empty());
+
+        Optional<Nsi> actual = nsiService.getNsiById(NSI_ID);
+
+        assertThat(actual).isEmpty();
     }
 
     public static uk.gov.justice.digital.delius.jpa.standard.entity.Nsi buildNsi(final Event event, final String typeCode) {

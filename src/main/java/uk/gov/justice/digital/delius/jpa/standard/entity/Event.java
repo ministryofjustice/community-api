@@ -108,6 +108,10 @@ public class Event {
     @Column(name = "CPS_SOFT_DELETED")
     private Long cpsSoftDeleted;
 
+    @JoinColumn(name = "COURT_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Court court;
+
     public boolean hasCpsPack() {
         return !StringUtils.isEmpty(cpsAlfrescoDocumentId)
                 && Optional.ofNullable(cpsSoftDeleted).orElse(0L).equals(0L);

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -15,7 +16,6 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "NSI")
 public class Nsi {
-
     @Id
     @Column(name = "NSI_ID")
     private Long nsiId;
@@ -55,5 +55,11 @@ public class Nsi {
     @JoinColumn(name = "NSI_STATUS_ID")
     @OneToOne
     private NsiStatus nsiStatus;
+
+    @Column(name = "LENGTH")
+    private Long length;
+
+    @OneToMany(mappedBy = "nsi")
+    private List<NsiManager> nsiManagers;
 
 }
