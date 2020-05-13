@@ -60,6 +60,7 @@ jobs:
           name: Build container and publish to docker hub
           command: |
             docker build -f docker/Dockerfile.aws --rm=false . \
+               --build-arg BUILD_NUMBER=$APP_VERSION \
                --tag "mojdigitalstudio/community-api:$APP_VERSION" \
                --label "maintainer=info@digital.justice.gov.uk" \
                --label "app.version=$APP_VERSION" \
