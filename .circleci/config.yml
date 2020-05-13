@@ -7,6 +7,8 @@ version: 2.1
 
 orbs:
   owasp: entur/owasp@0.0.6
+  hmpps: ministryofjustice/hmpps@1.0.0
+  mem: circleci/rememborb@0.0.1
 
 executors:
   builder:
@@ -29,21 +31,7 @@ jobs:
           keys:
             - gradle-{{ checksum "build.gradle" }}
             - gradle-
-      - run: ./gradlew build
-      - run:
-          name: Record the Application Version
-          command: |
-            jar xvf build/libs/community-api-*.jar BOOT-INF/classes/META-INF/build-info.properties
-            APP_VERSION=$(grep 'build.version=' BOOT-INF/classes/META-INF/build-info.properties | awk -F= '{print $2}')
-            rm BOOT-INF/classes/META-INF/build-info.properties
-
-            # make up a good version name
-            TAG=${APP_VERSION}.${CIRCLE_BRANCH}
-            if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
-              TAG=${APP_VERSION}
-            fi
-            echo $TAG > ./app_version.txt
-
+      - run: ./gradlew check
       - save_cache:
           paths:
             - ~/.gradle
@@ -52,25 +40,18 @@ jobs:
           path: build/test-results
       - store_artifacts:
           path: build/reports/tests
-      - persist_to_workspace:
-          root: .
-          paths:
-            - build/libs
-            - build.gradle
-            - app_version.txt
   build_docker:
     executor: deployer
     steps:
       - checkout
-      - attach_workspace:
-          at: ~/app
       - setup_remote_docker:
           docker_layer_caching: true
+      - hmpps/create_app_version
       - run:
           name: Build container and publish to docker hub
           command: |
-            APP_VERSION=$(cat ./app_version.txt)
             docker build -f docker/Dockerfile.aws --rm=false . \
+               --build-arg BUILD_NUMBER=$APP_VERSION \
                --tag "mojdigitalstudio/community-api:$APP_VERSION" \
                --label "maintainer=info@digital.justice.gov.uk" \
                --label "app.version=$APP_VERSION" \
