@@ -19,11 +19,11 @@ dependencies {
     implementation 'org.springframework.security:spring-security-jwt:1.1.0.RELEASE'
 
     implementation 'org.hibernate:hibernate-java8:5.4.5.Final'
-    implementation 'com.unboundid:unboundid-ldapsdk:4.0.13'
+    implementation 'com.unboundid:unboundid-ldapsdk:5.0.1'
     implementation 'io.springfox:springfox-swagger2:2.9.2'
     implementation 'io.springfox:springfox-swagger-ui:2.9.2'
     implementation 'io.springfox:springfox-bean-validators:2.9.2'
-    implementation 'org.flywaydb:flyway-core:6.4.1'
+    implementation 'org.flywaydb:flyway-core:6.4.2'
     implementation 'com.zaxxer:HikariCP:3.4.5'
     implementation 'commons-io:commons-io:2.6'
     implementation 'org.apache.commons:commons-lang3:3.10'
