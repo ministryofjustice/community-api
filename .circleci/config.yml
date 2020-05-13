@@ -27,7 +27,6 @@ jobs:
     executor: builder
     steps:
       - checkout
-      - hmpps/create_app_version
       - restore_cache:
           keys:
             - gradle-{{ checksum "build.gradle" }}
@@ -41,21 +40,13 @@ jobs:
           path: build/test-results
       - store_artifacts:
           path: build/reports/tests
-      - persist_to_workspace:
-          root: .
-          paths:
-            - build/libs
-            - build.gradle
   build_docker:
     executor: deployer
     steps:
       - checkout
-      - attach_workspace:
-          at: ~/app
       - setup_remote_docker:
           docker_layer_caching: true
-      - mem/recall:
-          env_var: APP_VERSION
+      - hmpps/create_app_version
       - run:
           name: Build container and publish to docker hub
           command: |
