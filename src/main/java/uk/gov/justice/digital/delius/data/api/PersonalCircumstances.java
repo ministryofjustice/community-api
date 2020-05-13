@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PersonalCircumstancesWrapper {
+public class PersonalCircumstances {
     @ApiModelProperty(value = "List of personal circumstances")
     private List<PersonalCircumstance> personalCircumstances;
 }

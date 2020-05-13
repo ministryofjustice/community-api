@@ -20,6 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.jwt.JwtAuthenticationHelper;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -79,7 +80,9 @@ public class PersonalCircumstancesAPITest {
                 .get("/offenders/offenderId/{offenderId}/personalCircumstances", OFFENDER_ID)
                 .then()
                 .statusCode(200)
-                .body("personalCircumstances[0].personalCircumstanceType.description", is("AP - Medication in Posession  - Assessment"));
+                .body("personalCircumstances[0].personalCircumstanceType.description", is("AP - Medication in Posession  - Assessment"))
+                .body("personalCircumstances[0].startDate", is("2019-09-11"));
+
     }
 
     @Test

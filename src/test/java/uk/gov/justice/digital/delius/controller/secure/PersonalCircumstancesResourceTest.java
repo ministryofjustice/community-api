@@ -207,23 +207,6 @@ class PersonalCircumstancesResourceTest {
                                     .startDate(LocalDate.parse("2019-09-11"))
                                     .endDate(LocalDate.parse("2020-09-11"))
                                     .evidenced(true)
-                                    .build(),
-                            PersonalCircumstance
-                                    .builder()
-                                    .personalCircumstanceId(2500064996L)
-                                    .offenderId(99L)
-                                    .personalCircumstanceSubType(KeyValue
-                                            .builder()
-                                            .code("ACCP1")
-                                            .description("Transient/short term accommodation")
-                                            .build())
-                                    .personalCircumstanceType(KeyValue
-                                            .builder()
-                                            .code("ACCP")
-                                            .description("Accommodation")
-                                            .build())
-                                    .startDate(LocalDate.parse("2019-09-11"))
-                                    .evidenced(false)
                                     .build()
                     ));
 
@@ -234,17 +217,7 @@ class PersonalCircumstancesResourceTest {
                     .get("/secure/offenders/nomsNumber/{nomsNumber}/personalCircumstances", "G9542VP")
                     .then()
                     .statusCode(200)
-                    .body("personalCircumstances[0].personalCircumstanceId", is(2500064995L))
-                    .body("personalCircumstances[0].offenderId", is(99))
-                    .body("personalCircumstances[0].personalCircumstanceSubType.code", is("APMP1"))
-                    .body("personalCircumstances[0].personalCircumstanceSubType.description", is("MiP approved"))
-                    .body("personalCircumstances[0].personalCircumstanceType.code", is("APMP"))
-                    .body("personalCircumstances[0].personalCircumstanceType.description", is("AP - Medication in Posession  - Assessment"))
-                    .body("personalCircumstances[0].startDate", is("2019-09-11"))
-                    .body("personalCircumstances[0].endDate", is("2020-09-11"))
-                    .body("personalCircumstances[0].evidenced", is(true))
-                    .body("personalCircumstances[1].personalCircumstanceId", is(2500064996L))
-                    .body("personalCircumstances[1].endDate", nullValue());
+                    .body("personalCircumstances[0].personalCircumstanceId", is(2500064995L));
         }
     }
 
@@ -311,24 +284,8 @@ class PersonalCircumstancesResourceTest {
                                     .startDate(LocalDate.parse("2019-09-11"))
                                     .endDate(LocalDate.parse("2020-09-11"))
                                     .evidenced(true)
-                                    .build(),
-                            PersonalCircumstance
-                                    .builder()
-                                    .personalCircumstanceId(2500064996L)
-                                    .offenderId(99L)
-                                    .personalCircumstanceSubType(KeyValue
-                                            .builder()
-                                            .code("ACCP1")
-                                            .description("Transient/short term accommodation")
-                                            .build())
-                                    .personalCircumstanceType(KeyValue
-                                            .builder()
-                                            .code("ACCP")
-                                            .description("Accommodation")
-                                            .build())
-                                    .startDate(LocalDate.parse("2019-09-11"))
-                                    .evidenced(false)
                                     .build()
+
                     ));
 
 
@@ -338,17 +295,7 @@ class PersonalCircumstancesResourceTest {
                     .get("/secure/offenders/crn/{X12345}/personalCircumstances", "X12345")
                     .then()
                     .statusCode(200)
-                    .body("personalCircumstances[0].personalCircumstanceId", is(2500064995L))
-                    .body("personalCircumstances[0].offenderId", is(99))
-                    .body("personalCircumstances[0].personalCircumstanceSubType.code", is("APMP1"))
-                    .body("personalCircumstances[0].personalCircumstanceSubType.description", is("MiP approved"))
-                    .body("personalCircumstances[0].personalCircumstanceType.code", is("APMP"))
-                    .body("personalCircumstances[0].personalCircumstanceType.description", is("AP - Medication in Posession  - Assessment"))
-                    .body("personalCircumstances[0].startDate", is("2019-09-11"))
-                    .body("personalCircumstances[0].endDate", is("2020-09-11"))
-                    .body("personalCircumstances[0].evidenced", is(true))
-                    .body("personalCircumstances[1].personalCircumstanceId", is(2500064996L))
-                    .body("personalCircumstances[1].endDate", nullValue());
+                    .body("personalCircumstances[0].personalCircumstanceId", is(2500064995L));
         }
     }
 

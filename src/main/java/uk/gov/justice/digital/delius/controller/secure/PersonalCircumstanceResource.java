@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
-import uk.gov.justice.digital.delius.data.api.PersonalCircumstancesWrapper;
+import uk.gov.justice.digital.delius.data.api.PersonalCircumstances;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.PersonalCircumstanceService;
 
@@ -33,7 +33,7 @@ public class PersonalCircumstanceResource {
 
     @GetMapping(value = "offenders/offenderId/{offenderId}/personalCircumstances")
     @ApiOperation(
-            value = "Return the personal circumstances for an offender using offenderId")
+            value = "Return the personal circumstances for an offender using offenderId", notes = "requires ROLE_COMMUNITY")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
@@ -42,14 +42,14 @@ public class PersonalCircumstanceResource {
                     @ApiResponse(code = 404, message = "Offender not found", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
-    public PersonalCircumstancesWrapper getOffenderPersonalCircumstancesByOffenderId(final @PathVariable("offenderId") Long offenderId) {
+    public PersonalCircumstances getOffenderPersonalCircumstancesByOffenderId(final @PathVariable("offenderId") Long offenderId) {
         final var maybeOffender = offenderService.getOffenderByOffenderId(offenderId);
-        return personalCircumstancesResponseEntityOf(maybeOffender.map(OffenderDetail::getOffenderId));
+        return personalCircumstancesOf(maybeOffender.map(OffenderDetail::getOffenderId));
     }
 
     @GetMapping(value = "offenders/nomsNumber/{nomsNumber}/personalCircumstances")
     @ApiOperation(
-            value = "Return the personal circumstances for an offender using noms number")
+            value = "Return the personal circumstances for an offender using noms number", notes = "requires ROLE_COMMUNITY")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
@@ -58,13 +58,13 @@ public class PersonalCircumstanceResource {
                     @ApiResponse(code = 404, message = "Offender not found", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
-    public PersonalCircumstancesWrapper getOffenderPersonalCircumstancesByNomsNumber(final @PathVariable("nomsNumber") String nomsNumber) {
-        return personalCircumstancesResponseEntityOf(offenderService.offenderIdOfNomsNumber(nomsNumber));
+    public PersonalCircumstances getOffenderPersonalCircumstancesByNomsNumber(final @PathVariable("nomsNumber") String nomsNumber) {
+        return personalCircumstancesOf(offenderService.offenderIdOfNomsNumber(nomsNumber));
     }
 
     @GetMapping(value = "offenders/crn/{crn}/personalCircumstances")
     @ApiOperation(
-            value = "Return the personal circumstances for an offender using crn")
+            value = "Return the personal circumstances for an offender using crn", notes = "requires ROLE_COMMUNITY")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
@@ -73,13 +73,13 @@ public class PersonalCircumstanceResource {
                     @ApiResponse(code = 404, message = "Offender not found", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
-    public PersonalCircumstancesWrapper getOffenderPersonalCircumstancesByCrn(final @PathVariable("crn") String crn) {
-        return personalCircumstancesResponseEntityOf(offenderService.offenderIdOfCrn(crn));
+    public PersonalCircumstances getOffenderPersonalCircumstancesByCrn(final @PathVariable("crn") String crn) {
+        return personalCircumstancesOf(offenderService.offenderIdOfCrn(crn));
     }
 
-    private PersonalCircumstancesWrapper personalCircumstancesResponseEntityOf(Optional<Long> maybeOffenderId) {
+    private PersonalCircumstances personalCircumstancesOf(final Optional<Long> maybeOffenderId) {
         return maybeOffenderId
-                .map(offenderId -> new PersonalCircumstancesWrapper(personalCircumstanceService
+                .map(offenderId -> new PersonalCircumstances(personalCircumstanceService
                         .personalCircumstancesFor(offenderId)))
                 .orElseThrow(() -> new NotFoundException("No offender found"));
     }
