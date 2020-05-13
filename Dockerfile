@@ -22,9 +22,9 @@ RUN addgroup --gid 2000 --system appgroup && \
 
 WORKDIR /app
 
-COPY --from=builder --chown=appuser:appgroup build/libs/community-api-*.jar /app/app.jar
-COPY --from=builder --chown=appuser:appgroup build/libs/applicationinsights-agent*.jar /app/agent.jar
-COPY --from=builder --chown=appuser:appgroup AI-Agent.xml /app
+COPY --from=builder --chown=appuser:appgroup /app/build/libs/community-api-*.jar /app/app.jar
+COPY --from=builder --chown=appuser:appgroup /app/build/libs/applicationinsights-agent*.jar /app/agent.jar
+COPY --from=builder --chown=appuser:appgroup /app/AI-Agent.xml /app
 
 USER 2000
 
