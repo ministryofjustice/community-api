@@ -29,7 +29,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @ActiveProfiles("dev-seed")
 @DirtiesContext
 @Ignore("Disabled until CI memory issues are addressed")
-public class PersonalCircumstancesAPITest {
+public class RegistrationsAPITest {
     private static final String NOMS_NUMBER = "G9542VP";
     private static final String OFFENDER_ID = "2500343964";
     private static final String CRN = "X320741";
@@ -56,53 +56,53 @@ public class PersonalCircumstancesAPITest {
                 .auth().oauth2(token)
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .get("/offenders/offenderId/{offenderId}/personalCircumstances", OFFENDER_ID)
+                .get("/offenders/offenderId/{offenderId}/registrations", OFFENDER_ID)
                 .then()
                 .statusCode(403);
     }
 
     @Test
-    public void canGetPersonalCircumstancesByOffenderId() {
+    public void canGetRegistrationByOffenderId() {
         final var token = createJwt("ROLE_COMMUNITY");
 
         given()
                 .auth().oauth2(token)
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .get("/offenders/offenderId/{offenderId}/personalCircumstances", OFFENDER_ID)
+                .get("/offenders/offenderId/{offenderId}/registrations", OFFENDER_ID)
                 .then()
                 .statusCode(200)
-                .body("personalCircumstances[0].personalCircumstanceType.description", is("AP - Medication in Posession  - Assessment"))
-                .body("personalCircumstances[0].startDate", is("2019-09-11"));
+                .body("registrations[0].register.description", is("Public Protection"))
+                .body("registrations[0].startDate", is("2019-10-11"));
 
     }
 
     @Test
-    public void canGetPersonalCircumstancesByNOMSNumber() {
+    public void canGetRegistrationByNOMSNumber() {
         final var token = createJwt("ROLE_COMMUNITY");
 
         given()
                 .auth().oauth2(token)
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .get("/offenders/nomsNumber/{nomsNumber}/personalCircumstances", NOMS_NUMBER)
+                .get("/offenders/nomsNumber/{nomsNumber}/registrations", NOMS_NUMBER)
                 .then()
                 .statusCode(200)
-                .body("personalCircumstances[0].personalCircumstanceType.description", is("AP - Medication in Posession  - Assessment"));
+                .body("registrations[0].register.description", is("Public Protection"));
     }
 
     @Test
-    public void canGetPersonalCircumstancesByCRN() {
+    public void canGetRegistrationByCRN() {
         final var token = createJwt("ROLE_COMMUNITY");
 
         given()
                 .auth().oauth2(token)
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .get("/offenders/crn/{crn}/personalCircumstances", CRN)
+                .get("/offenders/crn/{crn}/registrations", CRN)
                 .then()
                 .statusCode(200)
-                .body("personalCircumstances[0].personalCircumstanceType.description", is("AP - Medication in Posession  - Assessment"));
+                .body("registrations[0].register.description", is("Public Protection"));
     }
 
     private String createJwt(final String... roles) {
