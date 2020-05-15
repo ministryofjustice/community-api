@@ -1,37 +1,22 @@
-defaults: &defaults
-  working_directory: ~/app
-  environment:
-    JAVA_TOOL_OPTIONS: -Xmx1024m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2
-
 version: 2.1
 
 orbs:
-  owasp: entur/owasp@0.0.6
-  hmpps: ministryofjustice/hmpps@1.0.0
-  mem: circleci/rememborb@0.0.1
-
-executors:
-  builder:
-    <<: *defaults
-    docker:
-      - image: circleci/openjdk:11-jdk
-    working_directory: ~/app
-  deployer:
-    docker:
-      - image: circleci/python:3
-    working_directory: ~/app
-
+  owasp: entur/owasp@0.0.10
+  hmpps: ministryofjustice/hmpps@1.0
 
 jobs:
-  build:
-    executor: builder
+  validate:
+    executor: hmpps/java
+    environment:
+      _JAVA_OPTIONS: -Xmx1024m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false
     steps:
       - checkout
       - restore_cache:
           keys:
             - gradle-{{ checksum "build.gradle" }}
             - gradle-
-      - run: ./gradlew check
+      - run:
+          command: ./gradlew test
       - save_cache:
           paths:
             - ~/.gradle
@@ -40,43 +25,17 @@ jobs:
           path: build/test-results
       - store_artifacts:
           path: build/reports/tests
-  build_docker:
-    executor: deployer
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - hmpps/create_app_version
-      - run:
-          name: Build container and publish to docker hub
-          command: |
-            docker build --rm=false . \
-               --build-arg BUILD_NUMBER=$APP_VERSION \
-               --tag "mojdigitalstudio/community-api:$APP_VERSION" \
-               --label "maintainer=info@digital.justice.gov.uk" \
-               --label "app.version=$APP_VERSION" \
-               --label "build.version=$APP_VERSION" \
-               --label "build.number=$CIRCLE_BUILD_NUM" \
-               --label "build.url=$CIRCLE_BUILD_URL" \
-               --label "build.gitref=$CIRCLE_SHA1"
-
-            # publish to docker hub as the tag
-            docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-            docker tag mojdigitalstudio/community-api:$APP_VERSION mojdigitalstudio/community-api:latest
-            docker push mojdigitalstudio/community-api:$APP_VERSION
-            docker push mojdigitalstudio/community-api:latest
 
 workflows:
   version: 2
   build-test-and-deploy:
     jobs:
-      - build:
+      - validate:
           filters:
             tags:
               ignore: /.*/
-      - build_docker:
-          requires:
-            - build
+      - hmpps/build_docker:
+          name: build_docker
           filters:
             branches:
               only:
@@ -92,5 +51,4 @@ workflows:
                 - master
     jobs:
       - owasp/gradle_owasp_dependency_check:
-          executor: builder
-
+          executor: hmpps/java
