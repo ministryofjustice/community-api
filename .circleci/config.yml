@@ -8,7 +8,7 @@ jobs:
   validate:
     executor: hmpps/java
     environment:
-      _JAVA_OPTIONS: -Xmx1024m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false
+      _JAVA_OPTIONS: -Xmx1024m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-XX:+UseContainerSupport
     steps:
       - checkout
       - restore_cache:
@@ -45,7 +45,6 @@ workflows:
             branches:
               only:
                 - master
-                - DT-831-HMPPS-Orb
 
   scheduled:
     triggers:
