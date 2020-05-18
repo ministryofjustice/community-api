@@ -20,7 +20,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -89,5 +90,23 @@ public class RequirementServiceTest {
         ConvictionRequirements requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID);
         assertThat(requirements.getRequirements()).hasSize(1);
         assertThat(requirements.getRequirements()).isEqualTo(expectedRequirements);
+    }
+
+    @Test
+    public void givenNoDisposalForConviction_whenGetRequirementsByConvictionId_thenReturnEmptyList() {
+        when(event.getDisposal()).thenReturn(null);
+        when(eventRepository.findByOffenderId(OFFENDER_ID)).thenReturn(Arrays.asList(event, badEvent));
+
+        ConvictionRequirements requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID);
+        assertThat(requirements.getRequirements()).isEmpty();
+    }
+
+    @Test
+    public void givenRequirementsForConviction_whenGetRequirementsByConvictionId_thenReturnEmptyList() {
+        when(disposal.getRequirements()).thenReturn(null);
+        when(eventRepository.findByOffenderId(OFFENDER_ID)).thenReturn(Arrays.asList(event, badEvent));
+
+        ConvictionRequirements requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID);
+        assertThat(requirements.getRequirements()).isEmpty();
     }
 }
