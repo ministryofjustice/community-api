@@ -40,7 +40,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @ActiveProfiles("dev-seed")
 @DirtiesContext
 @RunWith(SpringJUnit4ClassRunner.class)
-@Ignore("Disabled until CI memory issues are addressed")
+//@Ignore("Disabled until CI memory issues are addressed")
 public class OffendersResource_AllocatePrisonOffenderManagerIT {
 
     @LocalServerPort

@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("dev-seed")
 @DirtiesContext
-@Disabled("Disabled until CI memory issues are addressed see https://dsdmoj.atlassian.net/browse/PIC-368")
+//@Disabled("Disabled until CI memory issues are addressed see https://dsdmoj.atlassian.net/browse/PIC-368")
 public class CustodyUpdateNomsNumberAPITest {
 
     @Autowired
