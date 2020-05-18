@@ -1,8 +1,20 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Test;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import uk.gov.justice.digital.delius.data.api.KeyValue;
+import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalIdentifier;
+import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderTeam;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ResponsibleOfficer;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -322,6 +334,131 @@ public class OffenderTransformerTest {
     private ProviderTeam aProviderTeam() {
         return ProviderTeam.builder().build();
 
+    }
+
+    @Nested
+    class AdditionalIdentifiersOf {
+        @Test
+        void willCopyPrimaryIdentifiers() {
+            final var offender = Offender
+                    .builder()
+                    .offenderId(99L)
+                    .crn("X123456")
+                    .nomsNumber("A1234CR")
+                    .pncNumber("2004/0712343H")
+                    .croNumber("123456/04A")
+                    .niNumber("AA112233B")
+                    .immigrationNumber("A1234567")
+                    .mostRecentPrisonerNumber("G12345")
+                    .build();
+
+            final var ids = offenderTransformer.idsOf(offender);
+
+            assertThat(ids.getNomsNumber()).isEqualTo("A1234CR");
+            assertThat(ids.getPncNumber()).isEqualTo("2004/0712343H");
+            assertThat(ids.getCroNumber()).isEqualTo("123456/04A");
+            assertThat(ids.getNiNumber()).isEqualTo("AA112233B");
+            assertThat(ids.getImmigrationNumber()).isEqualTo("A1234567");
+            assertThat(ids.getMostRecentPrisonerNumber()).isEqualTo("G12345");
+        }
+
+        @Test
+        void willCopyAdditionalIdentifiers() {
+            final var offender = Offender
+                    .builder()
+                    .additionalIdentifiers(List.of(
+                            AdditionalIdentifier
+                                    .builder()
+                                    .additionalIdentifierId(999L)
+                                    .identifierName(StandardReference
+                                            .builder()
+                                            .codeDescription("Duplicate NOMS number")
+                                            .codeValue("DNOMS")
+                                            .build())
+                                    .identifier("A1234XX")
+                                    .softDeleted(0L)
+                                    .build(),
+                            AdditionalIdentifier
+                                    .builder()
+                                    .additionalIdentifierId(998L)
+                                    .identifierName(StandardReference
+                                            .builder()
+                                            .codeDescription("Former NOMS number")
+                                            .codeValue("XNOMS")
+                                            .build())
+                                    .identifier("A1234YY")
+                                    .softDeleted(0L)
+                                    .build()
+
+                    ))
+                    .build();
+
+            final var additionalIdentifiers = offenderTransformer
+                    .additionalIdentifiersOf(offender.getAdditionalIdentifiers());
+
+            assertThat(additionalIdentifiers)
+                    .hasSize(2)
+                    .containsExactly(uk.gov.justice.digital.delius.data.api.AdditionalIdentifier
+                                    .builder()
+                                    .additionalIdentifierId(999L)
+                                    .value("A1234XX")
+                                    .type(KeyValue
+                                            .builder()
+                                            .code("DNOMS")
+                                            .description("Duplicate NOMS number")
+                                            .build())
+                                    .build(),
+                            uk.gov.justice.digital.delius.data.api.AdditionalIdentifier
+                                    .builder()
+                                    .additionalIdentifierId(998L)
+                                    .value("A1234YY")
+                                    .type(KeyValue
+                                            .builder()
+                                            .code("XNOMS")
+                                            .description("Former NOMS number")
+                                            .build())
+                                    .build()
+                    );
+
+        }
+
+        @Test
+        void willNotCopyDeletedAdditionalIdentifiers() {
+            final var offender = Offender
+                    .builder()
+                    .additionalIdentifiers(List.of(
+                            AdditionalIdentifier
+                                    .builder()
+                                    .additionalIdentifierId(999L)
+                                    .identifierName(StandardReference
+                                            .builder()
+                                            .codeDescription("Duplicate NOMS number")
+                                            .codeValue("DNOMS")
+                                            .build())
+                                    .identifier("A1234XX")
+                                    .softDeleted(0L)
+                                    .build(),
+                            AdditionalIdentifier
+                                    .builder()
+                                    .additionalIdentifierId(998L)
+                                    .identifierName(StandardReference
+                                            .builder()
+                                            .codeDescription("Former NOMS number")
+                                            .codeValue("XNOMS")
+                                            .build())
+                                    .identifier("A1234YY")
+                                    .softDeleted(1L)
+                                    .build()
+
+                    ))
+                    .build();
+
+            final var additionalIdentifiers = offenderTransformer
+                    .additionalIdentifiersOf(offender.getAdditionalIdentifiers());
+
+            assertThat(additionalIdentifiers).hasSize(1);
+
+        }
     }
 
 }

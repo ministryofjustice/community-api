@@ -50,4 +50,8 @@ public class AdditionalIdentifier extends AuditableEntity {
     private StandardReference identifierName;
     @Column(name = "TRAINING_SESSION_ID")
     private Long trainingSessionId;
+
+    public boolean isDeleted() {
+        return softDeleted == 1L;
+    }
 }
