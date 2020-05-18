@@ -6,12 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.ConvictionRequirements;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.RequirementTransformer;
 
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @NoArgsConstructor
@@ -32,10 +35,14 @@ public class RequirementService {
                 .stream()
                 .filter(event -> convictionId.equals(event.getEventId()))
                 .map(Event::getDisposal)
-                .flatMap(disposal -> disposal.getRequirements().stream())
+                .flatMap(this::getRequirementStreamFromDisposal)
                 .map(requirement -> requirementTransformer.requirementOf(requirement))
                 .collect(Collectors.toList());
 
         return new ConvictionRequirements(requirements);
+    }
+
+    private Stream<Requirement> getRequirementStreamFromDisposal(Disposal disposal) {
+        return disposal != null && disposal.getRequirements() != null ? disposal.getRequirements().stream() : Stream.empty();
     }
 }
