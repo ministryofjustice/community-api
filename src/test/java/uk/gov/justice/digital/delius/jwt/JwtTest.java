@@ -71,7 +71,7 @@ public class JwtTest {
 
         String token = jwt.buildToken(UserData.builder().distinguishedName("Colin").build());
 
-        Thread.sleep(1000);
+        Thread.sleep(1000); // TODO DT-835 why?
 
         jwt.parseToken(token);
 

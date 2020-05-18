@@ -1,0 +1,27 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPattern": "/alfresco/s/noms-spg/details/fa63c379-8b31-4e36-a152-2a57dfe251c5",
+    "headers": {
+      "X-DocRepository-Remote-User": { "equalTo": "N00" },
+      "X-DocRepository-Real-Remote-User": { "equalTo": "Smith,John"}
+    }
+  },
+  "response": {
+    "jsonBody": {
+      "status": "404",
+      "message": "00040163 Unable to find workspace://SpacesStore/fa63c379-8b31-4e36-a152-2a57dfe251c5"
+    },
+    "status": 404,
+    "headers": {
+      "Cache-Control": "no-cache",
+      "Content-Type": "application/json;charset=UTF-8",
+      "Date": "Wed, 03 Jan 2018 15:46:45 GMT",
+      "Expires": "Thu, 01 Jan 1970 00:00:00 GMT",
+      "Pragma": "no-cache",
+      "Server": "Apache-Coyote/1.1",
+      "Transfer-Encoding": "chunked"
+    }
+  }
+}
+

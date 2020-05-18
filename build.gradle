@@ -1,11 +1,18 @@
 plugins {
     id("uk.gov.justice.hmpps.gradle-spring-boot") version "0.3.0"
     id 'groovy'
+    id 'org.unbroken-dome.test-sets' version '3.0.1'
 }
 
 group = 'uk.gov.justice.digital.delius'
 
 ext["spring-security.version"] = "5.3.2.RELEASE"
+
+testSets {
+    testIntegration
+}
+
+check.dependsOn(testIntegration)
 
 dependencies {
     implementation files('lib/ojdbc8-12.2.0.1.jar')
@@ -43,7 +50,7 @@ dependencies {
         exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
     }
     testImplementation 'io.rest-assured:spring-mock-mvc:3.3.0'
-    testImplementation "com.github.tomakehurst:wiremock:2.26.3"
+    testIntegrationImplementation "com.github.tomakehurst:wiremock:2.26.3"
     testImplementation 'io.swagger.parser.v3:swagger-parser-v2-converter:2.0.19'
 }
 
