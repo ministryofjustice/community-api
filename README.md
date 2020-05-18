@@ -70,14 +70,14 @@ The unit tests can be found in the normal source set `test`.  This contains test
 The unit tests can be run with the command `./gradlew test`.
 
 ### Integration Tests
-The integration tests can be found in the additional source set `testIntegration`.  This contains long running tests.
+The integration tests can be found in the additional source set `testIntegration`.  This contains long running tests that generally start up the full application with local database.
 
 The integration tests can be run with the command `./gradlew testIntegration`.
 
 ### Test sets plugin
 Where did the new source set `testIntegration` come from?
 
-The plugin `org.unbroken-dome.test-sets` is used to introduce a new source set called `testIntegration` which copmlements the existing source set `test`.
+The plugin `org.unbroken-dome.test-sets` is used to introduce a new source set called `testIntegration` which complements the existing source set `test`.  Note that the plugin handles everything a source set needs, including new configurations.  For example, Wiremock is now a dependency of the `testIntegrationImplementation` configuration as it is only needed by the integration tests.
 
 ### Running tests in CI
 In the CircleCI config we run the gradle command `./gradlew check` which is intended to perform all validation of the project.
