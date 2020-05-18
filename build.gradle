@@ -54,7 +54,7 @@ dependencies {
     testImplementation 'io.swagger.parser.v3:swagger-parser-v2-converter:2.0.19'
 }
 
-test {
+testIntegration {
     timeout = Duration.ofMinutes(15)
     useJUnitPlatform ()
     testLogging {
@@ -65,5 +65,5 @@ test {
         showCauses = true
     }
     minHeapSize = "128m"
-    maxHeapSize = "1024m"
+    maxHeapSize = "1536m"
 }
