@@ -6,6 +6,11 @@ The service provides REST access to the  Delius Oracle DB offender information.
 ## Continuous Integration
 https://circleci.com/gh/noms-digital-studio/community-api
 
+## Docker repository
+quay.io/hmpps/community-api
+
+Admin via https://quay.io/repository/hmpps/community-api?tab=tags
+
 ## Gradle commands
 
 ### Build and run tests
@@ -26,6 +31,20 @@ references a file resource in the JAR (schema.ldif).
 
 ```
 java -jar build/libs/community-api.jar
+```
+
+### Start the application for secure endpoints
+ 
+When running locally and accessing the secure endpoints it is recommended to run the HMPPS Authentication server.
+
+```
+docker-compose up oauth
+```
+
+or to run the latest version of this API from the docker repository
+
+```
+docker-compose up
 ```
 
 ### Start the application with Delius Oracle db

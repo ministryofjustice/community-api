@@ -10,6 +10,7 @@ import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.filters.ProbationAreaFilter;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ReferenceDataMasterRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StandardReferenceRepository;
 import uk.gov.justice.digital.delius.transformers.InstitutionTransformer;
 import uk.gov.justice.digital.delius.transformers.ProbationAreaTransformer;
@@ -35,12 +36,16 @@ public class ReferenceDataServiceTest {
     @Mock
     private ProbationAreaRepository probationAreaRepository;
 
+    @Mock
+    private ReferenceDataMasterRepository referenceDataMasterRepository;
+
     @Before
     public void setup() {
         referenceDataService = new ReferenceDataService(
                 new ProbationAreaTransformer(new InstitutionTransformer()),
                 probationAreaRepository,
-                standardReferenceRepository);
+                standardReferenceRepository,
+                referenceDataMasterRepository);
     }
 
     @Test
