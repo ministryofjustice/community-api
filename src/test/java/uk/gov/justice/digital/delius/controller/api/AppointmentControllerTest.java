@@ -28,7 +28,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class AppointmentTest {
+public class AppointmentControllerTest {
 
     @Mock
     private AppointmentService appointmentService;
