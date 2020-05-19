@@ -62,6 +62,28 @@ https://docs.spring.io/spring-boot/docs/current/reference/html/common-applicatio
 Starts the application on port '8080'.
 To override, set server.port (eg SERVER_PORT=8099 java -jar etc etc)
 
+## Unit / Integration Tests
+
+### Unit Tests
+The unit tests can be found in the normal source set `test`.  This contains tests do not require running the Spring Boot application or priming the database.  They should be very quick to run.
+
+The unit tests can be run with the command `./gradlew test`.
+
+### Integration Tests
+The integration tests can be found in the additional source set `testIntegration`.  This contains long running tests that generally start up the full application with local database.
+
+The integration tests can be run with the command `./gradlew testIntegration`.
+
+### Test sets plugin
+Where did the new source set `testIntegration` come from?
+
+The plugin `org.unbroken-dome.test-sets` is used to introduce a new source set called `testIntegration` which complements the existing source set `test`.  Note that the plugin handles everything a source set needs, including new configurations.  For example, Wiremock is now a dependency of the `testIntegrationImplementation` configuration as it is only needed by the integration tests.
+
+### Running tests in CI
+In the CircleCI config we run the gradle command `./gradlew check` which is intended to perform all validation of the project.
+
+The `check` task always dependsOn the `test` - it now also depends on the `testIntegration` task.
+ 
 ## Documentation
 http://localhost:8080/api/swagger-ui.html
 
