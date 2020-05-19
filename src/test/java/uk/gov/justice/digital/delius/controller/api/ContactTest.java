@@ -19,9 +19,6 @@ import java.util.Optional;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -148,7 +145,7 @@ public class ContactTest {
     @Test
     public void canFilterContactsByCrnAndContactType() {
         when(offenderService.offenderIdOfCrn("crn1")).thenReturn(Optional.of(1L));
-        when(contactService.contactsFor(eq(1L), any(ContactFilter.class))).thenReturn(ImmutableList.of(contact3, contact4));
+        when(contactService.contactsFor(1L, typeFilter)).thenReturn(ImmutableList.of(contact3, contact4));
 
         Contact[] contacts = given()
                 .when()
@@ -160,7 +157,6 @@ public class ContactTest {
                 .as(Contact[].class);
 
         assertThat(contacts).extracting("contactId").containsOnly(3L, 4L);
-        verify(contactService).contactsFor(1L, typeFilter);
     }
 
     @Test
