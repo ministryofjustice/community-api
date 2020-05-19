@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.controller.CustodyNotFoundException;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
@@ -149,6 +150,18 @@ public class OffenderService {
         return custody.findLatestRelease()
                 .map(releaseTransformer::offenderLatestRecallOf)
                 .orElse(OffenderLatestRecall.NO_RELEASE);
+    }
+
+    @Transactional(readOnly = true)
+    public OffenderIdentifiers getOffenderIdentifiers(Long offenderId) {
+        var offender = offenderRepository.findByOffenderId(offenderId).orElseThrow(() -> new NotFoundException("Offender not found"));
+
+        return OffenderIdentifiers
+                .builder()
+                .primaryIdentifiers(offenderTransformer.idsOf(offender))
+                .additionalIdentifiers(offenderTransformer.additionalIdentifiersOf(offender.getAdditionalIdentifiers()))
+                .offenderId(offender.getOffenderId())
+                .build();
     }
 
     private Custody findCustodyOrThrow(Event activeCustodialEvent) {
