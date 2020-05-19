@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.delius.integration.secure;
+package uk.gov.justice.digital.delius.controller.secure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.justice.digital.delius.jwt.JwtAuthenticationHelper;
+import uk.gov.justice.digital.delius.JwtAuthenticationHelper;
 
 import java.time.Duration;
 import java.util.Arrays;
