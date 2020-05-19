@@ -60,8 +60,7 @@ import static uk.gov.justice.digital.delius.OffenderHelper.anOffender;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class DeliusOffenderAPITest {
     @Rule
-    public WireMockRule wireMock = new WireMockRule(wireMockConfig().port(8088).jettyStopTimeout(10000L));
-
+    public WireMockRule wireMock = new WireMockRule(wireMockConfig().port(8088).usingFilesUnderDirectory("src/testIntegration/resources").jettyStopTimeout(10000L));
 
     @LocalServerPort
     int port;

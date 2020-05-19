@@ -32,7 +32,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class OffendersResource_getOffenderDocumentsByCrn {
     @Rule
-    public WireMockRule wireMock = new WireMockRule(wireMockConfig().port(8088).jettyStopTimeout(10000L));
+    public WireMockRule wireMock = new WireMockRule(wireMockConfig().port(8088).usingFilesUnderDirectory("src/testIntegration/resources").jettyStopTimeout(10000L));
 
     private static final String GROUPED_DOCS_PATH_FORMAT = "/offenders/crn/%s/documents/grouped";
     private static final String SINGLE_DOC_PATH_FORMAT = "/offenders/crn/%s/documents/%s";
