@@ -1,13 +1,15 @@
 package uk.gov.justice.digital.delius.service;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.filters.ProbationAreaFilter;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ReferenceDataMaster;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ReferenceDataMasterRepository;
@@ -20,12 +22,13 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.util.EntityHelper.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ReferenceDataServiceTest {
 
     private ReferenceDataService referenceDataService;
@@ -39,7 +42,7 @@ public class ReferenceDataServiceTest {
     @Mock
     private ReferenceDataMasterRepository referenceDataMasterRepository;
 
-    @Before
+    @BeforeEach
     public void setup() {
         referenceDataService = new ReferenceDataService(
                 new ProbationAreaTransformer(new InstitutionTransformer()),
@@ -279,5 +282,61 @@ public class ReferenceDataServiceTest {
         assertThat(identifier.getCodeDescription()).isEqualTo("Former NOMS Number");
 
         verify(standardReferenceRepository).findByCodeAndCodeSetName("XNOMS", "ADDITIONAL IDENTIFIER TYPE");
+    }
+
+    @Nested
+    class GetReferenceDataForSet {
+        @Test
+        void willRetrieveDataFromRepository() {
+            when(referenceDataMasterRepository.findByCodeSetName(any())).thenReturn(Optional.of(ReferenceDataMaster
+                    .builder()
+                    .description("description")
+                    .codeSetName("code set name")
+                    .standardReferences(List.of(
+                            StandardReference
+                            .builder()
+                            .selectable("N")
+                            .codeValue("C")
+                            .codeDescription("c description")
+                            .standardReferenceListId(3L)
+                            .build()
+                    ))
+                    .build()));
+
+            assertThat(referenceDataService.getReferenceDataForSet("code set name")).isNotEmpty();
+
+            verify(referenceDataMasterRepository).findByCodeSetName("code set name");
+        }
+        @Test
+        void willReturnEmptyWhenSetNotFound() {
+            when(referenceDataMasterRepository.findByCodeSetName(any())).thenReturn(Optional.empty());
+
+            assertThat(referenceDataService.getReferenceDataForSet("code set name")).isEmpty();
+        }
+    }
+
+    @Nested
+    class GetReferenceDataSets {
+        @Test
+        void willRetrieveDataFromRepository() {
+            when(referenceDataMasterRepository.findAll()).thenReturn(List.of(ReferenceDataMaster
+                    .builder()
+                    .description("description")
+                    .codeSetName("code set name")
+                    .standardReferences(List.of(
+                            StandardReference
+                                    .builder()
+                                    .selectable("N")
+                                    .codeValue("C")
+                                    .codeDescription("c description")
+                                    .standardReferenceListId(3L)
+                                    .build()
+                    ))
+                    .build()));
+
+            assertThat(referenceDataService.getReferenceDataSets()).hasSize(1);
+
+            verify(referenceDataMasterRepository).findAll();
+        }
     }
 }

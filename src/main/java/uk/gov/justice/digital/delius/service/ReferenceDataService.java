@@ -16,6 +16,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaReposi
 import uk.gov.justice.digital.delius.jpa.standard.repository.ReferenceDataMasterRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StandardReferenceRepository;
 import uk.gov.justice.digital.delius.transformers.ProbationAreaTransformer;
+import uk.gov.justice.digital.delius.transformers.ReferenceDataTransformer;
 
 import java.util.List;
 import java.util.Optional;
@@ -155,27 +156,10 @@ public class ReferenceDataService {
     public Optional<List<ReferenceData>> getReferenceDataForSet(String set) {
         return referenceDataMasterRepository
                 .findByCodeSetName(set)
-                .map(referenceDataMaster -> referenceDataMaster.getStandardReferences()
-                        .stream()
-                        .map(data -> ReferenceData
-                                .builder()
-                                .id(data.getStandardReferenceListId().toString())
-                                .code(data.getCodeValue())
-                                .description(data.getCodeDescription())
-                                .active(data.isActive())
-                                .build())
-                        .collect(toList()));
+                .map(referenceDataMaster -> ReferenceDataTransformer.referenceDataOf(referenceDataMaster.getStandardReferences()));
     }
 
     public List<KeyValue> getReferenceDataSets() {
-        return referenceDataMasterRepository
-                .findAll()
-                .stream()
-                .map(sets -> KeyValue
-                        .builder()
-                        .code(sets.getCodeSetName())
-                        .description(sets.getDescription())
-                        .build())
-                .collect(toList());
+        return ReferenceDataTransformer.referenceDataSetsOf(referenceDataMasterRepository.findAll());
     }
 }
