@@ -113,7 +113,7 @@ class ReferenceDataResourceTest {
 
         @Test
         @DisplayName("Will return each data set")
-        void WillReturnEachRegistration() {
+        void WillReturnAllDataSets() {
             when(referenceDataService.getReferenceDataSets())
                     .thenReturn(List.of(
                             KeyValue
