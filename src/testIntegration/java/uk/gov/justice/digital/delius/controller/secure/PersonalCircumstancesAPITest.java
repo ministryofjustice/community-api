@@ -25,6 +25,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev-seed")
 @DirtiesContext
+@Disabled("Disabled until CI memory issues are addressed")
 public class PersonalCircumstancesAPITest {
     private static final String NOMS_NUMBER = "G9542VP";
     private static final String OFFENDER_ID = "2500343964";
