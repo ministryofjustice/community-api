@@ -112,7 +112,7 @@ public class ReferenceDataResource {
                                 .builder()
                                 .referenceData(list)
                                 .build())
-                .orElseThrow(() -> new NotFoundException(String.format("Data set %s not found", set)));
+                .orElseThrow(() -> new NotFoundException(String.format("Data set %s not found. All data sets available can be found by calling /secure/referenceData/sets", set)));
     }
 
     @ApiOperation(value = "Returns all available reference data sets", notes = "It is expected that this API will be used to assist developers in understanding the available set codes available for /secure/referenceData/set/{set} endpoint")
