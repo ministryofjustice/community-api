@@ -24,7 +24,14 @@ public class StandardReference {
     @Column(name = "CODE_DESCRIPTION")
     private String codeDescription;
 
+    @Column(name = "SELECTABLE")
+    private String selectable;
+
     @ManyToOne
     @JoinColumn(name = "REFERENCE_DATA_MASTER_ID")
     private ReferenceDataMaster referenceDataMaster;
+
+    public boolean isActive() {
+        return "Y".equals(selectable);
+    }
 }

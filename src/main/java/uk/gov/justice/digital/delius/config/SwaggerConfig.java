@@ -61,7 +61,7 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfo(
                 "Community API Documentation",
-                "REST service for accessing community information",
+                "REST service for accessing community probation information\nThis service serves two sets of APIs, those secured by OAuth2 (and marked as Secure) and those internal to the Probation New Tech Application which are not accessible to any other applications",
                 buildProperties.getVersion(),
                 "https://gateway.nomis-api.service.justice.gov.uk/auth/terms",
                 contactInfo(),

@@ -8,12 +8,15 @@ import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.ProbationArea;
+import uk.gov.justice.digital.delius.data.api.ReferenceData;
 import uk.gov.justice.digital.delius.jpa.filters.ProbationAreaFilter;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ReferenceDataMasterRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StandardReferenceRepository;
 import uk.gov.justice.digital.delius.transformers.ProbationAreaTransformer;
+import uk.gov.justice.digital.delius.transformers.ReferenceDataTransformer;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,13 +44,15 @@ public class ReferenceDataService {
     private final ProbationAreaTransformer probationAreaTransformer;
     private final ProbationAreaRepository probationAreaRepository;
     private final StandardReferenceRepository standardReferenceRepository;
+    private final ReferenceDataMasterRepository referenceDataMasterRepository;
 
 
     @Autowired
-    public ReferenceDataService(ProbationAreaTransformer probationAreaTransformer, ProbationAreaRepository probationAreaRepository, StandardReferenceRepository standardReferenceRepository) {
+    public ReferenceDataService(ProbationAreaTransformer probationAreaTransformer, ProbationAreaRepository probationAreaRepository, StandardReferenceRepository standardReferenceRepository, ReferenceDataMasterRepository referenceDataMasterRepository) {
         this.probationAreaTransformer = probationAreaTransformer;
         this.probationAreaRepository = probationAreaRepository;
         this.standardReferenceRepository = standardReferenceRepository;
+        this.referenceDataMasterRepository = referenceDataMasterRepository;
     }
 
     public List<ProbationArea> getProbationAreas(Optional<List<String>> maybeCodes, boolean restrictActive) {
@@ -146,5 +151,15 @@ public class ReferenceDataService {
                 // LDUs are represented as districts in the delius schema
                 .flatMap(borough -> borough.getDistricts().stream())
                 .filter(district -> ynToBoolean(district.getSelectable()));
+    }
+
+    public Optional<List<ReferenceData>> getReferenceDataForSet(String set) {
+        return referenceDataMasterRepository
+                .findByCodeSetName(set)
+                .map(referenceDataMaster -> ReferenceDataTransformer.referenceDataOf(referenceDataMaster.getStandardReferences()));
+    }
+
+    public List<KeyValue> getReferenceDataSets() {
+        return ReferenceDataTransformer.referenceDataSetsOf(referenceDataMasterRepository.findAll());
     }
 }

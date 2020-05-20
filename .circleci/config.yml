@@ -5,7 +5,7 @@ orbs:
   hmpps: ministryofjustice/hmpps@1.0
 
 jobs:
-  validate:
+  validate-unit:
     executor: hmpps/java
     environment:
       _JAVA_OPTIONS: -Xmx1024m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false
@@ -16,7 +16,27 @@ jobs:
             - gradle-{{ checksum "build.gradle" }}
             - gradle-
       - run:
-          command: ./gradlew check
+          command: ./gradlew test
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradle-{{ checksum "build.gradle" }}
+      - store_test_results:
+          path: build/test-results
+      - store_artifacts:
+          path: build/reports/tests
+  validate-integration:
+    executor: hmpps/java
+    environment:
+      _JAVA_OPTIONS: -Xmx1024m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
+            - gradle-
+      - run:
+          command: ./gradlew testIntegration
       - save_cache:
           paths:
             - ~/.gradle
@@ -30,7 +50,11 @@ workflows:
   version: 2
   build-test-and-deploy:
     jobs:
-      - validate:
+      - validate-unit:
+          filters:
+            tags:
+              ignore: /.*/
+      - validate-integration:
           filters:
             tags:
               ignore: /.*/

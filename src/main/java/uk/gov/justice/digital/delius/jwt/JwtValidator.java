@@ -14,7 +14,6 @@ import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Aspect
 @Component
@@ -31,8 +30,6 @@ public class JwtValidator {
     public void validateJwt(JoinPoint joinPoint) {
 
         ArrayList<Object> argsList = Lists.newArrayList(joinPoint.getArgs());
-
-        log.info("Received call to {} with arguments {}", joinPoint.getSignature().getName(), argsList.stream().map(Object::toString).collect(Collectors.joining(", ")));
 
         Optional<Claims> maybeClaims = argsList.stream()
                 .filter(arg -> arg instanceof HttpHeaders)
