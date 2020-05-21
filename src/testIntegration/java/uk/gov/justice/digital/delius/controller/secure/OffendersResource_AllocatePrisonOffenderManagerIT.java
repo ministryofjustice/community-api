@@ -8,7 +8,6 @@ import io.restassured.config.RestAssuredConfig;
 import org.flywaydb.core.Flyway;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @ActiveProfiles("dev-seed")
 @DirtiesContext
 @RunWith(SpringJUnit4ClassRunner.class)
-@Ignore("Disabled until CI memory issues are addressed")
 public class OffendersResource_AllocatePrisonOffenderManagerIT {
 
     @LocalServerPort

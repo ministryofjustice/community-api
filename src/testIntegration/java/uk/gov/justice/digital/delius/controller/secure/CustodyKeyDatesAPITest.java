@@ -6,8 +6,9 @@ import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.path.json.JsonPath;
+import org.flywaydb.core.Flyway;
+import org.junit.After;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,7 +40,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("dev-seed")
 @DirtiesContext
-@Disabled("Disabled until CI memory issues are addressed")
 public class CustodyKeyDatesAPITest {
     private static final String OFFENDER_ID = "2500343964";
     private static final String CRN = "X320741";
@@ -57,6 +57,8 @@ public class CustodyKeyDatesAPITest {
     JdbcTemplate jdbcTemplate;
     @Autowired
     protected JwtAuthenticationHelper jwtAuthenticationHelper;
+    @Autowired
+    private Flyway flyway;
 
     @Value("${test.token.good}")
     private String validOauthToken;
@@ -72,6 +74,13 @@ public class CustodyKeyDatesAPITest {
         //noinspection SqlWithoutWhere
         jdbcTemplate.execute("DELETE FROM CONTACT");
     }
+
+    @After
+    public void after() {
+        flyway.clean();
+        flyway.migrate();
+    }
+
 
     @Test
     public void anAddedKeyDateCanBeRetrievedByCRN()  {
