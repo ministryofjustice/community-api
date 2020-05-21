@@ -2,6 +2,8 @@ package uk.gov.justice.digital.delius.transformers;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import uk.gov.justice.digital.delius.data.api.KeyValue;
+import uk.gov.justice.digital.delius.data.api.ReferenceData;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ReferenceDataMaster;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
@@ -35,6 +37,31 @@ class ReferenceDataTransformerTest {
 
             final var dataSets = ReferenceDataTransformer.referenceDataSetsOf(dataSetsEntities);
             assertThat(dataSets).hasSize(3);
+        }
+
+
+        @Test
+        void wilSortListByCode() {
+            final var dataSetsEntities = List.of(
+                    ReferenceDataMaster
+                            .builder()
+                            .codeSetName("Z")
+                            .description("code set 1 description")
+                            .build(),
+                    ReferenceDataMaster
+                            .builder()
+                            .codeSetName("X")
+                            .description("code set 2 description")
+                            .build(),
+                    ReferenceDataMaster
+                            .builder()
+                            .codeSetName("Y")
+                            .description("code set 3 description")
+                            .build()
+            );
+
+            final var dataSets = ReferenceDataTransformer.referenceDataSetsOf(dataSetsEntities);
+            assertThat(dataSets).extracting(KeyValue::getCode).containsExactly("X", "Y", "Z");
         }
 
 
@@ -85,6 +112,35 @@ class ReferenceDataTransformerTest {
             final var data = ReferenceDataTransformer.referenceDataOf(dataEntities);
             assertThat(data).hasSize(3);
         }
+        @Test
+        void wilSortByCode() {
+            final var dataEntities = List.of(
+                    StandardReference
+                            .builder()
+                            .selectable("Y")
+                            .codeValue("B")
+                            .codeDescription("b description")
+                            .standardReferenceListId(1L)
+                            .build(),
+                    StandardReference
+                            .builder()
+                            .selectable("Y")
+                            .codeValue("A")
+                            .codeDescription("a description")
+                            .standardReferenceListId(2L)
+                            .build(),
+                    StandardReference
+                            .builder()
+                            .selectable("Y")
+                            .codeValue("C")
+                            .codeDescription("c description")
+                            .standardReferenceListId(3L)
+                            .build()
+            );
+
+            final var data = ReferenceDataTransformer.referenceDataOf(dataEntities);
+            assertThat(data).extracting(ReferenceData::getCode).containsExactly("A", "B", "C");
+        }
 
         @Test
         void importantAttributeWillBeCopied() {
@@ -101,7 +157,6 @@ class ReferenceDataTransformerTest {
             final var referenceData = ReferenceDataTransformer.referenceDataOf(dataEntities).get(0);
             assertThat(referenceData.getCode()).isEqualTo("C");
             assertThat(referenceData.getDescription()).isEqualTo("c description");
-            assertThat(referenceData.getId()).isEqualTo("3");
             assertThat(referenceData.isActive()).isTrue();
         }
 

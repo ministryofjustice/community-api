@@ -78,14 +78,12 @@ class ReferenceDataResourceTest {
                                     .active(true)
                                     .description("Lifer Number")
                                     .code("LIFN")
-                                    .id("549")
                                     .build(),
                             ReferenceData
                                     .builder()
                                     .active(false)
                                     .description("Other Personal Identifier")
                                     .code("OTHR")
-                                    .id("550")
                                     .build()
                     )));
 
@@ -96,11 +94,9 @@ class ReferenceDataResourceTest {
                     .get("/secure/referenceData/set/{set}", "ADDITIONAL IDENTIFIER TYPE")
                     .then()
                     .statusCode(200)
-                    .body("referenceData[0].id", is("549"))
                     .body("referenceData[0].active", is(true))
                     .body("referenceData[0].code", is("LIFN"))
                     .body("referenceData[0].description", is("Lifer Number"))
-                    .body("referenceData[1].id", is("550"))
                     .body("referenceData[1].active", is(false))
                     .body("referenceData[1].code", is("OTHR"))
                     .body("referenceData[1].description", is("Other Personal Identifier"));
