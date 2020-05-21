@@ -1,36 +1,27 @@
 package uk.gov.justice.digital.delius.controller.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.ActiveProfiles;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.PersonalCircumstance;
 import uk.gov.justice.digital.delius.jwt.Jwt;
-import uk.gov.justice.digital.delius.service.OffenderService;
-import uk.gov.justice.digital.delius.service.PersonalCircumstanceService;
 import uk.gov.justice.digital.delius.user.UserData;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@RunWith(SpringJUnit4ClassRunner.class)
+@ActiveProfiles("dev-seed")
 public class PersonalCircumstancesAPITest {
 
     @LocalServerPort
@@ -39,29 +30,16 @@ public class PersonalCircumstancesAPITest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
-    private PersonalCircumstanceService personalCircumstanceService;
-
-    @MockBean
-    private OffenderService offenderService;
-
     @Autowired
     private Jwt jwt;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         RestAssured.port = port;
         RestAssured.basePath = "/api";
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig().jackson2ObjectMapperFactory(
                 (aClass, s) -> objectMapper
         ));
-
-        when(offenderService.offenderIdOfCrn("CRN1")).thenReturn(Optional.of(1L));
-        when(offenderService.offenderIdOfNomsNumber("NOMS1")).thenReturn(Optional.of(1L));
-        when(offenderService.getOffenderByOffenderId(1L))
-            .thenReturn(Optional.of(OffenderDetail.builder().offenderId(1L).build()));
-        when(personalCircumstanceService.personalCircumstancesFor(1L))
-            .thenReturn(ImmutableList.of(aPersonalCircumstance(2L, "Benefit", "Universal Benefit"), aPersonalCircumstance(1L, "Accommodation", "Approved Premises")));
     }
 
     @Test
@@ -70,100 +48,14 @@ public class PersonalCircumstancesAPITest {
         PersonalCircumstance[] personalCircumstances = given()
             .header("Authorization", aValidToken())
             .when()
-            .get("offenders/crn/CRN1/personalCircumstances")
+            .get("offenders/crn/X320741/personalCircumstances")
             .then()
             .statusCode(200)
             .extract()
             .body()
             .as(PersonalCircumstance[].class);
 
-        assertThat(personalCircumstances).hasSize(2);
-        assertThat(personalCircumstances[0].getPersonalCircumstanceType().getDescription()).isEqualTo("Benefit");
-        assertThat(personalCircumstances[0].getPersonalCircumstanceSubType().getDescription()).isEqualTo("Universal Benefit");
-        assertThat(personalCircumstances[1].getPersonalCircumstanceType().getDescription()).isEqualTo("Accommodation");
-        assertThat(personalCircumstances[1].getPersonalCircumstanceSubType().getDescription()).isEqualTo("Approved Premises");
-    }
-
-    @Test
-    public void canGetPersonalCircumstancesByNoms() {
-
-        PersonalCircumstance[] personalCircumstances = given()
-            .header("Authorization", aValidToken())
-            .when()
-            .get("offenders/nomsNumber/NOMS1/personalCircumstances")
-            .then()
-            .statusCode(200)
-            .extract()
-            .body()
-            .as(PersonalCircumstance[].class);
-
-        assertThat(personalCircumstances).hasSize(2);
-        assertThat(personalCircumstances[0].getPersonalCircumstanceType().getDescription()).isEqualTo("Benefit");
-        assertThat(personalCircumstances[0].getPersonalCircumstanceSubType().getDescription()).isEqualTo("Universal Benefit");
-        assertThat(personalCircumstances[1].getPersonalCircumstanceType().getDescription()).isEqualTo("Accommodation");
-        assertThat(personalCircumstances[1].getPersonalCircumstanceSubType().getDescription()).isEqualTo("Approved Premises");
-    }
-
-    @Test
-    public void canGetPersonalCircumstancesByOffenderId() {
-
-        PersonalCircumstance[] personalCircumstances = given()
-            .header("Authorization", aValidToken())
-            .when()
-            .get("offenders/offenderId/1/personalCircumstances")
-            .then()
-            .statusCode(200)
-            .extract()
-            .body()
-            .as(PersonalCircumstance[].class);
-
-        assertThat(personalCircumstances).hasSize(2);
-        assertThat(personalCircumstances[0].getPersonalCircumstanceType().getDescription()).isEqualTo("Benefit");
-        assertThat(personalCircumstances[0].getPersonalCircumstanceSubType().getDescription()).isEqualTo("Universal Benefit");
-        assertThat(personalCircumstances[1].getPersonalCircumstanceType().getDescription()).isEqualTo("Accommodation");
-        assertThat(personalCircumstances[1].getPersonalCircumstanceSubType().getDescription()).isEqualTo("Approved Premises");
-    }
-
-    @Test
-    public void getPersonalCircumstancesForUnknownCrnReturnsNotFound() {
-        when(offenderService.offenderIdOfCrn("notFoundCrn")).thenReturn(Optional.empty());
-
-        given()
-            .header("Authorization", aValidToken())
-            .when()
-            .get("offenders/crn/notFoundCrn/personalCircumstances")
-            .then()
-            .statusCode(404);
-
-        verify(offenderService).offenderIdOfCrn("notFoundCrn");
-    }
-
-    @Test
-    public void getPersonalCircumstancesForUnknownNomsNumberReturnsNotFound() {
-        when(offenderService.offenderIdOfNomsNumber("notFoundNomsNumber")).thenReturn(Optional.empty());
-
-        given()
-            .header("Authorization", aValidToken())
-            .when()
-            .get("offenders/nomsNumber/notFoundNomsNumber/personalCircumstances")
-            .then()
-            .statusCode(404);
-
-        verify(offenderService).offenderIdOfNomsNumber("notFoundNomsNumber");
-    }
-
-    @Test
-    public void getPersonalCircumstancesForUnknownOffenderIdReturnsNotFound() {
-        when(offenderService.getOffenderByOffenderId(99L)).thenReturn(Optional.empty());
-
-        given()
-            .header("Authorization", aValidToken())
-            .when()
-            .get("offenders/offenderId/99/personalCircumstances")
-            .then()
-            .statusCode(404);
-
-        verify(offenderService).getOffenderByOffenderId(99L);
+        assertThat(personalCircumstances).extracting(PersonalCircumstance::getPersonalCircumstanceId).containsExactlyInAnyOrder(2500064995L);
     }
 
     @Test
