@@ -20,17 +20,20 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 public class ApplicationConfig {
 
     @Bean
-    public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
+    public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(ObjectMapper objectMapper) {
         MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
-        ObjectMapper objectMapper = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        customiseObjectMapper(objectMapper);
+        jsonConverter.setObjectMapper(objectMapper);
+        return jsonConverter;
+    }
+
+    public static ObjectMapper customiseObjectMapper(final ObjectMapper objectMapper) {
+        return objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL)
                 .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
                 .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
                 .registerModules(new Jdk8Module(), new JavaTimeModule());
-        jsonConverter.setObjectMapper(objectMapper);
-        return jsonConverter;
     }
 
     @Bean
