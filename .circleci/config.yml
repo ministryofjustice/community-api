@@ -27,6 +27,7 @@ jobs:
           path: build/reports/tests
   validate-integration:
     executor: hmpps/java
+    parallelism: 4
     environment:
       _JAVA_OPTIONS: -Xmx1024m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false
     steps:
@@ -36,7 +37,10 @@ jobs:
             - gradle-{{ checksum "build.gradle" }}
             - gradle-
       - run:
-          command: ./gradlew testIntegration
+          command: |
+            circleci tests glob "src/testIntegration/**/*.java" | circleci tests split | xargs -n 1 echo
+      - run:
+          command: ./gradlew testIntegration -PtestFilter="`circleci tests glob "src/testIntegration/**/*.java" | circleci tests split`"
       - save_cache:
           paths:
             - ~/.gradle
