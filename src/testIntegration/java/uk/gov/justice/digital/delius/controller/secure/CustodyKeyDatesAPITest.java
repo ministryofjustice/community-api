@@ -7,7 +7,7 @@ import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.path.json.JsonPath;
 import org.flywaydb.core.Flyway;
-import org.junit.After;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -59,6 +59,7 @@ public class CustodyKeyDatesAPITest {
     protected JwtAuthenticationHelper jwtAuthenticationHelper;
     @Autowired
     private Flyway flyway;
+    private static Flyway flywayInstance;
 
     @Value("${test.token.good}")
     private String validOauthToken;
@@ -73,12 +74,13 @@ public class CustodyKeyDatesAPITest {
         jdbcTemplate.execute("DELETE FROM KEY_DATE");
         //noinspection SqlWithoutWhere
         jdbcTemplate.execute("DELETE FROM CONTACT");
+        flywayInstance = flyway;
     }
 
-    @After
-    public void after() {
-        flyway.clean();
-        flyway.migrate();
+    @AfterAll
+    public static void after() {
+        flywayInstance.clean();
+        flywayInstance.migrate();
     }
 
 
