@@ -88,7 +88,7 @@ public class CustodyUpdateNomsNumberAPITest {
 
         // AND previous owner of NOMS number will have their NOMS number moved to an additional identifier
         final var additionalIdentifier = jdbcTemplate.query(
-                "SELECT ad.IDENTIFIER, o.NOMS_NUMBER, srl.CODE_VALUE from ADDITIONAL_IDENTIFIER ad, OFFENDER o, R_STANDARD_REFERENCE_LIST srl  where o.CRN = ? and o.OFFENDER_ID = ad.OFFENDER_ID and ad.IDENTIFIER_NAME_ID = srl.STANDARD_REFERENCE_LIST_ID",
+                "SELECT ad.IDENTIFIER, o.NOMS_NUMBER, srl.CODE_VALUE from ADDITIONAL_IDENTIFIER ad, OFFENDER o, R_STANDARD_REFERENCE_LIST srl  where o.CRN = ? and o.OFFENDER_ID = ad.OFFENDER_ID and ad.IDENTIFIER_NAME_ID = srl.STANDARD_REFERENCE_LIST_ID order by ad.CREATED_DATETIME desc ",
                 List.of("X320741").toArray(),
                 new ColumnMapRowMapper())
                 .stream()
