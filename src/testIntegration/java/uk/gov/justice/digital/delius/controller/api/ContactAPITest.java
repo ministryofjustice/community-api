@@ -42,6 +42,7 @@ public class ContactAPITest {
     }
 
     @Test
+    // TODO DT-835 This test intermittently fails due to data being corrupted by another test - currently working in Circle by splitting the tests into parallel executions, but needs a proper fix
     public void canGetAllContactsByOffenderId() {
         Contact[] contacts = given()
                 .when()
