@@ -9,7 +9,6 @@ import io.restassured.config.RestAssuredConfig;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("dev-seed")
 @DirtiesContext
-@Disabled("Disabled until CI memory issues are addressed see https://dsdmoj.atlassian.net/browse/PIC-368")
 public class CustodyUpdateNomsNumberAPITest {
 
     @Autowired
