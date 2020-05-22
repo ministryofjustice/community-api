@@ -35,7 +35,7 @@ public class StaffService {
     public Optional<List<ManagedOffender>> getManagedOffendersByStaffCode(String staffCode, boolean current) {
 
         return staffRepository.findByOfficerCode(staffCode).map(
-                staff -> offenderTransformer.managedOffenderOf(staff, current)
+                staff -> OffenderTransformer.managedOffenderOf(staff, current)
         );
     }
 
@@ -43,7 +43,7 @@ public class StaffService {
     public Optional<StaffDetails> getStaffDetails(String staffCode) {
         return staffRepository
                 .findByOfficerCode(staffCode)
-                .map(staffTransformer::staffDetailsOf)
+                .map(StaffTransformer::staffDetailsOf)
                 .map(staffDetails ->
                         Optional.ofNullable(staffDetails.getUsername())
                                 .map(username -> staffDetails
@@ -56,7 +56,7 @@ public class StaffService {
     @Transactional(readOnly = true)
     public Optional<StaffDetails> getStaffDetailsByUsername(String username) {
         return staffRepository.findByUsername(username)
-                .map(staffTransformer::staffDetailsOf)
+                .map(StaffTransformer::staffDetailsOf)
                 .map(addEmailFromLdap());
     }
 
@@ -66,7 +66,7 @@ public class StaffService {
 
         return staffRepository.findByUsernames(capitalisedUsernames)
                 .stream()
-                .map(staffTransformer::staffDetailsOf)
+                .map(StaffTransformer::staffDetailsOf)
                 .map(addEmailFromLdap())
                 .collect(Collectors.toList());
     }

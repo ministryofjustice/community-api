@@ -18,7 +18,7 @@ public class RegistrationTransformerTest {
 
     @Test
     public void registerMappedFromRegisterTypeFlagReferenceData() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .registerType(
@@ -42,7 +42,7 @@ public class RegistrationTransformerTest {
 
     @Test
     public void typeMappedFromRegisterType() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .registerType(
@@ -62,7 +62,7 @@ public class RegistrationTransformerTest {
 
     @Test
     public void registeringOfficerMappedFromStaff() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .registeringStaff(
@@ -82,7 +82,7 @@ public class RegistrationTransformerTest {
 
     @Test
     public void registeringTeamMappedFromTeam() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .registeringTeam(
@@ -103,7 +103,7 @@ public class RegistrationTransformerTest {
 
     @Test
     public void registeringProbationAreaMappedFromTeamsProbationArea() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .registeringTeam(
@@ -123,7 +123,7 @@ public class RegistrationTransformerTest {
 
     @Test
     public void reviewPeriodMonthsMappedFromRegisterTypeReviewPeriod() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .registerType(
@@ -141,7 +141,7 @@ public class RegistrationTransformerTest {
 
     @Test
     public void registerLevelMappedFromRegisterLevelWhenPresent() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .registerLevel(StandardReference
@@ -159,7 +159,7 @@ public class RegistrationTransformerTest {
 
     @Test
     public void registerLevelNotMappedFromRegisterLevelWhenAbsent() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .registerLevel(null)
@@ -171,7 +171,7 @@ public class RegistrationTransformerTest {
 
     @Test
     public void registerCategoryMappedFromRegisterLevelWhenPresent() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .registerCategory(StandardReference
@@ -189,7 +189,7 @@ public class RegistrationTransformerTest {
 
     @Test
     public void registerCategoryNotMappedFromRegisterLevelWhenAbsent() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .registerCategory(null)
@@ -201,7 +201,7 @@ public class RegistrationTransformerTest {
 
     @Test
     public void warnUserMappedFromRegisterTypeAlertMessage_Yes() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .registerType(
@@ -217,7 +217,7 @@ public class RegistrationTransformerTest {
 
     @Test
     public void warnUserMappedFromRegisterTypeAlertMessage_No() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .registerType(
@@ -233,7 +233,7 @@ public class RegistrationTransformerTest {
 
     @Test
     public void warnUserMappedFromRegisterTypeAlertMessage_Absent() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .registerType(
@@ -249,7 +249,7 @@ public class RegistrationTransformerTest {
 
     @Test
     public void activeMappedFromDeregisteredReversed_1() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .deregistered(1L)
@@ -260,7 +260,7 @@ public class RegistrationTransformerTest {
 
     @Test
     public void activeMappedFromDeregisteredReversed_0() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .deregistered(0L)
@@ -271,7 +271,7 @@ public class RegistrationTransformerTest {
 
     @Test
     public void activeMappedFromDeregisteredReversed_null() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .deregistered(null)
@@ -283,7 +283,7 @@ public class RegistrationTransformerTest {
 
     @Test
     public void endDateMappedFromDeregistrationWhenDeregistered() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .deregistered(1L)
@@ -300,7 +300,7 @@ public class RegistrationTransformerTest {
 
     @Test
     public void endDateWillBeBullWhenNotDeregistered() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .deregistered(0L)
@@ -319,7 +319,7 @@ public class RegistrationTransformerTest {
 
     @Test
     public void deregisteringOfficerMappedFromStaff() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .deregistered(1L)
@@ -347,7 +347,7 @@ public class RegistrationTransformerTest {
 
     @Test
     public void deregisteringTeamMappedFromTeam() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .deregistered(1L)
@@ -374,7 +374,7 @@ public class RegistrationTransformerTest {
     }
     @Test
     public void deregisteringProbationAreaMappedFromTeamArea() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .deregistered(1L)
@@ -400,7 +400,7 @@ public class RegistrationTransformerTest {
     }
     @Test
     public void deregisteringNotesMappedFromDeregistration() {
-        assertThat(transformer.registrationOf(
+        assertThat(RegistrationTransformer.registrationOf(
                 aRegistration()
                         .toBuilder()
                         .deregistered(1L)

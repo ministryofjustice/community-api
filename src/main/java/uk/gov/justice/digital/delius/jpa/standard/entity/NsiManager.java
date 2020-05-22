@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDate;
 
-@Builder
+@Builder(toBuilder = true)
 @Getter
 @Entity
 @Table(name = "NSI_MANAGER")

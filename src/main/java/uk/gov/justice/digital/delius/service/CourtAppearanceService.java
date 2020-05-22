@@ -37,7 +37,8 @@ public class CourtAppearanceService {
             .stream()
             .filter(courtAppearance -> !convertToBoolean(courtAppearance.getSoftDeleted()))
             .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance::getAppearanceDate).reversed())
-            .map(courtAppearance -> courtAppearanceTransformer.courtAppearanceOf(courtAppearance).toBuilder()
+            .map(courtAppearance -> CourtAppearanceTransformer
+                    .courtAppearanceOf(courtAppearance).toBuilder()
                 .offenceIds(
                     ImmutableList.<String>builder()
                     .addAll(mainOffenceIds(courtAppearance))

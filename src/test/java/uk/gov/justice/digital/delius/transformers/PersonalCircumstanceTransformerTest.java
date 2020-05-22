@@ -20,14 +20,14 @@ public class PersonalCircumstanceTransformerTest {
     @Test
     public void probationAreasMappedOnlyWhenNotNull() {
 
-        assertThat(transformer.personalCircumstanceOf(
+        assertThat(PersonalCircumstanceTransformer.personalCircumstanceOf(
                 aPersonalCircumstance()
                         .toBuilder()
                         .probationArea(null)
                         .build()).getProbationArea())
                 .isNull();
 
-        assertThat(transformer.personalCircumstanceOf(
+        assertThat(PersonalCircumstanceTransformer.personalCircumstanceOf(
                 aPersonalCircumstance()
                         .toBuilder()
                         .probationArea(ProbationArea.builder().code("X").description("Description").build())
@@ -39,7 +39,7 @@ public class PersonalCircumstanceTransformerTest {
 
     @Test
     public void typeMappedFromCircumstanceType() {
-        assertThat(transformer.personalCircumstanceOf(
+        assertThat(PersonalCircumstanceTransformer.personalCircumstanceOf(
                 aPersonalCircumstance()
                         .toBuilder()
                         .circumstanceType(CircumstanceType.builder().codeValue("X").codeDescription("Description").build())
@@ -52,7 +52,7 @@ public class PersonalCircumstanceTransformerTest {
 
     @Test
     public void subTypeMappedFromCircumstanceSubType() {
-        assertThat(transformer.personalCircumstanceOf(
+        assertThat(PersonalCircumstanceTransformer.personalCircumstanceOf(
                 aPersonalCircumstance()
                         .toBuilder()
                         .circumstanceSubType(CircumstanceSubType.builder().codeValue("X").codeDescription("Description").build())
@@ -65,9 +65,12 @@ public class PersonalCircumstanceTransformerTest {
 
     @Test
     public void evidencedConvertedToBoolean() {
-        assertThat(transformer.personalCircumstanceOf(aPersonalCircumstance().toBuilder().evidenced("Y").build()).getEvidenced()).isTrue();
-        assertThat(transformer.personalCircumstanceOf(aPersonalCircumstance().toBuilder().evidenced("N").build()).getEvidenced()).isFalse();
-        assertThat(transformer.personalCircumstanceOf(aPersonalCircumstance().toBuilder().evidenced(null).build()).getEvidenced()).isNull();
+        assertThat(PersonalCircumstanceTransformer
+                .personalCircumstanceOf(aPersonalCircumstance().toBuilder().evidenced("Y").build()).getEvidenced()).isTrue();
+        assertThat(PersonalCircumstanceTransformer
+                .personalCircumstanceOf(aPersonalCircumstance().toBuilder().evidenced("N").build()).getEvidenced()).isFalse();
+        assertThat(PersonalCircumstanceTransformer
+                .personalCircumstanceOf(aPersonalCircumstance().toBuilder().evidenced(null).build()).getEvidenced()).isNull();
     }
 
     private PersonalCircumstance aPersonalCircumstance() {

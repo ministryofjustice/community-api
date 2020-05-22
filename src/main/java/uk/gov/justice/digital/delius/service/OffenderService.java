@@ -36,7 +36,7 @@ public class OffenderService {
 
         Optional<Offender> maybeOffender = offenderRepository.findByOffenderId(offenderId);
 
-        return maybeOffender.map(offenderTransformer::fullOffenderOf);
+        return maybeOffender.map(OffenderTransformer::fullOffenderOf);
     }
 
     @Transactional(readOnly = true)
@@ -44,7 +44,7 @@ public class OffenderService {
 
         Optional<Offender> maybeOffender = offenderRepository.findByCrn(crn);
 
-        return maybeOffender.map(offenderTransformer::fullOffenderOf);
+        return maybeOffender.map(OffenderTransformer::fullOffenderOf);
     }
 
     @Transactional(readOnly = true)
@@ -52,7 +52,7 @@ public class OffenderService {
 
         Optional<Offender> maybeOffender = offenderRepository.findByNomsNumber(nomsNumber);
 
-        return maybeOffender.map(offenderTransformer::fullOffenderOf);
+        return maybeOffender.map(OffenderTransformer::fullOffenderOf);
     }
 
     @Transactional(readOnly = true)
@@ -60,7 +60,7 @@ public class OffenderService {
 
         Optional<Offender> maybeOffender = offenderRepository.findByOffenderId(offenderId);
 
-        return maybeOffender.map(offenderTransformer::offenderSummaryOf);
+        return maybeOffender.map(OffenderTransformer::offenderSummaryOf);
     }
 
     @Transactional(readOnly = true)
@@ -68,7 +68,7 @@ public class OffenderService {
 
         Optional<Offender> maybeOffender = offenderRepository.findByCrn(crn);
 
-        return maybeOffender.map(offenderTransformer::offenderSummaryOf);
+        return maybeOffender.map(OffenderTransformer::offenderSummaryOf);
     }
 
     @Transactional(readOnly = true)
@@ -76,7 +76,7 @@ public class OffenderService {
 
         Optional<Offender> maybeOffender = offenderRepository.findByNomsNumber(nomsNumber);
 
-        return maybeOffender.map(offenderTransformer::offenderSummaryOf);
+        return maybeOffender.map(OffenderTransformer::offenderSummaryOf);
     }
 
     public Optional<String> crnOf(Long offenderId) {
@@ -118,28 +118,28 @@ public class OffenderService {
     @Transactional(readOnly = true)
     public Optional<List<OffenderManager>> getOffenderManagersForOffenderId(Long offenderId) {
         return offenderRepository.findByOffenderId(offenderId).map(
-                offender -> offenderTransformer.offenderManagersOf(offender.getOffenderManagers()));
+                offender -> OffenderTransformer.offenderManagersOf(offender.getOffenderManagers()));
 
     }
 
     @Transactional(readOnly = true)
     public Optional<List<OffenderManager>> getOffenderManagersForNomsNumber(String nomsNumber) {
         return offenderRepository.findByNomsNumber(nomsNumber).map(
-                offender -> offenderTransformer.offenderManagersOf(offender.getOffenderManagers()));
+                offender -> OffenderTransformer.offenderManagersOf(offender.getOffenderManagers()));
 
     }
 
     @Transactional(readOnly = true)
     public Optional<List<OffenderManager>> getOffenderManagersForCrn(String crn) {
         return offenderRepository.findByCrn(crn).map(
-                offender -> offenderTransformer.offenderManagersOf(offender.getOffenderManagers()));
+                offender -> OffenderTransformer.offenderManagersOf(offender.getOffenderManagers()));
 
     }
 
     @Transactional(readOnly = true)
     public Optional<List<ResponsibleOfficer>> getResponsibleOfficersForNomsNumber(String nomsNumber, boolean current) {
         return offenderRepository.findByNomsNumber(nomsNumber).map(
-                offender -> offenderTransformer.responsibleOfficersOf(offender, current));
+                offender -> OffenderTransformer.responsibleOfficersOf(offender, current));
 
     }
 
@@ -148,7 +148,7 @@ public class OffenderService {
         final var actualCustodialEvent = convictionService.getActiveCustodialEvent(offenderId);
         final var custody = findCustodyOrThrow(actualCustodialEvent);
         return custody.findLatestRelease()
-                .map(releaseTransformer::offenderLatestRecallOf)
+                .map(ReleaseTransformer::offenderLatestRecallOf)
                 .orElse(OffenderLatestRecall.NO_RELEASE);
     }
 
@@ -158,8 +158,8 @@ public class OffenderService {
 
         return OffenderIdentifiers
                 .builder()
-                .primaryIdentifiers(offenderTransformer.idsOf(offender))
-                .additionalIdentifiers(offenderTransformer.additionalIdentifiersOf(offender.getAdditionalIdentifiers()))
+                .primaryIdentifiers(OffenderTransformer.idsOf(offender))
+                .additionalIdentifiers(OffenderTransformer.additionalIdentifiersOf(offender.getAdditionalIdentifiers()))
                 .offenderId(offender.getOffenderId())
                 .build();
     }

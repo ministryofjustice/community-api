@@ -49,7 +49,7 @@ class ProbationAreaTransformerTest {
         when(team.getCode()).thenReturn("team");
         when(providerTeam.getCode()).thenReturn("providerteam");
 
-        var result = probationAreaTransformer.probationAreaOf(probationArea, true);
+        var result = ProbationAreaTransformer.probationAreaOf(probationArea, true);
         assertThat(result.getTeams()).hasSize(2);
         assertThat(result.getTeams().get(0).getCode()).isEqualTo("team");
         assertThat(result.getTeams().get(1).getCode()).isEqualTo("providerteam");
@@ -57,7 +57,7 @@ class ProbationAreaTransformerTest {
 
     @Test
     public void whenIncludeTeamsIsFalseThenDontMapTeams() {
-        var result = probationAreaTransformer.probationAreaOf(probationArea, false);
+        var result = ProbationAreaTransformer.probationAreaOf(probationArea, false);
         assertThat(result.getTeams()).isNull();
     }
 

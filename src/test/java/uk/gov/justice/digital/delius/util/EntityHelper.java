@@ -108,6 +108,7 @@ public class EntityHelper {
                 .softDeleted(0L)
                 .activeFlag(1L)
                 .orderManagers(List.of(anOrderManager()))
+                .additionalOffences(List.of())
                 .build();
     }
 
@@ -355,7 +356,7 @@ public class EntityHelper {
                 .build();
     }
 
-    private static Nsi aNsi() {
+    public static Nsi aNsi() {
         return Nsi
                 .builder()
                 .nsiType(NsiType
@@ -367,6 +368,7 @@ public class EntityHelper {
                         .codeDescription("Healthy Sex Programme (HCP)")
                         .build())
                 .referralDate(LocalDate.now())
+                .nsiManagers(List.of(aNsiManager()))
                 .build();
     }
 
@@ -714,4 +716,38 @@ public class EntityHelper {
                 .build();
     }
 
+    public static Release aRelease() {
+        return Release
+                .builder()
+                .actualReleaseDate(LocalDateTime.now())
+                .institution(EntityHelper.aPrisonInstitution())
+                .releaseId(99L)
+                .releaseType(StandardReference.builder().build())
+                .notes("Released for geed behaviour")
+                .softDeleted(0L)
+                .build();
+    }
+
+    public static Recall aRecall() {
+        return Recall
+                .builder()
+                .notes("Naughty")
+                .reason(StandardReference.builder().build())
+                .recallDate(LocalDateTime.now())
+                .releaseId(99L)
+                .softDeleted(0L)
+                .build();
+    }
+
+    public static NsiManager aNsiManager() {
+        return NsiManager
+                .builder()
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now().plusMonths(12))
+                .probationArea(aProbationArea())
+                .staff(aStaff())
+                .team(aTeam())
+                .nsiManagerId(99L)
+                .build();
+    }
 }

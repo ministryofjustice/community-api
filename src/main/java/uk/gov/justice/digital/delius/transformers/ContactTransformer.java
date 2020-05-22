@@ -23,18 +23,18 @@ public class ContactTransformer {
 
     private final NsiTransformer nsiTransformer = new NsiTransformer();
 
-    public List<Contact> contactsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.Contact> contacts) {
+    public static List<Contact> contactsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.Contact> contacts) {
         return contacts.stream()
                 .sorted(comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Contact::getCreatedDateTime))
-                .map(this::contactOf)
+                .map(ContactTransformer::contactOf)
                 .collect(Collectors.toList());
     }
 
-    public Nsi nsiOf(uk.gov.justice.digital.delius.jpa.standard.entity.Nsi nsi) {
-        return nsiTransformer.nsiOf(nsi);
+    public static Nsi nsiOf(uk.gov.justice.digital.delius.jpa.standard.entity.Nsi nsi) {
+        return NsiTransformer.nsiOf(nsi);
     }
 
-    private uk.gov.justice.digital.delius.data.api.Contact contactOf(uk.gov.justice.digital.delius.jpa.standard.entity.Contact contact) {
+    private static uk.gov.justice.digital.delius.data.api.Contact contactOf(uk.gov.justice.digital.delius.jpa.standard.entity.Contact contact) {
         return uk.gov.justice.digital.delius.data.api.Contact.builder()
                 .eventId(eventIdOf(contact.getEvent()))
                 .alertActive(ynToBoolean(contact.getAlertActive()))
@@ -49,8 +49,8 @@ public class ContactTransformer {
                 .licenceCondition(licenceConditionOf(contact.getLicenceCondition()))
                 .linkedContactId(contact.getLinkedContactId())
                 .notes(contact.getNotes())
-                .nsi(nsiTransformer.nsiOf(contact.getNsi()))
-                .requirement(requirementTransformer.requirementOf(contact.getRequirement()))
+                .nsi(NsiTransformer.nsiOf(contact.getNsi()))
+                .requirement(RequirementTransformer.requirementOf(contact.getRequirement()))
                 .softDeleted(zeroOneToBoolean(contact.getSoftDeleted()))
                 .probationArea(probationAreaOf(contact.getProbationArea()))
                 .partitionArea(partitionAreaOf(contact.getPartitionArea()))
@@ -68,15 +68,15 @@ public class ContactTransformer {
                 .build();
     }
 
-    protected Long eventIdOf(Event event) {
+    protected static Long eventIdOf(Event event) {
         return Optional.ofNullable(event).map(Event::getEventId).orElse(null);
     }
 
-    public KeyValue teamOf(Team team) {
+    public static KeyValue teamOf(Team team) {
         return Optional.ofNullable(team).map(t -> KeyValue.builder().code(t.getCode()).description(t.getDescription()).build()).orElse(null);
     }
 
-    public Human staffOf(Staff staff) {
+    public static Human staffOf(Staff staff) {
         return Optional.ofNullable(staff).map(s -> Human
                 .builder()
                 .forenames(combinedForenamesOf(s.getForename(), s.getForname2()))
@@ -84,17 +84,17 @@ public class ContactTransformer {
                 .build()).orElse(null);
     }
 
-    protected KeyValue providerTeamOf(ProviderTeam providerTeam) {
+    protected static KeyValue providerTeamOf(ProviderTeam providerTeam) {
         return Optional.ofNullable(providerTeam).map(pt -> KeyValue.builder().code(pt.getCode()).description(pt.getName()).build()).orElse(null);
     }
 
-    protected KeyValue providerLocationOf(ProviderLocation providerLocation) {
+    protected static KeyValue providerLocationOf(ProviderLocation providerLocation) {
         return Optional.ofNullable(providerLocation).map(
                 pl -> KeyValue.builder().code(providerLocation.getCode()).description(providerLocation.getDescription()).build()
         ).orElse(null);
     }
 
-    public Human providerEmployeeOf(ProviderEmployee providerEmployee) {
+    public static Human providerEmployeeOf(ProviderEmployee providerEmployee) {
         return Optional.ofNullable(providerEmployee)
                 .map(pe -> Human
                         .builder()
@@ -103,7 +103,7 @@ public class ContactTransformer {
                         .build()).orElse(null);
     }
 
-    private String combinedForenamesOf(String name1, String name2) {
+    private static String combinedForenamesOf(String name1, String name2) {
         Optional<String> maybeSecondName = Optional.ofNullable(name1);
         Optional<String> maybeThirdName = Optional.ofNullable(name2);
 
@@ -113,17 +113,17 @@ public class ContactTransformer {
                 .collect(Collectors.joining(" "));
     }
 
-    protected String partitionAreaOf(PartitionArea partitionArea) {
+    protected static String partitionAreaOf(PartitionArea partitionArea) {
         return Optional.ofNullable(partitionArea).map(PartitionArea::getArea).orElse(null);
     }
 
-    protected KeyValue probationAreaOf(ProbationArea probationArea) {
+    protected static KeyValue probationAreaOf(ProbationArea probationArea) {
         return Optional.ofNullable(probationArea).map(
                 pa -> KeyValue.builder().code(pa.getCode()).description(pa.getDescription()).build()
         ).orElse(null);
     }
 
-    protected uk.gov.justice.digital.delius.data.api.LicenceCondition licenceConditionOf(LicenceCondition licenceCondition) {
+    protected static uk.gov.justice.digital.delius.data.api.LicenceCondition licenceConditionOf(LicenceCondition licenceCondition) {
         return Optional.ofNullable(licenceCondition).map(lc -> uk.gov.justice.digital.delius.data.api.LicenceCondition.builder()
                 .active(zeroOneToBoolean(lc.getActiveFlag()))
                 .commencementDate(lc.getCommencementDate())
@@ -137,7 +137,7 @@ public class ContactTransformer {
                 .build()).orElse(null);
     }
 
-    private KeyValue licenceConditionTypeMainCatOf(LicenceConditionTypeMainCat licenceConditionTypeMainCat) {
+    private static KeyValue licenceConditionTypeMainCatOf(LicenceConditionTypeMainCat licenceConditionTypeMainCat) {
         return Optional.ofNullable(licenceConditionTypeMainCat).map(lctmc ->
                 KeyValue.builder()
                         .code(lctmc.getCode())
@@ -145,7 +145,7 @@ public class ContactTransformer {
                         .build()).orElse(null);
     }
 
-    protected KeyValue explanationOf(Explanation explanation) {
+    protected static KeyValue explanationOf(Explanation explanation) {
         return Optional.ofNullable(explanation).map(e ->
                 KeyValue.builder()
                         .code(e.getCode())
@@ -153,7 +153,7 @@ public class ContactTransformer {
                         .build()).orElse(null);
     }
 
-    private uk.gov.justice.digital.delius.data.api.ContactType contactTypeOf(ContactType contactType) {
+    private static uk.gov.justice.digital.delius.data.api.ContactType contactTypeOf(ContactType contactType) {
         return uk.gov.justice.digital.delius.data.api.ContactType.builder()
                 .code(contactType.getCode())
                 .description(contactType.getDescription())
@@ -161,7 +161,7 @@ public class ContactTransformer {
                 .build();
     }
 
-    private KeyValue contactOutcomeTypeOf(ContactOutcomeType contactOutcomeType) {
+    private static KeyValue contactOutcomeTypeOf(ContactOutcomeType contactOutcomeType) {
         return Optional.ofNullable(contactOutcomeType).map(cot ->
                 KeyValue.builder()
                         .code(cot.getCode())

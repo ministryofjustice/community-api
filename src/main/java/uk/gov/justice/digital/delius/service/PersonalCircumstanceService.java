@@ -29,7 +29,7 @@ public class PersonalCircumstanceService {
                 .stream()
                 .filter(personalCircumstance -> !convertToBoolean(personalCircumstance.getSoftDeleted()))
                 .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.PersonalCircumstance::getPersonalCircumstanceId).reversed())
-                .map(personalCircumstanceTransformer::personalCircumstanceOf)
+                .map(PersonalCircumstanceTransformer::personalCircumstanceOf)
                 .collect(toList());
     }
 }

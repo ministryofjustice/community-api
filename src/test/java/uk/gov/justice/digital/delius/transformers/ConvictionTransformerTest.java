@@ -16,6 +16,7 @@ import uk.gov.justice.digital.delius.data.api.UnpaidWork;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 import uk.gov.justice.digital.delius.service.LookupSupplier;
+import uk.gov.justice.digital.delius.util.EntityHelper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -63,7 +64,7 @@ public class ConvictionTransformerTest {
 
     @Test
     public void convictionIdMappedFromEventId() {
-        assertThat(transformer.convictionOf(
+        assertThat(ConvictionTransformer.convictionOf(
                 anEvent()
                     .toBuilder()
                     .eventId(99L)
@@ -81,7 +82,7 @@ public class ConvictionTransformerTest {
                 lookupSupplier,
                 institutionTransformer);
 
-        assertThat(transformer.convictionOf(
+        assertThat(ConvictionTransformer.convictionOf(
                 anEvent()
                         .toBuilder()
                         .eventId(99L)
@@ -93,28 +94,28 @@ public class ConvictionTransformerTest {
 
     @Test
     public void activeMappedForZeroOneActiveFlag() {
-        assertThat((transformer.convictionOf(anEvent().toBuilder().activeFlag(1L).build()).getActive())).isTrue();
-        assertThat((transformer.convictionOf(anEvent().toBuilder().activeFlag(0L).build()).getActive())).isFalse();
+        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().activeFlag(1L).build()).getActive())).isTrue();
+        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().activeFlag(0L).build()).getActive())).isFalse();
 
     }
 
     @Test
     public void inBreachMappedForZeroOneInBreach() {
-        assertThat((transformer.convictionOf(anEvent().toBuilder().inBreach(1L).build()).getInBreach())).isTrue();
-        assertThat((transformer.convictionOf(anEvent().toBuilder().inBreach(0L).build()).getInBreach())).isFalse();
+        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().inBreach(1L).build()).getInBreach())).isTrue();
+        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().inBreach(0L).build()).getInBreach())).isFalse();
 
     }
 
     @Test
     public void sentenceIsMappedWhenEvenHasDisposal() {
-        assertThat((transformer.convictionOf(anEvent().toBuilder().disposal(null).build()).getSentence())).isNull();
-        assertThat((transformer.convictionOf(anEvent().toBuilder().disposal(aDisposal()).build()).getSentence())).isNotNull();
+        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().disposal(null).build()).getSentence())).isNull();
+        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().disposal(aDisposal()).build()).getSentence())).isNotNull();
 
     }
 
     @Test
     public void outcomeMappedFromLastCourtAppearance() {
-        assertThat(transformer.convictionOf(
+        assertThat(ConvictionTransformer.convictionOf(
                 anEvent()
                         .toBuilder()
                         .courtAppearances(ImmutableList.of(
@@ -131,13 +132,13 @@ public class ConvictionTransformerTest {
 
     @Test
     public void indexMappedFromEventNumberString() {
-        assertThat((transformer.convictionOf(anEvent().toBuilder().eventNumber("5").build()).getIndex())).isEqualTo("5");
+        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().eventNumber("5").build()).getIndex())).isEqualTo("5");
     }
 
     @Test
     public void custodyNotSetWhenDisposalNotPresent() {
         assertThat(
-                transformer.convictionOf(
+                ConvictionTransformer.convictionOf(
                         anEvent()
                                 .toBuilder()
                                 .disposal(null)
@@ -149,7 +150,7 @@ public class ConvictionTransformerTest {
     @Test
     public void custodyNotSetWhenCustodyNotPresentInDisposal() {
         assertThat(
-                transformer.convictionOf(
+                ConvictionTransformer.convictionOf(
                         anEvent()
                                 .toBuilder()
                                 .disposal(Disposal
@@ -164,7 +165,7 @@ public class ConvictionTransformerTest {
     @Test
     public void custodySetWhenCustodyPresentInDisposal() {
         assertThat(
-                transformer.convictionOf(
+                ConvictionTransformer.convictionOf(
                         anEvent()
                                 .toBuilder()
                                 .disposal(Disposal
@@ -179,7 +180,7 @@ public class ConvictionTransformerTest {
     @Test
     public void bookingNumberCopiedFromCustodyPrisonerNumber() {
         assertThat(
-                transformer.convictionOf(
+                ConvictionTransformer.convictionOf(
                         anEvent()
                                 .toBuilder()
                                 .disposal(Disposal
@@ -198,10 +199,8 @@ public class ConvictionTransformerTest {
 
     @Test
     public void institutionCopiedFromCustodyWhenPresent() {
-        when(institutionTransformer.institutionOf(any())).thenReturn(Institution.builder().build());
-
         assertThat(
-                transformer.convictionOf(
+                ConvictionTransformer.convictionOf(
                         anEvent()
                                 .toBuilder()
                                 .disposal(Disposal
@@ -223,7 +222,7 @@ public class ConvictionTransformerTest {
     public void institutionNotCopiedFromCustodyWhenNotPresent() {
 
         assertThat(
-                transformer.convictionOf(
+                ConvictionTransformer.convictionOf(
                         anEvent()
                                 .toBuilder()
                                 .disposal(Disposal
@@ -331,7 +330,7 @@ public class ConvictionTransformerTest {
     @Test
     public void unpaidWorkMappedWherePresent() {
 
-        Event event = Event.builder()
+        Event event = EntityHelper.anEvent().toBuilder()
                 .disposal(Disposal.builder()
                         .unpaidWorkDetails(UpwDetails.builder()
                                 .upwLengthMinutes(120L)
@@ -372,7 +371,7 @@ public class ConvictionTransformerTest {
                                 .build())
                         .build())
                 .build();
-        UnpaidWork unpaidWork = transformer.convictionOf(event)
+        UnpaidWork unpaidWork = ConvictionTransformer.convictionOf(event)
                 .getSentence()
                 .getUnpaidWork();
 
@@ -389,24 +388,24 @@ public class ConvictionTransformerTest {
 
     @Test
     public void unpaidWorkIsNullWhereNonePresent() {
-        Event event = Event.builder()
+        Event event = EntityHelper.anEvent().toBuilder()
                 .disposal(Disposal.builder()
                         .unpaidWorkDetails(null)
                         .build())
                 .build();
-        Conviction conviction = transformer.convictionOf(event);
+        Conviction conviction = ConvictionTransformer.convictionOf(event);
         UnpaidWork unpaidWork = conviction.getSentence().getUnpaidWork();
         assertThat(unpaidWork).isNull();
     }
 
     @Test
     public void sentenceStartDateCopiedWhenPresent() {
-        Event event = Event.builder()
+        Event event = EntityHelper.anEvent().toBuilder()
                 .disposal(Disposal.builder()
                         .startDate(LocalDate.of(2020, 2, 22))
                         .build())
                 .build();
-        final var conviction = transformer.convictionOf(event);
+        final var conviction = ConvictionTransformer.convictionOf(event);
         assertThat(conviction.getSentence().getStartDate()).isEqualTo(LocalDate.of(2020, 2, 22));
     }
 
@@ -419,13 +418,13 @@ public class ConvictionTransformerTest {
                                                     .codeDescription("Auto Terminated")
                                                     .build();
 
-        Event event = Event.builder()
+        Event event = EntityHelper.anEvent().toBuilder()
             .disposal(Disposal.builder()
                 .terminationDate(LocalDate.of(2020, 2, 22))
                 .terminationReason(standardReference)
                 .build())
             .build();
-        final var conviction = transformer.convictionOf(event);
+        final var conviction = ConvictionTransformer.convictionOf(event);
         assertThat(conviction.getSentence().getTerminationDate()).isEqualTo(LocalDate.of(2020, 2, 22));
         assertThat(conviction.getSentence().getTerminationReason()).isEqualTo("Auto Terminated");
     }
@@ -434,7 +433,7 @@ public class ConvictionTransformerTest {
     class CustodyRelatedKeyDatesOf {
         @Test
         void willSetNothingIfNoneExist() {
-            final var keyDates = transformer.custodyOf(aCustody().toBuilder().keyDates(List.of()).build())
+            final var keyDates = ConvictionTransformer.custodyOf(aCustody().toBuilder().keyDates(List.of()).build())
                     .getKeyDates();
 
             assertThat(keyDates.getConditionalReleaseDate()).isNull();
@@ -450,7 +449,7 @@ public class ConvictionTransformerTest {
 
         @Test
         void willSetNothingIfNoneOfTheOnesWeAreInterestedInExist() {
-            final var keyDates = transformer.custodyOf(aCustody().toBuilder()
+            final var keyDates = ConvictionTransformer.custodyOf(aCustody().toBuilder()
                     .keyDates(List.of(aKeyDate("XX", "Whatever", LocalDate
                             .now()))).build())
                     .getKeyDates();
@@ -468,7 +467,7 @@ public class ConvictionTransformerTest {
 
         @Test
         void willSetAllIfAllAreSet() {
-            final var keyDates = transformer.custodyOf(aCustody().toBuilder()
+            final var keyDates = ConvictionTransformer.custodyOf(aCustody().toBuilder()
                     .keyDates(List.of(
                             aKeyDate("LED", "LicenceExpiryDate", LocalDate.of(2030, 1, 1)),
                             aKeyDate("POM2", "ExpectedPrisonOffenderManagerHandoverDate", LocalDate.of(2030, 1, 2)),

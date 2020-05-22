@@ -14,7 +14,7 @@ public class StaffTransformerTest {
 
     @Test
     public void staffNameDetailsTakenFromStaff() {
-        assertThat(staffTransformer.staffDetailsOf(
+        assertThat(StaffTransformer.staffDetailsOf(
                                         aStaff()
                                             .toBuilder()
                                             .forename("John")
@@ -26,7 +26,7 @@ public class StaffTransformerTest {
 
     @Test
     public void staffCodeTakenFromStaff() {
-        assertThat(staffTransformer.staffDetailsOf(
+        assertThat(StaffTransformer.staffDetailsOf(
                                         aStaff()
                                             .toBuilder()
                                             .forename("John")
@@ -38,7 +38,7 @@ public class StaffTransformerTest {
 
     @Test
     public void teamsTakenFromStaff() {
-        assertThat(staffTransformer.staffDetailsOf(
+        assertThat(StaffTransformer.staffDetailsOf(
                                         aStaff()
                                         .toBuilder()
                                         .teams(ImmutableList.of(aTeam(), aTeam()))
@@ -48,7 +48,7 @@ public class StaffTransformerTest {
 
     @Test
     public void usernameCopiedWhenLinkedToUser() {
-        assertThat(staffTransformer.staffDetailsOf(
+        assertThat(StaffTransformer.staffDetailsOf(
                                         aStaff()
                                         .toBuilder()
                                         .user(User.builder().distinguishedName("username").build())
@@ -58,7 +58,7 @@ public class StaffTransformerTest {
 
     @Test
     public void usernameNotCopiedWhenNotLinkedToUser() {
-        assertThat(staffTransformer.staffDetailsOf(aStaff()
+        assertThat(StaffTransformer.staffDetailsOf(aStaff()
                                                     .toBuilder()
                                                     .user(null)
                                                     .build()).getUsername())

@@ -14,24 +14,24 @@ public class ReleaseTransformer {
     private InstitutionTransformer institutionTransformer;
     private RecallTransformer recallTransformer;
 
-    public OffenderRelease offenderReleaseOf(Release release) {
+    public static OffenderRelease offenderReleaseOf(Release release) {
         final var releaseType = KeyValue.builder()
                 .code(release.getReleaseType().getCodeValue())
                 .description(release.getReleaseType().getCodeDescription())
                 .build();
         return OffenderRelease.builder()
                 .date(release.getActualReleaseDate().toLocalDate())
-                .institution(institutionTransformer.institutionOf(release.getInstitution()))
+                .institution(InstitutionTransformer.institutionOf(release.getInstitution()))
                 .notes(release.getNotes())
                 .reason(releaseType)
                 .build();
     }
 
-    public OffenderLatestRecall offenderLatestRecallOf(Release release) {
-        final var offenderRelease = offenderReleaseOf(release);
+    public static OffenderLatestRecall offenderLatestRecallOf(Release release) {
+        final var offenderRelease = ReleaseTransformer.offenderReleaseOf(release);
         final var offenderRecall =
                 release.findLatestRecall()
-                        .map(latestRecall -> recallTransformer.offenderRecallOf(latestRecall))
+                        .map(RecallTransformer::offenderRecallOf)
                         .orElse(null);
         return OffenderLatestRecall.builder()
                 .lastRelease(offenderRelease)

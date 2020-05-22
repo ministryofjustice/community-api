@@ -7,17 +7,16 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.ConvictionRequirements;
-import uk.gov.justice.digital.delius.data.api.Requirement;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.RequirementTransformer;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,34 +43,30 @@ public class RequirementServiceTest {
     private Event badEvent;
     @Mock
     private Disposal disposal;
-    @Mock
-    private Requirement requirement;
-    @Mock
-    private uk.gov.justice.digital.delius.jpa.standard.entity.Requirement requirementEntity;
-
-    private List<Requirement> expectedRequirements;
 
     private RequirementService requirementService;
 
     @Before
     public void setUp() {
         requirementService = new RequirementService(offenderRepository, eventRepository, transformer);
-        expectedRequirements = Collections.singletonList(requirement);
 
         when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
         when(offender.getOffenderId()).thenReturn(OFFENDER_ID);
         when(eventRepository.findByOffenderId(OFFENDER_ID)).thenReturn(Collections.singletonList(event));
         when(event.getDisposal()).thenReturn(disposal);
         when(event.getEventId()).thenReturn(CONVICTION_ID);
-        when(disposal.getRequirements()).thenReturn(Collections.singletonList(requirementEntity));
-        when(transformer.requirementOf(requirementEntity)).thenReturn(requirement);
+        when(disposal.getRequirements()).thenReturn(Collections.singletonList(Requirement.builder().build()));
     }
 
     @Test
     public void whenGetRequirementsByConvictionId_thenReturnRequirements() {
+        when(disposal.getRequirements()).thenReturn(Collections.singletonList(Requirement
+                .builder()
+                .requirementId(99L)
+                .build()));
         ConvictionRequirements requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID);
         assertThat(requirements.getRequirements()).hasSize(1);
-        assertThat(requirements.getRequirements()).isEqualTo(expectedRequirements);
+        assertThat(requirements.getRequirements().get(0).getRequirementId()).isEqualTo(99L);
     }
 
     @Test
@@ -85,11 +80,15 @@ public class RequirementServiceTest {
 
     @Test
     public void givenMultipleEventsReturnedForOffender_whenGetRequirementsByConvictionId_thenFilterByConvictionId() {
+        when(disposal.getRequirements()).thenReturn(Collections.singletonList(Requirement
+                .builder()
+                .requirementId(99L)
+                .build()));
         when(eventRepository.findByOffenderId(OFFENDER_ID)).thenReturn(Arrays.asList(event, badEvent));
 
         ConvictionRequirements requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID);
         assertThat(requirements.getRequirements()).hasSize(1);
-        assertThat(requirements.getRequirements()).isEqualTo(expectedRequirements);
+        assertThat(requirements.getRequirements().get(0).getRequirementId()).isEqualTo(99L);
     }
 
     @Test

@@ -18,7 +18,7 @@ public class AppointmentTransformerTest {
 
     @Test
     public void appointmentOutcomeMappedFromContactOutcomeType() {
-        assertThat(transformer.appointmentsOf(ImmutableList.of(
+        assertThat(AppointmentTransformer.appointmentsOf(ImmutableList.of(
                 aContact()
                     .toBuilder()
                     .contactOutcomeType(ContactOutcomeType
@@ -34,7 +34,7 @@ public class AppointmentTransformerTest {
 
     @Test
     public void appointmentTypeMappedFromContactType() {
-        assertThat(transformer.appointmentsOf(ImmutableList.of(
+        assertThat(AppointmentTransformer.appointmentsOf(ImmutableList.of(
                 aContact()
                     .toBuilder()
                     .contactType(ContactType
@@ -49,7 +49,7 @@ public class AppointmentTransformerTest {
     }
     @Test
     public void officeLocationMappedFromOfficeLocation() {
-        assertThat(transformer.appointmentsOf(ImmutableList.of(
+        assertThat(AppointmentTransformer.appointmentsOf(ImmutableList.of(
                 aContact()
                     .toBuilder()
                     .officeLocation(OfficeLocation
@@ -65,7 +65,7 @@ public class AppointmentTransformerTest {
 
     @Test
     public void attendedMappedToNotRecordedWhenNull() {
-        assertThat(transformer.appointmentsOf(ImmutableList.of(
+        assertThat(AppointmentTransformer.appointmentsOf(ImmutableList.of(
                 aContact()
                         .toBuilder()
                         .attended(null)
@@ -76,7 +76,7 @@ public class AppointmentTransformerTest {
 
     @Test
     public void attendedMappedToAttendedWhenY() {
-        assertThat(transformer.appointmentsOf(ImmutableList.of(
+        assertThat(AppointmentTransformer.appointmentsOf(ImmutableList.of(
                 aContact()
                         .toBuilder()
                         .attended("Y")
@@ -87,7 +87,7 @@ public class AppointmentTransformerTest {
 
     @Test
     public void attendedMappedToNotAttendedWhenN() {
-        assertThat(transformer.appointmentsOf(ImmutableList.of(
+        assertThat(AppointmentTransformer.appointmentsOf(ImmutableList.of(
                 aContact()
                         .toBuilder()
                         .attended("N")

@@ -29,7 +29,7 @@ public class RegistrationService {
                 .stream()
                 .filter(registration -> !convertToBoolean(registration.getSoftDeleted()))
                 .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Registration::getRegistrationDate).reversed())
-                .map(registrationTransformer::registrationOf)
+                .map(RegistrationTransformer::registrationOf)
                 .collect(toList());
     }
 }

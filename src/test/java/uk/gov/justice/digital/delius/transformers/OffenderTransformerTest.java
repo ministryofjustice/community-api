@@ -32,7 +32,7 @@ public class OffenderTransformerTest {
 
     @Test
     public void offenderManagerAllocationReasonMappedFromAllocationReasonInOffenderTransfer() {
-        assertThat(offenderTransformer.offenderManagersOf(ImmutableList.of(aOffenderManager())).get(0).getAllocationReason())
+        assertThat(OffenderTransformer.offenderManagersOf(ImmutableList.of(aOffenderManager())).get(0).getAllocationReason())
                 .isNotNull()
                 .hasFieldOrPropertyWithValue("code", "1984")
                 .hasFieldOrPropertyWithValue("description", "Reallocation - Inactive Offender");
@@ -41,7 +41,7 @@ public class OffenderTransformerTest {
 
     @Test
     public void offenderManagerAllocationReasonNullWhenOffenderTransferAbsent() {
-        assertThat(offenderTransformer.offenderManagersOf(
+        assertThat(OffenderTransformer.offenderManagersOf(
                 ImmutableList.of(
                         aOffenderManager()
                                 .toBuilder()
@@ -54,7 +54,7 @@ public class OffenderTransformerTest {
 
     @Test
     public void disabilitiesCopiedWithLatestFirst() {
-        assertThat(offenderTransformer.fullOffenderOf(anOffender()
+        assertThat(OffenderTransformer.fullOffenderOf(anOffender()
                 .toBuilder()
                 .disabilities(ImmutableList.of(
                         uk.gov.justice.digital.delius.jpa.standard.entity.Disability
@@ -101,7 +101,7 @@ public class OffenderTransformerTest {
 
     @Test
     public void deletedDisabilitiesNotCopied() {
-        assertThat(offenderTransformer.fullOffenderOf(anOffender()
+        assertThat(OffenderTransformer.fullOffenderOf(anOffender()
                 .toBuilder()
                 .disabilities(ImmutableList.of(
                         uk.gov.justice.digital.delius.jpa.standard.entity.Disability
@@ -139,7 +139,7 @@ public class OffenderTransformerTest {
     public void currentlyManagedOffenders() {
 
         // Get currently managed offenders for this officer
-        assertThat(offenderTransformer.managedOffenderOf(anOfficerWithOffenderManagers(), true)
+        assertThat(OffenderTransformer.managedOffenderOf(anOfficerWithOffenderManagers(), true)
                 .get(0))
                 .hasFieldOrPropertyWithValue("nomsNumber", "A1111")
                 .hasFieldOrPropertyWithValue("offenderSurname", "SMITH")
@@ -150,7 +150,7 @@ public class OffenderTransformerTest {
     public void allManagedOffenders() {
 
         // Get current and past managed offenders for this officer
-        assertThat(offenderTransformer.managedOffenderOf(anOfficerWithOffenderManagers(), false)
+        assertThat(OffenderTransformer.managedOffenderOf(anOfficerWithOffenderManagers(), false)
                 .stream()
                 .collect(Collectors.toList()))
                 .hasSize(2);
@@ -160,7 +160,7 @@ public class OffenderTransformerTest {
     public void currentResponsibleOfficer() {
 
         // Get the current responsible officers for an offender
-        assertThat(offenderTransformer.responsibleOfficersOf(anOffenderWithManagers(), true)
+        assertThat(OffenderTransformer.responsibleOfficersOf(anOffenderWithManagers(), true)
                 .stream()
                 .map(ro -> ro.getOffenderManagerId())
                 .collect(Collectors.toList()))
@@ -172,7 +172,7 @@ public class OffenderTransformerTest {
     public void allResponsibleOfficers() {
 
         // Get the current and previous reponsible officers assignments for this offender
-        assertThat(offenderTransformer.responsibleOfficersOf(anOffenderWithManagers(), false)
+        assertThat(OffenderTransformer.responsibleOfficersOf(anOffenderWithManagers(), false)
                 .stream()
                 .map(ro -> ro.getOffenderManagerId())
                 .collect(Collectors.toList()))
@@ -182,7 +182,7 @@ public class OffenderTransformerTest {
 
     @Test
     public void ProbationAreaNPSPrivateSectorTransformedToTrue() {
-        assertThat(offenderTransformer.offenderManagersOf(ImmutableList.of(
+        assertThat(OffenderTransformer.offenderManagersOf(ImmutableList.of(
                 aOffenderManager()
                         .toBuilder()
                         .probationArea(npsProbationArea())
@@ -192,7 +192,7 @@ public class OffenderTransformerTest {
 
     @Test
     public void ProbationAreaNPSPrivateSectorTransformedToFalse() {
-        assertThat(offenderTransformer.offenderManagersOf(ImmutableList.of(
+        assertThat(OffenderTransformer.offenderManagersOf(ImmutableList.of(
                 aOffenderManager()
                         .toBuilder()
                         .probationArea(crcProbationArea())
@@ -352,7 +352,7 @@ public class OffenderTransformerTest {
                     .mostRecentPrisonerNumber("G12345")
                     .build();
 
-            final var ids = offenderTransformer.idsOf(offender);
+            final var ids = OffenderTransformer.idsOf(offender);
 
             assertThat(ids.getNomsNumber()).isEqualTo("A1234CR");
             assertThat(ids.getPncNumber()).isEqualTo("2004/0712343H");
@@ -393,7 +393,7 @@ public class OffenderTransformerTest {
                     ))
                     .build();
 
-            final var additionalIdentifiers = offenderTransformer
+            final var additionalIdentifiers = OffenderTransformer
                     .additionalIdentifiersOf(offender.getAdditionalIdentifiers());
 
             assertThat(additionalIdentifiers)
@@ -453,7 +453,7 @@ public class OffenderTransformerTest {
                     ))
                     .build();
 
-            final var additionalIdentifiers = offenderTransformer
+            final var additionalIdentifiers = OffenderTransformer
                     .additionalIdentifiersOf(offender.getAdditionalIdentifiers());
 
             assertThat(additionalIdentifiers).hasSize(1);

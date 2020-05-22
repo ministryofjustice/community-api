@@ -92,10 +92,11 @@ public class CustodyService {
                         return maybeInstitution.map(institution -> {
                             if (currentlyAtDifferentInstitution(event, institution)) {
                                 telemetryClient.trackEvent("P2PTransferPrisonUpdated", telemetryProperties, null);
-                                return convictionTransformer.custodyOf(updateInstitutionOnEvent(offender, event, institution).getDisposal().getCustody());
+                                return ConvictionTransformer
+                                        .custodyOf(updateInstitutionOnEvent(offender, event, institution).getDisposal().getCustody());
                             } else {
                                 telemetryClient.trackEvent("P2PTransferPrisonUpdateIgnored", telemetryProperties, null);
-                                return convictionTransformer.custodyOf(event.getDisposal().getCustody());
+                                return ConvictionTransformer.custodyOf(event.getDisposal().getCustody());
                             }
                         }).orElseThrow(() -> {
                             telemetryClient.trackEvent("P2PTransferPrisonNotFound", telemetryProperties, null);
@@ -143,11 +144,12 @@ public class CustodyService {
 
         if (maybeExistingBookingNumber.filter(sameAsNewBookingNumber).isPresent()) {
             telemetryClient.trackEvent("P2PImprisonmentStatusBookingNumberAlreadySet", telemetryProperties, null);
-            return convictionTransformer.custodyOf(event.getDisposal().getCustody());
+            return ConvictionTransformer.custodyOf(event.getDisposal().getCustody());
         } else {
             final var eventName = maybeExistingBookingNumber.isPresent() ? "P2PImprisonmentStatusBookingNumberUpdated" : "P2PImprisonmentStatusBookingNumberInserted";
             telemetryClient.trackEvent(eventName, telemetryProperties, null);
-            return convictionTransformer.custodyOf(updateBookingNumberFor(offender, event, updateCustodyBookingNumber.getBookingNumber()).getDisposal().getCustody());
+            return ConvictionTransformer
+                    .custodyOf(updateBookingNumberFor(offender, event, updateCustodyBookingNumber.getBookingNumber()).getDisposal().getCustody());
         }
     }
 

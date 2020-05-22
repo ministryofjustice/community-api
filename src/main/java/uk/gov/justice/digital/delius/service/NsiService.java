@@ -38,13 +38,13 @@ public class NsiService {
             .map(nsis -> nsis.stream()
                 .filter(e -> !convertToBoolean(e.getEvent().getSoftDeleted()))
                 .filter(e -> nsiCodes.contains(e.getNsiType().getCode()))
-                .map(nsiTransformer::nsiOf)
+                .map(NsiTransformer::nsiOf)
                 .collect(Collectors.toList()))
             .map(NsiWrapper::new);
     }
 
     public Optional<Nsi> getNsiById(Long nsiId) {
         return nsiRepository.findById(nsiId)
-                .map(nsiTransformer::nsiOf);
+                .map(NsiTransformer::nsiOf);
     }
 }

@@ -18,7 +18,7 @@ public class MainOffenceTransformer {
         this.lookupSupplier = lookupSupplier;
     }
 
-    public Offence offenceOf(MainOffence mainOffence) {
+    public static Offence offenceOf(MainOffence mainOffence) {
         return Offence.builder()
             .offenceId(OffenceIdTransformer.mainOffenceIdOf(mainOffence.getMainOffenceId()))
             .detail(detailOf(mainOffence.getOffence()))

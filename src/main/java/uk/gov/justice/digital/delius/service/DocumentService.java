@@ -118,69 +118,69 @@ public class DocumentService {
                                 ImmutableList.<OffenderDocumentDetail>builder()
                                         .addAll(toOffenderDocumentDetailList(eventWithCPsPack(events, eventId)))
                                         .addAll(
-                                            documentTransformer
+                                            DocumentTransformer
                                             .offenderDocumentsDetailsOfEventDocuments(
                                                     eventDocuments
                                                             .stream()
                                                             .filter(document -> eventId(document).equals(eventId))
                                                             .collect(toList())))
-                                        .addAll(documentTransformer
+                                        .addAll(DocumentTransformer
                                                 .offenderDocumentsDetailsOfCourtReportDocuments(
                                                         courtReportDocuments
                                                                 .stream()
                                                                 .filter(document -> eventId(document).equals(eventId))
                                                                 .collect(toList()))
                                         )
-                                        .addAll(documentTransformer
+                                        .addAll(DocumentTransformer
                                                 .offenderDocumentsDetailsOfInstitutionReportDocuments(
                                                         institutionReportDocuments
                                                                 .stream()
                                                                 .filter(document -> eventId(document).equals(eventId))
                                                                 .collect(toList()))
                                         )
-                                        .addAll(documentTransformer
+                                        .addAll(DocumentTransformer
                                                 .offenderDocumentsDetailsOfContactDocuments(
                                                         contactEventDocuments
                                                                 .stream()
                                                                 .filter(document -> eventId(document).equals(eventId))
                                                                 .collect(toList()))
                                         )
-                                        .addAll(documentTransformer
+                                        .addAll(DocumentTransformer
                                                 .offenderDocumentsDetailsOfApprovedPremisesReferralDocuments(
                                                         approvedPremisesReferralDocuments
                                                                 .stream()
                                                                 .filter(document -> eventId(document).equals(eventId))
                                                                 .collect(toList()))
                                         )
-                                        .addAll(documentTransformer
+                                        .addAll(DocumentTransformer
                                                 .offenderDocumentsDetailsOfAssessmentDocuments(
                                                         assessmentDocuments
                                                                 .stream()
                                                                 .filter(document -> eventId(document).equals(eventId))
                                                                 .collect(toList()))
                                         )
-                                        .addAll(documentTransformer
+                                        .addAll(DocumentTransformer
                                                 .offenderDocumentsDetailsOfCaseAllocationDocuments(
                                                         caseAllocationDocuments
                                                                 .stream()
                                                                 .filter(document -> eventId(document).equals(eventId))
                                                                 .collect(toList()))
                                         )
-                                        .addAll(documentTransformer
+                                        .addAll(DocumentTransformer
                                                 .offenderDocumentsDetailsOfReferralDocuments(
                                                         referralDocuments
                                                                 .stream()
                                                                 .filter(document -> eventId(document).equals(eventId))
                                                                 .collect(toList()))
                                         )
-                                        .addAll(documentTransformer
+                                        .addAll(DocumentTransformer
                                                 .offenderDocumentsDetailsOfNsiDocuments(
                                                         nsiEventDocuments
                                                                 .stream()
                                                                 .filter(document -> eventId(document).equals(eventId))
                                                                 .collect(toList()))
                                         )
-                                        .addAll(documentTransformer
+                                        .addAll(DocumentTransformer
                                                 .offenderDocumentsDetailsOfUPWAppointmentDocuments(
                                                         upwAppointmentDocuments
                                                                 .stream()
@@ -197,22 +197,22 @@ public class DocumentService {
                 .documents(
                         ImmutableList.<OffenderDocumentDetail>builder()
                                 .addAll(previousConvictions(offender))
-                                .addAll(documentTransformer
+                                .addAll(DocumentTransformer
                                         .offenderDocumentsDetailsOfOffenderDocuments(
                                                 offenderDocumentRepository.findByOffenderId(offenderId)))
-                                .addAll(documentTransformer
+                                .addAll(DocumentTransformer
                                         .offenderDocumentsDetailsOfAddressAssessmentDocuments(
                                                 addressAssessmentDocumentRepository.findByOffenderId(offenderId)))
-                                .addAll(documentTransformer
+                                .addAll(DocumentTransformer
                                         .offenderDocumentsDetailsOfPersonalContactDocuments(
                                                 personalContactDocumentRepository.findByOffenderId(offenderId)))
-                                .addAll(documentTransformer
+                                .addAll(DocumentTransformer
                                         .offenderDocumentsDetailsOfPersonalCircumstanceDocuments(
                                                 personalCircumstanceDocumentRepository.findByOffenderId(offenderId)))
-                                .addAll(documentTransformer
+                                .addAll(DocumentTransformer
                                         .offenderDocumentsDetailsOfContactDocuments(
                                                 allContactDocuments.stream().filter(not(this::isEventRelated)).collect(toList())))
-                                .addAll(documentTransformer
+                                .addAll(DocumentTransformer
                                         .offenderDocumentsDetailsOfNsiDocuments(
                                                 allNsiDocuments.stream().filter(not(this::isEventRelated)).collect(toList())))
                                 .build()
@@ -278,14 +278,14 @@ public class DocumentService {
 
     private List<OffenderDocumentDetail> toOffenderDocumentDetailList(Optional<Event> maybeEvent) {
         return maybeEvent
-                .map(event -> ImmutableList.of(documentTransformer.offenderDocumentDetailsOfCpsPack(event)))
+                .map(event -> ImmutableList.of(DocumentTransformer.offenderDocumentDetailsOfCpsPack(event)))
                 .orElseGet(ImmutableList::of);
     }
 
     private List<OffenderDocumentDetail> previousConvictions(Offender offender) {
         return Optional.of(offender)
                 .filter(this::hasPreviousConvictions)
-                .map(offenderWithPreCPns -> ImmutableList.of(documentTransformer.offenderDocumentDetailsOfPreviousConvictions(offenderWithPreCPns)))
+                .map(offenderWithPreCPns -> ImmutableList.of(DocumentTransformer.offenderDocumentDetailsOfPreviousConvictions(offenderWithPreCPns)))
                 .orElseGet(ImmutableList::of);
     }
 

@@ -23,7 +23,7 @@ public class AdditionalOffenceTransformer {
     }
 
 
-    public List<Offence> offencesOf(List<AdditionalOffence> additionalOffences) {
+    public static List<Offence> offencesOf(List<AdditionalOffence> additionalOffences) {
         return additionalOffences.stream()
             .filter(offence -> !convertToBoolean(offence.getSoftDeleted()))
             .map(additionalOffence ->
