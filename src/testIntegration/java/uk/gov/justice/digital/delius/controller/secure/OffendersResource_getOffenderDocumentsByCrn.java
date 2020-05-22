@@ -1,38 +1,37 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.gov.justice.digital.delius.controller.wiremock.DeliusExtension;
+import uk.gov.justice.digital.delius.controller.wiremock.DeliusMockServer;
 import uk.gov.justice.digital.delius.data.api.ConvictionDocuments;
 import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
 
 import java.time.LocalDate;
 
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev-seed")
-@RunWith(SpringJUnit4ClassRunner.class)
 public class OffendersResource_getOffenderDocumentsByCrn {
-    @Rule
-    public WireMockRule wireMock = new WireMockRule(wireMockConfig().port(8088).usingFilesUnderDirectory("src/testIntegration/resources").jettyStopTimeout(10000L));
+
+    private static final DeliusMockServer deliusMockServer = new DeliusMockServer(8088, "src/testIntegration/resources");
+    @RegisterExtension
+    static DeliusExtension deliusExtension = new DeliusExtension(deliusMockServer);
 
     private static final String GROUPED_DOCS_PATH_FORMAT = "/offenders/crn/%s/documents/grouped";
     private static final String SINGLE_DOC_PATH_FORMAT = "/offenders/crn/%s/documents/%s";
@@ -47,7 +46,7 @@ public class OffendersResource_getOffenderDocumentsByCrn {
     @Value("${test.token.good}")
     private String validOauthToken;
 
-    @Before
+    @BeforeEach
     public void setup() {
         RestAssured.port = port;
         RestAssured.basePath = "/secure";
