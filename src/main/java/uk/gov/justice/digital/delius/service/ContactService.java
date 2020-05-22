@@ -39,7 +39,7 @@ public class ContactService {
     }
 
     public List<Contact> contactsFor(Long offenderId, ContactFilter filter) {
-        return contactTransformer.contactsOf(contactRepository.findAll(filter.toBuilder().offenderId(offenderId).build()));
+        return ContactTransformer.contactsOf(contactRepository.findAll(filter.toBuilder().offenderId(offenderId).build()));
     }
 
 

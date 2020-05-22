@@ -50,7 +50,7 @@ public class OffenderIdentifierService {
         } else {
             log.warn("Update NOMS number will be ignored, this feature is switched off ");
         }
-        return offenderTransformer.idsOf(offender);
+        return OffenderTransformer.idsOf(offender);
     }
 
     private void doUpdateNomsNumber(String nomsNumber, Offender offender) {

@@ -27,7 +27,7 @@ public class CourtAppearanceTransformer {
         this.lookupSupplier = lookupSupplier;
     }
 
-    public CourtAppearance courtAppearanceOf(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance courtAppearance) {
+    public static CourtAppearance courtAppearanceOf(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance courtAppearance) {
         return CourtAppearance.builder()
             .courtAppearanceId(courtAppearance.getCourtAppearanceId())
             .appearanceDate(courtAppearance.getAppearanceDate())
@@ -37,15 +37,15 @@ public class CourtAppearanceTransformer {
             .eventId(courtAppearance.getEvent().getEventId())
             .teamId(courtAppearance.getTeamId())
             .staffId(courtAppearance.getStaffId())
-            .court(courtTransformer.courtOf(courtAppearance.getCourt()))
+            .court(CourtTransformer.courtOf(courtAppearance.getCourt()))
             .appearanceTypeId(courtAppearance.getAppearanceTypeId())
             .pleaId(courtAppearance.getPleaId())
-            .outcome(outcomeOf(courtAppearance.getOutcome()))
+            .outcome(CourtAppearanceTransformer.outcomeOf(courtAppearance.getOutcome()))
             .remandStatusId(courtAppearance.getRemandStatusId())
             .createdDatetime(courtAppearance.getCreatedDatetime())
             .lastUpdatedDatetime(courtAppearance.getLastUpdatedDatetime())
             .offenderId(courtAppearance.getOffenderId())
-            .courtReports(courtReportsOf(courtAppearance.getCourtReports()))
+            .courtReports(CourtAppearanceTransformer.courtReportsOf(courtAppearance.getCourtReports()))
             .build();
     }
 
@@ -80,7 +80,7 @@ public class CourtAppearanceTransformer {
     }
 
 
-    private KeyValue outcomeOf(StandardReference standardReference) {
+    private static KeyValue outcomeOf(StandardReference standardReference) {
         return Optional.ofNullable(standardReference)
             .map(standardReference1 -> KeyValue.builder()
                                         .code(standardReference.getCodeValue())
@@ -89,10 +89,10 @@ public class CourtAppearanceTransformer {
             .orElse(null);
     }
 
-    private List<CourtReport> courtReportsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport> courtReports) {
+    private static List<CourtReport> courtReportsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport> courtReports) {
         return courtReports.stream()
             .filter(report -> !convertToBoolean(report.getSoftDeleted()))
-            .map(courtReportTransformer::courtReportOf)
+            .map(CourtReportTransformer::courtReportOf)
             .collect(toList());
     }
 

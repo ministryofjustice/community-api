@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,8 +11,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.justice.digital.delius.data.api.ReplaceCustodyKeyDates;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
-import uk.gov.justice.digital.delius.jpa.standard.entity.KeyDate;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
@@ -29,8 +26,13 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static uk.gov.justice.digital.delius.util.EntityHelper.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aCustodyEvent;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aKeyDate;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anOffender;
 
 @ExtendWith(MockitoExtension.class)
 public class ConvictionService_AddOrReplaceOrDeleteCustodyKeyDatesTest {
@@ -59,9 +61,6 @@ public class ConvictionService_AddOrReplaceOrDeleteCustodyKeyDatesTest {
     private ContactService contactService;
 
     @Captor
-    private ArgumentCaptor<Custody> custodyArgumentCaptor;
-
-    @Captor
     private ArgumentCaptor<Map<String, LocalDate>> datesAmendedOrUpdatedArgumentCaptor;
     @Captor
     private ArgumentCaptor<Map<String, LocalDate>> datesRemovedArgumentCaptor;
@@ -84,19 +83,13 @@ public class ConvictionService_AddOrReplaceOrDeleteCustodyKeyDatesTest {
                 aKeyDate("LED", "licenceExpiryDate", LocalDate.of(2039, 9, 30))
         )))));
 
-        convictionService.addOrReplaceOrDeleteCustodyKeyDates(99L, 88L, ReplaceCustodyKeyDates
+        final var custody = convictionService.addOrReplaceOrDeleteCustodyKeyDates(99L, 88L, ReplaceCustodyKeyDates
                 .builder()
                 .conditionalReleaseDate(LocalDate.of(2030, 1, 1))
                 .build());
 
-        verify(convictionTransformer).custodyOf(custodyArgumentCaptor.capture());
-
-        final var custody = custodyArgumentCaptor.getValue();
-
-        assertThat(custody.getKeyDates()).hasSize(1)
-                .extracting( keyDate -> keyDate.getKeyDateType().getCodeValue(), KeyDate::getKeyDate)
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple("ACR", LocalDate.of(2030, 1, 1)));
+        assertThat(custody.getKeyDates().getLicenceExpiryDate()).isNull();
+        assertThat(custody.getKeyDates().getConditionalReleaseDate()).isEqualTo(LocalDate.of(2030, 1, 1));
     }
     @Test
     void willLeaveAloneKeyDatesNotPresentButNotCustodyManagedDatesInRequestAndAddOnesThatArePresent() {
@@ -104,20 +97,14 @@ public class ConvictionService_AddOrReplaceOrDeleteCustodyKeyDatesTest {
                 aKeyDate("POM1", "POM", LocalDate.of(2039, 9, 30))
         )))));
 
-        convictionService.addOrReplaceOrDeleteCustodyKeyDates(99L, 88L, ReplaceCustodyKeyDates
+        final var custody = convictionService.addOrReplaceOrDeleteCustodyKeyDates(99L, 88L, ReplaceCustodyKeyDates
                 .builder()
                 .conditionalReleaseDate(LocalDate.of(2030, 1, 1))
                 .build());
 
-        verify(convictionTransformer).custodyOf(custodyArgumentCaptor.capture());
+        assertThat(custody.getKeyDates().getConditionalReleaseDate()).isEqualTo(LocalDate.of(2030, 1, 1));
+        assertThat(custody.getKeyDates().getExpectedPrisonOffenderManagerHandoverStartDate()).isEqualTo(LocalDate.of(2039, 9, 30));
 
-        final var custody = custodyArgumentCaptor.getValue();
-
-        assertThat(custody.getKeyDates()).hasSize(2)
-                .extracting( keyDate -> keyDate.getKeyDateType().getCodeValue(), KeyDate::getKeyDate)
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple("POM1",  LocalDate.of(2039, 9, 30)),
-                        Tuple.tuple("ACR", LocalDate.of(2030, 1, 1)));
     }
     @Test
     void willAddReplaceDeleteKeyDate() {
@@ -127,22 +114,15 @@ public class ConvictionService_AddOrReplaceOrDeleteCustodyKeyDatesTest {
                 aKeyDate("SED", "sentenceExpiryDate", LocalDate.of(2039, 9, 30))
         )))));
 
-        convictionService.addOrReplaceOrDeleteCustodyKeyDates(99L, 88L, ReplaceCustodyKeyDates
+        final var custody = convictionService.addOrReplaceOrDeleteCustodyKeyDates(99L, 88L, ReplaceCustodyKeyDates
                 .builder()
                 .conditionalReleaseDate(LocalDate.of(2030, 1, 1))
                 .licenceExpiryDate(LocalDate.of(2030, 1, 2))
                 .build());
 
-        verify(convictionTransformer).custodyOf(custodyArgumentCaptor.capture());
+        assertThat(custody.getKeyDates().getConditionalReleaseDate()).isEqualTo(LocalDate.of(2030, 1, 1));
+        assertThat(custody.getKeyDates().getLicenceExpiryDate()).isEqualTo(LocalDate.of(2030, 1, 2));
 
-        final var custody = custodyArgumentCaptor.getValue();
-
-        assertThat(custody.getKeyDates()).hasSize(3)
-                .extracting( keyDate -> keyDate.getKeyDateType().getCodeValue(), KeyDate::getKeyDate)
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple("XX", LocalDate.of(1995, 1, 1)),
-                        Tuple.tuple("LED", LocalDate.of(2030, 1, 2)),
-                        Tuple.tuple("ACR", LocalDate.of(2030, 1, 1)));
     }
     @Test
     void willUpdateExistingKeyDates() {
@@ -150,19 +130,12 @@ public class ConvictionService_AddOrReplaceOrDeleteCustodyKeyDatesTest {
                 aKeyDate("SED", "sentenceExpiryDate", LocalDate.of(2039, 9, 30))
         )))));
 
-        convictionService.addOrReplaceOrDeleteCustodyKeyDates(99L, 88L, ReplaceCustodyKeyDates
+        final var custody = convictionService.addOrReplaceOrDeleteCustodyKeyDates(99L, 88L, ReplaceCustodyKeyDates
                 .builder()
                 .sentenceExpiryDate(LocalDate.of(2030, 1, 1))
                 .build());
 
-        verify(convictionTransformer).custodyOf(custodyArgumentCaptor.capture());
-
-        final var custody = custodyArgumentCaptor.getValue();
-
-        assertThat(custody.getKeyDates()).hasSize(1)
-                .extracting( keyDate -> keyDate.getKeyDateType().getCodeValue(), KeyDate::getKeyDate)
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple("SED",LocalDate.of(2030, 1, 1)));
+        assertThat(custody.getKeyDates().getSentenceExpiryDate()).isEqualTo(LocalDate.of(2030, 1, 1));
     }
 
     @Test
@@ -175,8 +148,6 @@ public class ConvictionService_AddOrReplaceOrDeleteCustodyKeyDatesTest {
                 .builder()
                 .sentenceExpiryDate(LocalDate.of(2030, 1, 1))
                 .build());
-
-        verify(convictionTransformer).custodyOf(custodyArgumentCaptor.capture());
 
         verify(iapsNotificationService, never()).notifyEventUpdated(any());
     }
@@ -191,8 +162,6 @@ public class ConvictionService_AddOrReplaceOrDeleteCustodyKeyDatesTest {
                 .builder()
                 .paroleEligibilityDate(LocalDate.now())
                 .build());
-
-        verify(convictionTransformer).custodyOf(custodyArgumentCaptor.capture());
 
         verify(iapsNotificationService, never()).notifyEventUpdated(any());
     }

@@ -55,12 +55,12 @@ public class OffenderManagerService {
                         offender.getOffenderManagers()
                                 .stream()
                                 .filter(OffenderManager::isActive)
-                                .map(offenderManagerTransformer::offenderManagerOf)
+                                .map(OffenderManagerTransformer::offenderManagerOf)
                                 .collect(Collectors.toList()),
                         offender.getPrisonOffenderManagers()
                                 .stream()
                                 .filter(PrisonOffenderManager::isActive)
-                                .map(offenderManagerTransformer::offenderManagerOf)
+                                .map(OffenderManagerTransformer::offenderManagerOf)
                                 .collect(Collectors.toList())
                 ) );
     }
@@ -165,7 +165,7 @@ public class OffenderManagerService {
         }, () -> contactService.addContactForPOMAllocation(newPrisonOffenderManager));
 
 
-        return offenderManagerTransformer.offenderManagerOf(newPrisonOffenderManager);
+        return OffenderManagerTransformer.offenderManagerOf(newPrisonOffenderManager);
     }
 
     private StandardReference getAllocationReason(ProbationArea probationArea, Optional<PrisonOffenderManager> existingPrisonOffenderManager) {

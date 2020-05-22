@@ -34,7 +34,7 @@ public class InstitutionalReportService {
         return institutionalReports
             .stream()
             .filter(this::notDeleted)
-            .map(institutionalReportTransformer::institutionalReportOf)
+            .map(InstitutionalReportTransformer::institutionalReportOf)
             .collect(toList());
     }
 
@@ -45,7 +45,7 @@ public class InstitutionalReportService {
 
         return maybeInstitutionalReport
                 .filter(this::notDeleted)
-                .map(institutionalReportTransformer::institutionalReportOf);
+                .map(InstitutionalReportTransformer::institutionalReportOf);
     }
 
     private boolean notDeleted(uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReport institutionalReport) {

@@ -24,15 +24,15 @@ public class AppointmentTransformer {
     }
 
 
-    public List<Appointment> appointmentsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.Contact> contacts) {
+    public static List<Appointment> appointmentsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.Contact> contacts) {
         return contacts.stream()
-                .map(this::appointmentOf)
+                .map(AppointmentTransformer::appointmentOf)
                 .collect(Collectors.toList());
     }
 
-    private Appointment appointmentOf(uk.gov.justice.digital.delius.jpa.standard.entity.Contact contact) {
+    private static Appointment appointmentOf(uk.gov.justice.digital.delius.jpa.standard.entity.Contact contact) {
         return Appointment.builder()
-                .eventId(contactTransformer.eventIdOf(contact.getEvent()))
+                .eventId(ContactTransformer.eventIdOf(contact.getEvent()))
                 .alertActive(ynToBoolean(contact.getAlertActive()))
                 .appointmentDate(contact.getContactDate())
                 .appointmentStartTime(contact.getContactStartTime())
@@ -41,20 +41,20 @@ public class AppointmentTransformer {
                 .appointmentOutcomeType(appointmentOutcomeTypeOf(contact.getContactOutcomeType()))
                 .appointmentType(appointmentTypeOf(contact.getContactType()))
                 .createdDateTime(contact.getCreatedDateTime())
-                .explanation(contactTransformer.explanationOf(contact.getExplanation()))
+                .explanation(ContactTransformer.explanationOf(contact.getExplanation()))
                 .lastUpdatedDateTime(contact.getLastUpdatedDateTime())
-                .licenceCondition(contactTransformer.licenceConditionOf(contact.getLicenceCondition()))
+                .licenceCondition(ContactTransformer.licenceConditionOf(contact.getLicenceCondition()))
                 .linkedContactId(contact.getLinkedContactId())
                 .notes(contact.getNotes())
-                .nsi(contactTransformer.nsiOf(contact.getNsi()))
-                .requirement(requirementTransformer.requirementOf(contact.getRequirement()))
-                .probationArea(contactTransformer.probationAreaOf(contact.getProbationArea()))
-                .providerEmployee(contactTransformer.providerEmployeeOf(contact.getProviderEmployee()))
+                .nsi(ContactTransformer.nsiOf(contact.getNsi()))
+                .requirement(RequirementTransformer.requirementOf(contact.getRequirement()))
+                .probationArea(ContactTransformer.probationAreaOf(contact.getProbationArea()))
+                .providerEmployee(ContactTransformer.providerEmployeeOf(contact.getProviderEmployee()))
                 .officeLocation(officeLocationOf(contact.getOfficeLocation()))
-                .providerLocation(contactTransformer.providerLocationOf(contact.getProviderLocation()))
-                .team(contactTransformer.teamOf(contact.getTeam()))
-                .providerTeam(contactTransformer.providerTeamOf(contact.getProviderTeam()))
-                .staff(contactTransformer.staffOf(contact.getStaff()))
+                .providerLocation(ContactTransformer.providerLocationOf(contact.getProviderLocation()))
+                .team(ContactTransformer.teamOf(contact.getTeam()))
+                .providerTeam(ContactTransformer.providerTeamOf(contact.getProviderTeam()))
+                .staff(ContactTransformer.staffOf(contact.getStaff()))
                 .hoursCredited(contact.getHoursCredited())
                 .visorContact(ynToBoolean(contact.getVisorContact()))
                 .attended(attendedOf(contact.getAttended()))
@@ -64,7 +64,7 @@ public class AppointmentTransformer {
                 .build();
     }
 
-    private KeyValue appointmentOutcomeTypeOf(ContactOutcomeType contactOutcomeType) {
+    private static KeyValue appointmentOutcomeTypeOf(ContactOutcomeType contactOutcomeType) {
         return Optional.ofNullable(contactOutcomeType).map(cot ->
                 KeyValue.builder()
                         .code(cot.getCode())
@@ -72,18 +72,18 @@ public class AppointmentTransformer {
                         .build()).orElse(null);
     }
 
-    private Appointment.Attended attendedOf(String yn) {
+    private static Appointment.Attended attendedOf(String yn) {
        return Optional.ofNullable(ynToBoolean(yn)).map(flag -> flag ? ATTENDED : UNATTENDED).orElse(NOT_RECORDED);
     }
 
-    private KeyValue appointmentTypeOf(ContactType contactType) {
+    private static KeyValue appointmentTypeOf(ContactType contactType) {
         return KeyValue.builder()
                 .code(contactType.getCode())
                 .description(contactType.getDescription())
                 .build();
     }
 
-    private KeyValue officeLocationOf(OfficeLocation officeLocation) {
+    private static KeyValue officeLocationOf(OfficeLocation officeLocation) {
         return Optional.ofNullable(officeLocation).map(
                 pl -> KeyValue.builder().code(officeLocation.getCode()).description(officeLocation.getDescription()).build()
         ).orElse(null);

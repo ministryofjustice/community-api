@@ -88,7 +88,7 @@ public class ConvictionTransformer {
         this.institutionTransformer = institutionTransformer;
     }
 
-    public Conviction convictionOf(Event event) {
+    public static Conviction convictionOf(Event event) {
         return Conviction.builder()
                 .active(zeroOneToBoolean(event.getActiveFlag()))
                 .convictionDate(event.getConvictionDate())
@@ -96,24 +96,24 @@ public class ConvictionTransformer {
                 .convictionId(event.getEventId())
                 .index(event.getEventNumber())
                 .offences(offencesOf(event))
-                .sentence(Optional.ofNullable(event.getDisposal()).map(this::sentenceOf).orElse(null))
+                .sentence(Optional.ofNullable(event.getDisposal()).map(ConvictionTransformer::sentenceOf).orElse(null))
                 .custody(Optional
                         .ofNullable(event.getDisposal())
-                        .flatMap(disposal -> Optional.ofNullable(disposal.getCustody()).map(this::custodyOf))
+                        .flatMap(disposal -> Optional.ofNullable(disposal.getCustody()).map(ConvictionTransformer::custodyOf))
                         .orElse(null))
                 .inBreach(zeroOneToBoolean(event.getInBreach()))
-                .latestCourtAppearanceOutcome(Optional.ofNullable(event.getCourtAppearances()).map(this::outcomeOf).orElse(null))
+                .latestCourtAppearanceOutcome(Optional.ofNullable(event.getCourtAppearances()).map(ConvictionTransformer::outcomeOf).orElse(null))
                 .build();
     }
 
-    private KeyValue outcomeOf(List<CourtAppearance> courtAppearances) {
+    private static KeyValue outcomeOf(List<CourtAppearance> courtAppearances) {
         return courtAppearances
                 .stream()
                 .filter(courtAppearance -> courtAppearance.getOutcome() != null).max(Comparator.comparing(CourtAppearance::getAppearanceDate))
                 .map(courtAppearance -> outcomeOf(courtAppearance.getOutcome()))
                 .orElse(null);
     }
-    private KeyValue outcomeOf(StandardReference outcome) {
+    private static KeyValue outcomeOf(StandardReference outcome) {
         return KeyValue
                 .builder()
                 .description(outcome.getCodeDescription())
@@ -122,14 +122,15 @@ public class ConvictionTransformer {
     }
 
 
-    private List<Offence> offencesOf(Event event) {
+    private static List<Offence> offencesOf(Event event) {
         return ImmutableList.<Offence>builder()
-                .addAll(Optional.ofNullable(event.getMainOffence()).map(mainOffence -> ImmutableList.of(mainOffenceTransformer.offenceOf(mainOffence))).orElse(ImmutableList.of()) )
-                .addAll(additionalOffenceTransformer.offencesOf(event.getAdditionalOffences()))
+                .addAll(Optional.ofNullable(event.getMainOffence()).map(mainOffence -> ImmutableList.of(MainOffenceTransformer
+                        .offenceOf(mainOffence))).orElse(ImmutableList.of()) )
+                .addAll(AdditionalOffenceTransformer.offencesOf(event.getAdditionalOffences()))
                 .build();
     }
 
-    private Sentence sentenceOf(Disposal disposal) {
+    private static Sentence sentenceOf(Disposal disposal) {
         return Sentence.builder()
                 .defaultLength(disposal.getLength())
                 .effectiveLength(disposal.getEffectiveLength())
@@ -146,7 +147,7 @@ public class ConvictionTransformer {
                         .map(DisposalType::getDescription)
                         .orElse(null))
                 .unpaidWork(Optional.ofNullable(disposal.getUnpaidWorkDetails())
-                        .map(this::unpaidWorkOf)
+                        .map(ConvictionTransformer::unpaidWorkOf)
                         .orElse(null))
                 .startDate(disposal.getStartDate())
                 .terminationDate(disposal.getTerminationDate())
@@ -156,7 +157,7 @@ public class ConvictionTransformer {
                 .build();
     }
 
-    private UnpaidWork unpaidWorkOf(UpwDetails upwDetails) {
+    private static UnpaidWork unpaidWorkOf(UpwDetails upwDetails) {
         return UnpaidWork.builder()
                 .minutesOrdered(upwDetails.getUpwLengthMinutes())
                 .minutesCompleted(upwDetails.getAppointments().stream()
@@ -171,7 +172,7 @@ public class ConvictionTransformer {
                 .build();
     }
 
-    private Appointments appointmentsOf(List<UpwAppointment> appointments) {
+    private static Appointments appointmentsOf(List<UpwAppointment> appointments) {
         return Appointments.builder()
                 .total((long) appointments.size())
                 .attended(appointments.stream()
@@ -189,15 +190,15 @@ public class ConvictionTransformer {
                 .build();
     }
 
-    public Custody custodyOf(uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody) {
+    public static Custody custodyOf(uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody) {
         return Custody.builder().bookingNumber(custody.getPrisonerNumber())
-                .institution(Optional.ofNullable(custody.getInstitution()).map(institutionTransformer::institutionOf)
+                .institution(Optional.ofNullable(custody.getInstitution()).map(InstitutionTransformer::institutionOf)
                         .orElse(null))
-                .keyDates(Optional.ofNullable(custody.getKeyDates()).map(this::custodyRelatedKeyDatesOf)
+                .keyDates(Optional.ofNullable(custody.getKeyDates()).map(ConvictionTransformer::custodyRelatedKeyDatesOf)
                         .orElse(CustodyRelatedKeyDates.builder().build())).build();
     }
 
-    private CustodyRelatedKeyDates custodyRelatedKeyDatesOf(List<KeyDate> keyDates) {
+    private static CustodyRelatedKeyDates custodyRelatedKeyDatesOf(List<KeyDate> keyDates) {
         final var allCustodyRelatedKeyDates = KeyDateTypes.custodyRelatedKeyDates();
         final var custodyRelatedKeyDates = CustodyRelatedKeyDates.builder();
 
@@ -275,10 +276,10 @@ public class ConvictionTransformer {
                 .build();
     }
 
-    private List<Offence> additionalOffences(List<Offence> offences) {
+    private static List<Offence> additionalOffences(List<Offence> offences) {
         return offences.stream().filter(not(Offence::getMainOffence)).collect(Collectors.toList());
     }
-    private Offence mainOffence(List<Offence> offences) {
+    private static Offence mainOffence(List<Offence> offences) {
         return offences.stream().filter(Offence::getMainOffence).findFirst().orElseThrow(() -> new RuntimeException("No main offence found"));
     }
     private List<CourtAppearance> courtAppearances(

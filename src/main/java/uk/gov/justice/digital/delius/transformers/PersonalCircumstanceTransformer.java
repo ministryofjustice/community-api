@@ -13,12 +13,12 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBo
 
 @Component
 public class PersonalCircumstanceTransformer {
-    public PersonalCircumstance personalCircumstanceOf(uk.gov.justice.digital.delius.jpa.standard.entity.PersonalCircumstance personalCircumstance) {
+    public static PersonalCircumstance personalCircumstanceOf(uk.gov.justice.digital.delius.jpa.standard.entity.PersonalCircumstance personalCircumstance) {
         return PersonalCircumstance.builder()
                 .personalCircumstanceType(circumstanceTypeOf(personalCircumstance.getCircumstanceType()))
                 .personalCircumstanceSubType(circumstanceSubTypeOf(personalCircumstance.getCircumstanceSubType()))
                 .personalCircumstanceId(personalCircumstance.getPersonalCircumstanceId())
-                .probationArea(Optional.ofNullable(personalCircumstance.getProbationArea()).map(this::probationAreaOf).orElse(null))
+                .probationArea(Optional.ofNullable(personalCircumstance.getProbationArea()).map(PersonalCircumstanceTransformer::probationAreaOf).orElse(null))
                 .endDate(personalCircumstance.getEndDate())
                 .startDate(personalCircumstance.getStartDate())
                 .offenderId(personalCircumstance.getOffenderId())
@@ -27,21 +27,21 @@ public class PersonalCircumstanceTransformer {
             .build();
     }
 
-    private KeyValue probationAreaOf(ProbationArea probationArea) {
+    private static KeyValue probationAreaOf(ProbationArea probationArea) {
         return KeyValue.builder()
                 .code(probationArea.getCode())
                 .description(probationArea.getDescription())
                 .build();
     }
 
-    private KeyValue circumstanceTypeOf(CircumstanceType circumstanceType) {
+    private static KeyValue circumstanceTypeOf(CircumstanceType circumstanceType) {
         return KeyValue.builder()
                 .code(circumstanceType.getCodeValue())
                 .description(circumstanceType.getCodeDescription())
                 .build();
     }
 
-    private KeyValue circumstanceSubTypeOf(CircumstanceSubType circumstanceSubType) {
+    private static KeyValue circumstanceSubTypeOf(CircumstanceSubType circumstanceSubType) {
         return KeyValue.builder()
                 .code(circumstanceSubType.getCodeValue())
                 .description(circumstanceSubType.getCodeDescription())

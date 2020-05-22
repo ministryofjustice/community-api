@@ -25,7 +25,7 @@ public class AppointmentService {
     }
 
     public List<Appointment> appointmentsFor(Long offenderId, AppointmentFilter filter) {
-        return appointmentTransformer.appointmentsOf(
+        return AppointmentTransformer.appointmentsOf(
                 contactRepository.findAll(
                         filter.toBuilder().offenderId(offenderId).build(),
                         Sort.by(DESC, "contactDate")));

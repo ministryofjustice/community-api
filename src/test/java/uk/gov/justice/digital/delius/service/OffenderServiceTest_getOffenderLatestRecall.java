@@ -8,21 +8,22 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.digital.delius.controller.CustodyNotFoundException;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
-import uk.gov.justice.digital.delius.data.api.OffenderRecall;
-import uk.gov.justice.digital.delius.data.api.OffenderRelease;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Release;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.ContactTransformer;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 import uk.gov.justice.digital.delius.transformers.ReleaseTransformer;
+import uk.gov.justice.digital.delius.util.EntityHelper;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -35,17 +36,6 @@ public class OffenderServiceTest_getOffenderLatestRecall {
     private Event mockCustodialEvent = mock(Event.class);
     private Disposal mockDisposal = mock(Disposal.class);
     private Custody mockCustody = mock(Custody.class);
-    private static final OffenderRelease SOME_OFFENDER_RELEASE = OffenderRelease.builder().build();
-    private static final OffenderRecall SOME_OFFENDER_RECALL = OffenderRecall.builder().build();
-    private static final OffenderLatestRecall SOME_OFFENDER_LATEST_RECALL =
-            OffenderLatestRecall.builder()
-                    .lastRelease(SOME_OFFENDER_RELEASE)
-                    .lastRecall(SOME_OFFENDER_RECALL)
-                    .build();
-    private static final OffenderLatestRecall OFFENDER_LATEST_RECALL_NULL_RECALL =
-            OffenderLatestRecall.builder()
-                    .lastRelease(SOME_OFFENDER_RELEASE)
-                    .build();
 
     @Mock
     private OffenderRepository mockOffenderRepository;
@@ -53,8 +43,6 @@ public class OffenderServiceTest_getOffenderLatestRecall {
     private ConvictionService mockConvictionService;
     @Mock
     private ReleaseTransformer mockReleaseTransformer;
-    @Mock
-    private Release mockRelease;
 
     private OffenderService offenderService;
 
@@ -100,27 +88,37 @@ public class OffenderServiceTest_getOffenderLatestRecall {
     public void getOffenderLatestRecall_releaseFound_transformsRelease() {
         mockHappyPath();
 
-        offenderService.getOffenderLatestRecall(SOME_OFFENDER_ID);
+        final var release = offenderService.getOffenderLatestRecall(SOME_OFFENDER_ID);
 
-        then(mockReleaseTransformer).should().offenderLatestRecallOf(mockRelease);
+        assertThat(release.getLastRelease()).isNotNull();
     }
 
     @Test
     public void getOffenderLatestRecall_releaseTransformed_returnsReleaseAndRecallFromTransformer() {
         mockHappyPath();
 
+        given(mockCustody.findLatestRelease()).willReturn(Optional.of(EntityHelper.aRelease().toBuilder()
+                .notes("Released for geed behaviour")
+                .recalls(List.of(EntityHelper.aRecall().toBuilder().notes("Recalled, bad person").build()))
+                .build()));
+
         final var actualOffenderLatestRecall = offenderService.getOffenderLatestRecall(SOME_OFFENDER_ID);
 
-        assertThat(actualOffenderLatestRecall.getLastRelease()).isEqualTo(SOME_OFFENDER_RELEASE);
-        assertThat(actualOffenderLatestRecall.getLastRecall()).isEqualTo(SOME_OFFENDER_RECALL);
+        assertThat(actualOffenderLatestRecall.getLastRelease().getNotes()).isEqualTo("Released for geed behaviour");
+        assertThat(actualOffenderLatestRecall.getLastRecall().getNotes()).isEqualTo("Recalled, bad person");
     }
 
     private void mockHappyPath() {
         given(mockConvictionService.getActiveCustodialEvent(OffenderServiceTest_getOffenderLatestRecall.SOME_OFFENDER_ID)).willReturn(mockCustodialEvent);
         given(mockCustodialEvent.getDisposal()).willReturn(mockDisposal);
         given(mockDisposal.getCustody()).willReturn(mockCustody);
-        given(mockCustody.findLatestRelease()).willReturn(Optional.of(mockRelease));
-        given(mockReleaseTransformer.offenderLatestRecallOf(mockRelease)).willReturn(SOME_OFFENDER_LATEST_RECALL);
+        given(mockCustody.findLatestRelease()).willReturn(Optional.of(Release
+                .builder()
+                .actualReleaseDate(LocalDateTime.now())
+                .institution(EntityHelper.aPrisonInstitution())
+                .releaseId(99L)
+                .releaseType(StandardReference.builder().build())
+                .build()));
     }
 
     @Test(expected = ConvictionService.SingleActiveCustodyConvictionNotFoundException.class)
@@ -183,8 +181,7 @@ public class OffenderServiceTest_getOffenderLatestRecall {
         given(mockConvictionService.getActiveCustodialEvent(ANY_OFFENDER_ID)).willReturn(mockCustodialEvent);
         given(mockCustodialEvent.getDisposal()).willReturn(mockDisposal);
         given(mockDisposal.getCustody()).willReturn(mockCustody);
-        given(mockCustody.findLatestRelease()).willReturn(Optional.of(mockRelease));
-        given(mockReleaseTransformer.offenderLatestRecallOf(any(Release.class))).willReturn(OFFENDER_LATEST_RECALL_NULL_RECALL);
+        given(mockCustody.findLatestRelease()).willReturn(Optional.of(EntityHelper.aRelease()));
 
         final var actualOffenderLatestRecall = offenderService.getOffenderLatestRecall(ANY_OFFENDER_ID);
 

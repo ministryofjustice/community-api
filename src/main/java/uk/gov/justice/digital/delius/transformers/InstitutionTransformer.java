@@ -13,7 +13,7 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOn
 
 @Component
 public class InstitutionTransformer {
-    public Institution institutionOf(RInstitution institution) {
+    public static Institution institutionOf(RInstitution institution) {
         return Optional.ofNullable(institution).map(inst -> Institution.builder()
                 .code(inst.getCode())
                 .description(inst.getDescription())
@@ -26,7 +26,7 @@ public class InstitutionTransformer {
                 .build()).orElse(null);
     }
 
-    private KeyValue establishmentTypeOf(StandardReference establishmentType) {
+    private static KeyValue establishmentTypeOf(StandardReference establishmentType) {
         return Optional.ofNullable(establishmentType).map(et -> KeyValue.builder()
                 .code(et.getCodeValue())
                 .description(et.getCodeDescription())

@@ -15,7 +15,7 @@ public class OffenderManagerTransformer {
     private final StaffTransformer staffTransformer;
     private final TeamTransformer teamTransformer;
     private final ProbationAreaTransformer probationAreaTransformer;
-    private final String UNALLOCATED_STAFF_CODE_SUFFIX = "U";
+    private static final String UNALLOCATED_STAFF_CODE_SUFFIX = "U";
 
     @Autowired
     public OffenderManagerTransformer(StaffTransformer staffTransformer, TeamTransformer teamTransformer, ProbationAreaTransformer probationAreaTransformer) {
@@ -24,79 +24,79 @@ public class OffenderManagerTransformer {
         this.probationAreaTransformer = probationAreaTransformer;
     }
 
-    public CommunityOrPrisonOffenderManager offenderManagerOf(OffenderManager offenderManager) {
+    public static CommunityOrPrisonOffenderManager offenderManagerOf(OffenderManager offenderManager) {
         return CommunityOrPrisonOffenderManager
                 .builder()
                 .staffCode(staffCodeOf(offenderManager))
                 .isUnallocated(isUnallocated(offenderManager))
                 .staff(Optional
                         .ofNullable(offenderManager.getStaff())
-                        .map(staffTransformer::humanOf)
+                        .map(StaffTransformer::humanOf)
                         .orElse(null))
                 .team(Optional
                         .ofNullable(offenderManager.getTeam())
-                        .map(teamTransformer::teamOf)
+                        .map(TeamTransformer::teamOf)
                         .orElse(null))
                 .isPrisonOffenderManager(false)
                 .probationArea(Optional
                         .ofNullable(offenderManager.getProbationArea())
-                        .map(probationAreaTransformer::probationAreaOf)
+                        .map(ProbationAreaTransformer::probationAreaOf)
                         .orElse(null))
                 .isResponsibleOfficer(isResponsibleOfficer(offenderManager.getResponsibleOfficer()))
                 .fromDate(offenderManager.getAllocationDate())
                 .build();
     }
 
-    public CommunityOrPrisonOffenderManager offenderManagerOf(PrisonOffenderManager offenderManager) {
+    public static CommunityOrPrisonOffenderManager offenderManagerOf(PrisonOffenderManager offenderManager) {
         return CommunityOrPrisonOffenderManager
                 .builder()
                 .staffCode(staffCodeOf(offenderManager))
                 .isUnallocated(isUnallocated(offenderManager))
                 .staff(Optional
                         .ofNullable(offenderManager.getStaff())
-                        .map(staffTransformer::humanOf)
+                        .map(StaffTransformer::humanOf)
                         .orElse(null))
                 .team(Optional
                         .ofNullable(offenderManager.getTeam())
-                        .map(teamTransformer::teamOf)
+                        .map(TeamTransformer::teamOf)
                         .orElse(null))
                 .isPrisonOffenderManager(true)
                 .probationArea(Optional
                         .ofNullable(offenderManager.getProbationArea())
-                        .map(probationAreaTransformer::probationAreaOf)
+                        .map(ProbationAreaTransformer::probationAreaOf)
                         .orElse(null))
                 .isResponsibleOfficer(isResponsibleOfficer(offenderManager.getResponsibleOfficer()))
                 .fromDate(offenderManager.getAllocationDate())
                 .build();
     }
 
-    private String staffCodeOf(OffenderManager offenderManager) {
+    private static String staffCodeOf(OffenderManager offenderManager) {
         return Optional
                 .ofNullable(offenderManager.getStaff())
                 .map(Staff::getOfficerCode)
                 .orElse(null);
     }
 
-    private String staffCodeOf(PrisonOffenderManager offenderManager) {
+    private static String staffCodeOf(PrisonOffenderManager offenderManager) {
         return Optional
                 .ofNullable(offenderManager.getStaff())
                 .map(Staff::getOfficerCode)
                 .orElse(null);
     }
 
-    private boolean isUnallocated(OffenderManager offenderManager) {
-        return Optional.ofNullable(staffCodeOf(offenderManager))
+    private static boolean isUnallocated(OffenderManager offenderManager) {
+        return Optional.ofNullable(OffenderManagerTransformer.staffCodeOf(offenderManager))
                 .map(staffCode -> staffCode.endsWith(UNALLOCATED_STAFF_CODE_SUFFIX))
                 .orElse(false);
     }
 
-    private boolean isUnallocated(PrisonOffenderManager offenderManager) {
-        return Optional.ofNullable(staffCodeOf(offenderManager))
+    private static boolean isUnallocated(PrisonOffenderManager offenderManager) {
+        return Optional.ofNullable(OffenderManagerTransformer.staffCodeOf(offenderManager))
                 .map(staffCode -> staffCode.endsWith(UNALLOCATED_STAFF_CODE_SUFFIX))
                 .orElse(false);
     }
 
-    private boolean isResponsibleOfficer(ResponsibleOfficer responsibleOfficer) {
+    private static boolean isResponsibleOfficer(ResponsibleOfficer responsibleOfficer) {
         return Optional
                 .ofNullable(responsibleOfficer)
                 .filter(officer -> officer.getEndDateTime() == null)

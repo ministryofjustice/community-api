@@ -25,26 +25,26 @@ public class ProbationAreaTransformer {
         this.institutionTransformer = new InstitutionTransformer();
     }
 
-    public List<ProbationArea> probationAreasOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea> probationAreas) {
-        return probationAreas.stream().map(this::probationAreaOf).collect(Collectors.toList());
+    public static List<ProbationArea> probationAreasOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea> probationAreas) {
+        return probationAreas.stream().map(ProbationAreaTransformer::probationAreaOf).collect(Collectors.toList());
     }
 
-    public ProbationArea probationAreaOf(uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea probationArea) {
+    public static ProbationArea probationAreaOf(uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea probationArea) {
         return probationAreaOf(probationArea, true);
     }
 
-    public ProbationArea probationAreaOf(uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea probationArea, boolean includeTeams) {
+    public static ProbationArea probationAreaOf(uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea probationArea, boolean includeTeams) {
         return ProbationArea.builder()
                 .code(probationArea.getCode())
                 .description(probationArea.getDescription())
                 .organisation(organisationOf(probationArea.getOrganisation()))
-                .institution(institutionTransformer.institutionOf(probationArea.getInstitution()))
+                .institution(InstitutionTransformer.institutionOf(probationArea.getInstitution()))
                 .probationAreaId(probationArea.getProbationAreaId())
                 .teams(includeTeams ? teamsOf(probationArea) : null)
                 .build();
     }
 
-    private List<AllTeam> teamsOf(uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea probationArea) {
+    private static List<AllTeam> teamsOf(uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea probationArea) {
         List<AllTeam> teams = probationArea.getTeams().stream().map(team -> AllTeam.builder()
                 .code(team.getCode())
                 .description(team.getDescription())
@@ -66,7 +66,7 @@ public class ProbationAreaTransformer {
         return Stream.concat(teams.stream(), providerTeams.stream()).collect(Collectors.toList());
     }
 
-    private KeyValue externalProviderOf(ExternalProvider externalProvider) {
+    private static KeyValue externalProviderOf(ExternalProvider externalProvider) {
         return Optional.ofNullable(externalProvider)
                 .map(ep -> KeyValue.builder()
                         .code(ep.getCode())
@@ -75,7 +75,7 @@ public class ProbationAreaTransformer {
                 .orElse(null);
     }
 
-    private KeyValue scProviderOf(Team team) {
+    private static KeyValue scProviderOf(Team team) {
         return Optional.ofNullable(team)
                 .map(t -> KeyValue.builder()
                         .code(t.getCode())
@@ -84,7 +84,7 @@ public class ProbationAreaTransformer {
                 .orElse(null);
     }
 
-    private KeyValue localDeliveryUnitOf(LocalDeliveryUnit localDeliveryUnit) {
+    private static KeyValue localDeliveryUnitOf(LocalDeliveryUnit localDeliveryUnit) {
         return Optional.ofNullable(localDeliveryUnit)
                 .map(ldu -> KeyValue.builder()
                         .code(ldu.getCode())
@@ -93,7 +93,7 @@ public class ProbationAreaTransformer {
                 .orElse(null);
     }
 
-    private KeyValue boroughOf(District district) {
+    private static KeyValue boroughOf(District district) {
         Optional<Borough> maybeBorough = Optional.ofNullable(district).map(District::getBorough);
         return maybeBorough
                 .map(b -> KeyValue.builder()
@@ -103,7 +103,7 @@ public class ProbationAreaTransformer {
                 .orElse(null);
     }
 
-    private KeyValue districtOf(District district) {
+    private static KeyValue districtOf(District district) {
         return Optional.ofNullable(district)
                 .map(d -> KeyValue.builder()
                         .code(d.getCode())
@@ -112,7 +112,7 @@ public class ProbationAreaTransformer {
                 .orElse(null);
     }
 
-    private KeyValue organisationOf(Organisation organisation) {
+    private static KeyValue organisationOf(Organisation organisation) {
         return Optional.ofNullable(organisation)
                 .map(org -> KeyValue.builder()
                         .code(org.getCode())

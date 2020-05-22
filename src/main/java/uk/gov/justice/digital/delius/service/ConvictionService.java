@@ -110,7 +110,7 @@ public class ConvictionService {
                 .stream()
                 .filter(event -> !convertToBoolean(event.getSoftDeleted()))
                 .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Event::getReferralDate).reversed())
-                .map(convictionTransformer::convictionOf)
+                .map(ConvictionTransformer::convictionOf)
                 .collect(toList());
     }
 
@@ -120,7 +120,7 @@ public class ConvictionService {
         return event
             .filter(e ->  offenderId.equals(e.getOffenderId()))
             .filter(e -> !convertToBoolean(e.getSoftDeleted()))
-            .map(convictionTransformer::convictionOf);
+            .map(ConvictionTransformer::convictionOf);
     }
 
     @Transactional
@@ -130,7 +130,7 @@ public class ConvictionService {
                 courtCase,
                 calculateNextEventNumber(offenderId));
 
-        val conviction = convictionTransformer.convictionOf(eventRepository.save(event));
+        val conviction = ConvictionTransformer.convictionOf(eventRepository.save(event));
         spgNotificationService.notifyNewCourtCaseCreated(event);
         return conviction;
     }
@@ -277,7 +277,7 @@ public class ConvictionService {
             log.warn("Update custody key dates will be ignored, this feature is switched off ");
         }
 
-        return convictionTransformer.custodyOf(event
+        return ConvictionTransformer.custodyOf(event
                 .getDisposal()
                 .getCustody());
     }
@@ -359,7 +359,7 @@ public class ConvictionService {
                 .stream()
                 .filter(matchTypeCode(typeCode))
                 .findAny()
-                .map(custodyKeyDateTransformer::custodyKeyDateOf);
+                .map(CustodyKeyDateTransformer::custodyKeyDateOf);
     }
 
     private Predicate<KeyDate> matchTypeCode(String typeCode) {
@@ -413,7 +413,7 @@ public class ConvictionService {
     private List<CustodyKeyDate> getCustodyKeyDates(Event event) {
         return event.getDisposal().getCustody().getKeyDates()
                 .stream()
-                .map(custodyKeyDateTransformer::custodyKeyDateOf)
+                .map(CustodyKeyDateTransformer::custodyKeyDateOf)
                 .collect(toList());
     }
 

@@ -9,7 +9,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
 
 @Component
 public class TeamTransformer {
-    public Team teamOf(uk.gov.justice.digital.delius.jpa.standard.entity.Team team) {
+    public static Team teamOf(uk.gov.justice.digital.delius.jpa.standard.entity.Team team) {
         return Team.builder().code(team.getCode()).description(team.getDescription())
                 .telephone(team.getTelephone())
                 .borough(keyValueOf(team.getDistrict().getBorough()))
@@ -21,7 +21,7 @@ public class TeamTransformer {
                 .build();
     }
 
-    private KeyValue keyValueOf(LocalDeliveryUnit localDeliveryUnit) {
+    private static KeyValue keyValueOf(LocalDeliveryUnit localDeliveryUnit) {
         return KeyValue
             .builder()
             .code(localDeliveryUnit.getCode())
@@ -29,7 +29,7 @@ public class TeamTransformer {
             .build();
     }
 
-    private KeyValue keyValueOf(District district) {
+    private static KeyValue keyValueOf(District district) {
         return KeyValue
             .builder()
             .code(district.getCode())
@@ -37,7 +37,7 @@ public class TeamTransformer {
             .build();
     }
 
-    private KeyValue keyValueOf(Borough borough) {
+    private static KeyValue keyValueOf(Borough borough) {
         return KeyValue
             .builder()
             .code(borough.getCode())

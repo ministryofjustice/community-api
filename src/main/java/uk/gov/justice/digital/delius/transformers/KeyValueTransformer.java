@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Component
 public class KeyValueTransformer {
-    public KeyValue keyValueOf(StandardReference standardReference) {
+    public static KeyValue keyValueOf(StandardReference standardReference) {
         return Optional.ofNullable(standardReference).map(reason -> KeyValue.builder()
                     .description(reason.getCodeDescription())
                     .code(reason.getCodeValue()).build())

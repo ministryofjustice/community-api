@@ -54,14 +54,14 @@ public class OffenderTransformer {
         this.contactTransformer = contactTransformer;
     }
 
-    private List<PhoneNumber> phoneNumbersOf(Offender offender) {
+    private static List<PhoneNumber> phoneNumbersOf(Offender offender) {
         return ImmutableList.of(
                 PhoneNumber.builder().number(Optional.ofNullable(offender.getTelephoneNumber())).type(PhoneNumber.PhoneTypes.TELEPHONE).build(),
                 PhoneNumber.builder().number(Optional.ofNullable(offender.getMobileNumber())).type(PhoneNumber.PhoneTypes.MOBILE).build()
         ).stream().filter(phoneNumber -> phoneNumber.getNumber().isPresent()).collect(toList());
     }
 
-    private OffenderLanguages languagesOf(Offender offender) {
+    private static OffenderLanguages languagesOf(Offender offender) {
         return OffenderLanguages.builder()
                 .primaryLanguage(Optional.ofNullable(offender.getLanguage()).map(StandardReference::getCodeDescription).orElse(null))
                 .languageConcerns(Optional.ofNullable(offender.getLanguageConcerns()).orElse(null))
@@ -69,14 +69,14 @@ public class OffenderTransformer {
                 .build();
     }
 
-    private PreviousConviction previousConvictionOf(Offender offender) {
+    private static PreviousConviction previousConvictionOf(Offender offender) {
         return PreviousConviction.builder()
                 .convictionDate(offender.getPreviousConvictionDate())
                 .detail(Optional.ofNullable(offender.getPrevConvictionDocumentName()).map(doc -> ImmutableMap.of("documentName", doc)).orElse(null))
                 .build();
     }
 
-    private OffenderProfile offenderProfileOf(Offender offender) {
+    private static OffenderProfile offenderProfileOf(Offender offender) {
         return OffenderProfile.builder()
                 .ethnicity(Optional.ofNullable(offender.getEthnicity()).map(StandardReference::getCodeDescription).orElse(null))
                 .immigrationStatus(Optional.ofNullable(offender.getImmigrationStatus()).map(StandardReference::getCodeDescription).orElse(null))
@@ -93,7 +93,7 @@ public class OffenderTransformer {
                 .build();
     }
 
-    public IDs idsOf(Offender offender) {
+    public static IDs idsOf(Offender offender) {
         return IDs.builder()
                 .crn(offender.getCrn())
                 .croNumber(offender.getCroNumber())
@@ -105,7 +105,7 @@ public class OffenderTransformer {
                 .build();
     }
 
-    private Address addressOf(OffenderAddress address) {
+    private static Address addressOf(OffenderAddress address) {
         return Address.builder()
                 .addressNumber(address.getAddressNumber())
                 .buildingName(address.getBuildingName())
@@ -127,33 +127,33 @@ public class OffenderTransformer {
                 .build();
     }
 
-    private ContactDetails contactDetailsOf(Offender offender) {
+    private static ContactDetails contactDetailsOf(Offender offender) {
         return ContactDetails.builder()
                 .allowSMS(ynToBoolean(offender.getAllowSMS()))
-                .emailAddresses(emailAddressesOf(offender))
+                .emailAddresses(OffenderTransformer.emailAddressesOf(offender))
                 .phoneNumbers(phoneNumbersOf(offender))
-                .addresses(addressesOf(offender))
+                .addresses(OffenderTransformer.addressesOf(offender))
                 .build();
     }
 
-    private ContactDetailsSummary contactDetailsSummaryOf(Offender offender) {
+    private static ContactDetailsSummary contactDetailsSummaryOf(Offender offender) {
         return ContactDetailsSummary.builder()
                 .allowSMS(ynToBoolean(offender.getAllowSMS()))
-                .emailAddresses(emailAddressesOf(offender))
+                .emailAddresses(OffenderTransformer.emailAddressesOf(offender))
                 .phoneNumbers(phoneNumbersOf(offender))
                 .build();
     }
 
-    private List<String> emailAddressesOf(Offender offender) {
+    private static List<String> emailAddressesOf(Offender offender) {
         return Optional.ofNullable(offender.getEmailAddress()).map(Arrays::asList).orElse(Collections.emptyList());
     }
 
-    private List<Address> addressesOf(Offender offender) {
+    private static List<Address> addressesOf(Offender offender) {
         return offender.getOffenderAddresses().stream().map(
-                this::addressOf).collect(toList());
+                OffenderTransformer::addressOf).collect(toList());
     }
 
-    private uk.gov.justice.digital.delius.data.api.OffenderAlias aliasOf(OffenderAlias alias) {
+    private static uk.gov.justice.digital.delius.data.api.OffenderAlias aliasOf(OffenderAlias alias) {
         return uk.gov.justice.digital.delius.data.api.OffenderAlias.builder()
                 .dateOfBirth(alias.getDateOfBirth())
                 .firstName(alias.getFirstName())
@@ -163,12 +163,12 @@ public class OffenderTransformer {
                 .build();
     }
 
-    private List<uk.gov.justice.digital.delius.data.api.OffenderAlias> offenderAliasesOf(List<OffenderAlias> offenderAliases) {
-        return offenderAliases.stream().map(this::aliasOf).collect(toList());
+    private static List<uk.gov.justice.digital.delius.data.api.OffenderAlias> offenderAliasesOf(List<OffenderAlias> offenderAliases) {
+        return offenderAliases.stream().map(OffenderTransformer::aliasOf).collect(toList());
 
     }
 
-    public OffenderDetail fullOffenderOf(Offender offender) {
+    public static OffenderDetail fullOffenderOf(Offender offender) {
         return OffenderDetail.builder()
                 .offenderId(offender.getOffenderId())
                 .dateOfBirth(offender.getDateOfBirthDate())
@@ -189,11 +189,11 @@ public class OffenderTransformer {
                 .exclusionMessage(offender.getExclusionMessage())
                 .currentRestriction(zeroOneToBoolean(offender.getCurrentRestriction()))
                 .restrictionMessage(offender.getRestrictionMessage())
-                .offenderManagers(offenderManagersOf(offender.getOffenderManagers()))
+                .offenderManagers(OffenderTransformer.offenderManagersOf(offender.getOffenderManagers()))
                 .build();
     }
 
-    public OffenderDetailSummary offenderSummaryOf(Offender offender) {
+    public static OffenderDetailSummary offenderSummaryOf(Offender offender) {
         return OffenderDetailSummary.builder()
                 .offenderId(offender.getOffenderId())
                 .dateOfBirth(offender.getDateOfBirthDate())
@@ -214,7 +214,7 @@ public class OffenderTransformer {
                 .build();
     }
 
-    private List<String> combinedMiddleNamesOf(String secondName, String thirdName) {
+    private static List<String> combinedMiddleNamesOf(String secondName, String thirdName) {
         Optional<String> maybeSecondName = Optional.ofNullable(secondName);
         Optional<String> maybeThirdName = Optional.ofNullable(thirdName);
 
@@ -224,34 +224,34 @@ public class OffenderTransformer {
                 .collect(toList());
     }
 
-    public List<OffenderManager> offenderManagersOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager> offenderManagers) {
+    public static List<OffenderManager> offenderManagersOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager> offenderManagers) {
         return offenderManagers.stream()
                 .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager::getAllocationDate)
                         .reversed())
-                .map(this::offenderManagerOf).collect(toList());
+                .map(OffenderTransformer::offenderManagerOf).collect(toList());
     }
 
-    private OffenderManager offenderManagerOf(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager offenderManager) {
+    private static OffenderManager offenderManagerOf(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager offenderManager) {
         return OffenderManager.builder()
                 .partitionArea(partitionAreaOf(offenderManager))
                 .softDeleted(zeroOneToBoolean(offenderManager.getSoftDeleted()))
                 .trustOfficer(Optional.ofNullable(offenderManager.getOfficer())
                         .map(o -> humanOf(o.getForename(), o.getForename2(), o.getSurname()))
                         .orElse(null))
-                .staff(contactTransformer.staffOf(offenderManager.getStaff()))
-                .providerEmployee(contactTransformer.providerEmployeeOf(offenderManager.getProviderEmployee()))
+                .staff(ContactTransformer.staffOf(offenderManager.getStaff()))
+                .providerEmployee(ContactTransformer.providerEmployeeOf(offenderManager.getProviderEmployee()))
                 .team(teamOf(offenderManager))
                 .probationArea(probationAreaOf(offenderManager.getProbationArea()))
                 .active(zeroOneToBoolean(offenderManager.getActiveFlag()))
                 .fromDate(offenderManager.getAllocationDate())
                 .toDate(offenderManager.getEndDate())
                 .allocationReason(Optional.ofNullable(offenderManager.getAllocationReason())
-                        .map(this::allocationReasonOf)
+                        .map(OffenderTransformer::allocationReasonOf)
                         .orElse(null))
                 .build();
     }
 
-    private KeyValue allocationReasonOf(StandardReference allocationReason) {
+    private static KeyValue allocationReasonOf(StandardReference allocationReason) {
         return KeyValue
                 .builder()
                 .code(allocationReason.getCodeValue())
@@ -259,7 +259,7 @@ public class OffenderTransformer {
                 .build();
     }
 
-    private uk.gov.justice.digital.delius.data.api.ProbationArea probationAreaOf(ProbationArea probationArea) {
+    private static uk.gov.justice.digital.delius.data.api.ProbationArea probationAreaOf(ProbationArea probationArea) {
         return uk.gov.justice.digital.delius.data.api.ProbationArea.builder()
                 .code(probationArea.getCode())
                 .description(probationArea.getDescription())
@@ -271,7 +271,7 @@ public class OffenderTransformer {
         return Optional.ofNullable(zeroOrOne).map(value -> value == 0).orElse(null);
     }
 
-    private Team teamOf(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager offenderManager) {
+    private static Team teamOf(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager offenderManager) {
         /*
          * This only populates a subset of team data - this is currently indexed in elasticsearch so if this is modified
          * then it will lead to inconsistent data and the index will need to be rebuilt.
@@ -296,28 +296,28 @@ public class OffenderTransformer {
                 .orElse(null);
     }
 
-    private String partitionAreaOf(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager offenderManager) {
+    private static String partitionAreaOf(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager offenderManager) {
         return Optional.ofNullable(offenderManager.getPartitionArea())
                 .map(PartitionArea::getArea)
                 .orElse(null);
     }
 
-    private Human humanOf(String forename, String forename2, String surname) {
+    private static Human humanOf(String forename, String forename2, String surname) {
         return Human.builder()
                 .surname(surname)
-                .forenames(String.join(" ", combinedMiddleNamesOf(forename, forename2)))
+                .forenames(String.join(" ", OffenderTransformer.combinedMiddleNamesOf(forename, forename2)))
                 .build();
     }
 
-    private List<uk.gov.justice.digital.delius.data.api.Disability> disabilitiesOf(List<Disability> disabilities) {
+    private static List<uk.gov.justice.digital.delius.data.api.Disability> disabilitiesOf(List<Disability> disabilities) {
         return disabilities.stream()
                 .filter(disability -> disability.getSoftDeleted() == 0)
                 .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Disability::getStartDate)
                         .reversed())
-                .map(this::disabilityOf).collect(toList());
+                .map(OffenderTransformer::disabilityOf).collect(toList());
     }
 
-    private uk.gov.justice.digital.delius.data.api.Disability disabilityOf(Disability disability) {
+    private static uk.gov.justice.digital.delius.data.api.Disability disabilityOf(Disability disability) {
         return uk.gov.justice.digital.delius.data.api.Disability
                 .builder()
                 .disabilityId(disability.getDisabilityId())
@@ -331,7 +331,7 @@ public class OffenderTransformer {
                 .build();
     }
 
-    private ResponsibleOfficer convertToResponsibleOfficer(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager om, Offender offender) {
+    private static ResponsibleOfficer convertToResponsibleOfficer(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager om, Offender offender) {
 
         return ResponsibleOfficer
                 .builder()
@@ -341,7 +341,8 @@ public class OffenderTransformer {
                 .prisonOffenderManagerId(null)
                 .staffCode(Optional.ofNullable(om.getStaff()).map(Staff::getOfficerCode).orElse(null))
                 .surname(Optional.ofNullable(om.getStaff()).map(Staff::getSurname).orElse(null))
-                .forenames(String.join(" ", combinedMiddleNamesOf(om.getStaff().getForename(), om.getStaff().getForname2())))
+                .forenames(String.join(" ", OffenderTransformer
+                        .combinedMiddleNamesOf(om.getStaff().getForename(), om.getStaff().getForname2())))
                 .providerTeamCode(Optional.ofNullable(om.getProviderTeam()).map(ProviderTeam::getCode).orElse(null))
                 .providerTeamDescription(Optional.ofNullable(om.getProviderTeam()).map(ProviderTeam::getName).orElse(null))
                 .lduCode(Optional.ofNullable(om.getTeam()).map(team -> team.getLocalDeliveryUnit().getCode()).orElse(null))
@@ -356,7 +357,7 @@ public class OffenderTransformer {
                 .build();
     }
 
-    private ResponsibleOfficer convertToResponsibleOfficer(uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager pom, Offender offender) {
+    private static ResponsibleOfficer convertToResponsibleOfficer(uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager pom, Offender offender) {
 
         return ResponsibleOfficer
                 .builder()
@@ -365,7 +366,8 @@ public class OffenderTransformer {
                 .prisonOffenderManagerId(pom.getPrisonOffenderManagerId())
                 .staffCode(Optional.ofNullable(pom.getStaff()).map(Staff::getOfficerCode).orElse(null))
                 .surname(Optional.ofNullable(pom.getStaff()).map(Staff::getSurname).orElse(null))
-                .forenames(String.join(" ", combinedMiddleNamesOf(pom.getStaff().getForename(), pom.getStaff().getForname2())))
+                .forenames(String.join(" ", OffenderTransformer
+                        .combinedMiddleNamesOf(pom.getStaff().getForename(), pom.getStaff().getForname2())))
                 .providerTeamCode(Optional.ofNullable(pom.getTeam()).map(uk.gov.justice.digital.delius.jpa.standard.entity.Team::getCode).orElse(null))
                 .providerTeamDescription(Optional.ofNullable(pom.getTeam()).map(uk.gov.justice.digital.delius.jpa.standard.entity.Team::getDescription).orElse(null))
                 .lduCode(Optional.ofNullable(pom.getTeam()).map(team -> team.getLocalDeliveryUnit().getCode()).orElse(null))
@@ -380,21 +382,22 @@ public class OffenderTransformer {
                 .build();
     }
 
-    public List<uk.gov.justice.digital.delius.data.api.ResponsibleOfficer> responsibleOfficersOf(Offender offender, boolean current) {
+    public static List<uk.gov.justice.digital.delius.data.api.ResponsibleOfficer> responsibleOfficersOf(Offender offender, boolean current) {
 
         List<ResponsibleOfficer> responsibleOfficers = new ArrayList<>();
 
         if (offender.getOffenderManagers() != null && !offender.getOffenderManagers().isEmpty()) {
             responsibleOfficers.addAll(
                     offender.getOffenderManagers().stream()
-                            .map(offMgr -> convertToResponsibleOfficer(offMgr, offender))
+                            .map(offMgr -> OffenderTransformer.convertToResponsibleOfficer(offMgr, offender))
                             .collect(toList()));
         }
 
         if (offender.getPrisonOffenderManagers() != null && !offender.getPrisonOffenderManagers().isEmpty()) {
             responsibleOfficers.addAll(
                     offender.getPrisonOffenderManagers().stream()
-                            .map(prisonOffenderManager -> convertToResponsibleOfficer(prisonOffenderManager, offender))
+                            .map(prisonOffenderManager -> OffenderTransformer
+                                    .convertToResponsibleOfficer(prisonOffenderManager, offender))
                             .collect(toList()));
         }
 
@@ -409,7 +412,7 @@ public class OffenderTransformer {
         return responsibleOfficers;
     }
 
-    private ManagedOffender convertToManagedOffender(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager om, Staff staff) {
+    private static ManagedOffender convertToManagedOffender(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager om, Staff staff) {
 
         return ManagedOffender.builder()
                 .staffCode(staff.getOfficerCode())
@@ -425,7 +428,7 @@ public class OffenderTransformer {
                 .build();
     }
 
-    private ManagedOffender convertToManagedOffender(uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager pom, Staff staff) {
+    private static ManagedOffender convertToManagedOffender(uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager pom, Staff staff) {
 
         return ManagedOffender.builder()
                 .staffCode(staff.getOfficerCode())
@@ -441,7 +444,7 @@ public class OffenderTransformer {
                 .build();
     }
 
-    public List<uk.gov.justice.digital.delius.data.api.ManagedOffender> managedOffenderOf(Staff staff, boolean current) {
+    public static List<uk.gov.justice.digital.delius.data.api.ManagedOffender> managedOffenderOf(Staff staff, boolean current) {
 
         List<ManagedOffender> managedOffenders = new ArrayList<>();
 
@@ -471,7 +474,7 @@ public class OffenderTransformer {
         return managedOffenders;
     }
 
-    public List<AdditionalIdentifier> additionalIdentifiersOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalIdentifier> additionalIdentifiers) {
+    public static List<AdditionalIdentifier> additionalIdentifiersOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalIdentifier> additionalIdentifiers) {
         return Optional.ofNullable(additionalIdentifiers)
                 .map(identifiers -> identifiers
                         .stream()
@@ -490,7 +493,7 @@ public class OffenderTransformer {
                 .orElse(List.of());
     }
 
-    private boolean isCurrentRo(uk.gov.justice.digital.delius.jpa.standard.entity.ResponsibleOfficer ro) {
+    private static boolean isCurrentRo(uk.gov.justice.digital.delius.jpa.standard.entity.ResponsibleOfficer ro) {
         boolean result = false;
         if (ro != null && ro.getEndDateTime() == null) {
             result = true;
@@ -498,7 +501,7 @@ public class OffenderTransformer {
         return result;
     }
 
-    private boolean isCurrentManager(Long activeFlag, LocalDate endDate) {
+    private static boolean isCurrentManager(Long activeFlag, LocalDate endDate) {
         boolean result = false;
         if (activeFlag.intValue() == 1 && endDate == null) {
             result = true;

@@ -22,19 +22,19 @@ public class StaffTransformer {
         this.teamTransformer = new TeamTransformer();
     }
 
-    public StaffDetails staffDetailsOf(Staff staff) {                    
+    public static StaffDetails staffDetailsOf(Staff staff) {
         return StaffDetails.builder()
                 .staff(humanOf(staff))
                 .staffCode(staff.getOfficerCode())
                 .username(
                     Optional.ofNullable(staff.getUser()).map(User::getDistinguishedName).orElse(null))
                 .teams(staff.getTeams().stream()
-                        .map(teamTransformer::teamOf)
+                        .map(TeamTransformer::teamOf)
                         .collect(Collectors.toList()))
                 .build();
     }
 
-    public String combinedMiddleNamesOf(String secondName, String thirdName) {
+    public static String combinedMiddleNamesOf(String secondName, String thirdName) {
         Optional<String> maybeSecondName = Optional.ofNullable(secondName);
         Optional<String> maybeThirdName = Optional.ofNullable(thirdName);
 
@@ -43,7 +43,7 @@ public class StaffTransformer {
                 .collect(Collectors.joining(" "));
     }
 
-    Human humanOf(Staff staff) {
+    static Human humanOf(Staff staff) {
         return Human.builder()
                 .forenames(combinedMiddleNamesOf(staff.getForename(), staff.getForname2()))
                 .surname(staff.getSurname()).build();

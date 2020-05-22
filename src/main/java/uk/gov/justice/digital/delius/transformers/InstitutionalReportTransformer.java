@@ -18,7 +18,7 @@ public class InstitutionalReportTransformer {
         this.convictionTransformer = convictionTransformer;
     }
 
-    public InstitutionalReport institutionalReportOf(uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReport report) {
+    public static InstitutionalReport institutionalReportOf(uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReport report) {
         return InstitutionalReport.builder()
             .institutionalReportId(report.getInstitutionalReportId())
             .offenderId(report.getOffenderId())
@@ -27,7 +27,7 @@ public class InstitutionalReportTransformer {
     }
 
 
-    private Conviction convictionOf(uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReport report) {
+    private static Conviction convictionOf(uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReport report) {
 
         return Optional.ofNullable(report.getCustody())
             .filter(custody -> !convertToBoolean(custody.getSoftDeleted()))
@@ -35,7 +35,7 @@ public class InstitutionalReportTransformer {
             .filter(disposal -> !convertToBoolean(disposal.getSoftDeleted()))
             .map(Disposal::getEvent)
             .filter(event -> !convertToBoolean(event.getSoftDeleted()))
-            .map(convictionTransformer::convictionOf)
+            .map(ConvictionTransformer::convictionOf)
             .orElse(null);
     }
 

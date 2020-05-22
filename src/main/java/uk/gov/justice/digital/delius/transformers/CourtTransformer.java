@@ -9,7 +9,7 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBo
 public class CourtTransformer {
 
 
-    public Court courtOf(uk.gov.justice.digital.delius.jpa.standard.entity.Court court) {
+    public static Court courtOf(uk.gov.justice.digital.delius.jpa.standard.entity.Court court) {
         return Court.builder()
             .courtId(court.getCourtId())
             .code(court.getCode())

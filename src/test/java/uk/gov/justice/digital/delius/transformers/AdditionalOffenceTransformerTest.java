@@ -55,7 +55,7 @@ public class AdditionalOffenceTransformerTest {
                 .build()
         );
 
-        assertThat(additionalOffenceTransformer.offencesOf(additionalOffences))
+        assertThat(AdditionalOffenceTransformer.offencesOf(additionalOffences))
             .extracting("offenceId").containsOnly("A1", "A3");
     }
 
@@ -71,7 +71,7 @@ public class AdditionalOffenceTransformerTest {
                 .build()
         );
 
-        assertThat(additionalOffenceTransformer.offencesOf(additionalOffences).get(0).getOffenceId())
+        assertThat(AdditionalOffenceTransformer.offencesOf(additionalOffences).get(0).getOffenceId())
             .isEqualTo("A92");
     }
 
@@ -85,7 +85,7 @@ public class AdditionalOffenceTransformerTest {
                 .build()
         );
 
-        assertThat(additionalOffenceTransformer.offencesOf(additionalOffences).get(0).getMainOffence()).isFalse();
+        assertThat(AdditionalOffenceTransformer.offencesOf(additionalOffences).get(0).getMainOffence()).isFalse();
     }
 
 

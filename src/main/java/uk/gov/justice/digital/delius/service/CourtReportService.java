@@ -34,7 +34,7 @@ public class CourtReportService {
             .stream()
             .filter(this::notDeleted)
             .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport::getDateRequested).reversed())
-            .map(courtReportTransformer::courtReportOf)
+            .map(CourtReportTransformer::courtReportOf)
             .collect(toList());
     }
 
@@ -43,7 +43,7 @@ public class CourtReportService {
         Optional<uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport> maybeCourtReport = courtReportRepository.findByOffenderIdAndCourtReportId(offenderId, courtReportId);
         return maybeCourtReport
                 .filter(this::notDeleted)
-                .map(courtReportTransformer::courtReportOf);
+                .map(CourtReportTransformer::courtReportOf);
     }
 
     private boolean notDeleted(uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport courtReport) {

@@ -41,9 +41,9 @@ public class OffenceService {
 
     private ImmutableList<Offence> combineMainAndAdditionalOffences(MainOffence mainOffence) {
         List<Offence> additionalOffences =
-            additionalOffenceTransformer.offencesOf(mainOffence.getEvent().getAdditionalOffences());
+            AdditionalOffenceTransformer.offencesOf(mainOffence.getEvent().getAdditionalOffences());
         return ImmutableList.<Offence>builder()
-            .add(mainOffenceTransformer.offenceOf(mainOffence))
+            .add(MainOffenceTransformer.offenceOf(mainOffence))
             .addAll(additionalOffences)
             .build();
     }

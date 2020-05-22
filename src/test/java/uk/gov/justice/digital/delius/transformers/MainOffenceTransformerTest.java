@@ -40,7 +40,7 @@ public class MainOffenceTransformerTest {
                 .build())
             .build();
 
-        assertThat(mainOffenceTransformer.offenceOf(mainOffence).getOffenceId()).isEqualTo("M92");
+        assertThat(MainOffenceTransformer.offenceOf(mainOffence).getOffenceId()).isEqualTo("M92");
     }
 
     @Test
@@ -51,7 +51,7 @@ public class MainOffenceTransformerTest {
                 .build())
             .build();
 
-        assertThat(mainOffenceTransformer.offenceOf(mainOffence).getMainOffence()).isTrue();
+        assertThat(MainOffenceTransformer.offenceOf(mainOffence).getMainOffence()).isTrue();
     }
 
     @Test

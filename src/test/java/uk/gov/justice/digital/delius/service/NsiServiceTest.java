@@ -10,7 +10,7 @@ import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.repository.NsiRepository;
-import uk.gov.justice.digital.delius.transformers.NsiTransformer;
+import uk.gov.justice.digital.delius.util.EntityHelper;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -19,7 +19,9 @@ import java.util.Set;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class NsiServiceTest {
@@ -35,12 +37,6 @@ public class NsiServiceTest {
     @Mock
     private NsiRepository nsiRepository;
 
-    @Mock
-    private Nsi nsi;
-
-    @Mock
-    private NsiTransformer nsiTransformer;
-
     @InjectMocks
     private NsiService nsiService;
 
@@ -51,17 +47,15 @@ public class NsiServiceTest {
         final uk.gov.justice.digital.delius.jpa.standard.entity.Nsi nsiEntity = buildNsi(EVENT, "BRE");
         when(nsiRepository.findByEventIdAndOffenderId(EVENT_ID, OFFENDER_ID)).thenReturn(singletonList(nsiEntity));
         when(convictionService.convictionFor(OFFENDER_ID, EVENT_ID)).thenReturn(Optional.of(Conviction.builder().build()));
-        when(nsiTransformer.nsiOf(nsiEntity)).thenReturn(nsi);
 
         final var nsiWrapper = nsiService.getNsiByCodes(OFFENDER_ID, EVENT_ID, Set.of("BRE", "APCUS"));
 
-        assertThat(nsiWrapper.get().getNsis()).hasSize(1);
-        assertThat(nsiWrapper.get().getNsis()).contains(nsi);
+        assertThat(nsiWrapper.orElseThrow().getNsis()).hasSize(1);
+        assertThat(nsiWrapper.get().getNsis().get(0).getNsiType().getCode()).isEqualTo("BRE");
 
-        verify(nsiTransformer).nsiOf(nsiEntity);
         verify(nsiRepository).findByEventIdAndOffenderId(EVENT_ID, OFFENDER_ID);
         verify(convictionService).convictionFor(OFFENDER_ID, EVENT_ID);
-        verifyNoMoreInteractions(nsiRepository, nsiTransformer, convictionService);
+        verifyNoMoreInteractions(nsiRepository, convictionService);
     }
 
     @DisplayName("All NSIs filtered out because the code doesn't match on any of those fetched")
@@ -75,11 +69,11 @@ public class NsiServiceTest {
 
         final var nsiWrapper = nsiService.getNsiByCodes(OFFENDER_ID, EVENT_ID, Set.of("BRE", "BRZ"));
 
-        assertThat(nsiWrapper.get().getNsis()).hasSize(0);
+        assertThat(nsiWrapper.orElseThrow().getNsis()).hasSize(0);
 
         verify(nsiRepository).findByEventIdAndOffenderId(EVENT_ID, OFFENDER_ID);
         verify(convictionService).convictionFor(OFFENDER_ID, EVENT_ID);
-        verifyNoMoreInteractions(nsiRepository, nsiTransformer, convictionService);
+        verifyNoMoreInteractions(nsiRepository, convictionService);
     }
 
     @DisplayName("All NSIs filtered out because they are soft deleted, despite match on code")
@@ -93,11 +87,11 @@ public class NsiServiceTest {
 
         final var nsiWrapper = nsiService.getNsiByCodes(OFFENDER_ID, EVENT_ID, Set.of("BRE"));
 
-        assertThat(nsiWrapper.get().getNsis()).hasSize(0);
+        assertThat(nsiWrapper.orElseThrow().getNsis()).hasSize(0);
 
         verify(nsiRepository).findByEventIdAndOffenderId(EVENT_ID, OFFENDER_ID);
         verify(convictionService).convictionFor(OFFENDER_ID, EVENT_ID);
-        verifyNoMoreInteractions(nsiRepository, nsiTransformer);
+        verifyNoMoreInteractions(nsiRepository);
     }
 
     @DisplayName("Conviction exists, but there are no NSIs matching the code, return empty list.")
@@ -109,10 +103,10 @@ public class NsiServiceTest {
 
         final var nsiWrapper = nsiService.getNsiByCodes(OFFENDER_ID, EVENT_ID, Set.of("BRE"));
 
-        assertThat(nsiWrapper.get().getNsis()).hasSize(0);
+        assertThat(nsiWrapper.orElseThrow().getNsis()).hasSize(0);
         verify(nsiRepository).findByEventIdAndOffenderId(EVENT_ID, OFFENDER_ID);
         verify(convictionService).convictionFor(OFFENDER_ID, EVENT_ID);
-        verifyNoMoreInteractions(nsiRepository, nsiTransformer, convictionService);
+        verifyNoMoreInteractions(nsiRepository, convictionService);
     }
 
     @DisplayName("Conviction does not exist, or is not associated to the offender, return empty optional")
@@ -125,7 +119,7 @@ public class NsiServiceTest {
 
         assertThat(nsiWrapper).isEmpty();
         verify(convictionService).convictionFor(OFFENDER_ID, EVENT_ID);
-        verifyNoMoreInteractions(nsiRepository, nsiTransformer, convictionService);
+        verifyNoMoreInteractions(nsiRepository, convictionService);
     }
 
     @DisplayName("When repo returns NSI return mapped NSI")
@@ -133,18 +127,16 @@ public class NsiServiceTest {
     public void givenNsiExistsReturnIt() {
         var nsiEntity = buildNsi(EVENT, "BRE");
         when(nsiRepository.findById(NSI_ID)).thenReturn(Optional.of(nsiEntity));
-        when(nsiTransformer.nsiOf(nsiEntity)).thenReturn(nsi);
 
         Optional<Nsi> actual = nsiService.getNsiById(NSI_ID);
 
         assertThat(actual).isPresent();
-        assertThat(actual.get()).isEqualTo(nsi);
+        assertThat(actual.get().getNsiType().getCode()).isEqualTo("BRE");
     }
 
     @DisplayName("When repo returns null return empty")
     @Test
     public void givenNsiDoesNotExistReturnNull() {
-        var nsiEntity = buildNsi(EVENT, "BRE");
         when(nsiRepository.findById(NSI_ID)).thenReturn(Optional.empty());
 
         Optional<Nsi> actual = nsiService.getNsiById(NSI_ID);
@@ -153,7 +145,7 @@ public class NsiServiceTest {
     }
 
     public static uk.gov.justice.digital.delius.jpa.standard.entity.Nsi buildNsi(final Event event, final String typeCode) {
-        return uk.gov.justice.digital.delius.jpa.standard.entity.Nsi.builder()
+        return EntityHelper.aNsi().toBuilder()
                 .nsiType(uk.gov.justice.digital.delius.jpa.standard.entity.NsiType.builder()
                     .code(typeCode)
                     .description("Some description")

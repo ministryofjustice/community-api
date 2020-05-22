@@ -59,7 +59,8 @@ public class CourtAppearanceTransformerTest {
             ))
             .build();
 
-        List<CourtReport> courtReports = courtAppearanceTransformer.courtAppearanceOf(courtAppearance).getCourtReports();
+        List<CourtReport> courtReports = CourtAppearanceTransformer
+                .courtAppearanceOf(courtAppearance).getCourtReports();
         assertThat(courtReports)
             .extracting("courtReportId").containsOnly(1L, 3L);
     }

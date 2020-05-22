@@ -18,7 +18,7 @@ public class CustodyKeyDateTransformer {
         this.lookupSupplier = lookupSupplier;
     }
 
-    private KeyValue keyValueOf(StandardReference outcome) {
+    private static KeyValue keyValueOf(StandardReference outcome) {
         return KeyValue
                 .builder()
                 .description(outcome.getCodeDescription())
@@ -42,7 +42,7 @@ public class CustodyKeyDateTransformer {
                 .build();
     }
 
-    public CustodyKeyDate custodyKeyDateOf(KeyDate keyDate) {
+    public static CustodyKeyDate custodyKeyDateOf(KeyDate keyDate) {
         return CustodyKeyDate
                 .builder()
                 .date(keyDate.getKeyDate())

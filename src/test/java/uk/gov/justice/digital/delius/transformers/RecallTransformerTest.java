@@ -28,7 +28,7 @@ public class RecallTransformerTest {
                 .notes(SOME_NOTES)
                 .build();
 
-        OffenderRecall offenderRecall = recallTransformer.offenderRecallOf(recall);
+        OffenderRecall offenderRecall = RecallTransformer.offenderRecallOf(recall);
 
         assertThat(offenderRecall.getDate()).isEqualTo(SOME_DATE);
         assertThat(offenderRecall.getReason().getCode()).isEqualTo(SOME_REASON_CODE);

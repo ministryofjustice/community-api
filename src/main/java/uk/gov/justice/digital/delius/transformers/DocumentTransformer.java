@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.ReportDocumentDates;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail;
-import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail.Type;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 
 import java.time.LocalDate;
@@ -17,111 +16,111 @@ import static java.util.stream.Collectors.toList;
 
 @Component
 public class DocumentTransformer {
-    public List<OffenderDocumentDetail> offenderDocumentsDetailsOfOffenderDocuments(List<OffenderDocument> documents) {
+    public static List<OffenderDocumentDetail> offenderDocumentsDetailsOfOffenderDocuments(List<OffenderDocument> documents) {
         return documents
                 .stream()
-                .map(this::offenderDocumentDetailOf)
+                .map(DocumentTransformer::offenderDocumentDetailOf)
                 .collect(toList());
     }
-    public List<OffenderDocumentDetail> offenderDocumentsDetailsOfEventDocuments(List<EventDocument> documents) {
+    public static List<OffenderDocumentDetail> offenderDocumentsDetailsOfEventDocuments(List<EventDocument> documents) {
         return documents
                 .stream()
-                .map(this::offenderDocumentDetailOf)
+                .map(DocumentTransformer::offenderDocumentDetailOf)
                 .collect(toList());
     }
-    public List<OffenderDocumentDetail> offenderDocumentsDetailsOfCourtReportDocuments(List<CourtReportDocument> documents) {
+    public static List<OffenderDocumentDetail> offenderDocumentsDetailsOfCourtReportDocuments(List<CourtReportDocument> documents) {
         return documents
                 .stream()
-                .map(this::offenderDocumentDetailOf)
+                .map(DocumentTransformer::offenderDocumentDetailOf)
                 .collect(toList());
     }
-    public List<OffenderDocumentDetail> offenderDocumentsDetailsOfInstitutionReportDocuments(List<InstitutionalReportDocument> documents) {
+    public static List<OffenderDocumentDetail> offenderDocumentsDetailsOfInstitutionReportDocuments(List<InstitutionalReportDocument> documents) {
         return documents
                 .stream()
-                .map(this::offenderDocumentDetailOf)
-                .collect(toList());
-    }
-
-    public List<OffenderDocumentDetail> offenderDocumentsDetailsOfAddressAssessmentDocuments(List<AddressAssessmentDocument> documents) {
-        return documents
-                .stream()
-                .map(this::offenderDocumentDetailOf)
+                .map(DocumentTransformer::offenderDocumentDetailOf)
                 .collect(toList());
     }
 
-    public List<OffenderDocumentDetail> offenderDocumentsDetailsOfApprovedPremisesReferralDocuments(List<ApprovedPremisesReferralDocument> documents) {
+    public static List<OffenderDocumentDetail> offenderDocumentsDetailsOfAddressAssessmentDocuments(List<AddressAssessmentDocument> documents) {
         return documents
                 .stream()
-                .map(this::offenderDocumentDetailOf)
+                .map(DocumentTransformer::offenderDocumentDetailOf)
                 .collect(toList());
     }
 
-    public List<OffenderDocumentDetail> offenderDocumentsDetailsOfAssessmentDocuments(List<AssessmentDocument> documents) {
+    public static List<OffenderDocumentDetail> offenderDocumentsDetailsOfApprovedPremisesReferralDocuments(List<ApprovedPremisesReferralDocument> documents) {
         return documents
                 .stream()
-                .map(this::offenderDocumentDetailOf)
+                .map(DocumentTransformer::offenderDocumentDetailOf)
                 .collect(toList());
     }
 
-    public List<OffenderDocumentDetail> offenderDocumentsDetailsOfCaseAllocationDocuments(List<CaseAllocationDocument> documents) {
+    public static List<OffenderDocumentDetail> offenderDocumentsDetailsOfAssessmentDocuments(List<AssessmentDocument> documents) {
         return documents
                 .stream()
-                .map(this::offenderDocumentDetailOf)
+                .map(DocumentTransformer::offenderDocumentDetailOf)
                 .collect(toList());
     }
 
-
-    public List<OffenderDocumentDetail> offenderDocumentsDetailsOfPersonalContactDocuments(List<PersonalContactDocument> documents) {
+    public static List<OffenderDocumentDetail> offenderDocumentsDetailsOfCaseAllocationDocuments(List<CaseAllocationDocument> documents) {
         return documents
                 .stream()
-                .map(this::offenderDocumentDetailOf)
-                .collect(toList());
-    }
-
-    public List<OffenderDocumentDetail> offenderDocumentsDetailsOfReferralDocuments(List<ReferralDocument> documents) {
-        return documents
-                .stream()
-                .map(this::offenderDocumentDetailOf)
+                .map(DocumentTransformer::offenderDocumentDetailOf)
                 .collect(toList());
     }
 
 
-    public List<OffenderDocumentDetail> offenderDocumentsDetailsOfNsiDocuments(List<NsiDocument> documents) {
+    public static List<OffenderDocumentDetail> offenderDocumentsDetailsOfPersonalContactDocuments(List<PersonalContactDocument> documents) {
         return documents
                 .stream()
-                .map(this::offenderDocumentDetailOf)
+                .map(DocumentTransformer::offenderDocumentDetailOf)
+                .collect(toList());
+    }
+
+    public static List<OffenderDocumentDetail> offenderDocumentsDetailsOfReferralDocuments(List<ReferralDocument> documents) {
+        return documents
+                .stream()
+                .map(DocumentTransformer::offenderDocumentDetailOf)
                 .collect(toList());
     }
 
 
-    public List<OffenderDocumentDetail> offenderDocumentsDetailsOfPersonalCircumstanceDocuments(List<PersonalCircumstanceDocument> documents) {
+    public static List<OffenderDocumentDetail> offenderDocumentsDetailsOfNsiDocuments(List<NsiDocument> documents) {
         return documents
                 .stream()
-                .map(this::offenderDocumentDetailOf)
+                .map(DocumentTransformer::offenderDocumentDetailOf)
                 .collect(toList());
     }
 
 
-    public List<OffenderDocumentDetail> offenderDocumentsDetailsOfUPWAppointmentDocuments(List<UPWAppointmentDocument> documents) {
+    public static List<OffenderDocumentDetail> offenderDocumentsDetailsOfPersonalCircumstanceDocuments(List<PersonalCircumstanceDocument> documents) {
         return documents
                 .stream()
-                .map(this::offenderDocumentDetailOf)
+                .map(DocumentTransformer::offenderDocumentDetailOf)
                 .collect(toList());
     }
 
 
-    public List<OffenderDocumentDetail> offenderDocumentsDetailsOfContactDocuments(List<ContactDocument> documents) {
+    public static List<OffenderDocumentDetail> offenderDocumentsDetailsOfUPWAppointmentDocuments(List<UPWAppointmentDocument> documents) {
         return documents
                 .stream()
-                .map(this::offenderDocumentDetailOf)
+                .map(DocumentTransformer::offenderDocumentDetailOf)
                 .collect(toList());
     }
 
-    public OffenderDocumentDetail offenderDocumentDetailsOfCpsPack(Event event) {
+
+    public static List<OffenderDocumentDetail> offenderDocumentsDetailsOfContactDocuments(List<ContactDocument> documents) {
+        return documents
+                .stream()
+                .map(DocumentTransformer::offenderDocumentDetailOf)
+                .collect(toList());
+    }
+
+    public static OffenderDocumentDetail offenderDocumentDetailsOfCpsPack(Event event) {
         return OffenderDocumentDetail
                 .builder()
                 .author(Optional.ofNullable(event.getCpsCreatedByUser())
-                        .map(this::fullName)
+                        .map(DocumentTransformer::fullName)
                         .orElse(null))
                 .createdAt(event.getCpsCreatedDatetime())
                 .documentName(event.getCpsDocumentName())
@@ -136,12 +135,12 @@ public class DocumentTransformer {
 
     }
 
-    public OffenderDocumentDetail offenderDocumentDetailsOfPreviousConvictions(Offender offender) {
+    public static OffenderDocumentDetail offenderDocumentDetailsOfPreviousConvictions(Offender offender) {
 
         return OffenderDocumentDetail
                 .builder()
                 .author(Optional.ofNullable(offender.getPreviousConvictionsCreatedByUser())
-                                .map(this::fullName)
+                                .map(DocumentTransformer::fullName)
                                 .orElse(null))
                 .createdAt(offender.getPreviousConvictionsCreatedDatetime())
                 .documentName(offender.getPrevConvictionDocumentName())
@@ -155,7 +154,7 @@ public class DocumentTransformer {
                 .build();
     }
 
-    private OffenderDocumentDetail offenderDocumentDetailOf(OffenderDocument document) {
+    private static OffenderDocumentDetail offenderDocumentDetailOf(OffenderDocument document) {
         return offenderDocumentDetailBuilderOf(document)
                 .type(KeyValue
                         .builder()
@@ -164,7 +163,7 @@ public class DocumentTransformer {
                         .build())
                 .build();
     }
-    private OffenderDocumentDetail offenderDocumentDetailOf(EventDocument document) {
+    private static OffenderDocumentDetail offenderDocumentDetailOf(EventDocument document) {
         return offenderDocumentDetailBuilderOf(document)
                 .type(KeyValue
                         .builder()
@@ -174,7 +173,7 @@ public class DocumentTransformer {
                 .build();
     }
 
-    private OffenderDocumentDetail offenderDocumentDetailOf(CourtReportDocument document) {
+    private static OffenderDocumentDetail offenderDocumentDetailOf(CourtReportDocument document) {
         return offenderDocumentDetailBuilderOf(document)
                 .extendedDescription(String.format(
                         "%s requested by %s on %s",
@@ -204,7 +203,7 @@ public class DocumentTransformer {
                 .build();
     }
 
-    private OffenderDocumentDetail offenderDocumentDetailOf(AddressAssessmentDocument document) {
+    private static OffenderDocumentDetail offenderDocumentDetailOf(AddressAssessmentDocument document) {
         return offenderDocumentDetailBuilderOf(document)
                 .extendedDescription(String.format(
                         "Address assessment on %s",
@@ -218,7 +217,7 @@ public class DocumentTransformer {
                 .build();
     }
 
-    private OffenderDocumentDetail offenderDocumentDetailOf(ApprovedPremisesReferralDocument document) {
+    private static OffenderDocumentDetail offenderDocumentDetailOf(ApprovedPremisesReferralDocument document) {
         return offenderDocumentDetailBuilderOf(document)
                 .extendedDescription(String.format(
                         "Approved premises referral on %s",
@@ -232,7 +231,7 @@ public class DocumentTransformer {
                 .build();
     }
 
-    private OffenderDocumentDetail offenderDocumentDetailOf(AssessmentDocument document) {
+    private static OffenderDocumentDetail offenderDocumentDetailOf(AssessmentDocument document) {
         return offenderDocumentDetailBuilderOf(document)
                 .extendedDescription(String.format(
                         "Assessment for %s on %s",
@@ -247,7 +246,7 @@ public class DocumentTransformer {
                 .build();
     }
 
-    private OffenderDocumentDetail offenderDocumentDetailOf(CaseAllocationDocument document) {
+    private static OffenderDocumentDetail offenderDocumentDetailOf(CaseAllocationDocument document) {
         return offenderDocumentDetailBuilderOf(document)
                 .type(KeyValue
                         .builder()
@@ -257,7 +256,7 @@ public class DocumentTransformer {
                 .build();
     }
 
-    private OffenderDocumentDetail offenderDocumentDetailOf(PersonalContactDocument document) {
+    private static OffenderDocumentDetail offenderDocumentDetailOf(PersonalContactDocument document) {
         return offenderDocumentDetailBuilderOf(document)
                 .extendedDescription(String.format(
                         "Personal contact of type %s with %s",
@@ -272,7 +271,7 @@ public class DocumentTransformer {
                 .build();
     }
 
-    private OffenderDocumentDetail offenderDocumentDetailOf(ReferralDocument document) {
+    private static OffenderDocumentDetail offenderDocumentDetailOf(ReferralDocument document) {
         return offenderDocumentDetailBuilderOf(document)
                 .extendedDescription(String.format(
                         "Referral for %s on %s",
@@ -287,7 +286,7 @@ public class DocumentTransformer {
                 .build();
     }
 
-    private OffenderDocumentDetail offenderDocumentDetailOf(PersonalCircumstanceDocument document) {
+    private static OffenderDocumentDetail offenderDocumentDetailOf(PersonalCircumstanceDocument document) {
         return offenderDocumentDetailBuilderOf(document)
                 .extendedDescription(String.format(
                         "Personal circumstance of %s started on %s",
@@ -302,7 +301,7 @@ public class DocumentTransformer {
                 .build();
     }
 
-    private OffenderDocumentDetail offenderDocumentDetailOf(UPWAppointmentDocument document) {
+    private static OffenderDocumentDetail offenderDocumentDetailOf(UPWAppointmentDocument document) {
         return offenderDocumentDetailBuilderOf(document)
                 .type(KeyValue
                         .builder()
@@ -316,7 +315,7 @@ public class DocumentTransformer {
                         .build();
     }
 
-    private OffenderDocumentDetail offenderDocumentDetailOf(ContactDocument document) {
+    private static OffenderDocumentDetail offenderDocumentDetailOf(ContactDocument document) {
         return offenderDocumentDetailBuilderOf(document)
                 .type(KeyValue
                         .builder()
@@ -331,26 +330,26 @@ public class DocumentTransformer {
     }
 
 
-    private String toHumanReadable(LocalDateTime maybeDate) {
+    private static String toHumanReadable(LocalDateTime maybeDate) {
         return Optional
                 .ofNullable(maybeDate)
                 .map(date -> date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                 .orElse("");
     }
-    private String toHumanReadable(LocalDate maybeDate) {
+    private static String toHumanReadable(LocalDate maybeDate) {
         return Optional
                 .ofNullable(maybeDate)
                 .map(date -> date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                 .orElse("");
     }
 
-    private OffenderDocumentDetail offenderDocumentDetailOf(InstitutionalReportDocument document) {
+    private static OffenderDocumentDetail offenderDocumentDetailOf(InstitutionalReportDocument document) {
         return offenderDocumentDetailBuilderOf(document)
                 .extendedDescription(String.format(
                         "%s at %s requested on %s",
                         document.getInstitutionalReport().getInstitutionalReportType().getCodeDescription(),
                         document.getInstitutionalReport().getInstitution().getInstitutionName(),
-                        toHumanReadable(document.getInstitutionalReport().getDateRequested())
+                        DocumentTransformer.toHumanReadable(document.getInstitutionalReport().getDateRequested())
                 ))
                 .type(KeyValue
                         .builder()
@@ -368,12 +367,12 @@ public class DocumentTransformer {
                 .build();
     }
 
-    private OffenderDocumentDetail offenderDocumentDetailOf(NsiDocument document) {
+    private static OffenderDocumentDetail offenderDocumentDetailOf(NsiDocument document) {
         return offenderDocumentDetailBuilderOf(document)
                 .extendedDescription(String.format(
                         "Non Statutory Intervention for %s on %s",
                         document.getNsi().getNsiType().getDescription(),
-                        toHumanReadable(document.getNsi().getReferralDate())
+                        DocumentTransformer.toHumanReadable(document.getNsi().getReferralDate())
                 ))
                 .type(KeyValue
                         .builder()
@@ -383,7 +382,7 @@ public class DocumentTransformer {
                 .build();
     }
 
-    private OffenderDocumentDetail.OffenderDocumentDetailBuilder offenderDocumentDetailBuilderOf(Document document) {
+    private static OffenderDocumentDetail.OffenderDocumentDetailBuilder offenderDocumentDetailBuilderOf(Document document) {
         return OffenderDocumentDetail
                 .builder()
                 .author(authorOf(document))
@@ -393,27 +392,27 @@ public class DocumentTransformer {
                 .lastModifiedAt(document.getLastSaved());
     }
 
-    private String authorOf(Document document) {
+    private static String authorOf(Document document) {
         return Optional
                 .ofNullable(document.getCreatedByUser()) // this can be null since bug in document service is not setting this !
-                .map(this::fullName)
+                .map(DocumentTransformer::fullName)
                 .orElse(
                     Optional
                         .ofNullable(document.getLastUpdatedByUser())
-                        .map(this::fullName)
+                        .map(DocumentTransformer::fullName)
                         .orElse(null));
 
 
 
     }
 
-    private LocalDateTime createAtOf(Document document) {
+    private static LocalDateTime createAtOf(Document document) {
         return Optional
                 .ofNullable(document.getCreatedDate())
                 .orElseGet(document::getLastSaved);
     }
 
-    private String fullName(User user) {
+    private static String fullName(User user) {
         return String.format("%s %s", user.getForename(), user.getSurname());
     }
 }

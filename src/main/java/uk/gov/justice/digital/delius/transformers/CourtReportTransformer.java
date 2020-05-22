@@ -17,7 +17,7 @@ public class CourtReportTransformer {
     }
 
 
-    public CourtReport courtReportOf(uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport report) {
+    public static CourtReport courtReportOf(uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport report) {
         return CourtReport.builder()
                         .courtReportId(report.getCourtReportId())
                         .dateRequested(report.getDateRequested())
@@ -42,7 +42,7 @@ public class CourtReportTransformer {
                         .courtReportTypeId(report.getCourtReportTypeId())
                         .deliveredCourtReportTypeId(report.getDeliveredCourtReportTypeId())
                         .offenderId(report.getOffenderId())
-                        .requiredByCourt(Optional.ofNullable(report.getRequiredByCourt()).map(courtTransformer::courtOf).orElse(null))
+                        .requiredByCourt(Optional.ofNullable(report.getRequiredByCourt()).map(CourtTransformer::courtOf).orElse(null))
                         .pendingTransfer(zeroOneToBoolean(report.getPendingTransfer()))
                         .build();
     }
