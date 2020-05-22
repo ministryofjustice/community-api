@@ -1,11 +1,9 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.Court;
 
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
 
-@Component
 public class CourtTransformer {
 
 

@@ -45,7 +45,6 @@ public class DocumentService {
     private final PersonalCircumstanceDocumentRepository personalCircumstanceDocumentRepository;
     private final UPWAppointmentDocumentRepository upwAppointmentDocumentRepository;
     private final ContactDocumentRepository contactDocumentRepository;
-    private final DocumentTransformer documentTransformer;
 
 
     @NationalUserOverride

@@ -18,19 +18,16 @@ import java.util.Optional;
 @Slf4j
 public class OffenderIdentifierService {
     private final boolean updateNomsNumberFeatureSwitch;
-    private final OffenderTransformer offenderTransformer;
     private final OffenderRepository offenderRepository;
     private final SpgNotificationService spgNotificationService;
     private final ReferenceDataService referenceDataService;
 
     public OffenderIdentifierService(
             @Value("${features.noms.update.noms.number}") Boolean updateNomsNumberFeatureSwitch,
-            OffenderTransformer offenderTransformer,
             OffenderRepository offenderRepository,
             SpgNotificationService spgNotificationService,
             ReferenceDataService referenceDataService) {
         this.updateNomsNumberFeatureSwitch = updateNomsNumberFeatureSwitch;
-        this.offenderTransformer = offenderTransformer;
         this.offenderRepository = offenderRepository;
         this.spgNotificationService = spgNotificationService;
         this.referenceDataService = referenceDataService;

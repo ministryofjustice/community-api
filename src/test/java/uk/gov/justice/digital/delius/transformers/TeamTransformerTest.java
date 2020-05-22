@@ -10,11 +10,10 @@ import static uk.gov.justice.digital.delius.util.EntityHelper.aDistrict;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aTeam;
 
 public class TeamTransformerTest {
-    private TeamTransformer teamTransformer = new TeamTransformer();
 
     @Test
     public void willCopyCode() {
-        assertThat(teamTransformer.teamOf(
+        assertThat(TeamTransformer.teamOf(
             aTeam().toBuilder().code("ABC").build()).getCode())
                 .isEqualTo("ABC");
 
@@ -22,7 +21,7 @@ public class TeamTransformerTest {
 
     @Test
     public void willCopyDescription() {
-        assertThat(teamTransformer.teamOf(
+        assertThat(TeamTransformer.teamOf(
             aTeam().toBuilder().description("My Description").build()).getDescription())
                 .isEqualTo("My Description");
 
@@ -30,7 +29,7 @@ public class TeamTransformerTest {
 
     @Test
     public void willCopyTelephone() {
-        assertThat(teamTransformer.teamOf(aTeam().toBuilder().telephone("0114 222 4444").build()).getTelephone())
+        assertThat(TeamTransformer.teamOf(aTeam().toBuilder().telephone("0114 222 4444").build()).getTelephone())
                 .isEqualTo("0114 222 4444");
 
     }
@@ -38,7 +37,7 @@ public class TeamTransformerTest {
     @Test
     public void willCopyDistrict() {
         assertThat(
-                teamTransformer
+                TeamTransformer
                         .teamOf(aTeam().toBuilder()
                                 .district(aDistrict().toBuilder().code("AA")
                                         .description("My Description").build())
@@ -50,7 +49,7 @@ public class TeamTransformerTest {
 
     @Test
     public void willCopyDistrictAcrossAsLocalDeliveryUnit() {
-        assertThat(teamTransformer
+        assertThat(TeamTransformer
                 .teamOf(aTeam().toBuilder()
                         .district(aDistrict().toBuilder()
                                 .code("LL")
@@ -62,7 +61,7 @@ public class TeamTransformerTest {
 
     @Test
     public void willCopyLduAcrossAsTeamType() {
-        assertThat(teamTransformer
+        assertThat(TeamTransformer
                 .teamOf(aTeam().toBuilder()
                         .localDeliveryUnit(LocalDeliveryUnit.builder().code("LL")
                                 .description("My Description").build())
@@ -73,7 +72,7 @@ public class TeamTransformerTest {
 
     @Test
     public void willCopyBorough() {
-        assertThat(teamTransformer.teamOf(aTeam()
+        assertThat(TeamTransformer.teamOf(aTeam()
                 .toBuilder()
                 .district(District
                     .builder()

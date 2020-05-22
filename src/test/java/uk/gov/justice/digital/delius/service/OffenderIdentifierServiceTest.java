@@ -11,8 +11,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalIdentifier;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
-import uk.gov.justice.digital.delius.transformers.ContactTransformer;
-import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +37,7 @@ class OffenderIdentifierServiceTest {
     class FeatureSwitchedOff {
         @BeforeEach
         void setUp() {
-            service = new OffenderIdentifierService(false, new OffenderTransformer(new ContactTransformer()), offenderRepository, spgNotificationService, referenceDataService);
+            service = new OffenderIdentifierService(false, offenderRepository, spgNotificationService, referenceDataService);
         }
 
         @Test
@@ -64,7 +62,7 @@ class OffenderIdentifierServiceTest {
     class FeatureSwitchedOn {
         @BeforeEach
         void setUp() {
-            service = new OffenderIdentifierService(true, new OffenderTransformer(new ContactTransformer()), offenderRepository, spgNotificationService, referenceDataService);
+            service = new OffenderIdentifierService(true, offenderRepository, spgNotificationService, referenceDataService);
             when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.empty());
         }
 

@@ -20,13 +20,11 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.conver
 public class NsiService {
     private final NsiRepository nsiRepository;
 
-    private final NsiTransformer nsiTransformer;
     private final ConvictionService convictionService;
 
     @Autowired
-    public NsiService(final NsiRepository nsiRepository, final NsiTransformer nsiTransformer, final ConvictionService convictionService) {
+    public NsiService(final NsiRepository nsiRepository, final ConvictionService convictionService) {
         this.nsiRepository = nsiRepository;
-        this.nsiTransformer = nsiTransformer;
         this.convictionService = convictionService;
     }
 

@@ -2,12 +2,8 @@ package uk.gov.justice.digital.delius.transformers;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.justice.digital.delius.data.api.Institution;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
-import uk.gov.justice.digital.delius.data.api.OffenderRecall;
 import uk.gov.justice.digital.delius.data.api.OffenderRelease;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RInstitution;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Recall;
@@ -19,9 +15,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReleaseTransformerTest {
@@ -32,12 +25,8 @@ public class ReleaseTransformerTest {
     private final RInstitution SOME_R_INSTITUTION = RInstitution.builder().code("MDI").description("HMP Moorland").build();
     private final String SOME_NOTES = "These are notes";
     private final StandardReference SOME_REASON = StandardReference.builder().codeValue("CODE_VALUE").codeDescription("Code description").build();
-    private final OffenderRecall SOME_OFFENDER_RECALL = OffenderRecall.builder().date(SOME_DATE).build();
     private final String SOME_RELEASE_TYPE_CODE = "The release type code";
     private final String SOME_RELEASE_TYPE = "The release type";
-
-    @InjectMocks
-    private ReleaseTransformer releaseTransformer;
 
     @Test
     public void offenderReleaseOf_valuesMappedCorrectly() {

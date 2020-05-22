@@ -15,12 +15,10 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.conver
 @Service
 public class PersonalCircumstanceService {
     private final PersonalCircumstanceRepository personalCircumstanceRepository;
-    private final PersonalCircumstanceTransformer personalCircumstanceTransformer;
 
     @Autowired
-    public PersonalCircumstanceService(PersonalCircumstanceRepository personalCircumstanceRepository, PersonalCircumstanceTransformer personalCircumstanceTransformer) {
+    public PersonalCircumstanceService(PersonalCircumstanceRepository personalCircumstanceRepository) {
         this.personalCircumstanceRepository = personalCircumstanceRepository;
-        this.personalCircumstanceTransformer = personalCircumstanceTransformer;
     }
 
     public List<PersonalCircumstance> personalCircumstancesFor(Long offenderId) {

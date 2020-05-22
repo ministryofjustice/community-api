@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.junit.Before;
 import org.junit.Test;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CircumstanceSubType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CircumstanceType;
@@ -10,12 +9,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PersonalCircumstanceTransformerTest {
-    private PersonalCircumstanceTransformer transformer;
-
-    @Before
-    public void before() {
-        transformer = new PersonalCircumstanceTransformer();
-    }
 
     @Test
     public void probationAreasMappedOnlyWhenNotNull() {

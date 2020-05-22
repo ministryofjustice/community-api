@@ -14,8 +14,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ReferenceDataMasterRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StandardReferenceRepository;
-import uk.gov.justice.digital.delius.transformers.InstitutionTransformer;
-import uk.gov.justice.digital.delius.transformers.ProbationAreaTransformer;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +24,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.digital.delius.util.EntityHelper.*;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aBorough;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aDistrict;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aProbationArea;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aTeam;
 
 @ExtendWith(MockitoExtension.class)
 public class ReferenceDataServiceTest {
@@ -45,7 +46,6 @@ public class ReferenceDataServiceTest {
     @BeforeEach
     public void setup() {
         referenceDataService = new ReferenceDataService(
-                new ProbationAreaTransformer(new InstitutionTransformer()),
                 probationAreaRepository,
                 standardReferenceRepository,
                 referenceDataMasterRepository);

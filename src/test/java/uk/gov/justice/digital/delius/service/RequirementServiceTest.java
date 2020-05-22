@@ -13,7 +13,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
-import uk.gov.justice.digital.delius.transformers.RequirementTransformer;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,8 +28,6 @@ public class RequirementServiceTest {
     private static final String CRN = "CRN";
     public static final Long OFFENDER_ID = 123456789L;
 
-    @Mock
-    private RequirementTransformer transformer;
     @Mock
     private OffenderRepository offenderRepository;
     @Mock
@@ -48,7 +45,7 @@ public class RequirementServiceTest {
 
     @Before
     public void setUp() {
-        requirementService = new RequirementService(offenderRepository, eventRepository, transformer);
+        requirementService = new RequirementService(offenderRepository, eventRepository);
 
         when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
         when(offender.getOffenderId()).thenReturn(OFFENDER_ID);

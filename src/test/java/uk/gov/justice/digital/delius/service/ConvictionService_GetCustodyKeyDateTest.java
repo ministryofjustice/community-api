@@ -14,6 +14,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.service.ConvictionService.SingleActiveCustodyConvictionNotFoundException;
 import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
 import uk.gov.justice.digital.delius.transformers.CustodyKeyDateTransformer;
+import uk.gov.justice.digital.delius.transformers.EventTransformer;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class ConvictionService_GetCustodyKeyDateTest {
     private OffenderRepository offenderRepository;
 
     @Mock
-    private ConvictionTransformer convictionTransformer;
+    private EventTransformer eventTransformer;
 
     @Mock
     private SpgNotificationService spgNotificationService;
@@ -52,7 +53,7 @@ public class ConvictionService_GetCustodyKeyDateTest {
 
     @Before
     public void setUp() {
-        convictionService = new ConvictionService(true, eventRepository, offenderRepository, convictionTransformer, spgNotificationService, lookupSupplier, new CustodyKeyDateTransformer(lookupSupplier), iapsNotificationService, contactService);
+        convictionService = new ConvictionService(true, eventRepository, offenderRepository, eventTransformer, spgNotificationService, lookupSupplier, new CustodyKeyDateTransformer(lookupSupplier), iapsNotificationService, contactService);
         when(eventRepository.findByOffenderId(anyLong())).thenReturn(ImmutableList.of(aCustodyEvent()));
     }
 

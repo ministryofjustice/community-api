@@ -18,8 +18,6 @@ public class RecallTransformerTest {
     private static final String SOME_REASON = "This is a reason";
     private static final String SOME_NOTES = "Here are some notes";
 
-    private RecallTransformer recallTransformer = new RecallTransformer();
-
     @Test
     public void offenderRecallOf_valuesMappedCorrectly() {
         Recall recall = Recall.builder()

@@ -28,7 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.digital.delius.util.OffenderHelper.anOffender;
 
 public class OffenderTransformerTest {
-    private OffenderTransformer offenderTransformer = new OffenderTransformer(new ContactTransformer());
 
     @Test
     public void offenderManagerAllocationReasonMappedFromAllocationReasonInOffenderTransfer() {

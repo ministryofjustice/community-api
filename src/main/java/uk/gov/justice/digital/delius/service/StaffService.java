@@ -26,8 +26,6 @@ public class StaffService {
 
     private final StaffRepository staffRepository;
     private final LdapRepository ldapRepository;
-    private final OffenderTransformer offenderTransformer;
-    private final StaffTransformer staffTransformer;
     private final StaffHelperRepository staffHelperRepository;
 
 
