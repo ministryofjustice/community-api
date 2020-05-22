@@ -27,7 +27,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringJUnit4ClassRunner.class)
-@ActiveProfiles("dev,dev-seed")
+@ActiveProfiles("dev-seed")
 public class OffendersResource_GetLatestRecallAndReleaseForOffenderIT {
 
     @LocalServerPort

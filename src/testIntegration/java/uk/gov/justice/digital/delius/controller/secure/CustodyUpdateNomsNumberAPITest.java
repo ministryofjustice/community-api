@@ -2,22 +2,19 @@ package uk.gov.justice.digital.delius.controller.secure;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.microsoft.applicationinsights.TelemetryClient;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.digital.delius.JwtAuthenticationHelper;
@@ -34,7 +31,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("dev-seed")
-@DirtiesContext
 public class CustodyUpdateNomsNumberAPITest {
 
     @Autowired
@@ -45,10 +41,9 @@ public class CustodyUpdateNomsNumberAPITest {
     private ObjectMapper objectMapper;
     @Autowired
     private Flyway flyway;
+    private static Flyway flywayInstance;
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    @MockBean
-    private TelemetryClient telemetryClient;
 
     @BeforeEach
     public void setup() {
@@ -56,12 +51,13 @@ public class CustodyUpdateNomsNumberAPITest {
         RestAssured.basePath = "/secure";
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
                 new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
+        flywayInstance = flyway;
     }
 
-    @AfterEach
-    public void after() {
-        flyway.clean();
-        flyway.migrate();
+    @AfterAll
+    public static void cleanDatabase() {
+        flywayInstance.clean();
+        flywayInstance.migrate();
     }
 
     @Test
