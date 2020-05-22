@@ -2,22 +2,23 @@ package uk.gov.justice.digital.delius.controller.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import org.assertj.core.util.Lists;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.justice.digital.delius.controller.wiremock.DeliusExtension;
+import uk.gov.justice.digital.delius.controller.wiremock.DeliusMockServer;
 import uk.gov.justice.digital.delius.data.api.AccessLimitation;
 import uk.gov.justice.digital.delius.data.api.Address;
 import uk.gov.justice.digital.delius.data.api.Count;
@@ -47,7 +48,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 import static java.util.Arrays.asList;
@@ -57,10 +57,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static uk.gov.justice.digital.delius.OffenderHelper.anOffender;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"offender.ids.pagesize=5"})
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class DeliusOffenderAPITest {
-    @Rule
-    public WireMockRule wireMock = new WireMockRule(wireMockConfig().port(8088).usingFilesUnderDirectory("src/testIntegration/resources").jettyStopTimeout(10000L));
+
+    private static DeliusMockServer deliusMockServer = new DeliusMockServer(8088, "src/testIntegration/resources");
+
+    @RegisterExtension
+    static DeliusExtension deliusExtension = new DeliusExtension(deliusMockServer);
 
     @LocalServerPort
     int port;
@@ -77,7 +80,7 @@ public class DeliusOffenderAPITest {
     @Autowired
     private Jwt jwt;
 
-    @Before
+    @BeforeEach
     public void setup() {
         RestAssured.port = port;
         RestAssured.basePath = "/api";
