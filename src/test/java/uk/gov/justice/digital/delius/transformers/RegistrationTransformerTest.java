@@ -1,20 +1,19 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.junit.Before;
 import org.junit.Test;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Deregistration;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.RegisterType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Registration;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class RegistrationTransformerTest {
-    private RegistrationTransformer transformer;
-
-    @Before
-    public void before() {
-        transformer = new RegistrationTransformer(new ContactTransformer());
-    }
 
     @Test
     public void registerMappedFromRegisterTypeFlagReferenceData() {

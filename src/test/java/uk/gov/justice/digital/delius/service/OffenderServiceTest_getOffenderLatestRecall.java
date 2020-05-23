@@ -14,9 +14,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Release;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
-import uk.gov.justice.digital.delius.transformers.ContactTransformer;
-import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
-import uk.gov.justice.digital.delius.transformers.ReleaseTransformer;
 import uk.gov.justice.digital.delius.util.EntityHelper;
 
 import java.time.LocalDateTime;
@@ -41,8 +38,6 @@ public class OffenderServiceTest_getOffenderLatestRecall {
     private OffenderRepository mockOffenderRepository;
     @Mock
     private ConvictionService mockConvictionService;
-    @Mock
-    private ReleaseTransformer mockReleaseTransformer;
 
     private OffenderService offenderService;
 
@@ -50,10 +45,7 @@ public class OffenderServiceTest_getOffenderLatestRecall {
     public void setup() {
         offenderService = new OffenderService(
                 mockOffenderRepository,
-                new OffenderTransformer(
-                        new ContactTransformer()),
-                mockConvictionService,
-                mockReleaseTransformer
+                mockConvictionService
         );
     }
 

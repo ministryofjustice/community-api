@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.PersonalCircumstance;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CircumstanceSubType;
@@ -11,7 +10,6 @@ import java.util.Optional;
 
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
 
-@Component
 public class PersonalCircumstanceTransformer {
     public static PersonalCircumstance personalCircumstanceOf(uk.gov.justice.digital.delius.jpa.standard.entity.PersonalCircumstance personalCircumstance) {
         return PersonalCircumstance.builder()

@@ -1,10 +1,14 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.AllTeam;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.ProbationArea;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
+import uk.gov.justice.digital.delius.jpa.standard.entity.District;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ExternalProvider;
+import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Organisation;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,17 +17,7 @@ import java.util.stream.Stream;
 
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
 
-@Component
 public class ProbationAreaTransformer {
-    private final InstitutionTransformer institutionTransformer;
-
-    public ProbationAreaTransformer(InstitutionTransformer institutionTransformer) {
-        this.institutionTransformer = institutionTransformer;
-    }
-
-    public ProbationAreaTransformer() {
-        this.institutionTransformer = new InstitutionTransformer();
-    }
 
     public static List<ProbationArea> probationAreasOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea> probationAreas) {
         return probationAreas.stream().map(ProbationAreaTransformer::probationAreaOf).collect(Collectors.toList());

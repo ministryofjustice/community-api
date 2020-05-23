@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.Appointment;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactOutcomeType;
@@ -11,18 +10,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static uk.gov.justice.digital.delius.data.api.Appointment.Attended.*;
+import static uk.gov.justice.digital.delius.data.api.Appointment.Attended.ATTENDED;
+import static uk.gov.justice.digital.delius.data.api.Appointment.Attended.NOT_RECORDED;
+import static uk.gov.justice.digital.delius.data.api.Appointment.Attended.UNATTENDED;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
 
-@Component
 public class AppointmentTransformer {
-    private final ContactTransformer contactTransformer;
-    private final RequirementTransformer requirementTransformer = new RequirementTransformer();
-
-    public AppointmentTransformer(ContactTransformer contactTransformer) {
-        this.contactTransformer = contactTransformer;
-    }
-
 
     public static List<Appointment> appointmentsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.Contact> contacts) {
         return contacts.stream()

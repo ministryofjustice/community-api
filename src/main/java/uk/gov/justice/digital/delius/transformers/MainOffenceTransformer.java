@@ -8,29 +8,12 @@ import uk.gov.justice.digital.delius.service.LookupSupplier;
 
 import java.time.LocalDateTime;
 
-import static uk.gov.justice.digital.delius.transformers.OffenceDetailTransformer.detailOf;
-
 @Component
 public class MainOffenceTransformer {
     private final LookupSupplier lookupSupplier;
 
     public MainOffenceTransformer(LookupSupplier lookupSupplier) {
         this.lookupSupplier = lookupSupplier;
-    }
-
-    public static Offence offenceOf(MainOffence mainOffence) {
-        return Offence.builder()
-            .offenceId(OffenceIdTransformer.mainOffenceIdOf(mainOffence.getMainOffenceId()))
-            .detail(detailOf(mainOffence.getOffence()))
-            .createdDatetime(mainOffence.getCreatedDatetime())
-            .lastUpdatedDatetime(mainOffence.getLastUpdatedDatetime())
-            .mainOffence(true)
-            .offenceCount(mainOffence.getOffenceCount())
-            .offenceDate(mainOffence.getOffenceDate())
-            .offenderId(mainOffence.getOffenderId())
-            .tics(mainOffence.getTics())
-            .verdict(mainOffence.getVerdict())
-            .build();
     }
 
     public MainOffence mainOffenceOf(Long offenderId, Offence mainOffence, Event event) {

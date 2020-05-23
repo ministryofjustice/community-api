@@ -13,7 +13,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.service.ConvictionService.SingleActiveCustodyConvictionNotFoundException;
-import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
+import uk.gov.justice.digital.delius.transformers.EventTransformer;
 import uk.gov.justice.digital.delius.transformers.CustodyKeyDateTransformer;
 
 import java.time.LocalDate;
@@ -38,7 +38,7 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
     private OffenderRepository offenderRepository;
 
     @Mock
-    private ConvictionTransformer convictionTransformer;
+    private EventTransformer eventTransformer;
 
     @Mock
     private SpgNotificationService spgNotificationService;
@@ -58,7 +58,7 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
 
     @Before
     public void setUp() {
-        convictionService = new ConvictionService(true, eventRepository, offenderRepository, convictionTransformer, spgNotificationService, lookupSupplier, new CustodyKeyDateTransformer(lookupSupplier), iapsNotificationService, contactService);
+        convictionService = new ConvictionService(true, eventRepository, offenderRepository, eventTransformer, spgNotificationService, lookupSupplier, new CustodyKeyDateTransformer(lookupSupplier), iapsNotificationService, contactService);
     }
 
 

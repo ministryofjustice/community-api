@@ -1,11 +1,9 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.OffenderRecall;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Recall;
 
-@Component
 public class RecallTransformer {
 
     public static OffenderRecall offenderRecallOf(Recall recall) {

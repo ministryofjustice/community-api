@@ -1,9 +1,11 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Registration;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Deregistration;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.RegisterType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -11,13 +13,7 @@ import java.util.function.Predicate;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
 
-@Component
 public class RegistrationTransformer {
-    private final ContactTransformer contactTransformer;
-
-    public RegistrationTransformer(ContactTransformer contactTransformer) {
-        this.contactTransformer = contactTransformer;
-    }
 
     public static Registration registrationOf(uk.gov.justice.digital.delius.jpa.standard.entity.Registration registration) {
         final Predicate<Deregistration> hasDeregistered = notUsed -> convertToBoolean(registration.getDeregistered());

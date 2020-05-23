@@ -16,7 +16,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CustodyHistoryRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
-import uk.gov.justice.digital.delius.transformers.*;
 import uk.gov.justice.digital.delius.util.EntityHelper;
 
 import java.time.LocalDate;
@@ -26,8 +25,19 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-import static uk.gov.justice.digital.delius.util.EntityHelper.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aCustodyEvent;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aPrisonInstitution;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anInstitution;
 import static uk.gov.justice.digital.delius.util.EntityHelper.anOffender;
 
 public class CustodyServiceTest {
@@ -38,13 +48,6 @@ public class CustodyServiceTest {
     private ConvictionService convictionService = mock(ConvictionService.class);
     private InstitutionRepository institutionRepository = mock(InstitutionRepository.class);
     private CustodyHistoryRepository custodyHistoryRepository = mock(CustodyHistoryRepository.class);
-    private LookupSupplier lookupSupplier = mock(LookupSupplier.class);
-    private final ConvictionTransformer convictionTransformer = new ConvictionTransformer(
-            new MainOffenceTransformer(lookupSupplier),
-            new AdditionalOffenceTransformer(lookupSupplier),
-            new CourtAppearanceTransformer(new CourtReportTransformer(new CourtTransformer()), new CourtTransformer(), lookupSupplier),
-            lookupSupplier,
-            new InstitutionTransformer());
     private ReferenceDataService referenceDataService = mock(ReferenceDataService.class);
     private SpgNotificationService spgNotificationService = mock(SpgNotificationService.class);
     private ArgumentCaptor<CustodyHistory> custodyHistoryArgumentCaptor = ArgumentCaptor.forClass(CustodyHistory.class);
@@ -54,7 +57,7 @@ public class CustodyServiceTest {
 
     @BeforeEach
     public void setup() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-        custodyService = new CustodyService(true, true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService);
+        custodyService = new CustodyService(true, true, telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService);
         when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
         when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                 .thenReturn(Optional.of(EntityHelper.aCustodyEvent()));
@@ -313,7 +316,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willUpdatePrisonInstitutionWillBeUpdatedWhenFeatureSwitchedOn() {
-            custodyService = new CustodyService(true, true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService);
+            custodyService = new CustodyService(true, true, telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService);
 
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
 
@@ -324,7 +327,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willNotUpdatePrisonInstitutionWillBeUpdatedWhenFeatureSwitchedOff() {
-            custodyService = new CustodyService(false, true, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService);
+            custodyService = new CustodyService(false, true, telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService);
 
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
 
@@ -468,7 +471,7 @@ public class CustodyServiceTest {
             class WhenFeatureSwitchedOff {
                 @BeforeEach
                 void setup() {
-                    custodyService = new CustodyService(true, false, telemetryClient, offenderRepository, convictionService, institutionRepository, convictionTransformer, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService);
+                    custodyService = new CustodyService(true, false, telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService);
                 }
 
                 @Test

@@ -23,7 +23,6 @@ class ProbationAreaTransformerTest {
     private ProviderTeam providerTeam;
 
     private ProbationArea probationArea;
-    private final ProbationAreaTransformer probationAreaTransformer = new ProbationAreaTransformer();
 
     @BeforeEach
     public void setUp() {
@@ -38,7 +37,7 @@ class ProbationAreaTransformerTest {
         when(team.getCode()).thenReturn("team");
         when(providerTeam.getCode()).thenReturn("providerteam");
 
-        var result = probationAreaTransformer.probationAreaOf(probationArea);
+        var result = ProbationAreaTransformer.probationAreaOf(probationArea);
         assertThat(result.getTeams()).hasSize(2);
         assertThat(result.getTeams().get(0).getCode()).isEqualTo("team");
         assertThat(result.getTeams().get(1).getCode()).isEqualTo("providerteam");

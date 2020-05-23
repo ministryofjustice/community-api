@@ -24,8 +24,6 @@ public class RequirementService {
     private OffenderRepository offenderRepository;
     @Autowired
     private EventRepository eventRepository;
-    @Autowired
-    private RequirementTransformer requirementTransformer;
 
     public ConvictionRequirements getRequirementsByConvictionId(String crn, Long convictionId) {
         var offender = offenderRepository.findByCrn(crn)
@@ -36,7 +34,7 @@ public class RequirementService {
                 .filter(event -> convictionId.equals(event.getEventId()))
                 .map(Event::getDisposal)
                 .flatMap(this::getRequirementStreamFromDisposal)
-                .map(requirement -> requirementTransformer.requirementOf(requirement))
+                .map(RequirementTransformer::requirementOf)
                 .collect(Collectors.toList());
 
         return new ConvictionRequirements(requirements);

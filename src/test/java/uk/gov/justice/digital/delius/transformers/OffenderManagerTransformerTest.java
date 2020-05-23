@@ -10,13 +10,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.digital.delius.util.EntityHelper.*;
 
 public class OffenderManagerTransformerTest {
-    private final OffenderManagerTransformer offenderManagerTransformer =
-            new OffenderManagerTransformer(
-                    new StaffTransformer(
-                            new TeamTransformer()),
-                    new TeamTransformer(),
-                    new ProbationAreaTransformer(
-                            new InstitutionTransformer()));
 
     @Test
     public void staffNameDetailsTakenFromStaffInOffenderManager() {

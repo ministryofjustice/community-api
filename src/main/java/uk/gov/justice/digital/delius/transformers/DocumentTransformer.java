@@ -1,10 +1,26 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.springframework.stereotype.Component;
-import uk.gov.justice.digital.delius.data.api.ReportDocumentDates;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
+import uk.gov.justice.digital.delius.data.api.ReportDocumentDates;
+import uk.gov.justice.digital.delius.jpa.standard.entity.AddressAssessmentDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ApprovedPremisesReferralDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.AssessmentDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.CaseAllocationDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ContactDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.CourtReportDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Document;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
+import uk.gov.justice.digital.delius.jpa.standard.entity.EventDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReportDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.NsiDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalCircumstanceDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalContactDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ReferralDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.UPWAppointmentDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.User;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,7 +30,6 @@ import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
-@Component
 public class DocumentTransformer {
     public static List<OffenderDocumentDetail> offenderDocumentsDetailsOfOffenderDocuments(List<OffenderDocument> documents) {
         return documents

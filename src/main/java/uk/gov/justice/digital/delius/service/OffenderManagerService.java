@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 public class OffenderManagerService {
 
     private final OffenderRepository offenderRepository;
-    private final OffenderManagerTransformer offenderManagerTransformer;
     private final ProbationAreaRepository probationAreaRepository;
     private final PrisonOffenderManagerRepository prisonOffenderManagerRepository;
     private final ResponsibleOfficerRepository responsibleOfficerRepository;
@@ -37,9 +36,8 @@ public class OffenderManagerService {
 
 
     @Autowired
-    public OffenderManagerService(OffenderRepository offenderRepository, OffenderManagerTransformer offenderManagerTransformer, ProbationAreaRepository probationAreaRepository, PrisonOffenderManagerRepository prisonOffenderManagerRepository, ResponsibleOfficerRepository responsibleOfficerRepository, StaffService staffService, TeamService teamService, ReferenceDataService referenceDataService, ContactService contactService) {
+    public OffenderManagerService(OffenderRepository offenderRepository, ProbationAreaRepository probationAreaRepository, PrisonOffenderManagerRepository prisonOffenderManagerRepository, ResponsibleOfficerRepository responsibleOfficerRepository, StaffService staffService, TeamService teamService, ReferenceDataService referenceDataService, ContactService contactService) {
         this.offenderRepository = offenderRepository;
-        this.offenderManagerTransformer = offenderManagerTransformer;
         this.probationAreaRepository = probationAreaRepository;
         this.prisonOffenderManagerRepository = prisonOffenderManagerRepository;
         this.responsibleOfficerRepository = responsibleOfficerRepository;

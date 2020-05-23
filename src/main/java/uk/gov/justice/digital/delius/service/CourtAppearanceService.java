@@ -20,14 +20,11 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.conver
 public class CourtAppearanceService {
 
     private final CourtAppearanceRepository courtAppearanceRepository;
-    private final CourtAppearanceTransformer courtAppearanceTransformer;
 
     @Autowired
-    public CourtAppearanceService(CourtAppearanceRepository courtAppearanceRepository,
-                                  CourtAppearanceTransformer courtAppearanceTransformer) {
+    public CourtAppearanceService(CourtAppearanceRepository courtAppearanceRepository) {
 
         this.courtAppearanceRepository = courtAppearanceRepository;
-        this.courtAppearanceTransformer = courtAppearanceTransformer;
     }
 
     public List<CourtAppearance> courtAppearancesFor(Long offenderId) {

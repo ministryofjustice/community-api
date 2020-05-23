@@ -31,7 +31,7 @@ public class CourtAppearanceTransformerTest {
 
     @Before
     public void setup() {
-        courtAppearanceTransformer = new CourtAppearanceTransformer(new CourtReportTransformer(new CourtTransformer()), new CourtTransformer(), lookupSupplier);
+        courtAppearanceTransformer = new CourtAppearanceTransformer(lookupSupplier);
         when(lookupSupplier.userSupplier()).thenReturn(() -> User.builder().userId(99L).build());
         when(lookupSupplier.courtAppearanceOutcomeSupplier()).thenReturn(code -> StandardReference.builder().codeValue(code).build());
         when(lookupSupplier.courtSupplier()).thenReturn(courtId -> Court.builder().courtId(courtId).build());

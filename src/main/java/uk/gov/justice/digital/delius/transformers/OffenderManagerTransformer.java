@@ -1,7 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
@@ -10,19 +8,8 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 
 import java.util.Optional;
 
-@Component
 public class OffenderManagerTransformer {
-    private final StaffTransformer staffTransformer;
-    private final TeamTransformer teamTransformer;
-    private final ProbationAreaTransformer probationAreaTransformer;
     private static final String UNALLOCATED_STAFF_CODE_SUFFIX = "U";
-
-    @Autowired
-    public OffenderManagerTransformer(StaffTransformer staffTransformer, TeamTransformer teamTransformer, ProbationAreaTransformer probationAreaTransformer) {
-        this.staffTransformer = staffTransformer;
-        this.teamTransformer = teamTransformer;
-        this.probationAreaTransformer = probationAreaTransformer;
-    }
 
     public static CommunityOrPrisonOffenderManager offenderManagerOf(OffenderManager offenderManager) {
         return CommunityOrPrisonOffenderManager

@@ -34,7 +34,6 @@ public class CustodyService {
     private final OffenderRepository offenderRepository;
     private final ConvictionService convictionService;
     private final InstitutionRepository institutionRepository;
-    private final ConvictionTransformer convictionTransformer;
     private final CustodyHistoryRepository custodyHistoryRepository;
     private final ReferenceDataService referenceDataService;
     private final SpgNotificationService spgNotificationService;
@@ -51,7 +50,6 @@ public class CustodyService {
             OffenderRepository offenderRepository,
             ConvictionService convictionService,
             InstitutionRepository institutionRepository,
-            ConvictionTransformer convictionTransformer,
             CustodyHistoryRepository custodyHistoryRepository,
             ReferenceDataService referenceDataService,
             SpgNotificationService spgNotificationService,
@@ -63,7 +61,6 @@ public class CustodyService {
         this.offenderRepository = offenderRepository;
         this.convictionService = convictionService;
         this.institutionRepository = institutionRepository;
-        this.convictionTransformer = convictionTransformer;
         this.custodyHistoryRepository = custodyHistoryRepository;
         this.referenceDataService = referenceDataService;
         this.spgNotificationService = spgNotificationService;

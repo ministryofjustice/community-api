@@ -6,8 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.data.api.Offence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.MainOffence;
 import uk.gov.justice.digital.delius.jpa.standard.repository.MainOffenceRepository;
-import uk.gov.justice.digital.delius.transformers.AdditionalOffenceTransformer;
-import uk.gov.justice.digital.delius.transformers.MainOffenceTransformer;
+import uk.gov.justice.digital.delius.transformers.OffenceTransformer;
 
 import java.util.List;
 
@@ -18,15 +17,10 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.conver
 public class OffenceService {
 
     private final MainOffenceRepository mainOffenceRepository;
-    private final MainOffenceTransformer mainOffenceTransformer;
-    private final AdditionalOffenceTransformer additionalOffenceTransformer;
 
     @Autowired
-    public OffenceService(MainOffenceRepository mainOffenceRepository,
-                          MainOffenceTransformer mainOffenceTransformer, AdditionalOffenceTransformer additionalOffenceTransformer) {
+    public OffenceService(MainOffenceRepository mainOffenceRepository) {
         this.mainOffenceRepository = mainOffenceRepository;
-        this.mainOffenceTransformer = mainOffenceTransformer;
-        this.additionalOffenceTransformer = additionalOffenceTransformer;
     }
 
     public List<Offence> offencesFor(Long offenderId) {
@@ -41,9 +35,9 @@ public class OffenceService {
 
     private ImmutableList<Offence> combineMainAndAdditionalOffences(MainOffence mainOffence) {
         List<Offence> additionalOffences =
-            AdditionalOffenceTransformer.offencesOf(mainOffence.getEvent().getAdditionalOffences());
+            OffenceTransformer.offencesOf(mainOffence.getEvent().getAdditionalOffences());
         return ImmutableList.<Offence>builder()
-            .add(MainOffenceTransformer.offenceOf(mainOffence))
+            .add(OffenceTransformer.offenceOf(mainOffence))
             .addAll(additionalOffences)
             .build();
     }
