@@ -16,12 +16,10 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 public class AppointmentService {
 
     private final ContactRepository contactRepository;
-    private final AppointmentTransformer appointmentTransformer;
 
     @Autowired
-    public AppointmentService(ContactRepository contactRepository, AppointmentTransformer appointmentTransformer) {
+    public AppointmentService(ContactRepository contactRepository) {
         this.contactRepository = contactRepository;
-        this.appointmentTransformer = appointmentTransformer;
     }
 
     public List<Appointment> appointmentsFor(Long offenderId, AppointmentFilter filter) {

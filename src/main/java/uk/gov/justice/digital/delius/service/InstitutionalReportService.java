@@ -16,14 +16,11 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.conver
 public class InstitutionalReportService {
 
     private final InstitutionalReportRepository institutionalReportRepository;
-    private final InstitutionalReportTransformer institutionalReportTransformer;
 
     @Autowired
-    public InstitutionalReportService(InstitutionalReportRepository institutionalReportRepository,
-                                      InstitutionalReportTransformer institutionalAppearanceTransformer) {
+    public InstitutionalReportService(InstitutionalReportRepository institutionalReportRepository) {
 
         this.institutionalReportRepository = institutionalReportRepository;
-        this.institutionalReportTransformer = institutionalAppearanceTransformer;
     }
 
     public List<InstitutionalReport> institutionalReportsFor(Long offenderId) {

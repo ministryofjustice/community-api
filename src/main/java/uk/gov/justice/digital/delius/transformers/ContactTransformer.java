@@ -1,12 +1,23 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import com.google.common.collect.ImmutableList;
-import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Nsi;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ContactOutcomeType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Explanation;
+import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceCondition;
+import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceConditionTypeMainCat;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PartitionArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderEmployee;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderLocation;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderTeam;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,12 +27,7 @@ import static java.util.Comparator.comparing;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
 
-@Component
 public class ContactTransformer {
-
-    private final RequirementTransformer requirementTransformer = new RequirementTransformer();
-
-    private final NsiTransformer nsiTransformer = new NsiTransformer();
 
     public static List<Contact> contactsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.Contact> contacts) {
         return contacts.stream()

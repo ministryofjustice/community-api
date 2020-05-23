@@ -10,7 +10,6 @@ import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.jpa.standard.entity.User;
 
 public class StaffTransformerTest {
-    private StaffTransformer staffTransformer = new StaffTransformer(new TeamTransformer());
 
     @Test
     public void staffNameDetailsTakenFromStaff() {

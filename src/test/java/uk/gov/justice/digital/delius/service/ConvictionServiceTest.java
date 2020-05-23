@@ -14,11 +14,25 @@ import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.CourtCase;
 import uk.gov.justice.digital.delius.data.api.OffenceDetail;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Court;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
+import uk.gov.justice.digital.delius.jpa.standard.entity.DisposalType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offence;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
+import uk.gov.justice.digital.delius.jpa.standard.entity.TransferReason;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.service.ConvictionService.DuplicateConvictionsForBookingNumberException;
-import uk.gov.justice.digital.delius.transformers.*;
+import uk.gov.justice.digital.delius.transformers.AdditionalOffenceTransformer;
+import uk.gov.justice.digital.delius.transformers.CourtAppearanceTransformer;
+import uk.gov.justice.digital.delius.transformers.CustodyKeyDateTransformer;
+import uk.gov.justice.digital.delius.transformers.EventTransformer;
+import uk.gov.justice.digital.delius.transformers.MainOffenceTransformer;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -33,7 +47,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-@Import({ConvictionService.class, ConvictionTransformer.class, MainOffenceTransformer.class, AdditionalOffenceTransformer.class, CourtAppearanceTransformer.class, CourtReportTransformer.class, CourtTransformer.class, InstitutionTransformer.class, CustodyKeyDateTransformer.class})
+@Import({ConvictionService.class, EventTransformer.class, MainOffenceTransformer.class, AdditionalOffenceTransformer.class, CourtAppearanceTransformer.class, CustodyKeyDateTransformer.class})
 @TestPropertySource(properties = "features.noms.update.keydates=true")
 public class ConvictionServiceTest {
 

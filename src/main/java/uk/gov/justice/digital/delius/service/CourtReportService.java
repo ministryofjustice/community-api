@@ -17,14 +17,11 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.conver
 public class CourtReportService {
 
     private final CourtReportRepository courtReportRepository;
-    private final CourtReportTransformer courtReportTransformer;
 
     @Autowired
-    public CourtReportService(CourtReportRepository courtReportRepository,
-                              CourtReportTransformer courtAppearanceTransformer) {
+    public CourtReportService(CourtReportRepository courtReportRepository) {
 
         this.courtReportRepository = courtReportRepository;
-        this.courtReportTransformer = courtAppearanceTransformer;
     }
 
     public List<CourtReport> courtReportsFor(Long offenderId) {

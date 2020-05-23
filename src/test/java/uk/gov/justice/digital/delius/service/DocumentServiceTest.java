@@ -26,7 +26,7 @@ import static uk.gov.justice.digital.delius.util.EntityHelper.*;
 import static uk.gov.justice.digital.delius.util.OffenderHelper.anOffender;
 
 @RunWith(SpringRunner.class)
-@Import({DocumentService.class, DocumentTransformer.class})
+@Import({DocumentService.class})
 public class DocumentServiceTest {
     @Autowired
     private DocumentService documentService;

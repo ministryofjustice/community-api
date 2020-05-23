@@ -17,13 +17,9 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.conver
 
 @Component
 public class CourtAppearanceTransformer {
-    private final CourtReportTransformer courtReportTransformer;
-    private final CourtTransformer courtTransformer;
     private final LookupSupplier lookupSupplier;
 
-    public CourtAppearanceTransformer(CourtReportTransformer courtReportTransformer, CourtTransformer courtTransformer, LookupSupplier lookupSupplier) {
-        this.courtReportTransformer = courtReportTransformer;
-        this.courtTransformer = courtTransformer;
+    public CourtAppearanceTransformer(LookupSupplier lookupSupplier) {
         this.lookupSupplier = lookupSupplier;
     }
 

@@ -2,8 +2,6 @@ package uk.gov.justice.digital.delius.transformers;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.AdditionalIdentifier;
 import uk.gov.justice.digital.delius.data.api.Address;
 import uk.gov.justice.digital.delius.data.api.ContactDetails;
@@ -44,15 +42,7 @@ import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
 
-@Component
 public class OffenderTransformer {
-
-    private final ContactTransformer contactTransformer;
-
-    @Autowired
-    public OffenderTransformer(ContactTransformer contactTransformer) {
-        this.contactTransformer = contactTransformer;
-    }
 
     private static List<PhoneNumber> phoneNumbersOf(Offender offender) {
         return ImmutableList.of(

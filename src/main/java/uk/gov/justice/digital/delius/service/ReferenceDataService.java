@@ -41,15 +41,13 @@ public class ReferenceDataService {
     private static final String ADDITIONAL_IDENTIFIER_DATASET = "ADDITIONAL IDENTIFIER TYPE";
     private static final String DUPLICATE_NOMS_NUMBER_CODE = "DNOMS";
     private static final String FORMER_NOMS_NUMBER_CODE = "XNOMS";
-    private final ProbationAreaTransformer probationAreaTransformer;
     private final ProbationAreaRepository probationAreaRepository;
     private final StandardReferenceRepository standardReferenceRepository;
     private final ReferenceDataMasterRepository referenceDataMasterRepository;
 
 
     @Autowired
-    public ReferenceDataService(ProbationAreaTransformer probationAreaTransformer, ProbationAreaRepository probationAreaRepository, StandardReferenceRepository standardReferenceRepository, ReferenceDataMasterRepository referenceDataMasterRepository) {
-        this.probationAreaTransformer = probationAreaTransformer;
+    public ReferenceDataService(ProbationAreaRepository probationAreaRepository, StandardReferenceRepository standardReferenceRepository, ReferenceDataMasterRepository referenceDataMasterRepository) {
         this.probationAreaRepository = probationAreaRepository;
         this.standardReferenceRepository = standardReferenceRepository;
         this.referenceDataMasterRepository = referenceDataMasterRepository;

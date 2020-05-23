@@ -15,6 +15,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
 import uk.gov.justice.digital.delius.transformers.CustodyKeyDateTransformer;
+import uk.gov.justice.digital.delius.transformers.EventTransformer;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -37,7 +38,7 @@ public class ConvictionService {
     private final Boolean updateCustodyKeyDatesFeatureSwitch;
     private final EventRepository eventRepository;
     private final OffenderRepository offenderRepository;
-    private final ConvictionTransformer convictionTransformer;
+    private final EventTransformer eventTransformer;
     private final CustodyKeyDateTransformer custodyKeyDateTransformer;
     private final IAPSNotificationService iapsNotificationService;
     private final SpgNotificationService spgNotificationService;
@@ -85,7 +86,8 @@ public class ConvictionService {
             @Value("${features.noms.update.keydates}")
                     Boolean updateCustodyKeyDatesFeatureSwitch,
             EventRepository eventRepository,
-            OffenderRepository offenderRepository, ConvictionTransformer convictionTransformer,
+            OffenderRepository offenderRepository,
+            EventTransformer eventTransformer,
             SpgNotificationService spgNotificationService,
             LookupSupplier lookupSupplier,
             CustodyKeyDateTransformer custodyKeyDateTransformer,
@@ -94,7 +96,7 @@ public class ConvictionService {
         this.updateCustodyKeyDatesFeatureSwitch = updateCustodyKeyDatesFeatureSwitch;
         this.eventRepository = eventRepository;
         this.offenderRepository = offenderRepository;
-        this.convictionTransformer = convictionTransformer;
+        this.eventTransformer = eventTransformer;
         this.spgNotificationService = spgNotificationService;
         this.lookupSupplier = lookupSupplier;
         this.custodyKeyDateTransformer = custodyKeyDateTransformer;
@@ -125,7 +127,7 @@ public class ConvictionService {
 
     @Transactional
     public Conviction addCourtCaseFor(Long offenderId, CourtCase courtCase) {
-        val event = convictionTransformer.eventOf(
+        val event = eventTransformer.eventOf(
                 offenderId,
                 courtCase,
                 calculateNextEventNumber(offenderId));

@@ -27,9 +27,7 @@ import static java.util.function.Predicate.not;
 public class OffenderService {
 
     private final OffenderRepository offenderRepository;
-    private final OffenderTransformer offenderTransformer;
     private final ConvictionService convictionService;
-    private final ReleaseTransformer releaseTransformer;
 
     @Transactional(readOnly = true)
     public Optional<OffenderDetail> getOffenderByOffenderId(Long offenderId) {

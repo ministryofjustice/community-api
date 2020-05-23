@@ -1,12 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.justice.digital.delius.util.EntityHelper.*;
-
-import java.util.*;
-
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,10 +15,21 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffHelperRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
-import uk.gov.justice.digital.delius.transformers.ContactTransformer;
-import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
-import uk.gov.justice.digital.delius.transformers.StaffTransformer;
-import uk.gov.justice.digital.delius.transformers.TeamTransformer;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aProbationArea;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aStaff;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aUser;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StaffServiceTest {
@@ -49,8 +53,6 @@ public class StaffServiceTest {
         staffService = new StaffService(
                 staffRepository,
                 ldapRepository,
-                new OffenderTransformer(new ContactTransformer()),
-                new StaffTransformer(new TeamTransformer()),
                 staffHelperRepository);
     }
 

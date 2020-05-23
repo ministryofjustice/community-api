@@ -29,13 +29,11 @@ public class ContactService {
     private static final String CUSTODY_AUTO_UPDATE_CONTACT_TYPE = "EDSS";
     private final ContactRepository contactRepository;
     private final ContactTypeRepository contactTypeRepository;
-    private final ContactTransformer contactTransformer;
 
     @Autowired
-    public ContactService(ContactRepository contactRepository, ContactTypeRepository contactTypeRepository, ContactTransformer contactTransformer) {
+    public ContactService(ContactRepository contactRepository, ContactTypeRepository contactTypeRepository) {
         this.contactRepository = contactRepository;
         this.contactTypeRepository = contactTypeRepository;
-        this.contactTransformer = contactTransformer;
     }
 
     public List<Contact> contactsFor(Long offenderId, ContactFilter filter) {

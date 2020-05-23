@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.CourtReport;
 
 import java.util.Optional;
@@ -8,14 +7,7 @@ import java.util.Optional;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
 
-@Component
 public class CourtReportTransformer {
-    final private CourtTransformer courtTransformer;
-
-    public CourtReportTransformer(CourtTransformer courtTransformer) {
-        this.courtTransformer = courtTransformer;
-    }
-
 
     public static CourtReport courtReportOf(uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport report) {
         return CourtReport.builder()

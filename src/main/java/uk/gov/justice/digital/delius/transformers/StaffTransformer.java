@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
@@ -10,17 +9,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Component
 public class StaffTransformer {
-
-    private final TeamTransformer teamTransformer;
-
-    public StaffTransformer(TeamTransformer teamTransformer) {
-        this.teamTransformer = teamTransformer;
-    }
-    public StaffTransformer() {
-        this.teamTransformer = new TeamTransformer();
-    }
 
     public static StaffDetails staffDetailsOf(Staff staff) {
         return StaffDetails.builder()

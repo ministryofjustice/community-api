@@ -10,7 +10,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
-import uk.gov.justice.digital.delius.transformers.ContactTransformer;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,7 +19,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.digital.delius.util.EntityHelper.*;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aContactType;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aCustodyEvent;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aProbationArea;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aStaff;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aTeam;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anOffender;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anOrderManager;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ContactService_addContactForBookingNumberUpdateTest {
@@ -36,7 +41,7 @@ public class ContactService_addContactForBookingNumberUpdateTest {
 
     @Before
     public void setup() {
-        contactService = new ContactService(contactRepository, contactTypeRepository, new ContactTransformer());
+        contactService = new ContactService(contactRepository, contactTypeRepository);
         when(contactTypeRepository.findByCode(any())).thenReturn(Optional.of(aContactType()));
     }
 

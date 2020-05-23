@@ -15,12 +15,10 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.conver
 @Service
 public class RegistrationService {
     private final RegistrationRepository registrationRepository;
-    private final RegistrationTransformer registrationTransformer;
 
     @Autowired
-    public RegistrationService(RegistrationRepository registrationRepository, RegistrationTransformer registrationTransformer) {
+    public RegistrationService(RegistrationRepository registrationRepository) {
         this.registrationRepository = registrationRepository;
-        this.registrationTransformer = registrationTransformer;
     }
 
     public List<Registration> registrationsFor(Long offenderId) {

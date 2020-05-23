@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.Institution;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RInstitution;
@@ -11,7 +10,6 @@ import java.util.Optional;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
 
-@Component
 public class InstitutionTransformer {
     public static Institution institutionOf(RInstitution institution) {
         return Optional.ofNullable(institution).map(inst -> Institution.builder()

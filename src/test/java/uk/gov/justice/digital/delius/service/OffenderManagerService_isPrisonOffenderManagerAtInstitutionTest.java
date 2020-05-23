@@ -9,7 +9,6 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.PrisonOffenderManagerRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ResponsibleOfficerRepository;
-import uk.gov.justice.digital.delius.transformers.*;
 
 import java.util.List;
 
@@ -41,12 +40,6 @@ public class OffenderManagerService_isPrisonOffenderManagerAtInstitutionTest {
     public void setup() {
         offenderManagerService = new OffenderManagerService(
                 offenderRepository,
-                new OffenderManagerTransformer(
-                        new StaffTransformer(
-                                new TeamTransformer()),
-                        new TeamTransformer(),
-                        new ProbationAreaTransformer(
-                                new InstitutionTransformer())),
                 probationAreaRepository,
                 prisonOffenderManagerRepository,
                 responsibleOfficerRepository,

@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AdRequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
@@ -11,7 +10,6 @@ import java.util.Optional;
 
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
 
-@Component
 public class RequirementTransformer {
 
     public static uk.gov.justice.digital.delius.data.api.Requirement requirementOf(Requirement requirement) {

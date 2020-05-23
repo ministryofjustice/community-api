@@ -10,7 +10,6 @@ import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.MainOffence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offence;
-import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.service.LookupSupplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,29 +28,6 @@ public class MainOffenceTransformerTest {
         when(lookupSupplier.userSupplier()).thenReturn(() -> User.builder().userId(99L).build());
         when(lookupSupplier.offenceSupplier()).thenReturn(code -> Offence.builder().code(code).build());
 
-    }
-
-    @Test
-    public void itConvertsTheIdCorrectly() {
-        MainOffence mainOffence = MainOffence.builder()
-            .mainOffenceId(92L)
-            .offence(Offence.builder()
-                .ogrsOffenceCategory(StandardReference.builder().build())
-                .build())
-            .build();
-
-        assertThat(MainOffenceTransformer.offenceOf(mainOffence).getOffenceId()).isEqualTo("M92");
-    }
-
-    @Test
-    public void itSetsTheMainOffenceFlagToTrue() {
-        MainOffence mainOffence = MainOffence.builder()
-            .offence(Offence.builder()
-                .ogrsOffenceCategory(StandardReference.builder().build())
-                .build())
-            .build();
-
-        assertThat(MainOffenceTransformer.offenceOf(mainOffence).getMainOffence()).isTrue();
     }
 
     @Test

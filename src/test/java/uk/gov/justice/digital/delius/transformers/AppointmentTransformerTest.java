@@ -1,21 +1,22 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
 import org.junit.Test;
 import uk.gov.justice.digital.delius.data.api.Appointment;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ContactOutcomeType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Explanation;
+import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceCondition;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OfficeLocation;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AppointmentTransformerTest {
-    private AppointmentTransformer transformer;
-
-    @Before
-    public void before() {
-        transformer = new AppointmentTransformer(new ContactTransformer());
-    }
-
     @Test
     public void appointmentOutcomeMappedFromContactOutcomeType() {
         assertThat(AppointmentTransformer.appointmentsOf(ImmutableList.of(

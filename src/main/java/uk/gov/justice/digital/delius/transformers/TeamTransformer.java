@@ -1,13 +1,11 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Team;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
 
-@Component
 public class TeamTransformer {
     public static Team teamOf(uk.gov.justice.digital.delius.jpa.standard.entity.Team team) {
         return Team.builder().code(team.getCode()).description(team.getDescription())
