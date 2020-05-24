@@ -1,13 +1,10 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
-import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -24,6 +21,10 @@ import uk.gov.justice.digital.delius.data.api.Attendance;
 import uk.gov.justice.digital.delius.data.api.Attendances;
 import uk.gov.justice.digital.delius.service.AttendanceService;
 import uk.gov.justice.digital.delius.service.OffenderService;
+
+import java.time.LocalDate;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Api(tags = "Attendance resources (Secure)", authorizations = {@Authorization("ROLE_COMMUNITY")})
 @RestController

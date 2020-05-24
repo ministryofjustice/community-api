@@ -2,16 +2,17 @@ package uk.gov.justice.digital.delius.controller.secure;
 
 import io.restassured.RestAssured;
 import org.apache.http.entity.ContentType;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.digital.delius.JwtAuthenticationHelper;
+import uk.gov.justice.digital.delius.controller.wiremock.DeliusExtension;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusMockServer;
 
 import java.time.Duration;
@@ -23,8 +24,13 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 public class CaseNoteAPITest {
+
+    private static final DeliusMockServer deliusMockServer = new DeliusMockServer(8999);
+
+    @RegisterExtension
+    static DeliusExtension deliusExtension = new DeliusExtension(deliusMockServer);
 
     @LocalServerPort
     int port;
@@ -32,12 +38,8 @@ public class CaseNoteAPITest {
     @Autowired
     protected JwtAuthenticationHelper jwtAuthenticationHelper;
 
-    @ClassRule
-    public static final DeliusMockServer deliusMockServer = new DeliusMockServer();
-
-    @Before
+    @BeforeEach
     public void setup() {
-        deliusMockServer.resetAll();
         RestAssured.port = port;
         RestAssured.basePath = "/secure";
     }

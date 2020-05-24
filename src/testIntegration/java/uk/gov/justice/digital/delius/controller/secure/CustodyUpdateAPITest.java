@@ -7,23 +7,21 @@ import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import org.flywaydb.core.Flyway;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.JwtAuthenticationHelper;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -36,6 +34,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.any;
@@ -45,9 +44,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles("dev-seed")
-@DirtiesContext
 public class CustodyUpdateAPITest {
     private static final String NOMS_NUMBER = "G9542VP";
     private static final String OFFENDER_ID = "2500343964";
@@ -61,17 +58,21 @@ public class CustodyUpdateAPITest {
 
     @Autowired
     private Flyway flyway;
+    private static Flyway flywayInstance;
 
     @Autowired
     JdbcTemplate jdbcTemplate;
 
     @Autowired
+    private ContactRepository contactRepository;
+
+    @Autowired
     protected JwtAuthenticationHelper jwtAuthenticationHelper;
 
-    @MockBean
+    @SpyBean
     private TelemetryClient telemetryClient;
 
-    @Before
+    @BeforeEach
     public void setup() {
         RestAssured.port = port;
         RestAssured.basePath = "/secure";
@@ -79,12 +80,13 @@ public class CustodyUpdateAPITest {
                 new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
         //noinspection SqlWithoutWhere
         jdbcTemplate.execute("DELETE FROM CONTACT");
+        flywayInstance = flyway;
     }
 
-    @After
-    public void after() {
-        flyway.clean();
-        flyway.migrate();
+    @AfterAll
+    public static void cleanDatabase() {
+        flywayInstance.clean();
+        flywayInstance.migrate();
     }
 
     @Test
@@ -96,7 +98,7 @@ public class CustodyUpdateAPITest {
                 .contentType("application/json")
                 .body(createUpdateCustody("MDI"))
                 .when()
-                .put(String.format("offenders/nomsNumber/%s/custody/bookingNumber/%s",  NOMS_NUMBER, PRISON_BOOKING_NUMBER))
+                .put(format("offenders/nomsNumber/%s/custody/bookingNumber/%s",  NOMS_NUMBER, PRISON_BOOKING_NUMBER))
                 .then()
                 .statusCode(403);
     }
@@ -110,13 +112,12 @@ public class CustodyUpdateAPITest {
                 .contentType("application/json")
                 .body(createUpdateCustody("MDI"))
                 .when()
-                .put(String.format("offenders/nomsNumber/%s/custody/bookingNumber/%s", NOMS_NUMBER, PRISON_BOOKING_NUMBER))
+                .put(format("offenders/nomsNumber/%s/custody/bookingNumber/%s", NOMS_NUMBER, PRISON_BOOKING_NUMBER))
                 .then()
                 .statusCode(200)
                 .extract()
                 .body()
                 .as(Custody.class);
-
 
         assertThat(custody.getInstitution().getNomsPrisonInstitutionCode()).isEqualTo("MDI");
         verify(telemetryClient).trackEvent(eq("P2PTransferPrisonUpdated"), any(), isNull());

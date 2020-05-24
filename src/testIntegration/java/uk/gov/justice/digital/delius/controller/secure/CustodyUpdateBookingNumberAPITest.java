@@ -7,17 +7,16 @@ import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.digital.delius.JwtAuthenticationHelper;
@@ -43,7 +42,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("dev-seed")
-@DirtiesContext
 public class CustodyUpdateBookingNumberAPITest {
     private static final String NOMS_NUMBER = "G9542VP";
     private static final String OFFENDER_ID = "2500343964";
@@ -56,6 +54,7 @@ public class CustodyUpdateBookingNumberAPITest {
 
     @Autowired
     private Flyway flyway;
+    private static Flyway flywayInstance;
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -63,7 +62,7 @@ public class CustodyUpdateBookingNumberAPITest {
     @Autowired
     protected JwtAuthenticationHelper jwtAuthenticationHelper;
 
-    @MockBean
+    @SpyBean
     private TelemetryClient telemetryClient;
 
     @BeforeEach
@@ -74,12 +73,13 @@ public class CustodyUpdateBookingNumberAPITest {
                 new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
         //noinspection SqlWithoutWhere
         jdbcTemplate.execute("DELETE FROM CONTACT");
+        flywayInstance = flyway;
     }
 
-    @AfterEach
-    public void after() {
-        flyway.clean();
-        flyway.migrate();
+    @AfterAll
+    public static void cleanDatabase() {
+        flywayInstance.clean();
+        flywayInstance.migrate();
     }
 
     @Test

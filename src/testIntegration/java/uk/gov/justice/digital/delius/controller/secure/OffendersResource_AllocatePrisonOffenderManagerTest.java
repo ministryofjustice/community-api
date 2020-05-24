@@ -6,17 +6,14 @@ import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import org.flywaydb.core.Flyway;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
@@ -37,9 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev-seed")
-@DirtiesContext
-@RunWith(SpringJUnit4ClassRunner.class)
-public class OffendersResource_AllocatePrisonOffenderManagerIT {
+public class OffendersResource_AllocatePrisonOffenderManagerTest {
 
     @LocalServerPort
     int port;
@@ -49,6 +44,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerIT {
 
     @Autowired
     private Flyway flyway;
+    private static Flyway flywayInstance;
 
     @Autowired
     private Jwt jwt;
@@ -57,18 +53,19 @@ public class OffendersResource_AllocatePrisonOffenderManagerIT {
     @Value("${test.token.good}")
     private String validOauthToken;
 
-    @Before
+    @BeforeEach
     public void setup() {
         RestAssured.port = port;
         RestAssured.basePath = "/secure";
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
                 new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
+        flywayInstance = flyway;
     }
 
-    @After
-    public void after() {
-        flyway.clean();
-        flyway.migrate();
+    @AfterAll
+    public static void cleanDatabase() {
+        flywayInstance.clean();
+        flywayInstance.migrate();
     }
 
     @Test
@@ -261,7 +258,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerIT {
                 .contentType("application/json")
                 .body(createPrisonOffenderManagerOf("BWIA010", "BWI"))
                 .when()
-                .put("/offenders/nomsNumber/G0560UO/prisonOffenderManager")
+                .put("/offenders/nomsNumber/G4106UN/prisonOffenderManager")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -275,7 +272,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerIT {
                 .header("Authorization", aValidToken())
                 .queryParam("from", justBeforeAllocation.toString())
                 .basePath("/api")
-                .get("/offenders/nomsNumber/G0560UO/contacts")
+                .get("/offenders/nomsNumber/G4106UN/contacts")
                 .then()
                 .statusCode(200)
                 .extract()
