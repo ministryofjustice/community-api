@@ -221,7 +221,7 @@ public class EntityHelper {
                 .build());
         document.setDocumentName("DocumentName.pdf");
         document.setLastSaved(LocalDateTime.now());
-
+        document.setPrimaryKeyId(100L);
     }
 
     public static EventDocument anEventDocument(Long eventId) {

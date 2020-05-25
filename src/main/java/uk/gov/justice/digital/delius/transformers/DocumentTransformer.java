@@ -404,6 +404,7 @@ public class DocumentTransformer {
                 .createdAt(createAtOf(document))
                 .documentName(document.getDocumentName())
                 .id(document.getAlfrescoId())
+                .parentPrimaryKeyId(document.getPrimaryKeyId())
                 .lastModifiedAt(document.getLastSaved());
     }
 
