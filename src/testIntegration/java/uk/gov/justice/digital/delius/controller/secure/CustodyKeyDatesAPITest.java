@@ -578,7 +578,7 @@ public class CustodyKeyDatesAPITest {
                 .body()
                 .jsonPath();
 
-        assertThat(errorMessage.getString("message")).isEqualTo("DOESNOTEXIST is not a valid custody key date");
+        assertThat(errorMessage.getString("developerMessage")).isEqualTo("DOESNOTEXIST is not a valid custody key date");
     }
 
     @Test

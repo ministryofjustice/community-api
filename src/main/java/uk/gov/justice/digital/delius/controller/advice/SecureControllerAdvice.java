@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
+import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.InvalidRequestException;
 import uk.gov.justice.digital.delius.controller.UnauthorisedException;
@@ -106,6 +107,18 @@ public class SecureControllerAdvice {
                         .builder()
                         .status(HttpStatus.BAD_REQUEST.value())
                         .developerMessage(e.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ErrorResponse> handleException(final ResponseStatusException e) {
+        log.debug("Bad request (400) returned", e);
+        return ResponseEntity
+                .status(e.getStatus())
+                .body(ErrorResponse
+                        .builder()
+                        .status(e.getStatus().value())
+                        .developerMessage(e.getReason())
                         .build());
     }
 

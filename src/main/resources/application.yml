@@ -20,6 +20,8 @@ spring:
       enabled: true
   flyway:
     enabled: false
+  lifecycle:
+    timeout-per-shutdown-phase: 10s
 
 jwt:
   secret: 'ChangeMe!'
@@ -29,6 +31,7 @@ jwt:
 
 
 server:
+  shutdown: immediate
   servlet:
     context-path: ${contextpath:/}
   compression:
@@ -73,10 +76,6 @@ delius:
   baseurl: 'http://localhost:8999'
   username: 'default'
   password: 'default'
-
-graceful:
-  shutdown:
-    enabled: false
 
 azure:
   application-insights:

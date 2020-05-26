@@ -10,7 +10,6 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.Oracle10gDialect
 
-graceful:
-  shutdown:
-    enabled: true
+server:
+  shutdown: graceful
 
