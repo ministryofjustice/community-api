@@ -5,15 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
-import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.justice.digital.delius.FlywayRestoreExtension;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
@@ -34,6 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev-seed")
+@ExtendWith( FlywayRestoreExtension.class)
 public class OffendersResource_AllocatePrisonOffenderManagerTest {
 
     @LocalServerPort
@@ -41,10 +42,6 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private Flyway flyway;
-    private static Flyway flywayInstance;
 
     @Autowired
     private Jwt jwt;
@@ -59,13 +56,6 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest {
         RestAssured.basePath = "/secure";
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
                 new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
-        flywayInstance = flyway;
-    }
-
-    @AfterAll
-    public static void cleanDatabase() {
-        flywayInstance.clean();
-        flywayInstance.migrate();
     }
 
     @Test

@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
-import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +15,7 @@ import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.justice.digital.delius.FlywayRestoreExtension;
 import uk.gov.justice.digital.delius.JwtAuthenticationHelper;
 import uk.gov.justice.digital.delius.data.api.IDs;
 import uk.gov.justice.digital.delius.data.api.UpdateOffenderNomsNumber;
@@ -29,7 +28,7 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ExtendWith(SpringExtension.class)
+@ExtendWith({SpringExtension.class, FlywayRestoreExtension.class})
 @ActiveProfiles("dev-seed")
 public class CustodyUpdateNomsNumberAPITest {
 
@@ -40,9 +39,6 @@ public class CustodyUpdateNomsNumberAPITest {
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    private Flyway flyway;
-    private static Flyway flywayInstance;
-    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
@@ -51,13 +47,6 @@ public class CustodyUpdateNomsNumberAPITest {
         RestAssured.basePath = "/secure";
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
                 new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
-        flywayInstance = flyway;
-    }
-
-    @AfterAll
-    public static void cleanDatabase() {
-        flywayInstance.clean();
-        flywayInstance.migrate();
     }
 
     @Test
