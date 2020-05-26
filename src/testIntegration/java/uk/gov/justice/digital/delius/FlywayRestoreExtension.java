@@ -6,25 +6,11 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.context.TestContextManager;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 public class FlywayRestoreExtension implements AfterAllCallback, BeforeEachCallback {
-    private static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace
-            .create(SpringExtension.class);
     private static Flyway flyway;
     private static Logger logger = LoggerFactory.getLogger(FlywayRestoreExtension.class);
-
-    private static TestContextManager getTestContextManager(ExtensionContext context) {
-        // copied from SpringExtension
-        final var testClass = context.getRequiredTestClass();
-        final var store = getStore(context);
-        return store.getOrComputeIfAbsent(testClass, TestContextManager::new, TestContextManager.class);
-    }
-
-    private static ExtensionContext.Store getStore(ExtensionContext context) {
-        return context.getRoot().getStore(NAMESPACE);
-    }
 
     @Override
     public void afterAll(ExtensionContext extensionContext) {
@@ -36,8 +22,7 @@ public class FlywayRestoreExtension implements AfterAllCallback, BeforeEachCallb
 
     @Override
     public void beforeEach(ExtensionContext extensionContext) {
-        final var applicationContext = getTestContextManager(extensionContext).getTestContext()
-                .getApplicationContext();
+        final var applicationContext = SpringExtension.getApplicationContext(extensionContext);
         // deal with Nested classes
         if (applicationContext.containsBean("flyway")) {
             flyway = applicationContext.getBean(Flyway.class);
