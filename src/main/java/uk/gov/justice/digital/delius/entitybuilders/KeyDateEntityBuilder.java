@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.entitybuilders;
 
 import org.springframework.stereotype.Component;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.KeyDate;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.service.LookupSupplier;
@@ -16,7 +17,7 @@ public class KeyDateEntityBuilder {
         this.lookupSupplier = lookupSupplier;
     }
 
-    public KeyDate keyDateOf(uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody, StandardReference keyDateType, LocalDate date) {
+    public KeyDate keyDateOf(Custody custody, StandardReference keyDateType, LocalDate date) {
         return KeyDate
                 .builder()
                 .createdByUserId(lookupSupplier.userSupplier().get().getUserId())
