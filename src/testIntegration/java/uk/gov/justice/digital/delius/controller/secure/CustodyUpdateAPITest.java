@@ -6,10 +6,9 @@ import com.microsoft.applicationinsights.TelemetryClient;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
-import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -17,6 +16,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.justice.digital.delius.FlywayRestoreExtension;
 import uk.gov.justice.digital.delius.JwtAuthenticationHelper;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Custody;
@@ -45,6 +45,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev-seed")
+@ExtendWith(FlywayRestoreExtension.class)
 public class CustodyUpdateAPITest {
     private static final String NOMS_NUMBER = "G9542VP";
     private static final String OFFENDER_ID = "2500343964";
@@ -55,10 +56,6 @@ public class CustodyUpdateAPITest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private Flyway flyway;
-    private static Flyway flywayInstance;
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -80,13 +77,6 @@ public class CustodyUpdateAPITest {
                 new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
         //noinspection SqlWithoutWhere
         jdbcTemplate.execute("DELETE FROM CONTACT");
-        flywayInstance = flyway;
-    }
-
-    @AfterAll
-    public static void cleanDatabase() {
-        flywayInstance.clean();
-        flywayInstance.migrate();
     }
 
     @Test

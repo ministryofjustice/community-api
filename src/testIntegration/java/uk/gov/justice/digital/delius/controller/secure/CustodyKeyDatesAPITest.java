@@ -6,8 +6,6 @@ import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.path.json.JsonPath;
-import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,6 +18,7 @@ import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.justice.digital.delius.FlywayRestoreExtension;
 import uk.gov.justice.digital.delius.JwtAuthenticationHelper;
 import uk.gov.justice.digital.delius.data.api.CreateCustodyKeyDate;
 import uk.gov.justice.digital.delius.data.api.CustodyKeyDate;
@@ -36,7 +35,7 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ExtendWith(SpringExtension.class)
+@ExtendWith({SpringExtension.class, FlywayRestoreExtension.class})
 @ActiveProfiles("dev-seed")
 public class CustodyKeyDatesAPITest {
     private static final String OFFENDER_ID = "2500343964";
@@ -55,9 +54,6 @@ public class CustodyKeyDatesAPITest {
     JdbcTemplate jdbcTemplate;
     @Autowired
     protected JwtAuthenticationHelper jwtAuthenticationHelper;
-    @Autowired
-    private Flyway flyway;
-    private static Flyway flywayInstance;
 
     @Value("${test.token.good}")
     private String validOauthToken;
@@ -72,13 +68,6 @@ public class CustodyKeyDatesAPITest {
         jdbcTemplate.execute("DELETE FROM KEY_DATE");
         //noinspection SqlWithoutWhere
         jdbcTemplate.execute("DELETE FROM CONTACT");
-        flywayInstance = flyway;
-    }
-
-    @AfterAll
-    public static void after() {
-        flywayInstance.clean();
-        flywayInstance.migrate();
     }
 
 
@@ -589,7 +578,7 @@ public class CustodyKeyDatesAPITest {
                 .body()
                 .jsonPath();
 
-        assertThat(errorMessage.getString("message")).isEqualTo("DOESNOTEXIST is not a valid custody key date");
+        assertThat(errorMessage.getString("developerMessage")).isEqualTo("DOESNOTEXIST is not a valid custody key date");
     }
 
     @Test

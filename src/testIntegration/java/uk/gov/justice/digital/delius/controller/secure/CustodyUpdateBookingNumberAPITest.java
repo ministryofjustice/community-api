@@ -6,8 +6,6 @@ import com.microsoft.applicationinsights.TelemetryClient;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
-import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +17,7 @@ import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.justice.digital.delius.FlywayRestoreExtension;
 import uk.gov.justice.digital.delius.JwtAuthenticationHelper;
 import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
@@ -40,7 +39,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ExtendWith(SpringExtension.class)
+@ExtendWith({SpringExtension.class, FlywayRestoreExtension.class})
 @ActiveProfiles("dev-seed")
 public class CustodyUpdateBookingNumberAPITest {
     private static final String NOMS_NUMBER = "G9542VP";
@@ -51,10 +50,6 @@ public class CustodyUpdateBookingNumberAPITest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private Flyway flyway;
-    private static Flyway flywayInstance;
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -73,13 +68,6 @@ public class CustodyUpdateBookingNumberAPITest {
                 new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
         //noinspection SqlWithoutWhere
         jdbcTemplate.execute("DELETE FROM CONTACT");
-        flywayInstance = flyway;
-    }
-
-    @AfterAll
-    public static void cleanDatabase() {
-        flywayInstance.clean();
-        flywayInstance.migrate();
     }
 
     @Test
