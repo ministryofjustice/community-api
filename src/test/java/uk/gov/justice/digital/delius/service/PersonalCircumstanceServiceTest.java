@@ -1,33 +1,33 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CircumstanceSubType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CircumstanceType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalCircumstance;
 import uk.gov.justice.digital.delius.jpa.standard.repository.PersonalCircumstanceRepository;
-import uk.gov.justice.digital.delius.transformers.PersonalCircumstanceTransformer;
 
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
-@Import({PersonalCircumstanceService.class, PersonalCircumstanceTransformer.class})
+@ExtendWith(MockitoExtension.class)
 public class PersonalCircumstanceServiceTest {
 
-    @Autowired
     private PersonalCircumstanceService personalCircumstanceService;
 
-    @MockBean
+    @Mock
     private PersonalCircumstanceRepository personalCircumstanceRepository;
 
+    @BeforeEach
+    void setUp() {
+        personalCircumstanceService = new PersonalCircumstanceService(personalCircumstanceRepository);
+    }
 
     @Test
     public void personalCircumstancesOrderedNaturallyByPrimaryKeyReversed() {

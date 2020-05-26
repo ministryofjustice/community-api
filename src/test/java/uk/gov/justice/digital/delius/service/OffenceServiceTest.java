@@ -1,38 +1,33 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalOffence;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
+import uk.gov.justice.digital.delius.jpa.standard.entity.MainOffence;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offence;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.MainOffenceRepository;
-import uk.gov.justice.digital.delius.transformers.AdditionalOffenceTransformer;
-import uk.gov.justice.digital.delius.transformers.MainOffenceTransformer;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
-@Import({OffenceService.class, MainOffenceTransformer.class, AdditionalOffenceTransformer.class})
+@ExtendWith(MockitoExtension.class)
 public class OffenceServiceTest {
 
-    @Autowired
     private OffenceService offenceService;
 
-    @MockBean
+    @Mock
     private MainOffenceRepository mainOffenceRepository;
-
-    @MockBean
-    private LookupSupplier lookupSupplier;
-
-    @Before
+    @BeforeEach
     public void setUp() {
+        offenceService = new OffenceService(mainOffenceRepository);
 
         Mockito.when(mainOffenceRepository.findByOffenderId(1L))
             .thenReturn(ImmutableList.of(

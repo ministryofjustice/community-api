@@ -1,6 +1,7 @@
-package uk.gov.justice.digital.delius.transformers;
+package uk.gov.justice.digital.delius.entitybuilders;
 
 import com.google.common.collect.ImmutableList;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.TransferReason;
 import uk.gov.justice.digital.delius.jpa.standard.entity.UpwAppointment;
 import uk.gov.justice.digital.delius.jpa.standard.entity.UpwDetails;
 import uk.gov.justice.digital.delius.service.LookupSupplier;
+import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
 import uk.gov.justice.digital.delius.util.EntityHelper;
 
 import java.time.LocalDate;
@@ -43,23 +45,23 @@ import static uk.gov.justice.digital.delius.util.EntityHelper.aKeyDate;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class EventTransformerTest {
+public class EventEntityBuilderTest {
     @Mock
     private LookupSupplier lookupSupplier;
     @Mock
-    private MainOffenceTransformer mainOffenceTransformer;
+    private MainOffenceEntityBuilder mainOffenceEntityBuilder;
     @Mock
-    private AdditionalOffenceTransformer additionalOffenceTransformer;
+    private AdditionalOffenceEntityBuilder additionalOffenceEntityBuilder;
     @Mock
-    private CourtAppearanceTransformer courtAppearanceTransformer;
-    private EventTransformer transformer;
+    private CourtAppearanceEntityBuilder courtAppearanceEntityBuilder;
+    private EventEntityBuilder eventEntityBuilder;
 
     @BeforeEach
     public void before() {
-        transformer = new EventTransformer(
-                mainOffenceTransformer,
-                additionalOffenceTransformer,
-                courtAppearanceTransformer,
+        eventEntityBuilder = new EventEntityBuilder(
+                mainOffenceEntityBuilder,
+                additionalOffenceEntityBuilder,
+                courtAppearanceEntityBuilder,
                 lookupSupplier
         );
 
@@ -70,12 +72,12 @@ public class EventTransformerTest {
         when(lookupSupplier.teamSupplier()).thenReturn(orderManager -> Team.builder().teamId(orderManager.getTeamId()).build());
         when(lookupSupplier.staffSupplier()).thenReturn(orderManager -> Staff.builder().staffId(orderManager.getOfficerId()).build());
 
-        when(courtAppearanceTransformer.courtAppearanceOf(any(), any(), any())).thenReturn(aCourtAppearanceWithNoOutcome(LocalDateTime.now()));
+        when(courtAppearanceEntityBuilder.courtAppearanceOf(any(), any(), any())).thenReturn(aCourtAppearanceWithNoOutcome(LocalDateTime.now()));
     }
 
     @Test
     public void convictionIdMappedFromEventId() {
-        assertThat(ConvictionTransformer.convictionOf(
+        Assertions.assertThat(ConvictionTransformer.convictionOf(
                 anEvent()
                     .toBuilder()
                     .eventId(99L)
@@ -86,10 +88,10 @@ public class EventTransformerTest {
 
     @Test
     public void offencesCollatedFromMainAndAdditionalOffences() {
-        transformer = new EventTransformer(
-                new MainOffenceTransformer(lookupSupplier),
-                new AdditionalOffenceTransformer(lookupSupplier),
-                courtAppearanceTransformer,
+        eventEntityBuilder = new EventEntityBuilder(
+                new MainOffenceEntityBuilder(lookupSupplier),
+                new AdditionalOffenceEntityBuilder(lookupSupplier),
+                courtAppearanceEntityBuilder,
                 lookupSupplier
         );
 
@@ -254,13 +256,13 @@ public class EventTransformerTest {
 
     @Test
     public void offenderIdCopiedToEvent() {
-        assertThat((transformer.eventOf(99L, aCourtCase(), "1").getOffenderId())).isEqualTo(99L);
+        assertThat((eventEntityBuilder.eventOf(99L, aCourtCase(), "1").getOffenderId())).isEqualTo(99L);
     }
 
     @Test
     public void setsAuditFields() {
         when(lookupSupplier.userSupplier()).thenReturn(() -> User.builder().userId(99L).build());
-        final Event event = transformer.eventOf(99L, aCourtCase(), "1");
+        final Event event = eventEntityBuilder.eventOf(99L, aCourtCase(), "1");
 
         assertThat(event.getCreatedByUserId()).isEqualTo(99L);
         assertThat(event.getLastUpdatedUserId()).isEqualTo(99L);
@@ -271,7 +273,7 @@ public class EventTransformerTest {
 
     @Test
     public void setsSensibleDefaults() {
-        final Event event = transformer.eventOf(99L, aCourtCase(), "1");
+        final Event event = eventEntityBuilder.eventOf(99L, aCourtCase(), "1");
 
         assertThat(event.getSoftDeleted()).isEqualTo(0L);
         assertThat(event.getPartitionAreaId()).isEqualTo(0L);
@@ -284,7 +286,7 @@ public class EventTransformerTest {
 
     @Test
     public void orderManagerIsCreatedFromTeamAreaStaffLookups() {
-        final Event event = transformer.eventOf(
+        final Event event = eventEntityBuilder.eventOf(
                 99L,
                 aCourtCase()
                         .toBuilder()
@@ -306,7 +308,7 @@ public class EventTransformerTest {
 
     @Test
     public void orderManagerProviderElementsNeverSet() {
-        final Event event = transformer.eventOf(99L, aCourtCase(), "1");
+        final Event event = eventEntityBuilder.eventOf(99L, aCourtCase(), "1");
 
         assertThat(event.getOrderManagers()).hasSize(1);
         assertThat(event.getOrderManagers().get(0).getProviderTeam()).isNull();
@@ -315,7 +317,7 @@ public class EventTransformerTest {
 
     @Test
     public void orderManagerTransferReasonIsAlwaysCaseOrder() {
-        final Event event = transformer.eventOf(99L, aCourtCase(), "1");
+        final Event event = eventEntityBuilder.eventOf(99L, aCourtCase(), "1");
 
         assertThat(event.getOrderManagers()).hasSize(1);
         assertThat(event.getOrderManagers().get(0).getTransferReason().getCode()).isEqualTo("CASE ORDER");
@@ -323,7 +325,7 @@ public class EventTransformerTest {
 
     @Test
     public void orderManagerIsNotEndDated() {
-        final Event event = transformer.eventOf(99L, aCourtCase(), "1");
+        final Event event = eventEntityBuilder.eventOf(99L, aCourtCase(), "1");
 
         assertThat(event.getOrderManagers()).hasSize(1);
         assertThat(event.getOrderManagers().get(0).getEndDate()).isNull();
@@ -331,7 +333,7 @@ public class EventTransformerTest {
 
     @Test
     public void orderManagerAllocationReasonIsAlwaysNexEventCreated() {
-        final Event event = transformer.eventOf(99L, aCourtCase(), "1");
+        final Event event = eventEntityBuilder.eventOf(99L, aCourtCase(), "1");
 
         assertThat(event.getOrderManagers()).hasSize(1);
         assertThat(event.getOrderManagers().get(0).getAllocationReason().getCodeValue()).isEqualTo("IN1");

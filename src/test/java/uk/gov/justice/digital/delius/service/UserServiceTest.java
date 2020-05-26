@@ -2,13 +2,12 @@ package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
 import com.microsoft.applicationinsights.TelemetryClient;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.UserDetails;
@@ -30,22 +29,29 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-@Import({UserService.class})
+@ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
-    @MockBean
+    @Mock
     private UserRepositoryWrapper userRepositoryWrapper;
 
-    @MockBean
+    @Mock
     private LdapRepository ldapRepository;
 
-    @MockBean
+    @Mock
     private TelemetryClient telemetryClient;
 
-    @Autowired
     private UserService userService;
+
+    @BeforeEach
+    void setUp() {
+        userService = new UserService(userRepositoryWrapper, ldapRepository, telemetryClient);
+    }
 
     @Test
     public void exclusionListNotCheckedWhenNotExcludedForAnyone() {

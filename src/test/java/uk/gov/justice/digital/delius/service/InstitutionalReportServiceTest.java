@@ -1,15 +1,21 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalOffence;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
+import uk.gov.justice.digital.delius.jpa.standard.entity.DisposalType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
+import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReport;
+import uk.gov.justice.digital.delius.jpa.standard.entity.MainOffence;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offence;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionalReportRepository;
-import uk.gov.justice.digital.delius.transformers.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,22 +23,19 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
-@RunWith(SpringRunner.class)
-@Import({InstitutionalReportService.class, InstitutionalReportTransformer.class,
-    MainOffenceTransformer.class, AdditionalOffenceTransformer.class, ConvictionTransformer.class, InstitutionTransformer.class})
+@ExtendWith(MockitoExtension.class)
 public class InstitutionalReportServiceTest {
 
     public static final long EVENT_ID = 42L;
-    @Autowired
     private InstitutionalReportService institutionalReportService;
 
-    @MockBean
+    @Mock
     private InstitutionalReportRepository institutionalReportRepository;
 
-    @MockBean
-    private LookupSupplier lookupSupplier;
-    @MockBean
-    private CourtAppearanceTransformer courtAppearanceTransformer;
+    @BeforeEach
+    void setUp() {
+        institutionalReportService = new InstitutionalReportService(institutionalReportRepository);
+    }
 
     @Test
     public void singleReportFilteredOutWhenSoftDeleted() {

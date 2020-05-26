@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.delius.transformers;
+package uk.gov.justice.digital.delius.entitybuilders;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.digital.delius.data.api.OffenceDetail;
+import uk.gov.justice.digital.delius.entitybuilders.AdditionalOffenceEntityBuilder;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offence;
@@ -16,15 +17,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AdditionalOffenceTransformerTest {
+public class AdditionalOffenceEntityBuilderTest {
     @Mock
     private LookupSupplier lookupSupplier;
 
-    private AdditionalOffenceTransformer  additionalOffenceTransformer;
+    private AdditionalOffenceEntityBuilder additionalOffenceEntityBuilder;
 
     @Before
     public void setup() {
-        additionalOffenceTransformer = new AdditionalOffenceTransformer(lookupSupplier);
+        additionalOffenceEntityBuilder = new AdditionalOffenceEntityBuilder(lookupSupplier);
         when(lookupSupplier.userSupplier()).thenReturn(() -> User.builder().userId(99L).build());
         when(lookupSupplier.offenceSupplier()).thenReturn((code) -> Offence.builder().offenceId(88L).build());
     }
@@ -36,7 +37,7 @@ public class AdditionalOffenceTransformerTest {
                 anOffence()
         );
 
-        assertThat(additionalOffenceTransformer.additionalOffencesOf(offences, anEvent())).hasSize(2);
+        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent())).hasSize(2);
     }
 
     @Test
@@ -47,10 +48,10 @@ public class AdditionalOffenceTransformerTest {
                 anOffence()
         );
 
-        assertThat(additionalOffenceTransformer.additionalOffencesOf(offences, anEvent()).get(0).getCreatedByUserId()).isEqualTo(99L);
-        assertThat(additionalOffenceTransformer.additionalOffencesOf(offences, anEvent()).get(0).getLastUpdatedUserId()).isEqualTo(99L);
-        assertThat(additionalOffenceTransformer.additionalOffencesOf(offences, anEvent()).get(0).getCreatedDatetime()).isNotNull();
-        assertThat(additionalOffenceTransformer.additionalOffencesOf(offences, anEvent()).get(0).getLastUpdatedDatetime()).isNotNull();
+        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).get(0).getCreatedByUserId()).isEqualTo(99L);
+        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).get(0).getLastUpdatedUserId()).isEqualTo(99L);
+        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).get(0).getCreatedDatetime()).isNotNull();
+        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).get(0).getLastUpdatedDatetime()).isNotNull();
     }
 
     @Test
@@ -59,9 +60,9 @@ public class AdditionalOffenceTransformerTest {
                 anOffence()
         );
 
-        assertThat(additionalOffenceTransformer.additionalOffencesOf(offences, anEvent()).get(0).getSoftDeleted()).isEqualTo(0L);
-        assertThat(additionalOffenceTransformer.additionalOffencesOf(offences, anEvent()).get(0).getPartitionAreaId()).isEqualTo(0L);
-        assertThat(additionalOffenceTransformer.additionalOffencesOf(offences, anEvent()).get(0).getRowVersion()).isEqualTo(1L);
+        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).get(0).getSoftDeleted()).isEqualTo(0L);
+        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).get(0).getPartitionAreaId()).isEqualTo(0L);
+        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).get(0).getRowVersion()).isEqualTo(1L);
 
     }
 
@@ -79,7 +80,7 @@ public class AdditionalOffenceTransformerTest {
                         .build()
         );
 
-        assertThat(additionalOffenceTransformer.additionalOffencesOf(offences, anEvent()).get(0).getOffence().getOffenceId()).isEqualTo(88L);
+        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).get(0).getOffence().getOffenceId()).isEqualTo(88L);
 
     }
     private Event anEvent() {
