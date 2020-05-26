@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.delius.transformers;
+package uk.gov.justice.digital.delius.entitybuilders;
 
 import com.google.common.collect.ImmutableList;
 import lombok.val;
@@ -20,16 +20,16 @@ import static uk.gov.justice.digital.delius.service.LookupSupplier.INITIAL_ORDER
 import static uk.gov.justice.digital.delius.service.LookupSupplier.TRANSFER_CASE_INITIAL_REASON;
 
 @Component
-public class EventTransformer {
-    private final MainOffenceTransformer mainOffenceTransformer;
-    private final AdditionalOffenceTransformer additionalOffenceTransformer;
-    private final CourtAppearanceTransformer courtAppearanceTransformer;
+public class EventEntityBuilder {
+    private final MainOffenceEntityBuilder mainOffenceEntityBuilder;
+    private final AdditionalOffenceEntityBuilder additionalOffenceEntityBuilder;
+    private final CourtAppearanceEntityBuilder courtAppearanceEntityBuilder;
     private final LookupSupplier lookupSupplier;
 
-    public EventTransformer(MainOffenceTransformer mainOffenceTransformer, AdditionalOffenceTransformer additionalOffenceTransformer, CourtAppearanceTransformer courtAppearanceTransformer, LookupSupplier lookupSupplier) {
-        this.mainOffenceTransformer = mainOffenceTransformer;
-        this.additionalOffenceTransformer = additionalOffenceTransformer;
-        this.courtAppearanceTransformer = courtAppearanceTransformer;
+    public EventEntityBuilder(MainOffenceEntityBuilder mainOffenceEntityBuilder, AdditionalOffenceEntityBuilder additionalOffenceEntityBuilder, CourtAppearanceEntityBuilder courtAppearanceEntityBuilder, LookupSupplier lookupSupplier) {
+        this.mainOffenceEntityBuilder = mainOffenceEntityBuilder;
+        this.additionalOffenceEntityBuilder = additionalOffenceEntityBuilder;
+        this.courtAppearanceEntityBuilder = courtAppearanceEntityBuilder;
         this.lookupSupplier = lookupSupplier;
     }
 
@@ -58,8 +58,8 @@ public class EventTransformer {
                 .postSentenceSupervisionRequirementFlag(0L)
                 .build();
 
-        event.setMainOffence(mainOffenceTransformer.mainOffenceOf(offenderId, mainOffence(courtCase.getOffences()), event));
-        event.setAdditionalOffences(additionalOffenceTransformer.additionalOffencesOf(additionalOffences(courtCase.getOffences()), event));
+        event.setMainOffence(mainOffenceEntityBuilder.mainOffenceOf(offenderId, mainOffence(courtCase.getOffences()), event));
+        event.setAdditionalOffences(additionalOffenceEntityBuilder.additionalOffencesOf(additionalOffences(courtCase.getOffences()), event));
         event.setCourtAppearances(courtAppearances(offenderId, event, courtCase.getCourtAppearance(), courtCase.getNextAppearance()));
         event.setOrderManagers(ImmutableList.of(orderManager(courtCase.getOrderManager(), event)));
 
@@ -105,8 +105,8 @@ public class EventTransformer {
             Event event,
             uk.gov.justice.digital.delius.data.api.CourtAppearance first,
             uk.gov.justice.digital.delius.data.api.CourtAppearance next) {
-        val builder = ImmutableList.<CourtAppearance>builder().add(courtAppearanceTransformer.courtAppearanceOf(offenderId, event, first));
-        return Optional.ofNullable(next).map(courtAppearance -> builder.add(courtAppearanceTransformer.courtAppearanceOf(offenderId, event, courtAppearance))).orElse(builder).build();
+        val builder = ImmutableList.<CourtAppearance>builder().add(courtAppearanceEntityBuilder.courtAppearanceOf(offenderId, event, first));
+        return Optional.ofNullable(next).map(courtAppearance -> builder.add(courtAppearanceEntityBuilder.courtAppearanceOf(offenderId, event, courtAppearance))).orElse(builder).build();
     }
 
 }

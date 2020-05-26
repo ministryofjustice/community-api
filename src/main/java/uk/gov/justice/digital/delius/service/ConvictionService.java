@@ -15,7 +15,8 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
 import uk.gov.justice.digital.delius.transformers.CustodyKeyDateTransformer;
-import uk.gov.justice.digital.delius.transformers.EventTransformer;
+import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
+import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,8 +39,8 @@ public class ConvictionService {
     private final Boolean updateCustodyKeyDatesFeatureSwitch;
     private final EventRepository eventRepository;
     private final OffenderRepository offenderRepository;
-    private final EventTransformer eventTransformer;
-    private final CustodyKeyDateTransformer custodyKeyDateTransformer;
+    private final EventEntityBuilder eventEntityBuilder;
+    private final KeyDateEntityBuilder keyDateEntityBuilder;
     private final IAPSNotificationService iapsNotificationService;
     private final SpgNotificationService spgNotificationService;
     private final LookupSupplier lookupSupplier;
@@ -87,19 +88,19 @@ public class ConvictionService {
                     Boolean updateCustodyKeyDatesFeatureSwitch,
             EventRepository eventRepository,
             OffenderRepository offenderRepository,
-            EventTransformer eventTransformer,
+            EventEntityBuilder eventEntityBuilder,
             SpgNotificationService spgNotificationService,
             LookupSupplier lookupSupplier,
-            CustodyKeyDateTransformer custodyKeyDateTransformer,
+            KeyDateEntityBuilder keyDateEntityBuilder,
             IAPSNotificationService iapsNotificationService,
             ContactService contactService) {
         this.updateCustodyKeyDatesFeatureSwitch = updateCustodyKeyDatesFeatureSwitch;
         this.eventRepository = eventRepository;
         this.offenderRepository = offenderRepository;
-        this.eventTransformer = eventTransformer;
+        this.eventEntityBuilder = eventEntityBuilder;
+        this.keyDateEntityBuilder = keyDateEntityBuilder;
         this.spgNotificationService = spgNotificationService;
         this.lookupSupplier = lookupSupplier;
-        this.custodyKeyDateTransformer = custodyKeyDateTransformer;
         this.iapsNotificationService = iapsNotificationService;
         this.contactService = contactService;
         log.info("NOMIS update custody key dates feature is {}", updateCustodyKeyDatesFeatureSwitch ? "ON" : "OFF");
@@ -127,7 +128,7 @@ public class ConvictionService {
 
     @Transactional
     public Conviction addCourtCaseFor(Long offenderId, CourtCase courtCase) {
-        val event = eventTransformer.eventOf(
+        val event = eventEntityBuilder.eventOf(
                 offenderId,
                 courtCase,
                 calculateNextEventNumber(offenderId));
@@ -394,7 +395,7 @@ public class ConvictionService {
         });
 
         if (maybeExistingKeyDate.isEmpty()) {
-            val keyDate = custodyKeyDateTransformer.keyDateOf(event.getDisposal().getCustody(), custodyKeyDateType, custodyKeyDate.getDate());
+            val keyDate = keyDateEntityBuilder.keyDateOf(event.getDisposal().getCustody(), custodyKeyDateType, custodyKeyDate.getDate());
             event.getDisposal()
                     .getCustody()
                     .getKeyDates()

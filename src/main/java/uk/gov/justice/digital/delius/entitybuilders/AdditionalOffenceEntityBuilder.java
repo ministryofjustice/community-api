@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.delius.transformers;
+package uk.gov.justice.digital.delius.entitybuilders;
 
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.Offence;
@@ -12,10 +12,10 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 @Component
-public class AdditionalOffenceTransformer {
+public class AdditionalOffenceEntityBuilder {
     private final LookupSupplier lookupSupplier;
 
-    public AdditionalOffenceTransformer(LookupSupplier lookupSupplier) {
+    public AdditionalOffenceEntityBuilder(LookupSupplier lookupSupplier) {
         this.lookupSupplier = lookupSupplier;
     }
 

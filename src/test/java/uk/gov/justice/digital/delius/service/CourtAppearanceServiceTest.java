@@ -1,22 +1,17 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.CourtAppearance;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalOffence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Court;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.MainOffence;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CourtAppearanceRepository;
-import uk.gov.justice.digital.delius.transformers.CourtAppearanceTransformer;
-import uk.gov.justice.digital.delius.transformers.CourtReportTransformer;
-import uk.gov.justice.digital.delius.transformers.CourtTransformer;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,21 +19,17 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-@Import({CourtAppearanceService.class, CourtAppearanceTransformer.class, CourtReportTransformer.class, CourtTransformer.class})
+@ExtendWith(MockitoExtension.class)
 public class CourtAppearanceServiceTest {
 
-    @Autowired
     private CourtAppearanceService courtAppearanceService;
 
-    @MockBean
+    @Mock
     private CourtAppearanceRepository courtAppearanceRepository;
 
-    @MockBean
-    private LookupSupplier lookupSupplier;
-
-    @Before
+    @BeforeEach
     public void setUp() {
+        courtAppearanceService = new CourtAppearanceService(courtAppearanceRepository);
         when(courtAppearanceRepository.findByOffenderId(1L))
             .thenReturn(
                 ImmutableList.of(

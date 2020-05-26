@@ -17,9 +17,8 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.service.ConvictionService.CustodyTypeCodeIsNotValidException;
 import uk.gov.justice.digital.delius.service.ConvictionService.SingleActiveCustodyConvictionNotFoundException;
-import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
-import uk.gov.justice.digital.delius.transformers.CustodyKeyDateTransformer;
-import uk.gov.justice.digital.delius.transformers.EventTransformer;
+import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
+import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,7 +43,7 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
     private OffenderRepository offenderRepository;
 
     @Mock
-    private EventTransformer eventTransformer;
+    private EventEntityBuilder eventEntityBuilder;
 
     @Mock
     private SpgNotificationService spgNotificationService;
@@ -63,7 +62,7 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
 
     @Before
     public void setUp() {
-        convictionService = new ConvictionService(true, eventRepository, offenderRepository, eventTransformer, spgNotificationService, lookupSupplier, new CustodyKeyDateTransformer(lookupSupplier), iapsNotificationService, contactService);
+        convictionService = new ConvictionService(true, eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService);
         when(lookupSupplier.userSupplier()).thenReturn(() -> User.builder().userId(88L).build());
         when(eventRepository.findByOffenderId(anyLong())).thenReturn(ImmutableList.of(aCustodyEvent()));
         when(lookupSupplier.custodyKeyDateTypeSupplier()).thenReturn(code -> Optional.of(StandardReference

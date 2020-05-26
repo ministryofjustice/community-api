@@ -1,74 +1,116 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
 import uk.gov.justice.digital.delius.jpa.national.repository.DocumentRepository;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CourtReportDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReportDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
-import uk.gov.justice.digital.delius.jpa.standard.repository.*;
-import uk.gov.justice.digital.delius.transformers.DocumentTransformer;
+import uk.gov.justice.digital.delius.jpa.standard.repository.AddressAssessmentDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ApprovedPremisesReferralDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.AssessmentDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.CaseAllocationDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ContactDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.CourtReportDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.EventDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionReportDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.NsiDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.PersonalCircumstanceDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.PersonalContactDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ReferralDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.UPWAppointmentDocumentRepository;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.digital.delius.util.EntityHelper.*;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aCaseAllocationDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aContactDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aCourtReportDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aNsiDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aPersonalCircumstanceDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aPersonalContactDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aReferralDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aUPWAppointmentDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anAddressAssessmentDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anApprovedPremisesReferralDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anAssessmentDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anEvent;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anEventDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anInstitutionalReportDocument;
 import static uk.gov.justice.digital.delius.util.OffenderHelper.anOffender;
 
-@RunWith(SpringRunner.class)
-@Import({DocumentService.class})
+@ExtendWith(MockitoExtension.class)
 public class DocumentServiceTest {
-    @Autowired
     private DocumentService documentService;
 
-    @MockBean
+    @Mock
     private DocumentRepository documentRepository;
-    @MockBean
+    @Mock
     private OffenderRepository offenderRepository;
-    @MockBean
+    @Mock
     private OffenderDocumentRepository offenderDocumentRepository;
-    @MockBean
+    @Mock
     private EventDocumentRepository eventDocumentRepository;
-    @MockBean
+    @Mock
     private CourtReportDocumentRepository courtReportDocumentRepository;
-    @MockBean
+    @Mock
     private InstitutionReportDocumentRepository institutionReportDocumentRepository;
-    @MockBean
+    @Mock
     private EventRepository eventRepository;
-    @MockBean
+    @Mock
     private AddressAssessmentDocumentRepository addressAssessmentRepository;
-    @MockBean
+    @Mock
     private ApprovedPremisesReferralDocumentRepository approvedPremisesReferralDocumentRepository;
-    @MockBean
+    @Mock
     private AssessmentDocumentRepository assessmentDocumentRepository;
-    @MockBean
+    @Mock
     private CaseAllocationDocumentRepository caseAllocationDocumentRepository;
-    @MockBean
+    @Mock
     private PersonalContactDocumentRepository personalContactDocumentRepository;
-    @MockBean
+    @Mock
     private ReferralDocumentRepository referralDocumentRepository;
-    @MockBean
+    @Mock
     private NsiDocumentRepository nsiDocumentRepository;
-    @MockBean
+    @Mock
     private PersonalCircumstanceDocumentRepository personalCircumstanceDocumentRepository;
-    @MockBean
+    @Mock
     private UPWAppointmentDocumentRepository upwAppointmentDocumentRepository;
-    @MockBean
+    @Mock
     private ContactDocumentRepository contactDocumentRepository;
 
 
-    @Before
+    @BeforeEach
     public void before() {
+        documentService = new DocumentService(
+                documentRepository,
+                offenderRepository,
+                offenderDocumentRepository,
+                eventDocumentRepository,
+                courtReportDocumentRepository,
+                institutionReportDocumentRepository,
+                eventRepository,
+                addressAssessmentRepository,
+                approvedPremisesReferralDocumentRepository,
+                assessmentDocumentRepository,
+                caseAllocationDocumentRepository,
+                personalContactDocumentRepository,
+                referralDocumentRepository,
+                nsiDocumentRepository,
+                personalCircumstanceDocumentRepository,
+                upwAppointmentDocumentRepository,
+                contactDocumentRepository
+        );
         when(offenderRepository.findByOffenderId(any())).thenReturn(Optional.of(anOffender()));
         when(offenderDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of());
         when(eventDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of());

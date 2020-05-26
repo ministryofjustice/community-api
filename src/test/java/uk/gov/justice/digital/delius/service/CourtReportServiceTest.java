@@ -1,17 +1,14 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CourtReportRepository;
-import uk.gov.justice.digital.delius.transformers.CourtAppearanceTransformer;
-import uk.gov.justice.digital.delius.transformers.CourtReportTransformer;
-import uk.gov.justice.digital.delius.transformers.CourtTransformer;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -21,22 +18,18 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-@Import({CourtReportService.class, CourtReportTransformer.class, CourtAppearanceTransformer.class, CourtTransformer.class})
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class CourtReportServiceTest {
-    @Autowired
     private CourtReportService courtReportService;
 
-    @MockBean
+    @Mock
     private CourtReportRepository courtReportRepository;
 
-    @MockBean
-    private LookupSupplier lookupSupplier;
 
-
-
-    @Before
+    @BeforeEach
     public void before() {
+        courtReportService = new CourtReportService(courtReportRepository);
         when(courtReportRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(
                 uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport.builder().courtReportId(1L).offenderId(1L).dateRequested(LocalDateTime.now().minusDays(98)).build(),
                 uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport.builder().courtReportId(2L).offenderId(1L).dateRequested(LocalDateTime.now().minusDays(1)).build(),

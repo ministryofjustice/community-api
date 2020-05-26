@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.delius.transformers;
+package uk.gov.justice.digital.delius.entitybuilders;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,15 +16,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MainOffenceTransformerTest {
+public class MainOffenceEntityBuilderTest {
     @Mock
     private LookupSupplier lookupSupplier;
 
-    private MainOffenceTransformer mainOffenceTransformer;
+    private MainOffenceEntityBuilder mainOffenceEntityBuilder;
 
     @Before
     public void setup() {
-        mainOffenceTransformer = new MainOffenceTransformer(lookupSupplier);
+        mainOffenceEntityBuilder = new MainOffenceEntityBuilder(lookupSupplier);
         when(lookupSupplier.userSupplier()).thenReturn(() -> User.builder().userId(99L).build());
         when(lookupSupplier.offenceSupplier()).thenReturn(code -> Offence.builder().code(code).build());
 
@@ -32,7 +32,7 @@ public class MainOffenceTransformerTest {
 
     @Test
     public void setsSensibleDefaults() {
-        final MainOffence mainOffence = mainOffenceTransformer.mainOffenceOf(1L, anOffence(), anEvent());
+        final MainOffence mainOffence = mainOffenceEntityBuilder.mainOffenceOf(1L, anOffence(), anEvent());
 
         assertThat(mainOffence.getPartitionAreaId()).isEqualTo(0L);
         assertThat(mainOffence.getRowVersion()).isEqualTo(1L);
@@ -43,7 +43,7 @@ public class MainOffenceTransformerTest {
     public void setsAuditFields() {
         when(lookupSupplier.userSupplier()).thenReturn(() -> User.builder().userId(99L).build());
 
-        final MainOffence mainOffence = mainOffenceTransformer.mainOffenceOf(1L, anOffence(), anEvent());
+        final MainOffence mainOffence = mainOffenceEntityBuilder.mainOffenceOf(1L, anOffence(), anEvent());
 
         assertThat(mainOffence.getCreatedByUserId()).isEqualTo(99L);
         assertThat(mainOffence.getLastUpdatedUserId()).isEqualTo(99L);
@@ -53,7 +53,8 @@ public class MainOffenceTransformerTest {
 
     @Test
     public void offenceIsSetFromDetailCode() {
-        final MainOffence mainOffence = mainOffenceTransformer.mainOffenceOf(1L, anOffence().toBuilder().detail(anOffence().getDetail().toBuilder().code("AA").build()).build(), anEvent());
+        final MainOffence mainOffence = mainOffenceEntityBuilder
+                .mainOffenceOf(1L, anOffence().toBuilder().detail(anOffence().getDetail().toBuilder().code("AA").build()).build(), anEvent());
 
         assertThat(mainOffence.getOffence().getCode()).isEqualTo("AA");
     }

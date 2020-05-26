@@ -12,9 +12,8 @@ import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.service.ConvictionService.SingleActiveCustodyConvictionNotFoundException;
-import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
-import uk.gov.justice.digital.delius.transformers.CustodyKeyDateTransformer;
-import uk.gov.justice.digital.delius.transformers.EventTransformer;
+import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
+import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,7 +22,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.digital.delius.util.EntityHelper.*;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aCommunityDisposal;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aCustodyEvent;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aKeyDate;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anEvent;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConvictionService_GetCustodyKeyDateTest {
@@ -37,7 +39,7 @@ public class ConvictionService_GetCustodyKeyDateTest {
     private OffenderRepository offenderRepository;
 
     @Mock
-    private EventTransformer eventTransformer;
+    private EventEntityBuilder eventEntityBuilder;
 
     @Mock
     private SpgNotificationService spgNotificationService;
@@ -53,7 +55,7 @@ public class ConvictionService_GetCustodyKeyDateTest {
 
     @Before
     public void setUp() {
-        convictionService = new ConvictionService(true, eventRepository, offenderRepository, eventTransformer, spgNotificationService, lookupSupplier, new CustodyKeyDateTransformer(lookupSupplier), iapsNotificationService, contactService);
+        convictionService = new ConvictionService(true, eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService);
         when(eventRepository.findByOffenderId(anyLong())).thenReturn(ImmutableList.of(aCustodyEvent()));
     }
 

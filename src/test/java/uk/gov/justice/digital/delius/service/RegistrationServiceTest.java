@@ -1,33 +1,36 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.Test;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.RegisterType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Registration;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import uk.gov.justice.digital.delius.jpa.standard.repository.RegistrationRepository;
-import uk.gov.justice.digital.delius.transformers.ContactTransformer;
-import uk.gov.justice.digital.delius.transformers.RegistrationTransformer;
 
 import java.time.LocalDate;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
-@Import({RegistrationService.class, RegistrationTransformer.class, ContactTransformer.class})
+@ExtendWith(MockitoExtension.class)
 public class RegistrationServiceTest {
 
-    @Autowired
     private RegistrationService registrationService;
 
-    @MockBean
+    @Mock
     private RegistrationRepository registrationRepository;
 
+    @BeforeEach
+    void before() {
+        registrationService = new RegistrationService(registrationRepository);
+    }
 
     @Test
     public void registrationsOrderedByRegistrationDateReversed() {
