@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CourtReportRepository;
 
 import java.time.LocalDateTime;
@@ -31,13 +32,13 @@ public class CourtReportServiceTest {
     public void before() {
         courtReportService = new CourtReportService(courtReportRepository);
         when(courtReportRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(
-                uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport.builder().courtReportId(1L).offenderId(1L).dateRequested(LocalDateTime.now().minusDays(98)).build(),
-                uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport.builder().courtReportId(2L).offenderId(1L).dateRequested(LocalDateTime.now().minusDays(1)).build(),
-                uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport.builder().courtReportId(3L).offenderId(1L).dateRequested(LocalDateTime.now()).softDeleted(1L).build(),
-                uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport.builder().courtReportId(4L).offenderId(1L).dateRequested(LocalDateTime.now().minusDays(99)).build()
+                CourtReport.builder().courtReportId(1L).offenderId(1L).dateRequested(LocalDateTime.now().minusDays(98)).build(),
+                CourtReport.builder().courtReportId(2L).offenderId(1L).dateRequested(LocalDateTime.now().minusDays(1)).build(),
+                CourtReport.builder().courtReportId(3L).offenderId(1L).dateRequested(LocalDateTime.now()).softDeleted(1L).build(),
+                CourtReport.builder().courtReportId(4L).offenderId(1L).dateRequested(LocalDateTime.now().minusDays(99)).build()
         ));
         when(courtReportRepository.findByOffenderIdAndCourtReportId(any(), any())).thenReturn(
-                Optional.of(uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport.builder().courtReportId(4L).offenderId(1L).build()));
+                Optional.of(CourtReport.builder().courtReportId(4L).offenderId(1L).build()));
 
     }
 
@@ -56,12 +57,12 @@ public class CourtReportServiceTest {
     @Test
     public void courtReportForFiltersRecords() {
         when(courtReportRepository.findByOffenderIdAndCourtReportId(any(), any())).thenReturn(
-                Optional.of(uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport.builder().courtReportId(4L).offenderId(1L).softDeleted(1L).build()));
+                Optional.of(CourtReport.builder().courtReportId(4L).offenderId(1L).softDeleted(1L).build()));
 
         assertThat(courtReportService.courtReportFor(1L, 4L).isPresent()).isFalse();
 
         when(courtReportRepository.findByOffenderIdAndCourtReportId(any(), any())).thenReturn(
-                Optional.of(uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport.builder().courtReportId(4L).offenderId(1L).softDeleted(0L).build()));
+                Optional.of(CourtReport.builder().courtReportId(4L).offenderId(1L).softDeleted(0L).build()));
 
         assertThat(courtReportService.courtReportFor(1L, 4L).isPresent()).isTrue();
     }
