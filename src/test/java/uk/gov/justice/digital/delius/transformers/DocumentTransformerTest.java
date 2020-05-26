@@ -304,6 +304,7 @@ public class DocumentTransformerTest {
         assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("NSI_DOCUMENT");
         assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Non Statutory Intervention for Custody - Accredited Programme on 19/07/1965");
         assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Non Statutory Intervention related document");
+        assertThat(offenderDocumentDetail.getParentPrimaryKeyId()).isEqualTo(100L);
     }
 
     @Test
