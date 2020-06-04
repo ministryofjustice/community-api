@@ -1,18 +1,8 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.RestAssured;
-import io.restassured.config.ObjectMapperConfig;
-import io.restassured.config.RestAssuredConfig;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusExtension;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusMockServer;
 import uk.gov.justice.digital.delius.data.api.ConvictionDocuments;
@@ -25,9 +15,7 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("dev-seed")
-public class OffendersResource_getOffenderDocumentsByCrn {
+public class OffendersResource_getOffenderDocumentsByCrn extends IntegrationTestBase {
 
     private static final DeliusMockServer deliusMockServer = new DeliusMockServer(8088, "src/testIntegration/resources");
     @RegisterExtension
@@ -37,28 +25,11 @@ public class OffendersResource_getOffenderDocumentsByCrn {
     private static final String SINGLE_DOC_PATH_FORMAT = "/offenders/crn/%s/documents/%s";
     public static final String EXISTING_DOCUMENT_ID = "fa63c379-8b31-4e36-a152-2a57dfe251c4";
 
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Value("${test.token.good}")
-    private String validOauthToken;
-
-    @BeforeEach
-    public void setup() {
-        RestAssured.port = port;
-        RestAssured.basePath = "/secure";
-        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-                new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
-    }
-
     @Test
     public void singleDocument_givenCrnDoesNotMatchMetadataThenReturn404() {
         given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get(String.format(SINGLE_DOC_PATH_FORMAT, "CRNXXX", "fa63c379-8b31-4e36-a152-2a57dfe251c5"))
@@ -70,7 +41,7 @@ public class OffendersResource_getOffenderDocumentsByCrn {
     public void singleDocument_givenUnknownDocumentIdThenReturn404() {
         given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get(String.format(SINGLE_DOC_PATH_FORMAT, "crn123", "fa63c379-8b31-4e36-a152-2a57dfe251c5"))
@@ -82,7 +53,7 @@ public class OffendersResource_getOffenderDocumentsByCrn {
     public void singleDocument_givenExistingDocumentIdThenReturn200() {
         given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get(String.format(SINGLE_DOC_PATH_FORMAT, "crn123", EXISTING_DOCUMENT_ID))
@@ -95,7 +66,7 @@ public class OffendersResource_getOffenderDocumentsByCrn {
     public void givenUnknownCrnThenReturn404() {
         given()
             .auth()
-            .oauth2(validOauthToken)
+            .oauth2(tokenWithRoleCommunity())
             .contentType(APPLICATION_JSON_VALUE)
             .when()
             .get(String.format(GROUPED_DOCS_PATH_FORMAT, "CRNXXX"))
@@ -107,7 +78,7 @@ public class OffendersResource_getOffenderDocumentsByCrn {
     public void givenKnownCrnWithNoDocuments() {
         final OffenderDocuments offenderDocuments = given()
             .auth()
-            .oauth2(validOauthToken)
+            .oauth2(tokenWithRoleCommunity())
             .contentType(APPLICATION_JSON_VALUE)
             .when()
             .get(String.format(GROUPED_DOCS_PATH_FORMAT, "CRN12"))
@@ -125,7 +96,7 @@ public class OffendersResource_getOffenderDocumentsByCrn {
     public void givenKnownCrnThenReturnDocuments() {
         final OffenderDocuments offenderDocuments = given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
             .when()
                 .get(String.format(GROUPED_DOCS_PATH_FORMAT, "X320741"))

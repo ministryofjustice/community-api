@@ -1,16 +1,6 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.RestAssured;
-import io.restassured.config.ObjectMapperConfig;
-import io.restassured.config.RestAssuredConfig;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.justice.digital.delius.data.api.Institution;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
@@ -23,32 +13,12 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("dev-seed")
-public class OffendersResource_GetLatestRecallAndReleaseForOffenderTest {
-
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Value("${test.token.good}")
-    private String validOauthToken;
-
-    @BeforeEach
-    public void setup() {
-        RestAssured.port = port;
-        RestAssured.basePath = "/secure";
-        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-                new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
-    }
-
+public class OffendersResource_GetLatestRecallAndReleaseForOffenderTest extends IntegrationTestBase {
     @Test
     public void getLatestRecallAndReleaseForOffender_offenderFound_returnsOk() {
         given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("/offenders/nomsNumber/G9542VP/release")
@@ -66,7 +36,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffenderTest {
 
         final var offenderLatestRecall = given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("/offenders/nomsNumber/G9542VP/release")
@@ -82,7 +52,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffenderTest {
     public void getLatestRecallAndReleaseForOffender_offenderNotFound_returnsNotFound() {
         given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("/offenders/nomsNumber/NOMS_NOT_FOUND/release")
@@ -94,7 +64,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffenderTest {
     public void getLatestRecallAndReleaseForOffenderByCrn_offenderFound_returnsOk() {
         given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("/offenders/crn/X320741/release")
@@ -112,7 +82,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffenderTest {
 
         final var offenderLatestRecall = given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("/offenders/crn/X320741/release")
@@ -128,7 +98,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffenderTest {
     public void getLatestRecallAndReleaseForOffenderByCrn_offenderNotFound_returnsNotFound() {
         given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("/offenders/crn/CRN_NOT_FOUND/release")

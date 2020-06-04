@@ -20,7 +20,7 @@ public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationT
     void mustHaveCommunityRole() {
         given()
                 .auth()
-                .oauth2(createJwt("ROLE_COMMUNITY"))
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("/offenders/primaryIdentifiers")
@@ -44,7 +44,7 @@ public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationT
     public void willReturnAllOffenders() {
         given()
                 .auth()
-                .oauth2(createJwt("ROLE_COMMUNITY"))
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .param("size", 1000)
                 .when()
@@ -65,7 +65,7 @@ public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationT
     public void willReturnPagedOffenders() {
         given()
                 .auth()
-                .oauth2(createJwt("ROLE_COMMUNITY"))
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .param("size", 5)
                 .param("sort", "crn,desc")
@@ -85,7 +85,7 @@ public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationT
     public void canPageThroughOffenders() {
         given()
                 .auth()
-                .oauth2(createJwt("ROLE_COMMUNITY"))
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .param("size", 5)
                 .param("sort", "crn,desc")
@@ -103,7 +103,7 @@ public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationT
 
         given()
                 .auth()
-                .oauth2(createJwt("ROLE_COMMUNITY"))
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .param("size", 5)
                 .param("sort", "crn,desc")
@@ -127,7 +127,7 @@ public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationT
         void byDefaultDeletedRecordsAreFilteredOut() {
             given()
                     .auth()
-                    .oauth2(createJwt("ROLE_COMMUNITY"))
+                    .oauth2(tokenWithRoleCommunity())
                     .contentType(APPLICATION_JSON_VALUE)
                     .param("size", 1000)
                     .when()
@@ -143,10 +143,10 @@ public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationT
         void canIncludeDeletedRecords() {
             given()
                     .auth()
-                    .oauth2(createJwt("ROLE_COMMUNITY"))
+                    .oauth2(tokenWithRoleCommunity())
                     .contentType(APPLICATION_JSON_VALUE)
                     .param("size", 1000)
-                    .param("includedDeleted", true)
+                    .param("includeDeleted", true)
                     .when()
                     .get("/offenders/primaryIdentifiers")
                     .then()
@@ -160,7 +160,7 @@ public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationT
         void canFilterByActiveOffenders() {
             given()
                     .auth()
-                    .oauth2(createJwt("ROLE_COMMUNITY"))
+                    .oauth2(tokenWithRoleCommunity())
                     .contentType(APPLICATION_JSON_VALUE)
                     .param("size", 1000)
                     .param("includeActiveOnly", true)
@@ -180,7 +180,7 @@ public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationT
         void canSortByCRNAscending() {
             given()
                     .auth()
-                    .oauth2(createJwt("ROLE_COMMUNITY"))
+                    .oauth2(tokenWithRoleCommunity())
                     .contentType(APPLICATION_JSON_VALUE)
                     .param("size", 1000)
                     .param("sort", "crn,desc")
@@ -197,7 +197,7 @@ public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationT
         void canSortByCRNDescending() {
             given()
                     .auth()
-                    .oauth2(createJwt("ROLE_COMMUNITY"))
+                    .oauth2(tokenWithRoleCommunity())
                     .contentType(APPLICATION_JSON_VALUE)
                     .param("size", 1000)
                     .param("sort", "crn,asc")

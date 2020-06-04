@@ -1,17 +1,7 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.RestAssured;
-import io.restassured.config.ObjectMapperConfig;
-import io.restassured.config.RestAssuredConfig;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.AuthPassword;
 import uk.gov.justice.digital.delius.data.api.AuthUser;
@@ -22,32 +12,12 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("dev-seed")
-public class AuthenticationAPITest {
-
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Value("${test.token.auth}")
-    private String validOauthToken;
-
-    @BeforeEach
-    public void setup() {
-        RestAssured.port = port;
-        RestAssured.basePath = "/secure";
-        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig().jackson2ObjectMapperFactory(
-                (aClass, s) -> objectMapper
-        ));
-    }
-
+public class AuthenticationAPITest extends IntegrationTestBase {
     @Test
     public void authenticateReturnsOKWhenUsernamePasswordMatch() {
         given()
-                .auth().oauth2(validOauthToken)
+                .auth()
+                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(AuthUser.builder().username("oliver.connolly").password("secret").build())
                 .when()
@@ -59,7 +29,8 @@ public class AuthenticationAPITest {
     @Test
     public void authenticateReturns400WhenNoPassword() {
         given()
-                .auth().oauth2(validOauthToken)
+                .auth()
+                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(AuthUser.builder().username("oliver.connolly").build())
                 .when()
@@ -71,7 +42,8 @@ public class AuthenticationAPITest {
     @Test
     public void authenticateReturns400WhenNoUsername() {
         given()
-                .auth().oauth2(validOauthToken)
+                .auth()
+                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(AuthUser.builder().password("secret").build())
                 .when()
@@ -83,7 +55,8 @@ public class AuthenticationAPITest {
     @Test
     public void authenticateReturns400WhenBodyEmpty() {
         given()
-                .auth().oauth2(validOauthToken)
+                .auth()
+                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .post("/authenticate")
@@ -94,7 +67,8 @@ public class AuthenticationAPITest {
     @Test
     public void authenticateReturnsUNAUTHORIZEDWhenUsernamePasswordDoNotMatch() {
         given()
-                .auth().oauth2(validOauthToken)
+                .auth()
+                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(AuthUser.builder().username("oliver.connolly").password("incorrectpassword").build())
                 .when()
@@ -106,7 +80,8 @@ public class AuthenticationAPITest {
     @Test
     public void authenticateReturnsUNAUTHORIZEDWhenUsernameNotFound() {
         given()
-                .auth().oauth2(validOauthToken)
+                .auth()
+                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(AuthUser.builder().username("not.exists").password("secret").build())
                 .when()
@@ -119,7 +94,8 @@ public class AuthenticationAPITest {
     public void notValid400ReturnedWhenPasswordEmpty() {
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth()
+                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(AuthPassword.builder().build())
                 .when()
@@ -132,7 +108,8 @@ public class AuthenticationAPITest {
     public void notValid400ReturnedWhenBodyEmpty() {
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth()
+                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .post("/users/oliver.connolly/password")
@@ -143,7 +120,8 @@ public class AuthenticationAPITest {
     @Test
     public void canChangeAUsersPassword() {
         given()
-                .auth().oauth2(validOauthToken)
+                .auth()
+                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(AuthUser.builder().username("oliver.connolly").password("secret").build())
                 .when()
@@ -152,7 +130,8 @@ public class AuthenticationAPITest {
                 .statusCode(200);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth()
+                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(AuthPassword.builder().password("newsecret").build())
                 .when()
@@ -161,7 +140,8 @@ public class AuthenticationAPITest {
                 .statusCode(200);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth()
+                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(AuthUser.builder().username("oliver.connolly").password("secret").build())
                 .when()
@@ -170,7 +150,8 @@ public class AuthenticationAPITest {
                 .statusCode(401);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth()
+                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(AuthUser.builder().username("oliver.connolly").password("newsecret").build())
                 .when()
@@ -180,7 +161,8 @@ public class AuthenticationAPITest {
 
         // restore to original password
         given()
-                .auth().oauth2(validOauthToken)
+                .auth()
+                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .body(AuthPassword.builder().password("secret").build())
                 .when()
@@ -192,7 +174,8 @@ public class AuthenticationAPITest {
     @Test
     public void usersDetails_success() {
         final var userDetails = given()
-                .auth().oauth2(validOauthToken)
+                .auth()
+                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
                 .contentType("text/plain")
                 .when()
                 .get("/users/bernard.beaks/details")
@@ -211,7 +194,8 @@ public class AuthenticationAPITest {
     @Test
     public void usersDetails_returns404WhenUserNotFound() {
         given()
-                .auth().oauth2(validOauthToken)
+                .auth()
+                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
                 .contentType("text/plain")
                 .when()
                 .get("/users/john.smith/details")
@@ -224,7 +208,8 @@ public class AuthenticationAPITest {
     public void addRole() {
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth()
+                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
                 .contentType("text/plain")
                 .when()
                 .put("/users/bernard.beaks/roles/CWBT001")
@@ -233,7 +218,8 @@ public class AuthenticationAPITest {
 
 
         final var userDetails = given()
-                .auth().oauth2(validOauthToken)
+                .auth()
+                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
                 .contentType("text/plain")
                 .when()
                 .get("/users/bernard.beaks/details")
@@ -255,7 +241,8 @@ public class AuthenticationAPITest {
     public void addRole_whenUserDoesNotExist() {
 
         ErrorResponse response = given()
-                .auth().oauth2(validOauthToken)
+                .auth()
+                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
                 .contentType("text/plain")
                 .when()
                 .put("/users/usernoexist/roles/CWBT001")

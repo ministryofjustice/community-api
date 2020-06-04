@@ -1,43 +1,29 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.RestAssured;
-import io.restassured.config.ObjectMapperConfig;
-import io.restassured.config.RestAssuredConfig;
 import io.restassured.path.json.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.digital.delius.FlywayRestoreExtension;
-import uk.gov.justice.digital.delius.JwtAuthenticationHelper;
 import uk.gov.justice.digital.delius.data.api.CreateCustodyKeyDate;
 import uk.gov.justice.digital.delius.data.api.CustodyKeyDate;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.ReplaceCustodyKeyDates;
 
 import java.sql.Timestamp;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith({SpringExtension.class, FlywayRestoreExtension.class})
-@ActiveProfiles("dev-seed")
-public class CustodyKeyDatesAPITest {
+public class CustodyKeyDatesAPITest extends IntegrationTestBase {
     private static final String OFFENDER_ID = "2500343964";
     private static final String CRN = "X320741";
     private static final String CRN_NO_EVENTS = "CRN31";
@@ -45,25 +31,11 @@ public class CustodyKeyDatesAPITest {
     private static final String NOMS_NUMBER = "G9542VP";
     private static final String PRISON_BOOKING_NUMBER = "V74111";
 
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    private ObjectMapper objectMapper;
     @Autowired
     JdbcTemplate jdbcTemplate;
-    @Autowired
-    protected JwtAuthenticationHelper jwtAuthenticationHelper;
-
-    @Value("${test.token.good}")
-    private String validOauthToken;
-
     @BeforeEach
     public void setup() {
-        RestAssured.port = port;
-        RestAssured.basePath = "/secure";
-        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-                new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
+        super.setup();
         //noinspection SqlWithoutWhere
         jdbcTemplate.execute("DELETE FROM KEY_DATE");
         //noinspection SqlWithoutWhere
@@ -76,7 +48,7 @@ public class CustodyKeyDatesAPITest {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -85,7 +57,7 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(200);
 
         CustodyKeyDate addedKeyDate = given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
                 .then()
@@ -100,14 +72,10 @@ public class CustodyKeyDatesAPITest {
     }
 
     private String createCustodyKeyDateOf(LocalDate tomorrow) {
-        try {
-            return objectMapper.writeValueAsString(CreateCustodyKeyDate
-                    .builder()
-                    .date(tomorrow)
-                    .build());
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return writeValueAsString(CreateCustodyKeyDate
+                .builder()
+                .date(tomorrow)
+                .build());
     }
 
     @Test
@@ -115,7 +83,7 @@ public class CustodyKeyDatesAPITest {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -124,7 +92,7 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(200);
 
         CustodyKeyDate addedKeyDate = given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get(String.format("offenders/nomsNumber/%s/custody/keyDates/POM1",  NOMS_NUMBER))
                 .then()
@@ -142,7 +110,7 @@ public class CustodyKeyDatesAPITest {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -151,7 +119,7 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(200);
 
         CustodyKeyDate addedKeyDate = given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get(String.format("offenders/offenderId/%s/custody/keyDates/POM1",  OFFENDER_ID))
                 .then()
@@ -169,7 +137,7 @@ public class CustodyKeyDatesAPITest {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -178,7 +146,7 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(200);
 
         CustodyKeyDate addedKeyDate = given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get(String.format("offenders/prisonBookingNumber/%s/custody/keyDates/POM1", PRISON_BOOKING_NUMBER))
                 .then()
@@ -197,7 +165,7 @@ public class CustodyKeyDatesAPITest {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -206,7 +174,7 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(200);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -215,7 +183,7 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(200);
 
         CustodyKeyDate[] keyDatesByCRN = given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get(String.format("offenders/crn/%s/custody/keyDates",  CRN))
                 .then()
@@ -225,7 +193,7 @@ public class CustodyKeyDatesAPITest {
                 .as(CustodyKeyDate[].class);
 
         CustodyKeyDate[] keyDatesByNOMSNumber = given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get(String.format("offenders/nomsNumber/%s/custody/keyDates",  NOMS_NUMBER))
                 .then()
@@ -235,7 +203,7 @@ public class CustodyKeyDatesAPITest {
                 .as(CustodyKeyDate[].class);
 
         CustodyKeyDate[] keyDatesByOffenderId = given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get(String.format("offenders/offenderId/%s/custody/keyDates",  OFFENDER_ID))
                 .then()
@@ -245,7 +213,7 @@ public class CustodyKeyDatesAPITest {
                 .as(CustodyKeyDate[].class);
 
         CustodyKeyDate[] keyDatesByBookingNumber = given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get(String.format("offenders/prisonBookingNumber/%s/custody/keyDates", PRISON_BOOKING_NUMBER))
                 .then()
@@ -285,7 +253,7 @@ public class CustodyKeyDatesAPITest {
         LocalDate dayAfterNext = LocalDate.now().plusDays(2);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -294,7 +262,7 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(200);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(dayAfterNext))
                 .when()
@@ -303,7 +271,7 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(200);
 
         CustodyKeyDate addedKeyDate = given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
                 .then()
@@ -323,7 +291,7 @@ public class CustodyKeyDatesAPITest {
         LocalDate dayAfterNext = LocalDate.now().plusDays(2);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -332,14 +300,14 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(200);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
                 .then()
                 .statusCode(200);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(dayAfterNext))
                 .when()
@@ -348,7 +316,7 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(200);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
                 .then()
@@ -360,7 +328,7 @@ public class CustodyKeyDatesAPITest {
         LocalDate dayAfterNext = LocalDate.now().plusDays(2);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -369,14 +337,14 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(200);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get(String.format("offenders/nomsNumber/%s/custody/keyDates/POM1",  NOMS_NUMBER))
                 .then()
                 .statusCode(200);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(dayAfterNext))
                 .when()
@@ -385,7 +353,7 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(200);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get(String.format("offenders/nomsNumber/%s/custody/keyDates/POM1",  NOMS_NUMBER))
                 .then()
@@ -398,7 +366,7 @@ public class CustodyKeyDatesAPITest {
         LocalDate dayAfterNext = LocalDate.now().plusDays(2);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -407,14 +375,14 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(200);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get(String.format("offenders/offenderId/%s/custody/keyDates/POM1",  OFFENDER_ID))
                 .then()
                 .statusCode(200);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(dayAfterNext))
                 .when()
@@ -423,7 +391,7 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(200);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get(String.format("offenders/offenderId/%s/custody/keyDates/POM1",  OFFENDER_ID))
                 .then()
@@ -435,7 +403,7 @@ public class CustodyKeyDatesAPITest {
         LocalDate dayAfterNext = LocalDate.now().plusDays(2);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -444,14 +412,14 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(200);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get(String.format("offenders/prisonBookingNumber/%s/custody/keyDates/POM1", PRISON_BOOKING_NUMBER))
                 .then()
                 .statusCode(200);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(dayAfterNext))
                 .when()
@@ -460,7 +428,7 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(200);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get(String.format("offenders/prisonBookingNumber/%s/custody/keyDates/POM1", PRISON_BOOKING_NUMBER))
                 .then()
@@ -470,7 +438,7 @@ public class CustodyKeyDatesAPITest {
     @Test
     public void shouldRespond404WhenOffenderNotFound()  {
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(LocalDate.now()))
                 .when()
@@ -479,21 +447,21 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(404);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .delete("offenders/nomsNumber/DOESNOTEXIST/custody/keyDates/POM1")
                 .then()
                 .statusCode(404);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get("offenders/nomsNumber/DOESNOTEXIST/custody/keyDates")
                 .then()
                 .statusCode(404);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(LocalDate.now()))
                 .when()
@@ -502,21 +470,21 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(404);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .delete("offenders/crn/DOESNOTEXIST/custody/keyDates/POM1")
                 .then()
                 .statusCode(404);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get("offenders/crn/DOESNOTEXIST/custody/keyDates")
                 .then()
                 .statusCode(404);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(LocalDate.now()))
                 .when()
@@ -525,21 +493,21 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(404);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get("offenders/offenderId/999999999/custody/keyDates/POM1")
                 .then()
                 .statusCode(404);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get("offenders/offenderId/999999999/custody/keyDates")
                 .then()
                 .statusCode(404);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(LocalDate.now()))
                 .when()
@@ -548,14 +516,14 @@ public class CustodyKeyDatesAPITest {
                 .statusCode(404);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .delete("offenders/prisonBookingNumber/DOESNOTEXIST/custody/keyDates/POM1")
                 .then()
                 .statusCode(404);
 
         given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .when()
                 .get("offenders/prisonBookingNumber/DOESNOTEXIST/custody/keyDates")
                 .then()
@@ -567,7 +535,7 @@ public class CustodyKeyDatesAPITest {
     @Test
     public void shouldRespond400WhenAddingKeyDateThatIsNotValid()  {
         JsonPath  errorMessage = given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(LocalDate.now()))
                 .when()
@@ -584,7 +552,7 @@ public class CustodyKeyDatesAPITest {
     @Test
     public void shouldRespond400WhenOffenderHasInvalidActiveCustodyEvents()  {
         JsonPath errorMessage = given()
-                .auth().oauth2(validOauthToken)
+                .auth().oauth2(tokenWithRoleCommunity())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(LocalDate.now()))
                 .when()
@@ -699,7 +667,7 @@ public class CustodyKeyDatesAPITest {
 
             // GIVEN I hae added some POM key dates from OMiC
             given()
-                    .auth().oauth2(validOauthToken)
+                    .auth().oauth2(tokenWithRoleCommunity())
                     .contentType("application/json")
                     .body(createCustodyKeyDateOf(LocalDate.of(2030, 1, 8)))
                     .when()
@@ -708,7 +676,7 @@ public class CustodyKeyDatesAPITest {
                     .statusCode(200);
 
             given()
-                    .auth().oauth2(validOauthToken)
+                    .auth().oauth2(tokenWithRoleCommunity())
                     .contentType("application/json")
                     .body(createCustodyKeyDateOf(LocalDate.of(2030, 1, 9)))
                     .when()
@@ -821,21 +789,8 @@ public class CustodyKeyDatesAPITest {
                     .build());
         }
         private String createReplaceCustodyKeyDates(ReplaceCustodyKeyDates replaceCustodyKeyDates) {
-            try {
-                return objectMapper.writeValueAsString(replaceCustodyKeyDates);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
+            return writeValueAsString(replaceCustodyKeyDates);
         }
-    }
-
-    private String createJwt(final String ...roles ) {
-        return jwtAuthenticationHelper.createJwt(JwtAuthenticationHelper.JwtParameters.builder()
-                .username("APIUser")
-                .roles(List.of(roles))
-                .scope(Arrays.asList("read", "write"))
-                .expiryTime(Duration.ofDays(1))
-                .build());
     }
 
     private LocalDate toLocalDate(Object columnValue) {

@@ -30,7 +30,7 @@ public class OffenderFilter implements Specification<Offender> {
     private boolean includeActiveOnly;
 
     @ApiModelProperty(value = "Include deleted offenders", example = "true")
-    private boolean includedDeleted;
+    private boolean includeDeleted;
 
     // TODO
 //    @ApiModelProperty(value = "Filter by offenders that were active on the supplied date", position = 2, example = "2017-10-31", dataType = "LocalDate")
@@ -41,7 +41,7 @@ public class OffenderFilter implements Specification<Offender> {
     public Predicate toPredicate(@NotNull Root<Offender> root, @NotNull CriteriaQuery<?> query, @NotNull CriteriaBuilder criteriaBuilder) {
         final ImmutableList.Builder<Predicate> predicateBuilder = ImmutableList.builder();
 
-        if (!includedDeleted) {
+        if (!includeDeleted) {
             predicateBuilder.add(criteriaBuilder.equal(root.get("softDeleted"), 0));
         }
 

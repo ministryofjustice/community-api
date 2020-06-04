@@ -1,24 +1,12 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.RestAssured;
-import io.restassured.config.ObjectMapperConfig;
-import io.restassured.config.RestAssuredConfig;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.justice.digital.delius.JwtAuthenticationHelper;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 
-import java.time.Duration;
-import java.util.Arrays;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
@@ -27,34 +15,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
-@ActiveProfiles("dev-seed")
-public class ReferenceDataAPITest {
-    @Autowired
-    protected JwtAuthenticationHelper jwtAuthenticationHelper;
-    @LocalServerPort
-    int port;
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @BeforeEach
-    public void setup() {
-        RestAssured.port = port;
-        RestAssured.basePath = "/secure";
-        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-                new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
-    }
-
-    private String createJwt(final String... roles) {
-        return jwtAuthenticationHelper.createJwt(JwtAuthenticationHelper.JwtParameters.builder()
-                .username("APIUser")
-                .roles(List.of(roles))
-                .scope(Arrays.asList("read", "write"))
-                .expiryTime(Duration.ofDays(1))
-                .build());
-    }
-
+public class ReferenceDataAPITest extends IntegrationTestBase {
     @Nested
     class GetReferenceData {
         @Test

@@ -84,11 +84,11 @@ class OffendersResource_getPrimaryIdentifiersTest {
     }
 
     @Test
-    @DisplayName("Will return 400 error if an include deleted active filter is supplied")
+    @DisplayName("Will return 400 error if an invalid deleted filter is supplied")
     void willReturn400IfInvalidDeletedFilterSupplied() {
         given()
                 .contentType(APPLICATION_JSON_VALUE)
-                .param("includedDeleted", "bananas")
+                .param("includeDeleted", "bananas")
                 .when()
                 .get("/secure/offenders/primaryIdentifiers")
                 .then()
@@ -128,10 +128,10 @@ class OffendersResource_getPrimaryIdentifiersTest {
 
     @Test
     @DisplayName("Will pass include deleted filter parameter to service")
-    void includedDeletedFilterSuppliedToService() {
+    void includeDeletedFilterSuppliedToService() {
         given()
                 .contentType(APPLICATION_JSON_VALUE)
-                .param("includedDeleted", "true")
+                .param("includeDeleted", "true")
                 .when()
                 .get("/secure/offenders/primaryIdentifiers")
                 .then()
@@ -139,12 +139,12 @@ class OffendersResource_getPrimaryIdentifiersTest {
 
         verify(offenderService).getAllPrimaryIdentifiers(offenderFilterCaptor.capture(), pageableCaptor.capture());
 
-        assertThat(offenderFilterCaptor.getValue().isIncludedDeleted()).isTrue();
+        assertThat(offenderFilterCaptor.getValue().isIncludeDeleted()).isTrue();
     }
 
     @Test
     @DisplayName("Include deleted filter defaults to false")
-    void includedDeletedFilterDefaultsToFalse() {
+    void includeDeletedFilterDefaultsToFalse() {
         given()
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
@@ -154,7 +154,7 @@ class OffendersResource_getPrimaryIdentifiersTest {
 
         verify(offenderService).getAllPrimaryIdentifiers(offenderFilterCaptor.capture(), pageableCaptor.capture());
 
-        assertThat(offenderFilterCaptor.getValue().isIncludedDeleted()).isFalse();
+        assertThat(offenderFilterCaptor.getValue().isIncludeDeleted()).isFalse();
     }
 
     @Test

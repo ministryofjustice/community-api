@@ -1,30 +1,16 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.RestAssured;
-import io.restassured.config.ObjectMapperConfig;
-import io.restassured.config.RestAssuredConfig;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.justice.digital.delius.FlywayRestoreExtension;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
-import uk.gov.justice.digital.delius.jwt.Jwt;
-import uk.gov.justice.digital.delius.user.UserData;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
@@ -32,37 +18,13 @@ import static java.util.function.Predicate.not;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("dev-seed")
 @ExtendWith( FlywayRestoreExtension.class)
-public class OffendersResource_AllocatePrisonOffenderManagerTest {
-
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private Jwt jwt;
-
-
-    @Value("${test.token.good}")
-    private String validOauthToken;
-
-    @BeforeEach
-    public void setup() {
-        RestAssured.port = port;
-        RestAssured.basePath = "/secure";
-        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-                new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
-    }
-
+public class OffendersResource_AllocatePrisonOffenderManagerTest  extends IntegrationTestBase  {
     @Test
-    public void canAllocatePrisonOffenderManagersByNOMSNumberAndStaffCode() throws JsonProcessingException {
+    public void canAllocatePrisonOffenderManagersByNOMSNumberAndStaffCode() {
         final var offenderManagersBeforeAllocation = given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("/offenders/nomsNumber/G0560UO/allOffenderManagers")
@@ -78,7 +40,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest {
 
         final var newPrisonOffenderManager = given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
                 .body(createPrisonOffenderManagerOf("BWIA010", "BWI"))
@@ -107,7 +69,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest {
 
         final var staffDetails = given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("staff/staffCode/BWIA010")
@@ -122,7 +84,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest {
 
         final var offenderManagers = given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("/offenders/nomsNumber/G0560UO/allOffenderManagers")
@@ -142,10 +104,10 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest {
     }
 
     @Test
-    public void canAllocatePrisonOffenderManagersByNOMSNumberAndStaffName() throws JsonProcessingException {
+    public void canAllocatePrisonOffenderManagersByNOMSNumberAndStaffName() {
         final var offenderManagersBeforeAllocation = given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("/offenders/nomsNumber/G9542VP/allOffenderManagers")
@@ -164,7 +126,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest {
 
         final var newPrisonOffenderManager = given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
                 .body(createPrisonOffenderManagerOf(Human
@@ -201,7 +163,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest {
 
         final var staffDetails = given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get(String.format("staff/staffCode/%s", newPrisonOffenderManager.getStaffCode()))
@@ -217,7 +179,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest {
 
         final var offenderManagers = given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("/offenders/nomsNumber/G9542VP/allOffenderManagers")
@@ -238,12 +200,12 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest {
     }
 
     @Test
-    public void willAddAContactWhenAllocatingPrisonOffenderManager() throws JsonProcessingException {
+    public void willAddAContactWhenAllocatingPrisonOffenderManager() {
         final var justBeforeAllocation = LocalDateTime.now().minusHours(1);
 
         final var newPrisonOffenderManager = given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
                 .body(createPrisonOffenderManagerOf("BWIA010", "BWI"))
@@ -259,7 +221,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest {
 
         Contact[] contacts = given()
                 .when()
-                .header("Authorization", aValidToken())
+                .header("Authorization", legacyToken())
                 .queryParam("from", justBeforeAllocation.toString())
                 .basePath("/api")
                 .get("/offenders/nomsNumber/G4106UN/contacts")
@@ -282,10 +244,10 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest {
     }
 
     @Test
-    public void shouldRespondWith404WhenAllocatingPrisonOffenderManagersAndExistingStaffNotFound() throws JsonProcessingException {
+    public void shouldRespondWith404WhenAllocatingPrisonOffenderManagersAndExistingStaffNotFound() {
         given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
                 .body(createPrisonOffenderManagerOf("DOESNOTEXIST"))
@@ -296,10 +258,10 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest {
     }
 
     @Test
-    public void shouldRespondWith404WhenAllocatingPrisonOffenderManagersAndOffenderNotFound() throws JsonProcessingException {
+    public void shouldRespondWith404WhenAllocatingPrisonOffenderManagersAndOffenderNotFound() {
         given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
                 .body(createPrisonOffenderManagerOf("BWIA010"))
@@ -310,10 +272,10 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest {
     }
 
     @Test
-    public void shouldRespondWith400WhenAllocatingPrisonOffenderManagersAndPrisonInstitutionNotFound() throws JsonProcessingException {
+    public void shouldRespondWith400WhenAllocatingPrisonOffenderManagersAndPrisonInstitutionNotFound() {
         given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
                 .body(createPrisonOffenderManagerOf("BWIA010", "DOESNOTEXIST"))
@@ -324,10 +286,10 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest {
     }
 
     @Test
-    public void shouldRespondWith400WhenStaffMemberNotInThePrisonInstitutionProbationArea() throws JsonProcessingException {
+    public void shouldRespondWith400WhenStaffMemberNotInThePrisonInstitutionProbationArea() {
         given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
                 .body(createPrisonOffenderManagerOf("BWIA010", "WWI"))
@@ -337,39 +299,28 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest {
                 .statusCode(400);
     }
 
-    private String createPrisonOffenderManagerOf(String staffCode) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(CreatePrisonOffenderManager
+    private String createPrisonOffenderManagerOf(String staffCode) {
+        return writeValueAsString(CreatePrisonOffenderManager
                 .builder()
                 .officerCode(staffCode)
                 .nomsPrisonInstitutionCode("BWI")
                 .build());
     }
 
-    private String createPrisonOffenderManagerOf(String staffCode, String nomsPrisonInstitutionCode) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(CreatePrisonOffenderManager
+    private String createPrisonOffenderManagerOf(String staffCode, String nomsPrisonInstitutionCode) {
+        return writeValueAsString(CreatePrisonOffenderManager
                 .builder()
                 .officerCode(staffCode)
                 .nomsPrisonInstitutionCode(nomsPrisonInstitutionCode)
                 .build());
     }
 
-    private String createPrisonOffenderManagerOf(Human staff, String nomsPrisonInstitutionCode) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(CreatePrisonOffenderManager
+    private String createPrisonOffenderManagerOf(Human staff, String nomsPrisonInstitutionCode) {
+        return writeValueAsString(CreatePrisonOffenderManager
                 .builder()
                 .officer(staff)
                 .nomsPrisonInstitutionCode(nomsPrisonInstitutionCode)
                 .build());
-    }
-
-
-    private String aValidToken() {
-        return aValidTokenFor(UUID.randomUUID().toString());
-    }
-
-    private String aValidTokenFor(String distinguishedName) {
-        return "Bearer " + jwt.buildToken(UserData.builder()
-                .distinguishedName(distinguishedName)
-                .uid("bobby.davro").build());
     }
 
 

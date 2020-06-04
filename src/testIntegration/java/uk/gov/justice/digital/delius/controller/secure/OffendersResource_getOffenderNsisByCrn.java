@@ -1,17 +1,7 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.RestAssured;
-import io.restassured.config.ObjectMapperConfig;
-import io.restassured.config.RestAssuredConfig;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.data.api.NsiWrapper;
 
@@ -19,9 +9,7 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("dev-seed")
-public class OffendersResource_getOffenderNsisByCrn {
+public class OffendersResource_getOffenderNsisByCrn extends IntegrationTestBase {
 
     private static final String OFFENDERS_PATH = "/offenders/crn/%s/convictions/%s/nsis?";
 
@@ -38,30 +26,13 @@ public class OffendersResource_getOffenderNsisByCrn {
     private static final long KNOWN_CONVICTION_ID_FOR_NSI = 2500295345L;
     private static final String KNOWN_CRN_FOR_NSI = "X320741";
 
-    @LocalServerPort
-    private int port;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Value("${test.token.good}")
-    private String validOauthToken;
-
-    @BeforeEach
-    public void setup() {
-        RestAssured.port = port;
-        RestAssured.basePath = "/secure";
-        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-                new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
-    }
-
     @Test
     public void getNsiByCrnAndNsiId() {
         String path = String.format(GET_NSI_PATH, KNOWN_CRN_FOR_NSI, KNOWN_CONVICTION_ID_FOR_NSI, KNOWN_NSI_ID);
 
         final var nsi = given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get(path)
@@ -87,7 +58,7 @@ public class OffendersResource_getOffenderNsisByCrn {
 
         given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get(path)
@@ -101,7 +72,7 @@ public class OffendersResource_getOffenderNsisByCrn {
 
         given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get(path)
@@ -115,7 +86,7 @@ public class OffendersResource_getOffenderNsisByCrn {
 
         given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get(path)
@@ -129,7 +100,7 @@ public class OffendersResource_getOffenderNsisByCrn {
                 + QUERY_PARAM_NAME + "=BRE&" + QUERY_PARAM_NAME + "=BRES";
         final var nsiWrapper = given()
                 .auth()
-                .oauth2(validOauthToken)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get(path)
@@ -147,7 +118,7 @@ public class OffendersResource_getOffenderNsisByCrn {
         final String path = String.format(OFFENDERS_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID) + QUERY_PARAM_NAME + "=XXX";
         final var nsiWrapper = given()
             .auth()
-            .oauth2(validOauthToken)
+            .oauth2(tokenWithRoleCommunity())
             .contentType(APPLICATION_JSON_VALUE)
             .when()
             .get(path)
@@ -166,7 +137,7 @@ public class OffendersResource_getOffenderNsisByCrn {
             + QUERY_PARAM_NAME + "=BRE&" + QUERY_PARAM_NAME + "=BRES";
         final var nsiWrapper = given()
             .auth()
-            .oauth2(validOauthToken)
+            .oauth2(tokenWithRoleCommunity())
             .contentType(APPLICATION_JSON_VALUE)
             .when()
             .get(path)
@@ -185,7 +156,7 @@ public class OffendersResource_getOffenderNsisByCrn {
             + QUERY_PARAM_NAME + "=BRE&" + QUERY_PARAM_NAME + "=BRES";
         final var nsiWrapper = given()
             .auth()
-            .oauth2(validOauthToken)
+            .oauth2(tokenWithRoleCommunity())
             .contentType(APPLICATION_JSON_VALUE)
             .when()
             .get(path)
@@ -204,7 +175,7 @@ public class OffendersResource_getOffenderNsisByCrn {
         final String path = String.format(OFFENDERS_PATH, KNOWN_OFFENDER, KNOWN_CONVICTION_ID) + QUERY_PARAM_NAME + "=BRES";
         final var nsiWrapper = given()
             .auth()
-            .oauth2(validOauthToken)
+            .oauth2(tokenWithRoleCommunity())
             .contentType(APPLICATION_JSON_VALUE)
             .when()
             .get(path)
@@ -224,7 +195,7 @@ public class OffendersResource_getOffenderNsisByCrn {
             + QUERY_PARAM_NAME + "=BRE&" + QUERY_PARAM_NAME + "=BRES";
         given()
             .auth()
-            .oauth2(validOauthToken)
+            .oauth2(tokenWithRoleCommunity())
             .contentType(APPLICATION_JSON_VALUE)
             .when()
             .get(path)
@@ -239,7 +210,7 @@ public class OffendersResource_getOffenderNsisByCrn {
             + QUERY_PARAM_NAME + "=BRE&" + QUERY_PARAM_NAME + "=BRES";
         given()
             .auth()
-            .oauth2(validOauthToken)
+            .oauth2(tokenWithRoleCommunity())
             .contentType(APPLICATION_JSON_VALUE)
             .when()
             .get(path)
