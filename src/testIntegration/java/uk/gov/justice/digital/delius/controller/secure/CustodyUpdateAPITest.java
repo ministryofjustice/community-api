@@ -1,34 +1,22 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.applicationinsights.TelemetryClient;
-import io.restassured.RestAssured;
-import io.restassured.config.ObjectMapperConfig;
-import io.restassured.config.RestAssuredConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.justice.digital.delius.FlywayRestoreExtension;
-import uk.gov.justice.digital.delius.JwtAuthenticationHelper;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
-import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 
 import java.sql.Timestamp;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
@@ -43,44 +31,27 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("dev-seed")
 @ExtendWith(FlywayRestoreExtension.class)
-public class CustodyUpdateAPITest {
+public class CustodyUpdateAPITest extends IntegrationTestBase {
     private static final String NOMS_NUMBER = "G9542VP";
     private static final String OFFENDER_ID = "2500343964";
     private static final String PRISON_BOOKING_NUMBER = "V74111";
 
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @Autowired
     JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private ContactRepository contactRepository;
-
-    @Autowired
-    protected JwtAuthenticationHelper jwtAuthenticationHelper;
 
     @SpyBean
     private TelemetryClient telemetryClient;
 
     @BeforeEach
     public void setup() {
-        RestAssured.port = port;
-        RestAssured.basePath = "/secure";
-        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-                new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
+        super.setup();
         //noinspection SqlWithoutWhere
         jdbcTemplate.execute("DELETE FROM CONTACT");
     }
 
     @Test
-    public void mustHaveUpdateRole() throws JsonProcessingException {
+    public void mustHaveUpdateRole() {
         final var token = createJwt("ROLE_COMMUNITY");
 
         given()
@@ -94,7 +65,7 @@ public class CustodyUpdateAPITest {
     }
 
     @Test
-    public void updatePrisonInstitution() throws JsonProcessingException {
+    public void updatePrisonInstitution() {
         final var token = createJwt("ROLE_COMMUNITY_CUSTODY_UPDATE", "ROLE_COMMUNITY");
 
         final var custody = given()
@@ -164,21 +135,12 @@ public class CustodyUpdateAPITest {
 
     }
 
-    private String createUpdateCustody(String prisonCode) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(UpdateCustody
+    private String createUpdateCustody(String prisonCode) {
+        return writeValueAsString(UpdateCustody
                 .builder()
                 .nomsPrisonInstitutionCode(prisonCode)
                 .build());
     }
-    private String createJwt(final String ...roles ) {
-        return jwtAuthenticationHelper.createJwt(JwtAuthenticationHelper.JwtParameters.builder()
-                .username("APIUser")
-                .roles(List.of(roles))
-                .scope(Arrays.asList("read", "write"))
-                .expiryTime(Duration.ofDays(1))
-                .build());
-    }
-
     private LocalDateTime toLocalDateTime(Object columnValue) {
         return ((Timestamp)columnValue).toLocalDateTime();
     }

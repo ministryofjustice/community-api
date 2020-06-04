@@ -1,21 +1,10 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import io.restassured.RestAssured;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.justice.digital.delius.JwtAuthenticationHelper;
-
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -23,39 +12,15 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("dev-seed")
 @ExtendWith(SpringExtension.class)
-public class RequirementsAPITest {
-
-
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    protected JwtAuthenticationHelper jwtAuthenticationHelper;
-
-    @BeforeEach
-    public void setup() {
-        RestAssured.port = port;
-        RestAssured.basePath = "/secure";
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-    }
-
+public class RequirementsAPITest extends IntegrationTestBase {
     @DisplayName("Known CRN and conviction ID returns full set of data")
     @Test
     public void getRequirementsByConvictionId_convictionsFound_returnsOk() {
 
-        var jwt = jwtAuthenticationHelper.createJwt(JwtAuthenticationHelper.JwtParameters.builder()
-                    .username("APIUser")
-                    .roles(List.of("ROLE_COMMUNITY"))
-                    .scope(Arrays.asList("read", "write"))
-                    .expiryTime(Duration.ofDays(1))
-                    .build());
-
         given()
                 .auth()
-                .oauth2(jwt)
+                .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get(String.format("/offenders/crn/%s/convictions/%s/requirements", "X320741", "2500295343"))
@@ -81,16 +46,9 @@ public class RequirementsAPITest {
     @Test
     public void getRequirementsByUnknownCrn_returns404() {
 
-        var jwt = jwtAuthenticationHelper.createJwt(JwtAuthenticationHelper.JwtParameters.builder()
-            .username("APIUser")
-            .roles(List.of("ROLE_COMMUNITY"))
-            .scope(Arrays.asList("read", "write"))
-            .expiryTime(Duration.ofDays(1))
-            .build());
-
         given()
             .auth()
-            .oauth2(jwt)
+            .oauth2(tokenWithRoleCommunity())
             .contentType(APPLICATION_JSON_VALUE)
             .when()
             .get(String.format("/offenders/crn/%s/convictions/%s/requirements", "XX?XX!", "2500295343"))
@@ -103,16 +61,9 @@ public class RequirementsAPITest {
     @Test
     public void getRequirementsByConvictionId_crnFound_noConvictionsFound_returnsOk() {
 
-        var jwt = jwtAuthenticationHelper.createJwt(JwtAuthenticationHelper.JwtParameters.builder()
-            .username("APIUser")
-            .roles(List.of("ROLE_COMMUNITY"))
-            .scope(Arrays.asList("read", "write"))
-            .expiryTime(Duration.ofDays(1))
-            .build());
-
         given()
             .auth()
-            .oauth2(jwt)
+            .oauth2(tokenWithRoleCommunity())
             .contentType(APPLICATION_JSON_VALUE)
             .when()
             .get(String.format("/offenders/crn/%s/convictions/%s/requirements", "X320741", "0"))
