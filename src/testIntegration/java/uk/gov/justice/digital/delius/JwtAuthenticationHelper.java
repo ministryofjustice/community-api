@@ -75,21 +75,4 @@ public class JwtAuthenticationHelper {
             throw new IllegalStateException("Cannot load keys from store: " + resource, e);
         }
     }
-
-    @Data
-    @Builder(toBuilder = true)
-    public class JwtParameters {
-        private String username;
-        private String userId;
-        @Builder.Default
-        private List<String> scope = List.of();
-        @Builder.Default
-        private List<String> roles = List.of();
-        @Builder.Default
-        private Duration expiryTime = Duration.ofHours(1L);
-        @Builder.Default
-        private String jwtId = UUID.randomUUID().toString();
-        @Builder.Default
-        private String clientId = "community-api-client";
-    }
 }
