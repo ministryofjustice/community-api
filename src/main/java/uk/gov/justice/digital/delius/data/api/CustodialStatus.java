@@ -1,10 +1,12 @@
 package uk.gov.justice.digital.delius.data.api;
 
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
 
 @Getter
+@Builder
 public class CustodialStatus {
     private Long sentenceId;
     private CustodialType custodialType;

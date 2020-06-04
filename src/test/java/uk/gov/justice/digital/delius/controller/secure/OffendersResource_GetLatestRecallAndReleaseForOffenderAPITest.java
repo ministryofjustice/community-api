@@ -6,7 +6,6 @@ import org.junit.Test;
 import uk.gov.justice.digital.delius.controller.CustodyNotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
-import uk.gov.justice.digital.delius.controller.secure.OffendersResource;
 import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.service.*;
@@ -39,11 +38,12 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffenderAPITest {
     private ConvictionService convictionService = mock(ConvictionService.class);
     private OffenderManagerService offenderManagerService = mock(OffenderManagerService.class);
     private NsiService nsiService = mock(NsiService.class);
+    private SentenceService sentenceService = mock(SentenceService.class);
 
     @Before
     public void setup() {
         RestAssuredMockMvc.standaloneSetup(
-                new OffendersResource(offenderService, alfrescoService, documentService, contactService, convictionService, nsiService, offenderManagerService),
+                new OffendersResource(offenderService, alfrescoService, documentService, contactService, convictionService, nsiService, offenderManagerService, sentenceService),
                 new SecureControllerAdvice()
         );
     }
