@@ -1,23 +1,57 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
+import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Contact;
-import uk.gov.justice.digital.delius.data.api.*;
+import uk.gov.justice.digital.delius.data.api.Conviction;
+import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
+import uk.gov.justice.digital.delius.data.api.Nsi;
+import uk.gov.justice.digital.delius.data.api.NsiWrapper;
+import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
+import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
+import uk.gov.justice.digital.delius.data.api.OffenderFilter;
+import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
+import uk.gov.justice.digital.delius.data.api.PrimaryIdentifiers;
+import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
-import uk.gov.justice.digital.delius.service.*;
+import uk.gov.justice.digital.delius.service.AlfrescoService;
+import uk.gov.justice.digital.delius.service.ContactService;
+import uk.gov.justice.digital.delius.service.ConvictionService;
+import uk.gov.justice.digital.delius.service.DocumentService;
+import uk.gov.justice.digital.delius.service.NsiService;
+import uk.gov.justice.digital.delius.service.OffenderManagerService;
+import uk.gov.justice.digital.delius.service.OffenderService;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -413,6 +447,21 @@ public class OffendersResource {
                 ).map(conviction -> nsiService.getNsiById(nsiId))
                 .orElseThrow(() -> new NotFoundException(String.format("NSI with id %s not found", nsiId)))
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
+    }
+
+    @ApiOperation(value = "Return pageable list of all offender identifiers that match the supplied filter")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", dataType = "int", paramType = "query",
+                    value = "Results page you want to retrieve (0..N)", example = "0", defaultValue = "0"),
+            @ApiImplicitParam(name = "size", dataType = "int", paramType = "query",
+                    value = "Number of records per page.", example = "10", defaultValue = "10"),
+            @ApiImplicitParam(name = "sort", dataType = "string", paramType = "query", example = "crn,desc", defaultValue = "crn,asc",
+                    value = "Sort column and direction. Multiple sort params allowed.")})
+    @GetMapping(value = "/offenders/primaryIdentifiers")
+    public Page<PrimaryIdentifiers> getOffenderIds(
+            @ApiParam(value = "Optionally specify an offender filter") final OffenderFilter filter,
+            @PageableDefault(sort = {"crn"}, direction = Sort.Direction.ASC) final Pageable pageable) {
+        return offenderService.getAllPrimaryIdentifiers(filter, pageable);
     }
 }
 

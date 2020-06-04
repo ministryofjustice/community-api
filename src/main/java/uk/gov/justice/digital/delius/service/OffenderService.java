@@ -2,11 +2,20 @@ package uk.gov.justice.digital.delius.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.controller.CustodyNotFoundException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
-import uk.gov.justice.digital.delius.data.api.*;
+import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
+import uk.gov.justice.digital.delius.data.api.OffenderFilter;
+import uk.gov.justice.digital.delius.data.api.OffenderIdentifiers;
+import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
+import uk.gov.justice.digital.delius.data.api.OffenderManager;
+import uk.gov.justice.digital.delius.data.api.PrimaryIdentifiers;
+import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
@@ -152,7 +161,8 @@ public class OffenderService {
 
     @Transactional(readOnly = true)
     public OffenderIdentifiers getOffenderIdentifiers(Long offenderId) {
-        var offender = offenderRepository.findByOffenderId(offenderId).orElseThrow(() -> new NotFoundException("Offender not found"));
+        var offender = offenderRepository.findByOffenderId(offenderId)
+                .orElseThrow(() -> new NotFoundException("Offender not found"));
 
         return OffenderIdentifiers
                 .builder()
@@ -170,4 +180,13 @@ public class OffenderService {
                 .orElseThrow(() -> new CustodyNotFoundException(activeCustodialEvent));
     }
 
+    public Page<PrimaryIdentifiers> getAllPrimaryIdentifiers(OffenderFilter filter, Pageable pageable) {
+        return offenderRepository
+                .findAll(filter, pageable)
+                .map(offender -> PrimaryIdentifiers
+                        .builder()
+                        .crn(offender.getCrn())
+                        .offenderId(offender.getOffenderId())
+                        .build());
+    }
 }
