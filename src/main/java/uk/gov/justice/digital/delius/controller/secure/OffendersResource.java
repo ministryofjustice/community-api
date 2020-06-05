@@ -40,7 +40,7 @@ import uk.gov.justice.digital.delius.data.api.NsiWrapper;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
-import uk.gov.justice.digital.delius.data.api.OffenderFilter;
+import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
 import uk.gov.justice.digital.delius.data.api.PrimaryIdentifiers;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;

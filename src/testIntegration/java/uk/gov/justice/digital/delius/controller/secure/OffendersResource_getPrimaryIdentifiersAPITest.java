@@ -1,8 +1,12 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
@@ -170,6 +174,136 @@ public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationT
                     .statusCode(200)
                     .body("content.size()", is(4))
                     .body("content.find { it.offenderId == 2500343964 }.crn", is("X320741"));
+        }
+
+        @Nested
+        class ActiveDateFilter {
+            @BeforeEach
+            void setUp() {
+            /*
+                Offender has following sentences - as shown by seed data
+                Sentence : 01-JUN-17 to 01-DEC-17
+                Sentence : 01-JAN-18 to 31-JAN-18 (10001)- deleted
+                Sentence : 01-FEB-18 to 01-MAR-18 (10002)
+                Sentence : 02-FEB-18 to 22-FEB-18 (10003)
+                Sentence : 16-SEP-19 to 17-SEP-19
+                Sentence : 20-SEP-19 to still active
+             */
+            }
+        }
+
+        @Test
+        @DisplayName("Not included if no events on that data")
+        void notIncludedIfNoSentencesOnThatDate() {
+            given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .param("size", 1000)
+                    .param("activeDate", "2017-05-31")
+                    .when()
+                    .get("/offenders/primaryIdentifiers")
+                    .then()
+                    .statusCode(200)
+                    .body("totalElements", is(0));
+        }
+        @Test
+        @DisplayName("Included if active sentence on that date")
+        void includeIfActiveSentenceOnThatDate() {
+            given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .param("size", 1000)
+                    .param("activeDate", "2017-06-02")
+                    .when()
+                    .get("/offenders/primaryIdentifiers")
+                    .then()
+                    .statusCode(200)
+                    .body("totalElements", is(1))
+                    .body("content.find { it.offenderId == 2500343964 }.crn", is("X320741"));
+        }
+        @Test
+        @DisplayName("Included if active sentence on first day of sentence")
+        void includeIfActiveSentenceStartedOnThatDate() {
+            given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .param("size", 1000)
+                    .param("activeDate", "2017-06-01")
+                    .when()
+                    .get("/offenders/primaryIdentifiers")
+                    .then()
+                    .statusCode(200)
+                    .body("totalElements", is(1))
+                    .body("content.find { it.offenderId == 2500343964 }.crn", is("X320741"));
+        }
+        @Test
+        @DisplayName("Included if active sentence on last day of sentence")
+        void includeIfActiveSentenceEndedOnThatDate() {
+            given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .param("size", 1000)
+                    .param("activeDate", "2017-12-01")
+                    .when()
+                    .get("/offenders/primaryIdentifiers")
+                    .then()
+                    .statusCode(200)
+                    .body("totalElements", is(1))
+                    .body("content.find { it.offenderId == 2500343964 }.crn", is("X320741"));
+        }
+        @Test
+        @DisplayName("Not included if event deleted on that data")
+        void notIncludedIfEVentDeletedOnThatDate() {
+            given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .param("size", 1000)
+                    .param("activeDate", "2018-01-02")
+                    .when()
+                    .get("/offenders/primaryIdentifiers")
+                    .then()
+                    .statusCode(200)
+                    .body("totalElements", is(0));
+        }
+
+        @Test
+        @DisplayName("Include only once if two active sentences on that date")
+        void includeOnceIfTwoActiveSentencesOnThatDate() {
+            given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .param("size", 1000)
+                    .param("activeDate", "2018-02-03")
+                    .when()
+                    .get("/offenders/primaryIdentifiers")
+                    .then()
+                    .statusCode(200)
+                    .body("totalElements", is(1))
+                    .body("content.find { it.offenderId == 2500343964 }.crn", is("X320741"));
+        }
+
+        @Test
+        @DisplayName("Included for today if sentence has not ended")
+        void canFilterByActiveOffendersOnCertainDate() {
+            given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .param("size", 1000)
+                    .param("activeDate", LocalDate.now().format(DateTimeFormatter.ISO_DATE))
+                    .when()
+                    .get("/offenders/primaryIdentifiers")
+                    .then()
+                    .statusCode(200)
+                    .body("totalElements", is(1))
+                    .body("content.find { it.offenderId == 2500343964 }.crn", is("X320741"));
+
         }
     }
 

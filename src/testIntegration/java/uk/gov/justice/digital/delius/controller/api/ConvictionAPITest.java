@@ -54,7 +54,7 @@ public class ConvictionAPITest {
             .body()
             .as(Conviction[].class);
 
-        assertThat(convictions).extracting("convictionId").containsExactlyInAnyOrder(2500297061L, 2500295345L, 2500295343L);
+        assertThat(convictions).extracting("convictionId").containsExactlyInAnyOrder(2500297061L, 2500295345L, 2500295343L, 10002L, 10003L);
     }
 
     @Test

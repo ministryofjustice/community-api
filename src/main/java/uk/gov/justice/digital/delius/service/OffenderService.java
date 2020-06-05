@@ -10,12 +10,13 @@ import uk.gov.justice.digital.delius.controller.CustodyNotFoundException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
-import uk.gov.justice.digital.delius.data.api.OffenderFilter;
+import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
 import uk.gov.justice.digital.delius.data.api.OffenderIdentifiers;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
 import uk.gov.justice.digital.delius.data.api.OffenderManager;
 import uk.gov.justice.digital.delius.data.api.PrimaryIdentifiers;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
+import uk.gov.justice.digital.delius.jpa.filters.OffenderFilterTransformer;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
@@ -182,7 +183,7 @@ public class OffenderService {
 
     public Page<PrimaryIdentifiers> getAllPrimaryIdentifiers(OffenderFilter filter, Pageable pageable) {
         return offenderRepository
-                .findAll(filter, pageable)
+                .findAll(OffenderFilterTransformer.fromFilter(filter), pageable)
                 .map(offender -> PrimaryIdentifiers
                         .builder()
                         .crn(offender.getCrn())
