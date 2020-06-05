@@ -13,8 +13,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.justice.digital.delius.data.api.CustodialStatus;
-import uk.gov.justice.digital.delius.data.api.Nsi;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 
 import java.time.LocalDate;
 
@@ -66,7 +64,7 @@ public class OffendersResource_getOffenderCustodialStatusByCrn {
         assertThat(custodialStatus.getSentenceId()).isEqualTo(KNOWN_SENTENCE_ID);
         assertThat(custodialStatus.getCustodialType().getCode()).isEqualTo("PSS");
         assertThat(custodialStatus.getCustodialType().getDescription()).isEqualTo("ORA Adult Custody (inc PSS)");
-        assertThat(custodialStatus.getMainOffenceDescription()).isEqualTo("Common assault and battery - 10501");
+        assertThat(custodialStatus.getMainOffence()).isEqualTo("Common assault and battery - 10501");
         assertThat(custodialStatus.getStatus()).isEqualTo("Post Sentence Supervision");
         assertThat(custodialStatus.getSentenceDate()).isEqualTo(LocalDate.of(2018, 12, 3));
         assertThat(custodialStatus.getActualReleaseDate()).isEqualTo(LocalDate.of(2019, 7, 3));

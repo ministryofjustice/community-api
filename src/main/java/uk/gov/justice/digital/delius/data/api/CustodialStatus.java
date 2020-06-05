@@ -9,13 +9,13 @@ import java.time.LocalDate;
 @Builder
 public class CustodialStatus {
     private Long sentenceId;
-    private CustodialType custodialType;
-    private String mainOffenceDescription;
-    private String status;
+    private KeyValue custodialType;
+    private KeyValue sentence;
+    private KeyValue mainOffence;
     private LocalDate sentenceDate;
     private LocalDate actualReleaseDate;
     private LocalDate licenceExpiryDate;
     private LocalDate pssEndDate;
-    private Integer length;
+    private Long length;
     private String lengthUnit;
 }

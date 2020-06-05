@@ -9,7 +9,6 @@ import uk.gov.justice.digital.delius.data.api.CustodialStatus;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
-import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.DisposalRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.CustodialStatusTransformer;
@@ -38,7 +37,7 @@ class SentenceServiceTest {
     @Mock
     private Custody custody;
     @Mock
-    private StandardReference custodialStatus;
+    private CustodialStatus custodialStatus;
     @Mock
     private CustodialStatusTransformer transformer;
 
@@ -70,13 +69,11 @@ class SentenceServiceTest {
         when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
         when(offender.getOffenderId()).thenReturn(OFFENDER_ID);
         when(disposalRepository.find(OFFENDER_ID, CONVICTION_ID, SENTENCE_ID)).thenReturn(Optional.of(disposal));
-        when(disposal.getCustody()).thenReturn(custody);
-        when(custody.getCustodialStatus()).thenReturn(custodialStatus);
-        when(custodialStatus.getCodeValue()).thenReturn("P");
+        when(transformer.custodialStatusOf(disposal)).thenReturn(custodialStatus);
 
         Optional<CustodialStatus> status = sentenceService.getCustodialStatus(CRN, CONVICTION_ID, SENTENCE_ID);
 
         assertThat(status).isNotEmpty();
-        assertThat(status.get().getCustodialType().getCode()).isEqualTo("P");
+        assertThat(status.get()).isEqualTo(custodialStatus);
     }
 }
