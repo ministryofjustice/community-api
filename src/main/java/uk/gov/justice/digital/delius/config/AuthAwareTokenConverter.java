@@ -18,11 +18,11 @@ public class AuthAwareTokenConverter implements Converter<Jwt, AbstractAuthentic
         final var claims = jwt.getClaims();
         var userId = getOrBlank((String)claims.get("user_id"));
         if (userId.isEmpty()) {
-            userId = jwt.getSubject();
+            userId = getOrBlank((String)claims.get("client_id"));
         }
-        var userName = getOrBlank((String)claims.get("user_name"));
+        var userName = jwt.getSubject();
         if (userName.isEmpty()) {
-            userName = getOrBlank((String)claims.get("client_id"));
+            userName = getOrBlank((String)claims.get("user_name"));
         }
         if (userName.isEmpty()) {
             userName = userId;
