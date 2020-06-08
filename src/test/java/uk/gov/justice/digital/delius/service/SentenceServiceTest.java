@@ -106,6 +106,20 @@ class SentenceServiceTest {
     }
 
     @Test
+    public void whenCustodyIsNull_thenReturnEmpty() {
+        when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
+        when(disposalRepository.findByDisposalId(SENTENCE_ID)).thenReturn(Optional.of(disposal));
+        when(offender.getOffenderId()).thenReturn(OFFENDER_ID);
+        when(disposal.getOffenderId()).thenReturn(OFFENDER_ID);
+        when(disposal.getEvent()).thenReturn(event);
+        when(disposal.isSoftDeleted()).thenReturn(false);
+        when(disposal.getCustody()).thenReturn(null);
+        Optional<CustodialStatus> status = sentenceService.getCustodialStatus(CRN, CONVICTION_ID, SENTENCE_ID);
+
+        assertThat(status).isEmpty();
+    }
+
+    @Test
     public void whenCustodyIsSoftDeleted_thenReturnEmpty() {
         when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
         when(disposalRepository.findByDisposalId(SENTENCE_ID)).thenReturn(Optional.of(disposal));

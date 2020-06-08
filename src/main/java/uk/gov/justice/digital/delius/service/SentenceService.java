@@ -22,6 +22,7 @@ public class SentenceService {
                     .filter(disposal -> offender.getOffenderId().equals(disposal.getOffenderId()))
                     .filter(disposal -> convictionId.equals(disposal.getEvent().getEventId()))
                     .filter(disposal -> !disposal.isSoftDeleted())
+                    .filter(disposal -> disposal.getCustody() != null)
                     .filter(disposal -> !disposal.getCustody().isSoftDeleted())
             )
             .flatMap(optional ->  optional.map(custodialStatusTransformer::custodialStatusOf));
