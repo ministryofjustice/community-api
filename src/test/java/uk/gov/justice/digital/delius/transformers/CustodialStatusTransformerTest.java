@@ -40,7 +40,6 @@ class CustodialStatusTransformerTest {
                                 .codeDescription(CUSTODIAL_TYPE_DESCRIPTION)
                                 .build())
                         .pssStartDate(LICENCE_EXPIRY_DATE)
-                        .pssEndDate(PSS_END_DATE)
                         .build())
                 .event(Event.builder()
                         .mainOffence(MainOffence.builder()
@@ -66,4 +65,7 @@ class CustodialStatusTransformerTest {
         assertThat(custodialStatus.getLength()).isEqualTo(LENGTH);
         assertThat(custodialStatus.getLengthUnit()).isEqualTo(LENGTH_UNIT);
     }
+
+    // TODO: Nullables
+    // TODO: Multiple releases
 }

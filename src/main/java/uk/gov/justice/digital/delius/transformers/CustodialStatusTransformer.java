@@ -21,7 +21,6 @@ public class CustodialStatusTransformer {
                         .description(disposal.getEvent().getMainOffence().getOffence().getDescription()).build())
                 .sentenceDate(disposal.getStartDate())
                 .actualReleaseDate(disposal.getCustody().getReleases().stream().findFirst().get().getActualReleaseDate().toLocalDate())
-                .pssEndDate(disposal.getCustody().getPssEndDate())
                 .licenceExpiryDate(disposal.getCustody().getPssStartDate())
                 .length(disposal.getLength())
                 .lengthUnit("Months")

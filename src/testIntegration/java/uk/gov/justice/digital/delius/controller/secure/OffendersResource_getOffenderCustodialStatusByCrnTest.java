@@ -22,9 +22,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev-seed")
-public class OffendersResource_getOffenderCustodialStatusByCrn {
-    private static final Long KNOWN_CONVICTION_ID = 2500295345L;
-    private static final Long KNOWN_SENTENCE_ID = 2500282335L;
+public class OffendersResource_getOffenderCustodialStatusByCrnTest {
+    private static final Long KNOWN_CONVICTION_ID = 2500295124L;
+    private static final Long KNOWN_SENTENCE_ID = 2500282123L;
     private static final String KNOWN_CRN = "X320741";
     public static final String URL_TEMPLATE = "/offenders/crn/%s/convictions/%s/sentences/%s/custodialStatus";
 
@@ -41,7 +41,8 @@ public class OffendersResource_getOffenderCustodialStatusByCrn {
     public void setup() {
         RestAssured.port = port;
         RestAssured.basePath = "/secure";
-        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
+        RestAssured.config = RestAssuredConfig.config()
+                .objectMapperConfig(
                 new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
     }
 
@@ -62,14 +63,13 @@ public class OffendersResource_getOffenderCustodialStatusByCrn {
                 .as(CustodialStatus.class);
 
         assertThat(custodialStatus.getSentenceId()).isEqualTo(KNOWN_SENTENCE_ID);
-        assertThat(custodialStatus.getCustodialType().getCode()).isEqualTo("PSS");
-        assertThat(custodialStatus.getCustodialType().getDescription()).isEqualTo("ORA Adult Custody (inc PSS)");
-        assertThat(custodialStatus.getMainOffence()).isEqualTo("Common assault and battery - 10501");
-        assertThat(custodialStatus.getStatus()).isEqualTo("Post Sentence Supervision");
+        assertThat(custodialStatus.getSentence().getDescription()).isEqualTo("CJA - Indeterminate Public Prot.");
         assertThat(custodialStatus.getSentenceDate()).isEqualTo(LocalDate.of(2018, 12, 3));
+        assertThat(custodialStatus.getCustodialType().getCode()).isEqualTo("P");
+        assertThat(custodialStatus.getCustodialType().getDescription()).isEqualTo("Post Sentence Supervision");
+        assertThat(custodialStatus.getMainOffence().getDescription()).isEqualTo("Common assault and battery - 10501");
         assertThat(custodialStatus.getActualReleaseDate()).isEqualTo(LocalDate.of(2019, 7, 3));
         assertThat(custodialStatus.getLicenceExpiryDate()).isEqualTo(LocalDate.of(2019, 11, 3));
-        assertThat(custodialStatus.getPssEndDate()).isEqualTo(LocalDate.of(2020, 6, 3));
         assertThat(custodialStatus.getLength()).isEqualTo(11);
         assertThat(custodialStatus.getLengthUnit()).isEqualTo("Months");
 

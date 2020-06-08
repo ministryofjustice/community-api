@@ -18,7 +18,7 @@ public class SentenceService {
 
     public Optional<CustodialStatus> getCustodialStatus(String crn, Long convictionId, Long sentenceId) {
         return offenderRepository.findByCrn(crn)
-            .map(offender -> disposalRepository.find(offender.getOffenderId(), convictionId, sentenceId))
+            .map(offender -> disposalRepository.findByDisposalId(sentenceId))
             .flatMap(optional ->  optional.map(custodialStatusTransformer::custodialStatusOf));
     }
 

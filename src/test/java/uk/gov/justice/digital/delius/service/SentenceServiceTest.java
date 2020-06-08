@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.CustodialStatus;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.DisposalRepository;
@@ -35,8 +34,6 @@ class SentenceServiceTest {
     @Mock
     private Disposal disposal;
     @Mock
-    private Custody custody;
-    @Mock
     private CustodialStatus custodialStatus;
     @Mock
     private CustodialStatusTransformer transformer;
@@ -57,8 +54,7 @@ class SentenceServiceTest {
     @Test
     public void whenNoDisposalFound_thenReturnEmpty() {
         when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
-        when(offender.getOffenderId()).thenReturn(OFFENDER_ID);
-        when(disposalRepository.find(OFFENDER_ID, CONVICTION_ID, SENTENCE_ID)).thenReturn(Optional.empty());
+        when(disposalRepository.findByDisposalId(SENTENCE_ID)).thenReturn(Optional.empty());
         Optional<CustodialStatus> status = sentenceService.getCustodialStatus(CRN, CONVICTION_ID, SENTENCE_ID);
 
         assertThat(status).isEmpty();
@@ -67,8 +63,7 @@ class SentenceServiceTest {
     @Test
     public void whenStatusReturnedFromRepository_thenMapAndReturnIt() {
         when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
-        when(offender.getOffenderId()).thenReturn(OFFENDER_ID);
-        when(disposalRepository.find(OFFENDER_ID, CONVICTION_ID, SENTENCE_ID)).thenReturn(Optional.of(disposal));
+        when(disposalRepository.findByDisposalId(SENTENCE_ID)).thenReturn(Optional.of(disposal));
         when(transformer.custodialStatusOf(disposal)).thenReturn(custodialStatus);
 
         Optional<CustodialStatus> status = sentenceService.getCustodialStatus(CRN, CONVICTION_ID, SENTENCE_ID);
