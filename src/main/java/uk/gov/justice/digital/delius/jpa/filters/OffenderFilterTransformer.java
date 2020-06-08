@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.domain.Specification;
 import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderPrimaryIdentifiers;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -12,19 +12,19 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.Optional;
 
-public class OffenderFilterTransformer implements Specification<Offender> {
+public class OffenderFilterTransformer implements Specification<OffenderPrimaryIdentifiers> {
     private final OffenderFilter filter;
 
     private OffenderFilterTransformer(OffenderFilter filter) {
         this.filter = filter;
     }
 
-    public static Specification<Offender> fromFilter(OffenderFilter filter) {
+    public static Specification<OffenderPrimaryIdentifiers> fromFilter(OffenderFilter filter) {
         return new OffenderFilterTransformer(filter);
     }
 
     @Override
-    public Predicate toPredicate(@NotNull Root<Offender> offenderRoot, @NotNull CriteriaQuery<?> query, @NotNull CriteriaBuilder criteriaBuilder) {
+    public Predicate toPredicate(@NotNull Root<OffenderPrimaryIdentifiers> offenderRoot, @NotNull CriteriaQuery<?> query, @NotNull CriteriaBuilder criteriaBuilder) {
         final ImmutableList.Builder<Predicate> predicateBuilder = ImmutableList.builder();
 
         if (!filter.isIncludeDeleted()) {
@@ -46,16 +46,16 @@ public class OffenderFilterTransformer implements Specification<Offender> {
                     and d.DISPOSAL_DATE<=?
                     and ( d.TERMINATION_DATE>=? or  d.TERMINATION_DATE is null)
                  */
-                final var eventJoin = offenderRoot.join("events");
-                predicateBuilder.add(criteriaBuilder.equal(eventJoin.get("softDeleted"), 0));
-                final var disposalJoin = eventJoin.join("disposal");
-                predicateBuilder.add(criteriaBuilder.lessThanOrEqualTo(disposalJoin.get("startDate"), activeDate));
-                predicateBuilder.add(criteriaBuilder.or(
-                        criteriaBuilder.greaterThanOrEqualTo(disposalJoin.get("terminationDate"), activeDate),
-                        criteriaBuilder.isNull(disposalJoin.get("terminationDate"))
-                ));
-                query.distinct(true);
-            }
+                    final var eventJoin = offenderRoot.join("events");
+                    predicateBuilder.add(criteriaBuilder.equal(eventJoin.get("softDeleted"), 0));
+                    final var disposalJoin = eventJoin.join("disposal");
+                    predicateBuilder.add(criteriaBuilder.lessThanOrEqualTo(disposalJoin.get("startDate"), activeDate));
+                    predicateBuilder.add(criteriaBuilder.or(
+                            criteriaBuilder.greaterThanOrEqualTo(disposalJoin.get("terminationDate"), activeDate),
+                            criteriaBuilder.isNull(disposalJoin.get("terminationDate"))
+                    ));
+                    query.distinct(true);
+                }
         );
         return criteriaBuilder.and(predicateBuilder.build().toArray(new Predicate[0]));
     }
