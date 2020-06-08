@@ -20,6 +20,6 @@ public class JwtParameters {
     private Duration expiryTime = Duration.ofHours(1L);
     @Builder.Default
     private String jwtId = UUID.randomUUID().toString();
-    @Builder.Default
-    private String clientId = "community-api-client";
+    private String clientId;
+    private String name;
 }

@@ -17,7 +17,7 @@ public class SecurityUserContext {
 
     public boolean isClientOnly() {
         if (getAuthentication() instanceof AuthAwareAuthenticationToken) {
-            return getOptionalCurrentUser().isEmpty(); // TODO DT-838 This needs explicitly testing
+            return getOptionalCurrentUser().isEmpty();
         }
         return false;
     }

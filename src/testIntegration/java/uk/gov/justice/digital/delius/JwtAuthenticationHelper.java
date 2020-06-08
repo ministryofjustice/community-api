@@ -24,6 +24,7 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -44,9 +45,6 @@ public class JwtAuthenticationHelper {
     public String createJwt(final JwtParameters parameters) {
 
         final HashMap<String, Object> claims = new HashMap<>();
-        claims.put("user_name", parameters.getUsername());
-        claims.put("client_id", parameters.getClientId());
-        claims.put("user_id", parameters.getUserId());
 
         if (parameters.getRoles() != null && !parameters.getRoles().isEmpty())
             claims.put("authorities", parameters.getRoles());
@@ -54,10 +52,19 @@ public class JwtAuthenticationHelper {
         if (parameters.getScope() != null && !parameters.getScope().isEmpty())
             claims.put("scope", parameters.getScope());
 
-        return Jwts.builder()
-                .setId(parameters.getJwtId())
-                .setSubject(parameters.getUsername())
-                .addClaims(claims)
+        final var builder = Jwts.builder().setId(UUID.randomUUID().toString());
+        Optional.ofNullable(parameters.getClientId()).ifPresent(clientId -> {
+            claims.put("client_id", clientId);
+            builder.setSubject(clientId);
+        });
+        Optional.ofNullable(parameters.getUsername()).ifPresent(username -> {
+            claims.put("user_name", username);
+            builder.setSubject(username);
+            Optional.ofNullable(parameters.getName()).ifPresent(name -> claims.put("name", name));
+        });
+        Optional.ofNullable(parameters.getUserId()).ifPresent(userId -> claims.put("user_id", userId));
+
+        return builder.addClaims(claims)
                 .setExpiration(new Date(System.currentTimeMillis() + parameters.getExpiryTime().toMillis()))
                 .signWith(SignatureAlgorithm.RS256, keyPair.getPrivate())
                 .compact();

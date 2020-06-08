@@ -12,8 +12,8 @@ public class AuthAwareAuthenticationToken extends JwtAuthenticationToken {
 
     private final UserIdUser userIdUser;
 
-    public AuthAwareAuthenticationToken(Jwt jwt, UserIdUser user, Collection<? extends GrantedAuthority> authorities) {
+    public AuthAwareAuthenticationToken(Jwt jwt, String userId, Collection<? extends GrantedAuthority> authorities) {
         super(jwt, authorities);
-        userIdUser = user;
+        userIdUser = new UserIdUser(jwt.getSubject(), userId);
     }
 }
