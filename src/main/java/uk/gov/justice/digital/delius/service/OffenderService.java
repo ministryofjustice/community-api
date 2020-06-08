@@ -10,17 +10,19 @@ import uk.gov.justice.digital.delius.controller.CustodyNotFoundException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
-import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
 import uk.gov.justice.digital.delius.data.api.OffenderIdentifiers;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
 import uk.gov.justice.digital.delius.data.api.OffenderManager;
 import uk.gov.justice.digital.delius.data.api.PrimaryIdentifiers;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
+import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
 import uk.gov.justice.digital.delius.jpa.filters.OffenderFilterTransformer;
+import uk.gov.justice.digital.delius.jpa.oracle.annotations.NationalUserOverride;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderPrimaryIdentifiersRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 import uk.gov.justice.digital.delius.transformers.ReleaseTransformer;
@@ -37,6 +39,7 @@ import static java.util.function.Predicate.not;
 public class OffenderService {
 
     private final OffenderRepository offenderRepository;
+    private final OffenderPrimaryIdentifiersRepository offenderPrimaryIdentifiersRepository;
     private final ConvictionService convictionService;
 
     @Transactional(readOnly = true)
@@ -181,8 +184,10 @@ public class OffenderService {
                 .orElseThrow(() -> new CustodyNotFoundException(activeCustodialEvent));
     }
 
+    @NationalUserOverride
+    @Transactional(readOnly = true)
     public Page<PrimaryIdentifiers> getAllPrimaryIdentifiers(OffenderFilter filter, Pageable pageable) {
-        return offenderRepository
+        return offenderPrimaryIdentifiersRepository
                 .findAll(OffenderFilterTransformer.fromFilter(filter), pageable)
                 .map(offender -> PrimaryIdentifiers
                         .builder()
