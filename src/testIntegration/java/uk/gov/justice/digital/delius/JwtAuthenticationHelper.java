@@ -15,6 +15,7 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -34,8 +35,6 @@ public class JwtAuthenticationHelper {
 
         final HashMap<String, Object> claims = new HashMap<String, Object>();
 
-        claims.put("user_name", parameters.getUsername());
-        claims.put("client_id", "elite2apiclient");
 
         if (parameters.getRoles() != null && !parameters.getRoles().isEmpty())
             claims.put("authorities", parameters.getRoles());
@@ -43,10 +42,19 @@ public class JwtAuthenticationHelper {
         if (parameters.getScope() != null && !parameters.getScope().isEmpty())
             claims.put("scope", parameters.getScope());
 
-        return Jwts.builder()
-                .setId(UUID.randomUUID().toString())
-                .setSubject(parameters.getUsername())
-                .addClaims(claims)
+        final var builder = Jwts.builder().setId(UUID.randomUUID().toString());
+        Optional.ofNullable(parameters.clientId).ifPresent(clientId -> {
+            claims.put("client_id", clientId);
+            builder.setSubject(clientId);
+        });
+        Optional.ofNullable(parameters.username).ifPresent(username -> {
+            claims.put("user_name", username);
+            builder.setSubject(username);
+            Optional.ofNullable(parameters.name).ifPresent(name -> claims.put("name", name));
+        });
+        Optional.ofNullable(parameters.userId).ifPresent(userId -> claims.put("user_id", userId));
+
+        return builder.addClaims(claims)
                 .setExpiration(new Date(System.currentTimeMillis() + parameters.getExpiryTime().toMillis()))
                 .signWith(SignatureAlgorithm.RS256, keyPair.getPrivate())
                 .compact();
@@ -56,7 +64,9 @@ public class JwtAuthenticationHelper {
     @Data
     public static class JwtParameters {
         private String username;
-        private String userId;
+        private String name;
+        private String clientId;
+        private Long userId;
         private List<String> scope;
         private List<String> roles;
         private Duration expiryTime;

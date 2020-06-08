@@ -11,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.justice.digital.delius.JwtAuthenticationHelper;
+import uk.gov.justice.digital.delius.JwtAuthenticationHelper.JwtParameters;
+import uk.gov.justice.digital.delius.JwtAuthenticationHelper.JwtParameters.JwtParametersBuilder;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.user.UserData;
 
@@ -41,12 +43,17 @@ public class IntegrationTestBase {
     }
 
     protected String createJwt(final String... roles) {
-        return jwtAuthenticationHelper.createJwt(JwtAuthenticationHelper.JwtParameters.builder()
-                .username("APIUser")
+        return jwtAuthenticationHelper.createJwt(
+                createJwtBuilder(roles)
+                        .clientId("system-client-id")
+                        .build());
+    }
+
+    protected JwtParametersBuilder createJwtBuilder(final String... roles) {
+        return JwtParameters.builder()
                 .roles(List.of(roles))
                 .scope(Arrays.asList("read", "write"))
-                .expiryTime(Duration.ofDays(1))
-                .build());
+                .expiryTime(Duration.ofDays(1));
     }
 
     protected String tokenWithRoleCommunity() {
