@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
-import uk.gov.justice.digital.delius.data.api.OffenderFilter;
+import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
 import uk.gov.justice.digital.delius.data.api.PrimaryIdentifiers;
 import uk.gov.justice.digital.delius.service.AlfrescoService;
 import uk.gov.justice.digital.delius.service.ContactService;

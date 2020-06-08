@@ -90,31 +90,31 @@ public class Offender {
     @Column(name = "ROW_VERSION")
     private Long rowVersion;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TITLE_ID")
     private StandardReference title;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "GENDER_ID")
     private StandardReference gender;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ETHNICITY_ID")
     private StandardReference ethnicity;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "NATIONALITY_ID")
     private StandardReference nationality;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "IMMIGRATION_STATUS_ID")
     private StandardReference immigrationStatus;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "LANGUAGE_ID")
     private StandardReference language;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "RELIGION_ID")
     private StandardReference religion;
 
@@ -127,7 +127,7 @@ public class Offender {
     @Column(name = "LAST_UPDATED_DATETIME_DIVERSIT")
     private LocalDateTime lastUpdatedDateTimeDiversity;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SECOND_NATIONALITY_ID")
     private StandardReference secondNationality;
 
@@ -145,7 +145,7 @@ public class Offender {
     @JoinColumn(name = "OFFENDER_ID")
     private List<Disability> disabilities;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SEXUAL_ORIENTATION_ID")
     private StandardReference sexualOrientation;
 
@@ -183,7 +183,7 @@ public class Offender {
     private String previousConvictionsAlfrescoDocumentId;
 
     @JoinColumn(name = "PREV_CON_CREATED_BY_USER_ID", referencedColumnName = "USER_ID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User previousConvictionsCreatedByUser;
 
     @Column(name = "PREV_CON_CREATED_DATETIME")
@@ -192,7 +192,7 @@ public class Offender {
     @Column(name = "CURRENT_REMAND_STATUS")
     private String currentRemandStatus;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARTITION_AREA_ID")
     private PartitionArea partitionArea;
 
@@ -209,4 +209,7 @@ public class Offender {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "OFFENDER_ID")
     private List<AdditionalIdentifier> additionalIdentifiers;
+
+    @OneToMany(mappedBy = "offenderId")
+    private List<Event> events;
 }

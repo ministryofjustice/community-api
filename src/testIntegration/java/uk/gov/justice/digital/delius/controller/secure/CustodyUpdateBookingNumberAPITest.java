@@ -54,7 +54,7 @@ public class CustodyUpdateBookingNumberAPITest extends IntegrationTestBase {
         final var custody = given()
                 .auth().oauth2(token)
                 .contentType("application/json")
-                .body(createUpdateCustodyBookingNumber("V74999", LocalDate.of(2019, 9, 5)))
+                .body(createUpdateCustodyBookingNumber("V74999", LocalDate.of(2019, 9, 21)))
                 .when()
                 .put(String.format("offenders/nomsNumber/%s/custody/bookingNumber", NOMS_NUMBER))
                 .then()
