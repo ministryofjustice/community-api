@@ -16,10 +16,11 @@ public class SecurityUserContext {
     }
 
     public boolean isClientOnly() {
-        if (getAuthentication() instanceof AuthAwareAuthenticationToken) {
-            return getOptionalCurrentUser().isEmpty();
-        }
-        return false;
+        final var authentication = getAuthentication();
+        if (!(authentication instanceof AuthAwareAuthenticationToken)) return false;
+
+        final var token = (AuthAwareAuthenticationToken) authentication;
+        return token.isClientOnly();
     }
 
     public boolean isSecure() {
@@ -27,14 +28,13 @@ public class SecurityUserContext {
     }
 
     public Optional<String> getCurrentUsername() {
-        return getOptionalCurrentUser().map(UserIdUser::getUsername);
-    }
-
-    public Optional<UserIdUser> getOptionalCurrentUser() {
-        final Authentication authentication = getAuthentication();
+        final var authentication = getAuthentication();
         if (!(authentication instanceof AuthAwareAuthenticationToken)) return Optional.empty();
 
-        return Optional.of(((AuthAwareAuthenticationToken) authentication).getUserIdUser());
+        final var token = (AuthAwareAuthenticationToken) authentication;
+        if (token.isClientOnly()) return Optional.empty();
+
+        return Optional.of(token.getSubject());
     }
 
 }

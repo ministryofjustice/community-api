@@ -15,9 +15,9 @@ public class AuthAwareTokenConverter implements Converter<Jwt, AbstractAuthentic
 
     @Override
     public AbstractAuthenticationToken convert(final Jwt jwt) {
-        final var optionalUserId = Optional.ofNullable(jwt.getClaims().get("user_id"));
-        final var userIdOrUsername = (String)optionalUserId.orElseGet(jwt::getSubject);
-        return new AuthAwareAuthenticationToken(jwt, userIdOrUsername, extractAuthorities(jwt));
+        final var clientId = jwt.getClaims().get("client_id");
+        final var clientOnly = jwt.getSubject().equals(clientId);
+        return new AuthAwareAuthenticationToken(jwt, clientOnly, extractAuthorities(jwt));
     }
 
     private Collection<GrantedAuthority> extractAuthorities(final Jwt jwt) {
