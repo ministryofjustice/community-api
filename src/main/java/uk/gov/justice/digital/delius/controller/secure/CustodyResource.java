@@ -22,6 +22,7 @@ import uk.gov.justice.digital.delius.service.CustodyService;
 import uk.gov.justice.digital.delius.service.OffenderIdentifierService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -83,5 +84,19 @@ public class CustodyResource {
         return offenderIdentifierService.updateNomsNumber(crn, updateOffenderNomsNumber);
     }
 
+    @RequestMapping(value = "offenders/nomsNumber/{originalNomsNumber}/nomsNumber", method = RequestMethod.PUT, consumes = "application/json")
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "The new noms number is not present"),
+            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "Missing required role for this operation"),
+            @ApiResponse(code = 404, message = "The requested offender was not found")
+    })
+    @ApiOperation(value = "Updates the offender record(s) with the new NOMS number in UpdateOffenderNomsNumber replacing the existing number.",
+            notes = "In the very rare circumstances more than one offender is found with matching noms number, all will be updated and their identifiers returned.")
+    public List<IDs> replaceOffenderNomsNumber(final @PathVariable String originalNomsNumber,
+                                               final @RequestBody @Valid UpdateOffenderNomsNumber updateOffenderNomsNumber) {
+        log.info("Call to replaceOffenderNomsNumber for {}", originalNomsNumber);
 
+        return offenderIdentifierService.replaceNomsNumber(originalNomsNumber, updateOffenderNomsNumber);
+    }
 }
