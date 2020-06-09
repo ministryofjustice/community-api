@@ -90,7 +90,7 @@ public class UserAuditingTest extends IntegrationTestBase {
                 createJwtBuilder(roles)
                         .clientId(clientId)
                         .username(username)
-                        .userId(userId)
+                        .userId(userId.toString())
                         .build());
     }
 
@@ -99,7 +99,7 @@ public class UserAuditingTest extends IntegrationTestBase {
                 createJwtBuilder(roles)
                         .username(username)
                         .name("John Smith")
-                        .userId(userId)
+                        .userId(userId.toString())
                         .build());
     }
 
