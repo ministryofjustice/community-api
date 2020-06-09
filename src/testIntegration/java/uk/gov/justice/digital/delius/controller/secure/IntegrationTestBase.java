@@ -11,8 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.justice.digital.delius.JwtAuthenticationHelper;
-import uk.gov.justice.digital.delius.JwtAuthenticationHelper.JwtParameters;
-import uk.gov.justice.digital.delius.JwtAuthenticationHelper.JwtParameters.JwtParametersBuilder;
+import uk.gov.justice.digital.delius.JwtParameters;
+import uk.gov.justice.digital.delius.JwtParameters.JwtParametersBuilder;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.user.UserData;
 

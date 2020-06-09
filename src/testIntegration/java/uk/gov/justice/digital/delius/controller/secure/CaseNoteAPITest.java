@@ -12,6 +12,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.digital.delius.JwtAuthenticationHelper;
+import uk.gov.justice.digital.delius.JwtParameters;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusExtension;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusMockServer;
 
@@ -106,7 +107,7 @@ public class CaseNoteAPITest {
 
 
     private String createJwt(final String user, final List<String> roles) {
-        return jwtAuthenticationHelper.createJwt(JwtAuthenticationHelper.JwtParameters.builder()
+        return jwtAuthenticationHelper.createJwt(JwtParameters.builder()
                 .username(user)
                 .roles(roles)
                 .scope(Arrays.asList("read", "write"))

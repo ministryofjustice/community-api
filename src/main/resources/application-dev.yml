@@ -11,4 +11,12 @@ spring:
     console:
       enabled: true
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          public-key-location: classpath:local-public-key.pub
+
+
+
 logging.level.org.hibernate.SQL: DEBUG

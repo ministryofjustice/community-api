@@ -1,14 +1,10 @@
 package uk.gov.justice.digital.delius.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -20,10 +16,11 @@ public class SecurityUserContext {
     }
 
     public boolean isClientOnly() {
-        if (getAuthentication() instanceof OAuth2Authentication) {
-            return ((OAuth2Authentication)getAuthentication()).isClientOnly();
-        }
-        return false;
+        final var authentication = getAuthentication();
+        if (!(authentication instanceof AuthAwareAuthenticationToken)) return false;
+
+        final var token = (AuthAwareAuthenticationToken) authentication;
+        return token.isClientOnly();
     }
 
     public boolean isSecure() {
@@ -31,27 +28,13 @@ public class SecurityUserContext {
     }
 
     public Optional<String> getCurrentUsername() {
-        final Authentication authentication = getAuthentication();
-        if (authentication == null || authentication.getPrincipal() == null) return Optional.empty();
+        final var authentication = getAuthentication();
+        if (!(authentication instanceof AuthAwareAuthenticationToken)) return Optional.empty();
 
-        final Object userPrincipal = authentication.getPrincipal();
+        final var token = (AuthAwareAuthenticationToken) authentication;
+        if (token.isClientOnly()) return Optional.empty();
 
-        final String username;
-        if (userPrincipal instanceof String) {
-            username = (String) userPrincipal;
-        } else if (userPrincipal instanceof UserDetails) {
-            username = ((UserDetails) userPrincipal).getUsername();
-        } else if (userPrincipal instanceof Map) {
-            final Map<?, ?> userPrincipalMap = (Map<?, ?>) userPrincipal;
-            username = (String) userPrincipalMap.get("username");
-        } else {
-            username = userPrincipal.toString();
-        }
-
-        if (StringUtils.isEmpty(username) || username.equals("anonymousUser")) return Optional.empty();
-
-        log.debug("Authentication doesn't contain user id, using username instead");
-        return Optional.of(username);
+        return Optional.of(token.getSubject());
     }
 
 }
