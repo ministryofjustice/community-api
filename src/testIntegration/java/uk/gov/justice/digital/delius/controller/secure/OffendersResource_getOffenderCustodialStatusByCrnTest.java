@@ -23,9 +23,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev-seed")
 public class OffendersResource_getOffenderCustodialStatusByCrnTest {
-    private static final Long KNOWN_CONVICTION_ID = 2500295124L;
-    private static final Long KNOWN_SENTENCE_ID = 2500282123L;
-    private static final String KNOWN_CRN = "X320741";
+    private static final Long KNOWN_CONVICTION_ID = 2600295124L;
+    private static final Long KNOWN_SENTENCE_ID = 2600282123L;
+    private static final String KNOWN_CRN = "X320811";
     public static final String URL_TEMPLATE = "/offenders/crn/%s/convictions/%s/sentences/%s/custodialStatus";
 
     @LocalServerPort
