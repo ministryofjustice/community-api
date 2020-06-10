@@ -12,7 +12,9 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -49,7 +51,30 @@ public class OffenderIdentifierService {
         }
         return OffenderTransformer.idsOf(offender);
     }
+    @Transactional
+    public List<IDs> replaceNomsNumber(String oldNomsNumber, UpdateOffenderNomsNumber updateOffenderNomsNumber) {
+        final var existingOffendersAlreadyWithNomsNumber = offenderRepository.findAllByNomsNumber(updateOffenderNomsNumber.getNomsNumber());
 
+        if (!existingOffendersAlreadyWithNomsNumber.isEmpty()) {
+            log.info("No need to Update NOMS number since an offender with the new noms number already exists");
+            return existingOffendersAlreadyWithNomsNumber.stream().map(OffenderTransformer::idsOf).collect(Collectors.toList());
+        }
+
+        final var offenders = offenderRepository.findAllByNomsNumber(oldNomsNumber);
+
+        if (offenders.isEmpty()) {
+            throw new NotFoundException(String.format("Offender with noms number %s not found ", oldNomsNumber));
+        }
+        if (updateNomsNumberFeatureSwitch) {
+            if (offenders.size() > 1) {
+                log.warn("Multiple offenders found with the same NOMS number {}. Updating all to new number {}", oldNomsNumber, updateOffenderNomsNumber.getNomsNumber());
+            }
+            offenders.forEach(offender -> doUpdateNomsNumber(updateOffenderNomsNumber.getNomsNumber(), offender));
+        } else {
+            log.warn("Update NOMS number will be ignored, this feature is switched off ");
+        }
+        return offenders.stream().map(OffenderTransformer::idsOf).collect(Collectors.toList());
+    }
     private void doUpdateNomsNumber(String nomsNumber, Offender offender) {
         offenderRepository.findAllByNomsNumber(nomsNumber).forEach(duplicateOffender -> {
             duplicateOffender.setNomsNumber(null);
