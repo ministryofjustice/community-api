@@ -5,26 +5,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.justice.digital.delius.data.api.alfresco.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.alfresco.SearchResult;
 
 import java.util.Optional;
 
+import static java.lang.String.format;
+
 @Service
 public class AlfrescoService {
-    private final RestTemplate restTemplate;
+    private final WebClient webClient;
     private final MultiValueMap<String, String> headers;
 
     @Autowired
-    public AlfrescoService(@Qualifier("alfrescoRestTemplate")RestTemplate restTemplate,
+    public AlfrescoService(@Qualifier("alfrescoWebClient") WebClient webClient,
                            @Value("${alfresco.X-DocRepository-Remote-User}") String alftresecoRemoteUser,
                            @Value("${alfresco.X-DocRepository-Real-Remote-User}") String alfrescoRealRemoteUser) {
-        this.restTemplate = restTemplate;
+        this.webClient = webClient;
         headers = new LinkedMultiValueMap<>();
         headers.add("X-DocRepository-Remote-User", alftresecoRemoteUser);
         headers.add("X-DocRepository-Real-Remote-User", alfrescoRealRemoteUser);
@@ -33,24 +37,21 @@ public class AlfrescoService {
 
     public SearchResult listDocuments(String crn) {
 
-
-        ResponseEntity<SearchResult> forEntity = restTemplate.exchange("/search/" + crn,
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                SearchResult.class);
-        return forEntity.getBody();
+        return webClient.get().uri(format("/search/%s", crn))
+                .headers(httpHeaders -> httpHeaders.addAll(headers))
+                .retrieve()
+                .bodyToMono(SearchResult.class)
+                .block();
     }
 
     public Optional<DocumentMeta> getDocumentDetail(String documentId, String crn) {
-        ResponseEntity<DocumentMeta> forEntity = restTemplate.exchange("/details/" + documentId,
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                DocumentMeta.class);
 
-        if (forEntity.getBody().getCrn().equals(crn)) {
-            return Optional.of(forEntity.getBody());
-        }
-        return Optional.empty();
+        return webClient.get().uri(format("/details/%s", documentId))
+                .headers(httpHeaders -> httpHeaders.addAll(headers))
+                .retrieve()
+                .bodyToMono(DocumentMeta.class)
+                .blockOptional()
+                .filter(documentMeta -> documentMeta.getCrn().equals(crn));
     }
 
     public ResponseEntity<Resource> getDocument(String documentId, String crn) {
@@ -62,10 +63,18 @@ public class AlfrescoService {
     }
 
     private ResponseEntity<Resource> getDocument(String documentId, Optional<String> filename) {
-        ResponseEntity<Resource> forEntity = restTemplate.exchange("/fetch/" + documentId, HttpMethod.GET, new HttpEntity<>(headers),
-                Resource.class);
+        return webClient.get().uri(format("/fetch/%s", documentId))
+                .headers(httpHeaders -> httpHeaders.addAll(headers))
+                .retrieve()
+                .toEntity(Resource.class)
+                .map(resource -> new ResponseEntity<>(
+                        resource.getBody(),
+                        collectDocumentResourceHeaders(resource.getHeaders(), documentId, filename),
+                        resource.getStatusCode()))
+                .block();
+    }
 
-        HttpHeaders responseHeaders = forEntity.getHeaders();
+    private HttpHeaders collectDocumentResourceHeaders(final HttpHeaders responseHeaders, final String documentId, final Optional<String> filename) {
         HttpHeaders newHeaders = new HttpHeaders();
         newHeaders.add(HttpHeaders.ACCEPT_RANGES, responseHeaders.getFirst(HttpHeaders.ACCEPT_RANGES));
         newHeaders.add(HttpHeaders.CONTENT_LENGTH, responseHeaders.getFirst(HttpHeaders.CONTENT_LENGTH));
@@ -73,12 +82,7 @@ public class AlfrescoService {
         newHeaders.add(HttpHeaders.ETAG, responseHeaders.getFirst(HttpHeaders.ETAG));
         newHeaders.add(HttpHeaders.LAST_MODIFIED, responseHeaders.getFirst(HttpHeaders.LAST_MODIFIED));
         newHeaders.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename.orElse(documentId) + "\"");
-
-
-        ResponseEntity<Resource> response = new ResponseEntity<>(forEntity.getBody(), newHeaders, forEntity.getStatusCode());
-
-        return response;
-
+        return newHeaders;
     }
 
     public ResponseEntity<Resource> getDocument(String documentId) {
