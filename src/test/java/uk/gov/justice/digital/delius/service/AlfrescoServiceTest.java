@@ -46,13 +46,13 @@ public class AlfrescoServiceTest {
     }
 
     @Test
-    public void shouldBeNotFoundIfDocumentDOesNotBelongToOffender() throws JsonProcessingException {
+    public void shouldBeNotFoundIfDocumentDoesNotBelongToOffender() throws JsonProcessingException {
         final var documentMeta = objectMapper.writeValueAsString(
                 DocumentMeta.builder()
                         .crn("T1234")
                         .name("document.pdf")
                         .build());
-        givenMockResponses(documentMeta);
+        givenStubResponses(documentMeta);
 
         assertThat(alfrescoService.getDocument("123", "X9999").getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
@@ -65,7 +65,7 @@ public class AlfrescoServiceTest {
                         .name("document.pdf")
                         .build());
         final var fetchResponse = "abc";
-        givenMockResponses(documentMeta, fetchResponse);
+        givenStubResponses(documentMeta, fetchResponse);
 
         final var response = alfrescoService.getDocument("123", "T1234");
 
@@ -74,15 +74,15 @@ public class AlfrescoServiceTest {
         assertThat(response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION)).isEqualTo("attachment; filename=\"document.pdf\"");
     }
 
-    private void givenMockResponses(final String... responseBodies) {
-        final var mockResponses = Arrays.stream(responseBodies)
+    private void givenStubResponses(final String... responseBodies) {
+        final var stubResponses = Arrays.stream(responseBodies)
                 .map(this::getClientResponse)
                 .toArray(Mono[]::new);
 
-        if (mockResponses.length == 1) {
-            when(exchangeFunction.exchange(any(ClientRequest.class))).thenReturn(mockResponses[0]);
+        if (stubResponses.length == 1) {
+            when(exchangeFunction.exchange(any(ClientRequest.class))).thenReturn(stubResponses[0]);
         } else {
-            when(exchangeFunction.exchange(any(ClientRequest.class))).thenReturn(mockResponses[0], Arrays.copyOfRange(mockResponses, 1, mockResponses.length));
+            when(exchangeFunction.exchange(any(ClientRequest.class))).thenReturn(stubResponses[0], Arrays.copyOfRange(stubResponses, 1, stubResponses.length));
         }
     }
 
