@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.CustodialStatus;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
@@ -9,9 +8,8 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Release;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Component
 public class CustodialStatusTransformer {
-    public CustodialStatus custodialStatusOf(Disposal disposal) {
+    public static CustodialStatus custodialStatusOf(Disposal disposal) {
         return CustodialStatus.builder()
                 .sentenceId(disposal.getDisposalId())
                 .custodialType(custodialTypeOf(disposal))
@@ -25,11 +23,11 @@ public class CustodialStatusTransformer {
         .build();
     }
 
-    private LocalDate pssStartDateOf(Disposal disposal) {
+    private static LocalDate pssStartDateOf(Disposal disposal) {
         return disposal.getCustody().getPssStartDate();
     }
 
-    private LocalDate actualReleaseDateOf(Disposal disposal) {
+    private static LocalDate actualReleaseDateOf(Disposal disposal) {
         return disposal.getCustody()
                 .getReleases()
                 .stream()
@@ -39,18 +37,18 @@ public class CustodialStatusTransformer {
                 .orElse(null);
     }
 
-    private KeyValue mainOffenceOf(Disposal disposal) {
+    private static KeyValue mainOffenceOf(Disposal disposal) {
         return KeyValue.builder()
                 .description(disposal.getEvent().getMainOffence().getOffence().getDescription()).build();
     }
 
-    private KeyValue sentenceOf(Disposal disposal) {
+    private static KeyValue sentenceOf(Disposal disposal) {
         return KeyValue.builder()
                 .description(disposal.getDisposalType().getDescription())
                 .build();
     }
 
-    private KeyValue custodialTypeOf(Disposal disposal) {
+    private static KeyValue custodialTypeOf(Disposal disposal) {
         return KeyValue.builder()
                 .code(disposal.getCustody().getCustodialStatus().getCodeValue())
                 .description(disposal.getCustody().getCustodialStatus().getCodeDescription())

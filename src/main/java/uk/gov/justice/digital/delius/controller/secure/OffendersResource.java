@@ -28,13 +28,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
-import uk.gov.justice.digital.delius.data.api.*;
+import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
+import uk.gov.justice.digital.delius.data.api.Contact;
+import uk.gov.justice.digital.delius.data.api.Conviction;
+import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
+import uk.gov.justice.digital.delius.data.api.CustodialStatus;
+import uk.gov.justice.digital.delius.data.api.Nsi;
+import uk.gov.justice.digital.delius.data.api.NsiWrapper;
+import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
+import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
+import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
+import uk.gov.justice.digital.delius.data.api.PrimaryIdentifiers;
+import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
-import uk.gov.justice.digital.delius.service.*;
+import uk.gov.justice.digital.delius.service.AlfrescoService;
+import uk.gov.justice.digital.delius.service.ContactService;
+import uk.gov.justice.digital.delius.service.ConvictionService;
+import uk.gov.justice.digital.delius.service.DocumentService;
+import uk.gov.justice.digital.delius.service.NsiService;
+import uk.gov.justice.digital.delius.service.OffenderManagerService;
+import uk.gov.justice.digital.delius.service.OffenderService;
+import uk.gov.justice.digital.delius.service.SentenceService;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -449,7 +469,9 @@ public class OffendersResource {
     }
 
 
-    @ApiOperation(value = "Return custodial status information by crn, convictionId and sentenceId")
+    @ApiIgnore("This endpoint is too specific to use case and does not reflect best practice so is deprecated for new use")
+    @Deprecated
+    @ApiOperation(value = "Return custodial status information by crn, convictionId and sentenceId.")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
@@ -461,9 +483,9 @@ public class OffendersResource {
     @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/sentences/{sentenceId}/custodialStatus")
     public CustodialStatus getCustodialStatusBySentenceId(
             @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
-            @NotNull @PathVariable(value = "crn") final String crn,
+            @PathVariable(value = "crn") final String crn,
             @ApiParam(name = "convictionId", value = "ID for the conviction / event", example = "2500295345", required = true)
-            @NotNull @PathVariable(value = "convictionId") final Long convictionId,
+            @PathVariable(value = "convictionId") final Long convictionId,
             @ApiParam(name = "sentenceId", value = "ID for the sentence", example="2500295123", required = true)
             @PathVariable(value = "sentenceId") Long sentenceId){
 

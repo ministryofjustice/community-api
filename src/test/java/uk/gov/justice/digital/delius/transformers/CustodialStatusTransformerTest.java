@@ -3,7 +3,14 @@ package uk.gov.justice.digital.delius.transformers;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.CustodialStatus;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
+import uk.gov.justice.digital.delius.jpa.standard.entity.DisposalType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
+import uk.gov.justice.digital.delius.jpa.standard.entity.MainOffence;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offence;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Release;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,7 +39,7 @@ class CustodialStatusTransformerTest {
                 .actualReleaseDate(ACTUAL_RELEASE_DATE.atTime(13, 0))
                 .build()));
 
-        CustodialStatus custodialStatus = new CustodialStatusTransformer().custodialStatusOf(disposal);
+        CustodialStatus custodialStatus = CustodialStatusTransformer.custodialStatusOf(disposal);
 
         assertThat(custodialStatus.getSentenceId()).isEqualTo(SENTENCE_ID);
         assertThat(custodialStatus.getCustodialType().getCode()).isEqualTo(CUSTODIAL_TYPE_CODE);
@@ -60,7 +67,7 @@ class CustodialStatusTransformerTest {
                         .build()
         ));
 
-        CustodialStatus custodialStatus = new CustodialStatusTransformer().custodialStatusOf(disposal);
+        CustodialStatus custodialStatus = CustodialStatusTransformer.custodialStatusOf(disposal);
 
         assertThat(custodialStatus.getActualReleaseDate()).isEqualTo(ACTUAL_RELEASE_DATE);
     }
@@ -69,7 +76,7 @@ class CustodialStatusTransformerTest {
     public void givenNoReleases_thenActualReleaseDateIsNull() {
         Disposal disposal = buildDisposal(Collections.emptyList());
 
-        CustodialStatus custodialStatus = new CustodialStatusTransformer().custodialStatusOf(disposal);
+        CustodialStatus custodialStatus = CustodialStatusTransformer.custodialStatusOf(disposal);
 
         assertThat(custodialStatus.getActualReleaseDate()).isNull();
     }

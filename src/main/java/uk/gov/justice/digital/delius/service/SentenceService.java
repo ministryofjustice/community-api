@@ -14,7 +14,6 @@ import java.util.Optional;
 public class SentenceService {
     private OffenderRepository offenderRepository;
     private DisposalRepository disposalRepository;
-    private CustodialStatusTransformer custodialStatusTransformer;
 
     public Optional<CustodialStatus> getCustodialStatus(String crn, Long convictionId, Long sentenceId) {
         return offenderRepository.findByCrn(crn)
@@ -25,7 +24,7 @@ public class SentenceService {
                     .filter(disposal -> disposal.getCustody() != null)
                     .filter(disposal -> !disposal.getCustody().isSoftDeleted())
             )
-            .flatMap(optional ->  optional.map(custodialStatusTransformer::custodialStatusOf));
+            .flatMap(optional ->  optional.map(CustodialStatusTransformer::custodialStatusOf));
     }
 
 }

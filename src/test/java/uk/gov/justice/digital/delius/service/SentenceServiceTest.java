@@ -3,6 +3,7 @@ package uk.gov.justice.digital.delius.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.CustodialStatus;
@@ -31,23 +32,22 @@ class SentenceServiceTest {
     private OffenderRepository offenderRepository;
     @Mock
     private DisposalRepository disposalRepository;
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private Offender offender;
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private Disposal disposal;
     @Mock
     private CustodialStatus custodialStatus;
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private Custody custody;
     @Mock
     private CustodialStatusTransformer transformer;
-    private Event event = Event.builder()
-            .eventId(CONVICTION_ID)
-            .build();
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private Event event;
 
     @BeforeEach
     public void setUp(){
-        sentenceService = new SentenceService(offenderRepository, disposalRepository, transformer);
+        sentenceService = new SentenceService(offenderRepository, disposalRepository);
     }
 
     @Test
@@ -99,6 +99,7 @@ class SentenceServiceTest {
         when(offender.getOffenderId()).thenReturn(OFFENDER_ID);
         when(disposal.getOffenderId()).thenReturn(OFFENDER_ID);
         when(disposal.getEvent()).thenReturn(event);
+        when(disposal.getEvent().getEventId()).thenReturn(CONVICTION_ID);
         when(disposal.isSoftDeleted()).thenReturn(true);
         Optional<CustodialStatus> status = sentenceService.getCustodialStatus(CRN, CONVICTION_ID, SENTENCE_ID);
 
@@ -112,6 +113,7 @@ class SentenceServiceTest {
         when(offender.getOffenderId()).thenReturn(OFFENDER_ID);
         when(disposal.getOffenderId()).thenReturn(OFFENDER_ID);
         when(disposal.getEvent()).thenReturn(event);
+        when(disposal.getEvent().getEventId()).thenReturn(CONVICTION_ID);
         when(disposal.isSoftDeleted()).thenReturn(false);
         when(disposal.getCustody()).thenReturn(null);
         Optional<CustodialStatus> status = sentenceService.getCustodialStatus(CRN, CONVICTION_ID, SENTENCE_ID);
@@ -126,6 +128,7 @@ class SentenceServiceTest {
         when(offender.getOffenderId()).thenReturn(OFFENDER_ID);
         when(disposal.getOffenderId()).thenReturn(OFFENDER_ID);
         when(disposal.getEvent()).thenReturn(event);
+        when(disposal.getEvent().getEventId()).thenReturn(CONVICTION_ID);
         when(disposal.isSoftDeleted()).thenReturn(false);
         when(disposal.getCustody()).thenReturn(custody);
         when(custody.isSoftDeleted()).thenReturn(true);
@@ -138,17 +141,18 @@ class SentenceServiceTest {
     public void whenStatusReturnedFromRepository_thenMapAndReturnIt() {
         when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
         when(disposalRepository.findByDisposalId(SENTENCE_ID)).thenReturn(Optional.of(disposal));
+        when(disposal.getDisposalId()).thenReturn(SENTENCE_ID);
         when(disposal.getOffenderId()).thenReturn(OFFENDER_ID);
         when(offender.getOffenderId()).thenReturn(OFFENDER_ID);
         when(disposal.getEvent()).thenReturn(event);
+        when(disposal.getEvent().getEventId()).thenReturn(CONVICTION_ID);
         when(disposal.isSoftDeleted()).thenReturn(false);
         when(disposal.getCustody()).thenReturn(custody);
         when(custody.isSoftDeleted()).thenReturn(false);
-        when(transformer.custodialStatusOf(disposal)).thenReturn(custodialStatus);
 
         Optional<CustodialStatus> status = sentenceService.getCustodialStatus(CRN, CONVICTION_ID, SENTENCE_ID);
 
         assertThat(status).isNotEmpty();
-        assertThat(status.get()).isEqualTo(custodialStatus);
+        assertThat(status.get().getSentenceId()).isEqualTo(SENTENCE_ID);
     }
 }

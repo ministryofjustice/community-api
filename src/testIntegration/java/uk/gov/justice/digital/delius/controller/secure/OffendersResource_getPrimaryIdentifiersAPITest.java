@@ -16,7 +16,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationTestBase {
 
-    public static final int TOTAL_NUMBER_NON_DELETED_OF_OFFENDERS = 22;
+    public static final int TOTAL_NUMBER_NON_DELETED_OF_OFFENDERS = 23;
     public static final int NUMBER_OF_DELETED_RECORDS = 2;
 
     @Test
@@ -172,7 +172,7 @@ public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationT
                     .get("/offenders/primaryIdentifiers")
                     .then()
                     .statusCode(200)
-                    .body("content.size()", is(4))
+                    .body("content.size()", is(5))
                     .body("content.find { it.offenderId == 2500343964 }.crn", is("X320741"));
         }
 
@@ -301,7 +301,7 @@ public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationT
                     .get("/offenders/primaryIdentifiers")
                     .then()
                     .statusCode(200)
-                    .body("totalElements", is(1))
+                    .body("totalElements", is(2))
                     .body("content.find { it.offenderId == 2500343964 }.crn", is("X320741"));
 
         }
@@ -322,7 +322,7 @@ public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationT
                     .get("/offenders/primaryIdentifiers")
                     .then()
                     .statusCode(200)
-                    .body("content[0].crn", is("X320741"));
+                    .body("content[0].crn", is("X320811"));
 
         }
 
@@ -339,7 +339,7 @@ public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationT
                     .get("/offenders/primaryIdentifiers")
                     .then()
                     .statusCode(200)
-                    .body(String.format("content[%d].crn", TOTAL_NUMBER_NON_DELETED_OF_OFFENDERS - 1), is("X320741"));
+                    .body(String.format("content[%d].crn", TOTAL_NUMBER_NON_DELETED_OF_OFFENDERS - 1), is("X320811"));
         }
     }
 }
