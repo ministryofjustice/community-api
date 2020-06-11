@@ -77,6 +77,9 @@ public class Custody extends AuditableEntity {
     @Column(name = "LOCATION_CHANGE_DATE")
     private LocalDate locationChangeDate;
 
+    @Column(name = "PSS_START_DATE")
+    private LocalDate pssStartDate;
+
     @JoinColumn(name = "CUSTODIAL_STATUS_ID")
     @ManyToOne
     private StandardReference custodialStatus;

@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
@@ -35,15 +36,16 @@ import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
+import uk.gov.justice.digital.delius.data.api.CustodialStatus;
 import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.data.api.NsiWrapper;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
-import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
 import uk.gov.justice.digital.delius.data.api.PrimaryIdentifiers;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
+import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
 import uk.gov.justice.digital.delius.service.AlfrescoService;
 import uk.gov.justice.digital.delius.service.ContactService;
@@ -52,6 +54,7 @@ import uk.gov.justice.digital.delius.service.DocumentService;
 import uk.gov.justice.digital.delius.service.NsiService;
 import uk.gov.justice.digital.delius.service.OffenderManagerService;
 import uk.gov.justice.digital.delius.service.OffenderService;
+import uk.gov.justice.digital.delius.service.SentenceService;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -77,6 +80,7 @@ public class OffendersResource {
     private final ConvictionService convictionService;
     private final NsiService nsiService;
     private final OffenderManagerService offenderManagerService;
+    private final SentenceService sentenceService;
 
     @ApiOperation(
             value = "Return the responsible officer (RO) for an offender",
@@ -462,6 +466,31 @@ public class OffendersResource {
             @ApiParam(value = "Optionally specify an offender filter") final OffenderFilter filter,
             @PageableDefault(sort = {"crn"}, direction = Sort.Direction.ASC) final Pageable pageable) {
         return offenderService.getAllPrimaryIdentifiers(filter, pageable);
+    }
+
+
+    @ApiIgnore("This endpoint is too specific to use case and does not reflect best practice so is deprecated for new use")
+    @Deprecated
+    @ApiOperation(value = "Return custodial status information by crn, convictionId and sentenceId.")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+                    @ApiResponse(code = 404, message = "The offender CRN is not found", response = ErrorResponse.class),
+                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            })
+    @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/sentences/{sentenceId}/custodialStatus")
+    public CustodialStatus getCustodialStatusBySentenceId(
+            @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
+            @PathVariable(value = "crn") final String crn,
+            @ApiParam(name = "convictionId", value = "ID for the conviction / event", example = "2500295345", required = true)
+            @PathVariable(value = "convictionId") final Long convictionId,
+            @ApiParam(name = "sentenceId", value = "ID for the sentence", example="2500295123", required = true)
+            @PathVariable(value = "sentenceId") Long sentenceId){
+
+        return sentenceService.getCustodialStatus(crn,convictionId, sentenceId)
+                .orElseThrow(() -> new NotFoundException(String.format("Sentence not found for crn '%s', convictionId '%s', and sentenceId '%s'", crn, convictionId, sentenceId)));
     }
 }
 

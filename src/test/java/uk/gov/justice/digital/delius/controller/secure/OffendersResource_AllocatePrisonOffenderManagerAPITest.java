@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.justice.digital.delius.controller.InvalidRequestException;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
-import uk.gov.justice.digital.delius.controller.secure.OffendersResource;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.service.*;
@@ -35,13 +34,14 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     private ConvictionService convictionService = mock(ConvictionService.class);
     private OffenderManagerService offenderManagerService = mock(OffenderManagerService.class);
     private NsiService nsiService = mock(NsiService.class);
+    private SentenceService sentenceService = mock(SentenceService.class);
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
     public void setup() {
         RestAssuredMockMvc.standaloneSetup(
-                new OffendersResource(offenderService, alfrescoService, documentService, contactService, convictionService, nsiService, offenderManagerService),
+                new OffendersResource(offenderService, alfrescoService, documentService, contactService, convictionService, nsiService, offenderManagerService, sentenceService),
                 new SecureControllerAdvice()
         );
     }
