@@ -1,9 +1,7 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.justice.digital.delius.data.api.CustodialStatus;
 
 import java.time.LocalDate;
@@ -12,8 +10,6 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("dev-seed")
 public class OffendersResource_getOffenderCustodialStatusByCrnTest extends IntegrationTestBase{
     private static final Long KNOWN_CONVICTION_ID = 2600295124L;
     private static final Long KNOWN_SENTENCE_ID = 2600282123L;
