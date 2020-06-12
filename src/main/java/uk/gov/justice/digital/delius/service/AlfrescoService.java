@@ -26,11 +26,11 @@ public class AlfrescoService {
 
     @Autowired
     public AlfrescoService(@Qualifier("alfrescoWebClient") WebClient webClient,
-                           @Value("${alfresco.X-DocRepository-Remote-User}") String alftresecoRemoteUser,
+                           @Value("${alfresco.X-DocRepository-Remote-User}") String alfrescoRemoteUser,
                            @Value("${alfresco.X-DocRepository-Real-Remote-User}") String alfrescoRealRemoteUser) {
         this.webClient = webClient;
         headers = new LinkedMultiValueMap<>();
-        headers.add("X-DocRepository-Remote-User", alftresecoRemoteUser);
+        headers.add("X-DocRepository-Remote-User", alfrescoRemoteUser);
         headers.add("X-DocRepository-Real-Remote-User", alfrescoRealRemoteUser);
     }
 

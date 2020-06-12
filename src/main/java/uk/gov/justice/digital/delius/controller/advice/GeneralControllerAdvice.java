@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import uk.gov.justice.digital.delius.service.NoSuchUserException;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -31,5 +32,13 @@ public class GeneralControllerAdvice {
        log.info(e.getMessage());
        return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
    }
+
+    @ExceptionHandler(WebClientResponseException.class)
+    public ResponseEntity<byte[]> handleException(final WebClientResponseException e) {
+        log.error("Unexpected exception", e);
+        return ResponseEntity
+                .status(e.getRawStatusCode())
+                .body(e.getResponseBodyAsByteArray());
+    }
 }
 

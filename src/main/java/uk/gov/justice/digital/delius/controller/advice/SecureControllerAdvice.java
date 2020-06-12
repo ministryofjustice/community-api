@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.InvalidRequestException;
@@ -21,6 +22,14 @@ public class SecureControllerAdvice {
 
     @ExceptionHandler(RestClientResponseException.class)
     public ResponseEntity<byte[]> handleException(final RestClientResponseException e) {
+        log.error("Unexpected exception", e);
+        return ResponseEntity
+                .status(e.getRawStatusCode())
+                .body(e.getResponseBodyAsByteArray());
+    }
+
+    @ExceptionHandler(WebClientResponseException.class)
+    public ResponseEntity<byte[]> handleException(final WebClientResponseException e) {
         log.error("Unexpected exception", e);
         return ResponseEntity
                 .status(e.getRawStatusCode())
