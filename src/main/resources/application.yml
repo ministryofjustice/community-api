@@ -24,7 +24,7 @@ spring:
     timeout-per-shutdown-phase: 10s
 
   codec:
-    max-in-memory-size: 20MB
+    max-in-memory-size: 200MB
 
 jwt:
   secret: 'ChangeMe!'
