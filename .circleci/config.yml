@@ -68,7 +68,6 @@ workflows:
             branches:
               only:
                 - master
-                - mh-DT-838-max-doc-size
 
   scheduled:
     triggers:
