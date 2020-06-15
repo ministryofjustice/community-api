@@ -2,26 +2,30 @@ package uk.gov.justice.digital.delius.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class CaseNoteService {
 
-    private final RestTemplate restTemplate;
+    private final WebClient webClient;
 
     @Autowired
-    public CaseNoteService(@Qualifier("deliusRestTemplateWithAuth") final RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public CaseNoteService(@Qualifier("deliusWebClientWithAuth") final WebClient webClient) {
+        this.webClient = webClient;
     }
 
     public ResponseEntity<String> upsertCaseNotesToDelius(final String nomisId, final Long caseNotesId, final String caseNote) {
-        final var headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        headers.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
-
-        return restTemplate.exchange("/nomisCaseNotes/{nomisId}/{caseNotesId}", HttpMethod.PUT, new HttpEntity<>(caseNote, headers), String.class, nomisId, caseNotesId);
-
+        return webClient.put()
+                .uri(uriBuilder -> uriBuilder.path("/nomisCaseNotes/{nomisId}/{caseNotesId}").build(nomisId, caseNotesId))
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .bodyValue(caseNote)
+                .retrieve()
+                .toEntity(String.class)
+                .block();
     }
 }
