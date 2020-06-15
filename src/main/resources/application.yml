@@ -23,6 +23,9 @@ spring:
   lifecycle:
     timeout-per-shutdown-phase: 10s
 
+  codec:
+    max-in-memory-size: 20MB
+
 jwt:
   secret: 'ChangeMe!'
   lifetimeSeconds: 60000
