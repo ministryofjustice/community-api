@@ -13,6 +13,10 @@
             </layout>
         </appender>
 
+        <logger name="uk.gov.justice.digital.delius.DeliusOffenderAPI" additivity="false" level="DEBUG">
+            <appender-ref ref="consoleAppender"/>
+        </logger>
+
         <logger name="uk.gov.justice.hmpps" additivity="false" level="DEBUG">
             <appender-ref ref="consoleAppender"/>
         </logger>
@@ -49,6 +53,11 @@
 
     <springProfile name="!(dev)">
         <appender name="logAppender" class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender"/>
+
+        <logger name="uk.gov.justice.digital.delius.DeliusOffenderAPI" additivity="false" level="INFO">
+            <appender-ref ref="logAppender"/>
+        </logger>
+
         <logger name="uk.gov.justice.hmpps" additivity="false" level="INFO">
             <appender-ref ref="logAppender"/>
         </logger>
