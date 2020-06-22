@@ -86,7 +86,7 @@ public class CustodyResource {
 
     @RequestMapping(value = "offenders/nomsNumber/{originalNomsNumber}/nomsNumber", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "The new noms number is not present"),
+            @ApiResponse(code = 400, message = "The new noms number is not present in request or existing offender exists with then new NOMS number already"),
             @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
             @ApiResponse(code = 403, message = "Missing required role for this operation"),
             @ApiResponse(code = 404, message = "The requested offender was not found")

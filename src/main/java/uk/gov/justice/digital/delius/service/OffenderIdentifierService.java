@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.IDs;
 import uk.gov.justice.digital.delius.data.api.UpdateOffenderNomsNumber;
@@ -57,7 +58,7 @@ public class OffenderIdentifierService {
 
         if (!existingOffendersAlreadyWithNomsNumber.isEmpty()) {
             log.info("No need to Update NOMS number since an offender with the new noms number already exists");
-            return existingOffendersAlreadyWithNomsNumber.stream().map(OffenderTransformer::idsOf).collect(Collectors.toList());
+            throw new BadRequestException(String.format("NOMS number %s is already assigned to %s", updateOffenderNomsNumber.getNomsNumber(), existingOffendersAlreadyWithNomsNumber.stream().map(Offender::getCrn).collect(Collectors.joining(","))));
         }
 
         final var offenders = offenderRepository.findAllByNomsNumber(oldNomsNumber);
