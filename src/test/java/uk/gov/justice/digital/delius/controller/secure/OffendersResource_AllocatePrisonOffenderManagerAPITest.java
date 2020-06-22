@@ -13,7 +13,9 @@ import uk.gov.justice.digital.delius.service.*;
 
 import java.util.Optional;
 
+import static io.restassured.config.EncoderConfig.encoderConfig;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
+import static io.restassured.module.mockmvc.config.RestAssuredMockMvcConfig.newConfig;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -40,6 +42,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
 
     @Before
     public void setup() {
+        RestAssuredMockMvc.config =  newConfig().encoderConfig(encoderConfig().defaultContentCharset("UTF-8"));
         RestAssuredMockMvc.standaloneSetup(
                 new OffendersResource(offenderService, alfrescoService, documentService, contactService, convictionService, nsiService, offenderManagerService, sentenceService),
                 new SecureControllerAdvice()

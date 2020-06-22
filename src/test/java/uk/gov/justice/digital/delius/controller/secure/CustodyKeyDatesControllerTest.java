@@ -20,7 +20,9 @@ import uk.gov.justice.digital.delius.service.OffenderService;
 
 import java.util.Optional;
 
+import static io.restassured.config.EncoderConfig.encoderConfig;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
+import static io.restassured.module.mockmvc.config.RestAssuredMockMvcConfig.newConfig;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -41,6 +43,7 @@ class CustodyKeyDatesControllerTest {
 
     @BeforeEach
     void setUp() {
+        RestAssuredMockMvc.config =  newConfig().encoderConfig(encoderConfig().defaultContentCharset("UTF-8"));
         RestAssuredMockMvc.standaloneSetup(
                 new CustodyKeyDatesController(offenderService, convictionService),
                 new SecureControllerAdvice()

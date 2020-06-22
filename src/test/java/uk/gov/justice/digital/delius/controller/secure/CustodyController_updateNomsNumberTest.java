@@ -11,7 +11,9 @@ import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.service.CustodyService;
 import uk.gov.justice.digital.delius.service.OffenderIdentifierService;
 
+import static io.restassured.config.EncoderConfig.encoderConfig;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
+import static io.restassured.module.mockmvc.config.RestAssuredMockMvcConfig.newConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -30,6 +32,7 @@ public class CustodyController_updateNomsNumberTest {
 
     @Before
     public void setup() {
+        RestAssuredMockMvc.config =  newConfig().encoderConfig(encoderConfig().defaultContentCharset("UTF-8"));
         RestAssuredMockMvc.standaloneSetup(
                 new CustodyResource(custodyService, offenderIdentifierService),
                 new SecureControllerAdvice()
