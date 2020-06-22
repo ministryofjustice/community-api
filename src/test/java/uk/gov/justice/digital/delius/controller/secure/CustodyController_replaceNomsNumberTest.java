@@ -6,6 +6,7 @@ import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
 import uk.gov.justice.digital.delius.data.api.IDs;
 import uk.gov.justice.digital.delius.data.api.UpdateOffenderNomsNumber;
@@ -71,6 +72,21 @@ public class CustodyController_replaceNomsNumberTest {
                 .then()
                 .statusCode(400)
                 .body("developerMessage", containsString("Missing a NOMS number"));
+    }
+
+    @Test
+    public void conflictingRequestExceptionDueToNAMSNumberAlreadyAssigned_returnsConflict() throws JsonProcessingException {
+        when(offenderIdentifierService.replaceNomsNumber(anyString(), any()))
+                .thenThrow(new ConflictingRequestException("NOMS number G5555TT is already assigned to X88888"));
+
+        given()
+                .contentType(APPLICATION_JSON_VALUE)
+                .body(json(createUpdateOffenderNomsNumberOf("G5555TT")))
+                .when()
+                .put("/secure/offenders/nomsNumber/G3333AA/nomsNumber")
+                .then()
+                .statusCode(409)
+                .body("developerMessage", containsString("NOMS number G5555TT is already assigned to X88888"));
     }
 
     @Test

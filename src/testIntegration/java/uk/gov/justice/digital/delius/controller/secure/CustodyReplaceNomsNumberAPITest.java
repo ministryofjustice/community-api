@@ -43,22 +43,22 @@ public class CustodyReplaceNomsNumberAPITest extends IntegrationTestBase {
         // And Offender with CRN = X320741 has NOMS_NUMBER = G9542VP
 
         // When I attempt to replace NOMS_NUMBER = G9542VP to Offender with original  = G0560UO
-        final var existingCrn = given()
+        final var message = given()
                 .auth().oauth2(token)
                 .contentType("application/json")
                 .body(createUpdateNomsNumber("G9542VP"))
                 .when()
                 .put(String.format("offenders/nomsNumber/%s/nomsNumber", "G0560UO"))
                 .then()
-                .statusCode(200)
+                .statusCode(409)
                 .extract()
                 .body()
                 .jsonPath()
-                .get("[0].crn");
+                .get("developerMessage");
 
 
-        // Then Offender returned will be the offender that already had the noms number
-        assertThat(existingCrn).isEqualTo("X320741");
+        // The error message indicates which offender already has the NOMS number
+        assertThat(message).isEqualTo("NOMS number G9542VP is already assigned to X320741");
     }
 
     @Test

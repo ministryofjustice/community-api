@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.IDs;
 import uk.gov.justice.digital.delius.data.api.UpdateOffenderNomsNumber;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -427,23 +429,26 @@ class OffenderIdentifierServiceTest {
                         .additionalIdentifiers(new ArrayList<>())
                         .build();
 
-                private IDs iDs;
-
                 @BeforeEach
                 void setUp() {
                     when(offenderRepository.findAllByNomsNumber("G5555TT")).thenReturn(List.of(existingOffender));
-                    iDs = service
-                            .replaceNomsNumber("A9999XX", UpdateOffenderNomsNumber.builder().nomsNumber("G5555TT")
-                                    .build()).get(0);
                 }
 
                 @Test
-                void willReturnExistingOffenderThatAlreadyHasNomsNumber() {
-                    assertThat(iDs.getCrn()).isEqualTo("X88888");
+                void willThrowBadRequestException() {
+                    assertThatThrownBy(() -> service
+                            .replaceNomsNumber("A9999XX", UpdateOffenderNomsNumber.builder().nomsNumber("G5555TT")
+                                    .build()))
+                            .isInstanceOf(ConflictingRequestException.class)
+                            .hasMessage("NOMS number G5555TT is already assigned to X88888");
                 }
 
                 @Test
                 void willNotUpdateExistingOffenderWithNOMSNumber() {
+                    assertThatThrownBy(() -> service
+                            .replaceNomsNumber("A9999XX", UpdateOffenderNomsNumber.builder().nomsNumber("G5555TT")
+                                    .build()));
+
                     // tested via SPG since this is teh side affect of updating
                     verify(spgNotificationService, never()).notifyUpdateOfOffender(offenderCaptor.capture());
                 }
