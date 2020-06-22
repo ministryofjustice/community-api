@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import uk.gov.justice.digital.delius.controller.BadRequestException;
+import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.IDs;
 import uk.gov.justice.digital.delius.data.api.UpdateOffenderNomsNumber;
@@ -439,7 +439,7 @@ class OffenderIdentifierServiceTest {
                     assertThatThrownBy(() -> service
                             .replaceNomsNumber("A9999XX", UpdateOffenderNomsNumber.builder().nomsNumber("G5555TT")
                                     .build()))
-                            .isInstanceOf(BadRequestException.class)
+                            .isInstanceOf(ConflictingRequestException.class)
                             .hasMessage("NOMS number G5555TT is already assigned to X88888");
                 }
 

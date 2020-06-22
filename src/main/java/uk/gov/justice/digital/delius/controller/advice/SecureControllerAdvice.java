@@ -12,6 +12,7 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
+import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.InvalidRequestException;
 import uk.gov.justice.digital.delius.controller.UnauthorisedException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
@@ -103,6 +104,18 @@ public class SecureControllerAdvice {
                 .body(ErrorResponse
                         .builder()
                         .status(HttpStatus.BAD_REQUEST.value())
+                        .developerMessage(e.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(ConflictingRequestException.class)
+    public ResponseEntity<ErrorResponse> handleException(final ConflictingRequestException e) {
+        log.debug("Conflict (409) returned", e);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ErrorResponse
+                        .builder()
+                        .status(HttpStatus.CONFLICT.value())
                         .developerMessage(e.getMessage())
                         .build());
     }

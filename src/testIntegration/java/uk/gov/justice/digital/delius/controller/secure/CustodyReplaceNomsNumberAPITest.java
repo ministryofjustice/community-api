@@ -50,7 +50,7 @@ public class CustodyReplaceNomsNumberAPITest extends IntegrationTestBase {
                 .when()
                 .put(String.format("offenders/nomsNumber/%s/nomsNumber", "G0560UO"))
                 .then()
-                .statusCode(400)
+                .statusCode(409)
                 .extract()
                 .body()
                 .jsonPath()
