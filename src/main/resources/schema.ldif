@@ -146,6 +146,19 @@ mail: sheila.hancock@justice.gov.uk
 uid: SheilaHancockNPS
 userPassword: secret
 
+dn: cn=SheilaHancockDupou=Users,dc=moj,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: NDUser
+cn: SheilaHancockNPS2
+sn: Hancock
+givenname: Sheila
+mail: sheila.hancock@justice.gov.uk
+uid: SheilaHancockDup
+userPassword: secret
+
 dn: cn=EmailNotPresentNPS,ou=Users,dc=moj,dc=com
 objectclass: top
 objectclass: person
