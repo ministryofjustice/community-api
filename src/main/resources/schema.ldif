@@ -146,13 +146,13 @@ mail: sheila.hancock@justice.gov.uk
 uid: SheilaHancockNPS
 userPassword: secret
 
-dn: cn=SheilaHancockDupou=Users,dc=moj,dc=com
+dn: cn=SheilaHancockDup,ou=Users,dc=moj,dc=com
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
 objectclass: inetOrgPerson
 objectclass: NDUser
-cn: SheilaHancockNPS2
+cn: SheilaHancockDup
 sn: Hancock
 givenname: Sheila
 mail: sheila.hancock@justice.gov.uk
