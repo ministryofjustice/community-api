@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OffenderAlias {
+    private String id;
     private LocalDate dateOfBirth;
     private String firstName;
     private List<String> middleNames;
