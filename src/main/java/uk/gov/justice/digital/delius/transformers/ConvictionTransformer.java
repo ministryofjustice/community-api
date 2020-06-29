@@ -145,8 +145,7 @@ public class ConvictionTransformer {
                         .map(StandardReference::getCodeDescription)
                         .orElse(null))
                 .expectedSentenceEndDate(Optional.ofNullable(disposal.getEnteredSentenceEndDate())
-                        .orElseGet(() -> Optional.ofNullable(disposal.getExpectedSentenceEndDate())
-                                .orElse(null)))
+                        .orElse(disposal.getExpectedSentenceEndDate()))
                 .build();
     }
 
