@@ -21,6 +21,8 @@ public class Sentence {
     private Long defaultLength;
     private Long effectiveLength;
     private Long lengthInDays;
+    @ApiModelProperty(value = "The expected end date of the sentence")
+    private LocalDate expectedSentenceEndDate;
     @ApiModelProperty(value = "Unpaid Work to date associated with this sentence")
     private UnpaidWork unpaidWork;
     @ApiModelProperty(value = "Date sentence started")

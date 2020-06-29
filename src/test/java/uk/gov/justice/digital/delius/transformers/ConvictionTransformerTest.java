@@ -74,6 +74,26 @@ public class ConvictionTransformerTest {
     }
 
     @Test
+    public void enteredSentenceEndDateOverridesExpectedSentenceEndDate() {
+        final var expectedEndDate = LocalDate.now().minusDays(1);
+        final var enteredEndDate = LocalDate.now().minusDays(2);
+        final var disposal = disposalBuilder().enteredSentenceEndDate(enteredEndDate).expectedSentenceEndDate(expectedEndDate).build();
+        assertThat(ConvictionTransformer.convictionOf(anEvent().toBuilder().disposal(disposal).build()).getSentence().getExpectedSentenceEndDate()).isEqualTo(enteredEndDate);
+    }
+
+    @Test
+    public void expectedSentenceEndDateIsMappedIfEnteredSentenceEndDateNotPresent() {
+        final var expectedEndDate = LocalDate.now().minusDays(1);
+        final var disposal = disposalBuilder().expectedSentenceEndDate(expectedEndDate).build();
+        assertThat(ConvictionTransformer.convictionOf(anEvent().toBuilder().disposal(disposal).build()).getSentence().getExpectedSentenceEndDate()).isEqualTo(expectedEndDate);
+    }
+
+    @Test
+    public void expectedSentenceEndDateMappingCanHandleNulls() {
+        assertThat(ConvictionTransformer.convictionOf(anEvent().toBuilder().disposal(aDisposal()).build()).getSentence().getExpectedSentenceEndDate()).isNull();
+    }
+
+    @Test
     public void outcomeMappedFromLastCourtAppearance() {
         assertThat(ConvictionTransformer.convictionOf(
                 anEvent()
@@ -426,12 +446,16 @@ public class ConvictionTransformerTest {
     }
 
     private Disposal aDisposal() {
+        return disposalBuilder()
+                .build();
+    }
+
+    private Disposal.DisposalBuilder disposalBuilder() {
         return Disposal.builder()
                 .disposalId(1L)
                 .event(anEvent())
                 .offenderId(1L)
-                .softDeleted(0L)
-                .build();
+                .softDeleted(0L);
     }
 
     private CourtCase aCourtCase() {
