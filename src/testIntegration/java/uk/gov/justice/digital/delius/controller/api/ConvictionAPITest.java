@@ -14,6 +14,7 @@ import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.user.UserData;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
@@ -55,6 +56,10 @@ public class ConvictionAPITest {
             .as(Conviction[].class);
 
         assertThat(convictions).extracting("convictionId").containsExactlyInAnyOrder(2500297061L, 2500295345L, 2500295343L, 10002L, 10003L);
+        assertThat(convictions).filteredOn("convictionId", 2500295343L).extracting("sentence.expectedSentenceEndDate")
+                .containsExactly(LocalDate.of(2019, 10, 15));
+        assertThat(convictions).filteredOn("convictionId", 2500295345L).extracting("sentence.expectedSentenceEndDate")
+                .containsExactly(LocalDate.of(2024, 9, 03));
     }
 
     @Test
