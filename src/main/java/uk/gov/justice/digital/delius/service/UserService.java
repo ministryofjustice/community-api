@@ -119,17 +119,17 @@ public class UserService {
                         .build());
     }
 
-    public List<UserDetails> getUserDetailsFromEmail(final String email) {
+    public List<UserDetails> getUserDetailsByEmail(final String email) {
         // first we perform the LDAP search to get a list of matching records for the email address
         final var userList = ldapRepository.getDeliusUserByEmail(email);
 
         // next we create a `UserDetails` object for each record. this involves looking up
-        // the user in the delius oracle db in orderto get the user id. users which exist
+        // the user in the delius oracle db in order to get the user id. users which exist
         // in the LDAP but not in the delius oracle db are not included in the result.
         return userList.stream()
             .map(user -> {
                 uk.gov.justice.digital.delius.jpa.national.entity.User oracleUser;
-                String userCn = user.getCn();
+                final String userCn = user.getCn();
 
                 try {
                     oracleUser = userRepositoryWrapper.getUser(userCn);

@@ -76,7 +76,7 @@ public class AuthenticationController {
             })
     @RequestMapping(value = "/users/search/email/{email}/details", method = RequestMethod.GET)
     public List<UserDetails> findUserByEmail(@ApiParam(name = "email", value = "LDAP email address", example = "sheila.hancock@justice.gov.uk", required = true) @NotNull final @PathVariable("email") String email) {
-        return userService.getUserDetailsFromEmail(email);
+        return userService.getUserDetailsByEmail(email);
     }
 
     @ApiOperation(
