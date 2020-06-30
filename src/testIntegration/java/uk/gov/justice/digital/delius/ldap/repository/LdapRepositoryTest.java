@@ -36,6 +36,18 @@ public class LdapRepositoryTest {
     }
 
     @Test
+    public void shouldReturnListForEmptyEmailSearchResult() {
+        assertThat(ldapRepository.getDeliusUserByEmail("missing").size())
+            .isEqualTo(0);
+    }
+
+    @Test
+    public void shouldReturnListForDuplicateEmails() {
+        assertThat(ldapRepository.getDeliusUserByEmail("sheila.hancock@justice.gov.uk").size())
+            .isEqualTo(2);
+    }
+
+    @Test
     @DirtiesContext(methodMode = AFTER_METHOD)
     public void shouldBeAbleToAddARole() {
         assertThat(ldapRepository.getDeliusUser("bernard.beaks").get().getRoles())

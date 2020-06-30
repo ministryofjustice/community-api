@@ -21,6 +21,7 @@ import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusRole;
 import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusUser;
 import uk.gov.justice.digital.delius.service.wrapper.UserRepositoryWrapper;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -338,6 +339,78 @@ public class UserServiceTest {
         final var userDetails = userService.getUserDetails("john.bean");
 
         assertThat(userDetails.isPresent()).isFalse();
+    }
+
+    @Test public void userDetailsByEmailMappedFromLdapRepository() {
+        when(ldapRepository.getDeliusUserByEmail(anyString())).thenReturn(
+            List.of(
+                NDeliusUser.builder()
+                    .givenname("John")
+                    .sn("Bean")
+                    .cn("john.bean")
+                    .mail("john.bean@justice.gov.uk")
+                    .roles(ImmutableList.of(NDeliusRole.builder().cn("ROLE1").build()))
+                    .build())
+        );
+        when(userRepositoryWrapper.getUser(any())).thenReturn(User.builder().userId(12345L).build());
+
+        final var userDetails = userService.getUserDetailsByEmail("john.bean@justice.gov.uk");
+
+        assertThat(userDetails.size()).isEqualTo(1);
+        assertThat(userDetails.get(0)).isEqualTo(
+            UserDetails.builder()
+                .email("john.bean@justice.gov.uk")
+                .surname("Bean")
+                .firstName("John")
+                .roles(List.of(UserRole.builder().name("ROLE1").build()))
+                .enabled(true)
+                .userId(12345L)
+                .build());
+    }
+
+    @Test public void userDetailsByEmailHandlesMissingDataInDeliusDb() {
+        // when the ldap search finds two users, but only one of them is present
+        // in the oracle db, only one should be returned in the final result.
+        when(ldapRepository.getDeliusUserByEmail(anyString())).thenReturn(
+            List.of(
+                NDeliusUser.builder()
+                    .givenname("John")
+                    .sn("Bean")
+                    .cn("john.bean")
+                    .mail("john.bean@justice.gov.uk")
+                    .roles(ImmutableList.of(NDeliusRole.builder().cn("ROLE1").build()))
+                    .build(),
+                NDeliusUser.builder()
+                    .givenname("Al")
+                    .sn("Green")
+                    .cn("al.green")
+                    .mail("al.green@justice.gov.uk")
+                    .roles(ImmutableList.of(NDeliusRole.builder().cn("ROLE2").build()))
+                    .build())
+        );
+        when(userRepositoryWrapper.getUser("al.green")).thenThrow(new NoSuchUserException(""));
+        when(userRepositoryWrapper.getUser("john.bean")).thenReturn(User.builder().userId(12345L).build());
+
+        final var userDetails = userService.getUserDetailsByEmail("john.bean@justice.gov.uk");
+
+        assertThat(userDetails.size()).isEqualTo(1);
+        assertThat(userDetails.get(0)).isEqualTo(
+                UserDetails.builder()
+                    .email("john.bean@justice.gov.uk")
+                    .surname("Bean")
+                    .firstName("John")
+                    .roles(List.of(UserRole.builder().name("ROLE1").build()))
+                    .enabled(true)
+                    .userId(12345L)
+                    .build());
+    }
+
+    @Test public void userDetailsByEmailMyBeEmptyListFromLdapRepository() {
+        when(ldapRepository.getDeliusUserByEmail(anyString())).thenReturn(Collections.emptyList());
+
+        final var userDetails = userService.getUserDetailsByEmail("john.bean@justice.gov.uk");
+
+        assertThat(userDetails).isEmpty();
     }
 
     @Test

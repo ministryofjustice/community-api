@@ -8,6 +8,8 @@ import uk.gov.justice.digital.delius.data.api.AuthUser;
 import uk.gov.justice.digital.delius.data.api.UserDetails;
 import uk.gov.justice.digital.delius.data.api.UserRole;
 
+import java.util.List;
+
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -201,6 +203,45 @@ public class AuthenticationAPITest extends IntegrationTestBase {
                 .get("/users/john.smith/details")
                 .then()
                 .statusCode(404);
+    }
+
+    @Test
+    public void userDetailsByEmail_success() {
+            final var userDetails = given()
+                .auth()
+                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
+                .contentType("text/plain")
+                .when()
+                .get("/users/search/email/bernard.beaks@justice.gov.uk/details")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(UserDetails[].class);
+
+        assertThat(userDetails.length).isEqualTo(1);
+        final var bernard = userDetails[0];
+        assertThat(bernard.getFirstName()).isEqualTo("Bernard");
+        assertThat(bernard.getSurname()).isEqualTo("Beaks");
+        assertThat(bernard.getEmail()).isEqualTo("bernard.beaks@justice.gov.uk");
+        assertThat(bernard.getRoles()).hasSize(1).contains(UserRole.builder().name("UWBT060").build());
+    }
+
+    @Test
+    public void usersDetailsByEmail_returns200WhenUserNotFound() {
+        final var userDetails = given()
+                .auth()
+                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
+                .contentType("text/plain")
+                .when()
+                .get("/users/search/email/missing/details")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(UserDetails[].class);
+
+        assertThat(userDetails.length).isEqualTo(0);
     }
 
     @Test

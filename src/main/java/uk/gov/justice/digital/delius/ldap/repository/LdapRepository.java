@@ -22,6 +22,7 @@ import javax.naming.directory.BasicAttributes;
 import javax.naming.ldap.LdapName;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkState;
@@ -55,23 +56,38 @@ public class LdapRepository {
     }
 
     public Optional<NDeliusUser> getDeliusUser(final String username) {
+        // this is a two step process:
+        //   1. find the user matching the supplied username in the delius LDAP.
+        //   2. find the roles associated with the matched user and add them to the user entity.
         final var nDeliusUser = authenticationTemplate.find(byUsername(username), NDeliusUser.class).stream().findAny();
+        return nDeliusUser.map(user -> mapRolesForUser(user));
+    }
 
-        return nDeliusUser.map(user -> {
-            final var roles = ldapTemplate
-                    .search(
-                            query()
-                                    .base(user.getDn())
-                                    .searchScope(SearchScope.ONELEVEL)
-                                    .filter("(|(objectclass=NDRole)(objectclass=NDRoleAssociation))"),
-                            (AttributesMapper<NDeliusRole>) attributes ->
-                                    NDeliusRole
-                                            .builder()
-                                            .cn(attributes.get("cn").get().toString())
-                                            .build());
+    public List<NDeliusUser> getDeliusUserByEmail(final String email) {
+        // this is a two step process:
+        //   1. find a list of users matching the supplied email address in the delius LDAP.
+        //   2. find the roles associated with the matched users and add them to the user entities.
+        final var users = authenticationTemplate.find(byEmail(email), NDeliusUser.class);
+        return users.stream()
+            .map(user -> mapRolesForUser(user))
+            .collect(Collectors.toList());
+    }
 
-            return user.toBuilder().roles(roles).build();
-        });
+    public NDeliusUser mapRolesForUser(final NDeliusUser user) {
+        // query the delius LDAP for the roles associated with this user and return a new user object with the roles added.
+        final var roles = ldapTemplate
+                .search(
+                        query()
+                                .base(user.getDn())
+                                .searchScope(SearchScope.ONELEVEL)
+                                .filter("(|(objectclass=NDRole)(objectclass=NDRoleAssociation))"),
+                        (AttributesMapper<NDeliusRole>) attributes ->
+                                NDeliusRole
+                                        .builder()
+                                        .cn(attributes.get("cn").get().toString())
+                                        .build());
+
+        return user.toBuilder().roles(roles).build();
     }
 
     public void addRole(String username, String roleId)  {
@@ -117,6 +133,10 @@ public class LdapRepository {
 
         authenticationTemplate.modifyAttributes(context);
         return true;
+    }
+
+    private ContainerCriteria byEmail(final String email) {
+        return query().base(ldapUserBase).where("mail").is(email);
     }
 
     private ContainerCriteria byUsername(final String username) {

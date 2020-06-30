@@ -24,6 +24,8 @@ import uk.gov.justice.digital.delius.data.api.AuthUser;
 import uk.gov.justice.digital.delius.data.api.UserDetails;
 import uk.gov.justice.digital.delius.service.UserService;
 
+import java.util.List;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -63,6 +65,18 @@ public class AuthenticationController {
     public UserDetails findUser(@ApiParam(name = "username", value = "LDAP username", example = "TESTUSERNPS", required = true) @NotNull final @PathVariable("username") String username) {
         return userService.getUserDetails(username)
                 .orElseThrow(() -> new NotFoundException(String.format("User with username %s", username)));
+    }
+
+    @ApiOperation(
+            value = "Find user details of a user held in Delius Identity (LDAP)")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+            })
+    @RequestMapping(value = "/users/search/email/{email}/details", method = RequestMethod.GET)
+    public List<UserDetails> findUserByEmail(@ApiParam(name = "email", value = "LDAP email address", example = "sheila.hancock@justice.gov.uk", required = true) @NotNull final @PathVariable("email") String email) {
+        return userService.getUserDetailsByEmail(email);
     }
 
     @ApiOperation(
