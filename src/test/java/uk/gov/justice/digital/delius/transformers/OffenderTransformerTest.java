@@ -7,6 +7,7 @@ import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalIdentifier;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
@@ -15,6 +16,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
+import uk.gov.justice.digital.delius.util.EntityHelper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -460,4 +462,47 @@ public class OffenderTransformerTest {
         }
     }
 
+    @Test
+    void aliasesAreCopied() {
+        final var offenderEntity = EntityHelper.anOffender().toBuilder().offenderAliases(List.of(
+                OffenderAlias
+                        .builder()
+                        .aliasID(99L)
+                        .dateOfBirth(LocalDate.parse("1965-07-19"))
+                        .firstName("John")
+                        .surname("Smith")
+                        .build(),
+                OffenderAlias
+                        .builder()
+                        .aliasID(100L)
+                        .dateOfBirth(LocalDate.parse("1965-07-20"))
+                        .firstName("Johnny")
+                        .surname("Smyth")
+                        .build()
+
+        )).build();
+
+        final var offender = OffenderTransformer.fullOffenderOf(offenderEntity);
+
+        assertThat(offender.getOffenderAliases())
+                .hasSize(2)
+                .containsExactly(
+                        uk.gov.justice.digital.delius.data.api.OffenderAlias
+                                .builder()
+                                .id("99")
+                                .dateOfBirth(LocalDate.parse("1965-07-19"))
+                                .firstName("John")
+                                .surname("Smith")
+                                .middleNames(List.of())
+                                .build(),
+                        uk.gov.justice.digital.delius.data.api.OffenderAlias
+                                .builder()
+                                .id("100")
+                                .dateOfBirth(LocalDate.parse("1965-07-20"))
+                                .firstName("Johnny")
+                                .surname("Smyth")
+                                .middleNames(List.of())
+                                .build()
+                );
+    }
 }

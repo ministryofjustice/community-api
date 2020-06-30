@@ -145,6 +145,7 @@ public class OffenderTransformer {
 
     private static uk.gov.justice.digital.delius.data.api.OffenderAlias aliasOf(OffenderAlias alias) {
         return uk.gov.justice.digital.delius.data.api.OffenderAlias.builder()
+                .id(String.valueOf(alias.getAliasID()))
                 .dateOfBirth(alias.getDateOfBirth())
                 .firstName(alias.getFirstName())
                 .middleNames(combinedMiddleNamesOf(alias.getSecondName(), alias.getThirdName()))

@@ -75,6 +75,12 @@ public class Disposal {
     @OneToOne(mappedBy = "disposal")
     private UpwDetails unpaidWorkDetails;
 
+    @Column(name = "NOTIONAL_END_DATE")
+    private LocalDate expectedSentenceEndDate;
+
+    @Column(name = "ENTERED_NOTIONAL_END_DATE")
+    private LocalDate enteredSentenceEndDate;
+
     public boolean isSoftDeleted() {
         return this.softDeleted != 0L;
     }
