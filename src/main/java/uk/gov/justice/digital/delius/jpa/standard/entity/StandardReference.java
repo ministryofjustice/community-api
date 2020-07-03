@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -13,6 +14,7 @@ import javax.persistence.*;
 @Builder
 @Entity
 @Table(name = "R_STANDARD_REFERENCE_LIST")
+@ToString(exclude = "referenceDataMaster")
 public class StandardReference {
     @Id
     @Column(name = "STANDARD_REFERENCE_LIST_ID")

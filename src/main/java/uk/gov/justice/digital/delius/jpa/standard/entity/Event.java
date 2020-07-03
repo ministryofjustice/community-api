@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
@@ -18,6 +19,7 @@ import java.util.Optional;
 @Builder(toBuilder = true)
 @Entity
 @Table(name = "EVENT")
+@ToString(exclude = {"mainOffence", "additionalOffences", "courtAppearances", "orderManagers"})
 public class Event {
 
     @Id
