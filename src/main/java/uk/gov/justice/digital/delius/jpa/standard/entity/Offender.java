@@ -15,6 +15,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 @Entity
 @Table(name = "OFFENDER")
+@ToString(exclude = {"events", "previousConvictionsCreatedByUser", "offenderManagers", "prisonOffenderManagers"})
 public class Offender {
 
     @Id

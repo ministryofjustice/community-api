@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import java.util.Optional;
 @Builder(toBuilder = true)
 @Entity
 @Table(name = "ORDER_MANAGER")
+@ToString(exclude = {"event"})
 public class OrderManager {
 
     @Column(name = "ORDER_MANAGER_ID")
