@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import static java.util.function.Predicate.not;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "CUSTODY")
+@ToString(exclude = "disposal")
 public class Custody extends AuditableEntity {
     enum CustodialStatus {
         SENTENCED_IN_CUSTODY("A"),
