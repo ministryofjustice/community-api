@@ -1,5 +1,5 @@
 plugins {
-    id("uk.gov.justice.hmpps.gradle-spring-boot") version "0.4.2"
+    id("uk.gov.justice.hmpps.gradle-spring-boot") version "0.4.3"
     id 'groovy'
     id 'org.unbroken-dome.test-sets' version '3.0.1'
 }
@@ -33,9 +33,6 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.10'
     implementation 'org.apache.commons:commons-text:1.8'
     implementation 'io.swagger:swagger-core:1.6.1'
-    // remove when SpringBoot (possibly 2.4.0) brings this version in
-    // Fix for https://github.com/spring-projects/spring-boot/issues/21923
-    implementation 'io.projectreactor.netty:reactor-netty:0.9.9.RELEASE'
 
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
     compileOnly 'org.projectlombok:lombok:1.18.12'
