@@ -1,3 +1,5 @@
+[![API docs](https://img.shields.io/badge/API_docs_(needs_VPN)-view-85EA2D.svg?logo=swagger)](https://community-api.test.delius.probation.hmpps.dsd.io/swagger-ui.html)
+
 # Community API
 Probation Community API.
 
