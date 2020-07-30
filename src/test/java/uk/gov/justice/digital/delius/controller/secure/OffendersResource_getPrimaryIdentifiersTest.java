@@ -8,6 +8,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
@@ -218,6 +219,36 @@ class OffendersResource_getPrimaryIdentifiersTest {
         verify(offenderService).getAllPrimaryIdentifiers(offenderFilterCaptor.capture(), pageableCaptor.capture());
 
         assertThat(pageableCaptor.getValue().getPageSize()).isEqualTo(5);
+    }
+
+    @Test
+    @DisplayName("Will default sort to offenderId ascending")
+    void willDefaultToOffenderIdOrder() {
+        given()
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/secure/offenders/primaryIdentifiers")
+                .then()
+                .statusCode(200);
+
+        verify(offenderService).getAllPrimaryIdentifiers(offenderFilterCaptor.capture(), pageableCaptor.capture());
+
+        assertThat(pageableCaptor.getValue().getSort()).isEqualTo(Sort.by(Sort.Direction.ASC, "offenderId"));
+    }
+    @Test
+    @DisplayName("Can change sort to CRN descending")
+    void canChangeOrder() {
+        given()
+                .contentType(APPLICATION_JSON_VALUE)
+                .param("sort", "crn,desc")
+                .when()
+                .get("/secure/offenders/primaryIdentifiers")
+                .then()
+                .statusCode(200);
+
+        verify(offenderService).getAllPrimaryIdentifiers(offenderFilterCaptor.capture(), pageableCaptor.capture());
+
+        assertThat(pageableCaptor.getValue().getSort()).isEqualTo(Sort.by(Sort.Direction.DESC, "crn"));
     }
 
 }

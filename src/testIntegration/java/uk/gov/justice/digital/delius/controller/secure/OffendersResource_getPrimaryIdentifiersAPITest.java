@@ -325,6 +325,21 @@ public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationT
                     .body("content[0].crn", is("X320811"));
 
         }
+        @Test
+        @DisplayName("Default sort is offenderId ascending")
+        void defaultSortIsOffenderIdAscending() {
+            given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .param("size", 1000)
+                    .when()
+                    .get("/offenders/primaryIdentifiers")
+                    .then()
+                    .statusCode(200)
+                    .body("content[0].offenderId", is(11))
+                    .body("content[1].offenderId", is(12));
+        }
 
         @Test
         @DisplayName("Can sort by CRN descending")
