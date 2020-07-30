@@ -464,7 +464,7 @@ public class OffendersResource {
     @GetMapping(value = "/offenders/primaryIdentifiers")
     public Page<PrimaryIdentifiers> getOffenderIds(
             @ApiParam(value = "Optionally specify an offender filter") final OffenderFilter filter,
-            @PageableDefault(sort = {"crn"}, direction = Sort.Direction.ASC) final Pageable pageable) {
+            @PageableDefault(sort = {"offenderId"}, direction = Sort.Direction.ASC) final Pageable pageable) {
         return offenderService.getAllPrimaryIdentifiers(filter, pageable);
     }
 
