@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Sentence {
+    private Long sentenceId;
     private String description;
     private Long originalLength;
     private String originalLengthUnits;
