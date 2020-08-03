@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class OffendersResource_getOffenderConvictionsByCrn extends IntegrationTestBase {
@@ -59,7 +60,8 @@ public class OffendersResource_getOffenderConvictionsByCrn extends IntegrationTe
                 .get("/offenders/crn/X320741/convictions")
                 .then()
                 .statusCode(200)
-                .body("[2].sentence.unpaidWork.minutesOrdered", equalTo(3600))
+                .body("[2].sentence.sentenceId", notNullValue())
+                .body("[2].sentence.unpaidWork.minutesOrdered", equalTo( 3600))
                 .body("[2].sentence.unpaidWork.minutesCompleted", equalTo(360))
                 .body("[2].sentence.unpaidWork.appointments.total", equalTo(5))
                 .body("[2].sentence.unpaidWork.appointments.attended", equalTo(2))

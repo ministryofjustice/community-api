@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.CourtCase;
+import uk.gov.justice.digital.delius.data.api.Sentence;
 import uk.gov.justice.digital.delius.data.api.UnpaidWork;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalOffence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance;
@@ -70,7 +71,12 @@ public class ConvictionTransformerTest {
     public void sentenceIsMappedWhenEvenHasDisposal() {
         assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().disposal(null).build()).getSentence())).isNull();
         assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().disposal(aDisposal()).build()).getSentence())).isNotNull();
+    }
 
+    @Test
+    public void sentenceIdIsMappedWhenEventHasDisposal() {
+        Sentence sentence = ConvictionTransformer.convictionOf(anEvent().toBuilder().disposal(disposalBuilder().disposalId(1234L).build()).build()).getSentence();
+        assertThat(sentence.getSentenceId()).isEqualTo(1234L);
     }
 
     @Test
