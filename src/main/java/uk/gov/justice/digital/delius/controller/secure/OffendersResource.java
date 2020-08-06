@@ -93,7 +93,6 @@ public class OffendersResource {
             notes = "Accepts a NOMIS offender nomsNumber in the format A9999AA")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "OK", response = ResponsibleOfficer.class, responseContainer = "List"),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
                     @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
@@ -113,7 +112,6 @@ public class OffendersResource {
             notes = "Accepts a NOMIS offender nomsNumber in the format A9999AA")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "OK", response = CommunityOrPrisonOffenderManager.class, responseContainer = "List"),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
                     @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
@@ -131,7 +129,6 @@ public class OffendersResource {
     @ApiOperation(value = "Return the convictions (AKA Delius Event) for an offender")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "OK", response = Conviction.class, responseContainer = "List"),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
                     @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
@@ -150,7 +147,6 @@ public class OffendersResource {
     @ApiOperation(value = "Return the details for an offender")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "OK", response = OffenderDetailSummary.class),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
                     @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
@@ -168,7 +164,6 @@ public class OffendersResource {
     @ApiOperation(value = "Returns all document's meta data for an offender by NOMS number")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "OK", response = OffenderDocuments.class),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
                     @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
@@ -187,7 +182,6 @@ public class OffendersResource {
     @ApiOperation(value = "Returns all documents' meta data for an offender by CRN")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "OK", response = OffenderDocuments.class),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
                     @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
@@ -228,7 +222,6 @@ public class OffendersResource {
     @ApiOperation(value = "Returns the contact details for an offender")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "OK", response = Contact.class, responseContainer = "List"),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
                     @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
@@ -296,7 +289,6 @@ public class OffendersResource {
 
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/prisonOffenderManager", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The new prison offender manager"),
             @ApiResponse(code = 400, message = "Staff code does belong to the probation area related prison institution"),
             @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
             @ApiResponse(code = 404, message = "The offender or prison institution is not found")
@@ -326,7 +318,6 @@ public class OffendersResource {
 
     @RequestMapping(value = "/offenders/crn/{crn}", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The offender summary"),
             @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
             @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
             @ApiResponse(code = 404, message = "The offender not found")
@@ -340,7 +331,6 @@ public class OffendersResource {
 
     @RequestMapping(value = "/offenders/crn/{crn}/all", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The offender details"),
             @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
             @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
             @ApiResponse(code = 404, message = "The offender is not found")
@@ -353,7 +343,6 @@ public class OffendersResource {
 
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/all", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The offender details"),
             @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
             @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
             @ApiResponse(code = 404, message = "The offender is not found")
@@ -500,7 +489,6 @@ public class OffendersResource {
 
     @RequestMapping(value = "/offenders/crn/{crn}/userAccess", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "User has unrestricted access to offender"),
             @ApiResponse(code = 403, message = "User is restricted from access to offender", response = AccessLimitation.class),
             @ApiResponse(code = 404, message = "No such offender, or no such User (see body for detail)")
     })
@@ -511,7 +499,7 @@ public class OffendersResource {
         return maybeOffender.isEmpty() ? new ResponseEntity<>(NOT_FOUND) : accessLimitationResponseEntityOf(maybeOffender.get());
     }
 
-    private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(OffenderDetail offender) {
+    private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(final OffenderDetail offender) {
 
         AccessLimitation accessLimitation = userService.accessLimitationOf(currentUserSupplier.username().get(), offender);
 
