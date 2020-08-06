@@ -501,7 +501,7 @@ public class OffendersResource {
 
     private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(final OffenderDetail offender) {
 
-        AccessLimitation accessLimitation = userService.accessLimitationOf(currentUserSupplier.username().get(), offender);
+        final AccessLimitation accessLimitation = userService.accessLimitationOf(currentUserSupplier.username().get(), offender);
 
         return new ResponseEntity<>(accessLimitation, (accessLimitation.isUserExcluded() || accessLimitation.isUserRestricted()) ? FORBIDDEN : OK);
     }
