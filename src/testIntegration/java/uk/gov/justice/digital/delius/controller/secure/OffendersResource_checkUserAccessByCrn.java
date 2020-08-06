@@ -50,7 +50,7 @@ public class OffendersResource_checkUserAccessByCrn extends IntegrationTestBase 
     }
 
     @Test
-    public void canCheckUserAccessByCrnUserRestricted() {
+    public void canCheckUserAccessByCrnNotRestrictedUserForOffenderSoCannotSeeDetails() {
         final var accessLimitation = given()
                 .auth()
                 .oauth2(tokenWithRoleCommunityAndUser("bob.jones"))
@@ -70,7 +70,7 @@ public class OffendersResource_checkUserAccessByCrn extends IntegrationTestBase 
     }
 
     @Test
-    public void canCheckUserAccessByCrnUserNotRestricted() {
+    public void canCheckUserAccessByCrnRestrictedUserForOffenderSoCanSeeDetails() {
         final var accessLimitation = given()
                 .auth()
                 .oauth2(tokenWithRoleCommunityAndUser("bobby.davro"))
@@ -78,15 +78,15 @@ public class OffendersResource_checkUserAccessByCrn extends IntegrationTestBase 
                 .when()
                 .get("/offenders/crn/X440890/userAccess")
                 .then()
-                .statusCode(403)
+                .statusCode(200)
                 .extract()
                 .body()
                 .as(AccessLimitation.class);
 
         assertThat(accessLimitation.isUserExcluded()).isFalse();
         assertThat(accessLimitation.getExclusionMessage()).isNullOrEmpty();
-        assertThat(accessLimitation.isUserRestricted()).isTrue();
-        assertThat(accessLimitation.getRestrictionMessage()).isEqualTo("This is a restricted offender record. Please contact a system administrator");
+        assertThat(accessLimitation.isUserRestricted()).isFalse();
+        assertThat(accessLimitation.getRestrictionMessage()).isNullOrEmpty();
     }
 
     @Test
