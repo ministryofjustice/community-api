@@ -9,7 +9,16 @@ import uk.gov.justice.digital.delius.controller.InvalidRequestException;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Human;
-import uk.gov.justice.digital.delius.service.*;
+import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
+import uk.gov.justice.digital.delius.service.AlfrescoService;
+import uk.gov.justice.digital.delius.service.ContactService;
+import uk.gov.justice.digital.delius.service.ConvictionService;
+import uk.gov.justice.digital.delius.service.DocumentService;
+import uk.gov.justice.digital.delius.service.NsiService;
+import uk.gov.justice.digital.delius.service.OffenderManagerService;
+import uk.gov.justice.digital.delius.service.OffenderService;
+import uk.gov.justice.digital.delius.service.SentenceService;
+import uk.gov.justice.digital.delius.service.UserService;
 
 import java.util.Optional;
 
@@ -29,22 +38,25 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     private static final String SOME_OFFICER_SURNAME = "Smith";
     private static final String SOME_PRISON_NOMS_CODE = "BWI";
 
-    private OffenderService offenderService = mock(OffenderService.class);
-    private AlfrescoService alfrescoService = mock(AlfrescoService.class);
-    private DocumentService documentService = mock(DocumentService.class);
-    private ContactService contactService = mock(ContactService.class);
-    private ConvictionService convictionService = mock(ConvictionService.class);
-    private OffenderManagerService offenderManagerService = mock(OffenderManagerService.class);
-    private NsiService nsiService = mock(NsiService.class);
-    private SentenceService sentenceService = mock(SentenceService.class);
+    private final OffenderService offenderService = mock(OffenderService.class);
+    private final AlfrescoService alfrescoService = mock(AlfrescoService.class);
+    private final DocumentService documentService = mock(DocumentService.class);
+    private final ContactService contactService = mock(ContactService.class);
+    private final ConvictionService convictionService = mock(ConvictionService.class);
+    private final OffenderManagerService offenderManagerService = mock(OffenderManagerService.class);
+    private final NsiService nsiService = mock(NsiService.class);
+    private final SentenceService sentenceService = mock(SentenceService.class);
+    private final UserService userService = mock(UserService.class);
+    private final CurrentUserSupplier currentUserSupplier = mock(CurrentUserSupplier.class);
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
     public void setup() {
         RestAssuredMockMvc.config =  newConfig().encoderConfig(encoderConfig().defaultContentCharset("UTF-8"));
         RestAssuredMockMvc.standaloneSetup(
-                new OffendersResource(offenderService, alfrescoService, documentService, contactService, convictionService, nsiService, offenderManagerService, sentenceService),
+                new OffendersResource(offenderService, alfrescoService, documentService, contactService, convictionService, nsiService, offenderManagerService, sentenceService,userService,currentUserSupplier),
                 new SecureControllerAdvice()
         );
     }
