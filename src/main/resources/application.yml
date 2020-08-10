@@ -26,6 +26,11 @@ spring:
   codec:
     max-in-memory-size: 200MB
 
+  data:
+    web:
+      pageable:
+        max-page-size: 10000
+
 jwt:
   secret: 'ChangeMe!'
   lifetimeSeconds: 60000
