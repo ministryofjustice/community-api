@@ -329,6 +329,7 @@ public class UserServiceTest {
                         .roles(List.of(UserRole.builder().name("ROLE1").build()))
                         .enabled(true)
                         .userId(12345L)
+                        .username("john.bean")
                         .build());
     }
 
