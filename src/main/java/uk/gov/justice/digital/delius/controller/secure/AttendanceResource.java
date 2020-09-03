@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
-import uk.gov.justice.digital.delius.data.api.Attendance;
 import uk.gov.justice.digital.delius.data.api.Attendances;
 import uk.gov.justice.digital.delius.service.AttendanceService;
 import uk.gov.justice.digital.delius.service.OffenderService;
@@ -48,7 +48,6 @@ public class AttendanceResource {
     @ApiOperation(value = "Return the attendances for a CRN and a conviction id where enforcement is flagged")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "OK", response = Attendance.class, responseContainer = "List"),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
                     @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
@@ -59,11 +58,41 @@ public class AttendanceResource {
                                     final @PathVariable("convictionId") Long convictionId) {
 
         log.info("Call to getAttendances for CRN {} and conviction ID {}", crn, convictionId);
-        final LocalDate localDate = LocalDate.now();
-        final Long offenderId = offenderService.offenderIdOfCrn(crn)
-            .orElseThrow(() -> new NotFoundException(String.format(MSG_OFFENDER_NOT_FOUND, crn)));
+        final Long offenderId = getOffenderId(crn);
 
-        return new Attendances(AttendanceService.attendancesFor(attendanceService.getContactsForEvent(offenderId, convictionId, localDate)));
+        return new Attendances(AttendanceService.attendancesFor(attendanceService.getContactsForEvent(offenderId, convictionId, LocalDate.now())));
+    }
+
+    @GetMapping(value = "/offenders/crn/{crn}/convictions/{convictionId}/attendancesFilter", produces = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Return the attendances for a CRN and a conviction id, filtered.")
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+    public Attendances getAttendancesByConviction(final @PathVariable("crn") String crn,
+                                                final @PathVariable("convictionId") Long convictionId,
+                                                final @RequestParam(required = false, defaultValue = "1") String enforcement,
+                                                final @RequestParam(required = false, defaultValue = "Y") String attendanceContact,
+                                                final @RequestParam(required = false, defaultValue = "Y") String nationalStandardsContact) {
+
+        log.info("Call to getAttendances for CRN {} and conviction ID {}, with enforcement {}, attendanceContact {} and nationalStandardsContact {}",
+            crn, convictionId, enforcement, attendanceContact, nationalStandardsContact);
+        final Long offenderId = getOffenderId(crn);
+
+        return new Attendances(AttendanceService.attendancesFor(
+            attendanceService.getContactsForEvent(offenderId,
+                                                convictionId,
+                                                LocalDate.now(),
+                                                enforcement,
+                                                attendanceContact,
+                                                nationalStandardsContact)));
+    }
+
+    private Long getOffenderId(String crn) {
+        return offenderService.offenderIdOfCrn(crn).orElseThrow(() -> new NotFoundException(String.format(MSG_OFFENDER_NOT_FOUND, crn)));
     }
 
 }

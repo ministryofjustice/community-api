@@ -44,6 +44,8 @@ public class AttendanceResourceTest {
     private static final Long SOME_CONTACT_ID_2 = 8756L;
     private static final String PATH_FORMAT = "/secure/offenders/crn/%s/convictions/%s/attendances";
     private static final String PATH = String.format(PATH_FORMAT, SOME_CRN, SOME_EVENT_ID);
+    private static final String FILTER_PATH_FORMAT = "/secure/offenders/crn/%s/convictions/%s/attendancesFilter";
+    private static final String FILTER_PATH = String.format(FILTER_PATH_FORMAT, SOME_CRN, SOME_EVENT_ID);
 
     @Mock
     private AttendanceService attendanceService;
@@ -153,4 +155,36 @@ public class AttendanceResourceTest {
             .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
+    @Test
+    public void whenCallWithFilter_getMultipleAttendancesReturnsOk() {
+
+        final String nationalStandardsParam = "Y";
+        final String attendanceParam = "Y";
+        final String enforcementParam = "1";
+        final Contact contact = AttendanceServiceTest.getContactEntity(SOME_CONTACT_ID_1, LocalDate.of(2020, Month.FEBRUARY, 29), null, null);
+
+        when(offenderService.offenderIdOfCrn(SOME_CRN)).thenReturn(Optional.of(SOME_OFFENDER_ID));
+        when(attendanceService.getContactsForEvent(SOME_OFFENDER_ID, SOME_EVENT_ID, LocalDate.now(), enforcementParam, attendanceParam, nationalStandardsParam))
+            .thenReturn(List.of(contact));
+
+        // Act
+        final Attendances actual = given()
+            .contentType(APPLICATION_JSON_VALUE)
+            .queryParam("enforcement", enforcementParam)
+            .queryParam("attendanceContact", attendanceParam)
+            .queryParam("nationalStandardsContact", nationalStandardsParam)
+            .when()
+            .get(FILTER_PATH)
+            .then()
+            .statusCode(HttpStatus.OK.value())
+            .extract()
+            .body()
+            .as(Attendances.class);
+
+        // assert
+        assertThat(actual.getAttendances().stream()).isNotEmpty().hasSize(1);
+        verify(offenderService).offenderIdOfCrn(SOME_CRN);
+        verify(attendanceService).getContactsForEvent(SOME_OFFENDER_ID, SOME_EVENT_ID, LocalDate.now(), enforcementParam, attendanceParam, nationalStandardsParam);
+        verifyNoMoreInteractions(attendanceService, offenderService);
+    }
 }

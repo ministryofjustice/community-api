@@ -18,4 +18,19 @@ public interface ContactRepository extends JpaRepository<Contact, Long>, JpaSpec
     List<Contact> findByOffenderAndEventIdEnforcement(@Param("offenderId") Long offenderId,
                                                     @Param("eventId") Long eventId,
                                                     @Param("toDate") LocalDate toDate);
+
+    @Query("SELECT contact FROM Contact contact "
+        + "WHERE contact.offenderId = :offenderId "
+        + "AND contact.event.eventId = :eventId "
+        + "AND contact.contactDate <= :toDate "
+        + "AND contact.enforcement = :enforcement "
+        + "AND contact.contactType.attendanceContact = :attendanceContact "
+        + "AND contact.contactType.nationalStandardsContact = :nationalStandardsContact"
+    )
+    List<Contact> findByOffenderAndEventId(@Param("offenderId") Long offenderId,
+                                            @Param("eventId") Long eventId,
+                                            @Param("toDate") LocalDate toDate,
+                                            @Param("enforcement") String enforcement,
+                                            @Param("attendanceContact") String attendanceContact,
+                                            @Param("nationalStandardsContact") String nationalStandardsContact);
 }

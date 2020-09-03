@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +26,15 @@ public class AttendanceService {
 
     public List<Contact> getContactsForEvent(final Long offenderId, final Long eventId, final LocalDate localDate) {
         return contactRepository.findByOffenderAndEventIdEnforcement(offenderId, eventId, localDate);
+    }
+
+    public List<Contact> getContactsForEvent(final Long offenderId,
+                                            final Long eventId,
+                                            final LocalDate localDate,
+                                            final String enforcement,
+                                            final String attendanceContact,
+                                            final String nationalStandardsContact) {
+        return contactRepository.findByOffenderAndEventId(offenderId, eventId, localDate, enforcement, attendanceContact, nationalStandardsContact);
     }
 
     static boolean forEntityBoolean(final String booleanStr) {

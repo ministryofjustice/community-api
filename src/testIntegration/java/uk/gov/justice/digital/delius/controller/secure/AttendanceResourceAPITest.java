@@ -14,7 +14,9 @@ public class AttendanceResourceAPITest extends IntegrationTestBase {
     private static final Long KNOWN_EVENT_ID = 2500295343L;
     private static final String KNOWN_CRN = "X320741";
     private static final String PATH_FORMAT = "/offenders/crn/%s/convictions/%s/attendances";
+    private static final String FILTER_PATH_FORMAT = "/offenders/crn/%s/convictions/%s/attendancesFilter";
     private static final String PATH = String.format(PATH_FORMAT, KNOWN_CRN, KNOWN_EVENT_ID);
+    private static final String FILTER_PATH = String.format(FILTER_PATH_FORMAT, KNOWN_CRN, KNOWN_EVENT_ID);
 
     @Test
     public void normalGetAttendances() {
@@ -61,6 +63,63 @@ public class AttendanceResourceAPITest extends IntegrationTestBase {
             .as(Attendances.class);
 
         assertTrue(attendances.getAttendances().isEmpty());
+    }
+
+    @Test
+    public void givenDefaultFiltering_whenGetAttendances_ThenReturnNoResults() {
+        final Attendances attendances = given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get(FILTER_PATH)
+            .then()
+            .statusCode(HttpStatus.OK.value())
+            .extract()
+            .body()
+            .as(Attendances.class);
+
+        assertThat(attendances.getAttendances().stream()).hasSize(0);
+    }
+
+    @Test
+    public void givenFiltering_whenGetAttendances_ThenReturnNoResults() {
+        final Attendances attendances = given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .queryParam("enforcement", "1")
+            .queryParam("attendanceContact", "Y")
+            .queryParam("nationalStandardsContact", "N")
+            .get(FILTER_PATH)
+            .then()
+            .statusCode(HttpStatus.OK.value())
+            .extract()
+            .body()
+            .as(Attendances.class);
+
+        assertThat(attendances.getAttendances().stream()).hasSize(1);
+    }
+
+    @Test
+    public void givenFiltering_whenGetAttendances_ThenReturnSingleMatch() {
+        final Attendances attendances = given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .queryParam("enforcement", "1")
+            .queryParam("attendanceContact", "N")
+            .queryParam("nationalStandardsContact", "N")
+            .get(FILTER_PATH)
+            .then()
+            .statusCode(HttpStatus.OK.value())
+            .extract()
+            .body()
+            .as(Attendances.class);
+
+        assertThat(attendances.getAttendances().stream()).hasSize(1);
     }
 
 }
