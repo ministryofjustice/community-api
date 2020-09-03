@@ -89,9 +89,9 @@ public class AttendanceResourceAPITest extends IntegrationTestBase {
             .oauth2(tokenWithRoleCommunity())
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .queryParam("enforcement", "1")
-            .queryParam("attendanceContact", "Y")
-            .queryParam("nationalStandardsContact", "N")
+            .queryParam("enforcement", "0")
+            .queryParam("attendanceContact", "N")
+            .queryParam("nationalStandardsContact", "Y")
             .get(FILTER_PATH)
             .then()
             .statusCode(HttpStatus.OK.value())
@@ -99,7 +99,7 @@ public class AttendanceResourceAPITest extends IntegrationTestBase {
             .body()
             .as(Attendances.class);
 
-        assertThat(attendances.getAttendances().stream()).hasSize(1);
+        assertThat(attendances.getAttendances().stream()).hasSize(0);
     }
 
     @Test
@@ -111,7 +111,7 @@ public class AttendanceResourceAPITest extends IntegrationTestBase {
             .when()
             .queryParam("enforcement", "1")
             .queryParam("attendanceContact", "N")
-            .queryParam("nationalStandardsContact", "N")
+            .queryParam("nationalStandardsContact", "Y")
             .get(FILTER_PATH)
             .then()
             .statusCode(HttpStatus.OK.value())
