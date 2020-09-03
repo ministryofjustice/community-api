@@ -70,6 +70,23 @@ public class AttendanceServiceTest {
     }
 
     @Test
+    public void givenParams_whenCallGetContacts_ThenPassParams() {
+
+        final String enforcement = "1";
+        final String nationalStandardsParam = "N";
+        final String attendanceParam = "Y";
+        final LocalDate today = LocalDate.now();
+
+        when(contactRepository.findByOffenderAndEventId(SOME_OFFENDER_ID, SOME_EVENT_ID, today, enforcement, attendanceParam, nationalStandardsParam))
+            .thenReturn(Collections.emptyList());
+
+        assertTrue(attendanceService.getContactsForEvent(SOME_OFFENDER_ID, SOME_EVENT_ID, today, enforcement, attendanceParam, nationalStandardsParam).isEmpty());
+
+        verify(contactRepository).findByOffenderAndEventId(SOME_OFFENDER_ID, SOME_EVENT_ID, today, enforcement, attendanceParam, nationalStandardsParam);
+        verifyNoMoreInteractions(contactRepository);
+    }
+
+    @Test
     public void forEntityBooleanNull() {
         assertThat(forEntityBoolean(null)).isFalse();
     }
