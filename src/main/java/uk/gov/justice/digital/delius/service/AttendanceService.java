@@ -24,17 +24,12 @@ public class AttendanceService {
         this.contactRepository = contactRepository;
     }
 
-    public List<Contact> getContactsForEvent(final Long offenderId, final Long eventId, final LocalDate localDate) {
+    public List<Contact> getContactsForEventEnforcement(final Long offenderId, final Long eventId, final LocalDate localDate) {
         return contactRepository.findByOffenderAndEventIdEnforcement(offenderId, eventId, localDate);
     }
 
-    public List<Contact> getContactsForEvent(final Long offenderId,
-                                            final Long eventId,
-                                            final LocalDate localDate,
-                                            final String enforcement,
-                                            final String attendanceContact,
-                                            final String nationalStandardsContact) {
-        return contactRepository.findByOffenderAndEventId(offenderId, eventId, localDate, enforcement, attendanceContact, nationalStandardsContact);
+    public List<Contact> getContactsForEvent(final Long offenderId, final Long eventId, final LocalDate contactDate) {
+        return contactRepository.findByOffenderAndEventId(offenderId, eventId, contactDate);
     }
 
     static boolean forEntityBoolean(final String booleanStr) {
