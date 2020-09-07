@@ -66,52 +66,12 @@ public class AttendanceResourceAPITest extends IntegrationTestBase {
     }
 
     @Test
-    public void givenDefaultFiltering_whenGetAttendances_ThenReturnNoResults() {
+    public void whenGetAttendances_ThenReturnSingleMatch() {
         final Attendances attendances = given()
             .auth()
             .oauth2(tokenWithRoleCommunity())
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get(FILTER_PATH)
-            .then()
-            .statusCode(HttpStatus.OK.value())
-            .extract()
-            .body()
-            .as(Attendances.class);
-
-        assertThat(attendances.getAttendances().stream()).hasSize(0);
-    }
-
-    @Test
-    public void givenFiltering_whenGetAttendances_ThenReturnNoResults() {
-        final Attendances attendances = given()
-            .auth()
-            .oauth2(tokenWithRoleCommunity())
-            .contentType(APPLICATION_JSON_VALUE)
-            .when()
-            .queryParam("enforcement", "0")
-            .queryParam("attendanceContact", "N")
-            .queryParam("nationalStandardsContact", "Y")
-            .get(FILTER_PATH)
-            .then()
-            .statusCode(HttpStatus.OK.value())
-            .extract()
-            .body()
-            .as(Attendances.class);
-
-        assertThat(attendances.getAttendances().stream()).hasSize(0);
-    }
-
-    @Test
-    public void givenFiltering_whenGetAttendances_ThenReturnSingleMatch() {
-        final Attendances attendances = given()
-            .auth()
-            .oauth2(tokenWithRoleCommunity())
-            .contentType(APPLICATION_JSON_VALUE)
-            .when()
-            .queryParam("enforcement", "1")
-            .queryParam("attendanceContact", "N")
-            .queryParam("nationalStandardsContact", "Y")
             .get(FILTER_PATH)
             .then()
             .statusCode(HttpStatus.OK.value())
@@ -120,6 +80,26 @@ public class AttendanceResourceAPITest extends IntegrationTestBase {
             .as(Attendances.class);
 
         assertThat(attendances.getAttendances().stream()).hasSize(1);
+    }
+
+    @Test
+    public void givenCrnWithNullEnforcementAndOutcome_whenGetAttendances_ThenReturnNone() {
+
+        String path = String.format(FILTER_PATH_FORMAT, "X320811", "2600295124");
+
+        final Attendances attendances = given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get(path)
+            .then()
+            .statusCode(HttpStatus.OK.value())
+            .extract()
+            .body()
+            .as(Attendances.class);
+
+        assertThat(attendances.getAttendances().stream()).isEmpty();
     }
 
 }

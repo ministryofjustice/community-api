@@ -62,11 +62,11 @@ public class AttendanceResourceTest {
     }
 
     @Test
-    public void givenNoMatchingEventThenRespondWithEmptyList() {
+    public void givenNoMatchingEvent_whenGetContacts_thenRespondWithEmptyList() {
         final Long nonMatchingEventId = 99L;
 
         when(offenderService.offenderIdOfCrn(SOME_CRN)).thenReturn(Optional.of(SOME_OFFENDER_ID));
-        when(attendanceService.getContactsForEvent(eq(SOME_OFFENDER_ID), eq(nonMatchingEventId), any(LocalDate.class)))
+        when(attendanceService.getContactsForEventEnforcement(eq(SOME_OFFENDER_ID), eq(nonMatchingEventId), any(LocalDate.class)))
             .thenReturn(Collections.emptyList());
 
         final Attendances attendances = given()
@@ -82,12 +82,12 @@ public class AttendanceResourceTest {
         assertThat(attendances.getAttendances().stream()).isEmpty();
 
         verify(offenderService).offenderIdOfCrn(SOME_CRN);
-        verify(attendanceService).getContactsForEvent(eq(SOME_OFFENDER_ID), eq(nonMatchingEventId), any(LocalDate.class));
+        verify(attendanceService).getContactsForEventEnforcement(eq(SOME_OFFENDER_ID), eq(nonMatchingEventId), any(LocalDate.class));
         verifyNoMoreInteractions(attendanceService, offenderService);
     }
 
     @Test
-    public void givenNoOffenderIdForCrnThenRespondWithStatusNotFound() {
+    public void givenNoOffenderIdForCrn_thenRespondWithStatusNotFound() {
         final String expectedMsg = String.format(AttendanceResource.MSG_OFFENDER_NOT_FOUND, SOME_CRN);
 
         when(offenderService.offenderIdOfCrn(SOME_CRN)).thenReturn(Optional.empty());
@@ -114,7 +114,7 @@ public class AttendanceResourceTest {
         final List<Contact> contacts = Arrays.asList(contact1, contact2);
 
         when(offenderService.offenderIdOfCrn(SOME_CRN)).thenReturn(Optional.of(SOME_OFFENDER_ID));
-        when(attendanceService.getContactsForEvent(eq(SOME_OFFENDER_ID), eq(SOME_EVENT_ID), any(LocalDate.class)))
+        when(attendanceService.getContactsForEventEnforcement(eq(SOME_OFFENDER_ID), eq(SOME_EVENT_ID), any(LocalDate.class)))
             .thenReturn(contacts);
 
         // Act
@@ -139,7 +139,7 @@ public class AttendanceResourceTest {
         assertTrue(attendance2.isComplied());
 
         verify(offenderService).offenderIdOfCrn(SOME_CRN);
-        verify(attendanceService).getContactsForEvent(eq(SOME_OFFENDER_ID), eq(SOME_EVENT_ID), any(LocalDate.class));
+        verify(attendanceService).getContactsForEventEnforcement(eq(SOME_OFFENDER_ID), eq(SOME_EVENT_ID), any(LocalDate.class));
         verifyNoMoreInteractions(attendanceService, offenderService);
     }
 
@@ -156,23 +156,18 @@ public class AttendanceResourceTest {
     }
 
     @Test
-    public void whenCallWithFilter_getMultipleAttendancesReturnsOk() {
+    public void whenGetAttendances_thenReturnOk() {
 
-        final String nationalStandardsParam = "Y";
-        final String attendanceParam = "Y";
-        final String enforcementParam = "1";
         final Contact contact = AttendanceServiceTest.getContactEntity(SOME_CONTACT_ID_1, LocalDate.of(2020, Month.FEBRUARY, 29), null, null);
+        final LocalDate today = LocalDate.now();
 
         when(offenderService.offenderIdOfCrn(SOME_CRN)).thenReturn(Optional.of(SOME_OFFENDER_ID));
-        when(attendanceService.getContactsForEvent(SOME_OFFENDER_ID, SOME_EVENT_ID, LocalDate.now(), enforcementParam, attendanceParam, nationalStandardsParam))
+        when(attendanceService.getContactsForEvent(SOME_OFFENDER_ID, SOME_EVENT_ID, LocalDate.now()))
             .thenReturn(List.of(contact));
 
         // Act
         final Attendances actual = given()
             .contentType(APPLICATION_JSON_VALUE)
-            .queryParam("enforcement", enforcementParam)
-            .queryParam("attendanceContact", attendanceParam)
-            .queryParam("nationalStandardsContact", nationalStandardsParam)
             .when()
             .get(FILTER_PATH)
             .then()
@@ -184,7 +179,25 @@ public class AttendanceResourceTest {
         // assert
         assertThat(actual.getAttendances().stream()).isNotEmpty().hasSize(1);
         verify(offenderService).offenderIdOfCrn(SOME_CRN);
-        verify(attendanceService).getContactsForEvent(SOME_OFFENDER_ID, SOME_EVENT_ID, LocalDate.now(), enforcementParam, attendanceParam, nationalStandardsParam);
+        verify(attendanceService).getContactsForEvent(SOME_OFFENDER_ID, SOME_EVENT_ID, today);
+        verifyNoMoreInteractions(attendanceService, offenderService);
+    }
+
+    @Test
+    public void givenNoOffenderIdForCrn_ForAttendance_ThenRespondWithStatusNotFound() {
+        final String expectedMsg = String.format(AttendanceResource.MSG_OFFENDER_NOT_FOUND, SOME_CRN);
+
+        when(offenderService.offenderIdOfCrn(SOME_CRN)).thenReturn(Optional.empty());
+
+        given()
+            .when()
+            .get(FILTER_PATH)
+            .then()
+            .log().ifValidationFails()
+            .statusCode(HttpStatus.NOT_FOUND.value())
+            .body("developerMessage", containsString(expectedMsg));
+
+        verify(offenderService).offenderIdOfCrn(SOME_CRN);
         verifyNoMoreInteractions(attendanceService, offenderService);
     }
 }

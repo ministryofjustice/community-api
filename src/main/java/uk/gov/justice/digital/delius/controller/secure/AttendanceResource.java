@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
@@ -60,7 +59,7 @@ public class AttendanceResource {
         log.info("Call to getAttendances for CRN {} and conviction ID {}", crn, convictionId);
         final Long offenderId = getOffenderId(crn);
 
-        return new Attendances(AttendanceService.attendancesFor(attendanceService.getContactsForEvent(offenderId, convictionId, LocalDate.now())));
+        return new Attendances(AttendanceService.attendancesFor(attendanceService.getContactsForEventEnforcement(offenderId, convictionId, LocalDate.now())));
     }
 
     @GetMapping(value = "/offenders/crn/{crn}/convictions/{convictionId}/attendancesFilter", produces = APPLICATION_JSON_VALUE)
@@ -73,22 +72,11 @@ public class AttendanceResource {
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
         })
     public Attendances getAttendancesByConviction(final @PathVariable("crn") String crn,
-                                                final @PathVariable("convictionId") Long convictionId,
-                                                final @RequestParam(required = false, defaultValue = "1") String enforcement,
-                                                final @RequestParam(required = false, defaultValue = "Y") String attendanceContact,
-                                                final @RequestParam(required = false, defaultValue = "Y") String nationalStandardsContact) {
+                                                final @PathVariable("convictionId") Long convictionId) {
 
-        log.info("Call to getAttendances for CRN {} and conviction ID {}, with enforcement {}, attendanceContact {} and nationalStandardsContact {}",
-            crn, convictionId, enforcement, attendanceContact, nationalStandardsContact);
+        log.info("Call to getAttendances for CRN {} and conviction ID {}", crn, convictionId);
         final Long offenderId = getOffenderId(crn);
-
-        return new Attendances(AttendanceService.attendancesFor(
-            attendanceService.getContactsForEvent(offenderId,
-                                                convictionId,
-                                                LocalDate.now(),
-                                                enforcement,
-                                                attendanceContact,
-                                                nationalStandardsContact)));
+        return new Attendances(AttendanceService.attendancesFor(attendanceService.getContactsForEvent(offenderId, convictionId, LocalDate.now())));
     }
 
     private Long getOffenderId(String crn) {
