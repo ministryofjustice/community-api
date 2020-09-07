@@ -1,7 +1,11 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
+import java.time.LocalDate;
+import java.time.Month;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import uk.gov.justice.digital.delius.data.api.Attendance;
+import uk.gov.justice.digital.delius.data.api.Attendance.ContactTypeDetail;
 import uk.gov.justice.digital.delius.data.api.Attendances;
 
 import static io.restassured.RestAssured.given;
@@ -80,6 +84,14 @@ public class AttendanceResourceAPITest extends IntegrationTestBase {
             .as(Attendances.class);
 
         assertThat(attendances.getAttendances().stream()).hasSize(1);
+        assertThat(attendances.getAttendances()).containsExactlyInAnyOrder(Attendance.builder()
+            .attended(true)
+            .attendanceDate(LocalDate.of(2020, Month.SEPTEMBER, 4))
+            .complied(false)
+            .contactType(ContactTypeDetail.builder().code("C084").description("3 Way Meeting (NS)").build())
+            .outcome("Appointment Kept")
+            .contactId(2502719240L)
+            .build());
     }
 
     @Test

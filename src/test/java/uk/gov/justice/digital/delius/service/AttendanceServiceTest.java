@@ -89,8 +89,8 @@ public class AttendanceServiceTest {
     }
 
     @Test
-    public void forEntityBooleanIs1() {
-        assertThat(forEntityBoolean("1")).isTrue();
+    public void forEntityBooleanIsTrue() {
+        assertThat(forEntityBoolean("Y")).isTrue();
     }
 
     @Test
@@ -101,7 +101,7 @@ public class AttendanceServiceTest {
     @Test
     public void attendancesFor() {
         final LocalDate attendanceDate = LocalDate.of(2000, Month.APRIL, 20);
-        final Contact contact = getContactEntity(SOME_CONTACT_ID, attendanceDate, "1", null);
+        final Contact contact = getContactEntity(SOME_CONTACT_ID, attendanceDate, "Y", null);
 
         // Act
         final List<Attendance> attendances = AttendanceService.attendancesFor(singletonList(contact));

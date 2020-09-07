@@ -35,7 +35,7 @@ public class AttendanceService {
     static boolean forEntityBoolean(final String booleanStr) {
         if (booleanStr == null)
             return false;
-        return booleanStr.trim().equals("1");
+        return booleanStr.trim().equals("Y");
     }
 
     public static List<Attendance> attendancesFor(final List<Contact> contacts) {
