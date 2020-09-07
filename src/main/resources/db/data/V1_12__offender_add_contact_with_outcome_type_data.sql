@@ -40,7 +40,7 @@ values (2502719240,
         null, -- OFFICE_LOCATION_ID
         3, -- ROW_VERSION
         null, -- ALERT_ACTIVE
-        null, -- ATTENDED
+        'Y', -- ATTENDED
         to_date('13-SEP-19','DD-MON-RR'),
         null,
         to_date('13-SEP-19','DD-MON-RR'), -- LAST_UPDATED_DATETIME

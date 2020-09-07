@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.digital.delius.service.AttendanceService.forEntityBoolean;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -84,24 +83,9 @@ public class AttendanceServiceTest {
     }
 
     @Test
-    public void forEntityBooleanNull() {
-        assertThat(forEntityBoolean(null)).isFalse();
-    }
-
-    @Test
-    public void forEntityBooleanIs1() {
-        assertThat(forEntityBoolean("1")).isTrue();
-    }
-
-    @Test
-    public void forEntityBooleanIs0() {
-        assertThat(forEntityBoolean("0")).isFalse();
-    }
-
-    @Test
     public void attendancesFor() {
         final LocalDate attendanceDate = LocalDate.of(2000, Month.APRIL, 20);
-        final Contact contact = getContactEntity(SOME_CONTACT_ID, attendanceDate, "1", null);
+        final Contact contact = getContactEntity(SOME_CONTACT_ID, attendanceDate, "Y", null);
 
         // Act
         final List<Attendance> attendances = AttendanceService.attendancesFor(singletonList(contact));

@@ -110,7 +110,7 @@ public class AttendanceResourceTest {
         final LocalDate attendanceDate1 = LocalDate.of(2019, Month.AUGUST, 24);
         final LocalDate attendanceDate2 = LocalDate.of(2020, Month.FEBRUARY, 29);
         final Contact contact1 = AttendanceServiceTest.getContactEntity(SOME_CONTACT_ID_1, attendanceDate1, null, null);
-        final Contact contact2 = AttendanceServiceTest.getContactEntity(SOME_CONTACT_ID_2, attendanceDate2, "1", "1");
+        final Contact contact2 = AttendanceServiceTest.getContactEntity(SOME_CONTACT_ID_2, attendanceDate2, "Y", "Y");
         final List<Contact> contacts = Arrays.asList(contact1, contact2);
 
         when(offenderService.offenderIdOfCrn(SOME_CRN)).thenReturn(Optional.of(SOME_OFFENDER_ID));
