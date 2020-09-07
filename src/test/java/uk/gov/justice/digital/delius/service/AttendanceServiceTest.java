@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.digital.delius.service.AttendanceService.forEntityBoolean;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -81,21 +80,6 @@ public class AttendanceServiceTest {
 
         verify(contactRepository).findByOffenderAndEventId(SOME_OFFENDER_ID, SOME_EVENT_ID, today);
         verifyNoMoreInteractions(contactRepository);
-    }
-
-    @Test
-    public void forEntityBooleanNull() {
-        assertThat(forEntityBoolean(null)).isFalse();
-    }
-
-    @Test
-    public void forEntityBooleanIsTrue() {
-        assertThat(forEntityBoolean("Y")).isTrue();
-    }
-
-    @Test
-    public void forEntityBooleanIs0() {
-        assertThat(forEntityBoolean("0")).isFalse();
     }
 
     @Test
