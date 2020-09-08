@@ -293,7 +293,8 @@ public class OffendersResource {
             @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
             @ApiResponse(code = 404, message = "The offender or prison institution is not found")
     })
-    @ApiOperation(value = "Allocates the prison offender manager for an offender in custody. This operation may also have a side affect of creating a Staff member if one matching the name does not already exist. An existing staff member can be used if the staff code is supplied.")
+    @ApiOperation(value = "Allocates the prison offender manager for an offender in custody. This operation may also have a side affect of creating a Staff member if one matching the name does not already exist. An existing staff member can be used if the staff code is supplied.", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
+    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public CommunityOrPrisonOffenderManager allocatePrisonOffenderManagerByNomsNumber(final @PathVariable String nomsNumber,
                                                                                       final @RequestBody CreatePrisonOffenderManager prisonOffenderManager) {
         log.info("Request to allocate a prison offender manager to {} at prison with code {}", nomsNumber, prisonOffenderManager.getNomsPrisonInstitutionCode());
