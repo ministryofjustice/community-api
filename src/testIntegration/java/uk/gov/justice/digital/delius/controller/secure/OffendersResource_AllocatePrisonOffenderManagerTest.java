@@ -21,10 +21,23 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @ExtendWith( FlywayRestoreExtension.class)
 public class OffendersResource_AllocatePrisonOffenderManagerTest  extends IntegrationTestBase  {
     @Test
+    public void mustHaveUpdateRoleToAllocatedPOM() {
+        given()
+                .auth()
+                .oauth2(tokenWithRoleCommunity())
+                .contentType(APPLICATION_JSON_VALUE)
+                .contentType("application/json")
+                .body(createPrisonOffenderManagerOf("BWIA010", "BWI"))
+                .when()
+                .put("/offenders/nomsNumber/G0560UO/prisonOffenderManager")
+                .then()
+                .statusCode(403);
+    }
+    @Test
     public void canAllocatePrisonOffenderManagersByNOMSNumberAndStaffCode() {
         final var offenderManagersBeforeAllocation = given()
                 .auth()
-                .oauth2(tokenWithRoleCommunity())
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("/offenders/nomsNumber/G0560UO/allOffenderManagers")
@@ -40,7 +53,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest  extends Integr
 
         final var newPrisonOffenderManager = given()
                 .auth()
-                .oauth2(tokenWithRoleCommunity())
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
                 .body(createPrisonOffenderManagerOf("BWIA010", "BWI"))
@@ -126,7 +139,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest  extends Integr
 
         final var newPrisonOffenderManager = given()
                 .auth()
-                .oauth2(tokenWithRoleCommunity())
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
                 .body(createPrisonOffenderManagerOf(Human
@@ -205,7 +218,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest  extends Integr
 
         final var newPrisonOffenderManager = given()
                 .auth()
-                .oauth2(tokenWithRoleCommunity())
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
                 .body(createPrisonOffenderManagerOf("BWIA010", "BWI"))
@@ -247,7 +260,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest  extends Integr
     public void shouldRespondWith404WhenAllocatingPrisonOffenderManagersAndExistingStaffNotFound() {
         given()
                 .auth()
-                .oauth2(tokenWithRoleCommunity())
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
                 .body(createPrisonOffenderManagerOf("DOESNOTEXIST"))
@@ -261,7 +274,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest  extends Integr
     public void shouldRespondWith404WhenAllocatingPrisonOffenderManagersAndOffenderNotFound() {
         given()
                 .auth()
-                .oauth2(tokenWithRoleCommunity())
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
                 .body(createPrisonOffenderManagerOf("BWIA010"))
@@ -275,7 +288,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest  extends Integr
     public void shouldRespondWith400WhenAllocatingPrisonOffenderManagersAndPrisonInstitutionNotFound() {
         given()
                 .auth()
-                .oauth2(tokenWithRoleCommunity())
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
                 .body(createPrisonOffenderManagerOf("BWIA010", "DOESNOTEXIST"))
@@ -289,7 +302,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest  extends Integr
     public void shouldRespondWith400WhenStaffMemberNotInThePrisonInstitutionProbationArea() {
         given()
                 .auth()
-                .oauth2(tokenWithRoleCommunity())
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
                 .body(createPrisonOffenderManagerOf("BWIA010", "WWI"))

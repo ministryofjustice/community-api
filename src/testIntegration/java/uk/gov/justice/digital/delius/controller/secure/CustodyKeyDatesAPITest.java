@@ -44,11 +44,89 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
 
 
     @Test
+    void withoutUpdateRoleAccessWillBeDenied() {
+        final var token = createJwt("ROLE_COMMUNITY");
+
+        given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .body(createCustodyKeyDate())
+                .when()
+                .put(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
+                .then()
+                .statusCode(403);
+
+        given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .body(createCustodyKeyDate())
+                .when()
+                .put(String.format("offenders/nomsNumber/%s/custody/keyDates/POM1",  NOMS_NUMBER))
+                .then()
+                .statusCode(403);
+
+        given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .body(createCustodyKeyDate())
+                .when()
+                .put(String.format("offenders/offenderId/%s/custody/keyDates/POM1",  OFFENDER_ID))
+                .then()
+                .statusCode(403);
+
+        given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .body(createCustodyKeyDate())
+                .when()
+                .put(String.format("offenders/prisonBookingNumber/%s/custody/keyDates/POM1", PRISON_BOOKING_NUMBER))
+                .then()
+                .statusCode(403);
+
+
+        given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .body(createCustodyKeyDate())
+                .when()
+                .delete(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
+                .then()
+                .statusCode(403);
+
+        given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .body(createCustodyKeyDate())
+                .when()
+                .delete(String.format("offenders/nomsNumber/%s/custody/keyDates/POM1",  NOMS_NUMBER))
+                .then()
+                .statusCode(403);
+
+        given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .body(createCustodyKeyDate())
+                .when()
+                .delete(String.format("offenders/offenderId/%s/custody/keyDates/POM1",  OFFENDER_ID))
+                .then()
+                .statusCode(403);
+
+        given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .body(createCustodyKeyDate())
+                .when()
+                .delete(String.format("offenders/prisonBookingNumber/%s/custody/keyDates/POM1", PRISON_BOOKING_NUMBER))
+                .then()
+                .statusCode(403);
+    }
+
+    @Test
     public void anAddedKeyDateCanBeRetrievedByCRN()  {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -78,12 +156,19 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                 .build());
     }
 
+    private String createCustodyKeyDate() {
+        return writeValueAsString(CreateCustodyKeyDate
+                .builder()
+                .date(LocalDate.now().plusDays(1))
+                .build());
+    }
+
     @Test
     public void anAddedKeyDateCanBeRetrievedByNOMSNumber() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -110,7 +195,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -137,7 +222,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -165,7 +250,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -174,7 +259,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                 .statusCode(200);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -253,7 +338,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
         LocalDate dayAfterNext = LocalDate.now().plusDays(2);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -262,7 +347,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                 .statusCode(200);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(dayAfterNext))
                 .when()
@@ -291,7 +376,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
         LocalDate dayAfterNext = LocalDate.now().plusDays(2);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -307,7 +392,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                 .statusCode(200);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(dayAfterNext))
                 .when()
@@ -328,7 +413,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
         LocalDate dayAfterNext = LocalDate.now().plusDays(2);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -344,7 +429,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                 .statusCode(200);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(dayAfterNext))
                 .when()
@@ -366,7 +451,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
         LocalDate dayAfterNext = LocalDate.now().plusDays(2);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -382,7 +467,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                 .statusCode(200);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(dayAfterNext))
                 .when()
@@ -403,7 +488,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
         LocalDate dayAfterNext = LocalDate.now().plusDays(2);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(tomorrow))
                 .when()
@@ -419,7 +504,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                 .statusCode(200);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(dayAfterNext))
                 .when()
@@ -438,7 +523,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
     @Test
     public void shouldRespond404WhenOffenderNotFound()  {
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(LocalDate.now()))
                 .when()
@@ -447,7 +532,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                 .statusCode(404);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .when()
                 .delete("offenders/nomsNumber/DOESNOTEXIST/custody/keyDates/POM1")
                 .then()
@@ -461,7 +546,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                 .statusCode(404);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(LocalDate.now()))
                 .when()
@@ -470,7 +555,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                 .statusCode(404);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .when()
                 .delete("offenders/crn/DOESNOTEXIST/custody/keyDates/POM1")
                 .then()
@@ -484,7 +569,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                 .statusCode(404);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(LocalDate.now()))
                 .when()
@@ -507,7 +592,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                 .statusCode(404);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(LocalDate.now()))
                 .when()
@@ -516,7 +601,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                 .statusCode(404);
 
         given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .when()
                 .delete("offenders/prisonBookingNumber/DOESNOTEXIST/custody/keyDates/POM1")
                 .then()
@@ -535,7 +620,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
     @Test
     public void shouldRespond400WhenAddingKeyDateThatIsNotValid()  {
         JsonPath  errorMessage = given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(LocalDate.now()))
                 .when()
@@ -552,7 +637,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
     @Test
     public void shouldRespond400WhenOffenderHasInvalidActiveCustodyEvents()  {
         JsonPath errorMessage = given()
-                .auth().oauth2(tokenWithRoleCommunity())
+                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType("application/json")
                 .body(createCustodyKeyDateOf(LocalDate.now()))
                 .when()
@@ -667,7 +752,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
 
             // GIVEN I hae added some POM key dates from OMiC
             given()
-                    .auth().oauth2(tokenWithRoleCommunity())
+                    .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                     .contentType("application/json")
                     .body(createCustodyKeyDateOf(LocalDate.of(2030, 1, 8)))
                     .when()
@@ -676,7 +761,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                     .statusCode(200);
 
             given()
-                    .auth().oauth2(tokenWithRoleCommunity())
+                    .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                     .contentType("application/json")
                     .body(createCustodyKeyDateOf(LocalDate.of(2030, 1, 9)))
                     .when()

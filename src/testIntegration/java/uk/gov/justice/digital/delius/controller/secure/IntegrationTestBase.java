@@ -60,6 +60,10 @@ public class IntegrationTestBase {
         return createJwt("ROLE_COMMUNITY");
     }
 
+    protected String tokenWithRoleCommunityAndCustodyUpdate() {
+        return createJwt("ROLE_COMMUNITY", "ROLE_COMMUNITY_CUSTODY_UPDATE");
+    }
+
     protected String writeValueAsString(Object data) {
         try {
             return objectMapper.writeValueAsString(data);
