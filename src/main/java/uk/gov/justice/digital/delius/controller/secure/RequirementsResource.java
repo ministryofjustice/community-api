@@ -37,12 +37,12 @@ public class RequirementsResource {
                     @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
-    @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/requirements")
-    public ConvictionRequirements getPssRequirementsByConvictionId(
+    @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/pssRequirements")
+    public PssRequirements getPssRequirementsByConvictionId(
             @PathVariable(value = "crn") String crn,
             @PathVariable(value = "convictionId") Long convictionId
     ) {
-        return null;
+        return requirementsService.getPssRequirementsByConvictionId(crn, convictionId);
     }
 
     @ApiOperation(value = "Returns the requirements for a conviction")

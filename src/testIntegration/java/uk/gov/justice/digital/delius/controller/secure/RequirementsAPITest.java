@@ -57,7 +57,7 @@ public class RequirementsAPITest extends IntegrationTestBase {
         ;
     }
 
-    @DisplayName("Known CRN with non-matching conviction ID gives 200 with empty requirements list")
+    @DisplayName("Known CRN with non-matching conviction ID gives 404 with empty requirements list")
     @Test
     public void getRequirementsByConvictionId_crnFound_noConvictionsFound_returnsOk() {
 
@@ -68,8 +68,7 @@ public class RequirementsAPITest extends IntegrationTestBase {
             .when()
             .get(String.format("/offenders/crn/%s/convictions/%s/requirements", "X320741", "0"))
             .then()
-            .statusCode(HttpStatus.OK.value())
-            .body("requirements", hasSize(0))
+            .statusCode(HttpStatus.NOT_FOUND.value())
         ;
     }
 }

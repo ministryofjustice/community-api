@@ -10,10 +10,10 @@ public class RequirementsResource_getPssRequirements extends IntegrationTestBase
     private static final String PSS_REQUIREMENTS_PATH = "/offenders/crn/%s/convictions/%s/pssRequirements";
 
     private static final String KNOWN_OFFENDER_CRN = "X320741";
-    private static final Long KNOWN_CONVICTION_ID = 1234L;
+    private static final Long KNOWN_CONVICTION_ID = 2500295345L;
 
     @Test
-    public void getPssRequirementsBySentenceId() {
+    public void getPssRequirementsByConvictionId() {
 
         given()
                 .auth()
@@ -23,27 +23,15 @@ public class RequirementsResource_getPssRequirements extends IntegrationTestBase
                 .get(String.format(PSS_REQUIREMENTS_PATH, KNOWN_OFFENDER_CRN, KNOWN_CONVICTION_ID))
                 .then()
                 .statusCode(200)
-                .body("pssRequirements[0].pssRequirementId", equalTo("250015755"))
-                .body("[2].pssRequirements[0].type.description", equalTo( "Standard 7 Conditions"))
-                .body("[2].pssRequirements[0].subType.description", equalTo( "?"))
-                .body("[2].pssRequirements[0].active", equalTo(false))
+                .body("pssRequirements[0].pssRequirementId", equalTo(250015755))
+                .body("pssRequirements[0].type.description", equalTo( "Standard 7 Conditions"))
+                .body("pssRequirements[0].subType.description", equalTo( "Adult Custody 12m plus"))
+                .body("pssRequirements[0].active", equalTo(false))
                 ;
     }
 
     @Test
-    public void getPssRequirementsBySentenceId_offenderNotFound_returnsNotFound() {
-        given()
-                .auth()
-                .oauth2(tokenWithRoleCommunity())
-                .contentType(APPLICATION_JSON_VALUE)
-                .when()
-                .get(String.format(PSS_REQUIREMENTS_PATH, "X777777", KNOWN_CONVICTION_ID))
-                .then()
-                .statusCode(404);
-    }
-
-    @Test
-    public void getPssRequirementsBySentenceId_convictionNotFound_returnsNotFound() {
+    public void getPssRequirementsByConvictionId_convictionNotFound_returnsNotFound() {
         given()
                 .auth()
                 .oauth2(tokenWithRoleCommunity())
