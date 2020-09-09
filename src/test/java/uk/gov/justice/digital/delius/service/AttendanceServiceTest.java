@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.digital.delius.service.AttendanceService.forEntityBoolean;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -42,25 +41,25 @@ public class AttendanceServiceTest {
     private AttendanceService attendanceService;
 
     @Test
-    public void getAttendancesForEventNoneAvailable() {
+    public void getAttendancesForEventEnforcementNoneAvailable() {
 
         when(contactRepository.findByOffenderAndEventIdEnforcement(eq(SOME_OFFENDER_ID), eq(SOME_EVENT_ID), any(LocalDate.class)))
             .thenReturn(Collections.emptyList());
 
-        assertTrue(attendanceService.getContactsForEvent(SOME_OFFENDER_ID, SOME_EVENT_ID, LocalDate.now()).isEmpty());
+        assertTrue(attendanceService.getContactsForEventEnforcement(SOME_OFFENDER_ID, SOME_EVENT_ID, LocalDate.now()).isEmpty());
 
         verify(contactRepository).findByOffenderAndEventIdEnforcement(eq(SOME_OFFENDER_ID), eq(SOME_EVENT_ID), any(LocalDate.class));
         verifyNoMoreInteractions(contactRepository);
     }
 
     @Test
-    public void getAttendancesForEventMultipleAvailable() {
+    public void whenGetAttendancesForEventEnforcement_thenReturnMultipleAvailable() {
 
         final Contact contact = getContactEntity(SOME_CONTACT_ID, LocalDate.now(), "1", "1");
         when(contactRepository.findByOffenderAndEventIdEnforcement(eq(SOME_OFFENDER_ID), eq(SOME_EVENT_ID), any(LocalDate.class))).thenReturn(singletonList(contact));
 
         // Act
-        final List<Contact> contacts = attendanceService.getContactsForEvent(SOME_OFFENDER_ID, SOME_EVENT_ID, LocalDate.now());
+        final List<Contact> contacts = attendanceService.getContactsForEventEnforcement(SOME_OFFENDER_ID, SOME_EVENT_ID, LocalDate.now());
 
         // Assert
         assertThat(contacts).hasSize(1);
@@ -70,41 +69,23 @@ public class AttendanceServiceTest {
     }
 
     @Test
-    public void givenParams_whenCallGetContacts_ThenPassParams() {
+    public void whenCallGetContacts_thenReturnList() {
 
-        final String enforcement = "1";
-        final String nationalStandardsParam = "N";
-        final String attendanceParam = "Y";
         final LocalDate today = LocalDate.now();
 
-        when(contactRepository.findByOffenderAndEventId(SOME_OFFENDER_ID, SOME_EVENT_ID, today, enforcement, attendanceParam, nationalStandardsParam))
+        when(contactRepository.findByOffenderAndEventId(SOME_OFFENDER_ID, SOME_EVENT_ID, today))
             .thenReturn(Collections.emptyList());
 
-        assertTrue(attendanceService.getContactsForEvent(SOME_OFFENDER_ID, SOME_EVENT_ID, today, enforcement, attendanceParam, nationalStandardsParam).isEmpty());
+        assertTrue(attendanceService.getContactsForEvent(SOME_OFFENDER_ID, SOME_EVENT_ID, today).isEmpty());
 
-        verify(contactRepository).findByOffenderAndEventId(SOME_OFFENDER_ID, SOME_EVENT_ID, today, enforcement, attendanceParam, nationalStandardsParam);
+        verify(contactRepository).findByOffenderAndEventId(SOME_OFFENDER_ID, SOME_EVENT_ID, today);
         verifyNoMoreInteractions(contactRepository);
-    }
-
-    @Test
-    public void forEntityBooleanNull() {
-        assertThat(forEntityBoolean(null)).isFalse();
-    }
-
-    @Test
-    public void forEntityBooleanIs1() {
-        assertThat(forEntityBoolean("1")).isTrue();
-    }
-
-    @Test
-    public void forEntityBooleanIs0() {
-        assertThat(forEntityBoolean("0")).isFalse();
     }
 
     @Test
     public void attendancesFor() {
         final LocalDate attendanceDate = LocalDate.of(2000, Month.APRIL, 20);
-        final Contact contact = getContactEntity(SOME_CONTACT_ID, attendanceDate, "1", null);
+        final Contact contact = getContactEntity(SOME_CONTACT_ID, attendanceDate, "Y", null);
 
         // Act
         final List<Attendance> attendances = AttendanceService.attendancesFor(singletonList(contact));

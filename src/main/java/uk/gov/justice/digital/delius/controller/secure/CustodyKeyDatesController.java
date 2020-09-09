@@ -41,7 +41,8 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be added to an offender which does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
-    @ApiOperation(value = "Adds or replaces a custody key date for the active custodial conviction")
+    @ApiOperation(value = "Adds or replaces a custody key date for the active custodial conviction", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
+    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public CustodyKeyDate putCustodyKeyDateByCrn(final @PathVariable String crn,
                                                  final @PathVariable String typeCode,
                                                  final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
@@ -56,7 +57,8 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be added to an offender which does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
-    @ApiOperation(value = "Adds or replaces a custody key date for the active custodial conviction")
+    @ApiOperation(value = "Adds or replaces a custody key date for the active custodial conviction", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
+    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public CustodyKeyDate putCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber,
                                                         final @PathVariable String typeCode,
                                                         final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
@@ -70,7 +72,7 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
             @ApiResponse(code = 404, message = "The requested offender or conviction was not found.")
     })
-    @ApiOperation(value = "Replaces all key dates specified in body. Key dates are either added or replaced or deleted if absent (see ReplaceCustodyKeyDates for the list). The the custodial conviction must be active")
+    @ApiOperation(value = "Replaces all key dates specified in body. Key dates are either added or replaced or deleted if absent (see ReplaceCustodyKeyDates for the list). The the custodial conviction must be active", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
     @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public Custody replaceAllCustodyKeyDateByNomsNumberAndBookingNumber(final @PathVariable String nomsNumber,
                                                                         final @PathVariable String bookingNumber,
@@ -94,7 +96,8 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be added to an offender which does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
-    @ApiOperation(value = "Adds or replaces a custody key date for the active custodial conviction")
+    @ApiOperation(value = "Adds or replaces a custody key date for the active custodial conviction", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
+    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public CustodyKeyDate putCustodyKeyDateByOffenderId(final @PathVariable Long offenderId,
                                                         final @PathVariable String typeCode,
                                                         final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
@@ -109,7 +112,8 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be added to an offender which does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested conviction with associated prison booking was not found.")
     })
-    @ApiOperation(value = "Adds or replaces a custody key date for the active custodial conviction")
+    @ApiOperation(value = "Adds or replaces a custody key date for the active custodial conviction", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
+    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public CustodyKeyDate putCustodyKeyDateByPrisonBookingNumber(final @PathVariable String prisonBookingNumber,
                                                                  final @PathVariable String typeCode,
                                                                  final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
@@ -250,7 +254,8 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be deleted from an offender which does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
-    @ApiOperation(value = "Deletes the custody key date for the active custodial conviction")
+    @ApiOperation(value = "Deletes the custody key date for the active custodial conviction", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
+    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public void deleteCustodyKeyDateByCrn(final @PathVariable String crn,
                                           final @PathVariable String typeCode) {
         log.info("Call to deleteCustodyKeyDateByCrn for {} code {}", crn, typeCode);
@@ -264,8 +269,8 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be deleted from an offender which does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
-    @ApiOperation(value = "Deletes the custody key date for the active custodial conviction")
-
+    @ApiOperation(value = "Deletes the custody key date for the active custodial conviction", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
+    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public void deleteCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber,
                                                  final @PathVariable String typeCode) {
         log.info("Call to deleteCustodyKeyDateByNomsNumber for {} code {}", nomsNumber, typeCode);
@@ -279,7 +284,8 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be deleted from an offender which does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
-    @ApiOperation(value = "Deletes the custody key date for the active custodial conviction")
+    @ApiOperation(value = "Deletes the custody key date for the active custodial conviction", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
+    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public void deleteCustodyKeyDateByOffenderId(final @PathVariable Long offenderId,
                                                  final @PathVariable String typeCode) {
         log.info("Call to deleteCustodyKeyDateByOffenderId for {} code {}", offenderId, typeCode);
@@ -293,7 +299,8 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 400, message = "The keyDate is not valid"),
             @ApiResponse(code = 404, message = "The requested prison booking was not found.")
     })
-    @ApiOperation(value = "Deletes the custody key date for the associated custodial conviction")
+    @ApiOperation(value = "Deletes the custody key date for the associated custodial conviction", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
+    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public void deleteCustodyKeyDateByPrisonBookingNumber(final @PathVariable String prisonBookingNumber,
                                                           final @PathVariable String typeCode) {
         log.info("Call to deleteCustodyKeyDateByPrisonBookingNumber for {} code {}", prisonBookingNumber, typeCode);
