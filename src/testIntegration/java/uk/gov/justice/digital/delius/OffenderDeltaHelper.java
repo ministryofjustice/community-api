@@ -10,12 +10,10 @@ import java.util.stream.LongStream;
 
 public class OffenderDeltaHelper {
     public static void insert(final List<OffenderDelta> deltas, final JdbcTemplate jdbcTemplate) {
-        deltas.stream().forEach(
+        deltas.forEach(
                 delta -> jdbcTemplate.update(
-                        "INSERT INTO OFFENDER_DELTA(OFFENDER_DELTA_ID, OFFENDER_ID, DATE_CHANGED, ACTION, SOURCE_TABLE, SOURCE_RECORD_ID, STATUS, CREATED_DATETIME, LAST_UPDATED_DATETIME) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                        delta.getOffenderDeltaId(), delta.getOffenderId(), delta.getDateChanged(),
-                        delta.getAction(), delta.getSourceTable(), delta.getSourceRecordId(),
-                        delta.getStatus(), delta.getCreatedDateTime(), delta.getLastUpdatedDateTime()
+                        "INSERT INTO OFFENDER_DELTA(OFFENDER_ID, DATE_CHANGED, ACTION) VALUES (?, ?, ?)",
+                        delta.getOffenderId(), delta.getDateChanged(), delta.getAction()
                 )
         );
     }
@@ -26,17 +24,11 @@ public class OffenderDeltaHelper {
                 .offenderId(l)
                 .dateChanged(now.minusDays(howMany / 2).plusDays(l))
                 .action("UPSERT")
-                .offenderDeltaId(1000L+l)
-                .sourceTable("OFFENDER")
-                .sourceRecordId(10000L+l)
-                .status("CREATED")
-                .createdDateTime(now.minusDays(howMany / l).plusDays(l).plusMinutes(1L).withNano(0))
-                .lastUpdatedDateTime(now.minusDays(howMany / l).plusDays(l).plusMinutes(1L).withNano(0))
                 .build()).collect(Collectors.toList());
     }
 
-    public static OffenderDelta anOffenderDelta(final Long offenderDeltaId, final LocalDateTime createdDateTime, final String status) {
-        return OffenderDelta.builder()
+    public static uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDelta anOffenderDelta(final Long offenderDeltaId, final LocalDateTime createdDateTime, final String status) {
+        return uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDelta.builder()
                 .offenderDeltaId(offenderDeltaId)
                 .offenderId(1L)
                 .dateChanged(LocalDateTime.now())
@@ -45,7 +37,17 @@ public class OffenderDeltaHelper {
                 .sourceRecordId(2L)
                 .status(status)
                 .createdDateTime(createdDateTime)
-                .lastUpdatedDateTime(LocalDateTime.now())
+                .lastUpdatedDateTime(LocalDateTime.now().minusDays(1))
                 .build();
+    }
+    public static void insertEntities(final List<uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDelta> deltas, final JdbcTemplate jdbcTemplate) {
+        deltas.forEach(
+                delta -> jdbcTemplate.update(
+                        "INSERT INTO OFFENDER_DELTA(OFFENDER_DELTA_ID, OFFENDER_ID, DATE_CHANGED, ACTION, SOURCE_TABLE, SOURCE_RECORD_ID, STATUS, CREATED_DATETIME, LAST_UPDATED_DATETIME) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        delta.getOffenderDeltaId(), delta.getOffenderId(), delta.getDateChanged(), delta.getAction(),
+                        delta.getSourceTable(), delta.getSourceRecordId(), delta.getStatus(),
+                        delta.getCreatedDateTime(), delta.getLastUpdatedDateTime()
+                )
+        );
     }
 }

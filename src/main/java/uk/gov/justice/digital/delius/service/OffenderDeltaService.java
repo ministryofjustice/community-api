@@ -26,19 +26,13 @@ public class OffenderDeltaService {
     public List<OffenderDelta> findAll() {
         return jdbcTemplate.query("SELECT * FROM OFFENDER_DELTA", (resultSet, rowNum) ->
                 OffenderDelta.builder()
-                        .offenderDeltaId(resultSet.getLong("OFFENDER_DELTA_ID"))
                         .offenderId(resultSet.getLong("OFFENDER_ID"))
                         .dateChanged(resultSet.getTimestamp("DATE_CHANGED").toLocalDateTime())
                         .action(resultSet.getString("ACTION"))
-                        .sourceTable(resultSet.getString("SOURCE_TABLE"))
-                        .sourceRecordId(resultSet.getLong("SOURCE_RECORD_ID"))
-                        .status(resultSet.getString("STATUS"))
-                        .createdDateTime(resultSet.getTimestamp("CREATED_DATETIME").toLocalDateTime())
-                        .lastUpdatedDateTime(resultSet.getTimestamp("LAST_UPDATED_DATETIME").toLocalDateTime())
                         .build())
-                        .stream()
-                        .limit(1000) // limit to 1000 without using database specific syntax specific technology
-                        .collect(toList());
+                .stream()
+                .limit(1000) // limit to 1000 without using database specific syntax specific technology
+                .collect(toList());
     }
 
     @Transactional
@@ -46,9 +40,15 @@ public class OffenderDeltaService {
         jdbcTemplate.update("DELETE FROM OFFENDER_DELTA WHERE DATE_CHANGED < ?", dateTime);
     }
 
-    public Optional<OffenderDelta> lockNext() {
+    @Transactional
+    public Optional<uk.gov.justice.digital.delius.data.api.OffenderDelta> lockNext() {
         final var mayBeDelta = offenderDeltaRepository.findFirstByStatusOrderByCreatedDateTime("CREATED");
-        return mayBeDelta.map(delta -> OffenderDelta.builder()
+
+        return mayBeDelta.map(delta -> {
+                    delta.setStatus("INPROGRESS");
+                    return delta;
+                }
+        ).map(delta -> uk.gov.justice.digital.delius.data.api.OffenderDelta.builder()
                 .offenderDeltaId(delta.getOffenderDeltaId())
                 .offenderId(delta.getOffenderId())
                 .dateChanged(delta.getDateChanged())
@@ -56,8 +56,7 @@ public class OffenderDeltaService {
                 .sourceTable(delta.getSourceTable())
                 .sourceRecordId(delta.getSourceRecordId())
                 .status(delta.getStatus())
-                .createdDateTime(delta.getCreatedDateTime())
-                .lastUpdatedDateTime(delta.getLastUpdatedDateTime())
                 .build());
+
     }
 }

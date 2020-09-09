@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Version;
 import java.time.LocalDateTime;
 
 @Data
@@ -53,6 +54,7 @@ public class OffenderDelta {
 
     @Column(name = "LAST_UPDATED_DATETIME")
     @LastModifiedDate
+    @Version
     private LocalDateTime lastUpdatedDateTime;
 
 }
