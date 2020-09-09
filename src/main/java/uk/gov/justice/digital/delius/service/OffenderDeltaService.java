@@ -1,24 +1,26 @@
 package uk.gov.justice.digital.delius.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.jpa.dao.OffenderDelta;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderDeltaRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
 @Service
 public class OffenderDeltaService {
 
-    @Autowired
     private final JdbcTemplate jdbcTemplate;
+    private final OffenderDeltaRepository offenderDeltaRepository;
 
-    public OffenderDeltaService(JdbcTemplate jdbcTemplate) {
+    public OffenderDeltaService(JdbcTemplate jdbcTemplate, OffenderDeltaRepository offenderDeltaRepository) {
         this.jdbcTemplate = jdbcTemplate;
+        this.offenderDeltaRepository = offenderDeltaRepository;
     }
 
     public List<OffenderDelta> findAll() {
@@ -44,7 +46,18 @@ public class OffenderDeltaService {
         jdbcTemplate.update("DELETE FROM OFFENDER_DELTA WHERE DATE_CHANGED < ?", dateTime);
     }
 
-    public OffenderDelta lockNext() {
-        return OffenderDelta.builder().build();
+    public Optional<OffenderDelta> lockNext() {
+        final var mayBeDelta = offenderDeltaRepository.findFirstByStatusOrderByCreatedDateTime("CREATED");
+        return mayBeDelta.map(delta -> OffenderDelta.builder()
+                .offenderDeltaId(delta.getOffenderDeltaId())
+                .offenderId(delta.getOffenderId())
+                .dateChanged(delta.getDateChanged())
+                .action(delta.getAction())
+                .sourceTable(delta.getSourceTable())
+                .sourceRecordId(delta.getSourceRecordId())
+                .status(delta.getStatus())
+                .createdDateTime(delta.getCreatedDateTime())
+                .lastUpdatedDateTime(delta.getLastUpdatedDateTime())
+                .build());
     }
 }

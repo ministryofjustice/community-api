@@ -1,20 +1,25 @@
-package uk.gov.justice.digital.delius.jpa.national.entity;
+package uk.gov.justice.digital.delius.jpa.standard.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Data
+@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @Entity
 @Table(name = "OFFENDER_DELTA")
 public class OffenderDelta {
@@ -39,12 +44,15 @@ public class OffenderDelta {
     private Long sourceRecordId;
 
     @Column(name = "STATUS")
-    private String status;
+    @Builder.Default
+    private String status = "CREATED";
 
     @Column(name = "CREATED_DATETIME")
+    @CreatedDate
     private LocalDateTime createdDateTime;
 
     @Column(name = "LAST_UPDATED_DATETIME")
+    @LastModifiedDate
     private LocalDateTime lastUpdatedDateTime;
 
 }

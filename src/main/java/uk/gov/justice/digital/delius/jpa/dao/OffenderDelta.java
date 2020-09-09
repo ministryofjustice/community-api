@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonPropertyOrder({"offenderId", "dateChanged", "action"})
-public class OffenderDelta {
+public class  OffenderDelta {
     @ApiModelProperty(value = "Offender ID", example = "232423", position = 1)
     private Long offenderId;
     @ApiModelProperty(value = "The datetime the change occurred", example = "2019-11-27T15:12:43.000Z", position = 2)

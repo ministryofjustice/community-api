@@ -29,8 +29,23 @@ public class OffenderDeltaHelper {
                 .offenderDeltaId(1000L+l)
                 .sourceTable("OFFENDER")
                 .sourceRecordId(10000L+l)
+                .status("CREATED")
                 .createdDateTime(now.minusDays(howMany / l).plusDays(l).plusMinutes(1L).withNano(0))
                 .lastUpdatedDateTime(now.minusDays(howMany / l).plusDays(l).plusMinutes(1L).withNano(0))
                 .build()).collect(Collectors.toList());
+    }
+
+    public static OffenderDelta anOffenderDelta(final Long offenderDeltaId, final LocalDateTime createdDateTime, final String status) {
+        return OffenderDelta.builder()
+                .offenderDeltaId(offenderDeltaId)
+                .offenderId(1L)
+                .dateChanged(LocalDateTime.now())
+                .action("UPSERT")
+                .sourceTable("OFFENDER")
+                .sourceRecordId(2L)
+                .status(status)
+                .createdDateTime(createdDateTime)
+                .lastUpdatedDateTime(LocalDateTime.now())
+                .build();
     }
 }
