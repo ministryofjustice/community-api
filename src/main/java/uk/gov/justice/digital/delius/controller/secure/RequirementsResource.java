@@ -34,6 +34,7 @@ public class RequirementsResource {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
                     @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+                    @ApiResponse(code = 404, message = "Not Found", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/pssRequirements")
@@ -50,6 +51,7 @@ public class RequirementsResource {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
                     @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+                    @ApiResponse(code = 404, message = "Not Found", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/requirements")
