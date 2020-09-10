@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.OffenderDelta;
-import uk.gov.justice.digital.delius.service.OffenderDeltaService;
+import uk.gov.justice.digital.delius.service.OffenderUpdatesService;
 
 @Api(tags = "Offender update resource (Secure) for retrieving updates to offenders")
 @RestController
@@ -22,7 +22,7 @@ import uk.gov.justice.digital.delius.service.OffenderDeltaService;
 @AllArgsConstructor
 @PreAuthorize("hasRole('ROLE_COMMUNITY')")
 public class OffenderUpdatesResource {
-    private final OffenderDeltaService offenderDeltaService;
+    private final OffenderUpdatesService offenderUpdatesService;
 
     @ApiOperation(
             value = "Returns the next update required processing for any offender", notes = "requires ROLE_COMMUNITY")
