@@ -40,7 +40,6 @@ public class OffenderDeltaService {
         jdbcTemplate.update("DELETE FROM OFFENDER_DELTA WHERE DATE_CHANGED < ?", dateTime);
     }
 
-    @Transactional
     public Optional<uk.gov.justice.digital.delius.data.api.OffenderDelta> lockNext() {
         final var mayBeDelta = offenderDeltaRepository.findFirstByStatusOrderByCreatedDateTime("CREATED");
 
@@ -58,5 +57,10 @@ public class OffenderDeltaService {
                 .status(delta.getStatus())
                 .build());
 
+    }
+
+    @Transactional
+    public Optional<uk.gov.justice.digital.delius.data.api.OffenderDelta> getNextUpdate() {
+        return lockNext();
     }
 }
