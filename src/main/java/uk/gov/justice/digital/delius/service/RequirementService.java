@@ -2,7 +2,6 @@ package uk.gov.justice.digital.delius.service;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
@@ -12,17 +11,13 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
-import uk.gov.justice.digital.delius.jpa.standard.entity.PssRequirement;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.RequirementTransformer;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @NoArgsConstructor
@@ -34,11 +29,12 @@ public class RequirementService {
     private EventRepository eventRepository;
 
     public ConvictionRequirements getRequirementsByConvictionId(String crn, Long convictionId) {
-        var offender = offenderRepository.findByCrn(crn)
-                .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN '%s' not found", crn)));
+        var requirements = Optional.of(getEvent(crn, convictionId))
+                .map(Event::getDisposal)
+                .map(Disposal::getRequirements)
 
-        var requirements = getDisposalStream(convictionId, offender)
-                .flatMap(this::getRequirementStream)
+                .stream()
+                .flatMap(Collection::stream)
                 .map(RequirementTransformer::requirementOf)
                 .collect(Collectors.toList());
 
@@ -46,46 +42,30 @@ public class RequirementService {
     }
 
     public PssRequirements getPssRequirementsByConvictionId(String crn, Long convictionId) {
-        var offender = offenderRepository.findByCrn(crn)
-                .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN '%s' not found", crn)));
-
-        var requirements = getDisposalStream(convictionId, offender)
+        var pssRequirements = Optional.of(getEvent(crn, convictionId))
+                .map(Event::getDisposal)
                 .map(Disposal::getCustody)
-                .flatMap(this::getPssRequirementStream)
+                .map(Custody::getPssRequirements)
+
+                .stream()
+                .flatMap(Collection::stream)
                 .map(RequirementTransformer::pssRequirementOf)
                 .collect(Collectors.toList());
-        return new PssRequirements(requirements);
+
+        return new PssRequirements(pssRequirements);
     }
 
-    private Stream<Disposal> getDisposalStream(Long convictionId, Offender offender) {
-        List<Event> events = eventRepository.findByOffenderId(offender.getOffenderId())
+    private Event getEvent(String crn, Long convictionId) {
+        var offender = getOffender(crn);
+        return eventRepository.findByOffenderId(offender.getOffenderId())
                 .stream()
                 .filter(event -> convictionId.equals(event.getEventId()))
-                .collect(Collectors.toList());
-
-        if (events.size() == 0) {
-                throw new NotFoundException(String.format("Conviction with convictionId '%s' not found", convictionId));
-        }
-
-        return events.stream()
-                .flatMap(this::getDisposalStream);
+                .findAny()
+                .orElseThrow(() ->  new NotFoundException(String.format("Conviction with convictionId '%s' not found", convictionId)));
     }
 
-    @NotNull
-    private Stream<Disposal> getDisposalStream(Event event) {
-        return Optional.ofNullable(event.getDisposal())
-                .stream();
-    }
-
-    private Stream<Requirement> getRequirementStream(Disposal disposal) {
-        return Optional.ofNullable(disposal.getRequirements())
-                .orElse(Collections.emptyList())
-                .stream();
-    }
-
-    private Stream<PssRequirement> getPssRequirementStream(Custody custody) {
-        return Optional.ofNullable(custody.getPssRequirements())
-                .orElse(Collections.emptyList())
-                .stream();
+    private Offender getOffender(String crn) {
+        return offenderRepository.findByCrn(crn)
+                .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN '%s' not found", crn)));
     }
 }
