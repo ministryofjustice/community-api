@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.data.api.OffenderDelta;
@@ -7,9 +8,11 @@ import uk.gov.justice.digital.delius.data.api.OffenderDelta;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class OffenderUpdatesService {
 
     private final OffenderDeltaService offenderDeltaService;
+    @SuppressWarnings("FieldMayBeFinal")
     private int retries = 10;
 
     public OffenderUpdatesService(OffenderDeltaService offenderDeltaService) {
@@ -21,10 +24,10 @@ public class OffenderUpdatesService {
             try {
                 return offenderDeltaService.lockNext();
             } catch(ConcurrencyFailureException ex) {
-                // ignoring expected locking failures
+                log.warn("Received ConcurrencyFailureException while trying to getNextUpdate");
             }
         }
-        return Optional.empty();
+        throw new OffenderDeltaLockedException();
     }
 
 }

@@ -14,6 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class OffenderUpdatesServiceTest {
 
@@ -58,15 +59,14 @@ public class OffenderUpdatesServiceTest {
     }
 
     @Test
-    public void returnsEmptyIfRetryingFails() {
+    public void throwsIfRetryingFails() {
         ReflectionTestUtils.setField(offenderUpdatesService, "retries", 2);
         when(offenderDeltaService.lockNext())
                 .thenThrow(new ConcurrencyFailureException("some lock message"))
                 .thenThrow(new ConcurrencyFailureException("some lock message"));
 
-        final var offenderDelta = offenderUpdatesService.getNextUpdate();
+        assertThatThrownBy(offenderUpdatesService::getNextUpdate).isInstanceOf(OffenderDeltaLockedException.class);
 
-        assertThat(offenderDelta.isPresent()).isFalse();
         verify(offenderDeltaService, times(2)).lockNext();
     }
 

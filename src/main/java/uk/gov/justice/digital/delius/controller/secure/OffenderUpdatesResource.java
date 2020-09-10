@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.OffenderDelta;
 import uk.gov.justice.digital.delius.service.OffenderUpdatesService;
@@ -36,7 +37,7 @@ public class OffenderUpdatesResource {
             })
     @GetMapping(value = "offenders/nextUpdate")
     public OffenderDelta getNextOffenderUpdate() {
-        return null;
+        return offenderUpdatesService.getNextUpdate().orElseThrow(() -> new NotFoundException("No updates found"));
     }
 
 
