@@ -31,7 +31,6 @@ public class RequirementsResource {
     @ApiOperation(value = "Returns the Post Sentence Supervision Requirements for a conviction")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "OK", response = PssRequirements.class, responseContainer = "List"),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
                     @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
@@ -48,7 +47,6 @@ public class RequirementsResource {
     @ApiOperation(value = "Returns the requirements for a conviction")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "OK", response = ConvictionRequirements.class, responseContainer = "List"),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
                     @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
                     @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
