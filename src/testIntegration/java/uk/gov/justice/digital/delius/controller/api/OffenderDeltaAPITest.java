@@ -62,12 +62,15 @@ public class OffenderDeltaAPITest {
     @Test
     public void canGetOffenderDeltas() {
 
-        LocalDateTime now = LocalDateTime.now();
+        final var now = LocalDateTime.now();
 
-        List<OffenderDelta> deltas = OffenderDeltaHelper.someDeltas(now, 20l);
+        final var deltas = OffenderDeltaHelper.someDeltas(now, 20l);
         OffenderDeltaHelper.insert(deltas, jdbcTemplate);
+        final var expectedOffenderIds = deltas.stream()
+                .map(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDelta::getOffenderId)
+                .collect(Collectors.toList());
 
-        OffenderDelta[] offenderDeltas = given()
+        final var offenderDeltas = given()
                 .header("Authorization", aValidToken())
                 .when()
                 .get("/offenderDeltaIds")
@@ -77,20 +80,20 @@ public class OffenderDeltaAPITest {
                 .body()
                 .as(OffenderDelta[].class);
 
-        List<OffenderDelta> offenderDeltaList = Arrays.asList(offenderDeltas);
+        final var offenderDeltaList = Arrays.asList(offenderDeltas);
 
-        assertThat(offenderDeltaList).isEqualTo(deltas);
+        assertThat(offenderDeltaList).extracting(OffenderDelta::getOffenderId).containsExactlyInAnyOrderElementsOf(expectedOffenderIds);
     }
 
     @Test
     public void limitsOffenderDeltasTo1000() {
 
-        LocalDateTime now = LocalDateTime.now();
+        final var now = LocalDateTime.now();
 
-        List<OffenderDelta> deltas = OffenderDeltaHelper.someDeltas(now, 2000l);
+        final var deltas = OffenderDeltaHelper.someDeltas(now, 2000l);
         OffenderDeltaHelper.insert(deltas, jdbcTemplate);
 
-        OffenderDelta[] offenderDeltas = given()
+        final var offenderDeltas = given()
                 .header("Authorization", aValidToken())
                 .when()
                 .get("/offenderDeltaIds")
@@ -100,7 +103,7 @@ public class OffenderDeltaAPITest {
                 .body()
                 .as(OffenderDelta[].class);
 
-        List<OffenderDelta> offenderDeltaList = Arrays.asList(offenderDeltas);
+        final var offenderDeltaList = Arrays.asList(offenderDeltas);
 
         assertThat(offenderDeltaList).hasSize(1000);
     }
@@ -108,9 +111,9 @@ public class OffenderDeltaAPITest {
 
     @Test
     public void canDeleteOffenderDeltasOlderThan() {
-        LocalDateTime now = LocalDateTime.now();
+        final var now = LocalDateTime.now();
 
-        List<OffenderDelta> deltas = OffenderDeltaHelper.someDeltas(now, 20l);
+        final var deltas = OffenderDeltaHelper.someDeltas(now, 20l);
         OffenderDeltaHelper.insert(deltas, jdbcTemplate);
 
         given()
@@ -122,9 +125,13 @@ public class OffenderDeltaAPITest {
                 .then()
                 .statusCode(200);
 
-        Function<LocalDateTime, Predicate<OffenderDelta>> laterOrEqualTo = dateTime -> delta -> delta.getDateChanged().compareTo(dateTime) >= 0;
-        assertThat(offenderDeltaService.findAll()).isEqualTo(
-                deltas.stream().filter(laterOrEqualTo.apply(now)).collect(Collectors.toList()));
+        final Function<LocalDateTime, Predicate<uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDelta>> laterOrEqualTo = dateTime -> delta -> delta.getDateChanged().compareTo(dateTime) >= 0;
+        final var expectedOffenderIds = deltas.stream()
+                .filter(laterOrEqualTo.apply(now))
+                .map(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDelta::getOffenderId)
+                .collect(Collectors.toList());
+
+        assertThat(offenderDeltaService.findAll()).extracting(OffenderDelta::getOffenderId).containsExactlyInAnyOrderElementsOf(expectedOffenderIds);
     }
 
     @Test

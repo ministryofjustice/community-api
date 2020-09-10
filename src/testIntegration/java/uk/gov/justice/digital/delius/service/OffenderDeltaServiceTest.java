@@ -37,7 +37,7 @@ public class OffenderDeltaServiceTest {
     @Test
     public void canLockSingleDelta() {
         final var expectedDelta = OffenderDeltaHelper.anOffenderDelta(9L, LocalDateTime.now().minusMinutes(5), "CREATED");
-        OffenderDeltaHelper.insertEntities(List.of(expectedDelta), jdbcTemplate);
+        OffenderDeltaHelper.insert(List.of(expectedDelta), jdbcTemplate);
 
         final var offenderDelta = offenderDeltaService.lockNext().orElseThrow();
 
@@ -48,7 +48,7 @@ public class OffenderDeltaServiceTest {
     public void locksLatestDelta() {
         final var expectedDelta = OffenderDeltaHelper.anOffenderDelta(10L, LocalDateTime.now().minusMinutes(2), "CREATED");
         final var anyDelta = OffenderDeltaHelper.anOffenderDelta(11L, LocalDateTime.now().minusMinutes(1), "CREATED");
-        OffenderDeltaHelper.insertEntities(List.of(expectedDelta, anyDelta), jdbcTemplate);
+        OffenderDeltaHelper.insert(List.of(expectedDelta, anyDelta), jdbcTemplate);
 
         final var offenderDelta = offenderDeltaService.lockNext().orElseThrow();
 
@@ -59,7 +59,7 @@ public class OffenderDeltaServiceTest {
     public void ignoresWrongStatus() {
         final var expectedDelta = OffenderDeltaHelper.anOffenderDelta(10L, LocalDateTime.now().minusMinutes(1), "CREATED");
         final var anyDelta = OffenderDeltaHelper.anOffenderDelta(11L, LocalDateTime.now().minusMinutes(2), "INPROGRESS");
-        OffenderDeltaHelper.insertEntities(List.of(expectedDelta, anyDelta), jdbcTemplate);
+        OffenderDeltaHelper.insert(List.of(expectedDelta, anyDelta), jdbcTemplate);
 
         final var offenderDelta = offenderDeltaService.lockNext().orElseThrow();
 
@@ -69,7 +69,7 @@ public class OffenderDeltaServiceTest {
     @Test
     public void updatesStatus() {
         final var delta = OffenderDeltaHelper.anOffenderDelta(10L, LocalDateTime.now().minusMinutes(1), "CREATED");
-        OffenderDeltaHelper.insertEntities(List.of(delta), jdbcTemplate);
+        OffenderDeltaHelper.insert(List.of(delta), jdbcTemplate);
 
         final var offenderDelta = offenderDeltaService.lockNext().orElseThrow();
 
@@ -82,7 +82,7 @@ public class OffenderDeltaServiceTest {
     @Test
     public void lastUpdatedIsUpdated() {
         final var delta = OffenderDeltaHelper.anOffenderDelta(10L, LocalDateTime.now().minusMinutes(1), "CREATED");
-        OffenderDeltaHelper.insertEntities(List.of(delta), jdbcTemplate);
+        OffenderDeltaHelper.insert(List.of(delta), jdbcTemplate);
 
         final var timeBeforeUpdate = LocalDateTime.now().withNano(0);
 
@@ -112,7 +112,7 @@ public class OffenderDeltaServiceTest {
     @Transactional
     public void willNotAllowTwoThreadsToUpdateTheSameRecord() {
         final var delta = OffenderDeltaHelper.anOffenderDelta(10L, LocalDateTime.now().minusMinutes(1), "CREATED");
-        OffenderDeltaHelper.insertEntities(List.of(delta), jdbcTemplate);
+        OffenderDeltaHelper.insert(List.of(delta), jdbcTemplate);
 
         assertThatThrownBy(() -> {
             TestTransaction.flagForCommit();
