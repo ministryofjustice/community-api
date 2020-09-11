@@ -60,4 +60,7 @@ public class OffenderDeltaService {
 
     }
 
+    public void deleteDelta(Long offenderDeltaId) {
+        offenderDeltaRepository.deleteById(offenderDeltaId);
+    }
 }

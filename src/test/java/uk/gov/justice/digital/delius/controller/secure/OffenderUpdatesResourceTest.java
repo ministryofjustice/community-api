@@ -44,7 +44,7 @@ class OffenderUpdatesResourceTest {
         void willGetNextUpdate() {
             when(offenderUpdatesService.getNextUpdate()).thenReturn(Optional.of(OffenderDelta
                     .builder()
-                    .action("INSERT")
+                    .action("UPSERT")
                     .dateChanged(LocalDateTime.parse("2012-01-31T14:23:12"))
                     .offenderDeltaId(1L)
                     .offenderId(99L)
@@ -59,7 +59,7 @@ class OffenderUpdatesResourceTest {
                     .get("/secure/offenders/nextUpdate")
                     .then()
                     .statusCode(200)
-                    .body("action", equalTo("INSERT"))
+                    .body("action", equalTo("UPSERT"))
                     .body("dateChanged", notNullValue())
                     .body("offenderDeltaId", equalTo(1))
                     .body("offenderId", equalTo(99))
