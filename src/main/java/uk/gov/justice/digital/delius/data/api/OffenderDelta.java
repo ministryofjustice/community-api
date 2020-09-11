@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +12,6 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonPropertyOrder({"offenderId", "dateChanged", "action"})
 public class OffenderDelta {
     @ApiModelProperty(value = "Offender ID", example = "232423", position = 1)
     private Long offenderId;
@@ -27,6 +25,6 @@ public class OffenderDelta {
     private String sourceTable;
     @ApiModelProperty(value = "Record number from source table", example = "13256", position = 6)
     private Long sourceRecordId;
-    @ApiModelProperty(value = "Status", example = "CREATED", position = 5)
+    @ApiModelProperty(value = "Status", example = "CREATED", position = 7)
     private String status;
 }
