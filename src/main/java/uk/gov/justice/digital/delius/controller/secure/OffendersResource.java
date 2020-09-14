@@ -289,12 +289,12 @@ public class OffendersResource {
 
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/prisonOffenderManager", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Staff code does belong to the probation area related prison institution"),
+            @ApiResponse(code = 400, message = "Staff id does belong to the probation area related prison institution"),
             @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
             @ApiResponse(code = 404, message = "The offender or prison institution is not found")
     })
     @ApiOperation(value = "Allocates the prison offender manager for an offender in custody. This operation may also have a side affect of creating a Staff member " +
-            "if one matching the name does not already exist. An existing staff member can be used if the staff code is supplied.", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
+            "if one matching the name does not already exist. An existing staff member can be used if the staff id is supplied.", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
     @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public CommunityOrPrisonOffenderManager allocatePrisonOffenderManagerByNomsNumber(final @PathVariable String nomsNumber,
                                                                                       final @RequestBody CreatePrisonOffenderManager prisonOffenderManager) {
