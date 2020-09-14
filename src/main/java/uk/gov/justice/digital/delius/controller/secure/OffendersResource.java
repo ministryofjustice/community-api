@@ -293,19 +293,19 @@ public class OffendersResource {
             @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
             @ApiResponse(code = 404, message = "The offender or prison institution is not found")
     })
-    @ApiOperation(value = "Allocates the prison offender manager for an offender in custody. This operation may also have a side affect of creating a Staff member if one matching the name does not already exist. An existing staff member can be used if the staff code is supplied.", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
+    @ApiOperation(value = "Allocates the prison offender manager for an offender in custody. This operation may also have a side affect of creating a Staff member " +
+            "if one matching the name does not already exist. An existing staff member can be used if the staff code is supplied.", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
     @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public CommunityOrPrisonOffenderManager allocatePrisonOffenderManagerByNomsNumber(final @PathVariable String nomsNumber,
                                                                                       final @RequestBody CreatePrisonOffenderManager prisonOffenderManager) {
         log.info("Request to allocate a prison offender manager to {} at prison with code {}", nomsNumber, prisonOffenderManager.getNomsPrisonInstitutionCode());
 
-        final var errorMessage = prisonOffenderManager.validate();
-        if (errorMessage.isPresent()) {
-            throw new InvalidAllocatePOMRequestException(prisonOffenderManager, errorMessage.get());
-        }
+        prisonOffenderManager.validate().ifPresent((errorMessage) -> {
+            throw new InvalidAllocatePOMRequestException(prisonOffenderManager, errorMessage);
+        });
 
-        return Optional.ofNullable(prisonOffenderManager.getOfficerCode())
-                .map(staffCode -> offenderManagerService.allocatePrisonOffenderManagerByStaffCode(nomsNumber, staffCode, prisonOffenderManager))
+        return Optional.ofNullable(prisonOffenderManager.getStaffId())
+                .map(staffId -> offenderManagerService.allocatePrisonOffenderManagerByStaffId(nomsNumber, staffId, prisonOffenderManager))
                 .orElseGet(() -> offenderManagerService.allocatePrisonOffenderManagerByName(nomsNumber, prisonOffenderManager))
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with noms number %s not found", nomsNumber)));
     }
@@ -313,7 +313,7 @@ public class OffendersResource {
     public static class InvalidAllocatePOMRequestException extends BadRequestException {
         InvalidAllocatePOMRequestException(final CreatePrisonOffenderManager createPrisonOffenderManager, final String message) {
             super(message);
-            log.warn("Bad request: " + createPrisonOffenderManager);
+            log.warn("Bad request: {}", createPrisonOffenderManager);
         }
     }
 
@@ -436,7 +436,7 @@ public class OffendersResource {
             @ApiParam(name = "convictionId", value = "ID for the conviction / event", example = "2500295345", required = true)
             @NotNull @PathVariable(value = "convictionId") final Long convictionId,
             @ApiParam(name = "nsiId", value = "ID for the nsi", example = "2500295123", required = true)
-            @PathVariable(value = "nsiId") Long nsiId) {
+            @PathVariable(value = "nsiId") final Long nsiId) {
         return offenderService.getOffenderByCrn(crn)
                 .map((offender) -> convictionService.convictionsFor(offender.getOffenderId())
                         .stream()
@@ -482,7 +482,7 @@ public class OffendersResource {
             @ApiParam(name = "convictionId", value = "ID for the conviction / event", example = "2500295345", required = true)
             @PathVariable(value = "convictionId") final Long convictionId,
             @ApiParam(name = "sentenceId", value = "ID for the sentence", example = "2500295123", required = true)
-            @PathVariable(value = "sentenceId") Long sentenceId) {
+            @PathVariable(value = "sentenceId") final Long sentenceId) {
 
         return sentenceService.getCustodialStatus(crn, convictionId, sentenceId)
                 .orElseThrow(() -> new NotFoundException(String.format("Sentence not found for crn '%s', convictionId '%s', and sentenceId '%s'", crn, convictionId, sentenceId)));
@@ -495,14 +495,14 @@ public class OffendersResource {
     })
     public ResponseEntity<AccessLimitation> checkUserAccessByCrn(
             final @PathVariable("crn") String crn) {
-        Optional<OffenderDetail> maybeOffender = offenderService.getOffenderByCrn(crn);
+        final var maybeOffender = offenderService.getOffenderByCrn(crn);
 
         return maybeOffender.isEmpty() ? new ResponseEntity<>(NOT_FOUND) : accessLimitationResponseEntityOf(maybeOffender.get());
     }
 
     private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(final OffenderDetail offender) {
 
-        final AccessLimitation accessLimitation = userService.accessLimitationOf(currentUserSupplier.username().get(), offender);
+        final var accessLimitation = userService.accessLimitationOf(currentUserSupplier.username().get(), offender);
 
         return new ResponseEntity<>(accessLimitation, (accessLimitation.isUserExcluded() || accessLimitation.isUserRestricted()) ? FORBIDDEN : OK);
     }

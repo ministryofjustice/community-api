@@ -10,8 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Data
 @Builder
@@ -23,8 +23,8 @@ public class CreatePrisonOffenderManager {
     // This annotation appears to be ignored by swagger docs and nobody seems to care: https://github.com/springfox/springfox/issues/2237
     @ApiModelProperty(value = "Name of offender manager. If passed then must contain both forename(s) and surname", example = "officer: {\"forenames\": \"John\", \"surname\": \"Smith\" }")
     private Human officer;
-    @ApiModelProperty(value = "Officer staff code. If not present officer will be used to lookup staff member", example = "N07A001")
-    private String officerCode;
+    @ApiModelProperty(value = "Officer staff ID. If not present officer will be used to lookup staff member", example = "1234567")
+    private Long staffId;
     @ApiModelProperty(value = "Prison institution code in NOMIS", required = true, example = "MDI")
     private String nomsPrisonInstitutionCode;
 
@@ -32,30 +32,27 @@ public class CreatePrisonOffenderManager {
      * This is tested in the API @see OffenderResources_AllocatePrisonOffenderManagerAPITest
      */
     public Optional<String> validate() {
-        final var prisonCodeMissing = isNullOrEmpty(getNomsPrisonInstitutionCode());
-        final var officerCodeExists = !isNullOrEmpty(getOfficerCode());
-        final var officerExists = !isNull(getOfficer());
-        final var officerForenamesMissing = officerExists && isNullOrEmpty(getOfficer().getForenames());
-        final var officerSurnamesMissing = officerExists && isNullOrEmpty(getOfficer().getSurname());
+        final var prisonCodeMissing = isBlank(getNomsPrisonInstitutionCode());
+        final var staffIdExists = isNotEmpty(getStaffId());
+        final var officerExists = isNotEmpty(getOfficer());
+        final var officerForenamesMissing = officerExists && isBlank(getOfficer().getForenames());
+        final var officerSurnamesMissing = officerExists && isBlank(getOfficer().getSurname());
 
-        var expectedToContain = "";
+        final String expectedToContain;
         if (prisonCodeMissing) {
             expectedToContain = "a NOMS prison institution code";
-        }
-        else if (!officerCodeExists && !officerExists) {
-            expectedToContain =  "either officer or officer code";
-        }
-        else if (officerCodeExists && officerExists) {
-            expectedToContain = "either officer OR officer code, not both";
-        }
-        else if (officerExists && officerForenamesMissing && officerSurnamesMissing) {
+        } else if (!staffIdExists && !officerExists) {
+            expectedToContain = "either officer or staff id";
+        } else if (staffIdExists && officerExists) {
+            expectedToContain = "either officer OR staff id, not both";
+        } else if (officerExists && officerForenamesMissing && officerSurnamesMissing) {
             expectedToContain = "both officer names";
-        }
-        else if (officerExists && officerForenamesMissing) {
+        } else if (officerExists && officerForenamesMissing) {
             expectedToContain = "an officer with forenames";
-        }
-        else if (officerExists && officerSurnamesMissing) {
+        } else if (officerExists && officerSurnamesMissing) {
             expectedToContain = "an officer with a surname";
+        } else {
+            expectedToContain = "";
         }
 
         if (!expectedToContain.isBlank()) {
