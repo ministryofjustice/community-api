@@ -1,14 +1,25 @@
 package uk.gov.justice.digital.delius.service;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.controller.InvalidRequestException;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
-import uk.gov.justice.digital.delius.jpa.standard.repository.*;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.RInstitution;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ResponsibleOfficer;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.PrisonOffenderManagerRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ResponsibleOfficerRepository;
 import uk.gov.justice.digital.delius.transformers.OffenderManagerTransformer;
 
 import java.time.LocalDate;
@@ -21,6 +32,7 @@ import java.util.stream.Stream;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class OffenderManagerService {
 
     private final OffenderRepository offenderRepository;
@@ -32,22 +44,8 @@ public class OffenderManagerService {
     private final ReferenceDataService referenceDataService;
     private final ContactService contactService;
 
-
-
-
-    @Autowired
-    public OffenderManagerService(OffenderRepository offenderRepository, ProbationAreaRepository probationAreaRepository, PrisonOffenderManagerRepository prisonOffenderManagerRepository, ResponsibleOfficerRepository responsibleOfficerRepository, StaffService staffService, TeamService teamService, ReferenceDataService referenceDataService, ContactService contactService) {
-        this.offenderRepository = offenderRepository;
-        this.probationAreaRepository = probationAreaRepository;
-        this.prisonOffenderManagerRepository = prisonOffenderManagerRepository;
-        this.responsibleOfficerRepository = responsibleOfficerRepository;
-        this.staffService = staffService;
-        this.teamService = teamService;
-        this.referenceDataService = referenceDataService;
-        this.contactService = contactService;
-    }
     @Transactional(readOnly = true)
-    public Optional<List<CommunityOrPrisonOffenderManager>> getAllOffenderManagersForNomsNumber(String nomsNumber) {
+    public Optional<List<CommunityOrPrisonOffenderManager>> getAllOffenderManagersForNomsNumber(final String nomsNumber) {
         return offenderRepository.findByNomsNumber(nomsNumber).map(
                 offender -> combine(
                         offender.getOffenderManagers()
@@ -64,8 +62,8 @@ public class OffenderManagerService {
     }
 
     @Transactional
-    public Optional<CommunityOrPrisonOffenderManager> allocatePrisonOffenderManagerByStaffCode(String nomsNumber, String staffCode, CreatePrisonOffenderManager prisonOffenderManager) {
-        final var maybeStaff = staffService.findByOfficerCode(staffCode);
+    public Optional<CommunityOrPrisonOffenderManager> allocatePrisonOffenderManagerByStaffId(final String nomsNumber, final Long staffId, final CreatePrisonOffenderManager prisonOffenderManager) {
+        final var maybeStaff = staffService.findByStaffId(staffId);
         final var maybeOffender = offenderRepository.findByNomsNumber(nomsNumber);
         final var probationArea = probationAreaRepository.findByInstitutionByNomsCDECode(prisonOffenderManager.getNomsPrisonInstitutionCode())
                 .orElseThrow(() -> new InvalidRequestException(String.format("Prison NOMS code %s not found", prisonOffenderManager.getNomsPrisonInstitutionCode())));
@@ -76,21 +74,21 @@ public class OffenderManagerService {
     }
 
     @Transactional
-    public Optional<CommunityOrPrisonOffenderManager> allocatePrisonOffenderManagerByName(String nomsNumber, CreatePrisonOffenderManager prisonOffenderManager) {
+    public Optional<CommunityOrPrisonOffenderManager> allocatePrisonOffenderManagerByName(final String nomsNumber, final CreatePrisonOffenderManager prisonOffenderManager) {
 
         final var maybeOffender = offenderRepository.findByNomsNumber(nomsNumber);
         final var probationArea = probationAreaRepository.findByInstitutionByNomsCDECode(prisonOffenderManager.getNomsPrisonInstitutionCode())
                 .orElseThrow(() -> new InvalidRequestException(String.format("Prison NOMS code %s not found", prisonOffenderManager.getNomsPrisonInstitutionCode())));
 
-         return maybeOffender.map(offender ->
-                    allocatePrisonOffenderManager(
-                            probationArea,
-                            staffService.findOrCreateStaffInArea(prisonOffenderManager.getOfficer(), probationArea),
-                            offender));
+        return maybeOffender.map(offender ->
+                allocatePrisonOffenderManager(
+                        probationArea,
+                        staffService.findOrCreateStaffInArea(prisonOffenderManager.getOfficer(), probationArea),
+                        offender));
     }
 
 
-    boolean isPrisonOffenderManagerAtInstitution(Offender offender, RInstitution institution) {
+    boolean isPrisonOffenderManagerAtInstitution(final Offender offender, final RInstitution institution) {
         return offender.getPrisonOffenderManagers()
                 .stream()
                 .filter(PrisonOffenderManager::isActive)
@@ -101,7 +99,7 @@ public class OffenderManagerService {
                 .orElse(false);
     }
 
-    CommunityOrPrisonOffenderManager autoAllocatePrisonOffenderManagerAtInstitution(Offender offender, RInstitution institution) {
+    CommunityOrPrisonOffenderManager autoAllocatePrisonOffenderManagerAtInstitution(final Offender offender, final RInstitution institution) {
         final var allocationReason = referenceDataService.pomAllocationAutoTransferReason();
         final var probationArea = probationAreaRepository.findByInstitutionByNomsCDECode(institution.getNomisCdeCode()).orElseThrow();
         final var team = teamService.findUnallocatedTeam(probationArea).orElseThrow();
@@ -110,7 +108,7 @@ public class OffenderManagerService {
         return allocatePrisonOffenderManager(probationArea, staff, offender, team, allocationReason);
     }
 
-    private CommunityOrPrisonOffenderManager allocatePrisonOffenderManager(ProbationArea probationArea, Staff staff, Offender offender) {
+    private CommunityOrPrisonOffenderManager allocatePrisonOffenderManager(final ProbationArea probationArea, final Staff staff, final Offender offender) {
         return allocatePrisonOffenderManager(
                 probationArea,
                 staff,
@@ -119,7 +117,7 @@ public class OffenderManagerService {
                 getAllocationReason(probationArea, findExistingPrisonOffenderManager(offender)));
     }
 
-    private CommunityOrPrisonOffenderManager allocatePrisonOffenderManager(ProbationArea probationArea, Staff staff, Offender offender, Team team, StandardReference allocationReason) {
+    private CommunityOrPrisonOffenderManager allocatePrisonOffenderManager(final ProbationArea probationArea, final Staff staff, final Offender offender, final Team team, final StandardReference allocationReason) {
         if (!probationArea.getProbationAreaId().equals(staff.getProbationArea().getProbationAreaId())) {
             throw new InvalidRequestException(
                     String.format("Staff with code %s is in probation area %s but was expected to be in prison area of %s", staff.getOfficerCode(), staff.getProbationArea().getDescription(), probationArea.getDescription()));
@@ -166,7 +164,7 @@ public class OffenderManagerService {
         return OffenderManagerTransformer.offenderManagerOf(newPrisonOffenderManager);
     }
 
-    private StandardReference getAllocationReason(ProbationArea probationArea, Optional<PrisonOffenderManager> existingPrisonOffenderManager) {
+    private StandardReference getAllocationReason(final ProbationArea probationArea, final Optional<PrisonOffenderManager> existingPrisonOffenderManager) {
         return existingPrisonOffenderManager
                 .map(pom -> sameArea(probationArea, pom.getProbationArea())
                         ? referenceDataService.pomAllocationInternalTransferReason()
@@ -174,25 +172,25 @@ public class OffenderManagerService {
                 .orElseGet(referenceDataService::pomAllocationAutoTransferReason);
     }
 
-    private boolean sameArea(ProbationArea newProbationArea, ProbationArea oldProbationArea) {
+    private boolean sameArea(final ProbationArea newProbationArea, final ProbationArea oldProbationArea) {
         return newProbationArea.getCode().equals(oldProbationArea.getCode());
     }
 
-    private Optional<PrisonOffenderManager> findExistingPrisonOffenderManager(Offender offender) {
+    private Optional<PrisonOffenderManager> findExistingPrisonOffenderManager(final Offender offender) {
         return offender.getPrisonOffenderManagers()
                 .stream()
                 .filter(PrisonOffenderManager::isActive)
                 .findFirst();
     }
 
-    private boolean isStaffInTeam(Team team, Staff staff) {
+    private boolean isStaffInTeam(final Team team, final Staff staff) {
         return staff
                 .getTeams()
                 .stream()
                 .anyMatch(teamToMatch -> teamToMatch.getTeamId().equals(team.getTeamId()));
     }
 
-    private static <T> List<T> combine(List<T> first, List<T> second) {
+    private static <T> List<T> combine(final List<T> first, final List<T> second) {
         return Stream.of(first, second)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());

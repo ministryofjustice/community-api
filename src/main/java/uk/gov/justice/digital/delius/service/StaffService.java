@@ -15,7 +15,9 @@ import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 import uk.gov.justice.digital.delius.transformers.StaffTransformer;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,7 +32,7 @@ public class StaffService {
 
 
     @Transactional(readOnly = true)
-    public Optional<List<ManagedOffender>> getManagedOffendersByStaffCode(String staffCode, boolean current) {
+    public Optional<List<ManagedOffender>> getManagedOffendersByStaffCode(final String staffCode, final boolean current) {
 
         return staffRepository.findByOfficerCode(staffCode).map(
                 staff -> OffenderTransformer.managedOffenderOf(staff, current)
@@ -38,7 +40,7 @@ public class StaffService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<StaffDetails> getStaffDetails(String staffCode) {
+    public Optional<StaffDetails> getStaffDetails(final String staffCode) {
         return staffRepository
                 .findByOfficerCode(staffCode)
                 .map(StaffTransformer::staffDetailsOf)
@@ -52,15 +54,15 @@ public class StaffService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<StaffDetails> getStaffDetailsByUsername(String username) {
+    public Optional<StaffDetails> getStaffDetailsByUsername(final String username) {
         return staffRepository.findByUsername(username)
                 .map(StaffTransformer::staffDetailsOf)
                 .map(addEmailFromLdap());
     }
 
     @Transactional(readOnly = true)
-    public List<StaffDetails> getStaffDetailsByUsernames(Set<String> usernames) {
-        Set<String> capitalisedUsernames = usernames.stream().map(String::toUpperCase).collect(Collectors.toSet());
+    public List<StaffDetails> getStaffDetailsByUsernames(final Set<String> usernames) {
+        final var capitalisedUsernames = usernames.stream().map(String::toUpperCase).collect(Collectors.toSet());
 
         return staffRepository.findByUsernames(capitalisedUsernames)
                 .stream()
@@ -70,17 +72,17 @@ public class StaffService {
     }
 
     @Transactional
-    public  Staff findOrCreateStaffInArea(Human staff, ProbationArea probationArea) {
+    public Staff findOrCreateStaffInArea(final Human staff, final ProbationArea probationArea) {
         return staffRepository.findBySurnameAndForenameAndProbationArea(staff.getSurname(), firstNameIn(staff.getForenames()), probationArea)
                 .orElseGet(() -> createStaffInArea(staff.getSurname(), firstNameIn(staff.getForenames()), probationArea));
     }
 
     @Transactional
-    public Optional<Staff> findByOfficerCode(String officerCode) {
-        return staffRepository.findByOfficerCode(officerCode);
+    public Optional<Staff> findByStaffId(final Long staffId) {
+        return staffRepository.findByStaffId(staffId);
     }
 
-    Optional<Staff> findUnallocatedForTeam(Team team) {
+    Optional<Staff> findUnallocatedForTeam(final Team team) {
         return staffRepository.findByUnallocatedByTeam(team.getTeamId());
     }
 
@@ -92,7 +94,7 @@ public class StaffService {
                         .build();
     }
 
-    private Staff createStaffInArea(String surname, String forename, ProbationArea probationArea) {
+    private Staff createStaffInArea(final String surname, final String forename, final ProbationArea probationArea) {
         return staffRepository.save(
                 Staff
                         .builder()
@@ -106,11 +108,11 @@ public class StaffService {
         );
     }
 
-    private String generateStaffCodeFor(ProbationArea probationArea) {
+    private String generateStaffCodeFor(final ProbationArea probationArea) {
         return staffHelperRepository.getNextStaffCode(probationArea.getCode());
     }
 
-    private String firstNameIn(String forenames) {
+    private String firstNameIn(final String forenames) {
         return Stream.of(forenames.split("[, ]")).findFirst().orElseThrow();
     }
 

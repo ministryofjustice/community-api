@@ -11,10 +11,11 @@ import java.util.Optional;
 public class OffenderManagerTransformer {
     private static final String UNALLOCATED_STAFF_CODE_SUFFIX = "U";
 
-    public static CommunityOrPrisonOffenderManager offenderManagerOf(OffenderManager offenderManager) {
+    public static CommunityOrPrisonOffenderManager offenderManagerOf(final OffenderManager offenderManager) {
         return CommunityOrPrisonOffenderManager
                 .builder()
                 .staffCode(staffCodeOf(offenderManager))
+                .staffId(staffIdOf(offenderManager))
                 .isUnallocated(isUnallocated(offenderManager))
                 .staff(Optional
                         .ofNullable(offenderManager.getStaff())
@@ -34,10 +35,11 @@ public class OffenderManagerTransformer {
                 .build();
     }
 
-    public static CommunityOrPrisonOffenderManager offenderManagerOf(PrisonOffenderManager offenderManager) {
+    public static CommunityOrPrisonOffenderManager offenderManagerOf(final PrisonOffenderManager offenderManager) {
         return CommunityOrPrisonOffenderManager
                 .builder()
                 .staffCode(staffCodeOf(offenderManager))
+                .staffId(staffIdOf(offenderManager))
                 .isUnallocated(isUnallocated(offenderManager))
                 .staff(Optional
                         .ofNullable(offenderManager.getStaff())
@@ -57,33 +59,47 @@ public class OffenderManagerTransformer {
                 .build();
     }
 
-    private static String staffCodeOf(OffenderManager offenderManager) {
+    private static String staffCodeOf(final OffenderManager offenderManager) {
         return Optional
                 .ofNullable(offenderManager.getStaff())
                 .map(Staff::getOfficerCode)
                 .orElse(null);
     }
 
-    private static String staffCodeOf(PrisonOffenderManager offenderManager) {
+    private static Long staffIdOf(final OffenderManager offenderManager) {
+        return Optional
+                .ofNullable(offenderManager.getStaff())
+                .map(Staff::getStaffId)
+                .orElse(null);
+    }
+
+    private static String staffCodeOf(final PrisonOffenderManager offenderManager) {
         return Optional
                 .ofNullable(offenderManager.getStaff())
                 .map(Staff::getOfficerCode)
                 .orElse(null);
     }
 
-    private static boolean isUnallocated(OffenderManager offenderManager) {
+    private static Long staffIdOf(final PrisonOffenderManager offenderManager) {
+        return Optional
+                .ofNullable(offenderManager.getStaff())
+                .map(Staff::getStaffId)
+                .orElse(null);
+    }
+
+    private static boolean isUnallocated(final OffenderManager offenderManager) {
         return Optional.ofNullable(OffenderManagerTransformer.staffCodeOf(offenderManager))
                 .map(staffCode -> staffCode.endsWith(UNALLOCATED_STAFF_CODE_SUFFIX))
                 .orElse(false);
     }
 
-    private static boolean isUnallocated(PrisonOffenderManager offenderManager) {
+    private static boolean isUnallocated(final PrisonOffenderManager offenderManager) {
         return Optional.ofNullable(OffenderManagerTransformer.staffCodeOf(offenderManager))
                 .map(staffCode -> staffCode.endsWith(UNALLOCATED_STAFF_CODE_SUFFIX))
                 .orElse(false);
     }
 
-    private static boolean isResponsibleOfficer(ResponsibleOfficer responsibleOfficer) {
+    private static boolean isResponsibleOfficer(final ResponsibleOfficer responsibleOfficer) {
         return Optional
                 .ofNullable(responsibleOfficer)
                 .filter(officer -> officer.getEndDateTime() == null)

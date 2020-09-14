@@ -1,8 +1,68 @@
 package uk.gov.justice.digital.delius.util;
 
 import com.google.common.collect.ImmutableList;
-import lombok.val;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
+import uk.gov.justice.digital.delius.jpa.standard.entity.AddressAssessment;
+import uk.gov.justice.digital.delius.jpa.standard.entity.AddressAssessmentDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ApprovedPremisesReferral;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ApprovedPremisesReferralDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Assessment;
+import uk.gov.justice.digital.delius.jpa.standard.entity.AssessmentDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
+import uk.gov.justice.digital.delius.jpa.standard.entity.CaseAllocation;
+import uk.gov.justice.digital.delius.jpa.standard.entity.CaseAllocationDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.CircumstanceSubType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.CircumstanceType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ContactDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Court;
+import uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance;
+import uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport;
+import uk.gov.justice.digital.delius.jpa.standard.entity.CourtReportDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
+import uk.gov.justice.digital.delius.jpa.standard.entity.DisposalType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.District;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Document;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
+import uk.gov.justice.digital.delius.jpa.standard.entity.EventDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReport;
+import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReportDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.KeyDate;
+import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Nsi;
+import uk.gov.justice.digital.delius.jpa.standard.entity.NsiDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.NsiManager;
+import uk.gov.justice.digital.delius.jpa.standard.entity.NsiType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Officer;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OrderManager;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Organisation;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalCircumstance;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalCircumstanceDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalContact;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalContactDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.RAssessmentType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.RCourtReportType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.RInstitution;
+import uk.gov.justice.digital.delius.jpa.standard.entity.RReferralType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Recall;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Referral;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ReferralDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Release;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ResponsibleOfficer;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
+import uk.gov.justice.digital.delius.jpa.standard.entity.UPWAppointmentDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.UpwAppointment;
+import uk.gov.justice.digital.delius.jpa.standard.entity.UpwDetails;
+import uk.gov.justice.digital.delius.jpa.standard.entity.UpwProject;
+import uk.gov.justice.digital.delius.jpa.standard.entity.User;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,14 +72,14 @@ import java.util.List;
 
 public class EntityHelper {
     public static InstitutionalReportDocument anInstitutionalReportDocument() {
-        final InstitutionalReportDocument document = new InstitutionalReportDocument();
+        final var document = new InstitutionalReportDocument();
         populateBasics(document);
         document.setInstitutionalReport(anInstitutionalReport());
         return document;
     }
 
-    public static InstitutionalReportDocument anInstitutionalReportDocument(Long eventId) {
-        final InstitutionalReportDocument document = anInstitutionalReportDocument();
+    public static InstitutionalReportDocument anInstitutionalReportDocument(final Long eventId) {
+        final var document = anInstitutionalReportDocument();
         document.getInstitutionalReport().getCustody().getDisposal().getEvent().setEventId(eventId);
         return document;
     }
@@ -56,7 +116,7 @@ public class EntityHelper {
     }
 
     public static Offender anOffenderWithPreviousConvictionsDocument() {
-        final Offender offender = OffenderHelper.anOffender();
+        final var offender = OffenderHelper.anOffender();
         offender.setPrevConvictionDocumentName("precons.pdf");
         offender.setPreviousConvictionDate(LocalDate.now());
         offender.setPreviousConvictionsAlfrescoDocumentId("123");
@@ -73,8 +133,8 @@ public class EntityHelper {
         return anOffender(List.of(anActiveOffenderManager()), List.of(anActivePrisonOffenderManager()));
     }
 
-    public static Offender anOffender(List<OffenderManager> offenderManagers, List<PrisonOffenderManager> prisonOffenderManagers) {
-        return  OffenderHelper
+    public static Offender anOffender(final List<OffenderManager> offenderManagers, final List<PrisonOffenderManager> prisonOffenderManagers) {
+        return OffenderHelper
                 .anOffender()
                 .toBuilder()
                 .offenderManagers(offenderManagers)
@@ -86,11 +146,11 @@ public class EntityHelper {
         return anEvent(100L);
     }
 
-    public static Event anEvent(Long eventId) {
+    public static Event anEvent(final Long eventId) {
         return anEvent(eventId, 777L);
     }
 
-    public static Event anEvent(Long eventId, Long offenderId) {
+    public static Event anEvent(final Long eventId, final Long offenderId) {
         return Event
                 .builder()
                 .eventId(eventId)
@@ -116,31 +176,31 @@ public class EntityHelper {
         return aCustodyEvent(100L, 99L, new ArrayList<>());
     }
 
-    public static Event aCustodyEvent(StandardReference custodialStatus) {
+    public static Event aCustodyEvent(final StandardReference custodialStatus) {
         return aCustodyEvent(100L, 99L, new ArrayList<>(), custodialStatus);
     }
 
-    public static Event aCustodyEvent(Long eventId, List<KeyDate> keyDates) {
+    public static Event aCustodyEvent(final Long eventId, final List<KeyDate> keyDates) {
         return aCustodyEvent(eventId, 99L, keyDates);
     }
 
-    public static Event aCustodyEvent(Long eventId, Long offenderId, List<KeyDate> keyDates) {
-        val disposal = aDisposal(eventId);
+    public static Event aCustodyEvent(final Long eventId, final Long offenderId, final List<KeyDate> keyDates) {
+        final var disposal = aDisposal(eventId);
         return anEvent(eventId, offenderId)
                 .toBuilder()
                 .disposal(aCustodialDisposal(keyDates, disposal, StandardReference.builder().codeValue("D").codeDescription("In Custody").build()))
                 .build();
     }
 
-    private static Event aCustodyEvent(Long eventId, Long offenderId, List<KeyDate> keyDates, StandardReference custodialStatus) {
-        val disposal = aDisposal(eventId);
+    private static Event aCustodyEvent(final Long eventId, final Long offenderId, final List<KeyDate> keyDates, final StandardReference custodialStatus) {
+        final var disposal = aDisposal(eventId);
         return anEvent(eventId, offenderId)
                 .toBuilder()
                 .disposal(aCustodialDisposal(keyDates, disposal, custodialStatus))
                 .build();
     }
 
-    private static Disposal aCustodialDisposal(List<KeyDate> keyDates, Disposal disposal, StandardReference custodialStatus) {
+    private static Disposal aCustodialDisposal(final List<KeyDate> keyDates, final Disposal disposal, final StandardReference custodialStatus) {
         return disposal
                 .toBuilder()
                 .disposalType(DisposalType
@@ -151,7 +211,7 @@ public class EntityHelper {
                 .build();
     }
 
-    private static Custody aCustody(Disposal disposal, List<KeyDate> keyDates, StandardReference custodialStatus) {
+    private static Custody aCustody(final Disposal disposal, final List<KeyDate> keyDates, final StandardReference custodialStatus) {
         return Custody
                 .builder()
                 .disposal(disposal)
@@ -163,21 +223,21 @@ public class EntityHelper {
     }
 
     public static OffenderDocument anOffenderDocument() {
-        final OffenderDocument offenderDocument = new OffenderDocument();
+        final var offenderDocument = new OffenderDocument();
 
         populateBasics(offenderDocument);
         return offenderDocument;
     }
 
     public static CourtReportDocument aCourtReportDocument() {
-        final CourtReportDocument document = new CourtReportDocument();
+        final var document = new CourtReportDocument();
         populateBasics(document);
         document.setCourtReport(aCourtReport());
         return document;
     }
 
-    public static CourtReportDocument aCourtReportDocument(Long eventId) {
-        final CourtReportDocument document = aCourtReportDocument();
+    public static CourtReportDocument aCourtReportDocument(final Long eventId) {
+        final var document = aCourtReportDocument();
         document.getCourtReport().getCourtAppearance().getEvent().setEventId(eventId);
         return document;
     }
@@ -205,7 +265,7 @@ public class EntityHelper {
                 .build();
     }
 
-    private static void populateBasics(Document document) {
+    private static void populateBasics(final Document document) {
         document.setAlfrescoId("123");
         document.setCreatedByProbationAreaId(1L);
         document.setCreatedByUser(User
@@ -224,17 +284,17 @@ public class EntityHelper {
         document.setPrimaryKeyId(100L);
     }
 
-    public static EventDocument anEventDocument(Long eventId) {
-        final EventDocument document = new EventDocument();
+    public static EventDocument anEventDocument(final Long eventId) {
+        final var document = new EventDocument();
         populateBasics(document);
-        Event event = anEvent();
+        final var event = anEvent();
         event.setEventId(eventId);
         document.setEvent(event);
         return document;
     }
 
     public static AddressAssessmentDocument anAddressAssessmentDocument() {
-        final AddressAssessmentDocument document = new AddressAssessmentDocument();
+        final var document = new AddressAssessmentDocument();
         populateBasics(document);
         document.setAddressAssessment(anAddressAssessment());
         return document;
@@ -247,14 +307,14 @@ public class EntityHelper {
                 .build();
     }
 
-    public static ApprovedPremisesReferralDocument anApprovedPremisesReferralDocument(Long eventId) {
-        final ApprovedPremisesReferralDocument document = new ApprovedPremisesReferralDocument();
+    public static ApprovedPremisesReferralDocument anApprovedPremisesReferralDocument(final Long eventId) {
+        final var document = new ApprovedPremisesReferralDocument();
         populateBasics(document);
         document.setApprovedPremisesReferral(anApprovedPremisesReferral(eventId));
         return document;
     }
 
-    private static ApprovedPremisesReferral anApprovedPremisesReferral(Long eventId) {
+    private static ApprovedPremisesReferral anApprovedPremisesReferral(final Long eventId) {
         return ApprovedPremisesReferral
                 .builder()
                 .referralDate(LocalDateTime.now())
@@ -262,14 +322,14 @@ public class EntityHelper {
                 .build();
     }
 
-    public static AssessmentDocument anAssessmentDocument(Long eventId) {
-        final AssessmentDocument document = new AssessmentDocument();
+    public static AssessmentDocument anAssessmentDocument(final Long eventId) {
+        final var document = new AssessmentDocument();
         populateBasics(document);
         document.setAssessment(anAssessment(eventId));
         return document;
     }
 
-    private static Assessment anAssessment(Long eventId) {
+    private static Assessment anAssessment(final Long eventId) {
         return Assessment
                 .builder()
                 .assessmentDate(LocalDateTime.now())
@@ -281,14 +341,14 @@ public class EntityHelper {
                 .build();
     }
 
-    public static CaseAllocationDocument aCaseAllocationDocument(Long eventId) {
-        final CaseAllocationDocument document = new CaseAllocationDocument();
+    public static CaseAllocationDocument aCaseAllocationDocument(final Long eventId) {
+        final var document = new CaseAllocationDocument();
         populateBasics(document);
         document.setCaseAllocation(aCaseAllocation(eventId));
         return document;
     }
 
-    private static CaseAllocation aCaseAllocation(Long eventId) {
+    private static CaseAllocation aCaseAllocation(final Long eventId) {
         return CaseAllocation
                 .builder()
                 .event(anEvent(eventId))
@@ -296,7 +356,7 @@ public class EntityHelper {
     }
 
     public static PersonalContactDocument aPersonalContactDocument() {
-        final PersonalContactDocument document = new PersonalContactDocument();
+        final var document = new PersonalContactDocument();
         populateBasics(document);
         document.setPersonalContact(aPersonalContact());
         return document;
@@ -315,14 +375,14 @@ public class EntityHelper {
                 .build();
     }
 
-    public static ReferralDocument aReferralDocument(Long eventId) {
-        final ReferralDocument document = new ReferralDocument();
+    public static ReferralDocument aReferralDocument(final Long eventId) {
+        final var document = new ReferralDocument();
         populateBasics(document);
         document.setReferral(aReferral(eventId));
         return document;
     }
 
-    private static Referral aReferral(Long eventId) {
+    private static Referral aReferral(final Long eventId) {
         return Referral
                 .builder()
                 .event(anEvent(eventId))
@@ -334,22 +394,22 @@ public class EntityHelper {
                 .build();
     }
 
-    public static NsiDocument aNsiDocument(Long eventId) {
-        final NsiDocument document = new NsiDocument();
+    public static NsiDocument aNsiDocument(final Long eventId) {
+        final var document = new NsiDocument();
         populateBasics(document);
         document.setNsi(aNsi(eventId));
         return document;
     }
 
     public static NsiDocument aNsiDocument() {
-        final NsiDocument document = new NsiDocument();
+        final var document = new NsiDocument();
         populateBasics(document);
         document.setNsi(aNsi());
         return document;
     }
 
 
-    private static Nsi aNsi(Long eventId) {
+    private static Nsi aNsi(final Long eventId) {
         return aNsi()
                 .toBuilder()
                 .event(anEvent(eventId))
@@ -373,7 +433,7 @@ public class EntityHelper {
     }
 
     public static PersonalCircumstanceDocument aPersonalCircumstanceDocument() {
-        final PersonalCircumstanceDocument document = new PersonalCircumstanceDocument();
+        final var document = new PersonalCircumstanceDocument();
         populateBasics(document);
         document.setPersonalCircumstance(aPersonalCircumstance());
         return document;
@@ -394,15 +454,15 @@ public class EntityHelper {
                 .build();
     }
 
-    public static UPWAppointmentDocument aUPWAppointmentDocument(Long eventId) {
-        final UPWAppointmentDocument document = new UPWAppointmentDocument();
+    public static UPWAppointmentDocument aUPWAppointmentDocument(final Long eventId) {
+        final var document = new UPWAppointmentDocument();
         populateBasics(document);
         document.setUpwAppointment(upwAppointment(eventId));
         return document;
     }
 
 
-    private static UpwAppointment upwAppointment(Long eventId) {
+    private static UpwAppointment upwAppointment(final Long eventId) {
         return UpwAppointment
                 .builder()
                 .appointmentDate(LocalDateTime.now())
@@ -417,7 +477,7 @@ public class EntityHelper {
                 .build();
     }
 
-    private static Disposal aDisposal(Long eventId) {
+    private static Disposal aDisposal(final Long eventId) {
         return Disposal
                 .builder()
                 .disposalType(
@@ -430,7 +490,7 @@ public class EntityHelper {
                 .build();
     }
 
-    public static Disposal aCommunityDisposal(Long eventId) {
+    public static Disposal aCommunityDisposal(final Long eventId) {
         return aDisposal(eventId)
                 .toBuilder()
                 .disposalType(
@@ -441,21 +501,21 @@ public class EntityHelper {
                 .build();
     }
 
-    public static ContactDocument aContactDocument(Long eventId) {
-        final ContactDocument document = new ContactDocument();
+    public static ContactDocument aContactDocument(final Long eventId) {
+        final var document = new ContactDocument();
         populateBasics(document);
         document.setContact(aContact(eventId));
         return document;
     }
 
     public static ContactDocument aContactDocument() {
-        final ContactDocument document = new ContactDocument();
+        final var document = new ContactDocument();
         populateBasics(document);
         document.setContact(aContact());
         return document;
     }
 
-    private static Contact aContact(Long eventId) {
+    private static Contact aContact(final Long eventId) {
         return Contact
                 .builder()
                 .event(anEvent(eventId))
@@ -481,7 +541,7 @@ public class EntityHelper {
 
     }
 
-    public static KeyDate aKeyDate(String typeCode, String description, LocalDate date) {
+    public static KeyDate aKeyDate(final String typeCode, final String description, final LocalDate date) {
         return KeyDate
                 .builder()
                 .keyDate(date)
@@ -493,7 +553,7 @@ public class EntityHelper {
                 .build();
     }
 
-    public static KeyDate aKeyDate(Long keyDateId, String typeCode) {
+    public static KeyDate aKeyDate(final Long keyDateId, final String typeCode) {
         return KeyDate
                 .builder()
                 .keyDateId(keyDateId)
@@ -510,18 +570,18 @@ public class EntityHelper {
         return aStaff("A1234");
     }
 
-    public static Staff aStaff(String officerCode) {
-            return Staff
-            .builder()
-            .officerCode(officerCode)
-            .forename("John")
-            .surname("Smith")
-            .teams(ImmutableList.of())
-            .probationArea(aProbationArea())
-            .build();
+    public static Staff aStaff(final String officerCode) {
+        return Staff
+                .builder()
+                .officerCode(officerCode)
+                .forename("John")
+                .surname("Smith")
+                .teams(ImmutableList.of())
+                .probationArea(aProbationArea())
+                .build();
     }
 
-    public static Team aTeam(String teamCode) {
+    public static Team aTeam(final String teamCode) {
         return Team
                 .builder()
                 .code(teamCode)
@@ -541,41 +601,45 @@ public class EntityHelper {
     public static Borough aBorough() {
         return aBorough("BB");
     }
-    public static Borough aBorough(String code) {
+
+    public static Borough aBorough(final String code) {
         return Borough.builder()
                 .code(code)
                 .description("Borough description")
                 .build();
     }
 
-     public static District aDistrict() {
+    public static District aDistrict() {
         return District.builder()
                 .code("XX")
                 .description("DD description")
                 .borough(aBorough())
                 .build();
-     }
+    }
 
     public static LocalDeliveryUnit aLocalDeliveryUnit() {
         return aLocalDeliveryUnit("LDU");
     }
-    public static LocalDeliveryUnit aLocalDeliveryUnit(String code) {
+
+    public static LocalDeliveryUnit aLocalDeliveryUnit(final String code) {
         return LocalDeliveryUnit
                 .builder()
                 .code(code)
                 .description("LDU description")
                 .build();
-     }
-     public static User aUser() {
+    }
+
+    public static User aUser() {
         return User.builder()
                 .distinguishedName("XX")
                 .build();
-     }
+    }
 
     public static OffenderManager anActiveOffenderManager() {
         return anActiveOffenderManager("AA");
     }
-    public static OffenderManager anActiveOffenderManager(String staffCode) {
+
+    public static OffenderManager anActiveOffenderManager(final String staffCode) {
         return anOffenderManager(aStaff(staffCode), aTeam())
                 .toBuilder()
                 .activeFlag(1L)
@@ -583,21 +647,23 @@ public class EntityHelper {
                 .build();
     }
 
-    public static OffenderManager anInactiveOffenderManager(String staffCode) {
+    public static OffenderManager anInactiveOffenderManager(final String staffCode) {
         return anOffenderManager(aStaff(staffCode), aTeam())
                 .toBuilder()
                 .activeFlag(0L)
                 .endDate(LocalDate.now())
                 .build();
     }
-    public static OffenderManager anEndDatedActiveOffenderManager(String staffCode) {
+
+    public static OffenderManager anEndDatedActiveOffenderManager(final String staffCode) {
         return anOffenderManager(aStaff(staffCode), aTeam())
                 .toBuilder()
                 .activeFlag(1L)
                 .endDate(LocalDate.now())
                 .build();
     }
-    public static OffenderManager anOffenderManager(Staff staff, Team team) {
+
+    public static OffenderManager anOffenderManager(final Staff staff, final Team team) {
         return OffenderManager.builder()
                 .activeFlag(1L)
                 .allocationDate(LocalDate.now())
@@ -612,7 +678,8 @@ public class EntityHelper {
     public static PrisonOffenderManager anActivePrisonOffenderManager() {
         return anActivePrisonOffenderManager("AA");
     }
-    public static PrisonOffenderManager anActivePrisonOffenderManager(String staffCode) {
+
+    public static PrisonOffenderManager anActivePrisonOffenderManager(final String staffCode) {
         return aPrisonOffenderManager(aStaff(staffCode), aTeam())
                 .toBuilder()
                 .activeFlag(1L)
@@ -621,14 +688,15 @@ public class EntityHelper {
                 .build();
     }
 
-    public static PrisonOffenderManager anInactivePrisonOffenderManager(String staffCode) {
+    public static PrisonOffenderManager anInactivePrisonOffenderManager(final String staffCode) {
         return aPrisonOffenderManager(aStaff(staffCode), aTeam())
                 .toBuilder()
                 .activeFlag(0L)
                 .endDate(LocalDate.now())
                 .build();
     }
-    public static PrisonOffenderManager anEndDatedActivePrisonOffenderManager(String staffCode) {
+
+    public static PrisonOffenderManager anEndDatedActivePrisonOffenderManager(final String staffCode) {
         return aPrisonOffenderManager(aStaff(staffCode), aTeam())
                 .toBuilder()
                 .activeFlag(1L)
@@ -636,7 +704,7 @@ public class EntityHelper {
                 .build();
     }
 
-    public static PrisonOffenderManager aPrisonOffenderManager(Staff staff, Team team) {
+    public static PrisonOffenderManager aPrisonOffenderManager(final Staff staff, final Team team) {
         return PrisonOffenderManager.builder()
                 .activeFlag(1L)
                 .allocationDate(LocalDate.now())
