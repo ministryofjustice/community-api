@@ -1,15 +1,53 @@
 # Community API
-Probation Community API.
+Spring Boot 2, Java 11 API for accessing Probation offenders information
 
-The service provides REST access to the  Delius Oracle DB offender information.
+The service provides REST access to the Delius Oracle DB.
 
-## Continuous Integration
-https://circleci.com/gh/noms-digital-studio/community-api
+Documentation for the various endpoints can be found on the test instance at
+https://community-api-secure.test.delius.probation.hmpps.dsd.io/swagger-ui.html (VPN / trusted network required).
+We are in the process of switching to using HMPPS Auth for all the endpoints in the service, these are identified by
+(secure) after the name and are under `/secure` rather than `/api`.  The test instance is connected to the test instance
+of Delius and the dev (t3) instance of Auth.
 
-## Docker repository
-quay.io/hmpps/community-api
+For credentials to access the test service or any questions on the service please ask at #dps_tech_team channel in slack - https://mojdt.slack.com/archives/CK0QLCQ1G.
 
-Admin via https://quay.io/repository/hmpps/community-api?tab=tags
+## Running locally
+
+The easiest way to run the application locally is using `docker-compose`:
+```
+docker-compose pull && docker-compose up
+```
+
+This will grab the latest versions of auth and community api and start both - auth on 9090 and community api on 8080.
+
+## Testing locally
+
+We use [Postman](https://www.postman.com/) to test the API calls.  The swagger docs (http://localhost:8080/v2/api-docs)
+can be imported as a collection to make it easier to test out a single call.
+
+Calling the API is a two step process - obtaining a token from auth and then using the token in community API.  
+
+### Obtaining a token
+
+Within Postman in the Authorization tab select OAuth 2.0 type and add the authorization data to request headers.
+The grant type should be Client Credentials, access token URL http://localhost:9090/auth/oauth/token, client ID
+and secret both set to `community-api-client` and client authentication set to Send as Basic Auth header.
+
+Alternatively using `curl`:
+```
+curl --location --request POST "http://localhost:9090/auth/oauth/token?grant_type=client_credentials" --header "Authorization: Basic $(echo -n community-api-client:community-api-client | base64)"  | jq .access_token
+```
+### Using the token
+
+In the local environment some sample data is seeded automatically.  src/main/resources/db/data/V1_3__offender_X320741_data.sql
+contains a single offender data so in Postman making a `GET` request to http://localhost:8080/secure/offenders/crn/X320741/identifiers
+should then bring back the offender identifiers.
+
+Alternatively using `curl`:
+```
+curl 'http://localhost:8080/secure/offenders/crn/X320741/identifiers' --header 'Authorization: Bearer XXX'
+```
+where `XXX` should be replaced by the token.
 
 ## Gradle commands
 
@@ -134,11 +172,11 @@ curl -X GET http://localhost:8080/api/health
 
 ### Application Ping
 ```
-curl -X GET http://localhost:8080/api/ping
+curl -X GET http://localhost:8080/api/health/ping
 ```
 ## Health
 
-- `api/ping`: will respond `pong` to all requests.  This should be used by dependent systems to check connectivity to whereabouts,
+- `api/health/ping`: provides a simple status `UP` return.  This should be used by dependent systems to check connectivity to whereabouts,
 rather than calling the `api/health` endpoint.
 - `api/health`: provides information about the application health and its dependencies.  This should only be used
 by whereabouts health monitoring (e.g. pager duty) and not other systems who wish to find out the state of whereabouts.

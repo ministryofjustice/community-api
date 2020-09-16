@@ -6,7 +6,7 @@ services:
       - hmpps
     container_name: oauth
     ports:
-      - "8090:8080"
+      - "9090:8080"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/auth/health"]
     environment:
@@ -19,7 +19,7 @@ services:
       - hmpps
     container_name: community-api
     ports:
-      - "8096:8080"
+      - "8080:8080"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
     environment:
