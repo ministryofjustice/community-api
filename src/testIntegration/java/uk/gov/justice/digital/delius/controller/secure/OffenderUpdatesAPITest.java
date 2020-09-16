@@ -87,6 +87,58 @@ public class OffenderUpdatesAPITest extends IntegrationTestBase {
                     .statusCode(404);
 
         }
+
+        @Test
+        @DisplayName("will get and lock a single unprocessed offender delta record")
+        public void willLockSingleUnprocessedUpdate() {
+            final var delta = OffenderDeltaHelper.anOffenderDelta(9L, LocalDateTime.now().minusDays(1), "INPROGRESS")
+                    .toBuilder().lastUpdatedDateTime(LocalDateTime.now().minusMinutes(60))
+                    .build();
+            OffenderDeltaHelper.insert(List.of(delta), jdbcTemplate);
+
+            given()
+                    .auth().oauth2(createJwt("ROLE_COMMUNITY_EVENTS"))
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .get("/offenders/nextUpdate")
+                    .then()
+                    .statusCode(200)
+                    .body("offenderDeltaId", equalTo(9));
+
+            given()
+                    .auth().oauth2(createJwt("ROLE_COMMUNITY_EVENTS"))
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .get("/offenders/nextUpdate")
+                    .then()
+                    .statusCode(404);
+
+        }
+
+        @Test
+        @DisplayName("will get next new update when there are older unprocessed updates ")
+        public void willLockNewUpdateBeforeOlderUnprocessedUpdates() {
+            final var deltaLocked = OffenderDeltaHelper.anOffenderDelta(9L, LocalDateTime.now().minusDays(1), "INPROGRESS")
+                    .toBuilder().lastUpdatedDateTime(LocalDateTime.now().minusMinutes(60))
+                    .build();
+            final var delta = OffenderDeltaHelper.anOffenderDelta(10L, LocalDateTime.now().minusMinutes(1), "CREATED")
+                    .toBuilder().lastUpdatedDateTime(LocalDateTime.now().minusMinutes(1))
+                    .build();
+
+            OffenderDeltaHelper.insert(List.of(delta, deltaLocked), jdbcTemplate);
+
+            given()
+                    .auth().oauth2(createJwt("ROLE_COMMUNITY_EVENTS"))
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .get("/offenders/nextUpdate")
+                    .then()
+                    .statusCode(200)
+                    .body("offenderDeltaId", equalTo(10));
+
+        }
+
+
     }
 
     @Nested

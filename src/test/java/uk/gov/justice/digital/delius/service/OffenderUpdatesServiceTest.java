@@ -37,59 +37,59 @@ public class OffenderUpdatesServiceTest {
 
         @Test
         public void retrievesOffenderDelta() {
-            when(offenderDeltaService.lockNext()).thenReturn(Optional.of(anOffenderDelta()));
+            when(offenderDeltaService.lockNextUpdate()).thenReturn(Optional.of(anOffenderDelta()));
 
             final var offenderDelta = offenderUpdatesService.getNextUpdate().orElseThrow();
 
             assertThat(offenderDelta.getOffenderId()).isEqualTo(2L);
-            verify(offenderDeltaService).lockNext();
+            verify(offenderDeltaService).lockNextUpdate();
         }
 
         @Test
         public void returnsEmptyIfNotFound() {
-            when(offenderDeltaService.lockNext()).thenReturn(Optional.empty());
+            when(offenderDeltaService.lockNextUpdate()).thenReturn(Optional.empty());
 
             final var offenderDelta = offenderUpdatesService.getNextUpdate();
 
             assertThat(offenderDelta.isPresent()).isFalse();
-            verify(offenderDeltaService).lockNext();
+            verify(offenderDeltaService).lockNextUpdate();
         }
 
         @Test
         public void retrievesOffenderDeltaAfterRetry() {
-            when(offenderDeltaService.lockNext())
+            when(offenderDeltaService.lockNextUpdate())
                     .thenThrow(new ConcurrencyFailureException("some lock message"))
                     .thenReturn(Optional.of(anOffenderDelta()));
 
             final var offenderDelta = offenderUpdatesService.getNextUpdate().orElseThrow();
 
             assertThat(offenderDelta.getOffenderId()).isEqualTo(2L);
-            verify(offenderDeltaService, times(2)).lockNext();
+            verify(offenderDeltaService, times(2)).lockNextUpdate();
         }
 
         @Test
         public void throwsIfRetryingFails() {
             ReflectionTestUtils.setField(offenderUpdatesService, "retries", 2);
-            when(offenderDeltaService.lockNext())
+            when(offenderDeltaService.lockNextUpdate())
                     .thenThrow(new ConcurrencyFailureException("some lock message"))
                     .thenThrow(new ConcurrencyFailureException("some lock message"));
 
             assertThatThrownBy(offenderUpdatesService::getNextUpdate).isInstanceOf(OffenderDeltaLockedException.class);
 
-            verify(offenderDeltaService, times(2)).lockNext();
+            verify(offenderDeltaService, times(2)).lockNextUpdate();
         }
 
         @Test
         public void returnsEmptyIfNotFoundAfterRetry() {
             ReflectionTestUtils.setField(offenderUpdatesService, "retries", 2);
-            when(offenderDeltaService.lockNext())
+            when(offenderDeltaService.lockNextUpdate())
                     .thenThrow(new ConcurrencyFailureException("some lock message"))
                     .thenReturn(Optional.empty());
 
             final var offenderDelta = offenderUpdatesService.getNextUpdate();
 
             assertThat(offenderDelta.isPresent()).isFalse();
-            verify(offenderDeltaService, times(2)).lockNext();
+            verify(offenderDeltaService, times(2)).lockNextUpdate();
         }
 
         private OffenderDelta anOffenderDelta() {
