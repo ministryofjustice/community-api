@@ -8,7 +8,9 @@ import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.OffenderDelta;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 @Service
 @Slf4j
@@ -23,9 +25,17 @@ public class OffenderUpdatesService {
     }
 
     public Optional<OffenderDelta> getNextUpdate() {
+        var maybeOffenderUpdate = retrieveNext(offenderDeltaService::lockNextUpdate); // Force a future date as we want ALL
+        if (maybeOffenderUpdate.isEmpty()) {
+            maybeOffenderUpdate = retrieveNext(() -> offenderDeltaService.lockNextFailedUpdate(LocalDateTime.now().minusMinutes(10)));
+        }
+        return maybeOffenderUpdate;
+    }
+
+    private Optional<OffenderDelta> retrieveNext(Supplier<Optional<OffenderDelta>> supplier) {
         for(int i=0; i<retries; i++) {
             try {
-                return offenderDeltaService.lockNext();
+                return supplier.get();
             } catch(ConcurrencyFailureException ex) {
                 log.warn("Received ConcurrencyFailureException while trying to getNextUpdate");
             }

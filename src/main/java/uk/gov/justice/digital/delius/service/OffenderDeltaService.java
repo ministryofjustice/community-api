@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,11 +42,28 @@ public class OffenderDeltaService {
     }
 
     @Transactional
-    public Optional<uk.gov.justice.digital.delius.data.api.OffenderDelta> lockNext() {
+    public Optional<uk.gov.justice.digital.delius.data.api.OffenderDelta> lockNextUpdate() {
+
         final var mayBeDelta = offenderDeltaRepository.findFirstByStatusOrderByCreatedDateTime("CREATED");
 
+        return transformMaybeDelta(mayBeDelta);
+
+    }
+
+    @Transactional
+    public Optional<uk.gov.justice.digital.delius.data.api.OffenderDelta> lockNextFailedUpdate(final LocalDateTime cutoffDateTime) {
+
+        final var mayBeDelta = offenderDeltaRepository.findFirstByStatusAndLastUpdatedDateTimeLessThanEqualOrderByCreatedDateTime("INPROGRESS", cutoffDateTime);
+
+        return transformMaybeDelta(mayBeDelta);
+
+    }
+
+    @NotNull
+    private Optional<uk.gov.justice.digital.delius.data.api.OffenderDelta> transformMaybeDelta(Optional<uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDelta> mayBeDelta) {
         return mayBeDelta.map(delta -> {
                     delta.setStatus("INPROGRESS");
+                    delta.setLastUpdatedDateTime(LocalDateTime.now()); // Forces update
                     return delta;
                 }
         ).map(delta -> uk.gov.justice.digital.delius.data.api.OffenderDelta.builder()
@@ -57,7 +75,6 @@ public class OffenderDeltaService {
                 .sourceRecordId(delta.getSourceRecordId())
                 .status(delta.getStatus())
                 .build());
-
     }
 
     public void deleteDelta(Long offenderDeltaId) {
