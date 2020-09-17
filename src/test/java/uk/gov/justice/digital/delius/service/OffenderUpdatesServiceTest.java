@@ -28,7 +28,7 @@ public class OffenderUpdatesServiceTest {
     private final OffenderUpdatesService offenderUpdatesService = new OffenderUpdatesService(offenderDeltaService);
 
     @Nested
-    @DisplayName("getNextUpdate()")
+    @DisplayName("getNextUpdate for new offender updatees")
     class GetNextUpdate {
         @AfterEach
         public void resetRetries() {
@@ -91,17 +91,57 @@ public class OffenderUpdatesServiceTest {
             assertThat(offenderDelta.isPresent()).isFalse();
             verify(offenderDeltaService, times(2)).lockNextUpdate();
         }
+    }
 
-        private OffenderDelta anOffenderDelta() {
-            return OffenderDelta.builder()
-                    .offenderDeltaId(1L)
-                    .offenderId(2L)
-                    .action("UPSERT")
-                    .status("INPROGRESS")
-                    .sourceTable("OFFENDER")
-                    .sourceRecordId(3L)
-                    .dateChanged(LocalDateTime.now().minusHours(1))
-                    .build();
+    @Nested
+    @DisplayName("getNextUpdate for failed offender updates")
+    class GetNextUpdateFailedUpdates {
+
+        @Test
+        public void triesFailedUpdatesIfNoNewUpdatesFound() {
+            when(offenderDeltaService.lockNextUpdate()).thenReturn(Optional.empty());
+            when(offenderDeltaService.lockNextFailedUpdate()).thenReturn(Optional.empty());
+
+            final var offenderDelta = offenderUpdatesService.getAndLockNextUpdate();
+
+            assertThat(offenderDelta.isPresent()).isFalse();
+            verify(offenderDeltaService).lockNextUpdate();
+            verify(offenderDeltaService).lockNextFailedUpdate();
+        }
+
+        @Test
+        public void returnsFailedUpdateIfFound() {
+            when(offenderDeltaService.lockNextUpdate()).thenReturn(Optional.empty());
+            when(offenderDeltaService.lockNextFailedUpdate()).thenReturn(Optional.of(anOffenderDelta()));
+
+            final var offenderDelta = offenderUpdatesService.getAndLockNextUpdate().orElseThrow();
+
+            assertThat(offenderDelta.getOffenderId()).isEqualTo(2L);
+        }
+
+        @Test
+        public void returnsEmptyIfFailedUpdateNotFoundAfterRetry() {
+            ReflectionTestUtils.setField(offenderUpdatesService, "retries", 2);
+            when(offenderDeltaService.lockNextUpdate()).thenReturn(Optional.empty());
+            when(offenderDeltaService.lockNextFailedUpdate())
+                    .thenThrow(new ConcurrencyFailureException("some lock message"))
+                    .thenReturn(Optional.empty());
+
+            final var offenderDelta = offenderUpdatesService.getAndLockNextUpdate();
+
+            assertThat(offenderDelta.isPresent()).isFalse();
+            verify(offenderDeltaService, times(2)).lockNextFailedUpdate();
+        }
+
+        @Test
+        public void throwsIfFailedUpdatesAreLocked() {
+            ReflectionTestUtils.setField(offenderUpdatesService, "retries", 2);
+            when(offenderDeltaService.lockNextUpdate()).thenReturn(Optional.empty());
+            when(offenderDeltaService.lockNextFailedUpdate())
+                    .thenThrow(new ConcurrencyFailureException("some lock message"))
+                    .thenThrow(new ConcurrencyFailureException("some lock message"));
+
+            assertThatThrownBy(offenderUpdatesService::getAndLockNextUpdate).isInstanceOf(OffenderDeltaLockedException.class);
         }
     }
 
@@ -126,4 +166,17 @@ public class OffenderUpdatesServiceTest {
             verify(offenderDeltaService).deleteDelta(99L);
         }
     }
+
+    private OffenderDelta anOffenderDelta() {
+        return OffenderDelta.builder()
+                .offenderDeltaId(1L)
+                .offenderId(2L)
+                .action("UPSERT")
+                .status("INPROGRESS")
+                .sourceTable("OFFENDER")
+                .sourceRecordId(3L)
+                .dateChanged(LocalDateTime.now().minusHours(1))
+                .build();
+    }
+
 }
