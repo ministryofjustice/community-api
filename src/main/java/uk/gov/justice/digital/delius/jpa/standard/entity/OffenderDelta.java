@@ -57,4 +57,10 @@ public class OffenderDelta {
     @Version
     private LocalDateTime lastUpdatedDateTime;
 
+    public OffenderDelta setInProgress() {
+        this.setStatus("INPROGRESS");
+        this.setLastUpdatedDateTime(LocalDateTime.now()); // if status is already INPROGRESS we still need to set last updated date time inside the cutoff, otherwise it is still considered a failed update
+        return this;
+    }
+
 }

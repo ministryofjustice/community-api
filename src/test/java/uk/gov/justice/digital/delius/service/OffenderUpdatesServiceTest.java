@@ -39,7 +39,7 @@ public class OffenderUpdatesServiceTest {
         public void retrievesOffenderDelta() {
             when(offenderDeltaService.lockNextUpdate()).thenReturn(Optional.of(anOffenderDelta()));
 
-            final var offenderDelta = offenderUpdatesService.getNextUpdate().orElseThrow();
+            final var offenderDelta = offenderUpdatesService.getAndLockNextUpdate().orElseThrow();
 
             assertThat(offenderDelta.getOffenderId()).isEqualTo(2L);
             verify(offenderDeltaService).lockNextUpdate();
@@ -49,7 +49,7 @@ public class OffenderUpdatesServiceTest {
         public void returnsEmptyIfNotFound() {
             when(offenderDeltaService.lockNextUpdate()).thenReturn(Optional.empty());
 
-            final var offenderDelta = offenderUpdatesService.getNextUpdate();
+            final var offenderDelta = offenderUpdatesService.getAndLockNextUpdate();
 
             assertThat(offenderDelta.isPresent()).isFalse();
             verify(offenderDeltaService).lockNextUpdate();
@@ -61,7 +61,7 @@ public class OffenderUpdatesServiceTest {
                     .thenThrow(new ConcurrencyFailureException("some lock message"))
                     .thenReturn(Optional.of(anOffenderDelta()));
 
-            final var offenderDelta = offenderUpdatesService.getNextUpdate().orElseThrow();
+            final var offenderDelta = offenderUpdatesService.getAndLockNextUpdate().orElseThrow();
 
             assertThat(offenderDelta.getOffenderId()).isEqualTo(2L);
             verify(offenderDeltaService, times(2)).lockNextUpdate();
@@ -74,7 +74,7 @@ public class OffenderUpdatesServiceTest {
                     .thenThrow(new ConcurrencyFailureException("some lock message"))
                     .thenThrow(new ConcurrencyFailureException("some lock message"));
 
-            assertThatThrownBy(offenderUpdatesService::getNextUpdate).isInstanceOf(OffenderDeltaLockedException.class);
+            assertThatThrownBy(offenderUpdatesService::getAndLockNextUpdate).isInstanceOf(OffenderDeltaLockedException.class);
 
             verify(offenderDeltaService, times(2)).lockNextUpdate();
         }
@@ -86,7 +86,7 @@ public class OffenderUpdatesServiceTest {
                     .thenThrow(new ConcurrencyFailureException("some lock message"))
                     .thenReturn(Optional.empty());
 
-            final var offenderDelta = offenderUpdatesService.getNextUpdate();
+            final var offenderDelta = offenderUpdatesService.getAndLockNextUpdate();
 
             assertThat(offenderDelta.isPresent()).isFalse();
             verify(offenderDeltaService, times(2)).lockNextUpdate();

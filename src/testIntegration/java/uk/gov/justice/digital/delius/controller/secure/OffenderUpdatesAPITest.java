@@ -89,8 +89,8 @@ public class OffenderUpdatesAPITest extends IntegrationTestBase {
         }
 
         @Test
-        @DisplayName("will get and lock a single unprocessed offender delta record")
-        public void willLockSingleUnprocessedUpdate() {
+        @DisplayName("will get and lock a single failed offender update record")
+        public void willLockSingleFailedUpdate() {
             final var delta = OffenderDeltaHelper.anOffenderDelta(9L, LocalDateTime.now().minusDays(1), "INPROGRESS")
                     .toBuilder().lastUpdatedDateTime(LocalDateTime.now().minusMinutes(60))
                     .build();
@@ -116,8 +116,8 @@ public class OffenderUpdatesAPITest extends IntegrationTestBase {
         }
 
         @Test
-        @DisplayName("will get next new update when there are older unprocessed updates ")
-        public void willLockNewUpdateBeforeOlderUnprocessedUpdates() {
+        @DisplayName("will get next new update when there are older failed updates ")
+        public void willLockNewUpdateBeforeOlderFailedUpdates() {
             final var deltaLocked = OffenderDeltaHelper.anOffenderDelta(9L, LocalDateTime.now().minusDays(1), "INPROGRESS")
                     .toBuilder().lastUpdatedDateTime(LocalDateTime.now().minusMinutes(60))
                     .build();
@@ -176,7 +176,7 @@ public class OffenderUpdatesAPITest extends IntegrationTestBase {
         }
 
         @Test
-        @DisplayName("will return not found whn the update in not present")
+        @DisplayName("will return not found when the update in not present")
         public void willReturn404WhenNotPresent() {
             assertThat(hasUpdateFor(99L)).isFalse();
 
