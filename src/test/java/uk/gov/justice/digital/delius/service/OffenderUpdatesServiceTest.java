@@ -28,7 +28,7 @@ public class OffenderUpdatesServiceTest {
     private final OffenderUpdatesService offenderUpdatesService = new OffenderUpdatesService(offenderDeltaService);
 
     @Nested
-    @DisplayName("getNextUpdate for new offender updatees")
+    @DisplayName("getNextUpdate for new offender updates")
     class GetNextUpdate {
         @AfterEach
         public void resetRetries() {

@@ -19,7 +19,7 @@ public class OffenderDeltaService {
     private final JdbcTemplate jdbcTemplate;
     private final OffenderDeltaRepository offenderDeltaRepository;
     @SuppressWarnings({"FieldCanBeLocal"})
-    private final int inProgressIsFailedAfterMinutes = 10;
+    static final int IN_PROGRESS_IS_FAILED_AFTER_MINUTES = 10;
 
     public OffenderDeltaService(JdbcTemplate jdbcTemplate, OffenderDeltaRepository offenderDeltaRepository) {
         this.jdbcTemplate = jdbcTemplate;
@@ -59,7 +59,7 @@ public class OffenderDeltaService {
     }
 
     private LocalDateTime getFailedCutoffDateTime() {
-        return LocalDateTime.now().minusMinutes(inProgressIsFailedAfterMinutes);
+        return LocalDateTime.now().minusMinutes(IN_PROGRESS_IS_FAILED_AFTER_MINUTES);
     }
 
     @NotNull
