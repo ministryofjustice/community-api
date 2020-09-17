@@ -18,6 +18,8 @@ public class OffenderDeltaService {
 
     private final JdbcTemplate jdbcTemplate;
     private final OffenderDeltaRepository offenderDeltaRepository;
+    @SuppressWarnings({"FieldCanBeLocal"})
+    static final int IN_PROGRESS_IS_FAILED_AFTER_MINUTES = 10;
 
     public OffenderDeltaService(JdbcTemplate jdbcTemplate, OffenderDeltaRepository offenderDeltaRepository) {
         this.jdbcTemplate = jdbcTemplate;
@@ -43,30 +45,32 @@ public class OffenderDeltaService {
 
     @Transactional
     public Optional<uk.gov.justice.digital.delius.data.api.OffenderDelta> lockNextUpdate() {
-
         final var mayBeDelta = offenderDeltaRepository.findFirstByStatusOrderByCreatedDateTime("CREATED");
 
-        return transformMaybeDelta(mayBeDelta);
-
+        return transformAndLock(mayBeDelta);
     }
 
     @Transactional
-    public Optional<uk.gov.justice.digital.delius.data.api.OffenderDelta> lockNextFailedUpdate(final LocalDateTime cutoffDateTime) {
+    public Optional<uk.gov.justice.digital.delius.data.api.OffenderDelta> lockNextFailedUpdate() {
+        final var failedCutoffDateTime = getFailedCutoffDateTime();
+        final var mayBeDelta = offenderDeltaRepository.findFirstByStatusAndLastUpdatedDateTimeLessThanEqualOrderByCreatedDateTime("INPROGRESS", failedCutoffDateTime);
 
-        final var mayBeDelta = offenderDeltaRepository.findFirstByStatusAndLastUpdatedDateTimeLessThanEqualOrderByCreatedDateTime("INPROGRESS", cutoffDateTime);
+        return transformAndLock(mayBeDelta);
+    }
 
-        return transformMaybeDelta(mayBeDelta);
-
+    private LocalDateTime getFailedCutoffDateTime() {
+        return LocalDateTime.now().minusMinutes(IN_PROGRESS_IS_FAILED_AFTER_MINUTES);
     }
 
     @NotNull
-    private Optional<uk.gov.justice.digital.delius.data.api.OffenderDelta> transformMaybeDelta(Optional<uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDelta> mayBeDelta) {
-        return mayBeDelta.map(delta -> {
-                    delta.setStatus("INPROGRESS");
-                    delta.setLastUpdatedDateTime(LocalDateTime.now()); // Forces update
-                    return delta;
-                }
-        ).map(delta -> uk.gov.justice.digital.delius.data.api.OffenderDelta.builder()
+    private Optional<uk.gov.justice.digital.delius.data.api.OffenderDelta> transformAndLock(final Optional<uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDelta> mayBeDelta) {
+        return mayBeDelta
+                .map(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDelta::setInProgress)
+                .map(this::transformDelta);
+    }
+
+    private uk.gov.justice.digital.delius.data.api.OffenderDelta transformDelta(final uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDelta delta) {
+        return uk.gov.justice.digital.delius.data.api.OffenderDelta.builder()
                 .offenderDeltaId(delta.getOffenderDeltaId())
                 .offenderId(delta.getOffenderId())
                 .dateChanged(delta.getDateChanged())
@@ -74,10 +78,10 @@ public class OffenderDeltaService {
                 .sourceTable(delta.getSourceTable())
                 .sourceRecordId(delta.getSourceRecordId())
                 .status(delta.getStatus())
-                .build());
+                .build();
     }
 
-    public void deleteDelta(Long offenderDeltaId) {
+    public void deleteDelta(final Long offenderDeltaId) {
         offenderDeltaRepository.deleteById(offenderDeltaId);
     }
 }

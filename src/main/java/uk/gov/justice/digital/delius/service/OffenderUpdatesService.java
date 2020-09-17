@@ -8,7 +8,6 @@ import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.OffenderDelta;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -17,22 +16,23 @@ import java.util.function.Supplier;
 public class OffenderUpdatesService {
 
     private final OffenderDeltaService offenderDeltaService;
-    @SuppressWarnings("FieldMayBeFinal")
+    @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
     private int retries = 10;
 
     public OffenderUpdatesService(OffenderDeltaService offenderDeltaService) {
         this.offenderDeltaService = offenderDeltaService;
     }
 
-    public Optional<OffenderDelta> getNextUpdate() {
-        var maybeOffenderUpdate = retrieveNext(offenderDeltaService::lockNextUpdate); // Force a future date as we want ALL
+    public Optional<OffenderDelta> getAndLockNextUpdate() {
+        var maybeOffenderUpdate = lockNext(offenderDeltaService::lockNextUpdate);
         if (maybeOffenderUpdate.isEmpty()) {
-            maybeOffenderUpdate = retrieveNext(() -> offenderDeltaService.lockNextFailedUpdate(LocalDateTime.now().minusMinutes(10)));
+            maybeOffenderUpdate = lockNext(offenderDeltaService::lockNextFailedUpdate);
+            log.info("Attempted to lock a failed offender update, found {} ", maybeOffenderUpdate.isPresent() ? maybeOffenderUpdate.get().getOffenderDeltaId() : "nothing");
         }
         return maybeOffenderUpdate;
     }
 
-    private Optional<OffenderDelta> retrieveNext(Supplier<Optional<OffenderDelta>> supplier) {
+    private Optional<OffenderDelta> lockNext(final Supplier<Optional<OffenderDelta>> supplier) {
         for(int i=0; i<retries; i++) {
             try {
                 return supplier.get();
@@ -44,7 +44,7 @@ public class OffenderUpdatesService {
     }
 
     @Transactional
-    public void deleteUpdate(Long offenderDeltaId) {
+    public void deleteUpdate(final Long offenderDeltaId) {
         try {
             offenderDeltaService.deleteDelta(offenderDeltaId);
         } catch (EmptyResultDataAccessException e) {

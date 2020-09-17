@@ -28,7 +28,7 @@ public class OffenderUpdatesResource {
     private final OffenderUpdatesService offenderUpdatesService;
 
     @ApiOperation(
-            value = "Returns the next update for any offender", notes = "requires ROLE_COMMUNITY_EVENTS")
+            value = "Returns the next update for any offender. If none, will look for failed updates and set them in progress again", notes = "requires ROLE_COMMUNITY_EVENTS")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
@@ -38,8 +38,8 @@ public class OffenderUpdatesResource {
                     @ApiResponse(code = 409, message = "Attempt to retrieve the latest update that is already in progress", response = ErrorResponse.class)
             })
     @GetMapping(value = "offenders/nextUpdate")
-    public OffenderDelta getNextOffenderUpdate() {
-        return offenderUpdatesService.getNextUpdate().orElseThrow(() -> new NotFoundException("No updates found"));
+    public OffenderDelta getAndLockNextOffenderUpdate() {
+        return offenderUpdatesService.getAndLockNextUpdate().orElseThrow(() -> new NotFoundException("No updates found"));
     }
 
     @ApiOperation(
