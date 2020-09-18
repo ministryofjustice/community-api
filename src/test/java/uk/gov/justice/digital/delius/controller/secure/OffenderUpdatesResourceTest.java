@@ -6,7 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
-import uk.gov.justice.digital.delius.data.api.OffenderDelta;
+import uk.gov.justice.digital.delius.data.api.OffenderUpdate;
 import uk.gov.justice.digital.delius.service.OffenderDeltaLockedException;
 import uk.gov.justice.digital.delius.service.OffenderUpdatesService;
 
@@ -42,7 +42,7 @@ class OffenderUpdatesResourceTest {
         @Test
         @DisplayName("Will get the next update")
         void willGetNextUpdate() {
-            when(offenderUpdatesService.getAndLockNextUpdate()).thenReturn(Optional.of(OffenderDelta
+            when(offenderUpdatesService.getAndLockNextUpdate()).thenReturn(Optional.of(OffenderUpdate
                     .builder()
                     .action("UPSERT")
                     .dateChanged(LocalDateTime.parse("2012-01-31T14:23:12"))

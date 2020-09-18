@@ -8,7 +8,7 @@ import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
-import uk.gov.justice.digital.delius.data.api.OffenderDelta;
+import uk.gov.justice.digital.delius.data.api.OffenderUpdate;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -167,8 +167,19 @@ public class OffenderUpdatesServiceTest {
         }
     }
 
-    private OffenderDelta anOffenderDelta() {
-        return OffenderDelta.builder()
+    @Nested
+    @DisplayName("markAsFailed()")
+    class MarkAsFailed {
+        @Test
+        public void willCallServiceToUpdateToFailed() {
+            offenderUpdatesService.markAsFailed(99L);
+
+            verify(offenderDeltaService).markAsFailed(99L);
+        }
+    }
+
+    private OffenderUpdate anOffenderDelta() {
+        return OffenderUpdate.builder()
                 .offenderDeltaId(1L)
                 .offenderId(2L)
                 .action("UPSERT")

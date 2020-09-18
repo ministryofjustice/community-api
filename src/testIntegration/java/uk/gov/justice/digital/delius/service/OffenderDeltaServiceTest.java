@@ -42,10 +42,22 @@ class OffenderDeltaServiceTest {
         final var expectedDelta = OffenderDeltaHelper.anOffenderDelta(9L, LocalDateTime.now().minusMinutes(5), "CREATED");
         OffenderDeltaHelper.insert(List.of(expectedDelta), jdbcTemplate);
 
-        final var offenderDelta = offenderDeltaService.lockNextUpdate().orElseThrow();
+        final var offenderUpdate = offenderDeltaService.lockNextUpdate().orElseThrow();
 
-        assertThat(offenderDelta.getOffenderDeltaId()).isEqualTo(9L);
+        assertThat(offenderUpdate.getOffenderDeltaId()).isEqualTo(9L);
     }
+
+    @Test
+    @DisplayName("Will indicate a new update is not a retry")
+    void lockNextUpdate_markUpdateAsARetry() {
+        final var expectedDelta = OffenderDeltaHelper.anOffenderDelta(9L, LocalDateTime.now().minusMinutes(5), "CREATED");
+        OffenderDeltaHelper.insert(List.of(expectedDelta), jdbcTemplate);
+
+        final var offenderUpdate = offenderDeltaService.lockNextUpdate().orElseThrow();
+
+        assertThat(offenderUpdate.isFailedUpdate()).isFalse();
+    }
+
 
     @Test
     @DisplayName("will lock the oldest offender update")
@@ -54,9 +66,9 @@ class OffenderDeltaServiceTest {
         final var anyDelta = OffenderDeltaHelper.anOffenderDelta(11L, LocalDateTime.now().minusMinutes(1), "CREATED");
         OffenderDeltaHelper.insert(List.of(expectedDelta, anyDelta), jdbcTemplate);
 
-        final var offenderDelta = offenderDeltaService.lockNextUpdate().orElseThrow();
+        final var offenderUpdate = offenderDeltaService.lockNextUpdate().orElseThrow();
 
-        assertThat(offenderDelta.getOffenderDeltaId()).isEqualTo(expectedDelta.getOffenderDeltaId());
+        assertThat(offenderUpdate.getOffenderDeltaId()).isEqualTo(expectedDelta.getOffenderDeltaId());
     }
 
     @Test
@@ -66,9 +78,9 @@ class OffenderDeltaServiceTest {
         final var anyDelta = OffenderDeltaHelper.anOffenderDelta(11L, LocalDateTime.now().minusMinutes(2), "INPROGRESS");
         OffenderDeltaHelper.insert(List.of(expectedDelta, anyDelta), jdbcTemplate);
 
-        final var offenderDelta = offenderDeltaService.lockNextUpdate().orElseThrow();
+        final var offenderUpdate = offenderDeltaService.lockNextUpdate().orElseThrow();
 
-        assertThat(offenderDelta.getOffenderDeltaId()).isEqualTo(expectedDelta.getOffenderDeltaId());
+        assertThat(offenderUpdate.getOffenderDeltaId()).isEqualTo(expectedDelta.getOffenderDeltaId());
     }
 
     @Test
@@ -77,10 +89,10 @@ class OffenderDeltaServiceTest {
         final var delta = OffenderDeltaHelper.anOffenderDelta(10L, LocalDateTime.now().minusMinutes(1), "CREATED");
         OffenderDeltaHelper.insert(List.of(delta), jdbcTemplate);
 
-        final var offenderDelta = offenderDeltaService.lockNextUpdate().orElseThrow();
+        final var offenderUpdate = offenderDeltaService.lockNextUpdate().orElseThrow();
 
-        assertThat(offenderDelta.getOffenderDeltaId()).isEqualTo(delta.getOffenderDeltaId());
-        assertThat(offenderDelta.getStatus()).isEqualTo("INPROGRESS");
+        assertThat(offenderUpdate.getOffenderDeltaId()).isEqualTo(delta.getOffenderDeltaId());
+        assertThat(offenderUpdate.getStatus()).isEqualTo("INPROGRESS");
     }
 
     @Test
@@ -103,9 +115,9 @@ class OffenderDeltaServiceTest {
         final var timeBeforeUpdate = LocalDateTime.now().withNano(0);
 
         final var originalLastUpdated = delta.getLastUpdatedDateTime();
-        final var offenderDelta = offenderDeltaService.lockNextUpdate().orElseThrow();
+        final var offenderUpdate = offenderDeltaService.lockNextUpdate().orElseThrow();
 
-        assertThat(offenderDelta.getOffenderDeltaId()).isEqualTo(delta.getOffenderDeltaId());
+        assertThat(offenderUpdate.getOffenderDeltaId()).isEqualTo(delta.getOffenderDeltaId());
 
         final var lastUpdatedDate = toLocalDateTime(jdbcTemplate.query(
                 "SELECT * from OFFENDER_DELTA where OFFENDER_DELTA_ID = ?",
@@ -141,14 +153,41 @@ class OffenderDeltaServiceTest {
     }
 
     @Test
+    @Transactional
+    @DisplayName("will throw if the offender update even when the update is made withion the same second")
+    void lockNextUpdate_willNotAllowTwoThreadsToUpdateTheSameRecordInTheSameSecond() {
+        final var delta = OffenderDeltaHelper.anOffenderDelta(10L, LocalDateTime.now(), "CREATED");
+        OffenderDeltaHelper.insert(List.of(delta), jdbcTemplate);
+
+        assertThatThrownBy(() -> {
+            TestTransaction.flagForCommit();
+            assertThat(offenderDeltaService.lockNextUpdate()).isPresent();
+            jdbcTemplate.update("update OFFENDER_DELTA set LAST_UPDATED_DATETIME = ? where OFFENDER_DELTA_ID = ?", LocalDateTime.now().plusSeconds(1), 10L);
+            TestTransaction.end();
+        }).isInstanceOf(ConcurrencyFailureException.class);
+
+    }
+
+    @Test
     @DisplayName("Will retrieve the failed update that was updated over 10 minutes ago")
     void lockNextFailedUpdate_canLockSingleDelta() {
         final var expectedDelta = OffenderDeltaHelper.anOffenderDelta(9L, LocalDateTime.now().minusMinutes(IN_PROGRESS_IS_FAILED_AFTER_MINUTES + 1), "INPROGRESS");
         OffenderDeltaHelper.insert(List.of(expectedDelta), jdbcTemplate);
 
-        final var offenderDelta = offenderDeltaService.lockNextFailedUpdate().orElseThrow();
+        final var offenderUpdate = offenderDeltaService.lockNextFailedUpdate().orElseThrow();
 
-        assertThat(offenderDelta.getOffenderDeltaId()).isEqualTo(9L);
+        assertThat(offenderUpdate.getOffenderDeltaId()).isEqualTo(9L);
+    }
+
+    @Test
+    @DisplayName("Will indicate a previously failed update is a retry")
+    void lockNextFailedUpdate_markUpdateAsARetry() {
+        final var expectedDelta = OffenderDeltaHelper.anOffenderDelta(9L, LocalDateTime.now().minusMinutes(IN_PROGRESS_IS_FAILED_AFTER_MINUTES + 1), "INPROGRESS");
+        OffenderDeltaHelper.insert(List.of(expectedDelta), jdbcTemplate);
+
+        final var offenderUpdate = offenderDeltaService.lockNextFailedUpdate().orElseThrow();
+
+        assertThat(offenderUpdate.isFailedUpdate()).isTrue();
     }
 
     @Test
@@ -158,9 +197,9 @@ class OffenderDeltaServiceTest {
         final var anyDelta = OffenderDeltaHelper.anOffenderDelta(11L, LocalDateTime.now().minusMinutes(IN_PROGRESS_IS_FAILED_AFTER_MINUTES + 1), "INPROGRESS");
         OffenderDeltaHelper.insert(List.of(expectedDelta, anyDelta), jdbcTemplate);
 
-        final var offenderDelta = offenderDeltaService.lockNextFailedUpdate().orElseThrow();
+        final var offenderUpdate = offenderDeltaService.lockNextFailedUpdate().orElseThrow();
 
-        assertThat(offenderDelta.getOffenderDeltaId()).isEqualTo(expectedDelta.getOffenderDeltaId());
+        assertThat(offenderUpdate.getOffenderDeltaId()).isEqualTo(expectedDelta.getOffenderDeltaId());
     }
 
     @Test
@@ -183,9 +222,9 @@ class OffenderDeltaServiceTest {
         final var timeBeforeUpdate = LocalDateTime.now().withNano(0);
 
         final var originalLastUpdated = delta.getLastUpdatedDateTime();
-        final var offenderDelta = offenderDeltaService.lockNextFailedUpdate().orElseThrow();
+        final var offenderUpdate = offenderDeltaService.lockNextFailedUpdate().orElseThrow();
 
-        assertThat(offenderDelta.getOffenderDeltaId()).isEqualTo(delta.getOffenderDeltaId());
+        assertThat(offenderUpdate.getOffenderDeltaId()).isEqualTo(delta.getOffenderDeltaId());
 
         final var lastUpdatedDate = toLocalDateTime(jdbcTemplate.query(
                 "SELECT * from OFFENDER_DELTA where OFFENDER_DELTA_ID = ?",
