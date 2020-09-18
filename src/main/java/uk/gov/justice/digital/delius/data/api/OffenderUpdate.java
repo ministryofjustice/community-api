@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class OffenderDelta {
+public class OffenderUpdate {
     @ApiModelProperty(value = "Offender ID", example = "232423", position = 1)
     private Long offenderId;
     @ApiModelProperty(value = "The datetime the change occurred", example = "2019-11-27T15:12:43.000Z", position = 2)
@@ -27,4 +27,11 @@ public class OffenderDelta {
     private Long sourceRecordId;
     @ApiModelProperty(value = "Status", example = "CREATED", position = 7)
     private String status;
+    @ApiModelProperty(value = "A previously failed update", example = "false", position = 8)
+    private boolean failedUpdate;
+
+    public OffenderUpdate setAsFailed() {
+        return this.toBuilder().failedUpdate(true).build();
+    }
+
 }

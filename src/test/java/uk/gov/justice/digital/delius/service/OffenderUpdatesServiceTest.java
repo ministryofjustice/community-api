@@ -8,7 +8,7 @@ import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
-import uk.gov.justice.digital.delius.data.api.OffenderDelta;
+import uk.gov.justice.digital.delius.data.api.OffenderUpdate;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -28,7 +28,7 @@ public class OffenderUpdatesServiceTest {
     private final OffenderUpdatesService offenderUpdatesService = new OffenderUpdatesService(offenderDeltaService);
 
     @Nested
-    @DisplayName("getNextUpdate()")
+    @DisplayName("getNextUpdate for new offender updates")
     class GetNextUpdate {
         @AfterEach
         public void resetRetries() {
@@ -37,71 +37,111 @@ public class OffenderUpdatesServiceTest {
 
         @Test
         public void retrievesOffenderDelta() {
-            when(offenderDeltaService.lockNext()).thenReturn(Optional.of(anOffenderDelta()));
+            when(offenderDeltaService.lockNextUpdate()).thenReturn(Optional.of(anOffenderDelta()));
 
-            final var offenderDelta = offenderUpdatesService.getNextUpdate().orElseThrow();
+            final var offenderDelta = offenderUpdatesService.getAndLockNextUpdate().orElseThrow();
 
             assertThat(offenderDelta.getOffenderId()).isEqualTo(2L);
-            verify(offenderDeltaService).lockNext();
+            verify(offenderDeltaService).lockNextUpdate();
         }
 
         @Test
         public void returnsEmptyIfNotFound() {
-            when(offenderDeltaService.lockNext()).thenReturn(Optional.empty());
+            when(offenderDeltaService.lockNextUpdate()).thenReturn(Optional.empty());
 
-            final var offenderDelta = offenderUpdatesService.getNextUpdate();
+            final var offenderDelta = offenderUpdatesService.getAndLockNextUpdate();
 
             assertThat(offenderDelta.isPresent()).isFalse();
-            verify(offenderDeltaService).lockNext();
+            verify(offenderDeltaService).lockNextUpdate();
         }
 
         @Test
         public void retrievesOffenderDeltaAfterRetry() {
-            when(offenderDeltaService.lockNext())
+            when(offenderDeltaService.lockNextUpdate())
                     .thenThrow(new ConcurrencyFailureException("some lock message"))
                     .thenReturn(Optional.of(anOffenderDelta()));
 
-            final var offenderDelta = offenderUpdatesService.getNextUpdate().orElseThrow();
+            final var offenderDelta = offenderUpdatesService.getAndLockNextUpdate().orElseThrow();
 
             assertThat(offenderDelta.getOffenderId()).isEqualTo(2L);
-            verify(offenderDeltaService, times(2)).lockNext();
+            verify(offenderDeltaService, times(2)).lockNextUpdate();
         }
 
         @Test
         public void throwsIfRetryingFails() {
             ReflectionTestUtils.setField(offenderUpdatesService, "retries", 2);
-            when(offenderDeltaService.lockNext())
+            when(offenderDeltaService.lockNextUpdate())
                     .thenThrow(new ConcurrencyFailureException("some lock message"))
                     .thenThrow(new ConcurrencyFailureException("some lock message"));
 
-            assertThatThrownBy(offenderUpdatesService::getNextUpdate).isInstanceOf(OffenderDeltaLockedException.class);
+            assertThatThrownBy(offenderUpdatesService::getAndLockNextUpdate).isInstanceOf(OffenderDeltaLockedException.class);
 
-            verify(offenderDeltaService, times(2)).lockNext();
+            verify(offenderDeltaService, times(2)).lockNextUpdate();
         }
 
         @Test
         public void returnsEmptyIfNotFoundAfterRetry() {
             ReflectionTestUtils.setField(offenderUpdatesService, "retries", 2);
-            when(offenderDeltaService.lockNext())
+            when(offenderDeltaService.lockNextUpdate())
                     .thenThrow(new ConcurrencyFailureException("some lock message"))
                     .thenReturn(Optional.empty());
 
-            final var offenderDelta = offenderUpdatesService.getNextUpdate();
+            final var offenderDelta = offenderUpdatesService.getAndLockNextUpdate();
 
             assertThat(offenderDelta.isPresent()).isFalse();
-            verify(offenderDeltaService, times(2)).lockNext();
+            verify(offenderDeltaService, times(2)).lockNextUpdate();
+        }
+    }
+
+    @Nested
+    @DisplayName("getNextUpdate for failed offender updates")
+    class GetNextUpdateFailedUpdates {
+
+        @Test
+        public void triesFailedUpdatesIfNoNewUpdatesFound() {
+            when(offenderDeltaService.lockNextUpdate()).thenReturn(Optional.empty());
+            when(offenderDeltaService.lockNextFailedUpdate()).thenReturn(Optional.empty());
+
+            final var offenderDelta = offenderUpdatesService.getAndLockNextUpdate();
+
+            assertThat(offenderDelta.isPresent()).isFalse();
+            verify(offenderDeltaService).lockNextUpdate();
+            verify(offenderDeltaService).lockNextFailedUpdate();
         }
 
-        private OffenderDelta anOffenderDelta() {
-            return OffenderDelta.builder()
-                    .offenderDeltaId(1L)
-                    .offenderId(2L)
-                    .action("UPSERT")
-                    .status("INPROGRESS")
-                    .sourceTable("OFFENDER")
-                    .sourceRecordId(3L)
-                    .dateChanged(LocalDateTime.now().minusHours(1))
-                    .build();
+        @Test
+        public void returnsFailedUpdateIfFound() {
+            when(offenderDeltaService.lockNextUpdate()).thenReturn(Optional.empty());
+            when(offenderDeltaService.lockNextFailedUpdate()).thenReturn(Optional.of(anOffenderDelta()));
+
+            final var offenderDelta = offenderUpdatesService.getAndLockNextUpdate().orElseThrow();
+
+            assertThat(offenderDelta.getOffenderId()).isEqualTo(2L);
+        }
+
+        @Test
+        public void returnsEmptyIfFailedUpdateNotFoundAfterRetry() {
+            ReflectionTestUtils.setField(offenderUpdatesService, "retries", 2);
+            when(offenderDeltaService.lockNextUpdate()).thenReturn(Optional.empty());
+            when(offenderDeltaService.lockNextFailedUpdate())
+                    .thenThrow(new ConcurrencyFailureException("some lock message"))
+                    .thenReturn(Optional.empty());
+
+            final var offenderDelta = offenderUpdatesService.getAndLockNextUpdate();
+
+            assertThat(offenderDelta.isPresent()).isFalse();
+            verify(offenderDeltaService, times(2)).lockNextFailedUpdate();
+        }
+
+        @Test
+        public void throwsIfFailedUpdatesAreLocked() {
+            ReflectionTestUtils.setField(offenderUpdatesService, "retries", 2);
+            when(offenderDeltaService.lockNextUpdate()).thenReturn(Optional.empty());
+            when(offenderDeltaService.lockNextFailedUpdate())
+                    .thenThrow(new ConcurrencyFailureException("some lock message"))
+                    .thenThrow(new ConcurrencyFailureException("some lock message"));
+
+            assertThatThrownBy(offenderUpdatesService::getAndLockNextUpdate).isInstanceOf(OffenderDeltaLockedException.class);
         }
     }
 
@@ -126,4 +166,28 @@ public class OffenderUpdatesServiceTest {
             verify(offenderDeltaService).deleteDelta(99L);
         }
     }
+
+    @Nested
+    @DisplayName("markAsFailed()")
+    class MarkAsFailed {
+        @Test
+        public void willCallServiceToUpdateToFailed() {
+            offenderUpdatesService.markAsFailed(99L);
+
+            verify(offenderDeltaService).markAsFailed(99L);
+        }
+    }
+
+    private OffenderUpdate anOffenderDelta() {
+        return OffenderUpdate.builder()
+                .offenderDeltaId(1L)
+                .offenderId(2L)
+                .action("UPSERT")
+                .status("INPROGRESS")
+                .sourceTable("OFFENDER")
+                .sourceRecordId(3L)
+                .dateChanged(LocalDateTime.now().minusHours(1))
+                .build();
+    }
+
 }

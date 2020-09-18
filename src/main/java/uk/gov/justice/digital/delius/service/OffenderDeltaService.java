@@ -1,8 +1,11 @@
 package uk.gov.justice.digital.delius.service;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
+import uk.gov.justice.digital.delius.data.api.OffenderUpdate;
 import uk.gov.justice.digital.delius.jpa.dao.OffenderDelta;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderDeltaRepository;
 
@@ -10,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -17,6 +21,8 @@ public class OffenderDeltaService {
 
     private final JdbcTemplate jdbcTemplate;
     private final OffenderDeltaRepository offenderDeltaRepository;
+    @SuppressWarnings({"FieldCanBeLocal"})
+    static final int IN_PROGRESS_IS_FAILED_AFTER_MINUTES = 10;
 
     public OffenderDeltaService(JdbcTemplate jdbcTemplate, OffenderDeltaRepository offenderDeltaRepository) {
         this.jdbcTemplate = jdbcTemplate;
@@ -41,14 +47,33 @@ public class OffenderDeltaService {
     }
 
     @Transactional
-    public Optional<uk.gov.justice.digital.delius.data.api.OffenderDelta> lockNext() {
+    public Optional<OffenderUpdate> lockNextUpdate() {
         final var mayBeDelta = offenderDeltaRepository.findFirstByStatusOrderByCreatedDateTime("CREATED");
 
-        return mayBeDelta.map(delta -> {
-                    delta.setStatus("INPROGRESS");
-                    return delta;
-                }
-        ).map(delta -> uk.gov.justice.digital.delius.data.api.OffenderDelta.builder()
+        return transformAndLock(mayBeDelta);
+    }
+
+    @Transactional
+    public Optional<OffenderUpdate> lockNextFailedUpdate() {
+        final var failedCutoffDateTime = getFailedCutoffDateTime();
+        final var mayBeDelta = offenderDeltaRepository.findFirstByStatusAndLastUpdatedDateTimeLessThanEqualOrderByCreatedDateTime("INPROGRESS", failedCutoffDateTime);
+
+        return transformAndLock(mayBeDelta).map(OffenderUpdate::setAsFailed);
+    }
+
+    private LocalDateTime getFailedCutoffDateTime() {
+        return LocalDateTime.now().minusMinutes(IN_PROGRESS_IS_FAILED_AFTER_MINUTES);
+    }
+
+    @NotNull
+    private Optional<OffenderUpdate> transformAndLock(final Optional<uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDelta> mayBeDelta) {
+        return mayBeDelta
+                .map(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDelta::setInProgress)
+                .map(this::transformDelta);
+    }
+
+    private OffenderUpdate transformDelta(final uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDelta delta) {
+        return OffenderUpdate.builder()
                 .offenderDeltaId(delta.getOffenderDeltaId())
                 .offenderId(delta.getOffenderId())
                 .dateChanged(delta.getDateChanged())
@@ -56,11 +81,16 @@ public class OffenderDeltaService {
                 .sourceTable(delta.getSourceTable())
                 .sourceRecordId(delta.getSourceRecordId())
                 .status(delta.getStatus())
-                .build());
-
+                .build();
     }
 
-    public void deleteDelta(Long offenderDeltaId) {
+    public void deleteDelta(final Long offenderDeltaId) {
         offenderDeltaRepository.deleteById(offenderDeltaId);
+    }
+
+    public void markAsFailed(final Long offenderDeltaId) {
+        offenderDeltaRepository.findById(offenderDeltaId)
+                .orElseThrow(() -> new NotFoundException(format("Cannot mark as failed for offenderDeltaId %s", offenderDeltaId)))
+                .markAsFailed();
     }
 }

@@ -1,16 +1,24 @@
 package uk.gov.justice.digital.delius.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OrderManager;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 import uk.gov.justice.digital.delius.transformers.ContactTransformer;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +27,7 @@ import java.util.Optional;
 import static uk.gov.justice.digital.delius.jpa.standard.entity.Contact.*;
 
 @Service
+@AllArgsConstructor
 public class ContactService {
 
     private static final String PRISONER_OFFENDER_MANAGER_ALLOCATION_CONTACT_TYPE = "EPOMAT";
@@ -30,25 +39,19 @@ public class ContactService {
     private final ContactRepository contactRepository;
     private final ContactTypeRepository contactTypeRepository;
 
-    @Autowired
-    public ContactService(ContactRepository contactRepository, ContactTypeRepository contactTypeRepository) {
-        this.contactRepository = contactRepository;
-        this.contactTypeRepository = contactTypeRepository;
-    }
-
-    public List<Contact> contactsFor(Long offenderId, ContactFilter filter) {
+    public List<Contact> contactsFor(final Long offenderId, final ContactFilter filter) {
         return ContactTransformer.contactsOf(contactRepository.findAll(filter.toBuilder().offenderId(offenderId).build()));
     }
 
 
     @Transactional
-    public void addContactForPOMAllocation(PrisonOffenderManager newPrisonOffenderManager) {
+    public void addContactForPOMAllocation(final PrisonOffenderManager newPrisonOffenderManager) {
         contactRepository.save(contactForPOMAllocation(newPrisonOffenderManager));
     }
 
     @Transactional
-    public void addContactForPOMAllocation(PrisonOffenderManager newPrisonOffenderManager, PrisonOffenderManager existingPrisonOffenderManager) {
-        var contact = contactForPOMAllocation(newPrisonOffenderManager);
+    public void addContactForPOMAllocation(final PrisonOffenderManager newPrisonOffenderManager, final PrisonOffenderManager existingPrisonOffenderManager) {
+        final var contact = contactForPOMAllocation(newPrisonOffenderManager);
 
         contactRepository.save(contact
                 .toBuilder()
@@ -57,8 +60,8 @@ public class ContactService {
     }
 
     @Transactional
-    public void addContactForResponsibleOfficerChange(PrisonOffenderManager newPrisonOffenderManager, PrisonOffenderManager existingPrisonOffenderManager) {
-        final ContactType contactType = contactTypeForResponsibleOfficerChange();
+    public void addContactForResponsibleOfficerChange(final PrisonOffenderManager newPrisonOffenderManager, final PrisonOffenderManager existingPrisonOffenderManager) {
+        final var contactType = contactTypeForResponsibleOfficerChange();
         contactRepository.save(builder()
                 .contactDate(newPrisonOffenderManager.getAllocationDate())
                 .offenderId(newPrisonOffenderManager.getOffenderId())
@@ -74,7 +77,7 @@ public class ContactService {
     }
 
     @Transactional
-    public void addContactForPrisonLocationChange(Offender offender, Event event) {
+    public void addContactForPrisonLocationChange(final Offender offender, final Event event) {
         addContactForCustodyChange(offender,
                 event,
                 contactTypeForPrisonLocationChange(),
@@ -83,7 +86,7 @@ public class ContactService {
 
 
     @Transactional
-    public void addContactForBookingNumberUpdate(Offender offender, Event event) {
+    public void addContactForBookingNumberUpdate(final Offender offender, final Event event) {
         addContactForCustodyChange(offender,
                 event,
                 contactTypeForCustodyAutoUpdate(),
@@ -92,15 +95,15 @@ public class ContactService {
 
 
     @Transactional
-    public void addContactForBulkCustodyKeyDateUpdate(Offender offender, Event event, Map<String, LocalDate> datesAmendedOrUpdated, Map<String, LocalDate> datesRemoved) {
+    public void addContactForBulkCustodyKeyDateUpdate(final Offender offender, final Event event, final Map<String, LocalDate> datesAmendedOrUpdated, final Map<String, LocalDate> datesRemoved) {
         addContactForCustodyChange(offender,
                 event,
                 contactTypeForCustodyAutoUpdate(),
                 notesForKeyDatesUpdate(datesAmendedOrUpdated, datesRemoved));
     }
 
-    private String notesForKeyDatesUpdate(Map<String, LocalDate> datesAmendedOrUpdated, Map<String, LocalDate> datesRemoved) {
-        var notes = datesAmendedOrUpdated.entrySet().stream().map(entry -> String
+    private String notesForKeyDatesUpdate(final Map<String, LocalDate> datesAmendedOrUpdated, final Map<String, LocalDate> datesRemoved) {
+        final var notes = datesAmendedOrUpdated.entrySet().stream().map(entry -> String
                 .format("%s: %s\n", entry.getKey(), entry.getValue()
                         .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))))
                 .reduce("", (original, it) -> original + it);
@@ -111,7 +114,7 @@ public class ContactService {
                 .reduce(notes, (original, it) -> original + it);
     }
 
-    private void addContactForCustodyChange(Offender offender, Event event, ContactType contactType, String notes) {
+    private void addContactForCustodyChange(final Offender offender, final Event event, final ContactType contactType, final String notes) {
         final var mayBeOrderManager = event.getOrderManagers()
                 .stream()
                 .filter(OrderManager::isActive)
@@ -119,6 +122,7 @@ public class ContactService {
 
         contactRepository.save(builder()
                 .contactDate(LocalDate.now())
+                .contactStartTime(LocalTime.now())
                 .offenderId(offender.getOffenderId())
                 .notes(notes)
                 .team(mayBeOrderManager.map(OrderManager::getTeam).orElse(null))
@@ -132,8 +136,8 @@ public class ContactService {
                 .build());
     }
 
-    private uk.gov.justice.digital.delius.jpa.standard.entity.Contact contactForPOMAllocation(PrisonOffenderManager newPrisonOffenderManager) {
-        final ContactType contactType = contactTypeForPOMAllocationOf(newPrisonOffenderManager.getAllocationReason());
+    private uk.gov.justice.digital.delius.jpa.standard.entity.Contact contactForPOMAllocation(final PrisonOffenderManager newPrisonOffenderManager) {
+        final var contactType = contactTypeForPOMAllocationOf(newPrisonOffenderManager.getAllocationReason());
         return builder()
                 .contactDate(newPrisonOffenderManager.getAllocationDate())
                 .offenderId(newPrisonOffenderManager.getOffenderId())
@@ -148,7 +152,7 @@ public class ContactService {
                 .build();
     }
 
-    private ContactType contactTypeForPOMAllocationOf(StandardReference allocationReason) {
+    private ContactType contactTypeForPOMAllocationOf(final StandardReference allocationReason) {
         switch (allocationReason.getCodeValue()) {
             case ReferenceDataService.POM_AUTO_TRANSFER_ALLOCATION_REASON_CODE:
                 return contactTypeRepository.findByCode(PRISONER_OFFENDER_MANAGER_ALLOCATION_CONTACT_TYPE).orElseThrow();
@@ -173,7 +177,7 @@ public class ContactService {
         return contactTypeRepository.findByCode(CUSTODY_AUTO_UPDATE_CONTACT_TYPE).orElseThrow();
     }
 
-    private String notesForPOMAllocation(PrisonOffenderManager newPrisonOffenderManager) {
+    private String notesForPOMAllocation(final PrisonOffenderManager newPrisonOffenderManager) {
         return "Transfer Reason: " +
                 newPrisonOffenderManager.getAllocationReason().getCodeDescription() +
                 "\n" +
@@ -182,23 +186,23 @@ public class ContactService {
                 "\n";
     }
 
-    private String notesForResponsibleManager(PrisonOffenderManager newPrisonOffenderManager, PrisonOffenderManager existingPrisonOffenderManager) {
+    private String notesForResponsibleManager(final PrisonOffenderManager newPrisonOffenderManager, final PrisonOffenderManager existingPrisonOffenderManager) {
         return String.format(
                 "New Details:\n" +
-                "%s\n" +
-                "Previous Details:\n" +
-                "%s\n",
+                        "%s\n" +
+                        "Previous Details:\n" +
+                        "%s\n",
                 notesForResponsibleManagerOf(newPrisonOffenderManager),
                 notesForResponsibleManagerOf(existingPrisonOffenderManager));
     }
 
-    private String notesForResponsibleManagerOf(PrisonOffenderManager prisonOffenderManager) {
+    private String notesForResponsibleManagerOf(final PrisonOffenderManager prisonOffenderManager) {
         return String.format(
                 "Responsible Officer Type: Prison Offender Manager\n" +
-                "Responsible Officer: %s\n" +
-                "Start Date: %s\n" +
-                "%s" +
-                "Allocation Reason: %s\n",
+                        "Responsible Officer: %s\n" +
+                        "Start Date: %s\n" +
+                        "%s" +
+                        "Allocation Reason: %s\n",
                 responsibleOfficerOf(prisonOffenderManager),
                 prisonOffenderManager.getResponsibleOfficer().getStartDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")),
                 Optional.ofNullable(prisonOffenderManager.getResponsibleOfficer().getEndDateTime()).map(dateTime -> dateTime.format(DateTimeFormatter.ofPattern("'End Date: 'dd/MM/yyyy HH:mm:ss'\n'"))).orElse(""),
@@ -206,28 +210,28 @@ public class ContactService {
         ;
     }
 
-    private String responsibleOfficerOf(PrisonOffenderManager pom) {
+    private String responsibleOfficerOf(final PrisonOffenderManager pom) {
         return Optional.ofNullable(pom.getStaff()).map(staff ->
                 String.format("%s (%s, %s)", displayNameOf(staff), pom.getTeam().getDescription(), pom.getProbationArea().getDescription()))
                 .orElse("");
     }
 
 
-    private String appendNoteForExistingPOMAllocation(String notes, PrisonOffenderManager existingPrisonOffenderManager) {
+    private String appendNoteForExistingPOMAllocation(final String notes, final PrisonOffenderManager existingPrisonOffenderManager) {
         return notes + Optional.ofNullable(existingPrisonOffenderManager.getTeam()).map(team ->
                 "\n" +
-                Optional
-                    .ofNullable(existingPrisonOffenderManager.getTeam().getProbationArea())
-                    .map(probationArea -> String.format("From Establishment Provider: %s\n", existingPrisonOffenderManager.getTeam().getProbationArea().getDescription()))
-                    .orElse("") +
-                String.format("From Team: %s\n", existingPrisonOffenderManager.getTeam().getDescription()) +
-                Optional
-                        .ofNullable(existingPrisonOffenderManager.getStaff())
-                        .map(staff -> String.format("From Officer: %s\n", displayNameOf(existingPrisonOffenderManager.getStaff())))
+                        Optional
+                                .ofNullable(existingPrisonOffenderManager.getTeam().getProbationArea())
+                                .map(probationArea -> String.format("From Establishment Provider: %s\n", existingPrisonOffenderManager.getTeam().getProbationArea().getDescription()))
+                                .orElse("") +
+                        String.format("From Team: %s\n", existingPrisonOffenderManager.getTeam().getDescription()) +
+                        Optional
+                                .ofNullable(existingPrisonOffenderManager.getStaff())
+                                .map(staff -> String.format("From Officer: %s\n", displayNameOf(existingPrisonOffenderManager.getStaff())))
                         .orElse("")).orElse("");
     }
 
-    private String displayNameOf(Staff staff) {
+    private String displayNameOf(final Staff staff) {
         if (staff.isUnallocated()) {
             return "Unallocated";
         }
@@ -243,7 +247,7 @@ public class ContactService {
                 Optional.ofNullable(staff.getForname2()).orElse("");
     }
 
-    private String notesForPrisonLocationChange(Event event) {
+    private String notesForPrisonLocationChange(final Event event) {
         final var custody = event.getDisposal().getCustody();
         return String.format("%s%s%s-------------------------------",
                 Optional.ofNullable(custody.getCustodialStatus()).map(status -> String.format("Custodial Status: %s\n", status.getCodeDescription())).orElse(""),
@@ -251,7 +255,7 @@ public class ContactService {
                 Optional.ofNullable(custody.getLocationChangeDate()).map(date -> String.format("Location Change Date: %s\n", date.format(DateTimeFormatter.ISO_LOCAL_DATE))).orElse(""));
     }
 
-    private String notesForBookingNumbUpdate(Event event) {
+    private String notesForBookingNumbUpdate(final Event event) {
         return String.format("Prison Number: %s\n", event.getDisposal().getCustody().getPrisonerNumber());
     }
 }

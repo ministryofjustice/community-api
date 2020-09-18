@@ -53,8 +53,17 @@ public class OffenderDelta {
     private LocalDateTime createdDateTime;
 
     @Column(name = "LAST_UPDATED_DATETIME")
-    @LastModifiedDate
     @Version
     private LocalDateTime lastUpdatedDateTime;
 
+    public OffenderDelta setInProgress() {
+        this.setStatus("INPROGRESS");
+        // We use last updated date time for optimistic locking - we need to change the time here in case a 2nd pod completes within a second thus breaking the optimistic lock
+        this.setLastUpdatedDateTime(LocalDateTime.now().plusSeconds(1));
+        return this;
+    }
+
+    public void markAsFailed() {
+        this.setStatus("FAILED");
+    }
 }

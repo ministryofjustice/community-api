@@ -11,11 +11,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
-import uk.gov.justice.digital.delius.data.api.OffenderDelta;
+import uk.gov.justice.digital.delius.data.api.OffenderUpdate;
 import uk.gov.justice.digital.delius.service.OffenderUpdatesService;
 
 @Api(tags = "Offender update resource (Secure) for retrieving updates to offenders")
@@ -28,7 +29,7 @@ public class OffenderUpdatesResource {
     private final OffenderUpdatesService offenderUpdatesService;
 
     @ApiOperation(
-            value = "Returns the next update for any offender", notes = "requires ROLE_COMMUNITY_EVENTS")
+            value = "Returns the next update for any offender. If none, will look for failed updates and set them in progress again", notes = "requires ROLE_COMMUNITY_EVENTS")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
@@ -38,8 +39,8 @@ public class OffenderUpdatesResource {
                     @ApiResponse(code = 409, message = "Attempt to retrieve the latest update that is already in progress", response = ErrorResponse.class)
             })
     @GetMapping(value = "offenders/nextUpdate")
-    public OffenderDelta getNextOffenderUpdate() {
-        return offenderUpdatesService.getNextUpdate().orElseThrow(() -> new NotFoundException("No updates found"));
+    public OffenderUpdate getAndLockNextOffenderUpdate() {
+        return offenderUpdatesService.getAndLockNextUpdate().orElseThrow(() -> new NotFoundException("No updates found"));
     }
 
     @ApiOperation(
@@ -53,6 +54,19 @@ public class OffenderUpdatesResource {
     @DeleteMapping(value = "offenders/update/{offenderDeltaId}")
     public void deleteOffenderUpdate(@PathVariable Long offenderDeltaId) {
         offenderUpdatesService.deleteUpdate(offenderDeltaId);
+    }
+
+    @ApiOperation(
+            value = "Mark an offender update as failed", notes = "requires ROLE_COMMUNITY_EVENTS")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+                    @ApiResponse(code = 404, message = "Update not found", response = ErrorResponse.class),
+            })
+    @PutMapping(value = "offenders/update/{offenderDeltaId}/markAsFailed")
+    public void markAsFailed(@PathVariable Long offenderDeltaId) {
+        offenderUpdatesService.markAsFailed(offenderDeltaId);
     }
 
 

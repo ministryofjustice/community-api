@@ -87,6 +87,58 @@ public class OffenderUpdatesAPITest extends IntegrationTestBase {
                     .statusCode(404);
 
         }
+
+        @Test
+        @DisplayName("will get and lock a single failed offender update record")
+        public void willLockSingleFailedUpdate() {
+            final var delta = OffenderDeltaHelper.anOffenderDelta(9L, LocalDateTime.now().minusDays(1), "INPROGRESS")
+                    .toBuilder().lastUpdatedDateTime(LocalDateTime.now().minusMinutes(60))
+                    .build();
+            OffenderDeltaHelper.insert(List.of(delta), jdbcTemplate);
+
+            given()
+                    .auth().oauth2(createJwt("ROLE_COMMUNITY_EVENTS"))
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .get("/offenders/nextUpdate")
+                    .then()
+                    .statusCode(200)
+                    .body("offenderDeltaId", equalTo(9));
+
+            given()
+                    .auth().oauth2(createJwt("ROLE_COMMUNITY_EVENTS"))
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .get("/offenders/nextUpdate")
+                    .then()
+                    .statusCode(404);
+
+        }
+
+        @Test
+        @DisplayName("will get next new update when there are older failed updates ")
+        public void willLockNewUpdateBeforeOlderFailedUpdates() {
+            final var deltaLocked = OffenderDeltaHelper.anOffenderDelta(9L, LocalDateTime.now().minusDays(1), "INPROGRESS")
+                    .toBuilder().lastUpdatedDateTime(LocalDateTime.now().minusMinutes(60))
+                    .build();
+            final var delta = OffenderDeltaHelper.anOffenderDelta(10L, LocalDateTime.now().minusMinutes(1), "CREATED")
+                    .toBuilder().lastUpdatedDateTime(LocalDateTime.now().minusMinutes(1))
+                    .build();
+
+            OffenderDeltaHelper.insert(List.of(delta, deltaLocked), jdbcTemplate);
+
+            given()
+                    .auth().oauth2(createJwt("ROLE_COMMUNITY_EVENTS"))
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .get("/offenders/nextUpdate")
+                    .then()
+                    .statusCode(200)
+                    .body("offenderDeltaId", equalTo(10));
+
+        }
+
+
     }
 
     @Nested
@@ -124,7 +176,7 @@ public class OffenderUpdatesAPITest extends IntegrationTestBase {
         }
 
         @Test
-        @DisplayName("will return not found whn the update in not present")
+        @DisplayName("will return not found when the update in not present")
         public void willReturn404WhenNotPresent() {
             assertThat(hasUpdateFor(99L)).isFalse();
 
@@ -136,6 +188,60 @@ public class OffenderUpdatesAPITest extends IntegrationTestBase {
                     .then()
                     .statusCode(404);
         }
+    }
+
+    @Nested
+    @DisplayName("/offenders/update/${offenderDeltaId}/markAsFailed")
+    class MarkAsFailed {
+        @Test
+        @DisplayName("must have `ROLE_COMMUNITY_EVENTS` to access this service")
+        public void mustHaveCommunityRole() {
+            OffenderDeltaHelper.insert(List.of(OffenderDeltaHelper.anOffenderDelta(99L, LocalDateTime.now(), "INPROGRESS")), jdbcTemplate);
+
+            final var token = createJwt("ROLE_COMMUNITY");
+
+            given()
+                    .auth().oauth2(token)
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .put("/offenders/update/99/markAsFailed")
+                    .then()
+                    .statusCode(403);
+        }
+        @Test
+        @DisplayName("will update the status")
+        public void willUpdateStatus() {
+            OffenderDeltaHelper.insert(List.of(OffenderDeltaHelper.anOffenderDelta(99L, LocalDateTime.now(), "INPROGRESS")), jdbcTemplate);
+            assertThat(hasUpdateFor(99L)).isTrue();
+
+            given()
+                    .auth().oauth2(createJwt("ROLE_COMMUNITY_EVENTS"))
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .put("/offenders/update/99/markAsFailed")
+                    .then()
+                    .statusCode(200);
+            assertThat(hasUpdateWithFailedStatusFor(99L)).isTrue();
+        }
+
+        @Test
+        @DisplayName("will return not found when the update in not present")
+        public void willReturn404WhenNotPresent() {
+            assertThat(hasUpdateFor(99L)).isFalse();
+
+            given()
+                    .auth().oauth2(createJwt("ROLE_COMMUNITY_EVENTS"))
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .put("/offenders/update/99/markAsFailed")
+                    .then()
+                    .statusCode(404);
+        }
+    }
+
+    private boolean hasUpdateWithFailedStatusFor(Long offenderDeltaId) {
+        var result = jdbcTemplate.query("SELECT * FROM OFFENDER_DELTA WHERE OFFENDER_DELTA_ID = ? AND STATUS = 'FAILED'", List.of(offenderDeltaId).toArray(), new ColumnMapRowMapper());
+        return result.size() > 0;
     }
 
     private boolean hasUpdateFor(@SuppressWarnings("SameParameterValue") Long offenderDeltaId) {

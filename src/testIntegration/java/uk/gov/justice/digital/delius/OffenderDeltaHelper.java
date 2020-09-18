@@ -35,7 +35,7 @@ public class OffenderDeltaHelper {
                 .build()).collect(Collectors.toList());
     }
 
-    public static OffenderDelta anOffenderDelta(final Long offenderDeltaId, final LocalDateTime createdDateTime, final String status) {
+    public static OffenderDelta anOffenderDelta(final Long offenderDeltaId, final LocalDateTime lastUpdatedDateTime, final String status) {
         return OffenderDelta.builder()
                 .offenderDeltaId(offenderDeltaId)
                 .offenderId(1L)
@@ -44,8 +44,8 @@ public class OffenderDeltaHelper {
                 .sourceTable("OFFENDER")
                 .sourceRecordId(2L)
                 .status(status)
-                .createdDateTime(createdDateTime)
-                .lastUpdatedDateTime(LocalDateTime.now().minusDays(1))
+                .createdDateTime(lastUpdatedDateTime)
+                .lastUpdatedDateTime(lastUpdatedDateTime)
                 .build();
     }
 }
