@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.justice.digital.delius.data.api.OffenderUpdate;
 import uk.gov.justice.digital.delius.jpa.dao.OffenderDelta;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderDeltaRepository;
 
@@ -44,18 +45,18 @@ public class OffenderDeltaService {
     }
 
     @Transactional
-    public Optional<uk.gov.justice.digital.delius.data.api.OffenderDelta> lockNextUpdate() {
+    public Optional<OffenderUpdate> lockNextUpdate() {
         final var mayBeDelta = offenderDeltaRepository.findFirstByStatusOrderByCreatedDateTime("CREATED");
 
         return transformAndLock(mayBeDelta);
     }
 
     @Transactional
-    public Optional<uk.gov.justice.digital.delius.data.api.OffenderDelta> lockNextFailedUpdate() {
+    public Optional<OffenderUpdate> lockNextFailedUpdate() {
         final var failedCutoffDateTime = getFailedCutoffDateTime();
         final var mayBeDelta = offenderDeltaRepository.findFirstByStatusAndLastUpdatedDateTimeLessThanEqualOrderByCreatedDateTime("INPROGRESS", failedCutoffDateTime);
 
-        return transformAndLock(mayBeDelta);
+        return transformAndLock(mayBeDelta).map(OffenderUpdate::setAsFailed);
     }
 
     private LocalDateTime getFailedCutoffDateTime() {
@@ -63,14 +64,14 @@ public class OffenderDeltaService {
     }
 
     @NotNull
-    private Optional<uk.gov.justice.digital.delius.data.api.OffenderDelta> transformAndLock(final Optional<uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDelta> mayBeDelta) {
+    private Optional<OffenderUpdate> transformAndLock(final Optional<uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDelta> mayBeDelta) {
         return mayBeDelta
                 .map(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDelta::setInProgress)
                 .map(this::transformDelta);
     }
 
-    private uk.gov.justice.digital.delius.data.api.OffenderDelta transformDelta(final uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDelta delta) {
-        return uk.gov.justice.digital.delius.data.api.OffenderDelta.builder()
+    private OffenderUpdate transformDelta(final uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDelta delta) {
+        return OffenderUpdate.builder()
                 .offenderDeltaId(delta.getOffenderDeltaId())
                 .offenderId(delta.getOffenderId())
                 .dateChanged(delta.getDateChanged())

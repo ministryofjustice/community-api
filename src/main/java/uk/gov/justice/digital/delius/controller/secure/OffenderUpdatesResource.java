@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
-import uk.gov.justice.digital.delius.data.api.OffenderDelta;
+import uk.gov.justice.digital.delius.data.api.OffenderUpdate;
 import uk.gov.justice.digital.delius.service.OffenderUpdatesService;
 
 @Api(tags = "Offender update resource (Secure) for retrieving updates to offenders")
@@ -38,7 +38,7 @@ public class OffenderUpdatesResource {
                     @ApiResponse(code = 409, message = "Attempt to retrieve the latest update that is already in progress", response = ErrorResponse.class)
             })
     @GetMapping(value = "offenders/nextUpdate")
-    public OffenderDelta getAndLockNextOffenderUpdate() {
+    public OffenderUpdate getAndLockNextOffenderUpdate() {
         return offenderUpdatesService.getAndLockNextUpdate().orElseThrow(() -> new NotFoundException("No updates found"));
     }
 
