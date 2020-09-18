@@ -1,12 +1,12 @@
 package uk.gov.justice.digital.delius.service;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
@@ -14,6 +14,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeReposito
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +30,7 @@ import static uk.gov.justice.digital.delius.util.EntityHelper.aTeam;
 import static uk.gov.justice.digital.delius.util.EntityHelper.anOffender;
 import static uk.gov.justice.digital.delius.util.EntityHelper.anOrderManager;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ContactService_addContactForPrisonLocationChangeTest {
 
     private ContactService contactService;
@@ -41,7 +42,7 @@ public class ContactService_addContactForPrisonLocationChangeTest {
     @Captor
     private ArgumentCaptor<Contact> contactArgumentCaptor;
 
-    @Before
+    @BeforeEach
     public void setup() {
         contactService = new ContactService(contactRepository, contactTypeRepository);
         when(contactTypeRepository.findByCode(any())).thenReturn(Optional.of(aContactType()));
@@ -150,5 +151,13 @@ public class ContactService_addContactForPrisonLocationChangeTest {
         assertThat(contactArgumentCaptor.getValue().getProbationArea()).isEqualTo(probationArea);
     }
 
+    @Test
+    public void willSetContactStartTimeToBeNow() {
+        contactService.addContactForPrisonLocationChange(anOffender(), aCustodyEvent());
 
+        verify(contactRepository).save(contactArgumentCaptor.capture());
+
+        final var now = LocalTime.now();
+        assertThat(contactArgumentCaptor.getValue().getContactStartTime()).isBetween(now.minusMinutes(5), now);
+    }
 }
