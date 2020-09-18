@@ -89,7 +89,7 @@ public class Disposal {
     @Column(name = "ENTERED_NOTIONAL_END_DATE")
     private LocalDate enteredSentenceEndDate;
 
-    @OneToMany(targetEntity = LicenceCondition.class, mappedBy = "disposal")
+    @OneToMany(mappedBy = "disposal")
     private List<LicenceCondition> licenceConditions;
 
     public boolean isSoftDeleted() {
