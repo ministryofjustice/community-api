@@ -167,6 +167,17 @@ public class OffenderUpdatesServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("markAsFailed()")
+    class MarkAsFailed {
+        @Test
+        public void willCallServiceToUpdateToFailed() {
+            offenderUpdatesService.markAsFailed(99L);
+
+            verify(offenderDeltaService).markAsFailed(99L);
+        }
+    }
+
     private OffenderUpdate anOffenderDelta() {
         return OffenderUpdate.builder()
                 .offenderDeltaId(1L)

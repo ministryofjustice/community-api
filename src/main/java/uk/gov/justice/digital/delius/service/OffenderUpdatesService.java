@@ -33,10 +33,10 @@ public class OffenderUpdatesService {
     }
 
     private Optional<OffenderUpdate> lockNext(final Supplier<Optional<OffenderUpdate>> supplier) {
-        for(int i=0; i<retries; i++) {
+        for (int i = 0; i < retries; i++) {
             try {
                 return supplier.get();
-            } catch(ConcurrencyFailureException ex) {
+            } catch (ConcurrencyFailureException ex) {
                 log.warn("Received ConcurrencyFailureException while trying to getNextUpdate");
             }
         }
@@ -50,5 +50,10 @@ public class OffenderUpdatesService {
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Update not found");
         }
+    }
+
+    @Transactional
+    public void markAsFailed(final Long offenderDeltaId) {
+        offenderDeltaService.markAsFailed(offenderDeltaId);
     }
 }

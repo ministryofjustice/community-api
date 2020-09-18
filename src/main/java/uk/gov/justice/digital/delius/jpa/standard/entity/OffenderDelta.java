@@ -58,8 +58,12 @@ public class OffenderDelta {
 
     public OffenderDelta setInProgress() {
         this.setStatus("INPROGRESS");
-        this.setLastUpdatedDateTime(LocalDateTime.now().plusSeconds(1)); // if status is already INPROGRESS we still need to set last updated date time inside the cutoff, otherwise it is still considered a failed update
+        // We use last updated date time for optimistic locking - we need to change the time here in case a 2nd pod completes within a second thus breaking the optimistic lock
+        this.setLastUpdatedDateTime(LocalDateTime.now().plusSeconds(1));
         return this;
     }
 
+    public void markAsFailed() {
+        this.setStatus("FAILED");
+    }
 }

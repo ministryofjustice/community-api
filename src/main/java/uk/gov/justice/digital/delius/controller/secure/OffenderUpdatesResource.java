@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
@@ -53,6 +54,19 @@ public class OffenderUpdatesResource {
     @DeleteMapping(value = "offenders/update/{offenderDeltaId}")
     public void deleteOffenderUpdate(@PathVariable Long offenderDeltaId) {
         offenderUpdatesService.deleteUpdate(offenderDeltaId);
+    }
+
+    @ApiOperation(
+            value = "Mark an offender update as failed", notes = "requires ROLE_COMMUNITY_EVENTS")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+                    @ApiResponse(code = 404, message = "Update not found", response = ErrorResponse.class),
+            })
+    @PutMapping(value = "offenders/update/{offenderDeltaId}/markAsFailed")
+    public void markAsFailed(@PathVariable Long offenderDeltaId) {
+        offenderUpdatesService.markAsFailed(offenderDeltaId);
     }
 
 

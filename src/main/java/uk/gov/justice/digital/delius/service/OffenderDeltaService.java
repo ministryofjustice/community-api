@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.OffenderUpdate;
 import uk.gov.justice.digital.delius.jpa.dao.OffenderDelta;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderDeltaRepository;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -84,5 +86,11 @@ public class OffenderDeltaService {
 
     public void deleteDelta(final Long offenderDeltaId) {
         offenderDeltaRepository.deleteById(offenderDeltaId);
+    }
+
+    public void markAsFailed(final Long offenderDeltaId) {
+        offenderDeltaRepository.findById(offenderDeltaId)
+                .orElseThrow(() -> new NotFoundException(format("Cannot mark as failed for offenderDeltaId %s", offenderDeltaId)))
+                .markAsFailed();
     }
 }
