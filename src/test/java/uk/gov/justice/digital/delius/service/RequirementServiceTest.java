@@ -80,7 +80,6 @@ public class RequirementServiceTest {
         assertThat(requirements.getPssRequirements()).hasSize(1);
         uk.gov.justice.digital.delius.data.api.PssRequirement pssRequirement = requirements.getPssRequirements().get(0);
 
-        assertThat(pssRequirement.getPssRequirementId()).isEqualTo(88L);
         assertThat(pssRequirement.getType().getDescription()).isEqualTo("Standard 7 Conditions");
         assertThat(pssRequirement.getType().getCode()).isEqualTo("A");
         assertThat(pssRequirement.getSubType().getDescription()).isEqualTo("SubType");
@@ -108,7 +107,6 @@ public class RequirementServiceTest {
 
         PssRequirements requirements = requirementService.getPssRequirementsByConvictionId(CRN, CONVICTION_ID);
         assertThat(requirements.getPssRequirements()).hasSize(1);
-        assertThat(requirements.getPssRequirements().get(0).getPssRequirementId()).isEqualTo(88L);
         assertThat(requirements.getPssRequirements().get(0).getActive()).isEqualTo(false);
     }
 
