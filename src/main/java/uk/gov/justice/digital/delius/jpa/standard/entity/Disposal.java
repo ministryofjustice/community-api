@@ -6,7 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -82,6 +88,9 @@ public class Disposal {
 
     @Column(name = "ENTERED_NOTIONAL_END_DATE")
     private LocalDate enteredSentenceEndDate;
+
+    @OneToMany(targetEntity = LicenceCondition.class, mappedBy = "disposal")
+    private List<LicenceCondition> licenceConditions;
 
     public boolean isSoftDeleted() {
         return this.softDeleted != 0L;

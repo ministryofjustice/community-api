@@ -23,8 +23,8 @@ public class RequirementsResource_getLicenceConditions extends IntegrationTestBa
                 .get(String.format(LICENCE_CONDITIONS_PATH, KNOWN_OFFENDER_CRN, KNOWN_CONVICTION_ID))
                 .then()
                 .statusCode(200)
-                .body("licenceConditions[0].type.description", equalTo( "Local - Enforcement Activity"))
-                .body("licenceConditions[0].subType.description", equalTo( "Licence"))
+                .body("licenceConditions[0].licenceConditionTypeMainCat.description", equalTo( "Local - Enforcement Activity"))
+                .body("licenceConditions[0].licenceConditionTypeMainCat.code", equalTo( "LC19"))
                 .body("licenceConditions[0].active", equalTo(true))
                 ;
     }
