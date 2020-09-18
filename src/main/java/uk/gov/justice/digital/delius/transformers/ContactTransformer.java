@@ -129,7 +129,7 @@ public class ContactTransformer {
         ).orElse(null);
     }
 
-    protected static uk.gov.justice.digital.delius.data.api.LicenceCondition licenceConditionOf(LicenceCondition licenceCondition) {
+    public static uk.gov.justice.digital.delius.data.api.LicenceCondition licenceConditionOf(LicenceCondition licenceCondition) {
         return Optional.ofNullable(licenceCondition).map(lc -> uk.gov.justice.digital.delius.data.api.LicenceCondition.builder()
                 .active(zeroOneToBoolean(lc.getActiveFlag()))
                 .commencementDate(lc.getCommencementDate())

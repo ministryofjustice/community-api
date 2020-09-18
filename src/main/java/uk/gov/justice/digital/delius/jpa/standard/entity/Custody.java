@@ -3,6 +3,7 @@ package uk.gov.justice.digital.delius.jpa.standard.entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -23,6 +24,7 @@ import java.util.Optional;
 import static java.util.function.Predicate.not;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor

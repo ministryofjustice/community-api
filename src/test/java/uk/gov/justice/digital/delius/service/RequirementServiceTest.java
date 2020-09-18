@@ -6,11 +6,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
-import uk.gov.justice.digital.delius.data.api.ConvictionRequirements;
+import uk.gov.justice.digital.delius.data.api.LicenceConditions;
 import uk.gov.justice.digital.delius.data.api.PssRequirements;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
+import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceCondition;
+import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceConditionTypeMainCat;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PssRequirement;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PssRequirementTypeMainCategory;
@@ -19,6 +21,8 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
@@ -62,7 +66,81 @@ public class RequirementServiceTest {
     }
 
     @Test
-    public void whenGetPssRequirementsByConvictionId_thenReturnRequirements() {
+    public void whenGetLicenceConditionsByConvictionId_thenReturnLicenceConditions() {
+        var commencementDate = LocalDate.of(2020, 9, 18);
+        var startDate = LocalDate.of(2020, 9, 19);
+        var terminatedDate = LocalDate.of(2020, 9, 20);
+        var createdDateTime = LocalDateTime.of(2020, 9, 18, 1, 0);
+
+        when(disposal.getLicenceConditions()).thenReturn(Collections.singletonList(LicenceCondition.builder()
+                .licenceConditionId(88L)
+                .licenceConditionTypeMainCat(LicenceConditionTypeMainCat.builder()
+                        .description("Main Cat")
+                        .code("A")
+                        .build())
+                .commencementDate(commencementDate)
+                .commencementNotes("Commencement notes")
+                .startDate(startDate)
+                .terminationDate(terminatedDate)
+                .terminationNotes("Termination notes")
+                .createdDateTime(createdDateTime)
+                .activeFlag(1L)
+                .build()));
+
+        var conditions = requirementService.getLicenceConditionsByConvictionId(CRN, CONVICTION_ID);
+        assertThat(conditions.getLicenceConditions()).hasSize(1);
+        var licenceCondition = conditions.getLicenceConditions().get(0);
+
+        assertThat(licenceCondition.getLicenceConditionTypeMainCat().getDescription()).isEqualTo("Main Cat");
+        assertThat(licenceCondition.getLicenceConditionTypeMainCat().getCode()).isEqualTo("A");
+        assertThat(licenceCondition.getActive()).isEqualTo(true);
+        assertThat(licenceCondition.getCommencementDate()).isEqualTo(commencementDate);
+        assertThat(licenceCondition.getCommencementNotes()).isEqualTo("Commencement notes");
+        assertThat(licenceCondition.getCreatedDateTime()).isEqualTo(createdDateTime);
+        assertThat(licenceCondition.getStartDate()).isEqualTo(startDate);
+        assertThat(licenceCondition.getTerminationDate()).isEqualTo(terminatedDate);
+        assertThat(licenceCondition.getTerminationNotes()).isEqualTo("Termination notes");
+    }
+
+    @Test
+    public void givenOffenderDoesNotExist_whenGetLicenceConditionsByConvictionId_thenThrowException() {
+        when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.empty());
+
+        assertThatExceptionOfType(NotFoundException.class)
+                .isThrownBy(() -> requirementService.getLicenceConditionsByConvictionId(CRN, CONVICTION_ID))
+                .withMessage("Offender with CRN 'CRN' not found");
+    }
+
+    @Test
+    public void givenMultipleEventsReturnedForOffender_whenGetLicenceConditionsByConvictionId_thenFilterByConvictionId() {
+        when(disposal.getLicenceConditions()).thenReturn(Collections.singletonList(LicenceCondition.builder()
+                        .commencementNotes("Commencement notes")
+                .build()));
+        when(eventRepository.findByOffenderId(OFFENDER_ID)).thenReturn(Arrays.asList(event, badEvent));
+
+        LicenceConditions requirements = requirementService.getLicenceConditionsByConvictionId(CRN, CONVICTION_ID);
+        assertThat(requirements.getLicenceConditions()).hasSize(1);
+        assertThat(requirements.getLicenceConditions().get(0).getCommencementNotes()).isEqualTo("Commencement notes");
+    }
+
+    @Test
+    public void givenNoDisposalForConviction_whenGetLicenceConditionsByConvictionId_thenReturnEmptyList() {
+        when(event.getDisposal()).thenReturn(null);
+
+        LicenceConditions requirements = requirementService.getLicenceConditionsByConvictionId(CRN, CONVICTION_ID);
+        assertThat(requirements.getLicenceConditions()).isEmpty();
+    }
+
+    @Test
+    public void givenNoLicenceConditionsForConviction_whenGetLicenceConditionsByConvictionId_thenReturnEmptyList() {
+        when(disposal.getLicenceConditions()).thenReturn(null);
+
+        var requirements = requirementService.getLicenceConditionsByConvictionId(CRN, CONVICTION_ID);
+        assertThat(requirements.getLicenceConditions()).isEmpty();
+    }
+
+    @Test
+    public void whenGetPssRequirementsByConvictionId_thenReturnPssRequirements() {
         when(disposal.getCustody()).thenReturn(custody);
         when(custody.getPssRequirements()).thenReturn(Collections.singletonList(PssRequirement.builder()
                 .pssRequirementId(88L)
@@ -76,11 +154,10 @@ public class RequirementServiceTest {
                         .build())
                 .activeFlag(1L)
                 .build()));
-        PssRequirements requirements = requirementService.getPssRequirementsByConvictionId(CRN, CONVICTION_ID);
+        var requirements = requirementService.getPssRequirementsByConvictionId(CRN, CONVICTION_ID);
         assertThat(requirements.getPssRequirements()).hasSize(1);
-        uk.gov.justice.digital.delius.data.api.PssRequirement pssRequirement = requirements.getPssRequirements().get(0);
+        var pssRequirement = requirements.getPssRequirements().get(0);
 
-        assertThat(pssRequirement.getPssRequirementId()).isEqualTo(88L);
         assertThat(pssRequirement.getType().getDescription()).isEqualTo("Standard 7 Conditions");
         assertThat(pssRequirement.getType().getCode()).isEqualTo("A");
         assertThat(pssRequirement.getSubType().getDescription()).isEqualTo("SubType");
@@ -101,14 +178,18 @@ public class RequirementServiceTest {
     public void givenMultipleEventsReturnedForOffender_whenGetPssRequirementsByConvictionId_thenFilterByConvictionId() {
         when(disposal.getCustody()).thenReturn(custody);
         when(custody.getPssRequirements()).thenReturn(Collections.singletonList(PssRequirement.builder()
-                .pssRequirementId(88L)
+                .pssRequirementTypeMainCategory(PssRequirementTypeMainCategory.builder()
+                        .description("Standard 7 Conditions")
+                        .code("A")
+                        .build())
                 .activeFlag(0L)
                 .build()));
         when(eventRepository.findByOffenderId(OFFENDER_ID)).thenReturn(Arrays.asList(event, badEvent));
 
         PssRequirements requirements = requirementService.getPssRequirementsByConvictionId(CRN, CONVICTION_ID);
         assertThat(requirements.getPssRequirements()).hasSize(1);
-        assertThat(requirements.getPssRequirements().get(0).getPssRequirementId()).isEqualTo(88L);
+        assertThat(requirements.getPssRequirements().get(0).getType().getDescription()).isEqualTo("Standard 7 Conditions");
+        assertThat(requirements.getPssRequirements().get(0).getType().getCode()).isEqualTo("A");
         assertThat(requirements.getPssRequirements().get(0).getActive()).isEqualTo(false);
     }
 
@@ -116,7 +197,7 @@ public class RequirementServiceTest {
     public void givenNoDisposalForConviction_whenGetPssRequirementsByConvictionId_thenReturnEmptyList() {
         when(event.getDisposal()).thenReturn(null);
 
-        PssRequirements requirements = requirementService.getPssRequirementsByConvictionId(CRN, CONVICTION_ID);
+        var requirements = requirementService.getPssRequirementsByConvictionId(CRN, CONVICTION_ID);
         assertThat(requirements.getPssRequirements()).isEmpty();
     }
 
@@ -124,7 +205,7 @@ public class RequirementServiceTest {
     public void givenNoCustodyForConviction_whenGetPssRequirementsByConvictionId_thenReturnEmptyList() {
         when(disposal.getCustody()).thenReturn(custody);
 
-        PssRequirements requirements = requirementService.getPssRequirementsByConvictionId(CRN, CONVICTION_ID);
+        var requirements = requirementService.getPssRequirementsByConvictionId(CRN, CONVICTION_ID);
         assertThat(requirements.getPssRequirements()).isEmpty();
     }
 
@@ -133,7 +214,7 @@ public class RequirementServiceTest {
         when(disposal.getCustody()).thenReturn(custody);
         when(custody.getPssRequirements()).thenReturn(null);
 
-        PssRequirements requirements = requirementService.getPssRequirementsByConvictionId(CRN, CONVICTION_ID);
+        var requirements = requirementService.getPssRequirementsByConvictionId(CRN, CONVICTION_ID);
         assertThat(requirements.getPssRequirements()).isEmpty();
     }
 
@@ -143,7 +224,7 @@ public class RequirementServiceTest {
                 .builder()
                 .requirementId(99L)
                 .build()));
-        ConvictionRequirements requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID);
+        var requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID);
         assertThat(requirements.getRequirements()).hasSize(1);
         assertThat(requirements.getRequirements().get(0).getRequirementId()).isEqualTo(99L);
     }
@@ -165,7 +246,7 @@ public class RequirementServiceTest {
                 .build()));
         when(eventRepository.findByOffenderId(OFFENDER_ID)).thenReturn(Arrays.asList(event, badEvent));
 
-        ConvictionRequirements requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID);
+        var requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID);
         assertThat(requirements.getRequirements()).hasSize(1);
         assertThat(requirements.getRequirements().get(0).getRequirementId()).isEqualTo(99L);
     }
@@ -175,7 +256,7 @@ public class RequirementServiceTest {
         when(event.getDisposal()).thenReturn(null);
         when(eventRepository.findByOffenderId(OFFENDER_ID)).thenReturn(Arrays.asList(event, badEvent));
 
-        ConvictionRequirements requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID);
+        var requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID);
         assertThat(requirements.getRequirements()).isEmpty();
     }
 
@@ -184,7 +265,7 @@ public class RequirementServiceTest {
         when(disposal.getRequirements()).thenReturn(null);
         when(eventRepository.findByOffenderId(OFFENDER_ID)).thenReturn(Arrays.asList(event, badEvent));
 
-        ConvictionRequirements requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID);
+        var requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID);
         assertThat(requirements.getRequirements()).isEmpty();
     }
 }

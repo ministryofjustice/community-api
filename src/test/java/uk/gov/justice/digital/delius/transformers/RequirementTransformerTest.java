@@ -29,7 +29,6 @@ public class RequirementTransformerTest {
                 .build();
         uk.gov.justice.digital.delius.data.api.PssRequirement pssRequirement = RequirementTransformer.pssRequirementOf(requirement);
 
-        assertThat(pssRequirement.getPssRequirementId()).isEqualTo(88L);
         assertThat(pssRequirement.getType().getDescription()).isEqualTo("Standard 7 Conditions");
         assertThat(pssRequirement.getType().getCode()).isEqualTo("A");
         assertThat(pssRequirement.getSubType().getDescription()).isEqualTo("SubType");

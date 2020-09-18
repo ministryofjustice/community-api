@@ -39,7 +39,6 @@ public class RequirementTransformer {
     public static uk.gov.justice.digital.delius.data.api.PssRequirement pssRequirementOf(PssRequirement pssRequirement) {
         return Optional.ofNullable(pssRequirement)
                 .map(pssr -> uk.gov.justice.digital.delius.data.api.PssRequirement.builder()
-                        .pssRequirementId(pssRequirement.getPssRequirementId())
                         .type(pssRequirmentTypeMainCategoryOf(pssRequirement.getPssRequirementTypeMainCategory()))
                         .subType(pssRequirementTypeSubCategoryOf(pssRequirement.getPssRequirementTypeSubCategory()))
                         .active(pssRequirement.getActiveFlag() == 1L)
