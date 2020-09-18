@@ -407,6 +407,7 @@ public class OffenderTransformer {
 
         return ManagedOffender.builder()
                 .staffCode(staff.getOfficerCode())
+                .staffIdentifier(staff.getStaffId())
                 .offenderId(om.getOffenderId())
                 .nomsNumber(Optional.ofNullable(om.getManagedOffender()).map(Offender::getNomsNumber).orElse(null))
                 .crnNumber(Optional.ofNullable(om.getManagedOffender()).map(Offender::getCrn).orElse(null))
@@ -423,6 +424,7 @@ public class OffenderTransformer {
 
         return ManagedOffender.builder()
                 .staffCode(staff.getOfficerCode())
+                .staffIdentifier(staff.getStaffId())
                 .offenderId(pom.getOffenderId())
                 .nomsNumber(Optional.ofNullable(pom.getManagedOffender()).map(Offender::getNomsNumber).orElse(null))
                 .crnNumber(Optional.ofNullable(pom.getManagedOffender()).map(Offender::getCrn).orElse(null))
