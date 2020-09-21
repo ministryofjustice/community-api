@@ -144,16 +144,15 @@ public class OffenderTransformerTest {
                 .get(0))
                 .hasFieldOrPropertyWithValue("nomsNumber", "A1111")
                 .hasFieldOrPropertyWithValue("offenderSurname", "SMITH")
-                .hasFieldOrPropertyWithValue("staffCode", "AAAA");
+                .hasFieldOrPropertyWithValue("staffCode", "AAAA")
+                .hasFieldOrPropertyWithValue("staffIdentifier", 3L);
     }
 
     @Test
     public void allManagedOffenders() {
 
         // Get current and past managed offenders for this officer
-        assertThat(OffenderTransformer.managedOffenderOf(anOfficerWithOffenderManagers(), false)
-                .stream()
-                .collect(Collectors.toList()))
+        assertThat(new ArrayList<>(OffenderTransformer.managedOffenderOf(anOfficerWithOffenderManagers(), false)))
                 .hasSize(2);
     }
 
@@ -205,8 +204,7 @@ public class OffenderTransformerTest {
     private List<OffenderManager> aListOfOffenderManagers() {
 
         // List of offender managers managing the same offender with one current and one historical
-        List<OffenderManager> offenderManagers = ImmutableList.of(
-
+        return ImmutableList.of(
                 aOffenderManager()
                         .toBuilder()
                         .offenderManagerId(1L)
@@ -235,38 +233,30 @@ public class OffenderTransformerTest {
                         .managedOffender(anOffenderWithoutManagers())
                         .build()
         );
-
-        return offenderManagers;
     }
 
     private List<PrisonOffenderManager> aListOfPrisonOffenderManagers() {
-
-        List<PrisonOffenderManager> prisonOffenderManagers = new ArrayList<PrisonOffenderManager>();
-        return prisonOffenderManagers;
+        return new ArrayList<>();
     }
 
     private Offender anOffenderWithoutManagers() {
 
-        Offender offender = Offender.builder()
+        return Offender.builder()
                 .offenderId(1L)
                 .surname("SMITH")
                 .nomsNumber("A1111")
                 .build();
-
-        return offender;
     }
 
     private Offender anOffenderWithManagers() {
 
-        Offender offender = Offender.builder()
+        return Offender.builder()
                 .offenderId(1L)
                 .surname("SMITH")
                 .nomsNumber("A1111")
                 .offenderManagers(aListOfOffenderManagers())
                 .prisonOffenderManagers(aListOfPrisonOffenderManagers())
                 .build();
-
-        return offender;
     }
 
 

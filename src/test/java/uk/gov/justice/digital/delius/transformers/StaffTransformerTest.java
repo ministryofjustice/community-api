@@ -36,6 +36,20 @@ public class StaffTransformerTest {
     }
 
     @Test
+    public void staffIdentifierTakenFromStaff() {
+        assertThat(StaffTransformer.staffDetailsOf(
+                aStaff()
+                        .toBuilder()
+                        .forename("John")
+                        .surname("Smith")
+                        .officerCode("XXXXX")
+                        .staffId(1L)
+                        .build()).getStaffIdentifier())
+                .isEqualTo(1L);
+    }
+
+
+    @Test
     public void teamsTakenFromStaff() {
         assertThat(StaffTransformer.staffDetailsOf(
                                         aStaff()

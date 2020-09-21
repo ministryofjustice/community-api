@@ -15,6 +15,7 @@ public class StaffTransformer {
         return StaffDetails.builder()
                 .staff(humanOf(staff))
                 .staffCode(staff.getOfficerCode())
+                .staffIdentifier(staff.getStaffId())
                 .username(
                     Optional.ofNullable(staff.getUser()).map(User::getDistinguishedName).orElse(null))
                 .teams(staff.getTeams().stream()
@@ -28,7 +29,7 @@ public class StaffTransformer {
         Optional<String> maybeThirdName = Optional.ofNullable(thirdName);
 
         return Stream.of(maybeSecondName, maybeThirdName)
-                .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty))
+                .flatMap(Optional::stream)
                 .collect(Collectors.joining(" "));
     }
 
