@@ -20,6 +20,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.justice.digital.delius.service.OffenderDeltaService.IN_PROGRESS_IS_FAILED_AFTER_MINUTES;
+import static uk.gov.justice.digital.delius.service.OffenderDeltaService.WAIT_BEFORE_LOCKING_DELTA_SECONDS;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev-schema")
@@ -154,15 +155,15 @@ class OffenderDeltaServiceTest {
 
     @Test
     @Transactional
-    @DisplayName("will throw if the offender update even when the update is made withion the same second")
+    @DisplayName("will throw if the offender update even when the update is made within the same second")
     void lockNextUpdate_willNotAllowTwoThreadsToUpdateTheSameRecordInTheSameSecond() {
-        final var delta = OffenderDeltaHelper.anOffenderDelta(10L, LocalDateTime.now(), "CREATED");
+        final var delta = OffenderDeltaHelper.anOffenderDelta(10L, LocalDateTime.now().minusSeconds(WAIT_BEFORE_LOCKING_DELTA_SECONDS+1), "CREATED");
         OffenderDeltaHelper.insert(List.of(delta), jdbcTemplate);
 
         assertThatThrownBy(() -> {
             TestTransaction.flagForCommit();
             assertThat(offenderDeltaService.lockNextUpdate()).isPresent();
-            jdbcTemplate.update("update OFFENDER_DELTA set LAST_UPDATED_DATETIME = ? where OFFENDER_DELTA_ID = ?", LocalDateTime.now().plusSeconds(1), 10L);
+            jdbcTemplate.update("update OFFENDER_DELTA set LAST_UPDATED_DATETIME = ? where OFFENDER_DELTA_ID = ?", LocalDateTime.now(), 10L);
             TestTransaction.end();
         }).isInstanceOf(ConcurrencyFailureException.class);
 
