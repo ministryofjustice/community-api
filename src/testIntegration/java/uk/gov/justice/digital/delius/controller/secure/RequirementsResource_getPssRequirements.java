@@ -24,7 +24,7 @@ public class RequirementsResource_getPssRequirements extends IntegrationTestBase
                 .then()
                 .statusCode(200)
                 .body("pssRequirements[0].type.description", equalTo( "Standard 7 Conditions"))
-                .body("pssRequirements[0].subType.description", equalTo( "Adult Custody 12m plus"))
+                .body("pssRequirements[0].subType.description", equalTo( "Restorative Justice - Medium Intensity"))
                 .body("pssRequirements[0].active", equalTo(false))
                 ;
     }

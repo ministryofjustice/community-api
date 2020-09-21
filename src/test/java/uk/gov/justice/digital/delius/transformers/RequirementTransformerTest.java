@@ -4,6 +4,7 @@ import org.junit.Test;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AdRequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PssRequirement;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PssRequirementTypeMainCategory;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PssRequirementTypeSubCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
@@ -21,9 +22,9 @@ public class RequirementTransformerTest {
                         .description("Standard 7 Conditions")
                         .code("A")
                         .build())
-                .pssRequirementTypeSubCategory(StandardReference.builder()
-                        .codeDescription("SubType")
-                        .codeValue("B")
+                .pssRequirementTypeSubCategory(PssRequirementTypeSubCategory.builder()
+                        .description("SubType")
+                        .code("B")
                         .build())
                 .activeFlag(1L)
                 .build();

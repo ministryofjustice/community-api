@@ -35,7 +35,7 @@ public class PssRequirement extends AuditableEntity {
     @OneToOne
     private PssRequirementTypeMainCategory pssRequirementTypeMainCategory;
 
-    @JoinColumn(name = "PSS_RQMNT_TYPE_SUB_CAT_ID", referencedColumnName = "STANDARD_REFERENCE_LIST_ID")
+    @JoinColumn(name = "PSS_RQMNT_TYPE_SUB_CAT_ID", referencedColumnName = "PSS_RQMNT_TYPE_SUB_CAT_ID")
     @OneToOne
-    private StandardReference pssRequirementTypeSubCategory;
+    private PssRequirementTypeSubCategory pssRequirementTypeSubCategory;
 }

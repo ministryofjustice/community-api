@@ -4,6 +4,7 @@ import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AdRequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PssRequirement;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PssRequirementTypeMainCategory;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PssRequirementTypeSubCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
@@ -46,12 +47,12 @@ public class RequirementTransformer {
                 .orElse(null);
     }
 
-    private static KeyValue pssRequirementTypeSubCategoryOf(StandardReference pssRequirementTypeSubCategory) {
+    private static KeyValue pssRequirementTypeSubCategoryOf(PssRequirementTypeSubCategory pssRequirementTypeSubCategory) {
         return Optional.ofNullable(pssRequirementTypeSubCategory)
-                .map(mainCat ->
+                .map(sub ->
                         KeyValue.builder()
-                                .code(mainCat.getCodeValue())
-                                .description(mainCat.getCodeDescription())
+                                .code(sub.getCode())
+                                .description(sub.getDescription())
                                 .build())
                 .orElse(null);
     }
