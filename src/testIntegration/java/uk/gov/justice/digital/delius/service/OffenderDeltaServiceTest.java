@@ -157,7 +157,7 @@ class OffenderDeltaServiceTest {
     @Transactional
     @DisplayName("will throw if the offender update even when the update is made within the same second")
     void lockNextUpdate_willNotAllowTwoThreadsToUpdateTheSameRecordInTheSameSecond() {
-        final var delta = OffenderDeltaHelper.anOffenderDelta(10L, LocalDateTime.now().minusSeconds(WAIT_BEFORE_LOCKING_DELTA_SECONDS), "CREATED");
+        final var delta = OffenderDeltaHelper.anOffenderDelta(10L, LocalDateTime.now().minusSeconds(WAIT_BEFORE_LOCKING_DELTA_SECONDS+1), "CREATED");
         OffenderDeltaHelper.insert(List.of(delta), jdbcTemplate);
 
         assertThatThrownBy(() -> {
