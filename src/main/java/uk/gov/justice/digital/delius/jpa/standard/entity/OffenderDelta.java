@@ -58,8 +58,8 @@ public class OffenderDelta {
 
     public OffenderDelta setInProgress() {
         this.setStatus("INPROGRESS");
-        // We use last updated date time for optimistic locking - we need to change the time here in case a 2nd pod completes within a second thus breaking the optimistic lock
-        this.setLastUpdatedDateTime(LocalDateTime.now().plusSeconds(1));
+        // Force hibernate to update (in case record was already in progress)
+        this.setLastUpdatedDateTime(LocalDateTime.now());
         return this;
     }
 

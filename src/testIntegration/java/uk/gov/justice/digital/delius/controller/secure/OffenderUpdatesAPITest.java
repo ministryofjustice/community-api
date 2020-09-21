@@ -47,7 +47,7 @@ public class OffenderUpdatesAPITest extends IntegrationTestBase {
         @Test
         @DisplayName("can get next update with date changed")
         public void canGetNextUpdateWithDateChanged() {
-            final var delta = OffenderDeltaHelper.anOffenderDelta(9L, LocalDateTime.now(), "CREATED")
+            final var delta = OffenderDeltaHelper.anOffenderDelta(9L, LocalDateTime.now().minusMinutes(1), "CREATED")
                     .toBuilder().dateChanged(LocalDateTime.parse("2012-01-31T14:23:12"))
                     .build();
             OffenderDeltaHelper.insert(List.of(delta), jdbcTemplate);
@@ -67,7 +67,7 @@ public class OffenderUpdatesAPITest extends IntegrationTestBase {
         @Test
         @DisplayName("will get the next update and then lock that record so next call can not see it")
         public void willGetAndLockNextUpdate() {
-            final var delta = OffenderDeltaHelper.anOffenderDelta(9L, LocalDateTime.now(), "CREATED");
+            final var delta = OffenderDeltaHelper.anOffenderDelta(9L, LocalDateTime.now().minusMinutes(1), "CREATED");
             OffenderDeltaHelper.insert(List.of(delta), jdbcTemplate);
 
             given()

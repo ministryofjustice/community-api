@@ -23,6 +23,11 @@ public class OffenderDeltaService {
     private final OffenderDeltaRepository offenderDeltaRepository;
     @SuppressWarnings({"FieldCanBeLocal"})
     static final int IN_PROGRESS_IS_FAILED_AFTER_MINUTES = 10;
+    /*
+     * Last updated is used for optimistic locking which has a fidelity of 1 second, so we have to wait longer than
+     * that to avoid clashes
+     */
+    static final int WAIT_BEFORE_LOCKING_DELTA_SECONDS = 2;
 
     public OffenderDeltaService(JdbcTemplate jdbcTemplate, OffenderDeltaRepository offenderDeltaRepository) {
         this.jdbcTemplate = jdbcTemplate;
@@ -48,9 +53,14 @@ public class OffenderDeltaService {
 
     @Transactional
     public Optional<OffenderUpdate> lockNextUpdate() {
-        final var mayBeDelta = offenderDeltaRepository.findFirstByStatusOrderByCreatedDateTime("CREATED");
+        final var createdCutOffTime = getCreatedCutOffTime();
+        final var mayBeDelta = offenderDeltaRepository.findFirstByStatusAndLastUpdatedDateTimeLessThanEqualOrderByCreatedDateTime("CREATED", createdCutOffTime);
 
         return transformAndLock(mayBeDelta);
+    }
+
+    private LocalDateTime getCreatedCutOffTime() {
+        return LocalDateTime.now().minusSeconds(WAIT_BEFORE_LOCKING_DELTA_SECONDS);
     }
 
     @Transactional
