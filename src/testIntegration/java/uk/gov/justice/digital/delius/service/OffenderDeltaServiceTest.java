@@ -63,8 +63,8 @@ class OffenderDeltaServiceTest {
     @Test
     @DisplayName("will lock the oldest offender update")
     void lockNextUpdate_locksLatestDelta() {
-        final var expectedDelta = OffenderDeltaHelper.anOffenderDelta(10L, LocalDateTime.now().minusMinutes(2), "CREATED");
-        final var anyDelta = OffenderDeltaHelper.anOffenderDelta(11L, LocalDateTime.now().minusMinutes(1), "CREATED");
+        final var expectedDelta = OffenderDeltaHelper.anOffenderDelta(10L, LocalDateTime.now().minusMinutes(2), "CREATED").toBuilder().sourceTable("OFFENDER").build();
+        final var anyDelta = OffenderDeltaHelper.anOffenderDelta(11L, LocalDateTime.now().minusMinutes(1), "CREATED").toBuilder().sourceTable("OFFENDER_ADDRESS").build();
         OffenderDeltaHelper.insert(List.of(expectedDelta, anyDelta), jdbcTemplate);
 
         final var offenderUpdate = offenderDeltaService.lockNextUpdate().orElseThrow();
@@ -94,6 +94,50 @@ class OffenderDeltaServiceTest {
 
         assertThat(offenderUpdate.getOffenderDeltaId()).isEqualTo(delta.getOffenderDeltaId());
         assertThat(offenderUpdate.getStatus()).isEqualTo("INPROGRESS");
+    }
+
+    @Test
+    @DisplayName("will delete any duplicate records")
+    void lockNextUpdate_willDeleteDuplicateRecords() {
+        final LocalDateTime lastUpdatedDateTime = LocalDateTime.now().minusMinutes(1);
+        final var leadRecord = OffenderDeltaHelper.anOffenderDelta(10L, lastUpdatedDateTime, "CREATED");
+        final var duplicate1 = OffenderDeltaHelper.anOffenderDelta(11L, lastUpdatedDateTime, "CREATED");
+        final var duplicate2 = OffenderDeltaHelper.anOffenderDelta(12L, lastUpdatedDateTime, "CREATED");
+        OffenderDeltaHelper.insert(List.of(leadRecord, duplicate1, duplicate2), jdbcTemplate);
+
+        final var offenderUpdate = offenderDeltaService.lockNextUpdate().orElseThrow();
+
+        assertThat(offenderUpdate.getOffenderDeltaId()).isEqualTo(leadRecord.getOffenderDeltaId());
+
+        assertThat(offenderDeltaService.lockNextUpdate()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("will not delete different records even for the same offender")
+    void lockNextUpdate_willNotDeleteOtherRecords() {
+        final LocalDateTime lastUpdatedDateTime = LocalDateTime.now().minusMinutes(1);
+        final var addressRecordForOffender = OffenderDeltaHelper.anOffenderDelta(10L, lastUpdatedDateTime, "CREATED").toBuilder().sourceTable("OFFENDER_ADDRESS").build();
+        final var aliasRecordForOffender = OffenderDeltaHelper.anOffenderDelta(11L, lastUpdatedDateTime, "CREATED").toBuilder().sourceTable("ALIAS").build();
+        final var omRecordForOffender = OffenderDeltaHelper.anOffenderDelta(12L, lastUpdatedDateTime, "CREATED").toBuilder().sourceTable("OFFENDER_MANAGER").build();
+        OffenderDeltaHelper.insert(List.of(addressRecordForOffender, aliasRecordForOffender, omRecordForOffender), jdbcTemplate);
+
+        assertThat(offenderDeltaService.lockNextUpdate()).isNotEmpty();
+        assertThat(offenderDeltaService.lockNextUpdate()).isNotEmpty();
+        assertThat(offenderDeltaService.lockNextUpdate()).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("will not delete different records when they are for different entities for the same offender")
+    void lockNextUpdate_willNotDeleteOtherRecordsFroDifferentChildEntities() {
+        final LocalDateTime lastUpdatedDateTime = LocalDateTime.now().minusMinutes(1);
+        final var addressRecordForOffender = OffenderDeltaHelper.anOffenderDelta(10L, lastUpdatedDateTime, "CREATED").toBuilder().sourceTable("OFFENDER_ADDRESS").sourceRecordId(1L).build();
+        final var aliasRecordForOffender = OffenderDeltaHelper.anOffenderDelta(11L, lastUpdatedDateTime, "CREATED").toBuilder().sourceTable("OFFENDER_ADDRESS").sourceRecordId(2L).build();
+        final var omRecordForOffender = OffenderDeltaHelper.anOffenderDelta(12L, lastUpdatedDateTime, "CREATED").toBuilder().sourceTable("OFFENDER_ADDRESS").sourceRecordId(3L).build();
+        OffenderDeltaHelper.insert(List.of(addressRecordForOffender, aliasRecordForOffender, omRecordForOffender), jdbcTemplate);
+
+        assertThat(offenderDeltaService.lockNextUpdate()).isNotEmpty();
+        assertThat(offenderDeltaService.lockNextUpdate()).isNotEmpty();
+        assertThat(offenderDeltaService.lockNextUpdate()).isNotEmpty();
     }
 
     @Test
@@ -155,7 +199,28 @@ class OffenderDeltaServiceTest {
 
     @Test
     @Transactional
-    @DisplayName("will throw if the offender update even when the update is made within the same second")
+    @DisplayName("will throw if the offender update has been updated along with deleting duplicates before we lock it")
+    void lockNextUpdate_willNotAllowTwoThreadsToUpdateTheSameRecordAndDeleteDuplicates() {
+        final LocalDateTime lastUpdatedDateTime = LocalDateTime.now().minusMinutes(1);
+        final var leadRecord = OffenderDeltaHelper.anOffenderDelta(10L, lastUpdatedDateTime, "CREATED");
+        final var duplicate1 = OffenderDeltaHelper.anOffenderDelta(11L, lastUpdatedDateTime, "CREATED");
+        final var duplicate2 = OffenderDeltaHelper.anOffenderDelta(12L, lastUpdatedDateTime, "CREATED");
+        OffenderDeltaHelper.insert(List.of(leadRecord, duplicate1, duplicate2), jdbcTemplate);
+
+        assertThatThrownBy(() -> {
+            TestTransaction.flagForCommit();
+            assertThat(offenderDeltaService.lockNextUpdate()).isPresent();
+            jdbcTemplate.update("delete OFFENDER_DELTA where OFFENDER_DELTA_ID = ?",  11L);
+            jdbcTemplate.update("delete OFFENDER_DELTA where OFFENDER_DELTA_ID = ?", 12L);
+            jdbcTemplate.update("update OFFENDER_DELTA set LAST_UPDATED_DATETIME = ? where OFFENDER_DELTA_ID = ?", LocalDateTime.now().minusDays(5), 10L);
+            TestTransaction.end();
+        }).isInstanceOf(ConcurrencyFailureException.class);
+
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("will throw exception if the update is processes within a second of the previous update")
     void lockNextUpdate_willNotAllowTwoThreadsToUpdateTheSameRecordInTheSameSecond() {
         final var delta = OffenderDeltaHelper.anOffenderDelta(10L, LocalDateTime.now().minusSeconds(WAIT_BEFORE_LOCKING_DELTA_SECONDS+1), "CREATED");
         OffenderDeltaHelper.insert(List.of(delta), jdbcTemplate);

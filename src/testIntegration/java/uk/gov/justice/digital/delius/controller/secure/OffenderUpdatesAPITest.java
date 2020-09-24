@@ -27,7 +27,7 @@ public class OffenderUpdatesAPITest extends IntegrationTestBase {
     }
 
     @Nested
-    @DisplayName("/offenders/nextUpdate")
+    @DisplayName("GET /offenders/nextUpdate")
     class NextUpdate {
 
         @Test
@@ -69,6 +69,30 @@ public class OffenderUpdatesAPITest extends IntegrationTestBase {
         public void willGetAndLockNextUpdate() {
             final var delta = OffenderDeltaHelper.anOffenderDelta(9L, LocalDateTime.now().minusMinutes(1), "CREATED");
             OffenderDeltaHelper.insert(List.of(delta), jdbcTemplate);
+
+            given()
+                    .auth().oauth2(createJwt("ROLE_COMMUNITY_EVENTS"))
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .get("/offenders/nextUpdate")
+                    .then()
+                    .statusCode(200);
+
+            given()
+                    .auth().oauth2(createJwt("ROLE_COMMUNITY_EVENTS"))
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .get("/offenders/nextUpdate")
+                    .then()
+                    .statusCode(404);
+
+        }
+        @Test
+        @DisplayName("will get the next update and delete any duplicates")
+        public void willGetAndDeleteDuplicates() {
+            final var leadDelta = OffenderDeltaHelper.anOffenderDelta(9L, LocalDateTime.now().minusMinutes(1), "CREATED");
+            final var duplicateDelta = OffenderDeltaHelper.anOffenderDelta(10L, LocalDateTime.now().minusMinutes(1), "CREATED");
+            OffenderDeltaHelper.insert(List.of(leadDelta, duplicateDelta), jdbcTemplate);
 
             given()
                     .auth().oauth2(createJwt("ROLE_COMMUNITY_EVENTS"))
@@ -142,7 +166,7 @@ public class OffenderUpdatesAPITest extends IntegrationTestBase {
     }
 
     @Nested
-    @DisplayName("/offenders/update/{offenderDeltaId}")
+    @DisplayName("DELETE /offenders/update/{offenderDeltaId}")
     class DeleteUpdate {
         @Test
         @DisplayName("must have `ROLE_COMMUNITY_EVENTS` to access this service")
@@ -191,7 +215,7 @@ public class OffenderUpdatesAPITest extends IntegrationTestBase {
     }
 
     @Nested
-    @DisplayName("/offenders/update/${offenderDeltaId}/markAsFailed")
+    @DisplayName("PUT /offenders/update/${offenderDeltaId}/markAsFailed")
     class MarkAsFailed {
         @Test
         @DisplayName("must have `ROLE_COMMUNITY_EVENTS` to access this service")
@@ -239,7 +263,7 @@ public class OffenderUpdatesAPITest extends IntegrationTestBase {
         }
     }
 
-    private boolean hasUpdateWithFailedStatusFor(Long offenderDeltaId) {
+    private boolean hasUpdateWithFailedStatusFor(@SuppressWarnings("SameParameterValue") Long offenderDeltaId) {
         var result = jdbcTemplate.query("SELECT * FROM OFFENDER_DELTA WHERE OFFENDER_DELTA_ID = ? AND STATUS = 'FAILED'", List.of(offenderDeltaId).toArray(), new ColumnMapRowMapper());
         return result.size() > 0;
     }
