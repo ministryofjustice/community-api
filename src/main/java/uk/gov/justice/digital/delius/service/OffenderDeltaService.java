@@ -56,6 +56,7 @@ public class OffenderDeltaService {
         final var createdCutOffTime = getCreatedCutOffTime();
         final var mayBeDelta = offenderDeltaRepository.findFirstByStatusAndLastUpdatedDateTimeLessThanEqualOrderByCreatedDateTime("CREATED", createdCutOffTime);
 
+        mayBeDelta.ifPresent(delta -> offenderDeltaRepository.deleteOtherDuplicates(delta.getOffenderDeltaId()));
         return transformAndLock(mayBeDelta);
     }
 
