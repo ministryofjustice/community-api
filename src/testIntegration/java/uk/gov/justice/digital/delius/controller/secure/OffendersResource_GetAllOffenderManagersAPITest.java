@@ -46,6 +46,7 @@ public class OffendersResource_GetAllOffenderManagersAPITest extends Integration
         assertThat(prisonOffenderManager.getStaff()).isNotNull();
         assertThat(prisonOffenderManager.getTeam()).isNotNull();
         assertThat(prisonOffenderManager.getStaffCode()).isEqualTo("BWIA010");
+        assertThat(prisonOffenderManager.getStaffId()).isEqualTo(2500057541L);
     }
 
     @Test

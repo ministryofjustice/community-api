@@ -1,5 +1,5 @@
 plugins {
-    id("uk.gov.justice.hmpps.gradle-spring-boot") version "0.4.3"
+    id("uk.gov.justice.hmpps.gradle-spring-boot") version "1.0.6"
     id 'groovy'
     id 'org.unbroken-dome.test-sets' version '3.0.1'
 }
@@ -15,7 +15,7 @@ check.dependsOn(testIntegration)
 dependencies {
     implementation files('lib/ojdbc8-12.2.0.1.jar')
 
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.0'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.2'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-ldap'
@@ -27,12 +27,12 @@ dependencies {
     implementation 'io.springfox:springfox-swagger2:2.9.2'
     implementation 'io.springfox:springfox-swagger-ui:2.9.2'
     implementation 'io.springfox:springfox-bean-validators:2.9.2'
-    implementation 'org.flywaydb:flyway-core:6.4.4'
+    implementation 'org.flywaydb:flyway-core:6.5.6'
     implementation 'com.zaxxer:HikariCP:3.4.5'
-    implementation 'commons-io:commons-io:2.7'
-    implementation 'org.apache.commons:commons-lang3:3.10'
-    implementation 'org.apache.commons:commons-text:1.8'
-    implementation 'io.swagger:swagger-core:1.6.1'
+    implementation 'commons-io:commons-io:2.8.0'
+    implementation 'org.apache.commons:commons-lang3:3.11'
+    implementation 'org.apache.commons:commons-text:1.9'
+    implementation 'io.swagger:swagger-core:1.6.2'
 
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
     compileOnly 'org.projectlombok:lombok:1.18.12'
@@ -48,8 +48,8 @@ dependencies {
         exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
     }
     testImplementation 'io.rest-assured:spring-mock-mvc:3.3.0'
-    testIntegrationImplementation "com.github.tomakehurst:wiremock:2.26.3"
-    testImplementation 'io.swagger.parser.v3:swagger-parser-v2-converter:2.0.20'
+    testIntegrationImplementation "com.github.tomakehurst:wiremock:2.27.2"
+    testImplementation 'io.swagger.parser.v3:swagger-parser-v2-converter:2.0.21'
 }
 
 testIntegration {

@@ -1,12 +1,12 @@
 package uk.gov.justice.digital.delius.service;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.controller.InvalidRequestException;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Human;
@@ -24,12 +24,21 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.digital.delius.util.EntityHelper.*;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aPrisonProbationArea;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aProbationArea;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aResponsibleOfficer;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aStaff;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aTeam;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anActivePrisonOffenderManager;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anOffender;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class OffenderManagerService_allocatePrisonOffenderManagerTest {
     @Mock
     private OffenderRepository offenderRepository;
@@ -54,7 +63,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
 
     private OffenderManagerService offenderManagerService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         offenderManagerService = new OffenderManagerService(
                 offenderRepository,
@@ -67,29 +76,25 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                 contactService);
 
         when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(anOffender()));
-        when(staffService.findByOfficerCode(any())).thenReturn(Optional.of(aStaff()));
+        when(staffService.findByStaffId(anyLong())).thenReturn(Optional.of(aStaff()));
         when(probationAreaRepository.findByInstitutionByNomsCDECode(any())).thenAnswer(args -> {
-            var code = args.getArgument(0).toString();
+            final var code = args.getArgument(0).toString();
             return Optional.of(aPrisonProbationArea()
                     .toBuilder()
                     .code(code)
                     .build());
         });
-        when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
-        when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
-        when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
-
     }
 
     @Test
     public void willReturnEmptyWhenOffenderNotFound() {
         when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.empty());
-        when(staffService.findByOfficerCode("N01A12345")).thenReturn(Optional.of(aStaff()));
+        when(staffService.findByStaffId(anyLong())).thenReturn(Optional.of(aStaff()));
         when(probationAreaRepository.findByInstitutionByNomsCDECode("BWI")).thenReturn(Optional.of(aProbationArea()));
 
-        assertThat(offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+        assertThat(offenderManagerService.allocatePrisonOffenderManagerByStaffId(
                 "G9542VP",
-                "N01A12345",
+                12345L,
                 CreatePrisonOffenderManager
                         .builder()
                         .nomsPrisonInstitutionCode("BWI")
@@ -110,12 +115,12 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
     @Test
     public void willReturnEmptyWhenStaffNotFound() {
         when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.of(anOffender()));
-        when(staffService.findByOfficerCode("N01A12345")).thenReturn(Optional.empty());
+        when(staffService.findByStaffId(anyLong())).thenReturn(Optional.empty());
         when(probationAreaRepository.findByInstitutionByNomsCDECode("BWI")).thenReturn(Optional.of(aProbationArea()));
 
-        assertThat(offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+        assertThat(offenderManagerService.allocatePrisonOffenderManagerByStaffId(
                 "G9542VP",
-                "N01A12345",
+                12345L,
                 CreatePrisonOffenderManager
                         .builder()
                         .nomsPrisonInstitutionCode("BWI")
@@ -126,12 +131,12 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
     @Test
     public void willThrowInvalidRequestWhenPrisonProbationAreaNotFound() {
         when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.of(anOffender()));
-        when(staffService.findByOfficerCode("N01A12345")).thenReturn(Optional.of(aStaff()));
+        when(staffService.findByStaffId(anyLong())).thenReturn(Optional.of(aStaff()));
         when(probationAreaRepository.findByInstitutionByNomsCDECode("BWI")).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+        assertThatThrownBy(() -> offenderManagerService.allocatePrisonOffenderManagerByStaffId(
                 "G9542VP",
-                "N01A12345",
+                12345L,
                 CreatePrisonOffenderManager
                         .builder()
                         .nomsPrisonInstitutionCode("BWI")
@@ -155,14 +160,14 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
     @Test
     public void willNotAllowAllocationOfStaffInDifferentProbationArea() {
         when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.of(anOffender()));
-        when(staffService.findByOfficerCode("N01A12345")).thenReturn(Optional.of(aStaff()
+        when(staffService.findByStaffId(anyLong())).thenReturn(Optional.of(aStaff()
                 .toBuilder()
                 .probationArea(
                         aProbationArea()
-                        .toBuilder()
-                        .code("BWI")
-                        .probationAreaId(99L)
-                        .build()
+                                .toBuilder()
+                                .code("BWI")
+                                .probationAreaId(99L)
+                                .build()
                 )
                 .build())
         );
@@ -174,10 +179,11 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                                 .probationAreaId(88L)
                                 .build()
                 ));
+        when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
 
-        assertThatThrownBy(() -> offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+        assertThatThrownBy(() -> offenderManagerService.allocatePrisonOffenderManagerByStaffId(
                 "G9542VP",
-                "N01A12345",
+                12345L,
                 CreatePrisonOffenderManager
                         .builder()
                         .nomsPrisonInstitutionCode("N01")
@@ -191,9 +197,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                 .toBuilder()
                 .teams(new ArrayList<>())
                 .build();
-        when(staffService.findByOfficerCode("N01A12345")).thenReturn(Optional.of(
-                staff
-        ));
+        when(staffService.findByStaffId(anyLong())).thenReturn(Optional.of(staff));
 
         final var team = aTeam()
                 .toBuilder()
@@ -201,10 +205,12 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                 .build();
         when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(
                 team);
+        when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
+        when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
 
-        offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+        offenderManagerService.allocatePrisonOffenderManagerByStaffId(
                 "G9542VP",
-                "N01A12345",
+                12345L,
                 CreatePrisonOffenderManager
                         .builder()
                         .nomsPrisonInstitutionCode("N01")
@@ -227,11 +233,12 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                         .prisonOffenderManagers(List.of())
                         .build()
         ));
+        when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
+        when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
 
-
-        offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+        offenderManagerService.allocatePrisonOffenderManagerByStaffId(
                 "G9542VP",
-                "N01A12345",
+                12345L,
                 CreatePrisonOffenderManager
                         .builder()
                         .nomsPrisonInstitutionCode("N01")
@@ -250,7 +257,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                 .build());
 
 
-        var existingPOM  = anActivePrisonOffenderManager()
+        final var existingPOM = anActivePrisonOffenderManager()
                 .toBuilder()
                 .probationArea(aPrisonProbationArea()
                         .toBuilder()
@@ -264,10 +271,13 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                         .prisonOffenderManagers(List.of(existingPOM))
                         .build()
         ));
+        when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
+        when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
+        when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
 
-        offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+        offenderManagerService.allocatePrisonOffenderManagerByStaffId(
                 "G9542VP",
-                "N01A12345",
+                12345L,
                 CreatePrisonOffenderManager
                         .builder()
                         .nomsPrisonInstitutionCode("BWI")
@@ -286,7 +296,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                 .build());
 
 
-        var existingPOM  = anActivePrisonOffenderManager()
+        final var existingPOM = anActivePrisonOffenderManager()
                 .toBuilder()
                 .probationArea(aPrisonProbationArea()
                         .toBuilder()
@@ -300,10 +310,13 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                         .prisonOffenderManagers(List.of(existingPOM))
                         .build()
         ));
+        when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
+        when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
+        when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
 
-        offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+        offenderManagerService.allocatePrisonOffenderManagerByStaffId(
                 "G9542VP",
-                "N01A12345",
+                12345L,
                 CreatePrisonOffenderManager
                         .builder()
                         .nomsPrisonInstitutionCode("BRI")
@@ -318,23 +331,25 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
 
     @Test
     public void existingPrisonerOffenderManagerIsDeactivated() {
-        var existingPOM  = anActivePrisonOffenderManager();
+        final var existingPOM = anActivePrisonOffenderManager();
 
         when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
                 anOffender()
-                .toBuilder()
-                .prisonOffenderManagers(List.of(existingPOM))
-                .build()
+                        .toBuilder()
+                        .prisonOffenderManagers(List.of(existingPOM))
+                        .build()
         ));
+        when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
+        when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
+        when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
 
-        offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+        offenderManagerService.allocatePrisonOffenderManagerByStaffId(
                 "G9542VP",
-                "N01A12345",
+                12345L,
                 CreatePrisonOffenderManager
                         .builder()
                         .nomsPrisonInstitutionCode("N01")
                         .build());
-
 
         assertThat(existingPOM.getEndDate()).isNotNull();
         assertThat(existingPOM.getActiveFlag()).isEqualTo(0L);
@@ -342,25 +357,28 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
 
     @Test
     public void existingResponsibleOfficerIsDeactivatedWhenActivePOM() {
-        final ResponsibleOfficer existingPOMResponsibleOfficer = aResponsibleOfficer()
+        final var existingPOMResponsibleOfficer = aResponsibleOfficer()
                 .toBuilder()
                 .endDateTime(null)
                 .build();
-        var existingPOM  = anActivePrisonOffenderManager()
+        final var existingPOM = anActivePrisonOffenderManager()
                 .toBuilder()
                 .responsibleOfficer(existingPOMResponsibleOfficer)
                 .build();
 
         when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
                 anOffender()
-                .toBuilder()
-                .prisonOffenderManagers(List.of(existingPOM))
-                .build()
+                        .toBuilder()
+                        .prisonOffenderManagers(List.of(existingPOM))
+                        .build()
         ));
+        when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
+        when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
+        when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
 
-        offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+        offenderManagerService.allocatePrisonOffenderManagerByStaffId(
                 "G9542VP",
-                "N01A12345",
+                12345L,
                 CreatePrisonOffenderManager
                         .builder()
                         .nomsPrisonInstitutionCode("N01")
@@ -372,20 +390,20 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
 
     @Test
     public void newPrisonerOffenderManagerIsMadeResponsibleOfficerWhenExistingPOMIsAlsoCurrentRO() {
-        final ResponsibleOfficer existingPOMResponsibleOfficer = aResponsibleOfficer()
+        final var existingPOMResponsibleOfficer = aResponsibleOfficer()
                 .toBuilder()
                 .endDateTime(null)
                 .build();
-        var existingPOM  = anActivePrisonOffenderManager()
+        final var existingPOM = anActivePrisonOffenderManager()
                 .toBuilder()
                 .responsibleOfficer(existingPOMResponsibleOfficer)
                 .build();
 
         when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
                 anOffender()
-                .toBuilder()
-                .prisonOffenderManagers(List.of(existingPOM))
-                .build()
+                        .toBuilder()
+                        .prisonOffenderManagers(List.of(existingPOM))
+                        .build()
         ));
 
         when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> {
@@ -393,10 +411,12 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
             newPOM.setPrisonOffenderManagerId(99L);
             return newPOM;
         });
+        when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
+        when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
 
-        var newPrisonOffenderManager = offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+        final var newPrisonOffenderManager = offenderManagerService.allocatePrisonOffenderManagerByStaffId(
                 "G9542VP",
-                "N01A12345",
+                12345L,
                 CreatePrisonOffenderManager
                         .builder()
                         .nomsPrisonInstitutionCode("N01")
@@ -415,10 +435,12 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                         .toBuilder()
                         .prisonOffenderManagers(List.of())
                         .build()));
+        when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
+        when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
 
-        offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+        offenderManagerService.allocatePrisonOffenderManagerByStaffId(
                 "G9542VP",
-                "N01A12345",
+                12345L,
                 CreatePrisonOffenderManager
                         .builder()
                         .nomsPrisonInstitutionCode("N01")
@@ -436,10 +458,13 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                         .toBuilder()
                         .prisonOffenderManagers(List.of(existingPOM))
                         .build()));
+        when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
+        when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
+        when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
 
-        offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+        offenderManagerService.allocatePrisonOffenderManagerByStaffId(
                 "G9542VP",
-                "N01A12345",
+                12345L,
                 CreatePrisonOffenderManager
                         .builder()
                         .nomsPrisonInstitutionCode("N01")
@@ -451,11 +476,11 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
 
     @Test
     public void shouldAddAResponsibleOfficeMoveContactNotingOldPOM() {
-        final ResponsibleOfficer existingPOMResponsibleOfficer = aResponsibleOfficer()
+        final var existingPOMResponsibleOfficer = aResponsibleOfficer()
                 .toBuilder()
                 .endDateTime(null)
                 .build();
-        var existingPOM  = anActivePrisonOffenderManager()
+        final var existingPOM = anActivePrisonOffenderManager()
                 .toBuilder()
                 .responsibleOfficer(existingPOMResponsibleOfficer)
                 .build();
@@ -472,10 +497,12 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
             newPOM.setPrisonOffenderManagerId(99L);
             return newPOM;
         });
+        when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
+        when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
 
-        offenderManagerService.allocatePrisonOffenderManagerByStaffCode(
+        offenderManagerService.allocatePrisonOffenderManagerByStaffId(
                 "G9542VP",
-                "N01A12345",
+                12345L,
                 CreatePrisonOffenderManager
                         .builder()
                         .nomsPrisonInstitutionCode("N01")

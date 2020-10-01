@@ -18,13 +18,27 @@ import static java.util.function.Predicate.not;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@ExtendWith( FlywayRestoreExtension.class)
-public class OffendersResource_AllocatePrisonOffenderManagerTest  extends IntegrationTestBase  {
+@ExtendWith(FlywayRestoreExtension.class)
+public class OffendersResource_AllocatePrisonOffenderManagerTest extends IntegrationTestBase {
     @Test
-    public void canAllocatePrisonOffenderManagersByNOMSNumberAndStaffCode() {
-        final var offenderManagersBeforeAllocation = given()
+    public void mustHaveUpdateRoleToAllocatedPOM() {
+        given()
                 .auth()
                 .oauth2(tokenWithRoleCommunity())
+                .contentType(APPLICATION_JSON_VALUE)
+                .contentType("application/json")
+                .body(createPrisonOffenderManagerOf(2500057541L, "BWI"))
+                .when()
+                .put("/offenders/nomsNumber/G0560UO/prisonOffenderManager")
+                .then()
+                .statusCode(403);
+    }
+
+    @Test
+    public void canAllocatePrisonOffenderManagersByNOMSNumberAndStaffId() {
+        final var offenderManagersBeforeAllocation = given()
+                .auth()
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("/offenders/nomsNumber/G0560UO/allOffenderManagers")
@@ -40,10 +54,10 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest  extends Integr
 
         final var newPrisonOffenderManager = given()
                 .auth()
-                .oauth2(tokenWithRoleCommunity())
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
-                .body(createPrisonOffenderManagerOf("BWIA010", "BWI"))
+                .body(createPrisonOffenderManagerOf(2500057541L, "BWI"))
                 .when()
                 .put("/offenders/nomsNumber/G0560UO/prisonOffenderManager")
                 .then()
@@ -52,7 +66,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest  extends Integr
                 .body()
                 .as(CommunityOrPrisonOffenderManager.class);
 
-        assertThat(newPrisonOffenderManager.getStaffCode()).isEqualTo("BWIA010");
+        assertThat(newPrisonOffenderManager.getStaffId()).isEqualTo(2500057541L);
 
         // OM Team will be POM team in area within the POM borough, district and LDU
         assertThat(newPrisonOffenderManager.getTeam().getDescription()).isEqualTo("Prison Offender Managers");
@@ -80,7 +94,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest  extends Integr
                 .as(StaffDetails.class);
 
         // Staff will now be in the POM Team
-         assertThat(staffDetails.getTeams()).contains(newPrisonOffenderManager.getTeam());
+        assertThat(staffDetails.getTeams()).contains(newPrisonOffenderManager.getTeam());
 
         final var offenderManagers = given()
                 .auth()
@@ -100,7 +114,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest  extends Integr
         // responsible officer remains unchanged
         assertThat(communityOffenderManager(offenderManagers).orElseThrow().getIsResponsibleOfficer()).isTrue();
         assertThat(prisonOffenderManager(offenderManagers).orElseThrow().getIsResponsibleOfficer()).isFalse();
-        assertThat(prisonOffenderManager(offenderManagers).orElseThrow().getStaffCode()).isEqualTo("BWIA010");
+        assertThat(prisonOffenderManager(offenderManagers).orElseThrow().getStaffId()).isEqualTo(2500057541L);
     }
 
     @Test
@@ -121,19 +135,19 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest  extends Integr
         assertThat(offenderManagersBeforeAllocation).hasSize(2);
         assertThat(prisonOffenderManager(offenderManagersBeforeAllocation)).isPresent();
         assertThat(prisonOffenderManager(offenderManagersBeforeAllocation).orElseThrow().getIsResponsibleOfficer()).isTrue();
-        assertThat(prisonOffenderManager(offenderManagersBeforeAllocation).orElseThrow().getStaffCode()).isEqualTo("BWIA010");
+        assertThat(prisonOffenderManager(offenderManagersBeforeAllocation).orElseThrow().getStaffId()).isEqualTo(2500057541L);
         assertThat(communityOffenderManager(offenderManagersBeforeAllocation)).isPresent();
 
         final var newPrisonOffenderManager = given()
                 .auth()
-                .oauth2(tokenWithRoleCommunity())
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
                 .body(createPrisonOffenderManagerOf(Human
-                        .builder()
-                        .surname("Marke")
-                        .forenames("Joe")
-                        .build(),
+                                .builder()
+                                .surname("Marke")
+                                .forenames("Joe")
+                                .build(),
                         "BWI"))
                 .when()
                 .put("/offenders/nomsNumber/G9542VP/prisonOffenderManager")
@@ -144,7 +158,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest  extends Integr
                 .as(CommunityOrPrisonOffenderManager.class);
 
         // no longer previous POM
-        assertThat(newPrisonOffenderManager.getStaffCode()).isNotEqualTo("BWIA010");
+        assertThat(newPrisonOffenderManager.getStaffCode()).isNotEqualTo(2500057541L);
         // but will be a staff code in BWI area with area prefix
         assertThat(newPrisonOffenderManager.getStaffCode()).startsWith("BWI");
 
@@ -205,10 +219,10 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest  extends Integr
 
         final var newPrisonOffenderManager = given()
                 .auth()
-                .oauth2(tokenWithRoleCommunity())
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
-                .body(createPrisonOffenderManagerOf("BWIA010", "BWI"))
+                .body(createPrisonOffenderManagerOf(2500057541L, "BWI"))
                 .when()
                 .put("/offenders/nomsNumber/G4106UN/prisonOffenderManager")
                 .then()
@@ -217,9 +231,9 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest  extends Integr
                 .body()
                 .as(CommunityOrPrisonOffenderManager.class);
 
-        assertThat(newPrisonOffenderManager.getStaffCode()).isEqualTo("BWIA010");
+        assertThat(newPrisonOffenderManager.getStaffId()).isEqualTo(2500057541L);
 
-        Contact[] contacts = given()
+        final var contacts = given()
                 .when()
                 .header("Authorization", legacyToken())
                 .queryParam("from", justBeforeAllocation.toString())
@@ -235,11 +249,11 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest  extends Integr
         assertThat(contacts[0].getContactType().getDescription()).isEqualTo("Prison Offender Manager - Automatic Transfer");
     }
 
-    public Optional<CommunityOrPrisonOffenderManager> prisonOffenderManager(CommunityOrPrisonOffenderManager[] offenderManagers) {
+    public Optional<CommunityOrPrisonOffenderManager> prisonOffenderManager(final CommunityOrPrisonOffenderManager[] offenderManagers) {
         return Stream.of(offenderManagers).filter(CommunityOrPrisonOffenderManager::getIsPrisonOffenderManager).findAny();
     }
 
-    public Optional<CommunityOrPrisonOffenderManager> communityOffenderManager(CommunityOrPrisonOffenderManager[] offenderManagers) {
+    public Optional<CommunityOrPrisonOffenderManager> communityOffenderManager(final CommunityOrPrisonOffenderManager[] offenderManagers) {
         return Stream.of(offenderManagers).filter(not(CommunityOrPrisonOffenderManager::getIsPrisonOffenderManager)).findAny();
     }
 
@@ -247,10 +261,10 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest  extends Integr
     public void shouldRespondWith404WhenAllocatingPrisonOffenderManagersAndExistingStaffNotFound() {
         given()
                 .auth()
-                .oauth2(tokenWithRoleCommunity())
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
-                .body(createPrisonOffenderManagerOf("DOESNOTEXIST"))
+                .body(createPrisonOffenderManagerOf(234L))
                 .when()
                 .put("/offenders/nomsNumber/G9542VP/prisonOffenderManager")
                 .then()
@@ -261,10 +275,10 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest  extends Integr
     public void shouldRespondWith404WhenAllocatingPrisonOffenderManagersAndOffenderNotFound() {
         given()
                 .auth()
-                .oauth2(tokenWithRoleCommunity())
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
-                .body(createPrisonOffenderManagerOf("BWIA010"))
+                .body(createPrisonOffenderManagerOf(2500057541L))
                 .when()
                 .put("/offenders/nomsNumber/DOESNOTEXIST/prisonOffenderManager")
                 .then()
@@ -275,10 +289,10 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest  extends Integr
     public void shouldRespondWith400WhenAllocatingPrisonOffenderManagersAndPrisonInstitutionNotFound() {
         given()
                 .auth()
-                .oauth2(tokenWithRoleCommunity())
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
-                .body(createPrisonOffenderManagerOf("BWIA010", "DOESNOTEXIST"))
+                .body(createPrisonOffenderManagerOf(2500057541L, "DOESNOTEXIST"))
                 .when()
                 .put("/offenders/nomsNumber/G9542VP/prisonOffenderManager")
                 .then()
@@ -289,33 +303,33 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest  extends Integr
     public void shouldRespondWith400WhenStaffMemberNotInThePrisonInstitutionProbationArea() {
         given()
                 .auth()
-                .oauth2(tokenWithRoleCommunity())
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
-                .body(createPrisonOffenderManagerOf("BWIA010", "WWI"))
+                .body(createPrisonOffenderManagerOf(2500057541L, "WWI"))
                 .when()
                 .put("/offenders/nomsNumber/G9542VP/prisonOffenderManager")
                 .then()
                 .statusCode(400);
     }
 
-    private String createPrisonOffenderManagerOf(String staffCode) {
+    private String createPrisonOffenderManagerOf(final Long staffId) {
         return writeValueAsString(CreatePrisonOffenderManager
                 .builder()
-                .officerCode(staffCode)
+                .staffId(staffId)
                 .nomsPrisonInstitutionCode("BWI")
                 .build());
     }
 
-    private String createPrisonOffenderManagerOf(String staffCode, String nomsPrisonInstitutionCode) {
+    private String createPrisonOffenderManagerOf(final Long staffId, final String nomsPrisonInstitutionCode) {
         return writeValueAsString(CreatePrisonOffenderManager
                 .builder()
-                .officerCode(staffCode)
+                .staffId(staffId)
                 .nomsPrisonInstitutionCode(nomsPrisonInstitutionCode)
                 .build());
     }
 
-    private String createPrisonOffenderManagerOf(Human staff, String nomsPrisonInstitutionCode) {
+    private String createPrisonOffenderManagerOf(final Human staff, final String nomsPrisonInstitutionCode) {
         return writeValueAsString(CreatePrisonOffenderManager
                 .builder()
                 .officer(staff)

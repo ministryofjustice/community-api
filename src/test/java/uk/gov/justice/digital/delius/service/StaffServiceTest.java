@@ -61,7 +61,13 @@ public class StaffServiceTest {
         when(staffRepository.findByOfficerCode("ABC123")).thenReturn(Optional.empty());
 
         assertThat(staffService.getStaffDetails("ABC123")).isNotPresent();
+    }
 
+    @Test
+    public void whenStaffMemberNotFoundReturnEmpty_getStaffDetailsByStaffIdentifier() {
+        when(staffRepository.findByStaffId(1L)).thenReturn(Optional.empty());
+
+        assertThat(staffService.getStaffDetailsByStaffIdentifier(1L)).isNotPresent();
     }
 
     @Test
@@ -70,6 +76,14 @@ public class StaffServiceTest {
 
         assertThat(staffService.getStaffDetails("ABC123")).isPresent();
     }
+
+    @Test
+    public void whenStaffMemberFoundReturnStaffDetails_getStaffDetailsByStaffIdentifier() {
+        when(staffRepository.findByStaffId(10L)).thenReturn(Optional.of(aStaff()));
+
+        assertThat(staffService.getStaffDetailsByStaffIdentifier(10L)).isPresent();
+    }
+
 
     @Test
     public void whenStaffIsAssociatedWithUserLDAPIsQueried_getStaffDetails() {
@@ -90,6 +104,24 @@ public class StaffServiceTest {
         verify(ldapRepository).getEmail("username");
     }
 
+    @Test
+    public void whenStaffIsAssociatedWithUserLDAPIsQueried_getStaffDetailsByStaffIdentifier() {
+        when(staffRepository.findByStaffId(10L))
+                .thenReturn(
+                        Optional.of(
+                                aStaff()
+                                        .toBuilder()
+                                        .user(
+                                                aUser()
+                                                        .toBuilder()
+                                                        .distinguishedName("username")
+                                                        .build())
+                                        .build()));
+
+        staffService.getStaffDetailsByStaffIdentifier(10L);
+
+        verify(ldapRepository).getEmail("username");
+    }
 
     @Test
     public void willCopyEmailWhenUserFoundInLDAP_getStaffDetails() {
@@ -110,6 +142,25 @@ public class StaffServiceTest {
         assertThat(staffService.getStaffDetails("ABC123")).get().extracting(StaffDetails::getEmail).isEqualTo("user@service.com");
     }
 
+    @Test
+    public void willCopyEmailWhenUserFoundInLDAP_getStaffDetailsByStaffIdentifier() {
+        when(staffRepository.findByStaffId(10L))
+                .thenReturn(
+                        Optional.of(
+                                aStaff()
+                                        .toBuilder()
+                                        .user(
+                                                aUser()
+                                                        .toBuilder()
+                                                        .distinguishedName("username")
+                                                        .build())
+                                        .build()));
+
+        when(ldapRepository.getEmail("username")).thenReturn("user@service.com");
+
+        assertThat(staffService.getStaffDetailsByStaffIdentifier(10L)).get().extracting(StaffDetails::getEmail).isEqualTo("user@service.com");
+    }
+
 
     @Test
     public void willSetNullEmailWhenUserNotFoundInLDAP_getStaffDetails() {
@@ -128,6 +179,25 @@ public class StaffServiceTest {
         when(ldapRepository.getEmail("username")).thenReturn(null);
 
         assertThat(staffService.getStaffDetails("ABC123")).get().extracting(StaffDetails::getEmail).isNull();
+    }
+
+    @Test
+    public void willSetNullEmailWhenUserNotFoundInLDAP_getStaffDetailsByStaffIdentifier() {
+        when(staffRepository.findByStaffId(10L))
+                .thenReturn(
+                        Optional.of(
+                                aStaff()
+                                        .toBuilder()
+                                        .user(
+                                                aUser()
+                                                        .toBuilder()
+                                                        .distinguishedName("username")
+                                                        .build())
+                                        .build()));
+
+        when(ldapRepository.getEmail("username")).thenReturn(null);
+
+        assertThat(staffService.getStaffDetailsByStaffIdentifier(10L)).get().extracting(StaffDetails::getEmail).isNull();
     }
 
     @Test
@@ -185,7 +255,7 @@ public class StaffServiceTest {
 
     @Test
     public void willReturnCorrectDetailsForMultipleUsernames_getStaffDetailsByUsernames() {
-        Set usernames = Set.of("joefrazier", "georgeforeman");
+        Set<String> usernames = Set.of("joefrazier", "georgeforeman");
 
         when(staffRepository.findByUsernames(any()))
                 .thenReturn(ImmutableList.of(

@@ -17,6 +17,8 @@ public class ManagedOffender {
     @ApiModelProperty(required = true)
     private String staffCode;
     @ApiModelProperty(required = true)
+    private Long staffIdentifier;
+    @ApiModelProperty(required = true)
     private Long offenderId;
     @ApiModelProperty(required = true)
     private String nomsNumber;

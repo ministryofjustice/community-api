@@ -16,7 +16,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationTestBase {
 
-    public static final int TOTAL_NUMBER_NON_DELETED_OF_OFFENDERS = 23;
+    public static final int TOTAL_NUMBER_NON_DELETED_OF_OFFENDERS = 25;
     public static final int NUMBER_OF_DELETED_RECORDS = 2;
 
     @Test
@@ -172,7 +172,7 @@ public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationT
                     .get("/offenders/primaryIdentifiers")
                     .then()
                     .statusCode(200)
-                    .body("content.size()", is(5))
+                    .body("content.size()", is(7))
                     .body("content.find { it.offenderId == 2500343964 }.crn", is("X320741"));
         }
 
@@ -322,8 +322,23 @@ public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationT
                     .get("/offenders/primaryIdentifiers")
                     .then()
                     .statusCode(200)
-                    .body("content[0].crn", is("X320811"));
+                    .body("content[0].crn", is("X440890"));
 
+        }
+        @Test
+        @DisplayName("Default sort is offenderId ascending")
+        void defaultSortIsOffenderIdAscending() {
+            given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .param("size", 1000)
+                    .when()
+                    .get("/offenders/primaryIdentifiers")
+                    .then()
+                    .statusCode(200)
+                    .body("content[0].offenderId", is(11))
+                    .body("content[1].offenderId", is(12));
         }
 
         @Test
@@ -339,7 +354,7 @@ public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationT
                     .get("/offenders/primaryIdentifiers")
                     .then()
                     .statusCode(200)
-                    .body(String.format("content[%d].crn", TOTAL_NUMBER_NON_DELETED_OF_OFFENDERS - 1), is("X320811"));
+                    .body(String.format("content[%d].crn", TOTAL_NUMBER_NON_DELETED_OF_OFFENDERS - 1), is("X440890"));
         }
     }
 }

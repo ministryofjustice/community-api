@@ -31,6 +31,24 @@ public class StaffResource_StaffDetailsAPITest extends IntegrationTestBase {
     }
 
     @Test
+    public void canRetrieveStaffDetailsByStaffIdentifier() {
+
+        val staffDetails = given()
+                .auth()
+                .oauth2(tokenWithRoleCommunity())
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("staff/staffIdentifier/11")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(StaffDetails.class);
+
+        assertThat(staffDetails).isNotNull();
+    }
+
+    @Test
     public void retrievingStaffDetailsReturn404WhenStaffDoesNotExist() {
 
         given()
@@ -39,6 +57,19 @@ public class StaffResource_StaffDetailsAPITest extends IntegrationTestBase {
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("staff/staffCode/XXXXX")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void retrievingStaffDetailsByStaffIdentifierReturn404WhenStaffDoesNotExist() {
+
+        given()
+                .auth()
+                .oauth2(tokenWithRoleCommunity())
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("staff/staffIdentifier/99999")
                 .then()
                 .statusCode(404);
     }
@@ -157,7 +188,7 @@ public class StaffResource_StaffDetailsAPITest extends IntegrationTestBase {
     @Test
     public void retrieveMultipleUserDetailsWithNoBodyContentReturn400() {
 
-            given()
+        given()
                 .auth()
                 .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)

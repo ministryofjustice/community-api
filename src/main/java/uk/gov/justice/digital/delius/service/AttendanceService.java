@@ -13,6 +13,7 @@ import uk.gov.justice.digital.delius.data.api.Attendance;
 import uk.gov.justice.digital.delius.data.api.Attendance.ContactTypeDetail;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
+import uk.gov.justice.digital.delius.transformers.TypesTransformer;
 
 @Slf4j
 @Service
@@ -25,14 +26,12 @@ public class AttendanceService {
         this.contactRepository = contactRepository;
     }
 
-    public List<Contact> getContactsForEvent(final Long offenderId, final Long eventId, final LocalDate localDate) {
+    public List<Contact> getContactsForEventEnforcement(final Long offenderId, final Long eventId, final LocalDate localDate) {
         return contactRepository.findByOffenderAndEventIdEnforcement(offenderId, eventId, localDate);
     }
 
-    static boolean forEntityBoolean(final String booleanStr) {
-        if (booleanStr == null)
-            return false;
-        return booleanStr.trim().equals("1");
+    public List<Contact> getContactsForEvent(final Long offenderId, final Long eventId, final LocalDate contactDate) {
+        return contactRepository.findByOffenderAndEventId(offenderId, eventId, contactDate);
     }
 
     public static List<Attendance> attendancesFor(final List<Contact> contacts) {
@@ -45,8 +44,8 @@ public class AttendanceService {
             .stream()
             .filter(Objects::nonNull)
             .map(contactEntity -> Attendance.builder()
-                .attended(forEntityBoolean(contactEntity.getAttended()))
-                .complied(forEntityBoolean(contactEntity.getComplied()))
+                .attended(Optional.ofNullable(TypesTransformer.ynToBoolean(contactEntity.getAttended())).orElse(false))
+                .complied(Optional.ofNullable(TypesTransformer.ynToBoolean(contactEntity.getComplied())).orElse(false))
                 .attendanceDate(contactEntity.getContactDate())
                 .contactId(contactEntity.getContactId())
                 .outcome(contactEntity.getContactOutcomeType() != null ? contactEntity.getContactOutcomeType().getDescription() : null)

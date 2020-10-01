@@ -26,7 +26,8 @@ public class StaffResource {
 
     private final StaffService staffService;
 
-    @ApiOperation(value = "Return list of of currently managed offenders for one responsible officer (RO)", notes = "Accepts a Delius staff officer code")
+    @Deprecated(forRemoval = true)
+    @ApiOperation(value = "Deprecated. Return list of of currently managed offenders for one responsible officer (RO)", notes = "Accepts a Delius staff officer code")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = ManagedOffender.class, responseContainer = "List"),
             @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
@@ -42,7 +43,24 @@ public class StaffResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Staff member with code %s", staffCode)));
     }
 
-    @ApiOperation(value = "Return details of a staff member including option user details", notes = "Accepts a Delius staff officer code")
+    @ApiOperation(value = "Return list of of currently managed offenders for one responsible officer (RO)", notes = "Accepts a Delius staff officer identifier")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = ManagedOffender.class, responseContainer = "List"),
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "Not found", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
+    @GetMapping(path = "/staff/staffIdentifier/{staffIdentifier}/managedOffenders")
+    public List<ManagedOffender> getOffendersForResponsibleOfficerIdentifier(
+            @ApiParam(name = "staffIdentifier", value = "Delius officer identifier of the responsible officer", example = "123456", required = true) @NotNull @PathVariable(value = "staffIdentifier") final Long staffIdentifier,
+            @ApiParam(name = "current", value = "Current only", example = "false") @RequestParam(name = "current", required = false, defaultValue = "false") final boolean current) {
+        return staffService.getManagedOffendersByStaffIdentifier(staffIdentifier, current)
+                .orElseThrow(() -> new NotFoundException(String.format("Staff member with identifier %d", staffIdentifier)));
+    }
+
+    @Deprecated(forRemoval = true)
+    @ApiOperation(value = "Deprecated. Return details of a staff member including option user details", notes = "Accepts a Delius staff officer code")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = StaffDetails.class),
             @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
@@ -58,6 +76,24 @@ public class StaffResource {
         log.info("getStaffDetails called with {}", staffCode);
         return staffService.getStaffDetails(staffCode)
                 .orElseThrow(() -> new NotFoundException(String.format("Staff member with code %s", staffCode)));
+    }
+
+    @ApiOperation(value = "Return details of a staff member including option user details", notes = "Accepts a Delius staff officer identifier")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = StaffDetails.class),
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "Not found", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
+    @GetMapping(path = "/staff/staffIdentifier/{staffIdentifier}")
+    public StaffDetails getStaffDetailsForStaffIdentifier(
+            @ApiParam(name = "staffIdentifier", value = "Delius officer identifier", example = "123456", required = true)
+            @NotNull
+            @PathVariable(value = "staffIdentifier") final long staffIdentifier) {
+        log.info("getStaffDetailsForStaffIdentifier called with {}", staffIdentifier);
+        return staffService.getStaffDetailsByStaffIdentifier(staffIdentifier)
+                .orElseThrow(() -> new NotFoundException(String.format("Staff member with identifier %s", staffIdentifier)));
     }
 
     @ApiOperation(value = "Return details of a staff member including user details", notes = "Accepts a Delius staff username")

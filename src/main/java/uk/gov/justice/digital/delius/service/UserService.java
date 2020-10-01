@@ -116,6 +116,7 @@ public class UserService {
                         .email(user.getMail())
                         .enabled(user.isEnabled())
                         .userId(oracleUser.getUserId())
+                        .username(username)
                         .build());
     }
 
@@ -145,6 +146,7 @@ public class UserService {
                     .email(user.getMail())
                     .enabled(user.isEnabled())
                     .userId(oracleUser.getUserId())
+                    .username(userCn)
                     .build();
             })
             .filter(user -> user != null)

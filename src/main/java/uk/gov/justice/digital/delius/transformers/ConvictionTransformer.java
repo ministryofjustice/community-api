@@ -122,6 +122,7 @@ public class ConvictionTransformer {
 
     private static Sentence sentenceOf(Disposal disposal) {
         return Sentence.builder()
+                .sentenceId(disposal.getDisposalId())
                 .defaultLength(disposal.getLength())
                 .effectiveLength(disposal.getEffectiveLength())
                 .lengthInDays(disposal.getLengthInDays())

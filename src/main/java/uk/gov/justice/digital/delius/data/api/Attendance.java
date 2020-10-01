@@ -1,42 +1,46 @@
 package uk.gov.justice.digital.delius.data.api;
 
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class Attendance {
 
     @ApiModelProperty(required = true)
-    private final Long contactId;
+    private Long contactId;
 
     @ApiModelProperty(required = true)
-    private final LocalDate attendanceDate;
+    private LocalDate attendanceDate;
 
     @ApiModelProperty(required = true)
-    private final boolean attended;
+    private boolean attended;
 
     @ApiModelProperty(required = true )
-    private final boolean complied;
+    private boolean complied;
 
-    private final String outcome;
+    private String outcome;
 
-    private final ContactTypeDetail contactType;
+    private ContactTypeDetail contactType;
 
     @Data
     @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class ContactTypeDetail {
 
         @ApiModelProperty(required = true)
-        private final String description;
+        private String description;
 
         @ApiModelProperty(required = true)
-        private final String code;
+        private String code;
 
     }
 }

@@ -60,6 +60,10 @@ public class IntegrationTestBase {
         return createJwt("ROLE_COMMUNITY");
     }
 
+    protected String tokenWithRoleCommunityAndCustodyUpdate() {
+        return createJwt("ROLE_COMMUNITY", "ROLE_COMMUNITY_CUSTODY_UPDATE");
+    }
+
     protected String writeValueAsString(Object data) {
         try {
             return objectMapper.writeValueAsString(data);
@@ -76,6 +80,18 @@ public class IntegrationTestBase {
         return "Bearer " + jwt.buildToken(UserData.builder()
                 .distinguishedName(distinguishedName)
                 .uid("bobby.davro").build());
+    }
+
+    protected String tokenWithRoleCommunityAndUser(final String username) {
+        return createJwtWithUsername(username,"ROLE_COMMUNITY");
+    }
+
+    protected String createJwtWithUsername(final String username, final String... roles ) {
+        return jwtAuthenticationHelper.createJwt(
+                createJwtBuilder(roles)
+                        .username(username)
+                        .clientId("system-client-id")
+                        .build());
     }
 
 }
