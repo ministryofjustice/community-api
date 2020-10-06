@@ -107,7 +107,7 @@ public class CustodyService {
                     telemetryClient.trackEvent("P2PTransferBookingNumberNotFound", telemetryProperties, null);
                     return new NotFoundException(String.format("conviction with bookingNumber %s not found", bookingNumber));
                 });
-            } catch (ConvictionService.DuplicateConvictionsForBookingNumberException e) {
+            } catch (ConvictionService.DuplicateActiveCustodialConvictionsException e) {
                 telemetryClient.trackEvent("P2PTransferBookingNumberHasDuplicates", telemetryProperties, null);
                 throw new NotFoundException(String.format("no single conviction with bookingNumber %s found, instead %d duplicates found", bookingNumber, e.getConvictionCount()));
             }
