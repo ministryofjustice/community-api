@@ -15,7 +15,7 @@ def get_offenderapi_version() {
 }
 
 pipeline {
-    agent { label "jenkins_slave" }
+    agent { label "jenkins_agent" }
 
     environment {
         docker_image = "hmpps/new-tech-api"
