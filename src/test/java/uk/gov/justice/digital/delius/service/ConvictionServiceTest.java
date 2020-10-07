@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.CourtCase;
@@ -25,7 +24,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import uk.gov.justice.digital.delius.jpa.standard.entity.TransferReason;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
-import uk.gov.justice.digital.delius.service.ConvictionService.DuplicateConvictionsForBookingNumberException;
+import uk.gov.justice.digital.delius.service.ConvictionService.DuplicateActiveCustodialConvictionsException;
 import uk.gov.justice.digital.delius.entitybuilders.AdditionalOffenceEntityBuilder;
 import uk.gov.justice.digital.delius.entitybuilders.CourtAppearanceEntityBuilder;
 import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
@@ -185,7 +184,7 @@ public class ConvictionServiceTest {
     @Nested
     class GetByBookingNumber {
         @Test
-        public void convictionReturnedWhenSingleConvictionMatchedForPrisonBookingNumber() throws DuplicateConvictionsForBookingNumberException {
+        public void convictionReturnedWhenSingleConvictionMatchedForPrisonBookingNumber() throws DuplicateActiveCustodialConvictionsException {
             when(eventRepository.findByPrisonBookingNumber("A12345")).thenReturn(ImmutableList.of(
                     aEvent()
                             .toBuilder()
@@ -214,10 +213,10 @@ public class ConvictionServiceTest {
 
             assertThatThrownBy(
                     () -> convictionService.getConvictionIdByPrisonBookingNumber("A12345"))
-                    .isInstanceOf(DuplicateConvictionsForBookingNumberException.class);
+                    .isInstanceOf(DuplicateActiveCustodialConvictionsException.class);
         }
         @Test
-        public void convictionReturnedWhenSingleActiveConvictionMatchedAmoungstDuplicatesForPrisonBookingNumber() throws DuplicateConvictionsForBookingNumberException {
+        public void convictionReturnedWhenSingleActiveConvictionMatchedAmoungstDuplicatesForPrisonBookingNumber() throws DuplicateActiveCustodialConvictionsException {
             when(eventRepository.findByPrisonBookingNumber("A12345")).thenReturn(ImmutableList.of(
                     aEvent()
                             .toBuilder()
@@ -239,7 +238,7 @@ public class ConvictionServiceTest {
 
         }
         @Test
-        public void emptyReturnedWhenNoConvictionsMatchedForPrisonBookingNumber() throws DuplicateConvictionsForBookingNumberException {
+        public void emptyReturnedWhenNoConvictionsMatchedForPrisonBookingNumber() throws DuplicateActiveCustodialConvictionsException {
             when(eventRepository.findByPrisonBookingNumber("A12345")).thenReturn(ImmutableList.of());
 
             Optional<Long> maybeConviction = convictionService.getConvictionIdByPrisonBookingNumber("A12345");
@@ -252,9 +251,9 @@ public class ConvictionServiceTest {
     @Nested
     class GetSingleActiveByBookingNumber {
         @Test
-        public void convictionReturnedWhenSingleConvictionMatchedForOffenderIdPrisonBookingNumber() throws DuplicateConvictionsForBookingNumberException {
-            when(eventRepository.findByOffenderIdAndPrisonBookingNumber(99L, "A12345")).thenReturn(ImmutableList.of(
-                    aEvent()
+        public void convictionReturnedWhenSingleConvictionMatchedForOffenderIdPrisonBookingNumber() throws DuplicateActiveCustodialConvictionsException {
+            when(eventRepository.findByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+                    aCustodialEvent("A12345", true)
                             .toBuilder()
                             .eventId(999L)
                             .build()));
@@ -265,12 +264,12 @@ public class ConvictionServiceTest {
         }
         @Test
         public void exceptionThrownWhenMultipleActiveConvictionsMatchedForOffenderIdPrisonBookingNumber() {
-            when(eventRepository.findByOffenderIdAndPrisonBookingNumber(99L, "A12345")).thenReturn(ImmutableList.of(
-                    aEvent()
+            when(eventRepository.findByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+                    aCustodialEvent("A12345", true)
                             .toBuilder()
                             .eventId(999L)
                             .build(),
-                    aEvent()
+                    aCustodialEvent("A12345", true)
                             .toBuilder()
                             .eventId(998L)
                             .build())
@@ -278,20 +277,36 @@ public class ConvictionServiceTest {
 
             assertThatThrownBy(
                     () -> convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(99L, "A12345"))
-                    .isInstanceOf(DuplicateConvictionsForBookingNumberException.class);
+                    .isInstanceOf(DuplicateActiveCustodialConvictionsException.class);
         }
+
         @Test
-        public void convictionReturnedWhenSingleActiveConvictionMatchedAmongstDuplicatesForOffenderIdPrisonBookingNumber() throws DuplicateConvictionsForBookingNumberException {
-            when(eventRepository.findByOffenderIdAndPrisonBookingNumber(99L, "A12345")).thenReturn(ImmutableList.of(
-                    aEvent()
-                            .toBuilder()
-                            .eventId(998L)
-                            .activeFlag(0L)
-                            .build(),
-                    aEvent()
+        public void exceptionThrownWhenMultipleActiveCustodialConvictionsMatchedForOffenderId() {
+            when(eventRepository.findByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+                    aCustodialEvent("A12345", true)
                             .toBuilder()
                             .eventId(999L)
-                            .activeFlag(1L)
+                            .build(),
+                    aCustodialEvent(null, true)
+                            .toBuilder()
+                            .eventId(998L)
+                            .build())
+            );
+
+            assertThatThrownBy(
+                    () -> convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(99L, "A12345"))
+                    .isInstanceOf(DuplicateActiveCustodialConvictionsException.class);
+        }
+        @Test
+        public void convictionReturnedWhenSingleActiveConvictionMatchedAmongstDuplicatesForOffenderIdPrisonBookingNumber() throws DuplicateActiveCustodialConvictionsException {
+            when(eventRepository.findByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+                    aCustodialEvent("A12345", false)
+                            .toBuilder()
+                            .eventId(998L)
+                            .build(),
+                    aCustodialEvent("A12345", true)
+                            .toBuilder()
+                            .eventId(999L)
                             .build()
             ));
 
@@ -302,24 +317,35 @@ public class ConvictionServiceTest {
 
         }
         @Test
-        public void emptyReturnedWhenNoConvictionsMatchedForOffenderIdAndPrisonBookingNumber() throws DuplicateConvictionsForBookingNumberException {
-            when(eventRepository.findByOffenderIdAndPrisonBookingNumber(99L, "A12345")).thenReturn(ImmutableList.of());
+        public void emptyReturnedWhenNoConvictionsMatchedForOffenderIdAndPrisonBookingNumber() throws DuplicateActiveCustodialConvictionsException {
+            when(eventRepository.findByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of());
 
             Optional<Event> maybeConviction = convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(99L, "A12345");
 
             assertThat(maybeConviction).isNotPresent();
         }
 
+        @Test
+        public void emptyReturnedWhenSingleConvictionMatchedForOffenderIdButNotPrisonBookingNumber() throws DuplicateActiveCustodialConvictionsException {
+            when(eventRepository.findByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+                    aCustodialEvent("X65432", true)
+                            .toBuilder()
+                            .eventId(999L)
+                            .build()));
+
+            Optional<Event> maybeConviction = convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(99L, "A12345");
+
+            assertThat(maybeConviction).isEmpty();
+        }
 
         @Test
-        public void convictionIdReturnedWhenSingleActiveConvictionMatchedAmongstDuplicatesForOffenderIdPrisonBookingNumber() throws DuplicateConvictionsForBookingNumberException {
-            when(eventRepository.findByOffenderIdAndPrisonBookingNumber(99L, "A12345")).thenReturn(ImmutableList.of(
-                    aEvent()
+        public void convictionIdReturnedWhenSingleActiveConvictionMatchedAmongstDuplicatesForOffenderIdPrisonBookingNumber() throws DuplicateActiveCustodialConvictionsException {
+            when(eventRepository.findByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+                    aCustodialEvent("A12345", false)
                             .toBuilder()
                             .eventId(998L)
-                            .activeFlag(0L)
                             .build(),
-                    aEvent()
+                    aCustodialEvent("A12345", true)
                             .toBuilder()
                             .eventId(999L)
                             .activeFlag(1L)
@@ -469,6 +495,19 @@ public class ConvictionServiceTest {
                 .referralDate(LocalDate.now())
                 .additionalOffences(ImmutableList.of())
                 .activeFlag(1L)
+                .build();
+    }
+
+    private Event aCustodialEvent(String prisonerNumber, boolean active) {
+        Disposal disposal = Disposal.builder()
+                .terminationDate(null)
+                .disposalType(DisposalType.builder().sentenceType("NC").build())
+                .custody(Custody.builder().prisonerNumber(prisonerNumber).build())
+                .build();
+        return Event.builder()
+                .softDeleted(0L)
+                .activeFlag(active ? 1L : 0L)
+                .disposal(disposal)
                 .build();
     }
 

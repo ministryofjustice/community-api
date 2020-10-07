@@ -118,4 +118,8 @@ public class Event {
         return !StringUtils.isEmpty(cpsAlfrescoDocumentId)
                 && Optional.ofNullable(cpsSoftDeleted).orElse(0L).equals(0L);
     }
+
+    public boolean isActive() {
+        return getActiveFlag() == 1L;
+    }
 }
