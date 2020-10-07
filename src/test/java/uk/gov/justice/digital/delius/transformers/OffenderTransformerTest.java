@@ -162,7 +162,7 @@ public class OffenderTransformerTest {
         // Get the current responsible officers for an offender
         assertThat(OffenderTransformer.responsibleOfficersOf(anOffenderWithManagers(), true)
                 .stream()
-                .map(ro -> ro.getOffenderManagerId())
+                .map(uk.gov.justice.digital.delius.data.api.ResponsibleOfficer::getOffenderManagerId)
                 .collect(Collectors.toList()))
                 .hasSize(1)
                 .containsOnly(2L);
@@ -174,7 +174,7 @@ public class OffenderTransformerTest {
         // Get the current and previous reponsible officers assignments for this offender
         assertThat(OffenderTransformer.responsibleOfficersOf(anOffenderWithManagers(), false)
                 .stream()
-                .map(ro -> ro.getOffenderManagerId())
+                .map(uk.gov.justice.digital.delius.data.api.ResponsibleOfficer::getOffenderManagerId)
                 .collect(Collectors.toList()))
                 .hasSize(2)
                 .containsAll(Arrays.asList(1L, 2L));
@@ -200,6 +200,19 @@ public class OffenderTransformerTest {
                 .get(0).getProbationArea().getNps()).isFalse();
     }
 
+    @Test
+    public void currentTierDescriptionCopiedWhenNotNull() {
+        assertThat(OffenderTransformer.fullOffenderOf(anOffender().toBuilder().currentTier(
+                null).build()).getCurrentTier())
+                .isNull();
+
+        assertThat(OffenderTransformer.fullOffenderOf(anOffender().toBuilder().currentTier(
+                StandardReference
+                        .builder()
+                        .codeDescription("D2")
+                        .build()).build()).getCurrentTier())
+                .isEqualTo("D2");
+    }
 
     private List<OffenderManager> aListOfOffenderManagers() {
 
