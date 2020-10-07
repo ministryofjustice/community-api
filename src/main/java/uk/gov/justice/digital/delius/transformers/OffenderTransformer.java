@@ -181,6 +181,7 @@ public class OffenderTransformer {
                 .currentRestriction(zeroOneToBoolean(offender.getCurrentRestriction()))
                 .restrictionMessage(offender.getRestrictionMessage())
                 .offenderManagers(OffenderTransformer.offenderManagersOf(offender.getOffenderManagers()))
+                .currentTier(Optional.ofNullable(offender.getCurrentTier()).map(StandardReference::getCodeDescription).orElse(null))
                 .build();
     }
 
