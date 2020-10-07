@@ -12,7 +12,7 @@ import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.ConvictionService.CustodyTypeCodeIsNotValidException;
-import uk.gov.justice.digital.delius.service.ConvictionService.DuplicateConvictionsForBookingNumberException;
+import uk.gov.justice.digital.delius.service.ConvictionService.DuplicateActiveCustodialConvictionsException;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
 import java.util.List;
@@ -83,7 +83,7 @@ public class CustodyKeyDatesController {
         try {
             var convictionId = convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(offenderId, bookingNumber).orElseThrow(() -> new NotFoundException(String.format("Conviction with bookingNumber %s not found for offender with NOMS number %s", bookingNumber, nomsNumber)));
             return convictionService.addOrReplaceOrDeleteCustodyKeyDates(offenderId, convictionId, replaceCustodyKeyDates);
-        } catch (DuplicateConvictionsForBookingNumberException e) {
+        } catch (DuplicateActiveCustodialConvictionsException e) {
             log.warn("Multiple active custodial convictions found for {} for offender {}", bookingNumber, nomsNumber);
             throw new NotFoundException(String.format("Single active conviction for %s with booking number %s not found. Instead has %d convictions", nomsNumber, bookingNumber, e.getConvictionCount()));
         }
@@ -120,7 +120,7 @@ public class CustodyKeyDatesController {
         log.info("Call to putCustodyKeyDateByPrisonBookingNumber for {} code {}", prisonBookingNumber, typeCode);
         try {
             return addOrReplaceCustodyKeyDateByConvictionId(convictionService.getConvictionIdByPrisonBookingNumber(prisonBookingNumber), typeCode, custodyKeyDate);
-        } catch (DuplicateConvictionsForBookingNumberException e) {
+        } catch (DuplicateActiveCustodialConvictionsException e) {
             log.warn("Multiple active custodial convictions found for {}", prisonBookingNumber);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Can not add a key date where offender has multiple convictions for booking number. %s has %d", prisonBookingNumber, e.getConvictionCount()));
         }
@@ -182,7 +182,7 @@ public class CustodyKeyDatesController {
         log.info("Call to getCustodyKeyDateByPrisonBookingNumber for {} code {}", prisonBookingNumber, typeCode);
         try {
             return getCustodyKeyDateByConvictionId(convictionService.getConvictionIdByPrisonBookingNumber(prisonBookingNumber), typeCode);
-        } catch (DuplicateConvictionsForBookingNumberException e) {
+        } catch (DuplicateActiveCustodialConvictionsException e) {
             log.warn("Multiple active custodial convictions found for {}", prisonBookingNumber);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Can only get a key date where offender has multiple convictions for booking number. %s has %d", prisonBookingNumber, e.getConvictionCount()));
         }
@@ -241,7 +241,7 @@ public class CustodyKeyDatesController {
         log.info("Call to getAllCustodyKeyDateByPrisonBookingNumber for {}", prisonBookingNumber);
         try {
             return getCustodyKeyDatesByConvictionId(convictionService.getConvictionIdByPrisonBookingNumber(prisonBookingNumber));
-        } catch (DuplicateConvictionsForBookingNumberException e) {
+        } catch (DuplicateActiveCustodialConvictionsException e) {
             log.warn("Multiple active custodial convictions found for {}", prisonBookingNumber);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Can only get a key dates where offender has multiple convictions for booking number. %s has %d", prisonBookingNumber, e.getConvictionCount()));
         }
@@ -306,7 +306,7 @@ public class CustodyKeyDatesController {
         log.info("Call to deleteCustodyKeyDateByPrisonBookingNumber for {} code {}", prisonBookingNumber, typeCode);
         try {
             deleteCustodyKeyDateByConvictionId(convictionService.getConvictionIdByPrisonBookingNumber(prisonBookingNumber), typeCode);
-        } catch (DuplicateConvictionsForBookingNumberException e) {
+        } catch (DuplicateActiveCustodialConvictionsException e) {
             log.warn("Multiple active custodial convictions found for {}", prisonBookingNumber);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Can only delete a key date where offender has multiple convictions for booking number. %s has %d", prisonBookingNumber, e.getConvictionCount()));
         }
