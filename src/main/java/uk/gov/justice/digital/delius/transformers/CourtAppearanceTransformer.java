@@ -30,7 +30,7 @@ public class CourtAppearanceTransformer {
             .remandStatusId(courtAppearance.getRemandStatusId())
             .createdDatetime(courtAppearance.getCreatedDatetime())
             .lastUpdatedDatetime(courtAppearance.getLastUpdatedDatetime())
-            .offenderId(courtAppearance.getOffenderId())
+            .offenderId(courtAppearance.getOffender().getOffenderId())
             .courtReports(CourtAppearanceTransformer.courtReportsOf(courtAppearance.getCourtReports()))
             .build();
     }
