@@ -54,7 +54,7 @@ class CustodyKeyDatesControllerTest {
     @Nested
     class ReplaceAllCustodyKeyDateByNomsNumberAndBookingNumber {
         @BeforeEach
-        void setUp() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
+        void setUp() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
             when(offenderService.offenderIdOfNomsNumber(any())).thenReturn(Optional.of(99L));
             when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(any(), any())).thenReturn(Optional.of(88L));
             when(convictionService.addOrReplaceOrDeleteCustodyKeyDates(any(), any(), any())).thenReturn(Custody.builder().build());
@@ -77,7 +77,7 @@ class CustodyKeyDatesControllerTest {
         }
 
         @Test
-        void WillReturn404WhenConvictionForBookingNotFound() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
+        void WillReturn404WhenConvictionForBookingNotFound() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
             when(offenderService.offenderIdOfNomsNumber(any())).thenReturn(Optional.of(99L));
             when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(any(), any())).thenReturn(Optional.empty());
 
@@ -94,8 +94,8 @@ class CustodyKeyDatesControllerTest {
         }
 
         @Test
-        void WillReturn404WhenASingleConvictionForBookingNotFoundButHasDuplicates() throws ConvictionService.DuplicateConvictionsForBookingNumberException {
-            when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(any(), any())).thenThrow(new ConvictionService.DuplicateConvictionsForBookingNumberException(2));
+        void WillReturn404WhenASingleConvictionForBookingNotFoundButHasDuplicates() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
+            when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(any(), any())).thenThrow(new ConvictionService.DuplicateActiveCustodialConvictionsException(2));
 
             given()
                     .contentType(APPLICATION_JSON_VALUE)

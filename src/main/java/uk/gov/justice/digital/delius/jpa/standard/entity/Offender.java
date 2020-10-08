@@ -213,4 +213,8 @@ public class Offender {
 
     @OneToMany(mappedBy = "offenderId")
     private List<Event> events;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CURRENT_TIER")
+    private StandardReference currentTier;
 }

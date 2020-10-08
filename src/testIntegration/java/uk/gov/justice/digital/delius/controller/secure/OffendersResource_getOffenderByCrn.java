@@ -27,6 +27,7 @@ public class OffendersResource_getOffenderByCrn extends IntegrationTestBase {
       assertThat(offenderDetail.getOtherIds().getCrn()).isEqualTo("X320741");
       final var offenderManager = offenderDetail.getOffenderManagers().stream().filter(OffenderManager::getActive).findAny();
       assertThat(offenderManager).isPresent();
+      assertThat(offenderDetail.getCurrentTier()).isEqualTo("D2");
     }
 
   @Test

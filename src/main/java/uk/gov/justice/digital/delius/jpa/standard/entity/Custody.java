@@ -120,4 +120,10 @@ public class Custody extends AuditableEntity {
                 .orElse(false);
     }
 
+    public boolean isPostSentenceSupervision() {
+        return Optional.ofNullable(custodialStatus)
+                .map(status -> status.getCodeValue().equals(CustodialStatus.POST_SENTENCE_SUPERVISION.getCode()) )
+                .orElse(false);
+    }
+
 }

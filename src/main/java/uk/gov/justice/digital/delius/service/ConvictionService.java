@@ -52,10 +52,10 @@ public class ConvictionService {
         }
     }
 
-    public static class DuplicateConvictionsForBookingNumberException extends Exception {
+    public static class DuplicateActiveCustodialConvictionsException extends Exception {
         private final int convictionCount;
 
-        public DuplicateConvictionsForBookingNumberException(int convictionCount) {
+        public DuplicateActiveCustodialConvictionsException(int convictionCount) {
             super(String.format("duplicate active custody conviction count was %d, should be 1", convictionCount));
             this.convictionCount = convictionCount;
         }
@@ -139,7 +139,7 @@ public class ConvictionService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Long> getConvictionIdByPrisonBookingNumber(String prisonBookingNumber) throws DuplicateConvictionsForBookingNumberException {
+    public Optional<Long> getConvictionIdByPrisonBookingNumber(String prisonBookingNumber) throws DuplicateActiveCustodialConvictionsException {
         val events = eventRepository.findByPrisonBookingNumber(prisonBookingNumber);
 
         if (events.size() == 1) {
@@ -155,35 +155,37 @@ public class ConvictionService {
             case 1:
                 return firstEventId(activeEvents);
             default:
-                throw new DuplicateConvictionsForBookingNumberException(activeEvents.size());
+                throw new DuplicateActiveCustodialConvictionsException(activeEvents.size());
         }
     }
 
-    public Optional<Event> getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(Long offenderId, String prisonBookingNumber) throws DuplicateConvictionsForBookingNumberException {
-        val events = eventRepository.findByOffenderIdAndPrisonBookingNumber(offenderId, prisonBookingNumber)
+    public Optional<Event> getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(Long offenderId, String prisonBookingNumber) throws DuplicateActiveCustodialConvictionsException {
+        val events = eventRepository.findByOffenderIdWithCustody(offenderId)
                 .stream()
-                .filter(event -> event.getActiveFlag() == 1L)
+                .filter(Event::isActive)
+                .filter(event -> !event.getDisposal().getCustody().isPostSentenceSupervision())
                 .collect(toList());
 
         switch (events.size()) {
             case 0:
                 return Optional.empty();
             case 1:
-                return events.stream().findFirst();
+                return events.stream().filter(event -> prisonBookingNumber.equals(event.getDisposal().getCustody().getPrisonerNumber())).findFirst();
             default:
-                throw new DuplicateConvictionsForBookingNumberException(events.size());
+                throw new DuplicateActiveCustodialConvictionsException(events.size());
         }
     }
 
     @Transactional(readOnly = true)
-    public Optional<Long> getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(Long offenderId, String prisonBookingNumber) throws DuplicateConvictionsForBookingNumberException {
+    public Optional<Long> getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(Long offenderId, String prisonBookingNumber) throws DuplicateActiveCustodialConvictionsException {
         return getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(offenderId, prisonBookingNumber).map(Event::getEventId);
     }
 
     public Result<Optional<Event>, DuplicateConvictionsForSentenceDateException> getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(Long offenderId, LocalDate sentenceStartDate) {
         val events = eventRepository.findByOffenderIdWithCustody(offenderId)
                 .stream()
-                .filter(event -> event.getActiveFlag() == 1L)
+                .filter(Event::isActive)
+                .filter(event -> !event.getDisposal().getCustody().isPostSentenceSupervision())
                 .filter(event -> didSentenceStartAroundDate(event, sentenceStartDate))
                 .collect(toList());
 
@@ -351,6 +353,7 @@ public class ConvictionService {
                 .filter(event -> event.getDisposal().getDisposalType() != null)
                 .filter(event -> event.getDisposal().getDisposalType().isCustodial())
                 .filter(event -> event.getDisposal().getCustody() != null)
+                .filter(event -> !event.getDisposal().getCustody().isPostSentenceSupervision())
                 .collect(toList());
     }
 

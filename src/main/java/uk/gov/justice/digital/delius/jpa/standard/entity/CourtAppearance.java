@@ -6,7 +6,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -38,7 +49,7 @@ public class CourtAppearance {
     private String courtNotes;
 
     @JoinColumn(name = "EVENT_ID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Event event;
 
     @Column(name = "TEAM_ID")
@@ -66,7 +77,7 @@ public class CourtAppearance {
     @Column(name = "PLEA_ID")
     private Long pleaId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "OUTCOME_ID")
     private StandardReference outcome;
 
@@ -93,4 +104,12 @@ public class CourtAppearance {
 
     @OneToMany(mappedBy = "courtAppearance", cascade = {CascadeType.ALL})
     private List<CourtReport> courtReports;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "APPEARANCE_TYPE_ID", insertable = false, updatable = false)
+    private StandardReference appearanceType;
+
+    @JoinColumn(name = "OFFENDER_ID", insertable = false, updatable = false)
+    @ManyToOne
+    private Offender offender;
 }

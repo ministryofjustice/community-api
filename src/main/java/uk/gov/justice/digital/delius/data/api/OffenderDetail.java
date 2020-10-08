@@ -35,4 +35,6 @@ public class OffenderDetail {
     private String restrictionMessage;
     private Boolean currentExclusion;
     private String exclusionMessage;
+    @ApiModelProperty(value = "current tier", example = "D2")
+    private String currentTier;
 }
