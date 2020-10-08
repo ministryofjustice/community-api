@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius.controller.secure;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
@@ -22,7 +23,7 @@ import java.util.Optional;
 
 @RestController
 @Slf4j
-@Api(tags = {"Court appearance resource"}, authorizations = {@Authorization("ROLE_COMMUNITY")})
+@Api(tags = {"Offender Court Appearances (Secure)"}, authorizations = {@Authorization("ROLE_COMMUNITY")})
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @PreAuthorize("hasRole('ROLE_COMMUNITY')")
 public class CourtAppearancesResource {
@@ -32,7 +33,7 @@ public class CourtAppearancesResource {
         this.courtAppearanceService = courtAppearanceService;
     }
 
-    @ApiOperation(value = "Returns future court appearances, including any for the current date")
+    @ApiOperation(value = "Returns all court appearances on and after the given date.")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
@@ -41,7 +42,8 @@ public class CourtAppearancesResource {
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(value = "/courtAppearances")
-    public CourtAppearanceBasicWrapper getCourtAppearances(@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final @RequestParam("fromDate") Optional<LocalDate> fromDate) {
+    public CourtAppearanceBasicWrapper getCourtAppearances(@ApiParam(name = "fromDate", value = "Return court appearances from the given date. Defaults to today if not provided.", example = "2019-03-02", required = false)
+                                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final @RequestParam("fromDate") Optional<LocalDate> fromDate) {
         final var courtAppearanceBasics = courtAppearanceService.courtAppearances(fromDate.orElse(LocalDate.now()));
         return new CourtAppearanceBasicWrapper(courtAppearanceBasics);
     }
