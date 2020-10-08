@@ -1,12 +1,16 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.data.api.CourtAppearance;
+import uk.gov.justice.digital.delius.data.api.CourtAppearanceBasic;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CourtAppearanceRepository;
+import uk.gov.justice.digital.delius.transformers.CourtAppearanceBasicTransformer;
 import uk.gov.justice.digital.delius.transformers.CourtAppearanceTransformer;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +34,22 @@ public class CourtAppearanceService {
     public List<CourtAppearance> courtAppearancesFor(Long offenderId) {
 
         List<uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance> courtAppearances = courtAppearanceRepository.findByOffenderId(offenderId);
+        return buildCourtAppearanceList(courtAppearances);
+    }
+
+    public List<CourtAppearanceBasic> courtAppearances(LocalDate fromDate) {
+
+        var courtAppearances = courtAppearanceRepository.findByAppearanceDateGreaterThanEqual(fromDate.atStartOfDay());
+        return courtAppearances
+                .stream()
+                .filter(courtAppearance -> !convertToBoolean(courtAppearance.getSoftDeleted()))
+                .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance::getAppearanceDate))
+                .map(CourtAppearanceBasicTransformer::courtAppearanceOf)
+                .collect(toList());
+    }
+
+    @NotNull
+    private List<CourtAppearance> buildCourtAppearanceList(List<uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance> courtAppearances) {
         return courtAppearances
             .stream()
             .filter(courtAppearance -> !convertToBoolean(courtAppearance.getSoftDeleted()))
@@ -47,14 +67,14 @@ public class CourtAppearanceService {
 
     private List<String> mainOffenceIds(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance courtAppearance) {
         return Optional.ofNullable(courtAppearance.getEvent().getMainOffence())
-            .map(mainOffence -> ImmutableList.of(mainOffenceIdOf(mainOffence.getMainOffenceId())))
-            .orElse(ImmutableList.of());
+                .map(mainOffence -> ImmutableList.of(mainOffenceIdOf(mainOffence.getMainOffenceId())))
+                .orElse(ImmutableList.of());
     }
 
     private List<String> additionalOffenceIds(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance courtAppearance) {
         return courtAppearance.getEvent().getAdditionalOffences()
-            .stream()
-            .map(additionalOffence -> additionalOffenceIdOf(additionalOffence.getAdditionalOffenceId()))
-            .collect(toList());
+                .stream()
+                .map(additionalOffence -> additionalOffenceIdOf(additionalOffence.getAdditionalOffenceId()))
+                .collect(toList());
     }
 }
