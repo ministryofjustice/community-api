@@ -163,6 +163,7 @@ public class ConvictionService {
         val events = eventRepository.findByOffenderIdWithCustody(offenderId)
                 .stream()
                 .filter(Event::isActive)
+                .filter(event -> !event.getDisposal().getCustody().isPostSentenceSupervision())
                 .collect(toList());
 
         switch (events.size()) {
@@ -183,7 +184,8 @@ public class ConvictionService {
     public Result<Optional<Event>, DuplicateConvictionsForSentenceDateException> getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(Long offenderId, LocalDate sentenceStartDate) {
         val events = eventRepository.findByOffenderIdWithCustody(offenderId)
                 .stream()
-                .filter(event -> event.getActiveFlag() == 1L)
+                .filter(Event::isActive)
+                .filter(event -> !event.getDisposal().getCustody().isPostSentenceSupervision())
                 .filter(event -> didSentenceStartAroundDate(event, sentenceStartDate))
                 .collect(toList());
 
@@ -351,6 +353,7 @@ public class ConvictionService {
                 .filter(event -> event.getDisposal().getDisposalType() != null)
                 .filter(event -> event.getDisposal().getDisposalType().isCustodial())
                 .filter(event -> event.getDisposal().getCustody() != null)
+                .filter(event -> !event.getDisposal().getCustody().isPostSentenceSupervision())
                 .collect(toList());
     }
 
