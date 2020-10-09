@@ -46,6 +46,7 @@ import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
 import uk.gov.justice.digital.delius.data.api.PrimaryIdentifiers;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
+import uk.gov.justice.digital.delius.data.api.ResponsibleOfficerSwitch;
 import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
@@ -59,6 +60,7 @@ import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.SentenceService;
 import uk.gov.justice.digital.delius.service.UserService;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -291,6 +293,7 @@ public class OffendersResource {
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Staff id does belong to the probation area related prison institution"),
             @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "Forbidden, does not have required role"),
             @ApiResponse(code = 404, message = "The offender or prison institution is not found")
     })
     @ApiOperation(value = "Allocates the prison offender manager for an offender in custody. This operation may also have a side affect of creating a Staff member " +
@@ -309,6 +312,32 @@ public class OffendersResource {
                 .orElseGet(() -> offenderManagerService.allocatePrisonOffenderManagerByName(nomsNumber, prisonOffenderManager))
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with noms number %s not found", nomsNumber)));
     }
+
+    @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/prisonOffenderManager", method = RequestMethod.DELETE, consumes = "application/json")
+    @ApiResponses(value = {
+            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "Forbidden, does not have required role", response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "The offender is not found")
+    })
+    @ApiOperation(value = "Deallocates the prison offender manager for an offender in custody. The POM is set back to its unallocated state", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
+    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
+    public void deallocatePrisonOffenderManagerByNomsNumber(final @PathVariable String nomsNumber) {
+    }
+
+    @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/responsibleOfficer/switch", method = RequestMethod.PUT, consumes = "application/json")
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Either set true for the prisoner offender manager or the community offender manager"),
+            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "Forbidden, does not have required role"),
+            @ApiResponse(code = 404, message = "The offender or prison institution is not found")
+    })
+    @ApiOperation(value = "Sets the responsible officer for an offender to either the current prison offender manager to community offender manager. This will allow the responsible officer to be set to an unallocated offender manager", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
+    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
+    public CommunityOrPrisonOffenderManager switchResponsibleOfficer(final @PathVariable String nomsNumber,
+                                                                                      final @Valid @RequestBody ResponsibleOfficerSwitch responsibleOfficerSwitch) {
+        return CommunityOrPrisonOffenderManager.builder().build();
+    }
+
 
     public static class InvalidAllocatePOMRequestException extends BadRequestException {
         InvalidAllocatePOMRequestException(final CreatePrisonOffenderManager createPrisonOffenderManager, final String message) {
