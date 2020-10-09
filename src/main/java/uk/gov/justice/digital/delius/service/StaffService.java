@@ -48,20 +48,6 @@ public class StaffService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<StaffDetails> getStaffDetails(final String staffCode) {
-        return staffRepository
-                .findByOfficerCode(staffCode)
-                .map(StaffTransformer::staffDetailsOf)
-                .map(staffDetails ->
-                        Optional.ofNullable(staffDetails.getUsername())
-                                .map(username -> staffDetails
-                                        .toBuilder()
-                                        .email(ldapRepository.getEmail(username))
-                                        .build())
-                                .orElse(staffDetails));
-    }
-
-    @Transactional(readOnly = true)
     public Optional<StaffDetails> getStaffDetailsByStaffIdentifier(final long staffIdentifier) {
         return staffRepository
                 .findByStaffId(staffIdentifier)

@@ -13,24 +13,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class StaffResource_StaffDetailsAPITest extends IntegrationTestBase {
     @Test
-    public void canRetrieveStaffDetailsByStaffCode() {
-
-        val staffDetails = given()
-                .auth()
-                .oauth2(tokenWithRoleCommunity())
-                .contentType(APPLICATION_JSON_VALUE)
-                .when()
-                .get("staff/staffCode/SH0001")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(StaffDetails.class);
-
-        assertThat(staffDetails).isNotNull();
-    }
-
-    @Test
     public void canRetrieveStaffDetailsByStaffIdentifier() {
 
         val staffDetails = given()
@@ -46,19 +28,6 @@ public class StaffResource_StaffDetailsAPITest extends IntegrationTestBase {
                 .as(StaffDetails.class);
 
         assertThat(staffDetails).isNotNull();
-    }
-
-    @Test
-    public void retrievingStaffDetailsReturn404WhenStaffDoesNotExist() {
-
-        given()
-                .auth()
-                .oauth2(tokenWithRoleCommunity())
-                .contentType(APPLICATION_JSON_VALUE)
-                .when()
-                .get("staff/staffCode/XXXXX")
-                .then()
-                .statusCode(404);
     }
 
     @Test
@@ -119,19 +88,6 @@ public class StaffResource_StaffDetailsAPITest extends IntegrationTestBase {
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("staff/username/NoStaffUserNPS")
-                .then()
-                .statusCode(404);
-    }
-
-    @Test
-    public void retrievingStaffDetailsByUsernameReturn404WhenUserDoesNotExist() {
-
-        given()
-                .auth()
-                .oauth2(tokenWithRoleCommunity())
-                .contentType(APPLICATION_JSON_VALUE)
-                .when()
-                .get("staff/staffCode/NOTSheliaHancock")
                 .then()
                 .statusCode(404);
     }

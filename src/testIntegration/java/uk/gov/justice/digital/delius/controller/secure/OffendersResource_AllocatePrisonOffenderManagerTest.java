@@ -86,7 +86,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .get("staff/staffCode/BWIA010")
+                .get("staff/staffIdentifier/{staffId}", newPrisonOffenderManager.getStaffId())
                 .then()
                 .statusCode(200)
                 .extract()
@@ -158,7 +158,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .as(CommunityOrPrisonOffenderManager.class);
 
         // no longer previous POM
-        assertThat(newPrisonOffenderManager.getStaffCode()).isNotEqualTo(2500057541L);
+        assertThat(newPrisonOffenderManager.getStaffId()).isNotEqualTo(2500057541L);
         // but will be a staff code in BWI area with area prefix
         assertThat(newPrisonOffenderManager.getStaffCode()).startsWith("BWI");
 
@@ -180,7 +180,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .get(String.format("staff/staffCode/%s", newPrisonOffenderManager.getStaffCode()))
+                .get("staff/staffIdentifier/{staffId}", newPrisonOffenderManager.getStaffId())
                 .then()
                 .statusCode(200)
                 .extract()
