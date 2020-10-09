@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class OffenderManager {
     private Human trustOfficer;
-    private Human staff;
+    private StaffHuman staff;
     private Human providerEmployee;
     private String partitionArea;
     private Boolean softDeleted;

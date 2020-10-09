@@ -5,6 +5,7 @@ import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Nsi;
+import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactOutcomeType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
@@ -82,9 +83,10 @@ public class ContactTransformer {
         return Optional.ofNullable(team).map(t -> KeyValue.builder().code(t.getCode()).description(t.getDescription()).build()).orElse(null);
     }
 
-    public static Human staffOf(Staff staff) {
-        return Optional.ofNullable(staff).map(s -> Human
+    public static StaffHuman staffOf(Staff staff) {
+        return Optional.ofNullable(staff).map(s -> StaffHuman
                 .builder()
+                .code(s.getOfficerCode())
                 .forenames(combinedForenamesOf(s.getForename(), s.getForname2()))
                 .surname(s.getSurname())
                 .build()).orElse(null);

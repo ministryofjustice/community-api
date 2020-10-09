@@ -33,7 +33,7 @@ public class Appointment {
     private LocalDateTime createdDateTime;
     private LocalDateTime lastUpdatedDateTime;
     private KeyValue appointmentOutcomeType;
-    private Human staff;
+    private StaffHuman staff;
     private KeyValue team;
     private KeyValue officeLocation;
     private KeyValue probationArea;

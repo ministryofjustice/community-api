@@ -37,7 +37,7 @@ public class Contact {
     private KeyValue providerLocation;
     private KeyValue providerTeam;
     private KeyValue team;
-    private Human staff;
+    private StaffHuman staff;
     private Human providerEmployee;
     private Double hoursCredited;
     private Boolean visorContact;
