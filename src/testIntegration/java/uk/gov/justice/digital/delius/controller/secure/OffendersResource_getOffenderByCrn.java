@@ -27,6 +27,12 @@ public class OffendersResource_getOffenderByCrn extends IntegrationTestBase {
       assertThat(offenderDetail.getOtherIds().getCrn()).isEqualTo("X320741");
       final var offenderManager = offenderDetail.getOffenderManagers().stream().filter(OffenderManager::getActive).findAny();
       assertThat(offenderManager).isPresent();
+      assertThat(offenderManager.orElseThrow().getTeam().getCode()).isEqualTo("N02AAM");
+      assertThat(offenderManager.orElseThrow().getStaff().getCode()).isEqualTo("N02AAMU");
+      assertThat(offenderManager.orElseThrow().getStaff().getForenames()).isEqualTo("Unallocated");
+      assertThat(offenderManager.orElseThrow().getStaff().isUnallocated()).isTrue();
+      assertThat(offenderManager.orElseThrow().getTeam().getLocalDeliveryUnit().getCode()).isEqualTo("N02OMIC");
+      assertThat(offenderManager.orElseThrow().getTeam().getLocalDeliveryUnit().getDescription()).isEqualTo("OMiC POM Responsibility");
       assertThat(offenderDetail.getCurrentTier()).isEqualTo("D2");
     }
 

@@ -20,6 +20,8 @@ import uk.gov.justice.digital.delius.data.api.PreviousConviction;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.data.api.Team;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disability;
+import uk.gov.justice.digital.delius.jpa.standard.entity.District;
+import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAddress;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
@@ -268,8 +270,9 @@ public class OffenderTransformer {
          * This only populates a subset of team data - this is currently indexed in elasticsearch so if this is modified
          * then it will lead to inconsistent data and the index will need to be rebuilt.
          */
-        return Optional.ofNullable(offenderManager.getTrustProviderTeam())
+        return Optional.ofNullable(offenderManager.getTeam())
                 .map(tpt -> Team.builder()
+                        .code(tpt.getCode())
                         .description(tpt.getDescription())
                         .telephone(tpt.getTelephone())
                         .district(Optional.ofNullable(tpt.getDistrict()).map(
@@ -277,6 +280,7 @@ public class OffenderTransformer {
                                         .code(d.getCode())
                                         .description(d.getDescription()).build())
                                 .orElse(null))
+                        .localDeliveryUnit(keyValueOf(tpt.getDistrict()))
                         .borough(Optional.ofNullable(tpt.getDistrict()).flatMap(
                                 d -> Optional.ofNullable(d.getBorough())
                                         .map(b -> KeyValue.builder()
@@ -286,6 +290,14 @@ public class OffenderTransformer {
                                 .orElse(null))
                         .build())
                 .orElse(null);
+    }
+
+    private static KeyValue keyValueOf(District district) {
+        return KeyValue
+                .builder()
+                .code(district.getCode())
+                .description(district.getDescription())
+                .build();
     }
 
     private static String partitionAreaOf(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager offenderManager) {

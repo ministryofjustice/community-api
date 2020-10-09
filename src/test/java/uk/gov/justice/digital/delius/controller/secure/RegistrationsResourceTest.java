@@ -6,10 +6,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
-import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.Registration;
+import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.RegistrationService;
 
@@ -112,7 +112,7 @@ class RegistrationsResourceTest {
                                             .code("N02T01")
                                             .description("OMU A")
                                             .build())
-                                    .registeringOfficer(Human
+                                    .registeringOfficer(StaffHuman
                                             .builder()
                                             .forenames("Sandra Karen")
                                             .surname("Kane")
@@ -149,7 +149,7 @@ class RegistrationsResourceTest {
                                             .code("N02T01")
                                             .description("OMU A")
                                             .build())
-                                    .registeringOfficer(Human
+                                    .registeringOfficer(StaffHuman
                                             .builder()
                                             .forenames("Sandra Karen")
                                             .surname("Kane")
@@ -264,7 +264,7 @@ class RegistrationsResourceTest {
                                             .code("N02T01")
                                             .description("OMU A")
                                             .build())
-                                    .registeringOfficer(Human
+                                    .registeringOfficer(StaffHuman
                                             .builder()
                                             .forenames("Sandra Karen")
                                             .surname("Kane")
@@ -360,7 +360,7 @@ class RegistrationsResourceTest {
                                             .code("N02T01")
                                             .description("OMU A")
                                             .build())
-                                    .registeringOfficer(Human
+                                    .registeringOfficer(StaffHuman
                                             .builder()
                                             .forenames("Sandra Karen")
                                             .surname("Kane")

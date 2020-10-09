@@ -37,7 +37,7 @@ public class Registration {
     @ApiModelProperty(value = "Probation team that added the offender to the register")
     private KeyValue registeringTeam;
     @ApiModelProperty(value = "Probation officer who added the offender to the register")
-    private Human registeringOfficer;
+    private StaffHuman registeringOfficer;
     @ApiModelProperty(value = "Probation area that added the offender to the register")
     private KeyValue registeringProbationArea;
     @ApiModelProperty(value = "Level of register. Only used for certain registers for example Lifer - Supervised")
@@ -54,7 +54,7 @@ public class Registration {
     @ApiModelProperty(value = "Probation team that removed the offender from the register")
     private KeyValue deregisteringTeam;
     @ApiModelProperty(value = "Probation officer who removed the offender from the register")
-    private Human deregisteringOfficer;
+    private StaffHuman deregisteringOfficer;
     @ApiModelProperty(value = "Probation area that removed the offender from the register")
     private KeyValue deregisteringProbationArea;
     @ApiModelProperty(value = "Additional notes about the de-registration")
