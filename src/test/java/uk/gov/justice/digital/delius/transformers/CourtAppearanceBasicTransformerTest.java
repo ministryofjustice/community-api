@@ -18,6 +18,7 @@ public class CourtAppearanceBasicTransformerTest {
 
     public static final LocalDateTime APPEARANCE_DATE = LocalDateTime.of(1975, 9, 6, 20, 45);
     public static final String COURT_CODE = "C2";
+    public static final String COURT_NAME = "Somewhere Magistrates' Court";
     public static final String APPEARANCE_TYPE_DESCRIPTION = "codeDescription";
     public static final String APPEARANCE_TYPE_CODE = "codeDescription";
 
@@ -38,6 +39,7 @@ public class CourtAppearanceBasicTransformerTest {
         assertThat(dto.getCrn()).isEqualTo("A123");
         assertThat(dto.getAppearanceDate()).isEqualTo(APPEARANCE_DATE);
         assertThat(dto.getCourtCode()).isEqualTo(COURT_CODE);
+        assertThat(dto.getCourtName()).isEqualTo(COURT_NAME);
         assertThat(dto.getAppearanceType().getCode()).isEqualTo(APPEARANCE_TYPE_CODE);
         assertThat(dto.getAppearanceType().getDescription()).isEqualTo(APPEARANCE_TYPE_DESCRIPTION);
     }
@@ -46,6 +48,7 @@ public class CourtAppearanceBasicTransformerTest {
         return Court.builder()
                 .courtId(1L)
                 .code(COURT_CODE)
+                .courtName(COURT_NAME)
                 .build();
     }
 }

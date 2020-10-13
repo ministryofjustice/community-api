@@ -15,6 +15,7 @@ public class CourtAppearanceBasic {
     private Long courtAppearanceId;
     private LocalDateTime appearanceDate;
     private String courtCode;
+    private String courtName;
     private KeyValue appearanceType;
     private String crn;
 }
