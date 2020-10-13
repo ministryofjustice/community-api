@@ -37,6 +37,17 @@ public class CourtAppearanceService {
         return buildCourtAppearanceList(courtAppearances);
     }
 
+    public List<CourtAppearanceBasic> courtAppearancesFor(Long offenderId, Long eventId) {
+
+        var courtAppearances = courtAppearanceRepository.findByOffenderIdAndEventId(offenderId, eventId);
+        return courtAppearances
+            .stream()
+            .filter(courtAppearance -> !convertToBoolean(courtAppearance.getSoftDeleted()))
+            .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance::getAppearanceDate, Comparator.reverseOrder()))
+            .map(CourtAppearanceBasicTransformer::courtAppearanceOf)
+            .collect(toList());
+    }
+
     public List<CourtAppearanceBasic> courtAppearances(LocalDate fromDate) {
 
         var courtAppearances = courtAppearanceRepository.findByAppearanceDateGreaterThanEqual(fromDate.atStartOfDay());
