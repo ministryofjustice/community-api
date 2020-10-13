@@ -89,7 +89,7 @@ public class CourtAppearancesAPITest extends IntegrationTestBase {
             List<CourtAppearanceBasic> appearances = result.getCourtAppearances();
             assertThat(appearances).hasSize(2);
             CourtAppearanceBasic appearance1 = appearances.get(0);
-            assertThat(appearance1.getCourtCode()).isEqualTo("SHFMC");
+            assertThat(appearance1.getCourtCode()).isEqualTo("SHEFMC");
             assertThat(appearance1.getAppearanceDate()).isAfter(appearances.get(1).getAppearanceDate());
         }
 
