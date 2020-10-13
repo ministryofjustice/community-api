@@ -39,11 +39,6 @@ class CourtAppearanceServiceTest {
     @Mock
     private CourtAppearanceRepository courtAppearanceRepository;
 
-    @BeforeEach
-    void setUp() {
-        courtAppearanceService = new CourtAppearanceService(courtAppearanceRepository);
-    }
-
     private AdditionalOffence anAdditionalOffence(long id) {
         return AdditionalOffence.builder()
             .additionalOffenceId(id)
