@@ -160,11 +160,7 @@ public class ConvictionService {
     }
 
     public Optional<Event> getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(Long offenderId, String prisonBookingNumber) throws DuplicateActiveCustodialConvictionsException {
-        val events = eventRepository.findByOffenderIdWithCustody(offenderId)
-                .stream()
-                .filter(Event::isActive)
-                .filter(event -> !event.getDisposal().getCustody().isPostSentenceSupervision())
-                .collect(toList());
+        val events = activeCustodyEvents(offenderId);
 
         switch (events.size()) {
             case 0:
@@ -182,10 +178,8 @@ public class ConvictionService {
     }
 
     public Result<Optional<Event>, DuplicateConvictionsForSentenceDateException> getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(Long offenderId, LocalDate sentenceStartDate) {
-        val events = eventRepository.findByOffenderIdWithCustody(offenderId)
+        val events = activeCustodyEvents(offenderId)
                 .stream()
-                .filter(Event::isActive)
-                .filter(event -> !event.getDisposal().getCustody().isPostSentenceSupervision())
                 .filter(event -> didSentenceStartAroundDate(event, sentenceStartDate))
                 .collect(toList());
 
@@ -343,16 +337,10 @@ public class ConvictionService {
     }
 
     private List<Event> activeCustodyEvents(Long offenderId) {
-        return eventRepository
-                .findByOffenderId(offenderId)
+        return eventRepository.findByOffenderIdWithCustody(offenderId)
                 .stream()
-                .filter(event -> event.getSoftDeleted() == 0L)
-                .filter(event -> event.getActiveFlag() == 1L)
-                .filter(event -> event.getDisposal() != null)
+                .filter(Event::isActive)
                 .filter(event -> event.getDisposal().getTerminationDate() == null)
-                .filter(event -> event.getDisposal().getDisposalType() != null)
-                .filter(event -> event.getDisposal().getDisposalType().isCustodial())
-                .filter(event -> event.getDisposal().getCustody() != null)
                 .filter(event -> !event.getDisposal().getCustody().isPostSentenceSupervision())
                 .collect(toList());
     }
