@@ -13,6 +13,7 @@ public class CourtAppearanceBasicTransformer {
             .courtAppearanceId(courtAppearance.getCourtAppearanceId())
             .appearanceDate(courtAppearance.getAppearanceDate())
             .courtCode(courtAppearance.getCourt().getCode())
+            .courtName(courtAppearance.getCourt().getCourtName())
             .appearanceType(appearanceTypeOf(courtAppearance.getAppearanceType()))
             .crn(courtAppearance.getOffender().getCrn())
             .build();
