@@ -68,7 +68,7 @@ public class CourtAppearancesResource {
     public CourtAppearanceBasicWrapper getOffenderCourtAppearancesByCrn(final @PathVariable("crn") String crn,
                                                                         final @PathVariable("convictionId") Long convictionId) {
 
-        List<CourtAppearanceBasic> appearances = offenderService.offenderIdOfCrn(crn)
+        final var appearances = offenderService.offenderIdOfCrn(crn)
             .map((offenderId) -> courtAppearanceService.courtAppearancesFor(offenderId, convictionId))
             .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
 
