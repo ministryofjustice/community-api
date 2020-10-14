@@ -544,7 +544,7 @@ public class ConvictionServiceTest {
         @DisplayName("will return and active custodial event")
         public void getActiveCustodialEvent_singleActiveEvent_returnsEvent() throws ConvictionService.SingleActiveCustodyConvictionNotFoundException {
             final var expectedEvent = anActiveCustodialEvent();
-            when(eventRepository.findByOffenderId(ANY_OFFENDER_ID)).thenReturn(List.of(expectedEvent));
+            when(eventRepository.findByOffenderIdWithCustody(ANY_OFFENDER_ID)).thenReturn(List.of(expectedEvent));
 
             final var actualEvent = convictionService.getActiveCustodialEvent(ANY_OFFENDER_ID);
 
@@ -554,7 +554,7 @@ public class ConvictionServiceTest {
         @Test
         @DisplayName("will throw exception when no events found")
         public void getActiveCustodialEvent_noEvents_throwsException() throws ConvictionService.SingleActiveCustodyConvictionNotFoundException {
-            when(eventRepository.findByOffenderId(ANY_OFFENDER_ID)).thenReturn(Collections.emptyList());
+            when(eventRepository.findByOffenderIdWithCustody(ANY_OFFENDER_ID)).thenReturn(Collections.emptyList());
 
             assertThatThrownBy(() ->
                     convictionService.getActiveCustodialEvent(ANY_OFFENDER_ID)
@@ -564,7 +564,7 @@ public class ConvictionServiceTest {
         @Test
         @DisplayName("will throw exception when only custodial event found is in Post Sentence Supervision phase")
         public void getActiveCustodialEvent_onlyPSSEvent_throwsException() throws ConvictionService.SingleActiveCustodyConvictionNotFoundException {
-            when(eventRepository.findByOffenderId(ANY_OFFENDER_ID)).thenReturn(List.of(anActiveCustodialEvent("P")));
+            when(eventRepository.findByOffenderIdWithCustody(ANY_OFFENDER_ID)).thenReturn(List.of(anActiveCustodialEvent("P")));
 
             assertThatThrownBy(() ->
                     convictionService.getActiveCustodialEvent(ANY_OFFENDER_ID)
@@ -573,7 +573,7 @@ public class ConvictionServiceTest {
 
         @Test
         public void getActiveCustodialEvent_multipleEvents_throwsException() throws ConvictionService.SingleActiveCustodyConvictionNotFoundException {
-            when(eventRepository.findByOffenderId(ANY_OFFENDER_ID)).thenReturn(List.of(anActiveCustodialEvent(), anActiveCustodialEvent()));
+            when(eventRepository.findByOffenderIdWithCustody(ANY_OFFENDER_ID)).thenReturn(List.of(anActiveCustodialEvent(), anActiveCustodialEvent()));
 
             assertThatThrownBy(() ->
                     convictionService.getActiveCustodialEvent(ANY_OFFENDER_ID)
@@ -584,7 +584,7 @@ public class ConvictionServiceTest {
         public void getActiveCustodialEvent_multipleActiveEventOneWithPSS_returnsEvent() throws ConvictionService.SingleActiveCustodyConvictionNotFoundException {
             final var expectedEvent = anActiveCustodialEvent("D");
             final var postSentenceSupervisionEvent = anActiveCustodialEvent("P");
-            when(eventRepository.findByOffenderId(ANY_OFFENDER_ID)).thenReturn(List.of(expectedEvent, postSentenceSupervisionEvent));
+            when(eventRepository.findByOffenderIdWithCustody(ANY_OFFENDER_ID)).thenReturn(List.of(expectedEvent, postSentenceSupervisionEvent));
 
             final var actualEvent = convictionService.getActiveCustodialEvent(ANY_OFFENDER_ID);
 

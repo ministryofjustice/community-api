@@ -50,7 +50,8 @@ public class Event {
     private LocalDate referralDate;
 
     @Column(name = "SOFT_DELETED")
-    private Long softDeleted;
+    @Builder.Default
+    private Long softDeleted = 0L;
 
     @Column(name = "PARTITION_AREA_ID")
     private Long partitionAreaId;
@@ -120,6 +121,6 @@ public class Event {
     }
 
     public boolean isActive() {
-        return getActiveFlag() == 1L;
+        return getActiveFlag() == 1L && getSoftDeleted() != 1L;
     }
 }
