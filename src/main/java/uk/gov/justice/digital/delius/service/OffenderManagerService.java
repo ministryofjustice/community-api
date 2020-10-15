@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.InvalidRequestException;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
@@ -29,6 +31,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.lang.String.format;
 
 @Service
 @Slf4j
@@ -99,7 +103,7 @@ public class OffenderManagerService {
                 .orElse(false);
     }
 
-    CommunityOrPrisonOffenderManager autoAllocatePrisonOffenderManagerAtInstitution(final Offender offender, final RInstitution institution) {
+    public CommunityOrPrisonOffenderManager autoAllocatePrisonOffenderManagerAtInstitution(final Offender offender, final RInstitution institution) {
         final var allocationReason = referenceDataService.pomAllocationAutoTransferReason();
         final var probationArea = probationAreaRepository.findByInstitutionByNomsCDECode(institution.getNomisCdeCode()).orElseThrow();
         final var team = teamService.findUnallocatedTeam(probationArea).orElseThrow();
@@ -194,5 +198,13 @@ public class OffenderManagerService {
         return Stream.of(first, second)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
+    }
+
+    public void deallocatePrisonerOffenderManager(final String nomsNumber) {
+        final var offender = offenderRepository.findByNomsNumber(nomsNumber)
+                .orElseThrow(() -> new NotFoundException(format("Offender %s not found", nomsNumber)));
+        final var prisonerOffenderManager = findExistingPrisonOffenderManager(offender)
+                .orElseThrow(() -> new ConflictingRequestException(format("Offender %s does not have a prisoner offender manager", nomsNumber)));
+
     }
 }
