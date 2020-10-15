@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.CourtAppearanceBasic;
+import uk.gov.justice.digital.delius.data.api.CourtAppearanceBasicWrapper;
 import uk.gov.justice.digital.delius.service.CourtAppearanceService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
@@ -42,9 +43,10 @@ class CourtAppearancesResourceTest {
             .appearanceDate(LocalDateTime.now())
             .courtCode("SHF")
             .build();
+        var courtAppearanceResponse = CourtAppearanceBasicWrapper.builder().courtAppearances(List.of(courtAppearance)).build();
 
         when(offenderService.offenderIdOfCrn(CRN)).thenReturn(Optional.of(OFFENDER_ID));
-        when(courtAppearanceService.courtAppearancesFor(OFFENDER_ID, CONVICTION_ID)).thenReturn(List.of(courtAppearance));
+        when(courtAppearanceService.courtAppearancesFor(OFFENDER_ID, CONVICTION_ID)).thenReturn(Optional.of(courtAppearanceResponse));
 
         var courtAppearancesWrapper = courtAppearancesResource.getOffenderCourtAppearancesByCrn(CRN, CONVICTION_ID);
 
