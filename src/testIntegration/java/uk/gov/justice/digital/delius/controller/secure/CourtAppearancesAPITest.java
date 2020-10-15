@@ -106,18 +106,14 @@ public class CourtAppearancesAPITest extends IntegrationTestBase {
         }
 
         @Test
-        public void canGetCourtAppearancesNoResults() {
-            var result = given()
+        public void givenUnknownConvictionId_whenGetCourtAppearances_ThenReturn404() {
+            given()
                 .auth().oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get(String.format(PATH_FORMAT, CRN, 100L))
                 .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(CourtAppearanceBasicWrapper.class);
-            assertThat(result.getCourtAppearances()).hasSize(0);
+                .statusCode(HttpStatus.NOT_FOUND.value());
         }
 
     }

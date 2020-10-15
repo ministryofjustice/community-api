@@ -17,13 +17,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
-import uk.gov.justice.digital.delius.data.api.CourtAppearanceBasic;
 import uk.gov.justice.digital.delius.data.api.CourtAppearanceBasicWrapper;
+import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.CourtAppearanceService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -68,11 +67,10 @@ public class CourtAppearancesResource {
     public CourtAppearanceBasicWrapper getOffenderCourtAppearancesByCrn(final @PathVariable("crn") String crn,
                                                                         final @PathVariable("convictionId") Long convictionId) {
 
-        final var appearances = offenderService.offenderIdOfCrn(crn)
+        return offenderService.offenderIdOfCrn(crn)
             .map((offenderId) -> courtAppearanceService.courtAppearancesFor(offenderId, convictionId))
-            .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
-
-        return new CourtAppearanceBasicWrapper(appearances);
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)))
+            .orElseThrow(() -> new NotFoundException(String.format("Conviction with ID %s for Offender with crn %s not found", convictionId, crn)));
     }
 }
 

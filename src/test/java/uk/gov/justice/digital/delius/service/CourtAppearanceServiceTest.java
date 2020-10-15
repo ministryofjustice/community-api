@@ -1,12 +1,13 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.CourtAppearance;
 import uk.gov.justice.digital.delius.data.api.CourtAppearanceBasic;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalOffence;
@@ -22,8 +23,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,6 +41,9 @@ class CourtAppearanceServiceTest {
 
     @Mock
     private CourtAppearanceRepository courtAppearanceRepository;
+
+    @Mock
+    private ConvictionService convictionService;
 
     private AdditionalOffence anAdditionalOffence(long id) {
         return AdditionalOffence.builder()
@@ -75,15 +81,33 @@ class CourtAppearanceServiceTest {
         var appearance1 = aCourtAppearance(1L, 0L, Collections.emptyList(), now.minusDays(3));
         var appearance2 = aCourtAppearance(1L, 0L, Collections.emptyList(), now);
         var deletedAppearance = aCourtAppearance(1L, 1L, Collections.emptyList(), previous);
+        var conviction = mock(Conviction.class);
 
+        when(convictionService.convictionFor(OFFENDER_ID, EVENT_ID)).thenReturn(Optional.of(conviction));
         when(courtAppearanceRepository.findByOffenderIdAndEventId(OFFENDER_ID, EVENT_ID))
             .thenReturn(ImmutableList.of(appearance1, appearance2, deletedAppearance));
 
-        List<CourtAppearanceBasic> courtAppearances = courtAppearanceService.courtAppearancesFor(OFFENDER_ID, EVENT_ID);
+        var optionalCourtAppearances = courtAppearanceService.courtAppearancesFor(OFFENDER_ID, EVENT_ID);
 
-        assertThat(courtAppearances).hasSize(2);
-        assertThat(courtAppearances.get(0).getAppearanceDate()).isEqualTo(now);
-        assertThat(courtAppearances.get(1).getAppearanceDate()).isEqualTo(previous);
+        assertThat(optionalCourtAppearances).isPresent();
+        optionalCourtAppearances.ifPresent(courtAppearances -> {
+            List<CourtAppearanceBasic> appearances = courtAppearances.getCourtAppearances();
+            Assertions.assertAll(
+                () -> assertThat(appearances).hasSize(2),
+                () -> assertThat(appearances.get(0).getAppearanceDate()).isEqualTo(now),
+                () -> assertThat(appearances.get(1).getAppearanceDate()).isEqualTo(previous)
+            );
+        });
+    }
+
+    @Test
+    void givenUnknownConviction_whenGetAppearances_thenReturnEmptyOptional() {
+
+        when(convictionService.convictionFor(OFFENDER_ID, EVENT_ID)).thenReturn(Optional.empty());
+
+        var optionalCourtAppearances = courtAppearanceService.courtAppearancesFor(OFFENDER_ID, EVENT_ID);
+
+        assertThat(optionalCourtAppearances).isEmpty();
     }
 
     @Test
@@ -99,7 +123,7 @@ class CourtAppearanceServiceTest {
         when(courtAppearanceRepository.findByAppearanceDateGreaterThanEqual(today.atStartOfDay()))
             .thenReturn(ImmutableList.of(appearance1, appearance2, deletedAppearance));
 
-        List<CourtAppearanceBasic> courtAppearances = courtAppearanceService.courtAppearances(today);
+        var courtAppearances = courtAppearanceService.courtAppearances(today);
 
         assertThat(courtAppearances).hasSize(2);
         assertThat(courtAppearances.get(0).getAppearanceDate()).isEqualTo(previous);

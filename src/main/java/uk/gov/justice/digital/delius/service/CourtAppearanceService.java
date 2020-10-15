@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.data.api.CourtAppearance;
 import uk.gov.justice.digital.delius.data.api.CourtAppearanceBasic;
+import uk.gov.justice.digital.delius.data.api.CourtAppearanceBasicWrapper;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CourtAppearanceRepository;
 import uk.gov.justice.digital.delius.transformers.CourtAppearanceBasicTransformer;
 import uk.gov.justice.digital.delius.transformers.CourtAppearanceTransformer;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.transformers.OffenceIdTransformer.additionalOffenceIdOf;
@@ -24,11 +26,13 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.conver
 public class CourtAppearanceService {
 
     private final CourtAppearanceRepository courtAppearanceRepository;
+    private final ConvictionService convictionService;
 
     @Autowired
-    public CourtAppearanceService(CourtAppearanceRepository courtAppearanceRepository) {
+    public CourtAppearanceService(CourtAppearanceRepository courtAppearanceRepository, ConvictionService convictionService) {
 
         this.courtAppearanceRepository = courtAppearanceRepository;
+        this.convictionService = convictionService;
     }
 
     public List<CourtAppearance> courtAppearancesFor(Long offenderId) {
@@ -37,15 +41,16 @@ public class CourtAppearanceService {
         return buildCourtAppearanceList(courtAppearances);
     }
 
-    public List<CourtAppearanceBasic> courtAppearancesFor(Long offenderId, Long eventId) {
+    public Optional<CourtAppearanceBasicWrapper> courtAppearancesFor(Long offenderId, Long eventId) {
 
-        var courtAppearances = courtAppearanceRepository.findByOffenderIdAndEventId(offenderId, eventId);
-        return courtAppearances
-            .stream()
-            .filter(courtAppearance -> !convertToBoolean(courtAppearance.getSoftDeleted()))
-            .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance::getAppearanceDate, Comparator.reverseOrder()))
-            .map(CourtAppearanceBasicTransformer::courtAppearanceOf)
-            .collect(toList());
+       return convictionService.convictionFor(offenderId, eventId)
+            .map(conviction -> courtAppearanceRepository.findByOffenderIdAndEventId(offenderId, eventId))
+            .map(appearances -> appearances.stream()
+                .filter(courtAppearance -> !convertToBoolean(courtAppearance.getSoftDeleted()))
+                .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance::getAppearanceDate, Comparator.reverseOrder()))
+                .map(CourtAppearanceBasicTransformer::courtAppearanceOf)
+                .collect(Collectors.toList()))
+            .map(CourtAppearanceBasicWrapper::new);
     }
 
     public List<CourtAppearanceBasic> courtAppearances(LocalDate fromDate) {
