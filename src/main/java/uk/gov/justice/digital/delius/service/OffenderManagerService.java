@@ -200,11 +200,18 @@ public class OffenderManagerService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void deallocatePrisonerOffenderManager(final String nomsNumber) {
         final var offender = offenderRepository.findByNomsNumber(nomsNumber)
                 .orElseThrow(() -> new NotFoundException(format("Offender %s not found", nomsNumber)));
         final var prisonerOffenderManager = findExistingPrisonOffenderManager(offender)
                 .orElseThrow(() -> new ConflictingRequestException(format("Offender %s does not have a prisoner offender manager", nomsNumber)));
 
+        // Nothing to do if the POM is already unallocated
+        if (prisonerOffenderManager.getStaff().isUnallocated()) {
+            return;
+        }
+
+        autoAllocatePrisonOffenderManagerAtInstitution(offender, prisonerOffenderManager.getProbationArea().getInstitution());
     }
 }

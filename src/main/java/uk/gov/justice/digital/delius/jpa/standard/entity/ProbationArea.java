@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 
-@ToString(exclude = {"providerTeams", "teams", "institution"})
+@ToString(exclude = {"providerTeams", "teams", "institution", "boroughs"})
 @EqualsAndHashCode(of = "probationAreaId")
 @Data
 @NoArgsConstructor
