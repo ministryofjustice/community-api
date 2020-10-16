@@ -69,6 +69,18 @@ public class OffendersResource_deallocatePomByNomsTest extends IntegrationTestBa
     }
 
     @Test
+    public void offenderHasNoPom_returnsConflict() {
+        given()
+                .auth()
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .delete("/offenders/nomsNumber/G9643VP/prisonOffenderManager")
+                .then()
+                .statusCode(409);
+    }
+
+    @Test
     public void offenderNotFound_returnsNotFound() {
         given()
                 .auth()
