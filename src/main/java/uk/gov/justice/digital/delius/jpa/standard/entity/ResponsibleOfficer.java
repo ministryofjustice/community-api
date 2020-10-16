@@ -14,6 +14,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Data
 @NoArgsConstructor
@@ -72,4 +73,8 @@ public class ResponsibleOfficer implements Serializable {
     @Column(name = "LAST_UPDATED_DATETIME")
     @LastModifiedDate
     private LocalDateTime lastUpdatedDatetime;
+
+    public boolean isActive() {
+        return endDateTime == null;
+    }
 }

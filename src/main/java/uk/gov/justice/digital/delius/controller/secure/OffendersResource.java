@@ -332,13 +332,13 @@ public class OffendersResource {
             @ApiResponse(code = 400, message = "Either set true for the prisoner offender manager or the community offender manager"),
             @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
             @ApiResponse(code = 403, message = "Forbidden, does not have required role"),
-            @ApiResponse(code = 404, message = "The offender or prison institution is not found")
+            @ApiResponse(code = 404, message = "The offender is not found")
     })
     @ApiOperation(value = "Sets the responsible officer for an offender to either the current prison offender manager to community offender manager. This will allow the responsible officer to be set to an unallocated offender manager", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
     @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public CommunityOrPrisonOffenderManager switchResponsibleOfficer(final @PathVariable String nomsNumber,
                                                                                       final @Valid @RequestBody ResponsibleOfficerSwitch responsibleOfficerSwitch) {
-        return CommunityOrPrisonOffenderManager.builder().build();
+        return offenderManagerService.switchResponsibleOfficer(nomsNumber, responsibleOfficerSwitch);
     }
 
 

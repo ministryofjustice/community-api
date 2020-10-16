@@ -8,6 +8,7 @@ import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OrderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
@@ -71,6 +72,40 @@ public class ContactService {
                 .probationArea(newPrisonOffenderManager.getProbationArea())
                 .staffEmployeeId(newPrisonOffenderManager.getStaff().getStaffId())
                 .teamProviderId(newPrisonOffenderManager.getTeam().getTeamId())
+                .contactType(contactType)
+                .alertActive(contactType.getAlertFlag())
+                .build());
+    }
+
+    @Transactional
+    public void addContactForResponsibleOfficerChange(final OffenderManager newResponsibleOfficer, final PrisonOffenderManager existingResponisbleOfficer) {
+        final var contactType = contactTypeForResponsibleOfficerChange();
+        contactRepository.save(builder()
+                .contactDate(LocalDate.now())
+                .offenderId(newResponsibleOfficer.getOffenderId())
+                .notes(notesForResponsibleManager(newResponsibleOfficer, existingResponisbleOfficer))
+                .team(newResponsibleOfficer.getTeam())
+                .staff(newResponsibleOfficer.getStaff())
+                .probationArea(newResponsibleOfficer.getProbationArea())
+                .staffEmployeeId(newResponsibleOfficer.getStaff().getStaffId())
+                .teamProviderId(newResponsibleOfficer.getTeam().getTeamId())
+                .contactType(contactType)
+                .alertActive(contactType.getAlertFlag())
+                .build());
+    }
+
+    @Transactional
+    public void addContactForResponsibleOfficerChange(final PrisonOffenderManager newResponsibleOfficer, final OffenderManager existingResponsibleOfficer) {
+        final var contactType = contactTypeForResponsibleOfficerChange();
+        contactRepository.save(builder()
+                .contactDate(LocalDate.now())
+                .offenderId(newResponsibleOfficer.getOffenderId())
+                .notes(notesForResponsibleManager(newResponsibleOfficer, existingResponsibleOfficer))
+                .team(newResponsibleOfficer.getTeam())
+                .staff(newResponsibleOfficer.getStaff())
+                .probationArea(newResponsibleOfficer.getProbationArea())
+                .staffEmployeeId(newResponsibleOfficer.getStaff().getStaffId())
+                .teamProviderId(newResponsibleOfficer.getTeam().getTeamId())
                 .contactType(contactType)
                 .alertActive(contactType.getAlertFlag())
                 .build());
@@ -196,6 +231,27 @@ public class ContactService {
                 notesForResponsibleManagerOf(existingPrisonOffenderManager));
     }
 
+    private String notesForResponsibleManager(final OffenderManager newOffenderManager, final PrisonOffenderManager existingPrisonOffenderManager) {
+        return String.format(
+                "New Details:\n" +
+                        "%s\n" +
+                        "Previous Details:\n" +
+                        "%s\n",
+                notesForResponsibleManagerOf(newOffenderManager),
+                notesForResponsibleManagerOf(existingPrisonOffenderManager));
+    }
+
+    private String notesForResponsibleManager(final PrisonOffenderManager newPrisonOffenderManager, final OffenderManager existingCommunityOffenderManager) {
+        return String.format(
+                "New Details:\n" +
+                        "%s\n" +
+                        "Previous Details:\n" +
+                        "%s\n",
+                notesForResponsibleManagerOf(newPrisonOffenderManager),
+                notesForResponsibleManagerOf(existingCommunityOffenderManager));
+    }
+
+
     private String notesForResponsibleManagerOf(final PrisonOffenderManager prisonOffenderManager) {
         return String.format(
                 "Responsible Officer Type: Prison Offender Manager\n" +
@@ -210,9 +266,28 @@ public class ContactService {
         ;
     }
 
+    private String notesForResponsibleManagerOf(final OffenderManager offenderManager) {
+        return String.format(
+                "Responsible Officer Type: Offender Manager\n" +
+                        "Responsible Officer: %s\n" +
+                        "Start Date: %s\n" +
+                        "%s" +
+                        "Allocation Reason: %s\n",
+                responsibleOfficerOf(offenderManager),
+                offenderManager.getResponsibleOfficer().getStartDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")),
+                Optional.ofNullable(offenderManager.getResponsibleOfficer().getEndDateTime()).map(dateTime -> dateTime.format(DateTimeFormatter.ofPattern("'End Date: 'dd/MM/yyyy HH:mm:ss'\n'"))).orElse(""),
+                offenderManager.getAllocationReason().getCodeDescription())
+        ;
+    }
+
     private String responsibleOfficerOf(final PrisonOffenderManager pom) {
         return Optional.ofNullable(pom.getStaff()).map(staff ->
                 String.format("%s (%s, %s)", displayNameOf(staff), pom.getTeam().getDescription(), pom.getProbationArea().getDescription()))
+                .orElse("");
+    }
+    private String responsibleOfficerOf(final OffenderManager com) {
+        return Optional.ofNullable(com.getStaff()).map(staff ->
+                String.format("%s (%s, %s)", displayNameOf(staff), com.getTeam().getDescription(), com.getProbationArea().getDescription()))
                 .orElse("");
     }
 
