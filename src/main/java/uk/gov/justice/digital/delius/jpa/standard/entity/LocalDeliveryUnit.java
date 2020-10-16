@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -14,6 +15,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
+@ToString(exclude = {"probationArea"})
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "LOCAL_DELIVERY_UNIT")

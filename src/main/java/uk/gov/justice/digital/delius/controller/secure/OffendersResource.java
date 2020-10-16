@@ -315,13 +315,16 @@ public class OffendersResource {
 
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/prisonOffenderManager", method = RequestMethod.DELETE, consumes = "application/json")
     @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "The noms number must be passed in the URL"),
             @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
             @ApiResponse(code = 403, message = "Forbidden, does not have required role", response = ErrorResponse.class),
-            @ApiResponse(code = 404, message = "The offender is not found")
+            @ApiResponse(code = 404, message = "The offender is not found"),
+            @ApiResponse(code = 409, message = "The offender does not have a POM to deallocate")
     })
     @ApiOperation(value = "Deallocates the prison offender manager for an offender in custody. The POM is set back to its unallocated state", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
     @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public void deallocatePrisonOffenderManagerByNomsNumber(final @PathVariable String nomsNumber) {
+        offenderManagerService.deallocatePrisonerOffenderManager(nomsNumber);
     }
 
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/responsibleOfficer/switch", method = RequestMethod.PUT, consumes = "application/json")
