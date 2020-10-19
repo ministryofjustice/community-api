@@ -198,6 +198,9 @@ public class OffenderManagerService {
     @Transactional
     public CommunityOrPrisonOffenderManager switchResponsibleOfficer(String nomsNumber, ResponsibleOfficerSwitch responsibleOfficerSwitch) {
         return offenderRepository.findByNomsNumber(nomsNumber).map(offender -> {
+            currentResponsibleOfficer(offender).orElseThrow(() -> {
+                throw new ConflictingRequestException(String.format("Cannot find a current RO for %s", offender.getNomsNumber()));
+            });
             if (responsibleOfficerSwitch.isSwitchToCommunityOffenderManager()) {
                 switchResponsibleOfficeToCommunityOffenderManager(offender);
             } else {

@@ -81,11 +81,40 @@ public class OffenderManagerService_switchResponsibleOfficerTest {
                         .build()));
     }
 
+    protected void setupOffender(final OffenderManager com) {
+        when(offenderRepository.findByNomsNumber("G0560UO"))
+                .thenReturn(Optional.of(anOffender(List.of(com), List.of()).toBuilder()
+                        .nomsNumber("G0560UO")
+                        .offenderId(99L)
+                        .build()));
+    }
+
     @Nested
     @DisplayName("When switching to a community offender manager")
     class WhenSwitchingToCOM {
         private final ResponsibleOfficerSwitch comSwitchRequest = ResponsibleOfficerSwitch.builder()
                 .switchToCommunityOffenderManager(true).build();
+
+        @Nested
+        @DisplayName("and there is no responsible officer")
+        class WhenSwitchingROIsNotPresent {
+            @BeforeEach
+            void setUp() {
+                setupOffender(
+                        anActiveOffenderManager().toBuilder().responsibleOfficer(null).build());
+            }
+
+            @Test
+            @DisplayName("then an exception will be thrown indicating a conflicting request")
+            void willNotDoAnything() {
+                assertThatThrownBy(() -> offenderManagerService.switchResponsibleOfficer("G0560UO", comSwitchRequest))
+                        .isInstanceOf(ConflictingRequestException.class)
+                        .hasMessage("Cannot find a current RO for G0560UO");
+
+                verifyNoInteractions(responsibleOfficerRepository);
+                verifyNoInteractions(contactService);
+            }
+        }
 
         @Nested
         @DisplayName("and responsible officer is already a community offender manager")
@@ -183,6 +212,28 @@ public class OffenderManagerService_switchResponsibleOfficerTest {
     class WhenSwitchingToPOM {
         private final ResponsibleOfficerSwitch comSwitchRequest = ResponsibleOfficerSwitch.builder()
                 .switchToPrisonOffenderManager(true).build();
+
+        @Nested
+        @DisplayName("and there is no responsible officer")
+        class WhenSwitchingROIsNotPresent {
+            @BeforeEach
+            void setUp() {
+                setupOffender(
+                        anActiveOffenderManager().toBuilder().responsibleOfficer(null).build());
+            }
+
+            @Test
+            @DisplayName("then an exception will be thrown indicating a conflicting request")
+            void willNotDoAnything() {
+                assertThatThrownBy(() -> offenderManagerService.switchResponsibleOfficer("G0560UO", comSwitchRequest))
+                        .isInstanceOf(ConflictingRequestException.class)
+                        .hasMessage("Cannot find a current RO for G0560UO");
+
+                verifyNoInteractions(responsibleOfficerRepository);
+                verifyNoInteractions(contactService);
+            }
+        }
+
 
         @Nested
         @DisplayName("and responsible officer is already a prison offender manager")
