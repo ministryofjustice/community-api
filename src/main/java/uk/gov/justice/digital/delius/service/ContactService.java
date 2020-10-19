@@ -11,6 +11,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OrderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
@@ -65,6 +66,7 @@ public class ContactService {
         final var contactType = contactTypeForResponsibleOfficerChange();
         contactRepository.save(builder()
                 .contactDate(newPrisonOffenderManager.getAllocationDate())
+                .contactStartTime(LocalTime.now())
                 .offenderId(newPrisonOffenderManager.getOffenderId())
                 .notes(notesForResponsibleManager(newPrisonOffenderManager, existingPrisonOffenderManager))
                 .team(newPrisonOffenderManager.getTeam())
@@ -79,36 +81,20 @@ public class ContactService {
 
     @Transactional
     public void addContactForResponsibleOfficerChange(final OffenderManager newResponsibleOfficer, final PrisonOffenderManager existingResponisbleOfficer) {
-        final var contactType = contactTypeForResponsibleOfficerChange();
-        contactRepository.save(builder()
-                .contactDate(LocalDate.now())
-                .offenderId(newResponsibleOfficer.getOffenderId())
-                .notes(notesForResponsibleManager(newResponsibleOfficer, existingResponisbleOfficer))
-                .team(newResponsibleOfficer.getTeam())
-                .staff(newResponsibleOfficer.getStaff())
-                .probationArea(newResponsibleOfficer.getProbationArea())
-                .staffEmployeeId(newResponsibleOfficer.getStaff().getStaffId())
-                .teamProviderId(newResponsibleOfficer.getTeam().getTeamId())
-                .contactType(contactType)
-                .alertActive(contactType.getAlertFlag())
-                .build());
+        addContactForResponsibleOfficerChange(newResponsibleOfficer.getOffenderId(),
+                notesForResponsibleManager(newResponsibleOfficer, existingResponisbleOfficer),
+                newResponsibleOfficer.getTeam(),
+                newResponsibleOfficer.getStaff(),
+                newResponsibleOfficer.getProbationArea());
     }
 
     @Transactional
     public void addContactForResponsibleOfficerChange(final PrisonOffenderManager newResponsibleOfficer, final OffenderManager existingResponsibleOfficer) {
-        final var contactType = contactTypeForResponsibleOfficerChange();
-        contactRepository.save(builder()
-                .contactDate(LocalDate.now())
-                .offenderId(newResponsibleOfficer.getOffenderId())
-                .notes(notesForResponsibleManager(newResponsibleOfficer, existingResponsibleOfficer))
-                .team(newResponsibleOfficer.getTeam())
-                .staff(newResponsibleOfficer.getStaff())
-                .probationArea(newResponsibleOfficer.getProbationArea())
-                .staffEmployeeId(newResponsibleOfficer.getStaff().getStaffId())
-                .teamProviderId(newResponsibleOfficer.getTeam().getTeamId())
-                .contactType(contactType)
-                .alertActive(contactType.getAlertFlag())
-                .build());
+        addContactForResponsibleOfficerChange(newResponsibleOfficer.getOffenderId(),
+                notesForResponsibleManager(newResponsibleOfficer, existingResponsibleOfficer),
+                newResponsibleOfficer.getTeam(),
+                newResponsibleOfficer.getStaff(),
+                newResponsibleOfficer.getProbationArea());
     }
 
     @Transactional
@@ -175,6 +161,7 @@ public class ContactService {
         final var contactType = contactTypeForPOMAllocationOf(newPrisonOffenderManager.getAllocationReason());
         return builder()
                 .contactDate(newPrisonOffenderManager.getAllocationDate())
+                .contactStartTime(LocalTime.now())
                 .offenderId(newPrisonOffenderManager.getOffenderId())
                 .notes(notesForPOMAllocation(newPrisonOffenderManager))
                 .team(newPrisonOffenderManager.getTeam())
@@ -333,4 +320,22 @@ public class ContactService {
     private String notesForBookingNumbUpdate(final Event event) {
         return String.format("Prison Number: %s\n", event.getDisposal().getCustody().getPrisonerNumber());
     }
+
+    private void addContactForResponsibleOfficerChange(Long offenderId, String notes, Team team, Staff staff, ProbationArea probationArea) {
+        final var contactType = contactTypeForResponsibleOfficerChange();
+        contactRepository.save(builder()
+                .contactDate(LocalDate.now())
+                .contactStartTime(LocalTime.now())
+                .offenderId(offenderId)
+                .notes(notes)
+                .team(team)
+                .staff(staff)
+                .probationArea(probationArea)
+                .staffEmployeeId(staff.getStaffId())
+                .teamProviderId(team.getTeamId())
+                .contactType(contactType)
+                .alertActive(contactType.getAlertFlag())
+                .build());
+    }
+
 }
