@@ -313,7 +313,7 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with noms number %s not found", nomsNumber)));
     }
 
-    @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/prisonOffenderManager", method = RequestMethod.DELETE, consumes = "application/json")
+    @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/prisonOffenderManager", method = RequestMethod.DELETE)
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "The noms number must be passed in the URL"),
             @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
