@@ -99,6 +99,9 @@ public class PrisonOffenderManager {
 
 
     public boolean isActive() {
-        return endDate == null && Optional.ofNullable(activeFlag).orElse(0L) == 1L;
+        return endDate == null && Optional.ofNullable(activeFlag).orElse(0L) == 1L && !isDeleted();
+    }
+    private boolean isDeleted() {
+        return Optional.ofNullable(softDeleted).orElse(0L) == 1L;
     }
 }

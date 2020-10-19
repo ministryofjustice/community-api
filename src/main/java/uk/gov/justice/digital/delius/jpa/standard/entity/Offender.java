@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @EqualsAndHashCode(exclude = {"offenderManagers", "prisonOffenderManagers"})
 @Data
@@ -217,4 +218,30 @@ public class Offender {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CURRENT_TIER")
     private StandardReference currentTier;
+
+
+    public Optional<PrisonOffenderManager> getResponsibleOfficerWhoIsPrisonOffenderManager() {
+        return getActivePrisonOffenderManager()
+                .filter(pom -> pom.getResponsibleOfficer() != null)
+                .filter(pom -> pom.getResponsibleOfficer().isActive());
+    }
+
+    public Optional<OffenderManager> getActiveCommunityOffenderManager() {
+        return getOffenderManagers()
+                .stream()
+                .filter(OffenderManager::isActive)
+                .findFirst();
+    }
+    public Optional<OffenderManager> getResponsibleOfficerWhoIsCommunityOffenderManager() {
+        return getActiveCommunityOffenderManager()
+                .filter(pom -> pom.getResponsibleOfficer() != null)
+                .filter(pom -> pom.getResponsibleOfficer().isActive());
+    }
+
+    public Optional<PrisonOffenderManager> getActivePrisonOffenderManager() {
+        return getPrisonOffenderManagers()
+                .stream()
+                .filter(PrisonOffenderManager::isActive)
+                .findFirst();
+    }
 }

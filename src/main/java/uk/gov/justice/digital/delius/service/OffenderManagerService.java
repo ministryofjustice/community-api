@@ -9,6 +9,7 @@ import uk.gov.justice.digital.delius.controller.InvalidRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
+import uk.gov.justice.digital.delius.data.api.ResponsibleOfficerSwitch;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
@@ -50,19 +51,7 @@ public class OffenderManagerService {
 
     @Transactional(readOnly = true)
     public Optional<List<CommunityOrPrisonOffenderManager>> getAllOffenderManagersForNomsNumber(final String nomsNumber) {
-        return offenderRepository.findByNomsNumber(nomsNumber).map(
-                offender -> combine(
-                        offender.getOffenderManagers()
-                                .stream()
-                                .filter(OffenderManager::isActive)
-                                .map(OffenderManagerTransformer::offenderManagerOf)
-                                .collect(Collectors.toList()),
-                        offender.getPrisonOffenderManagers()
-                                .stream()
-                                .filter(PrisonOffenderManager::isActive)
-                                .map(OffenderManagerTransformer::offenderManagerOf)
-                                .collect(Collectors.toList())
-                ) );
+        return offenderRepository.findByNomsNumber(nomsNumber).map(this::getAllOffenderManagers);
     }
 
     @Transactional
@@ -153,13 +142,7 @@ public class OffenderManagerService {
                     .ifPresent(activeRo -> {
                         // deactivate old RO and add a new one
                         activeRo.setEndDateTime(LocalDateTime.now());
-                        newPrisonOffenderManager.setResponsibleOfficer(responsibleOfficerRepository.save(
-                                ResponsibleOfficer
-                                        .builder()
-                                        .offenderId(offender.getOffenderId())
-                                        .prisonOffenderManagerId(newPrisonOffenderManager.getPrisonOffenderManagerId())
-                                        .build()
-                        ));
+                        newPrisonOffenderManager.setResponsibleOfficer(responsibleOfficerRepository.save(responsibleOfficerOf(offender, newPrisonOffenderManager)));
                         contactService.addContactForResponsibleOfficerChange(newPrisonOffenderManager, existingPOM);
                     });
         }, () -> contactService.addContactForPOMAllocation(newPrisonOffenderManager));
@@ -181,10 +164,7 @@ public class OffenderManagerService {
     }
 
     private Optional<PrisonOffenderManager> findExistingPrisonOffenderManager(final Offender offender) {
-        return offender.getPrisonOffenderManagers()
-                .stream()
-                .filter(PrisonOffenderManager::isActive)
-                .findFirst();
+        return offender.getActivePrisonOffenderManager();
     }
 
     private boolean isStaffInTeam(final Team team, final Staff staff) {
@@ -214,4 +194,91 @@ public class OffenderManagerService {
 
         autoAllocatePrisonOffenderManagerAtInstitution(offender, prisonerOffenderManager.getProbationArea().getInstitution());
     }
+
+    @Transactional
+    public CommunityOrPrisonOffenderManager switchResponsibleOfficer(String nomsNumber, ResponsibleOfficerSwitch responsibleOfficerSwitch) {
+        return offenderRepository.findByNomsNumber(nomsNumber).map(offender -> {
+            if (responsibleOfficerSwitch.isSwitchToCommunityOffenderManager()) {
+                switchResponsibleOfficeToCommunityOffenderManager(offender);
+            } else {
+                switchResponsibleOfficerToPrisonOffenderManager(offender);
+            }
+            return currentResponsibleOfficer(offender).orElseThrow();
+        }).orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
+    }
+
+    private void switchResponsibleOfficerToPrisonOffenderManager(Offender offender) {
+        offender.getResponsibleOfficerWhoIsCommunityOffenderManager()
+                .ifPresentOrElse(currentCOMResponsibleOfficer -> offender.getActivePrisonOffenderManager()
+                        .ifPresentOrElse(prisonOffenderManager -> {
+                            currentCOMResponsibleOfficer.getResponsibleOfficer().setEndDateTime(LocalDateTime.now());
+                            prisonOffenderManager.setResponsibleOfficer(responsibleOfficerRepository
+                                    .save(responsibleOfficerOf(offender, prisonOffenderManager)));
+                            contactService
+                                    .addContactForResponsibleOfficerChange(prisonOffenderManager, currentCOMResponsibleOfficer);
+                        }, () -> {
+                            throw new ConflictingRequestException(String
+                                    .format("Cannot find an active POM for %s", offender
+                                            .getNomsNumber()));
+                        }),
+                        () -> log.info(String.format("Current RO is not a COM for %s, so not doing anything", offender.getNomsNumber())));
+    }
+
+    private void switchResponsibleOfficeToCommunityOffenderManager(Offender offender) {
+        offender.getResponsibleOfficerWhoIsPrisonOffenderManager()
+                .ifPresentOrElse(currentPOMResponsibleOfficer -> offender.getActiveCommunityOffenderManager()
+                                .ifPresentOrElse(communityOffenderManager -> {
+                                    currentPOMResponsibleOfficer.getResponsibleOfficer()
+                                            .setEndDateTime(LocalDateTime.now());
+                                    communityOffenderManager.setResponsibleOfficer(responsibleOfficerRepository
+                                            .save(responsibleOfficerOf(offender, communityOffenderManager)));
+                                    contactService
+                                            .addContactForResponsibleOfficerChange(communityOffenderManager, currentPOMResponsibleOfficer);
+                                }, () -> {
+                                    throw new ConflictingRequestException(String
+                                            .format("Cannot find an active COM for %s", offender
+                                                    .getNomsNumber()));
+                                }),
+                        () -> log.info(String.format("Current RO is not a POM for %s, so not doing anything", offender
+                                .getNomsNumber())));
+    }
+
+    private ResponsibleOfficer responsibleOfficerOf(Offender offender, OffenderManager communityOffenderManager) {
+        return ResponsibleOfficer
+                .builder()
+                .offenderId(offender.getOffenderId())
+                .offenderManagerId(communityOffenderManager.getOffenderManagerId())
+                .build();
+    }
+
+    private ResponsibleOfficer responsibleOfficerOf(Offender offender, PrisonOffenderManager prisonOffenderManager) {
+        return ResponsibleOfficer
+                .builder()
+                .offenderId(offender.getOffenderId())
+                .prisonOffenderManagerId(prisonOffenderManager.getPrisonOffenderManagerId())
+                .build();
+    }
+
+    private Optional<CommunityOrPrisonOffenderManager> currentResponsibleOfficer(final Offender offender) {
+        return getAllOffenderManagers(offender)
+                .stream()
+                .filter(CommunityOrPrisonOffenderManager::getIsResponsibleOfficer)
+                .findAny();
+    }
+
+    private List<CommunityOrPrisonOffenderManager> getAllOffenderManagers(final Offender offender) {
+        return combine(
+                offender.getOffenderManagers()
+                        .stream()
+                        .filter(OffenderManager::isActive)
+                        .map(OffenderManagerTransformer::offenderManagerOf)
+                        .collect(Collectors.toList()),
+                offender.getPrisonOffenderManagers()
+                        .stream()
+                        .filter(PrisonOffenderManager::isActive)
+                        .map(OffenderManagerTransformer::offenderManagerOf)
+                        .collect(Collectors.toList())
+        );
+    }
+
 }

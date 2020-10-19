@@ -644,6 +644,7 @@ public class EntityHelper {
                 .toBuilder()
                 .activeFlag(1L)
                 .endDate(null)
+                .responsibleOfficer(aResponsibleOfficer())
                 .build();
     }
 
@@ -671,6 +672,12 @@ public class EntityHelper {
                 .probationArea(ProbationArea.builder().code("A").description("B").privateSector(1L).build())
                 .staff(staff)
                 .team(team)
+                .allocationDate(LocalDate.now())
+                .allocationReason(StandardReference
+                        .builder()
+                        .codeValue("AUT")
+                        .codeDescription("Automatic allocation")
+                        .build())
                 .probationArea(aProbationArea())
                 .build();
     }
