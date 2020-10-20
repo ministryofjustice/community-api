@@ -101,7 +101,7 @@ public class OffenderManagerService_switchResponsibleOfficerTest {
             @BeforeEach
             void setUp() {
                 setupOffender(
-                        anActiveOffenderManager().toBuilder().responsibleOfficer(null).build());
+                        anActiveOffenderManager().toBuilder().responsibleOfficers(List.of()).build());
             }
 
             @Test
@@ -122,8 +122,8 @@ public class OffenderManagerService_switchResponsibleOfficerTest {
             @BeforeEach
             void setUp() {
                 setupOffender(
-                        anActiveOffenderManager().toBuilder().responsibleOfficer(aResponsibleOfficer()).build(),
-                        anActivePrisonOffenderManager().toBuilder().responsibleOfficer(null).build());
+                        anActiveOffenderManager().toBuilder().responsibleOfficers(List.of(aResponsibleOfficer())).build(),
+                        anActivePrisonOffenderManager().toBuilder().responsibleOfficers(List.of()).build());
             }
 
             @Test
@@ -143,7 +143,7 @@ public class OffenderManagerService_switchResponsibleOfficerTest {
             void setUp() {
                 setupOffender(
                         anInactiveOffenderManager("ABC"),
-                        anActivePrisonOffenderManager().toBuilder().responsibleOfficer(aResponsibleOfficer()).build());
+                        anActivePrisonOffenderManager().toBuilder().responsibleOfficers(List.of(aResponsibleOfficer())).build());
             }
 
             @Test
@@ -169,8 +169,11 @@ public class OffenderManagerService_switchResponsibleOfficerTest {
             @BeforeEach
             void setUp() {
                 when(responsibleOfficerRepository.save(any())).thenReturn(aResponsibleOfficer());
-                com = anActiveOffenderManager().toBuilder().responsibleOfficer(null).build();
-                pom = anActivePrisonOffenderManager().toBuilder().responsibleOfficer(aResponsibleOfficer()).build();
+                com = anActiveOffenderManager();
+                com.getResponsibleOfficers().clear();
+                pom = anActivePrisonOffenderManager();
+                pom.getResponsibleOfficers().clear();
+                pom.addResponsibleOfficer(aResponsibleOfficer());
 
                 setupOffender(com, pom);
 
@@ -187,8 +190,8 @@ public class OffenderManagerService_switchResponsibleOfficerTest {
             @Test
             @DisplayName("then community offender manager will be set as the responsible officer")
             void willSetCOMAsRo() {
-                assertThat(com.getResponsibleOfficer().isActive()).isTrue();
-                assertThat(pom.getResponsibleOfficer().isActive()).isFalse();
+                assertThat(com.getActiveResponsibleOfficer()).isNotNull();
+                assertThat(pom.getActiveResponsibleOfficer()).isNull();
             }
 
             @Test
@@ -219,7 +222,7 @@ public class OffenderManagerService_switchResponsibleOfficerTest {
             @BeforeEach
             void setUp() {
                 setupOffender(
-                        anActiveOffenderManager().toBuilder().responsibleOfficer(null).build());
+                        anActiveOffenderManager().toBuilder().responsibleOfficers(List.of()).build());
             }
 
             @Test
@@ -241,8 +244,8 @@ public class OffenderManagerService_switchResponsibleOfficerTest {
             @BeforeEach
             void setUp() {
                 setupOffender(
-                        anActiveOffenderManager().toBuilder().responsibleOfficer(null).build(),
-                        anActivePrisonOffenderManager().toBuilder().responsibleOfficer(aResponsibleOfficer()).build());
+                        anActiveOffenderManager().toBuilder().responsibleOfficers(List.of()).build(),
+                        anActivePrisonOffenderManager().toBuilder().responsibleOfficers(List.of(aResponsibleOfficer())).build());
             }
 
             @Test
@@ -262,7 +265,7 @@ public class OffenderManagerService_switchResponsibleOfficerTest {
             @BeforeEach
             void setUp() {
                 setupOffender(
-                        anActiveOffenderManager().toBuilder().responsibleOfficer(aResponsibleOfficer()).build(),
+                        anActiveOffenderManager().toBuilder().responsibleOfficers(List.of(aResponsibleOfficer())).build(),
                         anInactivePrisonOffenderManager("ABC").toBuilder().build());
             }
 
@@ -289,8 +292,11 @@ public class OffenderManagerService_switchResponsibleOfficerTest {
             @BeforeEach
             void setUp() {
                 when(responsibleOfficerRepository.save(any())).thenReturn(aResponsibleOfficer());
-                com = anActiveOffenderManager().toBuilder().responsibleOfficer(aResponsibleOfficer()).build();
-                pom = anActivePrisonOffenderManager().toBuilder().responsibleOfficer(null).build();
+                com = anActiveOffenderManager();
+                com.getResponsibleOfficers().clear();
+                com.addResponsibleOfficer(aResponsibleOfficer());
+                pom = anActivePrisonOffenderManager();
+                pom.getResponsibleOfficers().clear();
 
                 setupOffender(com, pom);
 
@@ -307,8 +313,8 @@ public class OffenderManagerService_switchResponsibleOfficerTest {
             @Test
             @DisplayName("then prison offender manager will be set as the responsible officer")
             void willSetPOMAsRo() {
-                assertThat(pom.getResponsibleOfficer().isActive()).isTrue();
-                assertThat(com.getResponsibleOfficer().isActive()).isFalse();
+                assertThat(pom.getActiveResponsibleOfficer()).isNotNull();
+                assertThat(com.getActiveResponsibleOfficer()).isNull();
             }
 
             @Test

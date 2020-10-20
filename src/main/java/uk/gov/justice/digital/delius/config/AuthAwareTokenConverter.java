@@ -8,7 +8,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class AuthAwareTokenConverter implements Converter<Jwt, AbstractAuthenticationToken> {
@@ -21,7 +20,7 @@ public class AuthAwareTokenConverter implements Converter<Jwt, AbstractAuthentic
     }
 
     private Collection<GrantedAuthority> extractAuthorities(final Jwt jwt) {
-        final Collection<String> authorities = (Collection<String>)jwt.getClaims().getOrDefault("authorities", List.of());
+        @SuppressWarnings("unchecked") final Collection<String> authorities = (Collection<String>)jwt.getClaims().getOrDefault("authorities", List.of());
         return authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toUnmodifiableSet());
     }
 }

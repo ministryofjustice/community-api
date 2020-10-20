@@ -15,15 +15,15 @@ import static uk.gov.justice.digital.delius.util.EntityHelper.anInactivePrisonOf
 class OffenderTest {
     private final PrisonOffenderManager inactivePOM = anInactivePrisonOffenderManager("ABC");
     private final PrisonOffenderManager activePOMNotRO = anActivePrisonOffenderManager().toBuilder()
-            .responsibleOfficer(null).build();
+            .responsibleOfficers(List.of()).build();
     private final PrisonOffenderManager activePOMIsRO = anActivePrisonOffenderManager().toBuilder()
-            .responsibleOfficer(aResponsibleOfficer()).build();
+            .responsibleOfficers(List.of(aResponsibleOfficer())).build();
 
     private final OffenderManager inactiveCOM = anInactiveOffenderManager("ABC");
-    private final OffenderManager activeCOMNotRO = anActiveOffenderManager().toBuilder().responsibleOfficer(null)
+    private final OffenderManager activeCOMNotRO = anActiveOffenderManager().toBuilder().responsibleOfficers(List.of())
             .build();
     private final OffenderManager activeCOMIsRO = anActiveOffenderManager().toBuilder()
-            .responsibleOfficer(aResponsibleOfficer()).build();
+            .responsibleOfficers(List.of(aResponsibleOfficer())).build();
 
     @Nested
     class GetResponsibleOfficerWhoIsPrisonOffenderManager {

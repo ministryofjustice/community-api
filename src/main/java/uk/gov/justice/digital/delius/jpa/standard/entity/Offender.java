@@ -222,8 +222,7 @@ public class Offender {
 
     public Optional<PrisonOffenderManager> getResponsibleOfficerWhoIsPrisonOffenderManager() {
         return getActivePrisonOffenderManager()
-                .filter(pom -> pom.getResponsibleOfficer() != null)
-                .filter(pom -> pom.getResponsibleOfficer().isActive());
+                .filter(pom -> pom.getActiveResponsibleOfficer() != null);
     }
 
     public Optional<OffenderManager> getActiveCommunityOffenderManager() {
@@ -234,8 +233,7 @@ public class Offender {
     }
     public Optional<OffenderManager> getResponsibleOfficerWhoIsCommunityOffenderManager() {
         return getActiveCommunityOffenderManager()
-                .filter(pom -> pom.getResponsibleOfficer() != null)
-                .filter(pom -> pom.getResponsibleOfficer().isActive());
+                .filter(com -> com.getActiveResponsibleOfficer() != null);
     }
 
     public Optional<PrisonOffenderManager> getActivePrisonOffenderManager() {

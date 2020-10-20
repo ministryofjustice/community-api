@@ -21,7 +21,6 @@ import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.data.api.Team;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disability;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
-import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAddress;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
@@ -37,6 +36,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.function.Predicate.not;
@@ -340,7 +340,7 @@ public class OffenderTransformer {
         return ResponsibleOfficer
                 .builder()
                 .nomsNumber(offender.getNomsNumber())
-                .responsibleOfficerId(isCurrentRo(om.getResponsibleOfficer()) ? om.getResponsibleOfficer().getResponsibleOfficerId() : null)
+                .responsibleOfficerId(Objects.nonNull(om.getActiveResponsibleOfficer()) ? om.getActiveResponsibleOfficer().getResponsibleOfficerId() : null)
                 .offenderManagerId(om.getOffenderManagerId())
                 .prisonOffenderManagerId(null)
                 .staffCode(Optional.ofNullable(om.getStaff()).map(Staff::getOfficerCode).orElse(null))
@@ -353,7 +353,7 @@ public class OffenderTransformer {
                 .lduDescription(Optional.ofNullable(om.getTeam()).map(team -> team.getLocalDeliveryUnit().getDescription()).orElse(null))
                 .probationAreaCode(Optional.ofNullable(om.getProbationArea()).map(ProbationArea::getCode).orElse(null))
                 .probationAreaDescription(Optional.ofNullable(om.getProbationArea()).map(ProbationArea::getDescription).orElse(null))
-                .isCurrentRo(isCurrentRo(om.getResponsibleOfficer()))
+                .isCurrentRo(Objects.nonNull(om.getActiveResponsibleOfficer()))
                 .isCurrentOm(isCurrentManager(om.getActiveFlag(), om.getEndDate()))
                 .isCurrentPom(false)
                 .omStartDate(om.getAllocationDate())
@@ -366,7 +366,7 @@ public class OffenderTransformer {
         return ResponsibleOfficer
                 .builder()
                 .nomsNumber(offender.getNomsNumber())
-                .responsibleOfficerId((isCurrentRo(pom.getResponsibleOfficer()) ? pom.getResponsibleOfficer().getResponsibleOfficerId() : null))
+                .responsibleOfficerId((Objects.nonNull(pom.getActiveResponsibleOfficer()) ? pom.getActiveResponsibleOfficer().getResponsibleOfficerId() : null))
                 .prisonOffenderManagerId(pom.getPrisonOffenderManagerId())
                 .staffCode(Optional.ofNullable(pom.getStaff()).map(Staff::getOfficerCode).orElse(null))
                 .surname(Optional.ofNullable(pom.getStaff()).map(Staff::getSurname).orElse(null))
@@ -378,7 +378,7 @@ public class OffenderTransformer {
                 .lduDescription(Optional.ofNullable(pom.getTeam()).map(team -> team.getLocalDeliveryUnit().getDescription()).orElse(null))
                 .probationAreaCode(Optional.ofNullable(pom.getProbationArea()).map(ProbationArea::getCode).orElse(null))
                 .probationAreaDescription(Optional.ofNullable(pom.getProbationArea()).map(ProbationArea::getDescription).orElse(null))
-                .isCurrentRo(isCurrentRo(pom.getResponsibleOfficer()))
+                .isCurrentRo(Objects.nonNull(pom.getActiveResponsibleOfficer()))
                 .isCurrentOm(false)
                 .isCurrentPom(isCurrentManager(pom.getActiveFlag(), pom.getEndDate()))
                 .omStartDate(null)
@@ -425,7 +425,7 @@ public class OffenderTransformer {
                 .nomsNumber(Optional.ofNullable(om.getManagedOffender()).map(Offender::getNomsNumber).orElse(null))
                 .crnNumber(Optional.ofNullable(om.getManagedOffender()).map(Offender::getCrn).orElse(null))
                 .offenderSurname(Optional.ofNullable(om.getManagedOffender()).map(Offender::getSurname).orElse(null))
-                .isCurrentRo(isCurrentRo(om.getResponsibleOfficer()))
+                .isCurrentRo(Objects.nonNull(om.getActiveResponsibleOfficer()))
                 .isCurrentOm(isCurrentManager(om.getActiveFlag(), om.getEndDate()))
                 .isCurrentPom(false)
                 .omStartDate(om.getAllocationDate())
@@ -442,7 +442,7 @@ public class OffenderTransformer {
                 .nomsNumber(Optional.ofNullable(pom.getManagedOffender()).map(Offender::getNomsNumber).orElse(null))
                 .crnNumber(Optional.ofNullable(pom.getManagedOffender()).map(Offender::getCrn).orElse(null))
                 .offenderSurname(Optional.ofNullable(pom.getManagedOffender()).map(Offender::getSurname).orElse(null))
-                .isCurrentRo(isCurrentRo(pom.getResponsibleOfficer()))
+                .isCurrentRo(Objects.nonNull(pom.getActiveResponsibleOfficer()))
                 .isCurrentOm(false)
                 .isCurrentPom(isCurrentManager(pom.getActiveFlag(), pom.getEndDate()))
                 .omStartDate(null)
@@ -497,14 +497,6 @@ public class OffenderTransformer {
                                 .build())
                         .collect(toList()))
                 .orElse(List.of());
-    }
-
-    private static boolean isCurrentRo(uk.gov.justice.digital.delius.jpa.standard.entity.ResponsibleOfficer ro) {
-        boolean result = false;
-        if (ro != null && ro.getEndDateTime() == null) {
-            result = true;
-        }
-        return result;
     }
 
     private static boolean isCurrentManager(Long activeFlag, LocalDate endDate) {

@@ -135,7 +135,7 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
                 .build();
         var existingPOM  = anActivePrisonOffenderManager()
                 .toBuilder()
-                .responsibleOfficer(existingPOMResponsibleOfficer)
+                .responsibleOfficers(List.of(existingPOMResponsibleOfficer))
                 .build();
         var offender = anOffender(List.of(), List.of(existingPOM));
 
@@ -152,7 +152,7 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
                 .build();
         var existingPOM  = anActivePrisonOffenderManager()
                 .toBuilder()
-                .responsibleOfficer(existingPOMResponsibleOfficer)
+                .responsibleOfficers(List.of(existingPOMResponsibleOfficer))
                 .build();
 
         var offender = anOffender(List.of(), List.of(existingPOM));
@@ -199,7 +199,7 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
                 .build();
         var existingPOM  = anActivePrisonOffenderManager()
                 .toBuilder()
-                .responsibleOfficer(existingPOMResponsibleOfficer)
+                .responsibleOfficers(List.of(existingPOMResponsibleOfficer))
                 .build();
 
         when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> {

@@ -363,7 +363,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                 .build();
         final var existingPOM = anActivePrisonOffenderManager()
                 .toBuilder()
-                .responsibleOfficer(existingPOMResponsibleOfficer)
+                .responsibleOfficers(List.of(existingPOMResponsibleOfficer))
                 .build();
 
         when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
@@ -396,7 +396,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                 .build();
         final var existingPOM = anActivePrisonOffenderManager()
                 .toBuilder()
-                .responsibleOfficer(existingPOMResponsibleOfficer)
+                .responsibleOfficers(List.of(existingPOMResponsibleOfficer))
                 .build();
 
         when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
@@ -482,7 +482,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                 .build();
         final var existingPOM = anActivePrisonOffenderManager()
                 .toBuilder()
-                .responsibleOfficer(existingPOMResponsibleOfficer)
+                .responsibleOfficers(List.of(existingPOMResponsibleOfficer))
                 .build();
 
         when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(

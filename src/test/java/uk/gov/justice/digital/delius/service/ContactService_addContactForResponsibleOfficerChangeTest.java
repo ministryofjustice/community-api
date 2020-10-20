@@ -15,6 +15,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeReposito
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -70,10 +71,10 @@ public class ContactService_addContactForResponsibleOfficerChangeTest {
                                     .codeDescription("Automatic allocation")
                                     .build())
                             .allocationDate(LocalDate.of(2019, 7, 19))
-                            .responsibleOfficer(aResponsibleOfficer()
+                            .responsibleOfficers(List.of(aResponsibleOfficer()
                                     .toBuilder()
                                     .startDateTime(LocalDateTime.of(2019, 7, 19, 11, 12, 59))
-                                    .build())
+                                    .build()))
                             .build(),
                     anActivePrisonOffenderManager()
                             .toBuilder()
@@ -85,11 +86,11 @@ public class ContactService_addContactForResponsibleOfficerChangeTest {
                                     .build())
                             .allocationDate(LocalDate.of(2018, 7, 19))
                             .endDate(LocalDate.of(2019, 7, 19))
-                            .responsibleOfficer(aResponsibleOfficer()
+                            .responsibleOfficers(List.of(aResponsibleOfficer()
                                     .toBuilder()
                                     .startDateTime(LocalDateTime.of(2018, 7, 19, 16, 12, 59))
                                     .endDateTime(LocalDateTime.of(2019, 7, 19, 11, 12, 58))
-                                    .build())
+                                    .build()))
                             .build()
             );
 
@@ -119,7 +120,7 @@ public class ContactService_addContactForResponsibleOfficerChangeTest {
                                     .toBuilder()
                                     .description("Moorland (HMP & YOI)")
                                     .build())
-                            .responsibleOfficer(aResponsibleOfficer())
+                            .responsibleOfficers(List.of(aResponsibleOfficer()))
                             .build(),
                     anActivePrisonOffenderManager()
                             .toBuilder()
@@ -136,7 +137,7 @@ public class ContactService_addContactForResponsibleOfficerChangeTest {
                                     .toBuilder()
                                     .description("Wandsworth (HMP)")
                                     .build())
-                            .responsibleOfficer(aResponsibleOfficer())
+                            .responsibleOfficers(List.of(aResponsibleOfficer()))
                             .build()
             );
 
@@ -173,10 +174,10 @@ public class ContactService_addContactForResponsibleOfficerChangeTest {
                                     .codeDescription("Automatic allocation")
                                     .build())
                             .allocationDate(LocalDate.of(2019, 7, 19))
-                            .responsibleOfficer(aResponsibleOfficer()
+                            .responsibleOfficers(List.of(aResponsibleOfficer()
                                     .toBuilder()
                                     .startDateTime(LocalDateTime.of(2019, 7, 19, 11, 12, 59))
-                                    .build())
+                                    .build()))
                             .build(),
                     anActiveOffenderManager()
                             .toBuilder()
@@ -188,11 +189,11 @@ public class ContactService_addContactForResponsibleOfficerChangeTest {
                                     .build())
                             .allocationDate(LocalDate.of(2018, 7, 19))
                             .endDate(LocalDate.of(2019, 7, 19))
-                            .responsibleOfficer(aResponsibleOfficer()
+                            .responsibleOfficers(List.of(aResponsibleOfficer()
                                     .toBuilder()
                                     .startDateTime(LocalDateTime.of(2018, 7, 19, 16, 12, 59))
                                     .endDateTime(LocalDateTime.of(2019, 7, 19, 11, 12, 58))
-                                    .build())
+                                    .build()))
                             .build()
             );
 
@@ -222,7 +223,7 @@ public class ContactService_addContactForResponsibleOfficerChangeTest {
                                     .toBuilder()
                                     .description("Moorland (HMP & YOI)")
                                     .build())
-                            .responsibleOfficer(aResponsibleOfficer())
+                            .responsibleOfficers(List.of(aResponsibleOfficer()))
                             .build(),
                     anActiveOffenderManager()
                             .toBuilder()
@@ -239,7 +240,7 @@ public class ContactService_addContactForResponsibleOfficerChangeTest {
                                     .toBuilder()
                                     .description("NPS North West")
                                     .build())
-                            .responsibleOfficer(aResponsibleOfficer())
+                            .responsibleOfficers(List.of(aResponsibleOfficer()))
                             .build()
             );
 
@@ -278,11 +279,11 @@ public class ContactService_addContactForResponsibleOfficerChangeTest {
                                     .build())
                             .allocationDate(LocalDate.of(2018, 7, 19))
                             .endDate(LocalDate.of(2019, 7, 19))
-                            .responsibleOfficer(aResponsibleOfficer()
+                            .responsibleOfficers(List.of(aResponsibleOfficer()
                                     .toBuilder()
                                     .startDateTime(LocalDateTime.of(2018, 7, 19, 16, 12, 59))
                                     .endDateTime(LocalDateTime.of(2019, 7, 19, 11, 12, 58))
-                                    .build())
+                                    .build()))
                             .build(),
                     anActivePrisonOffenderManager()
                             .toBuilder()
@@ -292,10 +293,10 @@ public class ContactService_addContactForResponsibleOfficerChangeTest {
                                     .codeDescription("Automatic allocation")
                                     .build())
                             .allocationDate(LocalDate.of(2019, 7, 19))
-                            .responsibleOfficer(aResponsibleOfficer()
+                            .responsibleOfficers(List.of(aResponsibleOfficer()
                                     .toBuilder()
                                     .startDateTime(LocalDateTime.of(2019, 7, 19, 11, 12, 59))
-                                    .build())
+                                    .build()))
                             .build()
 
             );
@@ -326,7 +327,7 @@ public class ContactService_addContactForResponsibleOfficerChangeTest {
                                     .toBuilder()
                                     .description("NPS North West")
                                     .build())
-                            .responsibleOfficer(aResponsibleOfficer())
+                            .responsibleOfficers(List.of(aResponsibleOfficer()))
                             .build(),
                     anActivePrisonOffenderManager()
                             .toBuilder()
@@ -343,7 +344,7 @@ public class ContactService_addContactForResponsibleOfficerChangeTest {
                                     .toBuilder()
                                     .description("Moorland (HMP & YOI)")
                                     .build())
-                            .responsibleOfficer(aResponsibleOfficer())
+                            .responsibleOfficers(List.of(aResponsibleOfficer()))
                             .build()
             );
 

@@ -9,12 +9,16 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 @EqualsAndHashCode(of = "prisonOffenderManagerId")
-@ToString(exclude = {"team","staff","probationArea", "responsibleOfficer" ,"managedOffender"})
+@ToString(exclude = {"team","staff","probationArea", "responsibleOfficers" ,"managedOffender"})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,7 +26,7 @@ import java.util.Optional;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "PRISON_OFFENDER_MANAGER")
-public class PrisonOffenderManager {
+public class PrisonOffenderManager implements Serializable {
 
     @Id
     @SequenceGenerator(name = "PRISON_OFFENDER_MANAGER_ID_GENERATOR", sequenceName = "PRISON_OFFENDER_MANAGER_ID_SEQ", allocationSize = 1)
@@ -64,12 +68,13 @@ public class PrisonOffenderManager {
     @JoinColumn(name = "ALLOCATION_REASON_ID")
     private StandardReference allocationReason;
 
-    @OneToOne
+    @OneToMany
     @JoinColumns({
             @JoinColumn(name = "PRISON_OFFENDER_MANAGER_ID", referencedColumnName = "PRISON_OFFENDER_MANAGER_ID", insertable = false, updatable = false),
             @JoinColumn(name = "OFFENDER_ID", referencedColumnName = "OFFENDER_ID", insertable = false, updatable = false)
     })
-    private ResponsibleOfficer responsibleOfficer;
+    @Builder.Default
+    private List<ResponsibleOfficer> responsibleOfficers = new ArrayList<>();
 
     @OneToOne
     @JoinColumn(name = "OFFENDER_ID", referencedColumnName = "OFFENDER_ID", insertable = false, updatable = false)
@@ -100,6 +105,16 @@ public class PrisonOffenderManager {
 
     public boolean isActive() {
         return endDate == null && Optional.ofNullable(activeFlag).orElse(0L) == 1L && !isDeleted();
+    }
+
+    public ResponsibleOfficer getActiveResponsibleOfficer() {
+        return responsibleOfficers.stream().filter(ResponsibleOfficer::isActive).findAny().orElse(null);
+    }
+    public ResponsibleOfficer getLatestResponsibleOfficer() {
+        return responsibleOfficers.stream().max(Comparator.comparing(ResponsibleOfficer::getStartDateTime)).orElse(null);
+    }
+    public void addResponsibleOfficer(ResponsibleOfficer responsibleOfficer) {
+        responsibleOfficers.add(responsibleOfficer);
     }
     private boolean isDeleted() {
         return Optional.ofNullable(softDeleted).orElse(0L) == 1L;

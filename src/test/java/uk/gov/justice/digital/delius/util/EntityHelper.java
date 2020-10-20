@@ -68,6 +68,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class EntityHelper {
@@ -644,8 +646,12 @@ public class EntityHelper {
                 .toBuilder()
                 .activeFlag(1L)
                 .endDate(null)
-                .responsibleOfficer(aResponsibleOfficer())
+                .responsibleOfficers(mutableListOf(aResponsibleOfficer()))
                 .build();
+    }
+
+    static <E> List<E> mutableListOf(E ... e1) {
+        return new ArrayList<>(Arrays.asList(e1));
     }
 
     public static OffenderManager anInactiveOffenderManager(final String staffCode) {
@@ -691,7 +697,7 @@ public class EntityHelper {
                 .toBuilder()
                 .activeFlag(1L)
                 .endDate(null)
-                .responsibleOfficer(aResponsibleOfficer())
+                .responsibleOfficers(mutableListOf(aResponsibleOfficer()))
                 .build();
     }
 

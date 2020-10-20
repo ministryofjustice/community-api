@@ -107,7 +107,7 @@ SPRING_LDAP_URLS=ldap://<ldap_addr>:<ldap_port> SPRING_LDAP_USERNAME=cn=orcladmi
 SPRING_PROFILES_ACTIVE=dev ./gradlew bootRun
 ```
 
-H2 Web console - <http://localhost:8080/api/h2-console>
+H2 Web console - <http://localhost:8080/h2-console>
 
 JDBC URL: ```jdbc:h2:mem:testdb;Mode=Oracle``` 
 USER: sa
