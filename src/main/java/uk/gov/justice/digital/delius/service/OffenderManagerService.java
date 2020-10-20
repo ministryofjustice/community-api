@@ -137,12 +137,11 @@ public class OffenderManagerService {
             existingPOM.setEndDate(LocalDate.now());
             existingPOM.setActiveFlag(0L);
 
-            Optional.ofNullable(existingPOM.getResponsibleOfficer())
-                    .filter(ro -> ro.getEndDateTime() == null)
+            Optional.ofNullable(existingPOM.getActiveResponsibleOfficer())
                     .ifPresent(activeRo -> {
                         // deactivate old RO and add a new one
                         activeRo.setEndDateTime(LocalDateTime.now());
-                        newPrisonOffenderManager.setResponsibleOfficer(responsibleOfficerRepository.save(responsibleOfficerOf(offender, newPrisonOffenderManager)));
+                        newPrisonOffenderManager.addResponsibleOfficer(responsibleOfficerRepository.save(responsibleOfficerOf(offender, newPrisonOffenderManager)));
                         contactService.addContactForResponsibleOfficerChange(newPrisonOffenderManager, existingPOM);
                     });
         }, () -> contactService.addContactForPOMAllocation(newPrisonOffenderManager));
@@ -214,8 +213,8 @@ public class OffenderManagerService {
         offender.getResponsibleOfficerWhoIsCommunityOffenderManager()
                 .ifPresentOrElse(currentCOMResponsibleOfficer -> offender.getActivePrisonOffenderManager()
                         .ifPresentOrElse(prisonOffenderManager -> {
-                            currentCOMResponsibleOfficer.getResponsibleOfficer().setEndDateTime(LocalDateTime.now());
-                            prisonOffenderManager.setResponsibleOfficer(responsibleOfficerRepository
+                            currentCOMResponsibleOfficer.getActiveResponsibleOfficer().makeInactive();
+                            prisonOffenderManager.addResponsibleOfficer(responsibleOfficerRepository
                                     .save(responsibleOfficerOf(offender, prisonOffenderManager)));
                             contactService
                                     .addContactForResponsibleOfficerChange(prisonOffenderManager, currentCOMResponsibleOfficer);
@@ -231,9 +230,8 @@ public class OffenderManagerService {
         offender.getResponsibleOfficerWhoIsPrisonOffenderManager()
                 .ifPresentOrElse(currentPOMResponsibleOfficer -> offender.getActiveCommunityOffenderManager()
                                 .ifPresentOrElse(communityOffenderManager -> {
-                                    currentPOMResponsibleOfficer.getResponsibleOfficer()
-                                            .setEndDateTime(LocalDateTime.now());
-                                    communityOffenderManager.setResponsibleOfficer(responsibleOfficerRepository
+                                    currentPOMResponsibleOfficer.getActiveResponsibleOfficer().makeInactive();
+                                    communityOffenderManager.addResponsibleOfficer(responsibleOfficerRepository
                                             .save(responsibleOfficerOf(offender, communityOffenderManager)));
                                     contactService
                                             .addContactForResponsibleOfficerChange(communityOffenderManager, currentPOMResponsibleOfficer);

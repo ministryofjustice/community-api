@@ -242,7 +242,7 @@ public class OffenderTransformerTest {
                         .team(aTeam())
                         .providerTeam(aProviderTeam())
                         .staff(anOfficerWithoutOffenderManagers())
-                        .responsibleOfficer(aResponsibleOfficer())
+                        .responsibleOfficers(List.of(aResponsibleOfficer()))
                         .managedOffender(anOffenderWithoutManagers())
                         .build()
         );

@@ -5,6 +5,7 @@ import org.junit.Test;
 import uk.gov.justice.digital.delius.data.api.Human;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.digital.delius.util.EntityHelper.*;
@@ -205,29 +206,29 @@ public class OffenderManagerTransformerTest {
         assertThat(OffenderManagerTransformer.offenderManagerOf(
                 anActiveOffenderManager()
                         .toBuilder()
-                        .responsibleOfficer(
-                                aResponsibleOfficer()
+                        .responsibleOfficers(
+                                List.of(aResponsibleOfficer()
                                         .toBuilder()
                                         .endDateTime(null)
-                                        .build())
+                                        .build()))
                         .build()
         ).getIsResponsibleOfficer()).isTrue();
 
         assertThat(OffenderManagerTransformer.offenderManagerOf(
                 anActiveOffenderManager()
                         .toBuilder()
-                        .responsibleOfficer(
-                                aResponsibleOfficer()
+                        .responsibleOfficers(
+                                List.of(aResponsibleOfficer()
                                         .toBuilder()
                                         .endDateTime(LocalDateTime.now())
-                                        .build())
+                                        .build()))
                         .build()
         ).getIsResponsibleOfficer()).isFalse();
 
         assertThat(OffenderManagerTransformer.offenderManagerOf(
                 anActiveOffenderManager()
                         .toBuilder()
-                        .responsibleOfficer(null)
+                        .responsibleOfficers(List.of())
                         .build()
         ).getIsResponsibleOfficer()).isFalse();
 
@@ -237,29 +238,29 @@ public class OffenderManagerTransformerTest {
         assertThat(OffenderManagerTransformer.offenderManagerOf(
                 anActivePrisonOffenderManager()
                         .toBuilder()
-                        .responsibleOfficer(
-                                aResponsibleOfficer()
+                        .responsibleOfficers(
+                                List.of(aResponsibleOfficer()
                                         .toBuilder()
                                         .endDateTime(null)
-                                        .build())
+                                        .build()))
                         .build()
         ).getIsResponsibleOfficer()).isTrue();
 
         assertThat(OffenderManagerTransformer.offenderManagerOf(
                 anActivePrisonOffenderManager()
                         .toBuilder()
-                        .responsibleOfficer(
+                        .responsibleOfficers(List.of(
                                 aResponsibleOfficer()
                                         .toBuilder()
                                         .endDateTime(LocalDateTime.now())
-                                        .build())
+                                        .build()))
                         .build()
         ).getIsResponsibleOfficer()).isFalse();
 
         assertThat(OffenderManagerTransformer.offenderManagerOf(
                 anActivePrisonOffenderManager()
                         .toBuilder()
-                        .responsibleOfficer(null)
+                        .responsibleOfficers(List.of())
                         .build()
         ).getIsResponsibleOfficer()).isFalse();
 

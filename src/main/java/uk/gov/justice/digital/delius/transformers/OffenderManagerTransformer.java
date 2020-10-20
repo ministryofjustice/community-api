@@ -6,6 +6,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public class OffenderManagerTransformer {
@@ -30,7 +31,7 @@ public class OffenderManagerTransformer {
                         .ofNullable(offenderManager.getProbationArea())
                         .map(ProbationAreaTransformer::probationAreaOf)
                         .orElse(null))
-                .isResponsibleOfficer(isResponsibleOfficer(offenderManager.getResponsibleOfficer()))
+                .isResponsibleOfficer(Objects.nonNull(offenderManager.getActiveResponsibleOfficer()))
                 .fromDate(offenderManager.getAllocationDate())
                 .build();
     }
@@ -54,7 +55,7 @@ public class OffenderManagerTransformer {
                         .ofNullable(offenderManager.getProbationArea())
                         .map(ProbationAreaTransformer::probationAreaOf)
                         .orElse(null))
-                .isResponsibleOfficer(isResponsibleOfficer(offenderManager.getResponsibleOfficer()))
+                .isResponsibleOfficer(Objects.nonNull(offenderManager.getActiveResponsibleOfficer()))
                 .fromDate(offenderManager.getAllocationDate())
                 .build();
     }
@@ -99,10 +100,4 @@ public class OffenderManagerTransformer {
                 .orElse(false);
     }
 
-    private static boolean isResponsibleOfficer(final ResponsibleOfficer responsibleOfficer) {
-        return Optional
-                .ofNullable(responsibleOfficer)
-                .filter(officer -> officer.getEndDateTime() == null)
-                .isPresent();
-    }
 }

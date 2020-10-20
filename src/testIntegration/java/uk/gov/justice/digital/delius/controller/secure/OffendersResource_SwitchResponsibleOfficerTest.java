@@ -71,7 +71,7 @@ public class OffendersResource_SwitchResponsibleOfficerTest extends IntegrationT
     @DisplayName("Will switch Responsible officer from COM to POM and back again")
     public void canSwitchResponsibleOfficerToPrisonOffenderManager() {
         // Given an offender has no prison offender manager
-        assertThat(prisonOffenderManager(getOffenderManagers("G0560UO"))).isEmpty();
+        assertThat(getOffenderManagers("G0560UO")).hasSize(1);
 
         // Then the responsible officer can not be assigned to a POM
         given()
@@ -91,10 +91,9 @@ public class OffendersResource_SwitchResponsibleOfficerTest extends IntegrationT
         // AND the COM is currently the Responsible Officer
         final var offenderManagersBeforeSwitch = getOffenderManagers("G0560UO");
 
-        assertThat(communityOffenderManager(offenderManagersBeforeSwitch).orElseThrow().getIsResponsibleOfficer())
-                .isTrue();
-        assertThat(prisonOffenderManager(offenderManagersBeforeSwitch).orElseThrow().getIsResponsibleOfficer())
-                .isFalse();
+        assertThat(offenderManagersBeforeSwitch).hasSize(2);
+        assertThat(isCommunityOffenderManagerTheRO(offenderManagersBeforeSwitch)).isTrue();
+        assertThat(isPrisonOffenderManagerTheRO(offenderManagersBeforeSwitch)).isFalse();
 
         // WHEN I request responsible officer is switched to the POM
         given()
@@ -112,9 +111,9 @@ public class OffendersResource_SwitchResponsibleOfficerTest extends IntegrationT
         final var offenderManagersAfterSwitch = getOffenderManagers("G0560UO");
 
         // THEN the responsible officer is now set to Prison Offender Manager
-        assertThat(prisonOffenderManager(offenderManagersAfterSwitch).orElseThrow().getIsResponsibleOfficer()).isTrue();
-        assertThat(communityOffenderManager(offenderManagersAfterSwitch).orElseThrow().getIsResponsibleOfficer())
-                .isFalse();
+        assertThat(offenderManagersBeforeSwitch).hasSize(2);
+        assertThat(isPrisonOffenderManagerTheRO(offenderManagersAfterSwitch)).isTrue();
+        assertThat(isCommunityOffenderManagerTheRO(offenderManagersAfterSwitch)).isFalse();
 
         // AND a CONTACT has been added to show responsible officer has changed
         final var contacts = getRecentContacts("G0560UO");
@@ -140,10 +139,9 @@ public class OffendersResource_SwitchResponsibleOfficerTest extends IntegrationT
         final var offenderManagersAfterSecondSwitch = getOffenderManagers("G0560UO");
 
         // THEN the responsible officer is now the Community Offender Manager
-        assertThat(communityOffenderManager(offenderManagersAfterSecondSwitch).orElseThrow().getIsResponsibleOfficer())
-                .isTrue();
-        assertThat(prisonOffenderManager(offenderManagersAfterSecondSwitch).orElseThrow().getIsResponsibleOfficer())
-                .isFalse();
+        assertThat(offenderManagersAfterSecondSwitch).hasSize(2);
+        assertThat(isCommunityOffenderManagerTheRO(offenderManagersAfterSecondSwitch)).isTrue();
+        assertThat(isPrisonOffenderManagerTheRO(offenderManagersAfterSecondSwitch)).isFalse();
 
     }
 
@@ -230,6 +228,14 @@ public class OffendersResource_SwitchResponsibleOfficerTest extends IntegrationT
                 .extract()
                 .body()
                 .as(Contact[].class);
+    }
+
+    private Boolean isPrisonOffenderManagerTheRO(CommunityOrPrisonOffenderManager[] offenderManagersAfterSecondSwitch) {
+        return prisonOffenderManager(offenderManagersAfterSecondSwitch).orElseThrow().getIsResponsibleOfficer();
+    }
+
+    private Boolean isCommunityOffenderManagerTheRO(CommunityOrPrisonOffenderManager[] offenderManagersBeforeSwitch) {
+        return communityOffenderManager(offenderManagersBeforeSwitch).orElseThrow().getIsResponsibleOfficer();
     }
 
 }

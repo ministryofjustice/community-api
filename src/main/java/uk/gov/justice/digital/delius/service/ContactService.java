@@ -247,8 +247,8 @@ public class ContactService {
                         "%s" +
                         "Allocation Reason: %s\n",
                 responsibleOfficerOf(prisonOffenderManager),
-                prisonOffenderManager.getResponsibleOfficer().getStartDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")),
-                Optional.ofNullable(prisonOffenderManager.getResponsibleOfficer().getEndDateTime()).map(dateTime -> dateTime.format(DateTimeFormatter.ofPattern("'End Date: 'dd/MM/yyyy HH:mm:ss'\n'"))).orElse(""),
+                prisonOffenderManager.getLatestResponsibleOfficer().getStartDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")),
+                Optional.ofNullable(prisonOffenderManager.getLatestResponsibleOfficer().getEndDateTime()).map(dateTime -> dateTime.format(DateTimeFormatter.ofPattern("'End Date: 'dd/MM/yyyy HH:mm:ss'\n'"))).orElse(""),
                 prisonOffenderManager.getAllocationReason().getCodeDescription())
         ;
     }
@@ -261,8 +261,8 @@ public class ContactService {
                         "%s" +
                         "Allocation Reason: %s\n",
                 responsibleOfficerOf(offenderManager),
-                offenderManager.getResponsibleOfficer().getStartDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")),
-                Optional.ofNullable(offenderManager.getResponsibleOfficer().getEndDateTime()).map(dateTime -> dateTime.format(DateTimeFormatter.ofPattern("'End Date: 'dd/MM/yyyy HH:mm:ss'\n'"))).orElse(""),
+                offenderManager.getLatestResponsibleOfficer().getStartDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")),
+                Optional.ofNullable(offenderManager.getLatestResponsibleOfficer().getEndDateTime()).map(dateTime -> dateTime.format(DateTimeFormatter.ofPattern("'End Date: 'dd/MM/yyyy HH:mm:ss'\n'"))).orElse(""),
                 offenderManager.getAllocationReason().getCodeDescription())
         ;
     }

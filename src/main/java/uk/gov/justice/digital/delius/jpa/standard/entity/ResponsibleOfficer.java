@@ -12,6 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -72,7 +73,11 @@ public class ResponsibleOfficer implements Serializable {
     @LastModifiedDate
     private LocalDateTime lastUpdatedDatetime;
 
-    public boolean isActive() {
+    protected boolean isActive() {
         return endDateTime == null;
+    }
+
+    public void makeInactive() {
+        this.endDateTime = LocalDateTime.now();
     }
 }

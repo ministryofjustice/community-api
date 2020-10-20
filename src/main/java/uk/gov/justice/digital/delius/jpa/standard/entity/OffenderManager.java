@@ -4,18 +4,22 @@ import lombok.*;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 @EqualsAndHashCode(of = {"offenderManagerId", "offenderId" , "allocationDate"})
-@ToString(exclude = {"team","staff","partitionArea","providerTeam","probationArea", "responsibleOfficer","managedOffender" ,"officer"})
+@ToString(exclude = {"team","staff","partitionArea","providerTeam","probationArea", "responsibleOfficers","managedOffender" ,"officer"})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Entity
 @Table(name = "OFFENDER_MANAGER")
-public class OffenderManager {
+public class OffenderManager implements Serializable {
 
     @Column(name = "OFFENDER_MANAGER_ID")
     @Id
@@ -78,13 +82,14 @@ public class OffenderManager {
     @JoinColumn(name = "ALLOCATION_REASON_ID")
     private StandardReference allocationReason;
 
-    @OneToOne
+    @OneToMany
     @JoinColumns({
             @JoinColumn(name = "OFFENDER_MANAGER_ID", referencedColumnName = "OFFENDER_MANAGER_ID", insertable = false, updatable = false),
             @JoinColumn(name = "OFFENDER_ID",
                     referencedColumnName = "OFFENDER_ID", insertable = false, updatable = false)
     })
-    private ResponsibleOfficer responsibleOfficer;
+    @Builder.Default
+    private List<ResponsibleOfficer> responsibleOfficers = new ArrayList<>();
 
     @OneToOne
     @JoinColumn(name = "OFFENDER_ID", referencedColumnName = "OFFENDER_ID", insertable = false, updatable = false)
@@ -95,6 +100,16 @@ public class OffenderManager {
     public boolean isActive() {
         return endDate == null && Optional.ofNullable(activeFlag).orElse(0L) == 1L && !isDeleted();
     }
+    public ResponsibleOfficer getActiveResponsibleOfficer() {
+        return responsibleOfficers.stream().filter(ResponsibleOfficer::isActive).findAny().orElse(null);
+    }
+    public ResponsibleOfficer getLatestResponsibleOfficer() {
+        return responsibleOfficers.stream().max(Comparator.comparing(ResponsibleOfficer::getStartDateTime)).orElse(null);
+    }
+    public void addResponsibleOfficer(ResponsibleOfficer responsibleOfficer) {
+        responsibleOfficers.add(responsibleOfficer);
+    }
+
     private boolean isDeleted() {
         return Optional.ofNullable(softDeleted).orElse(0L) == 1L;
     }
