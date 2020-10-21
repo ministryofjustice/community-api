@@ -41,7 +41,8 @@ public class ClientTrackingTelemetryModule implements WebTelemetryModule, Teleme
                 properties.put("clientId", String.valueOf(jwtBody.getClaim("client_id")));
 
             } catch (ParseException e) {
-                log.warn("problem decoding jwt public key for application insights", e);
+                // we have a bearer token we don't understand.
+                // this can happen from AWS health checks for instance - so just silently ignore
             }
         }
     }
