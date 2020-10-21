@@ -40,5 +40,12 @@ public class GeneralControllerAdvice {
                 .status(e.getRawStatusCode())
                 .body(e.getResponseBodyAsByteArray());
     }
+
+    @ExceptionHandler(WebClientResponseException.NotFound.class)
+    public ResponseEntity<byte[]> handleException(final WebClientResponseException.NotFound e) {
+        return ResponseEntity
+                .status(e.getRawStatusCode())
+                .body(e.getResponseBodyAsByteArray());
+    }
 }
 
