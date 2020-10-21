@@ -10,6 +10,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -286,11 +287,11 @@ public class RegistrationTransformerTest {
                 aRegistration()
                         .toBuilder()
                         .deregistered(1L)
-                        .deregistration(
-                                aDeregistration()
+                        .deregistrations(
+                                List.of(aDeregistration()
                                         .toBuilder()
                                         .deregistrationDate(LocalDate.now())
-                                        .build()
+                                        .build())
                         )
                         .build())
                 .getEndDate())
@@ -303,11 +304,11 @@ public class RegistrationTransformerTest {
                 aRegistration()
                         .toBuilder()
                         .deregistered(0L)
-                        .deregistration(
-                                aDeregistration()
+                        .deregistrations(
+                                List.of(aDeregistration()
                                         .toBuilder()
                                         .deregistrationDate(LocalDate.now())
-                                        .build()
+                                        .build())
                         )
                         .build())
                 .getEndDate())
@@ -322,8 +323,8 @@ public class RegistrationTransformerTest {
                 aRegistration()
                         .toBuilder()
                         .deregistered(1L)
-                        .deregistration(
-                                aDeregistration()
+                        .deregistrations(
+                                List.of(aDeregistration()
                                         .toBuilder()
                                         .deregisteringStaff(
                                                 aDeregistration()
@@ -334,7 +335,7 @@ public class RegistrationTransformerTest {
                                                 .build()
 
                                         )
-                                        .build()
+                                        .build())
                         )
                         .build())
                 .getDeregisteringOfficer())
@@ -350,8 +351,8 @@ public class RegistrationTransformerTest {
                 aRegistration()
                         .toBuilder()
                         .deregistered(1L)
-                        .deregistration(
-                                aDeregistration()
+                        .deregistrations(
+                                List.of(aDeregistration()
                                         .toBuilder()
                                         .deregisteringTeam(
                                                 aDeregistration()
@@ -362,7 +363,7 @@ public class RegistrationTransformerTest {
                                                 .build()
 
                                         )
-                                        .build()
+                                        .build())
                         )
                         .build())
                 .getDeregisteringTeam())
@@ -377,8 +378,8 @@ public class RegistrationTransformerTest {
                 aRegistration()
                         .toBuilder()
                         .deregistered(1L)
-                        .deregistration(
-                                aDeregistration()
+                        .deregistrations(
+                                List.of(aDeregistration()
                                         .toBuilder()
                                         .deregisteringTeam(
                                                 aDeregistration()
@@ -388,7 +389,7 @@ public class RegistrationTransformerTest {
                                                 .build()
 
                                         )
-                                        .build()
+                                        .build())
                         )
                         .build())
                 .getDeregisteringProbationArea())
@@ -403,16 +404,44 @@ public class RegistrationTransformerTest {
                 aRegistration()
                         .toBuilder()
                         .deregistered(1L)
-                        .deregistration(
-                                aDeregistration()
+                        .deregistrations(
+                                List.of(aDeregistration()
                                         .toBuilder()
                                         .deregisteringNotes("No longer an issue")
-                                        .build()
+                                        .build())
                         )
                         .build())
                 .getDeregisteringNotes())
                 .isEqualTo("No longer an issue");
 
+    }
+
+    @Test
+    public void deregisteringCountIsSummOfPreviousDeregistrations() {
+        final var registartion =                 aRegistration()
+                .toBuilder()
+                .deregistered(1L)
+                .deregistrations(
+                        List.of(
+                                aDeregistration()
+                                        .toBuilder()
+                                        .deregisteringNotes("No longer an issue")
+                                        .deregistrationDate(LocalDate.now().minusDays(2))
+                                        .build(),
+                                aDeregistration()
+                                        .toBuilder()
+                                        .deregisteringNotes("No longer an issue")
+                                        .deregistrationDate(LocalDate.now().minusDays(1))
+                                        .build(),
+                                aDeregistration()
+                                        .toBuilder()
+                                        .deregisteringNotes("No longer an issue")
+                                        .deregistrationDate(LocalDate.now())
+                                        .build()
+                        )
+                )
+                .build();
+        assertThat(RegistrationTransformer.registrationOf(registartion).getNumberOfPreviousDeregistrations()).isEqualTo(3);
     }
 
     private Registration aRegistration() {
