@@ -20,7 +20,7 @@ import uk.gov.justice.digital.delius.service.OffenderService;
 
 import java.util.Optional;
 
-@Api(tags = "Offender identifiers resource (Secure)")
+@Api(tags = "Offender identifiers resource")
 @RestController
 @Slf4j
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
