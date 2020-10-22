@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class RegistrationsAPITest extends IntegrationTestBase {
@@ -34,7 +35,9 @@ public class RegistrationsAPITest extends IntegrationTestBase {
                 .then()
                 .statusCode(200)
                 .body("registrations[0].register.description", is("Public Protection"))
-                .body("registrations[0].startDate", is("2019-10-11"));
+                .body("registrations[0].startDate", is("2019-10-11"))
+                .body("registrations[0].deregisteringNotes", nullValue())
+                .body("registrations[1].deregisteringNotes", is("Ok again now"));
 
     }
 
@@ -47,7 +50,10 @@ public class RegistrationsAPITest extends IntegrationTestBase {
                 .get("/offenders/nomsNumber/{nomsNumber}/registrations", NOMS_NUMBER)
                 .then()
                 .statusCode(200)
-                .body("registrations[0].register.description", is("Public Protection"));
+                .body("registrations[0].register.description", is("Public Protection"))
+                .body("registrations[0].deregisteringNotes", nullValue())
+                .body("registrations[1].deregisteringNotes", is("Ok again now"))
+                .body("registrations[1].numberOfPreviousDeregistrations", is(2));
     }
 
     @Test
@@ -59,6 +65,8 @@ public class RegistrationsAPITest extends IntegrationTestBase {
                 .get("/offenders/crn/{crn}/registrations", CRN)
                 .then()
                 .statusCode(200)
-                .body("registrations[0].register.description", is("Public Protection"));
+                .body("registrations[0].register.description", is("Public Protection"))
+                .body("registrations[0].deregisteringNotes", nullValue())
+                .body("registrations[1].deregisteringNotes", is("Ok again now"));
     }
 }

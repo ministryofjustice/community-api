@@ -5,9 +5,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -44,8 +54,10 @@ public class Registration {
     private Long lastUpdatedUserId;
     @Column(name = "DEREGISTERED")
     private Long deregistered;
-    @OneToOne(mappedBy = "registration")
-    private Deregistration deregistration;
+    @OneToMany
+    @JoinColumn(name = "REGISTRATION_ID")
+    @Builder.Default
+    private List<Deregistration> deregistrations = new ArrayList<>();
     @ManyToOne
     @JoinColumn(name = "REGISTERING_STAFF_ID")
     private Staff registeringStaff;
@@ -60,4 +72,12 @@ public class Registration {
     private StandardReference registerCategory;
 
 
+    public Deregistration getLatestDeregistration() {
+        return deregistrations
+                .stream()
+                .max(Comparator
+                        .comparing(Deregistration::getDeregistrationDate)
+                        .thenComparing(Deregistration::getCreatedDatetime))
+                .orElse(null);
+    }
 }

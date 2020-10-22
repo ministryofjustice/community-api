@@ -49,14 +49,16 @@ public class Registration {
     @ApiModelProperty(value = "true if active")
     private boolean active;
     @JsonFormat(pattern="yyyy-MM-dd")
-    @ApiModelProperty(value = "Date removed from register", example = "2021-01-30")
+    @ApiModelProperty(value = "Latest Date removed from register", example = "2021-01-30")
     private LocalDate endDate;
-    @ApiModelProperty(value = "Probation team that removed the offender from the register")
+    @ApiModelProperty(value = "Latest Probation team that removed the offender from the register")
     private KeyValue deregisteringTeam;
-    @ApiModelProperty(value = "Probation officer who removed the offender from the register")
+    @ApiModelProperty(value = "Latest Probation officer who removed the offender from the register")
     private StaffHuman deregisteringOfficer;
-    @ApiModelProperty(value = "Probation area that removed the offender from the register")
+    @ApiModelProperty(value = "Latest Probation area that removed the offender from the register")
     private KeyValue deregisteringProbationArea;
-    @ApiModelProperty(value = "Additional notes about the de-registration")
+    @ApiModelProperty(value = "Latest Additional notes about the de-registration")
     private String deregisteringNotes;
+    @ApiModelProperty(value = "Count of number times this was de-registered")
+    private int numberOfPreviousDeregistrations;
 }

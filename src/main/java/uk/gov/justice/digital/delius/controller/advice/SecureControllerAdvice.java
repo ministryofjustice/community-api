@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.controller.advice;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -30,9 +31,18 @@ public class SecureControllerAdvice {
                 .body(e.getResponseBodyAsByteArray());
     }
 
+    @Order(2)
     @ExceptionHandler(WebClientResponseException.class)
     public ResponseEntity<byte[]> handleException(final WebClientResponseException e) {
         log.error("Unexpected exception", e);
+        return ResponseEntity
+                .status(e.getRawStatusCode())
+                .body(e.getResponseBodyAsByteArray());
+    }
+
+    @Order(1)
+    @ExceptionHandler(WebClientResponseException.NotFound.class)
+    public ResponseEntity<byte[]> handleException(final WebClientResponseException.NotFound e) {
         return ResponseEntity
                 .status(e.getRawStatusCode())
                 .body(e.getResponseBodyAsByteArray());

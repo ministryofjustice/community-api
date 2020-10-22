@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.delius.controller.advice;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -34,15 +36,9 @@ public class GeneralControllerAdvice {
    }
 
     @ExceptionHandler(WebClientResponseException.class)
+    @Order(2)
     public ResponseEntity<byte[]> handleException(final WebClientResponseException e) {
         log.error("Unexpected exception", e);
-        return ResponseEntity
-                .status(e.getRawStatusCode())
-                .body(e.getResponseBodyAsByteArray());
-    }
-
-    @ExceptionHandler(WebClientResponseException.NotFound.class)
-    public ResponseEntity<byte[]> handleException(final WebClientResponseException.NotFound e) {
         return ResponseEntity
                 .status(e.getRawStatusCode())
                 .body(e.getResponseBodyAsByteArray());
