@@ -13,8 +13,13 @@ public class SwaggerValidator {
     private int port;
 
     @Test
-    public void test() {
-        final var result = new SwaggerConverter().readLocation(String.format("http://localhost:%d/v2/api-docs", port), null, null);
+    public void communityAPiSwaggerShouldBeValid() {
+        final var result = new SwaggerConverter().readLocation(String.format("http://localhost:%d/v2/api-docs?group=Community API", port), null, null);
+        assertThat(result.getMessages()).isEmpty();
+    }
+    @Test
+    public void newTechAPiSwaggerShouldBeValid() {
+        final var result = new SwaggerConverter().readLocation(String.format("http://localhost:%d/v2/api-docs?group=NewTech Private APIs", port), null, null);
         assertThat(result.getMessages()).isEmpty();
     }
 }

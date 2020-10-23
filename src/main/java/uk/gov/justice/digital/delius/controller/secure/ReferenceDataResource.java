@@ -24,7 +24,7 @@ import uk.gov.justice.digital.delius.data.api.ReferenceDataSets;
 import uk.gov.justice.digital.delius.service.ReferenceDataService;
 
 @Slf4j
-@Api(tags = "Reference Data API (Secure)", authorizations = {@Authorization("ROLE_COMMUNITY")})
+@Api(tags = "Reference Data", authorizations = {@Authorization("ROLE_COMMUNITY")})
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 @RestController

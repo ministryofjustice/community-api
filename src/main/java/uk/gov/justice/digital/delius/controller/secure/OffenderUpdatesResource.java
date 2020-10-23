@@ -19,7 +19,7 @@ import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.OffenderUpdate;
 import uk.gov.justice.digital.delius.service.OffenderUpdatesService;
 
-@Api(tags = "Offender update resource (Secure) for retrieving updates to offenders")
+@Api(tags = "Offender update resource for retrieving updates to offenders")
 @RestController
 @Slf4j
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)

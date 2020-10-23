@@ -15,7 +15,7 @@ import uk.gov.justice.digital.delius.service.CaseNoteService;
 
 @RestController
 @Slf4j
-@Api(description = "Case note resources", tags = "case notes")
+@Api(tags = "Case notes")
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @PreAuthorize("hasRole('ROLE_DELIUS_CASE_NOTES')")
 @AllArgsConstructor

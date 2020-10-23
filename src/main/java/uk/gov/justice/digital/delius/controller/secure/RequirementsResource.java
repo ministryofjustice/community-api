@@ -20,7 +20,7 @@ import uk.gov.justice.digital.delius.data.api.PssRequirements;
 import uk.gov.justice.digital.delius.service.RequirementService;
 
 
-@Api(tags = "Requirements resources (Secure)", authorizations = {@Authorization("ROLE_COMMUNITY")})
+@Api(tags = "Requirements resources", authorizations = {@Authorization("ROLE_COMMUNITY")})
 @RestController
 @Slf4j
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)

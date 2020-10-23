@@ -1,7 +1,7 @@
 [![CircleCI](https://circleci.com/gh/ministryofjustice/community-api/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/community-api)
 [![Docker Repository on Quay](https://quay.io/repository/hmpps/community-api/status "Docker Repository on Quay")](https://quay.io/repository/hmpps/community-api)
 [![Runbook](https://img.shields.io/badge/runbook-view-172B4D.svg?logo=confluence)](https://dsdmoj.atlassian.net/wiki/spaces/NOM/pages/1739325587/DPS+Runbook#Deploying-Community-API)
-[![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://community-api-public.test.delius.probation.hmpps.dsd.io/swagger-ui.html)
+[![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://community-api-public.test.delius.probation.hmpps.dsd.io/swagger-ui/index.html)
 
 # Community API
 Spring Boot 2, Java 11 API for accessing Probation offenders information

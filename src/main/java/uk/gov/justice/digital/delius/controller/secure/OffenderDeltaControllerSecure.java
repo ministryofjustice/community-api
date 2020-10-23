@@ -28,7 +28,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@Api(tags = "Offender Events (Secure)", value = "Low level API for propagating significant events", authorizations = {@Authorization("ROLE_PROBATION_OFFENDER_EVENTS")})
+@Api(tags = "Offender Events", value = "Low level API for propagating significant events", authorizations = {@Authorization("ROLE_PROBATION_OFFENDER_EVENTS")})
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 @PreAuthorize("hasRole('ROLE_PROBATION_OFFENDER_EVENTS')")

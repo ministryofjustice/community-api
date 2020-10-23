@@ -71,7 +71,7 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
-@Api(tags = "Offender resources (Secure)", authorizations = {@Authorization("ROLE_COMMUNITY")})
+@Api(tags = "Offender resources", authorizations = {@Authorization("ROLE_COMMUNITY")})
 @RestController
 @Slf4j
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -483,11 +483,11 @@ public class OffendersResource {
 
     @ApiOperation(value = "Return pageable list of all offender identifiers that match the supplied filter")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", dataType = "int", paramType = "query",
+            @ApiImplicitParam(name = "page", dataType = "java.lang.Integer", paramType = "query",
                     value = "Results page you want to retrieve (0..N)", example = "0", defaultValue = "0"),
-            @ApiImplicitParam(name = "size", dataType = "int", paramType = "query",
+            @ApiImplicitParam(name = "size", dataType = "java.lang.Integer", paramType = "query",
                     value = "Number of records per page.", example = "10", defaultValue = "10"),
-            @ApiImplicitParam(name = "sort", dataType = "string", paramType = "query", example = "crn,desc", defaultValue = "crn,asc",
+            @ApiImplicitParam(name = "sort",dataType = "java.lang.String", paramType = "query", example = "crn,desc", defaultValue = "crn,asc",
                     value = "Sort column and direction. Multiple sort params allowed.")})
     @GetMapping(value = "/offenders/primaryIdentifiers")
     public Page<PrimaryIdentifiers> getOffenderIds(

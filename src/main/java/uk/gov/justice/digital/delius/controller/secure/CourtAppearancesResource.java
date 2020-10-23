@@ -27,7 +27,7 @@ import java.util.Optional;
 
 @RestController
 @Slf4j
-@Api(tags = {"Offender Court Appearances (Secure)"}, authorizations = {@Authorization("ROLE_COMMUNITY")})
+@Api(tags = {"Offender Court Appearances"}, authorizations = {@Authorization("ROLE_COMMUNITY")})
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @PreAuthorize("hasRole('ROLE_COMMUNITY')")
 public class CourtAppearancesResource {

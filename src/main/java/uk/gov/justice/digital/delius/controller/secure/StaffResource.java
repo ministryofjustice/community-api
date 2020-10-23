@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 @Slf4j
-@Api(tags = "Staff (Secure)", authorizations = {@Authorization("ROLE_COMMUNITY")})
+@Api(tags = "Staff", authorizations = {@Authorization("ROLE_COMMUNITY")})
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 @RestController
