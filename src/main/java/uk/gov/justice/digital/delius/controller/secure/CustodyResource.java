@@ -26,7 +26,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@Api(tags = {"Custody resource"}, authorizations = {@Authorization("ROLE_COMMUNITY_CUSTODY_UPDATE")})
+@Api(tags = {"Custody"}, authorizations = {@Authorization("ROLE_COMMUNITY_CUSTODY_UPDATE")})
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
 public class CustodyResource {
@@ -40,8 +40,7 @@ public class CustodyResource {
 
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/custody/bookingNumber/{bookingNumber}", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The custody record was updated", response = Custody.class),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
             @ApiResponse(code = 400, message = "The custody request is invalid"),
             @ApiResponse(code = 404, message = "Either the requested offender was not found or the conviction associated the booking number.")
     })
@@ -57,8 +56,7 @@ public class CustodyResource {
 
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/custody/bookingNumber", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The custody record was updated", response = Custody.class),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
             @ApiResponse(code = 400, message = "The booking number custody request is invalid"),
             @ApiResponse(code = 404, message = "Either the requested offender was not found or the conviction associated the sentence start date")
     })
@@ -72,8 +70,7 @@ public class CustodyResource {
 
     @RequestMapping(value = "offenders/crn/{crn}/nomsNumber", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The offender record was updated", response = IDs.class),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
             @ApiResponse(code = 404, message = "The requested offender was not found")
     })
     @ApiOperation(value = "Updates the offender record with the NOMS number in UpdateOffenderNomsNumber")
@@ -87,8 +84,7 @@ public class CustodyResource {
     @RequestMapping(value = "offenders/nomsNumber/{originalNomsNumber}/nomsNumber", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "The new noms number is not present in request"),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
-            @ApiResponse(code = 403, message = "Missing required role for this operation"),
+            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
             @ApiResponse(code = 404, message = "The requested offender was not found"),
             @ApiResponse(code = 409, message = "The new noms number is assigned to an existing offender already")
     })

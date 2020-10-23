@@ -21,7 +21,7 @@ import java.util.function.Function;
 
 @RestController
 @Slf4j
-@Api(tags = {"Offender custody key dates", "OMiC"}, authorizations = {@Authorization("ROLE_COMMUNITY")})
+@Api(tags = {"Sentence dates", "Custody"}, authorizations = {@Authorization("ROLE_COMMUNITY")})
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @PreAuthorize("hasRole('ROLE_COMMUNITY')")
 public class CustodyKeyDatesController {
@@ -36,8 +36,7 @@ public class CustodyKeyDatesController {
 
     @RequestMapping(value = "offenders/crn/{crn}/custody/keyDates/{typeCode}", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The new or updated custody key date", response = CustodyKeyDate.class),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
             @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be added to an offender which does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
@@ -52,8 +51,7 @@ public class CustodyKeyDatesController {
 
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/custody/keyDates/{typeCode}", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The new or updated custody key date", response = CustodyKeyDate.class),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
             @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be added to an offender which does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
@@ -68,8 +66,7 @@ public class CustodyKeyDatesController {
 
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/bookingNumber/{bookingNumber}/custody/keyDates", method = RequestMethod.POST, consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The new or updated custody key dates", response = Custody.class),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
             @ApiResponse(code = 404, message = "The requested offender or conviction was not found.")
     })
     @ApiOperation(value = "Replaces all key dates specified in body. Key dates are either added or replaced or deleted if absent (see ReplaceCustodyKeyDates for the list). The the custodial conviction must be active", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
@@ -91,8 +88,7 @@ public class CustodyKeyDatesController {
 
     @RequestMapping(value = "offenders/offenderId/{offenderId}/custody/keyDates/{typeCode}", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The new or updated custody key date", response = CustodyKeyDate.class),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
             @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be added to an offender which does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
@@ -107,8 +103,7 @@ public class CustodyKeyDatesController {
 
     @RequestMapping(value = "offenders/prisonBookingNumber/{prisonBookingNumber}/custody/keyDates/{typeCode}", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The new or updated custody key date", response = CustodyKeyDate.class),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
             @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be added to an offender which does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested conviction with associated prison booking was not found.")
     })
@@ -129,8 +124,6 @@ public class CustodyKeyDatesController {
 
     @RequestMapping(value = "offenders/crn/{crn}/custody/keyDates/{typeCode}", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The custody key date", response = CustodyKeyDate.class),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
             @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be retrieved for an offender which does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found or does not have the supplied key date type.")
     })
@@ -143,8 +136,6 @@ public class CustodyKeyDatesController {
 
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/custody/keyDates/{typeCode}", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The custody key date", response = CustodyKeyDate.class),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
             @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be retrieved for an offender which does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found or does not have the supplied key date type.")
     })
@@ -157,8 +148,6 @@ public class CustodyKeyDatesController {
 
     @RequestMapping(value = "offenders/offenderId/{offenderId}/custody/keyDates/{typeCode}", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The custody key date", response = CustodyKeyDate.class),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
             @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be retrieved for an offender which does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found or does not have the supplied key date type.")
     })
@@ -171,8 +160,6 @@ public class CustodyKeyDatesController {
 
     @RequestMapping(value = "offenders/prisonBookingNumber/{prisonBookingNumber}/custody/keyDates/{typeCode}", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The custody key date", response = CustodyKeyDate.class),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
             @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be retrieved for an offender which does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found or does not have the supplied key date type.")
     })
@@ -191,8 +178,6 @@ public class CustodyKeyDatesController {
 
     @RequestMapping(value = "offenders/crn/{crn}/custody/keyDates", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The custody key dates", response = CustodyKeyDate.class, responseContainer = "List"),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
             @ApiResponse(code = 400, message = "The the offender does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
@@ -204,8 +189,6 @@ public class CustodyKeyDatesController {
 
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/custody/keyDates", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The custody key dates", response = CustodyKeyDate.class, responseContainer = "List"),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
             @ApiResponse(code = 400, message = "The the offender does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
@@ -217,8 +200,6 @@ public class CustodyKeyDatesController {
 
     @RequestMapping(value = "offenders/offenderId/{offenderId}/custody/keyDates", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The custody key dates", response = CustodyKeyDate.class, responseContainer = "List"),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
             @ApiResponse(code = 400, message = "The the offender does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
@@ -231,8 +212,6 @@ public class CustodyKeyDatesController {
 
     @RequestMapping(value = "offenders/prisonBookingNumber/{prisonBookingNumber}/custody/keyDates", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The custody key dates", response = CustodyKeyDate.class, responseContainer = "List"),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
             @ApiResponse(code = 400, message = "The the offender does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
@@ -249,8 +228,7 @@ public class CustodyKeyDatesController {
 
     @RequestMapping(value = "offenders/crn/{crn}/custody/keyDates/{typeCode}", method = RequestMethod.DELETE)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Key date has been deleted"),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
             @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be deleted from an offender which does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
@@ -265,7 +243,7 @@ public class CustodyKeyDatesController {
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/custody/keyDates/{typeCode}", method = RequestMethod.DELETE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Key date has been deleted"),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
             @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be deleted from an offender which does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
@@ -280,7 +258,7 @@ public class CustodyKeyDatesController {
     @RequestMapping(value = "offenders/offenderId/{offenderId}/custody/keyDates/{typeCode}", method = RequestMethod.DELETE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Key date has been deleted"),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
             @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be deleted from an offender which does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
@@ -295,7 +273,7 @@ public class CustodyKeyDatesController {
     @RequestMapping(value = "offenders/prisonBookingNumber/{prisonBookingNumber}/custody/keyDates/{typeCode}", method = RequestMethod.DELETE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Key date has been deleted"),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
+            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
             @ApiResponse(code = 400, message = "The keyDate is not valid"),
             @ApiResponse(code = 404, message = "The requested prison booking was not found.")
     })

@@ -27,7 +27,7 @@ import java.util.Optional;
 
 @RestController
 @Slf4j
-@Api(tags = {"Offender Court Appearances"}, authorizations = {@Authorization("ROLE_COMMUNITY")})
+@Api(tags = {"Court appearances"}, authorizations = {@Authorization("ROLE_COMMUNITY")})
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @PreAuthorize("hasRole('ROLE_COMMUNITY')")
 public class CourtAppearancesResource {
@@ -43,8 +43,6 @@ public class CourtAppearancesResource {
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(value = "/courtAppearances")
@@ -58,8 +56,6 @@ public class CourtAppearancesResource {
     @ApiResponses(
         value = {
             @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
             @ApiResponse(code = 404, message = "The offender CRN is not found", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
         })

@@ -19,7 +19,7 @@ import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.OffenderUpdate;
 import uk.gov.justice.digital.delius.service.OffenderUpdatesService;
 
-@Api(tags = "Offender update resource for retrieving updates to offenders")
+@Api(tags = "Events")
 @RestController
 @Slf4j
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -33,8 +33,7 @@ public class OffenderUpdatesResource {
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+                    @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_EVENTS"),
                     @ApiResponse(code = 404, message = "No updates found", response = ErrorResponse.class),
                     @ApiResponse(code = 409, message = "Attempt to retrieve the latest update that is already in progress", response = ErrorResponse.class)
             })
@@ -47,8 +46,7 @@ public class OffenderUpdatesResource {
             value = "Deletes an update of an offender previous retrieved by `/offenders/nextUpdate` ", notes = "requires ROLE_COMMUNITY_EVENTS")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+                    @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_EVENTS"),
                     @ApiResponse(code = 404, message = "Update not found", response = ErrorResponse.class),
             })
     @DeleteMapping(value = "offenders/update/{offenderDeltaId}")
@@ -60,8 +58,7 @@ public class OffenderUpdatesResource {
             value = "Mark an offender update as failed", notes = "requires ROLE_COMMUNITY_EVENTS")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+                    @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_EVENTS"),
                     @ApiResponse(code = 404, message = "Update not found", response = ErrorResponse.class),
             })
     @PutMapping(value = "offenders/update/{offenderDeltaId}/markAsFailed")

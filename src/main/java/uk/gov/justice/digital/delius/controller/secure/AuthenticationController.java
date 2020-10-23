@@ -31,7 +31,7 @@ import javax.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
-@Api(tags = "Authentication", authorizations = {@Authorization("ROLE_AUTH_DELIUS_LDAP")})
+@Api(tags = "Authentication and users", authorizations = {@Authorization("ROLE_AUTH_DELIUS_LDAP")})
 @AllArgsConstructor
 @PreAuthorize("hasRole('ROLE_AUTH_DELIUS_LDAP')")
 @Validated
@@ -44,7 +44,7 @@ public class AuthenticationController {
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class)
+                    @ApiResponse(code = 403, message = "Requires role ROLE_AUTH_DELIUS_LDAP"),
             })
     @PostMapping("/authenticate")
     public void authenticate(@NotNull @Valid @ApiParam(value = "Authentication Details", required = true) @RequestBody final AuthUser authUser) {
@@ -58,7 +58,7 @@ public class AuthenticationController {
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+                    @ApiResponse(code = 403, message = "Requires role ROLE_AUTH_DELIUS_LDAP"),
                     @ApiResponse(code = 404, message = "Not Found", response = ErrorResponse.class)
             })
     @RequestMapping(value = "/users/{username}/details", method = RequestMethod.GET)
@@ -72,7 +72,7 @@ public class AuthenticationController {
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+                    @ApiResponse(code = 403, message = "Requires role ROLE_AUTH_DELIUS_LDAP"),
             })
     @RequestMapping(value = "/users/search/email/{email}/details", method = RequestMethod.GET)
     public List<UserDetails> findUserByEmail(@ApiParam(name = "email", value = "LDAP email address", example = "sheila.hancock@justice.gov.uk", required = true) @NotNull final @PathVariable("email") String email) {
@@ -84,7 +84,7 @@ public class AuthenticationController {
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+                    @ApiResponse(code = 403, message = "Requires role ROLE_AUTH_DELIUS_LDAP"),
                     @ApiResponse(code = 404, message = "Not Found", response = ErrorResponse.class)
             })
     @RequestMapping(value = "/users/{username}/roles/{roleId}", method = RequestMethod.PUT)
@@ -101,7 +101,7 @@ public class AuthenticationController {
             value = {
                     @ApiResponse(code = 200, message = "Password Changed"),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
+                    @ApiResponse(code = 403, message = "Requires role ROLE_AUTH_DELIUS_LDAP"),
                     @ApiResponse(code = 404, message = "Not Found", response = ErrorResponse.class)
             })
     @PostMapping(value = "/users/{username}/password")

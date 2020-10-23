@@ -24,7 +24,7 @@ import uk.gov.justice.digital.delius.data.api.ReferenceDataSets;
 import uk.gov.justice.digital.delius.service.ReferenceDataService;
 
 @Slf4j
-@Api(tags = "Reference Data", authorizations = {@Authorization("ROLE_COMMUNITY")})
+@Api(tags = "Reference data", authorizations = {@Authorization("ROLE_COMMUNITY")})
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 @RestController
@@ -38,10 +38,7 @@ public class ReferenceDataResource {
             notes = "Accepts filtering to only return active areas")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "OK"),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping("/probationAreas")
@@ -58,10 +55,7 @@ public class ReferenceDataResource {
             notes = "Accepts a probation area code")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "OK"),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 404, message = "Not found", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
@@ -78,10 +72,7 @@ public class ReferenceDataResource {
             notes = "Accepts a probation area code and local delivery unit code")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 200, message = "OK"),
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 404, message = "Not found", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
@@ -98,8 +89,6 @@ public class ReferenceDataResource {
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 404, message = "Data set not found", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
@@ -118,8 +107,6 @@ public class ReferenceDataResource {
     @ApiOperation(value = "Returns all available reference data sets", notes = "It is expected that this API will be used to assist developers in understanding the available set codes available for /secure/referenceData/set/{set} endpoint")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(value = "/referenceData/sets")

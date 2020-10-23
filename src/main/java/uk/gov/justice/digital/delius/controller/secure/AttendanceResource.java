@@ -25,7 +25,7 @@ import java.time.LocalDate;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@Api(tags = "Attendance", authorizations = {@Authorization("ROLE_COMMUNITY")})
+@Api(tags = "Contact and attendance", authorizations = {@Authorization("ROLE_COMMUNITY")})
 @RestController
 @Slf4j
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -65,8 +65,6 @@ public class AttendanceResource {
     @ApiResponses(
         value = {
             @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
         })
     public Attendances getAttendancesByConviction(final @PathVariable("crn") String crn,
