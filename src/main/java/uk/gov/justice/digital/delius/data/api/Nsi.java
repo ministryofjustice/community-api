@@ -19,7 +19,7 @@ public class Nsi {
     private KeyValue nsiSubType;
     private Requirement requirement;
     private KeyValue nsiStatus;
-    private LocalDateTime statusDate;
+    private LocalDateTime statusDateTime;
     private LocalDate actualStartDate;
     private LocalDate expectedStartDate;
     private LocalDate referralDate;

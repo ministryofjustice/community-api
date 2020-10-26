@@ -35,7 +35,7 @@ public class Nsi {
     private LocalDate actualStartDate;
 
     @Column(name = "NSI_STATUS_DATE")
-    private LocalDateTime nsiStatusDate;
+    private LocalDateTime nsiStatusDateTime;
 
     @Column(name = "EXPECTED_START_DATE")
     private LocalDate expectedStartDate;

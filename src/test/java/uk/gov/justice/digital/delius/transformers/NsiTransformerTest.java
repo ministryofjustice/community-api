@@ -58,7 +58,7 @@ class NsiTransformerTest {
         assertThat(nsi.getExpectedStartDate()).isEqualTo(expectedStartDate);
         assertThat(nsi.getNsiStatus().getCode()).isEqualTo("STX");
         assertThat(nsi.getReferralDate()).isEqualTo(referralDate);
-        assertThat(nsi.getStatusDate()).isEqualTo(statusDate);
+        assertThat(nsi.getStatusDateTime()).isEqualTo(statusDate);
         assertThat(nsi.getNsiType()).isEqualTo(KeyValue.builder().code("TYPE").description("Type Desc").build());
         assertThat(nsi.getNsiSubType()).isEqualTo(KeyValue.builder().code("STC").description("Sub Type Desc").build());
         assertThat(nsi.getRequirement().getActive()).isEqualTo(true);
@@ -95,7 +95,7 @@ class NsiTransformerTest {
                 .nsiType(NsiType.builder().code("TYPE").description("Type Desc").build())
                 .actualStartDate(actualStartDate)
                 .expectedStartDate(expectedStartDate)
-                .nsiStatusDate(statusDate)
+                .nsiStatusDateTime(statusDate)
                 .referralDate(referralDate)
                 .nsiManagers(Arrays.asList(EntityHelper.aNsiManager(), EntityHelper.aNsiManager()))
                 .length(12L)

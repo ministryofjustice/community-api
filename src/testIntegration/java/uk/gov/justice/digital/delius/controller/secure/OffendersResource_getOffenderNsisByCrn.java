@@ -47,7 +47,7 @@ public class OffendersResource_getOffenderNsisByCrn extends IntegrationTestBase 
                 .as(Nsi.class);
 
         assertThat(nsi.getNsiId()).isEqualTo(KNOWN_NSI_ID);
-        assertThat(nsi.getStatusDate()).isEqualTo(LocalDateTime.of(2019, Month.SEPTEMBER, 16, 0, 0));
+        assertThat(nsi.getStatusDateTime()).isEqualTo(LocalDateTime.of(2019, Month.SEPTEMBER, 16, 0, 0));
         assertThat(nsi.getReferralDate()).isEqualTo(LocalDate.of(2019, Month.SEPTEMBER, 2));
         assertThat(nsi.getExpectedStartDate()).isEqualTo(LocalDate.of(2019, Month.SEPTEMBER, 20));
         assertThat(nsi.getActualStartDate()).isEqualTo(LocalDate.of(2019, Month.OCTOBER, 2));
