@@ -28,10 +28,7 @@ public class StaffResource {
 
     @ApiOperation(value = "Return list of of currently managed offenders for one responsible officer (RO)", notes = "Accepts a Delius staff officer identifier")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = ManagedOffender.class, responseContainer = "List"),
             @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
             @ApiResponse(code = 404, message = "Not found", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
     @GetMapping(path = "/staff/staffIdentifier/{staffIdentifier}/managedOffenders")
@@ -44,10 +41,7 @@ public class StaffResource {
 
     @ApiOperation(value = "Return details of a staff member including option user details", notes = "Accepts a Delius staff officer identifier")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = StaffDetails.class),
             @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
             @ApiResponse(code = 404, message = "Not found", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
     @GetMapping(path = "/staff/staffIdentifier/{staffIdentifier}")
@@ -62,10 +56,7 @@ public class StaffResource {
 
     @ApiOperation(value = "Return details of a staff member including user details", notes = "Accepts a Delius staff username")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = StaffDetails.class),
             @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
             @ApiResponse(code = 404, message = "Not found", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
     @GetMapping(path = "/staff/username/{username}")
@@ -80,10 +71,7 @@ public class StaffResource {
 
     @ApiOperation(value = "Returns a list of staff details for supplied usernames - POST version to allow large user lists.", notes = "staff details for supplied usernames", nickname = "getStaffDetailsList")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = StaffDetails.class, responseContainer = "List"),
             @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
             @ApiResponse(code = 404, message = "Not found", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
     @PostMapping(path="/staff/list", consumes = "application/json")

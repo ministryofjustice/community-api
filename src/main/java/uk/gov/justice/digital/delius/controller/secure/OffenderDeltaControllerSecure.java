@@ -28,7 +28,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@Api(tags = "Offender Events", value = "Low level API for propagating significant events", authorizations = {@Authorization("ROLE_PROBATION_OFFENDER_EVENTS")})
+@Api(tags = "Events", value = "Low level API for propagating significant events", authorizations = {@Authorization("ROLE_PROBATION_OFFENDER_EVENTS")})
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 @PreAuthorize("hasRole('ROLE_PROBATION_OFFENDER_EVENTS')")
@@ -41,8 +41,7 @@ public class OffenderDeltaControllerSecure {
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+                    @ApiResponse(code = 403, message = "Requires role ROLE_PROBATION_OFFENDER_EVENTS"),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(value = "/offenderDeltaIds")
@@ -56,8 +55,7 @@ public class OffenderDeltaControllerSecure {
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+                    @ApiResponse(code = 403, message = "Requires role ROLE_PROBATION_OFFENDER_EVENTS"),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @DeleteMapping(value = "/offenderDeltaIds")

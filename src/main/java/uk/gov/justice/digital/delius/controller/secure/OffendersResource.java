@@ -71,7 +71,7 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
-@Api(tags = "Offender resources", authorizations = {@Authorization("ROLE_COMMUNITY")})
+@Api(tags = "Core offender", authorizations = {@Authorization("ROLE_COMMUNITY")})
 @RestController
 @Slf4j
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -92,12 +92,11 @@ public class OffendersResource {
 
     @ApiOperation(
             value = "Return the responsible officer (RO) for an offender",
-            notes = "Accepts a NOMIS offender nomsNumber in the format A9999AA")
+            notes = "Accepts a NOMIS offender nomsNumber in the format A9999AA",
+            tags = "Offender managers")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/responsibleOfficers")
@@ -111,12 +110,11 @@ public class OffendersResource {
 
     @ApiOperation(
             value = "Returns the current community and prison offender managers for an offender",
-            notes = "Accepts a NOMIS offender nomsNumber in the format A9999AA")
+            notes = "Accepts a NOMIS offender nomsNumber in the format A9999AA",
+            tags = {"Offender managers", "-- Popular core APIs --"})
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/allOffenderManagers")
@@ -128,12 +126,10 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with NOMS number %s not found", nomsNumber)));
     }
 
-    @ApiOperation(value = "Return the convictions (AKA Delius Event) for an offender")
+    @ApiOperation(value = "Return the convictions (AKA Delius Event) for an offender", tags = {"Convictions","-- Popular core APIs --"})
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/convictions")
@@ -146,12 +142,10 @@ public class OffendersResource {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @ApiOperation(value = "Return the details for an offender")
+    @ApiOperation(value = "Return the details for an offender", tags = "-- Popular core APIs --")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}")
@@ -163,12 +157,10 @@ public class OffendersResource {
                 offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(new ResponseEntity<>(OffenderDetailSummary.builder().build(), NOT_FOUND));
     }
 
-    @ApiOperation(value = "Returns all document's meta data for an offender by NOMS number")
+    @ApiOperation(value = "Returns all document's meta data for an offender by NOMS number", tags = "Documents")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/documents/grouped")
@@ -181,12 +173,10 @@ public class OffendersResource {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @ApiOperation(value = "Returns all documents' meta data for an offender by CRN")
+    @ApiOperation(value = "Returns all documents' meta data for an offender by CRN", tags = "Documents")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 404, message = "Not Found. For example if the CRN is not known.", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
@@ -200,7 +190,7 @@ public class OffendersResource {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @ApiOperation(value = "Returns the document contents meta data for a given document associated with an offender")
+    @ApiOperation(value = "Returns the document contents meta data for a given document associated with an offender", tags = "Documents")
     @GetMapping(value = "/offenders/nomsNumber/{nomsNumber}/documents/{documentId}")
     public HttpEntity<Resource> getOffenderDocument(
             @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true) @NotNull final @PathVariable("nomsNumber") String nomsNumber,
@@ -211,7 +201,7 @@ public class OffendersResource {
                 .orElse(new ResponseEntity<>(NOT_FOUND));
     }
 
-    @ApiOperation(value = "Returns the document contents meta data for a given document associated with an offender")
+    @ApiOperation(value = "Returns the document contents meta data for a given document associated with an offender", tags = "Documents")
     @GetMapping(value = "/offenders/crn/{crn}/documents/{documentId}")
     public HttpEntity<Resource> getOffenderDocumentByCrn(
             @ApiParam(name = "crn", value = "CRN for the offender", example = "G9542VP", required = true) @NotNull final @PathVariable("crn") String crn,
@@ -221,12 +211,10 @@ public class OffendersResource {
                 .orElse(new ResponseEntity<>(NOT_FOUND));
     }
 
-    @ApiOperation(value = "Returns the contact details for an offender")
+    @ApiOperation(value = "Returns the contact details for an offender", tags = "Contact and attendance")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(value = "/offenders/nomsNumber/{nomsNumber}/contacts")
@@ -247,12 +235,11 @@ public class OffendersResource {
 
     @ApiOperation(
             value = "Returns the latest recall and release details for an offender",
-            notes = "Accepts a NOMIS offender nomsNumber in the format A9999AA")
+            notes = "Accepts a NOMIS offender nomsNumber in the format A9999AA",
+            tags = "Convictions")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/release")
@@ -266,12 +253,11 @@ public class OffendersResource {
 
     @ApiOperation(
             value = "Returns the latest recall and release details for an offender",
-            notes = "Accepts an offender CRN in the format A999999")
+            notes = "Accepts an offender CRN in the format A999999",
+            tags = "Convictions")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(path = "/offenders/crn/{crn}/release")
@@ -292,12 +278,11 @@ public class OffendersResource {
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/prisonOffenderManager", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Staff id does belong to the probation area related prison institution"),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
-            @ApiResponse(code = 403, message = "Forbidden, does not have required role"),
+            @ApiResponse(code = 403, message = "Forbidden, requires ROLE_COMMUNITY_CUSTODY_UPDATE"),
             @ApiResponse(code = 404, message = "The offender or prison institution is not found")
     })
     @ApiOperation(value = "Allocates the prison offender manager for an offender in custody. This operation may also have a side affect of creating a Staff member " +
-            "if one matching the name does not already exist. An existing staff member can be used if the staff id is supplied.", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
+            "if one matching the name does not already exist. An existing staff member can be used if the staff id is supplied.", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE", tags = "Offender managers")
     @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public CommunityOrPrisonOffenderManager allocatePrisonOffenderManagerByNomsNumber(final @PathVariable String nomsNumber,
                                                                                       final @RequestBody CreatePrisonOffenderManager prisonOffenderManager) {
@@ -316,12 +301,11 @@ public class OffendersResource {
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/prisonOffenderManager", method = RequestMethod.DELETE)
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "The noms number must be passed in the URL"),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
-            @ApiResponse(code = 403, message = "Forbidden, does not have required role", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Forbidden, requires ROLE_COMMUNITY_CUSTODY_UPDATE"),
             @ApiResponse(code = 404, message = "The offender is not found"),
             @ApiResponse(code = 409, message = "The offender does not have a POM to deallocate")
     })
-    @ApiOperation(value = "Deallocates the prison offender manager for an offender in custody. The POM is set back to its unallocated state", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
+    @ApiOperation(value = "Deallocates the prison offender manager for an offender in custody. The POM is set back to its unallocated state", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE", tags = "Offender managers")
     @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public void deallocatePrisonOffenderManagerByNomsNumber(final @PathVariable String nomsNumber) {
         offenderManagerService.deallocatePrisonerOffenderManager(nomsNumber);
@@ -330,12 +314,11 @@ public class OffendersResource {
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/responsibleOfficer/switch", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "Either set true for the prisoner offender manager or the community offender manager"),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
-            @ApiResponse(code = 403, message = "Forbidden, does not have required role"),
+            @ApiResponse(code = 403, message = "Forbidden, requires ROLE_COMMUNITY_CUSTODY_UPDATE"),
             @ApiResponse(code = 404, message = "The offender is not found"),
             @ApiResponse(code = 409, message = "Cannot find a current RO for offender or Cannot find an active POM for offender or Cannot find an active COM for offender")
     })
-    @ApiOperation(value = "Sets the responsible officer for an offender to either the current prison offender manager to community offender manager. This will allow the responsible officer to be set to an unallocated offender manager", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
+    @ApiOperation(value = "Sets the responsible officer for an offender to either the current prison offender manager to community offender manager. This will allow the responsible officer to be set to an unallocated offender manager", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE", tags = "Offender managers")
     @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public CommunityOrPrisonOffenderManager switchResponsibleOfficer(final @PathVariable String nomsNumber,
                                                                                       final @Valid @RequestBody ResponsibleOfficerSwitch responsibleOfficerSwitch) {
@@ -352,11 +335,9 @@ public class OffendersResource {
 
     @RequestMapping(value = "/offenders/crn/{crn}", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
-            @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
             @ApiResponse(code = 404, message = "The offender not found")
     })
-    @ApiOperation(value = "Returns the offender summary for the given crn")
+    @ApiOperation(value = "Returns the offender summary for the given crn", tags = "-- Popular core APIs --")
 
     public OffenderDetailSummary getOffenderSummaryByCrn(final @PathVariable("crn") String crn) {
         final var offender = offenderService.getOffenderSummaryByCrn(crn);
@@ -365,11 +346,9 @@ public class OffendersResource {
 
     @RequestMapping(value = "/offenders/crn/{crn}/all", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
-            @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
             @ApiResponse(code = 404, message = "The offender is not found")
     })
-    @ApiOperation(value = "Returns the full offender detail for the given crn")
+    @ApiOperation(value = "Returns the full offender detail for the given crn", tags = "-- Popular core APIs --")
     public OffenderDetail getOffenderDetailByCrn(final @PathVariable("crn") String crn) {
         final var offender = offenderService.getOffenderByCrn(crn);
         return offender.orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
@@ -377,22 +356,18 @@ public class OffendersResource {
 
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/all", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
-            @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
             @ApiResponse(code = 404, message = "The offender is not found")
     })
-    @ApiOperation(value = "Returns the full offender detail for the given nomsNumber")
+    @ApiOperation(value = "Returns the full offender detail for the given nomsNumber", tags = "-- Popular core APIs --")
     public OffenderDetail getOffenderDetailByNomsNumber(final @PathVariable("nomsNumber") String nomsNumber) {
         final var offender = offenderService.getOffenderByNomsNumber(nomsNumber);
         return offender.orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
     }
 
-    @ApiOperation(value = "Return the convictions (AKA Delius Event) for an offender")
+    @ApiOperation(value = "Return the convictions (AKA Delius Event) for an offender", tags = {"-- Popular core APIs --", "Convictions"})
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 404, message = "The offender is not found", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
@@ -406,12 +381,10 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 
-    @ApiOperation(value = "Return the conviction (AKA Delius Event) for a conviction ID and a CRN")
+    @ApiOperation(value = "Return the conviction (AKA Delius Event) for a conviction ID and a CRN", tags = {"-- Popular core APIs --", "Convictions"})
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 404, message = "The offender CRN or conviction ID is not found", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
@@ -428,12 +401,10 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Conviction with ID %s for Offender with crn %s not found", convictionId, crn)));
     }
 
-    @ApiOperation(value = "Return the NSIs for a conviction ID and a CRN, filtering by NSI codes")
+    @ApiOperation(value = "Return the NSIs for a conviction ID and a CRN, filtering by NSI codes", tags = "Sentence requirements and breach")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 404, message = "The offender CRN is not found", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
@@ -453,12 +424,10 @@ public class OffendersResource {
     }
 
 
-    @ApiOperation(value = "Return an NSI by crn, convictionId and nsiId")
+    @ApiOperation(value = "Return an NSI by crn, convictionId and nsiId", tags = "Convictions")
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 404, message = "The offender CRN is not found", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
@@ -503,8 +472,6 @@ public class OffendersResource {
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-                    @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
                     @ApiResponse(code = 404, message = "The offender CRN is not found", response = ErrorResponse.class),
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
@@ -521,6 +488,7 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Sentence not found for crn '%s', convictionId '%s', and sentenceId '%s'", crn, convictionId, sentenceId)));
     }
 
+    @ApiOperation(value = "Reveals if the logged on user can access details about the supplied offender", tags = "Authentication and users")
     @RequestMapping(value = "/offenders/crn/{crn}/userAccess", method = RequestMethod.GET)
     @ApiResponses(value = {
             @ApiResponse(code = 403, message = "User is restricted from access to offender", response = AccessLimitation.class),

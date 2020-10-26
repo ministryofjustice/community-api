@@ -17,7 +17,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
-@Api(tags = "User API", authorizations = {@Authorization("ROLE_AUTH_DELIUS_LDAP")})
+@Api(tags = "Authentication and users", authorizations = {@Authorization("ROLE_AUTH_DELIUS_LDAP")})
 @AllArgsConstructor
 @PreAuthorize("hasRole('ROLE_AUTH_DELIUS_LDAP')")
 @Slf4j
@@ -28,10 +28,8 @@ public class UserController {
     @ApiOperation(value = "Returns a list of user details for supplied usernames - POST version to allow large user lists.", notes = "user details for supplied usernames",
                   nickname = "getUserDetailsList")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = UserDetailsWrapper.class),
             @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Requires role ROLE_AUTH_DELIUS_LDAP"),
             @ApiResponse(code = 404, message = "Not found", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
     @PostMapping(path="/users/list/detail", consumes = "application/json")
@@ -41,10 +39,7 @@ public class UserController {
 
     @ApiOperation(value = "Returns a list of areas a user is related to including their home area", nickname = "getUserAreas")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = UserAreas.class),
             @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 401, message = "Unauthorised", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Forbidden", response = ErrorResponse.class),
             @ApiResponse(code = 404, message = "User with username not found", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
     @RequestMapping(value = "/users/{username}/areas", method = RequestMethod.GET)

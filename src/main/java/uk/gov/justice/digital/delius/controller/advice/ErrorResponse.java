@@ -13,18 +13,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse {
-    @ApiModelProperty(required = true, value = "Status of Error Code", example = "400", position = 0)
+    @ApiModelProperty(required = true, value = "Http status code", example = "400")
     private Integer status;
-
-    @ApiModelProperty(required = true, value = "Internal Error Code", example = "20012", position = 1)
-    private Integer errorCode;
-
-    @ApiModelProperty(required = true, value = "Error message information", example = "Offender Not Found", position = 2)
-    private String userMessage;
-
-    @ApiModelProperty(required = false, value = "Developer Information message", example = "System is down", position = 3)
+    @ApiModelProperty(value = "Reason for error", example = "Surname required", position = 1)
     private String developerMessage;
-
-    @ApiModelProperty(required = false, value = "Additional information about the error", example = "Hard disk failure", position = 4)
-    private String moreInfo;
 }
