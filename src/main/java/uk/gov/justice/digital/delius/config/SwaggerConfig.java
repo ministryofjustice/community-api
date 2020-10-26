@@ -52,7 +52,7 @@ public class SwaggerConfig {
                         new Tag("Staff", "Staff related endpoints. Staff are typically offender managers and maybe users of Delius"),
                         new Tag("Events", "Endpoints to support propagation of offender related events"),
                         new Tag("Reference data", "Retrieves Delius reference data"),
-                        new Tag("Sentence dates", "Endpoints and set a retrieve sentence dates"),
+                        new Tag("Sentence dates", "Endpoints to set a retrieve sentence dates"),
                         new Tag("Core offender", "Offender related endpoints")
                 )
                 .apiInfo(apiInfo())
