@@ -27,6 +27,7 @@ public class NsiTransformer {
                 .actualStartDate(n.getActualStartDate())
                 .expectedStartDate(n.getExpectedStartDate())
                 .referralDate(n.getReferralDate())
+                .statusDate(n.getNsiStatusDate())
                 .length(n.getLength())
                 .lengthUnit(NSI_LENGTH_UNIT)
                 .nsiManagers(nsiManagersOf(n.getNsiManagers()))

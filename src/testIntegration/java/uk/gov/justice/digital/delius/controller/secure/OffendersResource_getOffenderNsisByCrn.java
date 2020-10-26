@@ -1,7 +1,11 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.data.api.NsiWrapper;
 
@@ -43,7 +47,15 @@ public class OffendersResource_getOffenderNsisByCrn extends IntegrationTestBase 
                 .as(Nsi.class);
 
         assertThat(nsi.getNsiId()).isEqualTo(KNOWN_NSI_ID);
+        assertThat(nsi.getStatusDate()).isEqualTo(LocalDateTime.of(2019, Month.SEPTEMBER, 16, 0, 0));
+        assertThat(nsi.getReferralDate()).isEqualTo(LocalDate.of(2019, Month.SEPTEMBER, 2));
+        assertThat(nsi.getExpectedStartDate()).isEqualTo(LocalDate.of(2019, Month.SEPTEMBER, 20));
+        assertThat(nsi.getActualStartDate()).isEqualTo(LocalDate.of(2019, Month.OCTOBER, 2));
         assertThat(nsi.getLength()).isEqualTo(20L);
+        assertThat(nsi.getNsiStatus()).isEqualTo(KeyValue.builder().code("BRE01").description("Breach Initiated").build());
+        assertThat(nsi.getNsiType()).isEqualTo(KeyValue.builder().code("BRE").description("Breach Request").build());
+        assertThat(nsi.getNsiSubType()).isEqualTo(KeyValue.builder().code("BRE01").description("Community Order / SSO").build());
+        assertThat(nsi.getLengthUnit()).isEqualTo("Months");
         assertThat(nsi.getNsiManagers().get(0).getProbationArea().getDescription()).isEqualTo("NPS North East");
         assertThat(nsi.getNsiManagers().get(0).getProbationArea().getCode()).isEqualTo("N02");
         assertThat(nsi.getNsiManagers().get(0).getTeam().getDescription()).isEqualTo("Unallocated Team(N02)");
