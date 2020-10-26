@@ -9,7 +9,7 @@ Spring Boot 2, Java 11 API for accessing Probation offenders information
 The service provides REST access to the Delius Oracle DB.
 
 Documentation for the various endpoints can be found on the test instance at
-https://community-api-secure.test.delius.probation.hmpps.dsd.io/swagger-ui.html (VPN / trusted network required).
+https://community-api-public.test.delius.probation.hmpps.dsd.io/swagger-ui/index.html (VPN / trusted network required).
 We are in the process of switching to using HMPPS Auth for all the endpoints in the service, these are identified by
 (secure) after the name and are under `/secure` rather than `/api`.  The test instance is connected to the test instance
 of Delius and the dev (t3) instance of Auth.
