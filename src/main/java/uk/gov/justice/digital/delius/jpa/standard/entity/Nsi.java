@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -32,6 +33,9 @@ public class Nsi {
 
     @Column(name = "ACTUAL_START_DATE")
     private LocalDate actualStartDate;
+
+    @Column(name = "NSI_STATUS_DATE")
+    private LocalDateTime nsiStatusDateTime;
 
     @Column(name = "EXPECTED_START_DATE")
     private LocalDate expectedStartDate;
