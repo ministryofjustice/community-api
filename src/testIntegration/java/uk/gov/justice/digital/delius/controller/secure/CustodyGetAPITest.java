@@ -71,7 +71,7 @@ public class CustodyGetAPITest extends IntegrationTestBase {
         }
 
         @Test
-        @DisplayName("can get custody information by noms number and book number")
+        @DisplayName("can get custody information by crn and conviction id")
         public void canGetByNomsNumberAndBookNumber() {
             final var token = createJwt("ROLE_COMMUNITY");
 

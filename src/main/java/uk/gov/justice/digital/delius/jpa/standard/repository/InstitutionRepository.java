@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface InstitutionRepository extends JpaRepository<RInstitution, Long> {
     Optional<RInstitution> findByNomisCdeCode(String nomisCdeCode);
+    Optional<RInstitution> findByCode(String code);
 }

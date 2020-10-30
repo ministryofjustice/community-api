@@ -154,9 +154,11 @@ public class CustodyService {
 
     @Transactional(readOnly = true)
     public Custody getCustodyByBookNumber(String nomsNumber, String bookingNumber) {
-        final var offender = offenderRepository.findByNomsNumber(nomsNumber).orElseThrow(() -> new NotFoundException(String.format("offender with nomsNumber %s not found", nomsNumber)));
+        final var offender = offenderRepository.findByNomsNumber(nomsNumber)
+                .orElseThrow(() -> new NotFoundException(String.format("offender with nomsNumber %s not found", nomsNumber)));
         try {
-            final var event = convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(offender.getOffenderId(), bookingNumber).orElseThrow(() -> new NotFoundException(String.format("conviction with bookNumber %s not found", bookingNumber)));
+            final var event = convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(offender.getOffenderId(), bookingNumber)
+                    .orElseThrow(() -> new NotFoundException(String.format("conviction with bookNumber %s not found", bookingNumber)));
             return ConvictionTransformer.custodyOf(event.getDisposal().getCustody());
         } catch (ConvictionService.DuplicateActiveCustodialConvictionsException e) {
             throw new NotFoundException(String.format("no single conviction with bookingNumber %s found, instead %d duplicates found", bookingNumber, e.getConvictionCount()));
@@ -165,9 +167,11 @@ public class CustodyService {
 
     @Transactional(readOnly = true)
     public Custody getCustodyByConvictionId(String crn, Long convictionId) {
-        final var offender = offenderRepository.findByCrn(crn).orElseThrow(() -> new NotFoundException(String.format("offender with crn %s not found", crn)));
-        return Optional.ofNullable(convictionService.convictionFor(offender.getOffenderId(), convictionId).orElseThrow(() -> new NotFoundException(String.format("conviction with convictionId %d not found", convictionId))).getCustody()).orElseThrow(() -> new BadRequestException(String
-                .format("The conviction with convictionId %d is not a custodial sentence", convictionId)));
+        final var offender = offenderRepository.findByCrn(crn)
+                .orElseThrow(() -> new NotFoundException(String.format("offender with crn %s not found", crn)));
+        return Optional.ofNullable(convictionService.convictionFor(offender.getOffenderId(), convictionId)
+                .orElseThrow(() -> new NotFoundException(String.format("conviction with convictionId %d not found", convictionId))).getCustody())
+                .orElseThrow(() -> new BadRequestException(String.format("The conviction with convictionId %d is not a custodial sentence", convictionId)));
     }
 
     private Event updateBookingNumberFor(Offender offender, Event event, String bookingNumber) {
