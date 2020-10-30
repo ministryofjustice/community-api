@@ -45,7 +45,7 @@ public class ConvictionTransformer {
         RO_HANDOVER_DATE("POM2", CustodyRelatedKeyDatesBuilder::expectedPrisonOffenderManagerHandoverDate);
 
         private final BiConsumer<CustodyRelatedKeyDatesBuilder, LocalDate> consumer;
-        private String code;
+        private final String code;
 
         KeyDateTypes(String code, BiConsumer<CustodyRelatedKeyDatesBuilder, LocalDate> consumer) {
             this.code = code;
@@ -187,6 +187,7 @@ public class ConvictionTransformer {
         return Custody.builder().bookingNumber(custody.getPrisonerNumber())
                 .institution(Optional.ofNullable(custody.getInstitution()).map(InstitutionTransformer::institutionOf)
                         .orElse(null))
+                .status(KeyValueTransformer.keyValueOf(custody.getCustodialStatus()))
                 .keyDates(Optional.ofNullable(custody.getKeyDates()).map(ConvictionTransformer::custodyRelatedKeyDatesOf)
                         .orElse(CustodyRelatedKeyDates.builder().build())).build();
     }

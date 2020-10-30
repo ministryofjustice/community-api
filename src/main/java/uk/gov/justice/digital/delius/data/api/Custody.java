@@ -18,4 +18,6 @@ public class Custody {
     private Institution institution;
     @ApiModelProperty(value = "Key sentence dates of particular interest to custody")
     private CustodyRelatedKeyDates keyDates;
+    @ApiModelProperty(value = "Custodial status")
+    private KeyValue status;
 }
