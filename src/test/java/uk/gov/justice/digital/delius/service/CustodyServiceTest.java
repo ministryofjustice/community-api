@@ -2,11 +2,16 @@ package uk.gov.justice.digital.delius.service;
 
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
+import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
+import uk.gov.justice.digital.delius.data.api.Conviction;
+import uk.gov.justice.digital.delius.data.api.Custody;
+import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustodyBookingNumber;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CustodyHistory;
@@ -43,17 +48,17 @@ import static uk.gov.justice.digital.delius.util.EntityHelper.anOffender;
 public class CustodyServiceTest {
     private CustodyService custodyService;
 
-    private TelemetryClient telemetryClient = mock(TelemetryClient.class);
-    private OffenderRepository offenderRepository = mock(OffenderRepository.class);
-    private ConvictionService convictionService = mock(ConvictionService.class);
-    private InstitutionRepository institutionRepository = mock(InstitutionRepository.class);
-    private CustodyHistoryRepository custodyHistoryRepository = mock(CustodyHistoryRepository.class);
-    private ReferenceDataService referenceDataService = mock(ReferenceDataService.class);
-    private SpgNotificationService spgNotificationService = mock(SpgNotificationService.class);
-    private ArgumentCaptor<CustodyHistory> custodyHistoryArgumentCaptor = ArgumentCaptor.forClass(CustodyHistory.class);
-    private OffenderManagerService offenderManagerService = mock(OffenderManagerService.class);
-    private ContactService contactService = mock(ContactService.class);
-    private OffenderPrisonerService offenderPrisonerService = mock(OffenderPrisonerService.class);
+    private final TelemetryClient telemetryClient = mock(TelemetryClient.class);
+    private final OffenderRepository offenderRepository = mock(OffenderRepository.class);
+    private final ConvictionService convictionService = mock(ConvictionService.class);
+    private final InstitutionRepository institutionRepository = mock(InstitutionRepository.class);
+    private final CustodyHistoryRepository custodyHistoryRepository = mock(CustodyHistoryRepository.class);
+    private final ReferenceDataService referenceDataService = mock(ReferenceDataService.class);
+    private final SpgNotificationService spgNotificationService = mock(SpgNotificationService.class);
+    private final ArgumentCaptor<CustodyHistory> custodyHistoryArgumentCaptor = ArgumentCaptor.forClass(CustodyHistory.class);
+    private final OffenderManagerService offenderManagerService = mock(OffenderManagerService.class);
+    private final ContactService contactService = mock(ContactService.class);
+    private final OffenderPrisonerService offenderPrisonerService = mock(OffenderPrisonerService.class);
 
     @BeforeEach
     public void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
@@ -65,7 +70,7 @@ public class CustodyServiceTest {
 
     @Nested
     class WhenUpdatingCustody {
-        private ArgumentMatcher<Map<String, String>> standardTelemetryAttributes =
+        private final ArgumentMatcher<Map<String, String>> standardTelemetryAttributes =
                 attributes -> Optional.ofNullable(attributes.get("offenderNo")).filter(value -> value.equals("G9542VP")).isPresent() &&
                         Optional.ofNullable(attributes.get("bookingNumber")).filter(value -> value.equals("44463B")).isPresent() &&
                         Optional.ofNullable(attributes.get("toAgency")).filter(value -> value.equals("MDI")).isPresent();
@@ -339,12 +344,12 @@ public class CustodyServiceTest {
 
     @Nested
     class WhenUpdatingCustodyBookingNumber {
-        private ArgumentMatcher<Map<String, String>> standardTelemetryAttributes =
+        private final ArgumentMatcher<Map<String, String>> standardTelemetryAttributes =
                 attributes ->  Optional.ofNullable(attributes.get("offenderNo")).filter(value -> value.equals("G9542VP")).isPresent() &&
                         Optional.ofNullable(attributes.get("bookingNumber")).filter(value -> value.equals("44463B")).isPresent() &&
                         Optional.ofNullable(attributes.get("sentenceStartDate")).filter(value -> value.equals("2020-02-28")).isPresent();
 
-         private UpdateCustodyBookingNumber updateCustodyBookingNumber = UpdateCustodyBookingNumber
+         private final UpdateCustodyBookingNumber updateCustodyBookingNumber = UpdateCustodyBookingNumber
                  .builder()
                  .sentenceStartDate(LocalDate.of(2020, 2, 28))
                  .bookingNumber("44463B")
@@ -424,13 +429,13 @@ public class CustodyServiceTest {
 
         @Nested
         class WhenCanUpdateBooking {
-            private UpdateCustodyBookingNumber updateCustodyBookingNumber = UpdateCustodyBookingNumber
+            private final UpdateCustodyBookingNumber updateCustodyBookingNumber = UpdateCustodyBookingNumber
                     .builder()
                     .sentenceStartDate(LocalDate.of(2020, 2, 28))
                     .bookingNumber("44463B")
                     .build();
-            private Offender offender = anOffender();
-            private Event event = aCustodyEvent();
+            private final Offender offender = anOffender();
+            private final Event event = aCustodyEvent();
 
             @BeforeEach
             void setup() {
@@ -546,6 +551,166 @@ public class CustodyServiceTest {
 
                     verify(telemetryClient).trackEvent(eq("P2PImprisonmentStatusBookingNumberInserted"), argThat(standardTelemetryAttributes), isNull());
                 }
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("when calling getCustodyByBookNumber")
+    class WhenRetrievingByBookingNumber {
+        @Nested
+        @DisplayName("and there is more than one event for the booking number")
+        class WhenHasMultipleActiveEvents {
+            @BeforeEach
+            void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
+                when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
+                when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+                        .thenThrow(new ConvictionService.DuplicateActiveCustodialConvictionsException(2));
+            }
+
+            @Test
+            @DisplayName("then a NotFoundException will be thrown")
+            void willThrowNotFound() {
+                assertThatThrownBy(() -> custodyService.getCustodyByBookNumber("G9542VP", "44463B"))
+                        .isInstanceOf(NotFoundException.class);
+            }
+        }
+        @Nested
+        @DisplayName("and there no active events for the booking number")
+        class WhenNoActiveEvents {
+            @BeforeEach
+            void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
+                when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
+                when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+                        .thenReturn(Optional.empty());
+            }
+
+            @Test
+            @DisplayName("then a NotFoundException will be thrown")
+            void willThrowNotFound() {
+                assertThatThrownBy(() -> custodyService.getCustodyByBookNumber("G9542VP", "44463B"))
+                        .isInstanceOf(NotFoundException.class);
+            }
+        }
+        @Nested
+        @DisplayName("and the offender is not found")
+        class WhenNoOffenderFound {
+            @BeforeEach
+            void setup() {
+                when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.empty());
+            }
+
+            @Test
+            @DisplayName("then a NotFoundException will be thrown")
+            void willThrowNotFound() {
+                assertThatThrownBy(() -> custodyService.getCustodyByBookNumber("G9542VP", "44463B"))
+                        .isInstanceOf(NotFoundException.class);
+            }
+        }
+
+        @Nested
+        @DisplayName("and there is one event for the booking number")
+        class WhenHasSingleActiveEvent {
+            @BeforeEach
+            void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
+                when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
+                when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+                        .thenReturn(Optional.of(aCustodyEvent(StandardReference
+                                .builder()
+                                .codeDescription("In Custody")
+                                .codeValue("X")
+                                .build())));
+            }
+
+            @Test
+            @DisplayName("then the custody element will be returned")
+            void willReturnCustody() {
+                final var custody = custodyService.getCustodyByBookNumber("G9542VP", "44463B");
+                assertThat(custody.getStatus().getDescription()).isEqualTo("In Custody");
+            }
+        }
+    }
+    @Nested
+    @DisplayName("when calling getCustodyByConvictionId")
+    class WhenRetrievingByConvictionId {
+        @Nested
+        @DisplayName("and there no active events for the booking number")
+        class WhenNoActiveEvents {
+            @BeforeEach
+            void setup() {
+                when(offenderRepository.findByCrn(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
+                when(convictionService.convictionFor(anyLong(), anyLong()))
+                        .thenReturn(Optional.empty());
+            }
+
+            @Test
+            @DisplayName("then a NotFoundException will be thrown")
+            void willThrowNotFound() {
+                assertThatThrownBy(() -> custodyService.getCustodyByConvictionId("X12345", 99L))
+                        .isInstanceOf(NotFoundException.class);
+            }
+        }
+        @Nested
+        @DisplayName("and the offender is not found")
+        class WhenNoOffenderFound {
+            @BeforeEach
+            void setup() {
+                when(offenderRepository.findByCrn(anyString())).thenReturn(Optional.empty());
+            }
+
+            @Test
+            @DisplayName("then a NotFoundException will be thrown")
+            void willThrowNotFound() {
+                assertThatThrownBy(() -> custodyService.getCustodyByConvictionId("X12345", 99L))
+                        .isInstanceOf(NotFoundException.class);
+            }
+        }
+
+        @Nested
+        @DisplayName("and there is a custodial event for the conviction id")
+        class WhenHasSingleActiveEvent {
+            @BeforeEach
+            void setup() {
+                when(offenderRepository.findByCrn(anyString())).thenReturn(Optional.of(Offender
+                        .builder()
+                        .offenderId(99L)
+                        .build()));
+                when(convictionService.convictionFor(anyLong(), anyLong()))
+                        .thenReturn(Optional.of(Conviction
+                                .builder()
+                                .custody(Custody.builder().status(KeyValue.builder().description("In Custody")
+                                        .build()).build())
+                                .build()));
+            }
+
+            @Test
+            @DisplayName("then the custody element will be returned")
+            void willReturnCustody() {
+                final var custody = custodyService.getCustodyByConvictionId("X12345", 99L);
+                assertThat(custody.getStatus().getDescription()).isEqualTo("In Custody");
+            }
+        }
+        @Nested
+        @DisplayName("and there is a non-custodial event for the conviction id")
+        class WhenHasANonCustodialEvent {
+            @BeforeEach
+            void setup() {
+                when(offenderRepository.findByCrn(anyString())).thenReturn(Optional.of(Offender
+                        .builder()
+                        .offenderId(99L)
+                        .build()));
+                when(convictionService.convictionFor(anyLong(), anyLong()))
+                        .thenReturn(Optional.of(Conviction
+                                .builder()
+                                .custody(null)
+                                .build()));
+            }
+
+            @Test
+            @DisplayName("then a BadRequest will be thrown")
+            void willThrowNotFound() {
+                assertThatThrownBy(() -> custodyService.getCustodyByConvictionId("X12345", 99L))
+                        .isInstanceOf(BadRequestException.class);
             }
         }
     }

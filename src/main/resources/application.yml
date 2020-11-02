@@ -94,3 +94,7 @@ features:
       booking.number: false
       keydates: false
       noms.number: false
+
+smoke:
+  test:
+    aware: false
