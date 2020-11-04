@@ -17,7 +17,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @ExtendWith({SpringExtension.class, FlywayRestoreExtension.class})
-@DisplayName("POST /offenders/crn/{crn}/smoketest/custody/reset")
+@DisplayName("POST /smoketest/offenders/crn/{crn}/custody/reset")
 public class SmokeTestHelperAPITest extends IntegrationTestBase {
     private static final String NOMS_NUMBER = "G9542VP";
     private static final String CRN = "X320741";
@@ -33,7 +33,7 @@ public class SmokeTestHelperAPITest extends IntegrationTestBase {
                 .auth().oauth2(token)
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .post("/offenders/crn/{crn}/smoketest/custody/reset", CRN)
+                .post("smoketest/offenders/crn/{crn}/custody/reset", CRN)
                 .then()
                 .statusCode(403);
     }
@@ -93,7 +93,7 @@ public class SmokeTestHelperAPITest extends IntegrationTestBase {
                 .auth().oauth2(token)
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .post("/offenders/crn/{crn}/smoketest/custody/reset", CRN)
+                .post("/smoketest/offenders/crn/{crn}/custody/reset", CRN)
                 .then()
                 .statusCode(200);
 
@@ -126,7 +126,7 @@ public class SmokeTestHelperAPITest extends IntegrationTestBase {
                 .auth().oauth2(token)
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .post("/offenders/crn/{crn}/smoketest/custody/reset", CRN)
+                .post("/smoketest/offenders/crn/{crn}/custody/reset", CRN)
                 .then()
                 .statusCode(200);
     }

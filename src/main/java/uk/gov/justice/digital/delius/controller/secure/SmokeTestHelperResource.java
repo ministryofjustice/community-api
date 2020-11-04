@@ -17,7 +17,7 @@ import uk.gov.justice.digital.delius.service.SmokeTestHelperService;
 @Api(tags = "Smoke test")
 @RestController
 @Slf4j
-@RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "secure/smoketest", produces = MediaType.APPLICATION_JSON_VALUE)
 @PreAuthorize("hasRole('ROLE_SMOKE_TEST')")
 @ConditionalOnProperty(name = "smoke.test.aware", havingValue = "true")
 public class SmokeTestHelperResource {
@@ -27,7 +27,7 @@ public class SmokeTestHelperResource {
         this.smokeTestHelperService = smokeTestHelperService;
     }
 
-    @RequestMapping(value = "offenders/crn/{crn}/smoketest/custody/reset", method = RequestMethod.POST, consumes = "application/json")
+    @RequestMapping(value = "offenders/crn/{crn}/custody/reset", method = RequestMethod.POST, consumes = "application/json")
     @ApiResponses(value = {
             @ApiResponse(code = 403, message = "Requires role ROLE_SMOKE_TEST"),
             @ApiResponse(code = 404, message = "Either the requested offender was not found or no active custodial sentences were found")
