@@ -98,7 +98,7 @@ public class CustodyResource {
     }
 
 
-    @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/custody/bookingNumber/{bookingNumber}", method = RequestMethod.GET, consumes = "application/json")
+    @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/custody/bookingNumber/{bookingNumber}", method = RequestMethod.GET)
     @ApiResponses(value = {
             @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY"),
             @ApiResponse(code = 404, message = "Either the requested offender was not found or the conviction associated the booking number.")
@@ -110,7 +110,7 @@ public class CustodyResource {
         return custodyService.getCustodyByBookNumber(nomsNumber, bookingNumber);
     }
 
-    @RequestMapping(value = "offenders/crn/{crn}/custody/convictionId/{convictionId}", method = RequestMethod.GET, consumes = "application/json")
+    @RequestMapping(value = "offenders/crn/{crn}/custody/convictionId/{convictionId}", method = RequestMethod.GET)
     @ApiResponses(value = {
             @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY"),
             @ApiResponse(code = 404, message = "Either the requested offender was not found or the conviction associated the conviction id.")

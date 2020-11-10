@@ -37,7 +37,6 @@ public class CustodyGetAPITest extends IntegrationTestBase {
 
             given()
                     .auth().oauth2(token)
-                    .contentType("application/json")
                     .when()
                     .get("offenders/nomsNumber/{nomsNumber}/custody/bookingNumber/{bookingNumber}", NOMS_NUMBER, PRISON_BOOKING_NUMBER)
                     .then()
@@ -63,7 +62,6 @@ public class CustodyGetAPITest extends IntegrationTestBase {
 
             given()
                     .auth().oauth2(token)
-                    .contentType("application/json")
                     .when()
                     .get("offenders/crn/{crn}/custody/convictionId/{convictionId}", CRN, CONVICTION_ID)
                     .then()
@@ -77,7 +75,6 @@ public class CustodyGetAPITest extends IntegrationTestBase {
 
             given()
                     .auth().oauth2(token)
-                    .contentType("application/json")
                     .when()
                     .get("offenders/crn/{crn}/custody/convictionId/{convictionId}", CRN, CONVICTION_ID)
                     .then()
