@@ -52,6 +52,7 @@ public class OffendersResource_getOffenderNsisByCrn extends IntegrationTestBase 
         assertThat(nsi.getExpectedStartDate()).isEqualTo(LocalDate.of(2019, Month.SEPTEMBER, 20));
         assertThat(nsi.getActualStartDate()).isEqualTo(LocalDate.of(2019, Month.OCTOBER, 2));
         assertThat(nsi.getLength()).isEqualTo(20L);
+        assertThat(nsi.getNotes()).isEqualTo("Some notes added to the breach.");
         assertThat(nsi.getNsiStatus()).isEqualTo(KeyValue.builder().code("BRE01").description("Breach Initiated").build());
         assertThat(nsi.getNsiType()).isEqualTo(KeyValue.builder().code("BRE").description("Breach Request").build());
         assertThat(nsi.getNsiSubType()).isEqualTo(KeyValue.builder().code("BRE01").description("Community Order / SSO").build());

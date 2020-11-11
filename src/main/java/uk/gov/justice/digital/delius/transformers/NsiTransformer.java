@@ -31,6 +31,7 @@ public class NsiTransformer {
                 .length(n.getLength())
                 .lengthUnit(NSI_LENGTH_UNIT)
                 .nsiManagers(nsiManagersOf(n.getNsiManagers()))
+                .notes(n.getNotes())
                 .build()).orElse(null);
     }
 

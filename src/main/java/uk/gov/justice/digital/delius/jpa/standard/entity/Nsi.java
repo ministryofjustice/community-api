@@ -66,4 +66,7 @@ public class Nsi {
     @OneToMany(mappedBy = "nsi")
     private List<NsiManager> nsiManagers;
 
+    @Column(name = "NOTES")
+    private String notes;
+
 }
