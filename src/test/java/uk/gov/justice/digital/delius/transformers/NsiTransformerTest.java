@@ -64,6 +64,7 @@ class NsiTransformerTest {
         assertThat(nsi.getRequirement().getActive()).isEqualTo(true);
         assertThat(nsi.getLength()).isEqualTo(12L);
         assertThat(nsi.getLengthUnit()).isEqualTo("Months");
+        assertThat(nsi.getNotes()).isEqualTo("Some notes");
 
         assertThat(nsi.getNsiManagers()).isNotNull();
         assertThat(nsi.getNsiManagers()).hasSize(2);
@@ -81,7 +82,6 @@ class NsiTransformerTest {
         assertThat(manager2.getProbationArea().getCode()).isEqualTo("N02");
         assertThat(manager2.getTeam().getCode()).isEqualTo("N02AAA");
         assertThat(manager2.getStaff().getStaffCode()).isEqualTo("N02AAA001");
-
     }
 
    private uk.gov.justice.digital.delius.jpa.standard.entity.Nsi buildNsiEntity(LocalDate expectedStartDate,
@@ -99,6 +99,7 @@ class NsiTransformerTest {
                 .referralDate(referralDate)
                 .nsiManagers(Arrays.asList(EntityHelper.aNsiManager(), EntityHelper.aNsiManager()))
                 .length(12L)
+                .notes("Some notes")
                 .nsiManagers(List.of(EntityHelper.aNsiManager(), EntityHelper.aNsiManager()))
                 .rqmnt(Requirement.builder().activeFlag(1L).build()).build();
     }
