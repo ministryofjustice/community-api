@@ -81,7 +81,7 @@ public class StaffService {
 
     @Transactional
     public Staff findOrCreateStaffInArea(final Human staff, final ProbationArea probationArea) {
-        return staffRepository.findBySurnameAndForenameAndProbationArea(staff.getSurname(), firstNameIn(staff.getForenames()), probationArea)
+        return staffRepository.findFirstBySurnameAndForenameAndProbationArea(staff.getSurname(), firstNameIn(staff.getForenames()), probationArea)
                 .orElseGet(() -> createStaffInArea(staff.getSurname(), firstNameIn(staff.getForenames()), probationArea));
     }
 

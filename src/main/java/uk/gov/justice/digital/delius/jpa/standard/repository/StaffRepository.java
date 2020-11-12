@@ -21,7 +21,7 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
     @Query("select u.staff from User u where upper(u.distinguishedName) in (:usernames)")
     List<Staff> findByUsernames(@Param("usernames") Set<String> usernames);
 
-    Optional<Staff> findBySurnameAndForenameAndProbationArea(String surname, String forename, ProbationArea probationArea);
+    Optional<Staff> findFirstBySurnameAndForenameAndProbationArea(String surname, String forename, ProbationArea probationArea);
 
     @Query("select staff from Staff staff, StaffTeam staffTeam, Team team where staff.officerCode like '%U' and staffTeam.staffId = staff.staffId and staffTeam.teamId = :teamId" )
     Optional<Staff> findByUnallocatedByTeam(@Param("teamId") Long teamId);
