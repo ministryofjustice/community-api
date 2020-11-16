@@ -11,11 +11,14 @@ import java.util.Collection;
 public class AuthAwareAuthenticationToken extends JwtAuthenticationToken {
 
     private final String subject;
+    private final String databaseUsername;
     private final boolean clientOnly;
 
     public AuthAwareAuthenticationToken(Jwt jwt, boolean clientOnly, Collection<? extends GrantedAuthority> authorities) {
         super(jwt, authorities);
         subject = jwt.getSubject();
         this.clientOnly = clientOnly;
+        final var databaseUsernameClaim = jwt.getClaims().get("database_username");
+        databaseUsername = databaseUsernameClaim != null ? databaseUsernameClaim.toString() : null;
     }
 }

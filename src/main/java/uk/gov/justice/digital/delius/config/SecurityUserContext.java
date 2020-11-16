@@ -23,6 +23,14 @@ public class SecurityUserContext {
         return token.isClientOnly();
     }
 
+    public String getDatabaseUsername() {
+        final var authentication = getAuthentication();
+        if (!(authentication instanceof AuthAwareAuthenticationToken)) return null;
+
+        final var token = (AuthAwareAuthenticationToken) authentication;
+        return token.getDatabaseUsername();
+    }
+
     public boolean isSecure() {
        return getAuthentication() != null;
     }

@@ -68,6 +68,15 @@ public class CurrentUserSupplierTest {
     }
 
     @Test
+    public void willReturnDatabaseUserWhenSecureAndWhenClientCall() {
+        when(securityUserContext.isSecure()).thenReturn(true);
+        when(securityUserContext.isClientOnly()).thenReturn(true);
+        when(securityUserContext.getDatabaseUsername()).thenReturn("MOIC");
+
+        assertThat(currentUserSupplier.username()).get().isEqualTo("MOIC");
+    }
+
+    @Test
     public void willReturnNationalUserFromClaimWhenNotSecureAndNationalOverride() {
         // the implementation means the below will not be called but leave it
         // here for clarity on the scenario

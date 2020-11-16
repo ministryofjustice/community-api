@@ -31,7 +31,9 @@ public class CurrentUserSupplier {
 
         if (securityUserContext.isSecure()) {
             if (securityUserContext.isClientOnly()) {
-                return Optional.of(API_USER);
+                // check JWT to see if database_username is set, else use API_USER
+                final var databaseUsername = securityUserContext.getDatabaseUsername();
+                return Optional.of(databaseUsername != null ? databaseUsername : API_USER);
             } else {
                 return securityUserContext.getCurrentUsername();
             }
