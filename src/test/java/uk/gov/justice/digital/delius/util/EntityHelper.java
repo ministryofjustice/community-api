@@ -741,8 +741,8 @@ public class EntityHelper {
                 .description("NPS North East")
                 .privateSector(0L)
                 .organisation(Organisation.builder().build())
-                .providerTeams(List.of())
-                .teams(List.of())
+                .providerTeams(new ArrayList<>())
+                .teams(new ArrayList<>())
                 .build();
     }
 

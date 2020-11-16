@@ -1,25 +1,43 @@
 package uk.gov.justice.digital.delius.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
-import uk.gov.justice.digital.delius.jpa.standard.repository.*;
+import uk.gov.justice.digital.delius.data.api.TeamCreationResult;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
+import uk.gov.justice.digital.delius.jpa.standard.entity.District;
+import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StaffTeam;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
+import uk.gov.justice.digital.delius.jpa.standard.repository.BoroughRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.DistrictRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.LocalDeliveryUnitRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.StaffTeamRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.TeamRepository;
+import uk.gov.justice.digital.delius.transformers.TeamTransformer;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class TeamService {
     private static final String POM_TEAM_SUFFIX = "POM";
     private static final String UNALLOCATED_TEAM_SUFFIX = "ALL";
-    private static final String POM_DESCRIPTION_SUFFIX = "Prison Offender Managers";
+    private static final String POM_DESCRIPTION = "Prison Offender Managers";
 
     private final TeamRepository teamRepository;
     private final LocalDeliveryUnitRepository localDeliveryUnitRepository;
     private final DistrictRepository districtRepository;
     private final BoroughRepository boroughRepository;
     private final StaffTeamRepository staffTeamRepository;
+    private final ProbationAreaRepository probationAreaRepository;
+
 
 
     @Transactional
@@ -27,6 +45,17 @@ public class TeamService {
         final String teamCode = String.format("%s%s", probationArea.getCode(), POM_TEAM_SUFFIX);
         return teamRepository.findByCode(teamCode)
                 .orElseGet(() -> createPOMTeamInArea(teamCode, probationArea));
+    }
+
+    private Team createPrisonOffenderManagerTeamInArea(ProbationArea probationArea) {
+        log.info(String.format("Creating Prison Offender Manger team for %s", probationArea.getDescription()));
+        final String teamCode = String.format("%s%s", probationArea.getCode(), POM_TEAM_SUFFIX);
+        return createPOMTeamInArea(teamCode, probationArea);
+    }
+
+    private boolean isPOMTeamMissingForArea(ProbationArea probationArea) {
+        final String teamCode = String.format("%s%s", probationArea.getCode(), POM_TEAM_SUFFIX);
+        return teamRepository.findByCode(teamCode).isEmpty();
     }
 
     Optional<Team> findUnallocatedTeam(uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea probationArea) {
@@ -46,16 +75,29 @@ public class TeamService {
     }
 
 
+    @Transactional
+    public TeamCreationResult createMissingPrisonOffenderManagerTeams() {
+        return TeamCreationResult
+                .builder()
+                .teams(probationAreaRepository
+                        .findAllWithNomsCDECodeExcludeOut()
+                        .stream()
+                        .filter(this::isPOMTeamMissingForArea)
+                        .map(probationArea -> TeamTransformer.teamOf(createPrisonOffenderManagerTeamInArea(probationArea)))
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
     private Team createPOMTeamInArea(String code, ProbationArea probationArea) {
         final var team = Team
                 .builder()
                 .code(code)
-                .description(POM_DESCRIPTION_SUFFIX)
+                .description(POM_DESCRIPTION)
                 .probationArea(probationArea)
                 .district(findOrCreatePOMDistrictInArea(code, probationArea))
                 .localDeliveryUnit(findOrCreatePOMLDUInArea(code, probationArea))
                 .privateFlag(probationArea.getPrivateSector())
-                .unpaidWorkTeam("Y")  // same as case notes team but seems odd
+                .unpaidWorkTeam("N")
                 .build();
         probationArea.getTeams().add(team);
         return teamRepository.save(team);
@@ -71,7 +113,7 @@ public class TeamService {
                 LocalDeliveryUnit
                         .builder()
                         .code(code)
-                        .description(POM_DESCRIPTION_SUFFIX)
+                        .description(POM_DESCRIPTION)
                         .probationArea(probationArea)
                         .build()
         );
@@ -87,7 +129,7 @@ public class TeamService {
                 District
                         .builder()
                         .code(code)
-                        .description(POM_DESCRIPTION_SUFFIX)
+                        .description(POM_DESCRIPTION)
                         .borough(findOrCreatePOMBoroughInArea(code, probationArea))
                         .build()
         );
@@ -103,7 +145,7 @@ public class TeamService {
                 Borough
                         .builder()
                         .code(code)
-                        .description(POM_DESCRIPTION_SUFFIX)
+                        .description(POM_DESCRIPTION)
                         .probationArea(probationArea)
                         .build()
         );
