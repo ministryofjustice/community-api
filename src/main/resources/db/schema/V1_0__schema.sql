@@ -114,7 +114,7 @@ create sequence SUBJECT_ACCESS_REPORT_ID_SEQ
     ;
 
 create sequence TEAM_ID_SEQ
-    minvalue 2500000000
+    minvalue 2600000000
     maxvalue 900000000000000000
     cache 500
     ;
@@ -298,7 +298,7 @@ create sequence AUDITED_INTERACTION_ID_SEQ
     ;
 
 create sequence BOROUGH_ID_SEQ
-    minvalue 2500000000
+    minvalue 2600000000
     maxvalue 900000000000000000
     cache 500
     ;
@@ -763,7 +763,7 @@ create sequence DISPOSAL_TYPE_ID_SEQ
     ;
 
 create sequence DISTRICT_ID_SEQ
-    minvalue 2500000000
+    minvalue 2600000000
     maxvalue 900000000000000000
     cache 500
     ;
@@ -923,7 +923,7 @@ create sequence LIC_TERMIN_REASON_ID_SEQ
     ;
 
 create sequence LOCAL_DELIVERY_UNIT_ID_SEQ
-    minvalue 2500000000
+    minvalue 2600000000
     maxvalue 900000000000000000
     cache 500
     ;
