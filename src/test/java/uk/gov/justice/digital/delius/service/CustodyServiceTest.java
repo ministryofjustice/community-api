@@ -88,7 +88,7 @@ public class CustodyServiceTest {
             when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.empty());
 
             assertThatThrownBy(() ->
-                    custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()));
+                    custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()));
 
             verify(telemetryClient).trackEvent(eq("P2PTransferOffenderNotFound"), argThat(standardTelemetryAttributes), isNull());
         }
@@ -98,7 +98,7 @@ public class CustodyServiceTest {
             when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.empty());
 
             assertThatThrownBy(() ->
-                    custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()))
+                    custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()))
                     .isInstanceOf(NotFoundException.class);
 
         }
@@ -108,7 +108,7 @@ public class CustodyServiceTest {
             when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(99L, "44463B")).thenReturn(Optional.empty());
 
             assertThatThrownBy(() ->
-                    custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()));
+                    custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()));
 
             verify(telemetryClient).trackEvent(eq("P2PTransferBookingNumberNotFound"), argThat(standardTelemetryAttributes), isNull());
         }
@@ -118,7 +118,7 @@ public class CustodyServiceTest {
             when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(99L, "44463B")).thenReturn(Optional.empty());
 
             assertThatThrownBy(() ->
-                    custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()))
+                    custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()))
                     .isInstanceOf(NotFoundException.class);
         }
 
@@ -129,7 +129,7 @@ public class CustodyServiceTest {
                     .thenThrow(new ConvictionService.DuplicateActiveCustodialConvictionsException(2));
 
             assertThatThrownBy(() ->
-                    custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()));
+                    custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()));
 
             verify(telemetryClient).trackEvent(eq("P2PTransferBookingNumberHasDuplicates"), argThat(standardTelemetryAttributes), isNull());
         }
@@ -140,7 +140,7 @@ public class CustodyServiceTest {
                     .thenThrow(new ConvictionService.DuplicateActiveCustodialConvictionsException(2));
 
             assertThatThrownBy(() ->
-                    custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()))
+                    custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()))
                     .isInstanceOf(NotFoundException.class);
         }
 
@@ -149,7 +149,7 @@ public class CustodyServiceTest {
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.empty());
 
             assertThatThrownBy(() ->
-                    custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()));
+                    custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()));
 
             verify(telemetryClient).trackEvent(eq("P2PTransferPrisonNotFound"), argThat(standardTelemetryAttributes), isNull());
         }
@@ -159,7 +159,7 @@ public class CustodyServiceTest {
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.empty());
 
             assertThatThrownBy(() ->
-                    custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()))
+                    custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()))
                     .isInstanceOf(NotFoundException.class);
         }
 
@@ -174,7 +174,7 @@ public class CustodyServiceTest {
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(newInstitution));
 
 
-            final var custody = custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+            final var custody = custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
             verify(telemetryClient).trackEvent(eq("P2PTransferPrisonUpdateIgnored"), argThat(standardTelemetryAttributes), isNull());
 
@@ -189,7 +189,7 @@ public class CustodyServiceTest {
         public void willCreateTelemetryEventWhenPrisonLocationChanges() {
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution()));
 
-            custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+            custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
             verify(telemetryClient).trackEvent(eq("P2PTransferPrisonUpdated"), argThat(standardTelemetryAttributes), isNull());
         }
@@ -197,7 +197,7 @@ public class CustodyServiceTest {
         @Test
         public void willCreateCustodyHistoryChangeLocationEvent() {
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
-            custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+            custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
             verify(custodyHistoryRepository).save(custodyHistoryArgumentCaptor.capture());
 
@@ -212,7 +212,7 @@ public class CustodyServiceTest {
         public void willNotifySPGOfCustodyChange() {
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
 
-            custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+            custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
             verify(spgNotificationService).notifyUpdateOfCustody(any(), any());
         }
@@ -225,7 +225,7 @@ public class CustodyServiceTest {
             when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                     .thenReturn(Optional.of(event));
 
-            custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+            custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
             verify(contactService).addContactForPrisonLocationChange(offender, event);
         }
@@ -238,7 +238,7 @@ public class CustodyServiceTest {
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(institution));
             when(offenderManagerService.isPrisonOffenderManagerAtInstitution(any(), any())).thenReturn(false);
 
-            custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+            custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
             verify(offenderManagerService).autoAllocatePrisonOffenderManagerAtInstitution(offender, institution);
         }
@@ -250,7 +250,7 @@ public class CustodyServiceTest {
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(institution));
             when(offenderManagerService.isPrisonOffenderManagerAtInstitution(any(), any())).thenReturn(true);
 
-            custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+            custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
             verify(offenderManagerService, never()).autoAllocatePrisonOffenderManagerAtInstitution(any(), any());
         }
@@ -260,7 +260,7 @@ public class CustodyServiceTest {
             when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                     .thenReturn(Optional.of(EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("A").codeDescription("Sentenced in custody").build())));
 
-            custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+            custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
             verify(custodyHistoryRepository, times(2)).save(custodyHistoryArgumentCaptor.capture());
 
@@ -280,7 +280,7 @@ public class CustodyServiceTest {
             when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                     .thenReturn(Optional.of(EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("A").codeDescription("Sentenced in custody").build())));
 
-            custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+            custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
             verify(referenceDataService).getInCustodyCustodyStatus();
         }
@@ -290,7 +290,7 @@ public class CustodyServiceTest {
             when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                     .thenReturn(Optional.of(EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("A").codeDescription("Sentenced in custody").build())));
 
-            custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+            custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
             verify(spgNotificationService).notifyUpdateOfCustodyLocationChange(any(), any());
         }
@@ -300,7 +300,7 @@ public class CustodyServiceTest {
             when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                     .thenReturn(Optional.of(EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("D").codeDescription("In Custody").build())));
 
-            custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+            custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
             verify(spgNotificationService).notifyUpdateOfCustodyLocationChange(any(), any());
         }
@@ -313,7 +313,7 @@ public class CustodyServiceTest {
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
 
             assertThatThrownBy(() ->
-                    custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()))
+                    custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()))
                     .isInstanceOf(NotFoundException.class);
 
             verify(telemetryClient).trackEvent(eq("P2PTransferPrisonUpdateIgnored"), argThat(standardTelemetryAttributes), isNull());
@@ -325,7 +325,7 @@ public class CustodyServiceTest {
 
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
 
-            final var updatedCustody = custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+            final var updatedCustody = custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
             assertThat(updatedCustody.getInstitution().getDescription()).isEqualTo("HMP Highland");
         }
@@ -336,7 +336,7 @@ public class CustodyServiceTest {
 
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
 
-            final var updatedCustody = custodyService.updateCustody("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+            final var updatedCustody = custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
             assertThat(updatedCustody.getInstitution().getDescription()).isNotEqualTo("HMP Highland");
         }

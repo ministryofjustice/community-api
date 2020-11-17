@@ -4,18 +4,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.controller.InvalidRequestException;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
+import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import uk.gov.justice.digital.delius.service.AlfrescoService;
 import uk.gov.justice.digital.delius.service.ContactService;
 import uk.gov.justice.digital.delius.service.ConvictionService;
+import uk.gov.justice.digital.delius.service.CustodyService;
 import uk.gov.justice.digital.delius.service.DocumentService;
 import uk.gov.justice.digital.delius.service.NsiService;
 import uk.gov.justice.digital.delius.service.OffenderManagerService;
@@ -29,7 +32,10 @@ import static io.restassured.config.EncoderConfig.encoderConfig;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.config.RestAssuredMockMvcConfig.newConfig;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,6 +67,8 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     private UserService userService;
     @Mock
     private CurrentUserSupplier currentUserSupplier;
+    @Mock
+    private CustodyService custodyService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -68,7 +76,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     public void setup() {
         RestAssuredMockMvc.config = newConfig().encoderConfig(encoderConfig().defaultContentCharset("UTF-8"));
         RestAssuredMockMvc.standaloneSetup(
-                new OffendersResource(offenderService, alfrescoService, documentService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier),
+                new OffendersResource(offenderService, alfrescoService, documentService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier, custodyService),
                 new SecureControllerAdvice()
         );
     }
@@ -274,6 +282,87 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
                 .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
                 .then()
                 .statusCode(400);
+    }
+
+    @Nested
+    class PrisonLocationUpdate {
+        @Test
+        public void requestWithStaffId_willRequestUpdateToPrisonLocation() throws JsonProcessingException {
+            given(offenderManagerService.allocatePrisonOffenderManagerByStaffId(
+                    SOME_OFFENDER_NOMS_NUMBER,
+                    SOME_STAFF_ID,
+                    createPrisonOffenderManagerOf(SOME_STAFF_ID, null, null, SOME_PRISON_NOMS_CODE))
+            )
+                    .willReturn(Optional.of(CommunityOrPrisonOffenderManager.builder().build()));
+
+            given()
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .body(createPrisonOffenderManagerJsonOf(SOME_STAFF_ID, null, null, SOME_PRISON_NOMS_CODE))
+                    .when()
+                    .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
+                    .then()
+                    .statusCode(200);
+            verify(custodyService).updateCustodyPrisonLocation(SOME_OFFENDER_NOMS_NUMBER, SOME_PRISON_NOMS_CODE);
+        }
+
+        @Test
+        public void requestWithOfficerName_willRequestUpdateToPrisonLocation() throws JsonProcessingException {
+            given(offenderManagerService.allocatePrisonOffenderManagerByName(
+                    SOME_OFFENDER_NOMS_NUMBER,
+                    createPrisonOffenderManagerOf(null, SOME_OFFICER_FORENAMES, SOME_OFFICER_SURNAME, SOME_PRISON_NOMS_CODE))
+            )
+                    .willReturn(Optional.of(CommunityOrPrisonOffenderManager.builder().build()));
+
+            given()
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .body(createPrisonOffenderManagerJsonOf(null, SOME_OFFICER_FORENAMES, SOME_OFFICER_SURNAME, SOME_PRISON_NOMS_CODE))
+                    .when()
+                    .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
+                    .then()
+                    .statusCode(200);
+
+            verify(custodyService).updateCustodyPrisonLocation(SOME_OFFENDER_NOMS_NUMBER, SOME_PRISON_NOMS_CODE);
+        }
+        @Test
+        public void requestWithOfficerName_offenderManagerNotFoundOrCreated_willNotRequestUpdateToPrisonLocation() throws JsonProcessingException {
+            given(offenderManagerService.allocatePrisonOffenderManagerByName(
+                    SOME_OFFENDER_NOMS_NUMBER,
+                    createPrisonOffenderManagerOf(null, SOME_OFFICER_FORENAMES, SOME_OFFICER_SURNAME, SOME_PRISON_NOMS_CODE))
+            )
+                    .willReturn(Optional.empty());
+
+            given()
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .body(createPrisonOffenderManagerJsonOf(null, SOME_OFFICER_FORENAMES, SOME_OFFICER_SURNAME, SOME_PRISON_NOMS_CODE))
+                    .when()
+                    .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
+                    .then()
+                    .statusCode(404);
+
+            verify(custodyService, never()).updateCustodyPrisonLocation(any(), any());
+        }
+
+        @Test
+        public void requestWithStaffId_offenderManagerNotFoundOrCreated_willNotRequestUpdateToPrisonLocation() throws JsonProcessingException {
+            given(offenderManagerService.allocatePrisonOffenderManagerByStaffId(
+                    SOME_OFFENDER_NOMS_NUMBER,
+                    SOME_STAFF_ID,
+                    createPrisonOffenderManagerOf(SOME_STAFF_ID, null, null, SOME_PRISON_NOMS_CODE))
+            )
+                    .willReturn(Optional.empty());
+
+            given()
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .body(createPrisonOffenderManagerJsonOf(SOME_STAFF_ID, null, null, SOME_PRISON_NOMS_CODE))
+                    .when()
+                    .put(String.format("/secure/offenders/nomsNumber/%s/prisonOffenderManager", SOME_OFFENDER_NOMS_NUMBER))
+                    .then()
+                    .statusCode(404);
+
+            verify(custodyService, never()).updateCustodyPrisonLocation(any(), any());
+        }
+
+
     }
 
 

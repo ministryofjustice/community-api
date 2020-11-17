@@ -76,9 +76,9 @@ public class CustodyService {
     }
 
     @Transactional
-    public Custody updateCustody(final String nomsNumber,
-                                 final String bookingNumber,
-                                 final UpdateCustody updateCustody) {
+    public Custody updateCustodyPrisonLocation(final String nomsNumber,
+                                               final String bookingNumber,
+                                               final UpdateCustody updateCustody) {
         final var telemetryProperties = Map.of("offenderNo", nomsNumber,
                 "bookingNumber", bookingNumber,
                 "toAgency", updateCustody.getNomsPrisonInstitutionCode());
@@ -115,6 +115,12 @@ public class CustodyService {
             return new NotFoundException(error.getMessage());
         }));
     }
+
+    @Transactional
+    public void updateCustodyPrisonLocation(String nomsNumber, String nomsPrisonInstitutionCode) {
+
+    }
+
 
     private Either<PrisonLocationUpdateError, PrisonLocationUpdateSuccess> updateCustodyForTransfer(final String nomsNumber,
                                                                                 final String bookingNumber,

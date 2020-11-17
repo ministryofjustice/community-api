@@ -40,7 +40,7 @@ public class CustodyController_updateCustodyTest {
                 new SecureControllerAdvice()
         );
 
-        when(custodyService.updateCustody(anyString(), anyString(), any())).thenReturn(Custody.builder().build());
+        when(custodyService.updateCustodyPrisonLocation(anyString(), anyString(), any())).thenReturn(Custody.builder().build());
     }
 
     @Test
@@ -68,7 +68,7 @@ public class CustodyController_updateCustodyTest {
 
     @Test
     public void requestReturnsUpdatedCustody() throws JsonProcessingException {
-        when(custodyService.updateCustody(anyString(), anyString(), any())).thenReturn(Custody
+        when(custodyService.updateCustodyPrisonLocation(anyString(), anyString(), any())).thenReturn(Custody
                 .builder()
                 .institution(Institution
                         .builder()
@@ -99,7 +99,7 @@ public class CustodyController_updateCustodyTest {
                 .statusCode(200);
 
 
-        verify(custodyService).updateCustody(eq("G9542VP"), eq("44463B"), updateCustodyArgumentCaptor.capture());
+        verify(custodyService).updateCustodyPrisonLocation(eq("G9542VP"), eq("44463B"), updateCustodyArgumentCaptor.capture());
         assertThat(updateCustodyArgumentCaptor.getValue().getNomsPrisonInstitutionCode()).isEqualTo("MDI");
     }
 
