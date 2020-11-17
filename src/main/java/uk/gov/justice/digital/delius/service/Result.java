@@ -42,4 +42,7 @@ public class Result<T, X extends Throwable> {
             throw new NoSuchElementException("Result contains no error, did you call getError() instead of onError?");
         }
     }
+    public boolean isError() {
+        return error != null;
+    }
 }
