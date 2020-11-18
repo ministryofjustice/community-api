@@ -119,7 +119,6 @@ public class OffenderManagerService {
         if (!isStaffInTeam(team, staff)) {
             teamService.addStaffToTeam(staff, team);
         }
-
         final var newPrisonOffenderManager = prisonOffenderManagerRepository.save(PrisonOffenderManager
                 .builder()
                 .probationArea(probationArea)
@@ -129,6 +128,7 @@ public class OffenderManagerService {
                 .managedOffender(offender)
                 .offenderId(offender.getOffenderId())
                 .build());
+
 
         // deactivate existing POM
         findExistingPrisonOffenderManager(offender).ifPresentOrElse(existingPOM -> {
@@ -144,8 +144,10 @@ public class OffenderManagerService {
                         newPrisonOffenderManager.addResponsibleOfficer(responsibleOfficerRepository.save(responsibleOfficerOf(offender, newPrisonOffenderManager)));
                         contactService.addContactForResponsibleOfficerChange(newPrisonOffenderManager, existingPOM);
                     });
+            offender.getPrisonOffenderManagers().remove(existingPOM);
         }, () -> contactService.addContactForPOMAllocation(newPrisonOffenderManager));
 
+        offender.getPrisonOffenderManagers().add(newPrisonOffenderManager);
 
         return OffenderManagerTransformer.offenderManagerOf(newPrisonOffenderManager);
     }

@@ -83,7 +83,9 @@ public class CustodyService {
                 "bookingNumber", bookingNumber,
                 "toAgency", updateCustody.getNomsPrisonInstitutionCode());
 
-        final var result = updateCustodyForTransfer(nomsNumber, bookingNumber, updateCustody);
+        final var result = updateCustodyPrisonLocation(nomsNumber,
+                offender  -> getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(offender.getOffenderId(), bookingNumber),
+                updateCustody.getNomsPrisonInstitutionCode());
         return result.map(success -> {
             switch (success.outcome) {
                 case Updated:
@@ -117,18 +119,21 @@ public class CustodyService {
     }
 
     @Transactional
-    public void updateCustodyPrisonLocation(String nomsNumber, String nomsPrisonInstitutionCode) {
+    public void updateCustodyPrisonLocation(final String nomsNumber, final String nomsPrisonInstitutionCode) {
+        final var result = updateCustodyPrisonLocation(nomsNumber,
+                this::getSingleActiveCustodialEvent,
+                nomsPrisonInstitutionCode);
 
     }
 
 
-    private Either<PrisonLocationUpdateError, PrisonLocationUpdateSuccess> updateCustodyForTransfer(final String nomsNumber,
-                                                                                final String bookingNumber,
-                                                                                final UpdateCustody updateCustody) {
+    private Either<PrisonLocationUpdateError, PrisonLocationUpdateSuccess> updateCustodyPrisonLocation(final String nomsNumber,
+                                                                                                       final Function<Offender, Either<PrisonLocationUpdateError, Event>> eventSupplier,
+                                                                                                       final String nomsPrisonInstitutionCode) {
         return findByNomsNumber(nomsNumber)
-                .flatMap(offender -> getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(offender.getOffenderId(), bookingNumber)
+                .flatMap(offender -> eventSupplier.apply(offender)
                         .flatMap(event -> isInCustodyOrAboutToStartACustodySentence(event)
-                                .flatMap(notUsed -> findByNomisCdeCode(updateCustody.getNomsPrisonInstitutionCode())
+                                .flatMap(notUsed -> findByNomisCdeCode(nomsPrisonInstitutionCode)
                                         .flatMap(institution -> updateInstitutionWhenDifferent(offender, event, institution)))
                         ));
     }
@@ -278,6 +283,14 @@ public class CustodyService {
                     .orElseGet(() -> Either.left(new PrisonLocationUpdateError(PrisonLocationUpdateError.Reason.ConvictionNotFound, String.format("conviction with bookingNumber %s not found", bookingNumber))));
         } catch (ConvictionService.DuplicateActiveCustodialConvictionsException e) {
             return Either.left(new PrisonLocationUpdateError(PrisonLocationUpdateError.Reason.MultipleCustodialSentences, String.format("no single conviction with bookingNumber %s found, instead %d duplicates found", bookingNumber, e.getConvictionCount())));
+        }
+    }
+
+    private Either<PrisonLocationUpdateError, Event> getSingleActiveCustodialEvent(Offender offender) {
+        try {
+            return Either.right(convictionService.getActiveCustodialEvent(offender.getOffenderId()));
+        } catch (ConvictionService.SingleActiveCustodyConvictionNotFoundException e) {
+            return Either.left(new PrisonLocationUpdateError(PrisonLocationUpdateError.Reason.MultipleCustodialSentences, e.getMessage()));
         }
     }
 
