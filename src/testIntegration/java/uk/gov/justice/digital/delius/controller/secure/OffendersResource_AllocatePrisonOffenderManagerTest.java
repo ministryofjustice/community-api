@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 import static io.restassured.RestAssured.given;
 import static java.util.function.Predicate.not;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @ExtendWith(FlywayRestoreExtension.class)
@@ -119,6 +120,18 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
 
     @Test
     public void canAllocatePrisonOffenderManagersByNOMSNumberAndStaffName() {
+        // GIVEN the offender is in Berwyn prison
+        given()
+                .auth().oauth2(tokenWithRoleCommunity())
+                .when()
+                .get("offenders/nomsNumber/{nomsNumber}/custody/bookingNumber/{bookingNumber}", "G9542VP", "V74111")
+                .then()
+                .statusCode(200)
+                .body("institution.code", equalTo("BWIHMP"))
+                .body("institution.description", equalTo("Berwyn (HMP)"))
+        ;
+
+        // AND there is an existing POM
         final var offenderManagersBeforeAllocation = given()
                 .auth()
                 .oauth2(tokenWithRoleCommunity())
@@ -138,6 +151,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
         assertThat(prisonOffenderManager(offenderManagersBeforeAllocation).orElseThrow().getStaffId()).isEqualTo(2500057541L);
         assertThat(communityOffenderManager(offenderManagersBeforeAllocation)).isPresent();
 
+        // WHEN a POM is allocated at Moorland prison
         final var newPrisonOffenderManager = given()
                 .auth()
                 .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
@@ -148,7 +162,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                                 .surname("Marke")
                                 .forenames("Joe")
                                 .build(),
-                        "BWI"))
+                        "MDI"))
                 .when()
                 .put("/offenders/nomsNumber/G9542VP/prisonOffenderManager")
                 .then()
@@ -157,23 +171,24 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .body()
                 .as(CommunityOrPrisonOffenderManager.class);
 
+        //THEN
         // no longer previous POM
         assertThat(newPrisonOffenderManager.getStaffId()).isNotEqualTo(2500057541L);
-        // but will be a staff code in BWI area with area prefix
-        assertThat(newPrisonOffenderManager.getStaffCode()).startsWith("BWI");
+        // AND but will be a staff code in BWI area with area prefix
+        assertThat(newPrisonOffenderManager.getStaffCode()).startsWith("MDI");
 
-        // OM Team will be POM team in area within the POM borough, district and LDU
+        // AND OM Team will be POM team in area within the POM borough, district and LDU
         assertThat(newPrisonOffenderManager.getTeam().getDescription()).isEqualTo("Prison Offender Managers");
-        assertThat(newPrisonOffenderManager.getTeam().getCode()).isEqualTo("BWIPOM");
+        assertThat(newPrisonOffenderManager.getTeam().getCode()).isEqualTo("MDIPOM");
         assertThat(newPrisonOffenderManager.getTeam().getBorough().getDescription()).isEqualTo("Prison Offender Managers");
-        assertThat(newPrisonOffenderManager.getTeam().getBorough().getCode()).isEqualTo("BWIPOM");
+        assertThat(newPrisonOffenderManager.getTeam().getBorough().getCode()).isEqualTo("MDIPOM");
         assertThat(newPrisonOffenderManager.getTeam().getDistrict().getDescription()).isEqualTo("Prison Offender Managers");
-        assertThat(newPrisonOffenderManager.getTeam().getDistrict().getCode()).isEqualTo("BWIPOM");
+        assertThat(newPrisonOffenderManager.getTeam().getDistrict().getCode()).isEqualTo("MDIPOM");
         assertThat(newPrisonOffenderManager.getTeam().getLocalDeliveryUnit().getDescription()).isEqualTo("Prison Offender Managers");
-        assertThat(newPrisonOffenderManager.getTeam().getLocalDeliveryUnit().getCode()).isEqualTo("BWIPOM");
-        // OM will be in Prison Probation Area
-        assertThat(newPrisonOffenderManager.getProbationArea().getDescription()).isEqualTo("Berwyn (HMP)");
-        assertThat(newPrisonOffenderManager.getProbationArea().getCode()).isEqualTo("BWI");
+        assertThat(newPrisonOffenderManager.getTeam().getLocalDeliveryUnit().getCode()).isEqualTo("MDIPOM");
+        // AND OM will be in Prison Probation Area
+        assertThat(newPrisonOffenderManager.getProbationArea().getDescription()).isEqualTo("Moorland (HMP & YOI)");
+        assertThat(newPrisonOffenderManager.getProbationArea().getCode()).isEqualTo("MDI");
 
         final var staffDetails = given()
                 .auth()
@@ -187,7 +202,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .body()
                 .as(StaffDetails.class);
 
-        // New staff member will be in the POM Team
+        // AND New staff member will be in the POM Team
         assertThat(staffDetails.getTeams()).contains(newPrisonOffenderManager.getTeam());
 
 
@@ -203,14 +218,26 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .body()
                 .as(CommunityOrPrisonOffenderManager[].class);
 
-        // should have both community and prison offender manager
+        // AND should have both community and prison offender manager
         assertThat(offenderManagers).hasSize(2);
         assertThat(prisonOffenderManager(offenderManagers)).isPresent();
 
-        // responsible officer should be the new  POM
+        // AND responsible officer should be the new  POM
         assertThat(prisonOffenderManager(offenderManagers).orElseThrow().getIsResponsibleOfficer()).isTrue();
         assertThat(prisonOffenderManager(offenderManagers).orElseThrow().getStaffCode()).isEqualTo(newPrisonOffenderManager.getStaffCode());
         assertThat(communityOffenderManager(offenderManagers)).isPresent();
+
+        // AND the custody record has a new location of Moorland
+        given()
+                .auth().oauth2(tokenWithRoleCommunity())
+                .when()
+                .get("offenders/nomsNumber/{nomsNumber}/custody/bookingNumber/{bookingNumber}", "G9542VP", "V74111")
+                .then()
+                .statusCode(200)
+                .body("institution.code", equalTo("MDIHMP"))
+                .body("institution.description", equalTo("Moorland (HMP & YOI)"))
+        ;
+
     }
 
     @Test

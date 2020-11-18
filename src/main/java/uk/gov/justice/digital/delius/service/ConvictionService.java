@@ -249,6 +249,11 @@ public class ConvictionService {
         return activeCustodyConvictions.get(0);
     }
 
+    @Transactional(readOnly = true)
+    public List<Event> getAllActiveCustodialEvents(Long offenderId) {
+        return activeCustodyEvents(offenderId);
+    }
+
     @Transactional
     public Custody addOrReplaceOrDeleteCustodyKeyDates(Long offenderId, Long convictionId, ReplaceCustodyKeyDates replaceCustodyKeyDates) {
         var event = eventRepository.findById(convictionId).orElseThrow();

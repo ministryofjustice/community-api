@@ -6,6 +6,7 @@ import org.hibernate.annotations.Where;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -241,5 +242,13 @@ public class Offender {
                 .stream()
                 .filter(PrisonOffenderManager::isActive)
                 .findFirst();
+    }
+    public static class OffenderBuilder {
+        private List<PrisonOffenderManager> prisonOffenderManagers = new ArrayList<>();
+        public OffenderBuilder prisonOffenderManagers(List<PrisonOffenderManager> prisonOffenderManagers) {
+            this.prisonOffenderManagers.clear();
+            this.prisonOffenderManagers.addAll(prisonOffenderManagers);
+            return this;
+        }
     }
 }
