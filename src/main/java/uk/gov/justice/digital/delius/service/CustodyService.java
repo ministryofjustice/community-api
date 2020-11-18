@@ -120,9 +120,37 @@ public class CustodyService {
 
     @Transactional
     public void updateCustodyPrisonLocation(final String nomsNumber, final String nomsPrisonInstitutionCode) {
+        final var telemetryProperties = Map.of("offenderNo", nomsNumber,
+                "toAgency", nomsPrisonInstitutionCode);
+
         final var result = updateCustodyPrisonLocation(nomsNumber,
                 this::getSingleActiveCustodialEvent,
                 nomsPrisonInstitutionCode);
+        final Optional<String> telemetryName = result.fold(error -> {
+            switch (error.reason) {
+                case TransferPrisonNotFound:
+                    return Optional.of("POMLocationPrisonNotFound");
+                case CustodialSentenceNotFoundInCorrectState:
+                    return Optional.of("POMLocationCustodialStatusNotCorrect");
+                case ConvictionNotFound:
+                    return Optional.of("POMLocationNoEvents");
+                case MultipleCustodialSentences:
+                    return Optional.of("POMLocationMultipleEvents");
+                case OffenderNotFound:
+                    return Optional.of("POMLocationOffenderNotFound");
+            }
+            return Optional.empty();
+        }, success -> {
+            switch (success.outcome) {
+                case Updated:
+                    return Optional.of("POMLocationUpdated");
+                case NoUpdateRequired:
+                    return Optional.of("POMLocationCorrect");
+            }
+            return Optional.empty();
+        });
+
+        telemetryName.ifPresent(name -> telemetryClient.trackEvent(name, telemetryProperties, null));
 
     }
 

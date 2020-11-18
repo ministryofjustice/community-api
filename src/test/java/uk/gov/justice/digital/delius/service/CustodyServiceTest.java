@@ -24,6 +24,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.util.EntityHelper;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -42,6 +43,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aCustodyEvent;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aPrisonInstitution;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aPrisonOffenderManager;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aStaff;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aTeam;
 import static uk.gov.justice.digital.delius.util.EntityHelper.anInstitution;
 import static uk.gov.justice.digital.delius.util.EntityHelper.anOffender;
 
@@ -69,7 +73,7 @@ public class CustodyServiceTest {
     }
 
     @Nested
-    class WhenUpdatingCustody {
+    class WhenUpdatingCustodyForTransfer {
         private final ArgumentMatcher<Map<String, String>> standardTelemetryAttributes =
                 attributes -> Optional.ofNullable(attributes.get("offenderNo")).filter(value -> value.equals("G9542VP")).isPresent() &&
                         Optional.ofNullable(attributes.get("bookingNumber")).filter(value -> value.equals("44463B")).isPresent() &&
@@ -340,6 +344,153 @@ public class CustodyServiceTest {
 
             assertThat(updatedCustody.getInstitution().getDescription()).isNotEqualTo("HMP Highland");
         }
+    }
+    @Nested
+    class WhenUpdatingCustodyForPOMAllocation {
+        private final ArgumentMatcher<Map<String, String>> standardTelemetryAttributes =
+                attributes -> Optional.ofNullable(attributes.get("offenderNo")).filter(value -> value.equals("G9542VP")).isPresent() &&
+                        Optional.ofNullable(attributes.get("toAgency")).filter(value -> value.equals("MDI")).isPresent();
+
+        @BeforeEach
+        public void setup() {
+            when(referenceDataService.getPrisonLocationChangeCustodyEvent()).thenReturn(StandardReference.builder().codeValue("CPL").codeDescription("Change prison location").build());
+            when(referenceDataService.getCustodyStatusChangeCustodyEvent()).thenReturn(StandardReference.builder().codeValue("TSC").codeDescription("Custody status change").build());
+            when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(aPrisonInstitution()));
+            when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).prisonOffenderManagers(List.of(aPrisonOffenderManager(aStaff(), aTeam()))).build()));
+        }
+
+
+        @Test
+        @DisplayName("will offender add not found telemetry when offender not found")
+        public void willCreateTelemetryEventWhenOffenderNotFound() {
+            when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.empty());
+
+            custodyService.updateCustodyPrisonLocation("G9542VP", "MDI");
+
+            verify(telemetryClient).trackEvent(eq("POMLocationOffenderNotFound"), argThat(standardTelemetryAttributes), isNull());
+        }
+
+        @Test
+        @DisplayName("will add event not found telemetry when no active custodial events found")
+        public void willCreateTelemetryEventWhenConvictionNotFound() {
+            when(convictionService.getAllActiveCustodialEvents(99L)).thenReturn(List.of());
+
+            custodyService.updateCustodyPrisonLocation("G9542VP", "MDI");
+
+            verify(telemetryClient).trackEvent(eq("POMLocationNoEvents"), argThat(standardTelemetryAttributes), isNull());
+        }
+
+
+        @Test
+        @DisplayName("will add multiple events telemetry when more than one active custodial events found")
+        public void willCreateTelemetryEventWhenMultipleConvictionsFound() {
+            when(convictionService.getAllActiveCustodialEvents(99L)).thenReturn(List.of(aCustodyEvent(), aCustodyEvent()));
+
+            custodyService.updateCustodyPrisonLocation("G9542VP", "MDI");
+
+            verify(telemetryClient).trackEvent(eq("POMLocationMultipleEvents"), argThat(standardTelemetryAttributes), isNull());
+        }
+
+
+        @Test
+        @DisplayName("will add missing prison telemetry when prison not found")
+        public void willCreateTelemetryEventWhenPrisonNotFound() {
+            final var event = EntityHelper.aCustodyEvent();
+            event.getDisposal().getCustody().setInstitution(aPrisonInstitution());
+            when(convictionService.getAllActiveCustodialEvents(99L)).thenReturn(List.of(event));
+            when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.empty());
+
+            custodyService.updateCustodyPrisonLocation("G9542VP", "MDI");
+
+            verify(telemetryClient).trackEvent(eq("POMLocationPrisonNotFound"), argThat(standardTelemetryAttributes), isNull());
+        }
+
+
+        @Test
+        @DisplayName("will add a no change telemetry when location already correct")
+        public void willCreateTelemetryEventAndNothingElseWhenPrisonAlreadySet() {
+            final var event = EntityHelper.aCustodyEvent();
+            event.getDisposal().getCustody().setInstitution(aPrisonInstitution());
+            when(convictionService.getAllActiveCustodialEvents(99L)).thenReturn(List.of(event));
+            when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(aPrisonInstitution()));
+
+
+            custodyService.updateCustodyPrisonLocation("G9542VP", "MDI");
+
+            verify(telemetryClient).trackEvent(eq("POMLocationCorrect"), argThat(standardTelemetryAttributes), isNull());
+
+            verify(spgNotificationService, never()).notifyUpdateOfCustody(any(), any());
+            verify(contactService, never()).addContactForPrisonLocationChange(any(), any());
+            verify(offenderManagerService, never()).autoAllocatePrisonOffenderManagerAtInstitution(any(), any());
+        }
+        @Test
+        @DisplayName("will add a no change telemetry when custodial status indicates they are not in prison")
+        public void willCreateTelemetryEventWhenPrisonLocationChangesButStatusNotCurrentlyInPrison() {
+            final var event = EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("B").codeDescription("Released on Licence").build());
+            event.getDisposal().getCustody().setInstitution(aPrisonInstitution());
+            when(convictionService.getAllActiveCustodialEvents(99L)).thenReturn(List.of(event));
+            when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
+
+            custodyService.updateCustodyPrisonLocation("G9542VP", "MDI");
+
+            verify(telemetryClient).trackEvent(eq("POMLocationCustodialStatusNotCorrect"), argThat(standardTelemetryAttributes), isNull());
+        }
+
+
+        @Nested
+        class OnSuccessfulChange {
+            @BeforeEach
+            void setUp() {
+                final var event = EntityHelper.aCustodyEvent();
+                event.getDisposal().getCustody().setInstitution(aPrisonInstitution().toBuilder().nomisCdeCode("MDI").build());
+                when(convictionService.getAllActiveCustodialEvents(99L)).thenReturn(List.of(event));
+                when(institutionRepository.findByNomisCdeCode("WWI")).thenReturn(Optional.of(aPrisonInstitution()));
+                when(offenderManagerService.isPrisonOffenderManagerAtInstitution(any(), any())).thenCallRealMethod();
+
+                custodyService.updateCustodyPrisonLocation("G9542VP", "WWI");
+            }
+
+            @Test
+            @DisplayName("will add a location change telemetry when location changes")
+            public void willCreateTelemetryEventWhenPrisonLocationChanges() {
+                final ArgumentMatcher<Map<String, String>> standardTelemetryAttributes =
+                        attributes -> Optional.ofNullable(attributes.get("offenderNo")).filter(value -> value.equals("G9542VP")).isPresent() &&
+                                Optional.ofNullable(attributes.get("toAgency")).filter(value -> value.equals("WWI")).isPresent();
+
+                verify(telemetryClient).trackEvent(eq("POMLocationUpdated"), argThat(standardTelemetryAttributes), isNull());
+            }
+
+            @Test
+            @DisplayName("will created custody history record")
+            public void willCreateCustodyHistoryChangeLocationEvent() {
+                verify(custodyHistoryRepository).save(custodyHistoryArgumentCaptor.capture());
+
+                final var custodyHistoryEvent = custodyHistoryArgumentCaptor.getValue();
+
+                assertThat(custodyHistoryEvent.getCustodyEventType().getCodeValue()).isEqualTo("CPL");
+                assertThat(custodyHistoryEvent.getWhen()).isEqualTo(LocalDate.now());
+            }
+
+            @Test
+            @DisplayName("will notify SPG of change")
+            public void willNotifySPGOfCustodyChange() {
+                verify(spgNotificationService).notifyUpdateOfCustody(any(), any());
+            }
+
+            @Test
+            @DisplayName("will create contact")
+            public void willCreateContactAboutPrisonLocationChange() {
+                verify(contactService).addContactForPrisonLocationChange(any(), any());
+            }
+
+            @Test
+            @DisplayName("will not allocate a POM")
+            public void willCreateNewPrisonOffenderManagerWhenExistingPOMAtDifferentPrison() {
+                verify(offenderManagerService, never()).autoAllocatePrisonOffenderManagerAtInstitution(any(), any());
+            }
+
+        }
+
     }
 
     @Nested
