@@ -287,10 +287,16 @@ public class CustodyService {
     }
 
     private Either<PrisonLocationUpdateError, Event> getSingleActiveCustodialEvent(Offender offender) {
-        try {
-            return Either.right(convictionService.getActiveCustodialEvent(offender.getOffenderId()));
-        } catch (ConvictionService.SingleActiveCustodyConvictionNotFoundException e) {
-            return Either.left(new PrisonLocationUpdateError(PrisonLocationUpdateError.Reason.MultipleCustodialSentences, e.getMessage()));
+        final var events = convictionService.getAllActiveCustodialEvents(offender.getOffenderId());
+        switch (events.size()) {
+            case 0:
+                return Either.left(new PrisonLocationUpdateError(PrisonLocationUpdateError.Reason.ConvictionNotFound, String
+                        .format("No active custodial events found for offender %s", offender.getCrn())));
+            case 1:
+                return Either.right(events.get(0));
+            default:
+                return Either.left(new PrisonLocationUpdateError(PrisonLocationUpdateError.Reason.MultipleCustodialSentences, String
+                        .format("Multiple active custodial events found for offender %s. %d found", offender.getCrn(), events.size())));
         }
     }
 
