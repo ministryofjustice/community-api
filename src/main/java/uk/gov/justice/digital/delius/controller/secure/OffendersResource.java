@@ -53,6 +53,7 @@ import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
 import uk.gov.justice.digital.delius.service.AlfrescoService;
 import uk.gov.justice.digital.delius.service.ContactService;
 import uk.gov.justice.digital.delius.service.ConvictionService;
+import uk.gov.justice.digital.delius.service.CustodyService;
 import uk.gov.justice.digital.delius.service.DocumentService;
 import uk.gov.justice.digital.delius.service.NsiService;
 import uk.gov.justice.digital.delius.service.OffenderManagerService;
@@ -89,6 +90,7 @@ public class OffendersResource {
     private final SentenceService sentenceService;
     private final UserService userService;
     private final CurrentUserSupplier currentUserSupplier;
+    private final CustodyService custodyService;
 
     @ApiOperation(
             value = "Return the responsible officer (RO) for an offender",
@@ -292,10 +294,12 @@ public class OffendersResource {
             throw new InvalidAllocatePOMRequestException(prisonOffenderManager, errorMessage);
         });
 
-        return Optional.ofNullable(prisonOffenderManager.getStaffId())
+        final var newPrisonOffenderManager =  Optional.ofNullable(prisonOffenderManager.getStaffId())
                 .map(staffId -> offenderManagerService.allocatePrisonOffenderManagerByStaffId(nomsNumber, staffId, prisonOffenderManager))
                 .orElseGet(() -> offenderManagerService.allocatePrisonOffenderManagerByName(nomsNumber, prisonOffenderManager))
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with noms number %s not found", nomsNumber)));
+        custodyService.updateCustodyPrisonLocation(nomsNumber, prisonOffenderManager.getNomsPrisonInstitutionCode());
+        return newPrisonOffenderManager;
     }
 
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/prisonOffenderManager", method = RequestMethod.DELETE)

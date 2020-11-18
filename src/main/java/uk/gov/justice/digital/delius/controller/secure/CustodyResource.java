@@ -50,7 +50,7 @@ public class CustodyResource {
                                  final @RequestBody @Valid UpdateCustody updateCustody) {
         log.info("Call to updateCustody for {} booking {}", nomsNumber, bookingNumber);
 
-        return custodyService.updateCustody(nomsNumber, bookingNumber, updateCustody);
+        return custodyService.updateCustodyPrisonLocation(nomsNumber, bookingNumber, updateCustody);
     }
 
 
