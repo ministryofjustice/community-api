@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +21,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.ResponsibleOfficerR
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,6 +30,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aPrisonProbationArea;
@@ -56,6 +59,8 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
     private ReferenceDataService referenceDataService;
     @Mock
     private ContactService contactService;
+    @Mock
+    private TelemetryClient telemetryClient;
     @Captor
     private ArgumentCaptor<PrisonOffenderManager> prisonOffenderManagerArgumentCaptor;
     @Captor
@@ -73,7 +78,8 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                 staffService,
                 teamService,
                 referenceDataService,
-                contactService);
+                contactService,
+                telemetryClient);
 
         when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(anOffender()));
         when(staffService.findByStaffId(anyLong())).thenReturn(Optional.of(aStaff()));
@@ -449,6 +455,28 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
 
         verify(contactService).addContactForPOMAllocation(isA(PrisonOffenderManager.class));
     }
+    @Test
+    public void shouldAddTelemetryEventForPOMAllocation() {
+        when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
+                anOffender()
+                        .toBuilder()
+                        .prisonOffenderManagers(List.of())
+                        .crn("X12345")
+                        .build()));
+        when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
+        when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam().toBuilder().probationArea(aPrisonProbationArea().toBuilder().code("N01").build()).build());
+        when(staffService.findByStaffId(anyLong())).thenReturn(Optional.of(aStaff("N01ABC")));
+
+        offenderManagerService.allocatePrisonOffenderManagerByStaffId(
+                "G9542VP",
+                12345L,
+                CreatePrisonOffenderManager
+                        .builder()
+                        .nomsPrisonInstitutionCode("N01")
+                        .build());
+
+        verify(telemetryClient).trackEvent(eq("POMAllocated"), eq(Map.of("probationArea", "N01", "crn", "X12345", "staffCode", "N01ABC")), isNull());
+    }
 
     @Test
     public void shouldAddAPOMAllocationContactNotingOldPOM() {
@@ -509,6 +537,45 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                         .build());
 
         verify(contactService).addContactForResponsibleOfficerChange(isA(PrisonOffenderManager.class), eq(existingPOM));
+    }
+
+    @Test
+    public void shouldAddTelemetryEventForROAllocation() {
+        final var existingPOMResponsibleOfficer = aResponsibleOfficer()
+                .toBuilder()
+                .endDateTime(null)
+                .build();
+        final var existingPOM = anActivePrisonOffenderManager()
+                .toBuilder()
+                .responsibleOfficers(List.of(existingPOMResponsibleOfficer))
+                .build();
+
+        when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
+                anOffender()
+                        .toBuilder()
+                        .crn("X12345")
+                        .prisonOffenderManagers(List.of(existingPOM))
+                        .build()
+        ));
+
+        when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> {
+            final PrisonOffenderManager newPOM = args.getArgument(0);
+            newPOM.setPrisonOffenderManagerId(99L);
+            return newPOM;
+        });
+        when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
+        when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
+        when(staffService.findByStaffId(anyLong())).thenReturn(Optional.of(aStaff("N01ABC")));
+
+        offenderManagerService.allocatePrisonOffenderManagerByStaffId(
+                "G9542VP",
+                12345L,
+                CreatePrisonOffenderManager
+                        .builder()
+                        .nomsPrisonInstitutionCode("N01")
+                        .build());
+
+        verify(telemetryClient).trackEvent(eq("POMResponsibleOfficerSet"), eq(Map.of("probationArea", "N01", "crn", "X12345", "staffCode", "N01ABC")), isNull());
     }
 
 }

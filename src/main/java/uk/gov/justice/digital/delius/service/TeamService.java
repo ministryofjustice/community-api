@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import com.microsoft.applicationinsights.TelemetryClient;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.StaffTeamRepository
 import uk.gov.justice.digital.delius.jpa.standard.repository.TeamRepository;
 import uk.gov.justice.digital.delius.transformers.TeamTransformer;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -37,6 +39,8 @@ public class TeamService {
     private final BoroughRepository boroughRepository;
     private final StaffTeamRepository staffTeamRepository;
     private final ProbationAreaRepository probationAreaRepository;
+    private final TelemetryClient telemetryClient;
+
 
 
 
@@ -100,6 +104,8 @@ public class TeamService {
                 .unpaidWorkTeam("N")
                 .build();
         probationArea.getTeams().add(team);
+        telemetryClient.trackEvent("POMTeamCreated", Map.of("probationArea", probationArea.getCode(), "code", code), null);
+
         return teamRepository.save(team);
     }
 
@@ -109,6 +115,8 @@ public class TeamService {
     }
 
     private LocalDeliveryUnit createPOMLDUInArea(String code, ProbationArea probationArea) {
+        telemetryClient.trackEvent("POMTeamTypeCreated", Map.of("probationArea", probationArea.getCode(), "code", code), null);
+
         return localDeliveryUnitRepository.save(
                 LocalDeliveryUnit
                         .builder()
@@ -125,6 +133,8 @@ public class TeamService {
     }
 
     private District createPOMDistrictInArea(String code, ProbationArea probationArea) {
+        telemetryClient.trackEvent("POMLDUCreated", Map.of("probationArea", probationArea.getCode(), "code", code), null);
+
         return districtRepository.save(
                 District
                         .builder()
@@ -141,6 +151,8 @@ public class TeamService {
     }
 
     private Borough createPOMBoroughInArea(String code, ProbationArea probationArea) {
+        telemetryClient.trackEvent("POMClusterCreated", Map.of("probationArea", probationArea.getCode(), "code", code), null);
+
         return boroughRepository.save(
                 Borough
                         .builder()

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import com.microsoft.applicationinsights.TelemetryClient;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -48,6 +50,7 @@ public class OffenderManagerService {
     private final TeamService teamService;
     private final ReferenceDataService referenceDataService;
     private final ContactService contactService;
+    private final TelemetryClient telemetryClient;
 
     @Transactional(readOnly = true)
     public Optional<List<CommunityOrPrisonOffenderManager>> getAllOffenderManagersForNomsNumber(final String nomsNumber) {
@@ -115,6 +118,10 @@ public class OffenderManagerService {
             throw new InvalidRequestException(
                     String.format("Staff with code %s is in probation area %s but was expected to be in prison area of %s", staff.getOfficerCode(), staff.getProbationArea().getDescription(), probationArea.getDescription()));
         }
+        final var telemetryProperties = Map.of("probationArea", probationArea.getCode(),
+                "staffCode", staff.getOfficerCode(),
+                "crn", offender.getCrn());
+
 
         if (!isStaffInTeam(team, staff)) {
             teamService.addStaffToTeam(staff, team);
@@ -143,11 +150,13 @@ public class OffenderManagerService {
                         activeRo.setEndDateTime(LocalDateTime.now());
                         newPrisonOffenderManager.addResponsibleOfficer(responsibleOfficerRepository.save(responsibleOfficerOf(offender, newPrisonOffenderManager)));
                         contactService.addContactForResponsibleOfficerChange(newPrisonOffenderManager, existingPOM);
+                        telemetryClient.trackEvent("POMResponsibleOfficerSet", telemetryProperties, null);
                     });
             offender.getPrisonOffenderManagers().remove(existingPOM);
         }, () -> contactService.addContactForPOMAllocation(newPrisonOffenderManager));
 
         offender.getPrisonOffenderManagers().add(newPrisonOffenderManager);
+        telemetryClient.trackEvent("POMAllocated", telemetryProperties, null);
 
         return OffenderManagerTransformer.offenderManagerOf(newPrisonOffenderManager);
     }

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import com.microsoft.applicationinsights.TelemetryClient;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ public class ConvictionService {
     private final SpgNotificationService spgNotificationService;
     private final LookupSupplier lookupSupplier;
     private final ContactService contactService;
+    private final TelemetryClient telemetryClient;
 
     public static class SingleActiveCustodyConvictionNotFoundException extends BadRequestException {
         public SingleActiveCustodyConvictionNotFoundException(Long offenderId, int activeCustodyConvictionCount) {
@@ -93,7 +95,7 @@ public class ConvictionService {
             LookupSupplier lookupSupplier,
             KeyDateEntityBuilder keyDateEntityBuilder,
             IAPSNotificationService iapsNotificationService,
-            ContactService contactService) {
+            ContactService contactService, TelemetryClient telemetryClient) {
         this.updateCustodyKeyDatesFeatureSwitch = updateCustodyKeyDatesFeatureSwitch;
         this.eventRepository = eventRepository;
         this.offenderRepository = offenderRepository;
@@ -103,6 +105,7 @@ public class ConvictionService {
         this.lookupSupplier = lookupSupplier;
         this.iapsNotificationService = iapsNotificationService;
         this.contactService = contactService;
+        this.telemetryClient = telemetryClient;
         log.info("NOMIS update custody key dates feature is {}", updateCustodyKeyDatesFeatureSwitch ? "ON" : "OFF");
     }
 
@@ -376,6 +379,12 @@ public class ConvictionService {
         val custodyKeyDateType = lookupSupplier.custodyKeyDateTypeSupplier().apply(typeCode)
                 .orElseThrow(() -> new CustodyTypeCodeIsNotValidException(String.format("%s is not a valid custody key date", typeCode)));
 
+        final var telemetryProperties = Map.of("offenderId", event.getOffenderId().toString(),
+                "eventId", event.getEventId().toString(),
+                "eventNumber", event.getEventNumber(),
+                "type", typeCode,
+                "date", custodyKeyDate.getDate().toString());
+
 
         val maybeExistingKeyDate = event.getDisposal().getCustody().getKeyDates()
                 .stream()
@@ -388,6 +397,7 @@ public class ConvictionService {
             existingKeyDate.setLastUpdatedUserId(lookupSupplier.userSupplier().get().getUserId());
             eventRepository.save(event);
             spgNotificationService.notifyUpdateOfCustodyKeyDate(typeCode, event);
+            telemetryClient.trackEvent("KeyDateUpdated", telemetryProperties, null);
         });
 
         if (maybeExistingKeyDate.isEmpty()) {
@@ -399,6 +409,7 @@ public class ConvictionService {
 
             eventRepository.saveAndFlush(event);
             spgNotificationService.notifyNewCustodyKeyDate(typeCode, event);
+            telemetryClient.trackEvent("KeyDateAdded", telemetryProperties, null);
         }
 
         // Delius does not notify IAPS when the update comes from NOMIS only when done by probation - no idea why so this behaviour but it must be replicated given we have no user needs defined
@@ -417,6 +428,11 @@ public class ConvictionService {
     }
 
     private void deleteCustodyKeyDate(Event event, String typeCode, boolean shouldNotifyIAPS) {
+        final var telemetryProperties = Map.of("offenderId", event.getOffenderId().toString(),
+                "eventId", event.getEventId().toString(),
+                "eventNumber", event.getEventNumber(),
+                "type", typeCode);
+
         val keyDates = event.getDisposal().getCustody().getKeyDates();
         val maybeKeyDateToRemove =  keyDates
                .stream()
@@ -430,6 +446,7 @@ public class ConvictionService {
            if (shouldNotifyIAPS && KeyDate.isSentenceExpiryKeyDate(typeCode)) {
                iapsNotificationService.notifyEventUpdated(event);
            }
+           telemetryClient.trackEvent("KeyDateDeleted", telemetryProperties, null);
        });
     }
 

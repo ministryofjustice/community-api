@@ -1,15 +1,20 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
+import com.microsoft.applicationinsights.TelemetryClient;
 import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.justice.digital.delius.data.api.CreateCustodyKeyDate;
+import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
+import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
@@ -17,19 +22,28 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.service.ConvictionService.CustodyTypeCodeIsNotValidException;
 import uk.gov.justice.digital.delius.service.ConvictionService.SingleActiveCustodyConvictionNotFoundException;
-import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
-import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
-import static uk.gov.justice.digital.delius.util.EntityHelper.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.isNull;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aCustodyEvent;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aKeyDate;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConvictionService_AddReplaceCustodyKeyDateTest {
@@ -57,12 +71,15 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
     @Mock
     private ContactService contactService;
 
+    @Mock
+    private TelemetryClient telemetryClient;
+
     @Captor
     private ArgumentCaptor<Event> eventArgumentCaptor;
 
     @Before
     public void setUp() {
-        convictionService = new ConvictionService(true, eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService);
+        convictionService = new ConvictionService(true, eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient);
         when(lookupSupplier.userSupplier()).thenReturn(() -> User.builder().userId(88L).build());
         when(eventRepository.findByOffenderIdWithCustody(anyLong())).thenReturn(ImmutableList.of(aCustodyEvent()));
         when(lookupSupplier.custodyKeyDateTypeSupplier()).thenReturn(code -> Optional.of(StandardReference
@@ -121,6 +138,49 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
                         .build());
 
         verify(spgNotificationService).notifyNewCustodyKeyDate("POM1", event);
+    }
+
+    @Test
+    @DisplayName("KeyDateAdded telemetry event raised when adding a key date")
+    public void telemetryEventRaisedWhenAddedByOffenderId() throws SingleActiveCustodyConvictionNotFoundException, CustodyTypeCodeIsNotValidException {
+        final ArgumentMatcher<Map<String, String>> standardTelemetryAttributes =
+                attributes ->
+                        Optional
+                                .ofNullable(attributes.get("eventNumber"))
+                                .filter(value -> value.equals("20"))
+                                .isPresent() &&
+                                Optional
+                                        .ofNullable(attributes.get("offenderId"))
+                                        .filter(value -> value.equals("999"))
+                                        .isPresent() &&
+                                Optional
+                                        .ofNullable(attributes.get("eventId"))
+                                        .filter(value -> value.equals("345"))
+                                        .isPresent() &&
+                                Optional
+                                        .ofNullable(attributes.get("date"))
+                                        .filter(value -> value.equals(LocalDate.now().toString()))
+                                        .isPresent() &&
+                                Optional
+                                        .ofNullable(attributes.get("type"))
+                                        .filter(value -> value.equals("POM1"))
+                                        .isPresent();
+
+        when(eventRepository.findByOffenderIdWithCustody(999L)).thenReturn(List.of(aCustodyEvent(345L, new ArrayList<>())
+                .toBuilder()
+                .offenderId(999L)
+                .eventNumber("20")
+                .build()));
+
+        convictionService.addOrReplaceCustodyKeyDateByOffenderId(
+                999L,
+                "POM1",
+                CreateCustodyKeyDate
+                        .builder()
+                        .date(LocalDate.now())
+                        .build());
+
+        verify(telemetryClient).trackEvent(eq("KeyDateAdded"), argThat(standardTelemetryAttributes), isNull());
     }
 
     @Test
@@ -199,6 +259,53 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
         assertThat(custodyKeyDateToInsert.getLastUpdatedUserId()).isEqualTo(88L);
         assertThat(custodyKeyDateToInsert.getKeyDate()).isEqualTo(newKeyDate);
         assertThat(custodyKeyDateToInsert.getKeyDateType()).isEqualTo(keyDateType);
+    }
+
+    @Test
+    @DisplayName("KeyDateAdded telemetry event raised when adding a key date")
+    public void telemetryEventRaisedWhenUpdatingByOffenderId() throws SingleActiveCustodyConvictionNotFoundException, CustodyTypeCodeIsNotValidException {
+        final ArgumentMatcher<Map<String, String>> standardTelemetryAttributes =
+                attributes ->
+                        Optional
+                                .ofNullable(attributes.get("eventNumber"))
+                                .filter(value -> value.equals("20"))
+                                .isPresent() &&
+                                Optional
+                                        .ofNullable(attributes.get("offenderId"))
+                                        .filter(value -> value.equals("999"))
+                                        .isPresent() &&
+                                Optional
+                                        .ofNullable(attributes.get("eventId"))
+                                        .filter(value -> value.equals("345"))
+                                        .isPresent() &&
+                                Optional
+                                        .ofNullable(attributes.get("date"))
+                                        .filter(value -> value.equals(LocalDate.now().toString()))
+                                        .isPresent() &&
+                                Optional
+                                        .ofNullable(attributes.get("type"))
+                                        .filter(value -> value.equals("POM1"))
+                                        .isPresent();
+
+        val event = aCustodyEvent(345L, new ArrayList<>())
+                .toBuilder()
+                .offenderId(999L)
+                .eventNumber("20")
+                .build();
+        event.getDisposal().getCustody().getKeyDates().add(
+                aKeyDate("POM1", "POM Handover expected start date", LocalDate.now().minusDays(1)));
+
+        when(eventRepository.findByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(event));
+
+        convictionService.addOrReplaceCustodyKeyDateByOffenderId(
+                999L,
+                "POM1",
+                CreateCustodyKeyDate
+                        .builder()
+                        .date(LocalDate.now())
+                        .build());
+
+        verify(telemetryClient).trackEvent(eq("KeyDateUpdated"), argThat(standardTelemetryAttributes), isNull());
     }
 
     @Test

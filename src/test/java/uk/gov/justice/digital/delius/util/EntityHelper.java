@@ -69,9 +69,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings("SameParameterValue")
 public class EntityHelper {
     public static InstitutionalReportDocument anInstitutionalReportDocument() {
         final var document = new InstitutionalReportDocument();
@@ -157,6 +157,7 @@ public class EntityHelper {
                 .builder()
                 .eventId(eventId)
                 .offenderId(offenderId)
+                .eventNumber("1")
                 .cpsAlfrescoDocumentId("123")
                 .cpsCreatedByUser(User
                         .builder()
