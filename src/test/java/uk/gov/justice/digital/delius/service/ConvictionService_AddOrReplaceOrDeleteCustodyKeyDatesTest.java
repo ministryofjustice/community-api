@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,6 +61,9 @@ public class ConvictionService_AddOrReplaceOrDeleteCustodyKeyDatesTest {
     @Mock
     private ContactService contactService;
 
+    @Mock
+    private TelemetryClient telemetryClient;
+
     @Captor
     private ArgumentCaptor<Map<String, LocalDate>> datesAmendedOrUpdatedArgumentCaptor;
     @Captor
@@ -67,7 +71,7 @@ public class ConvictionService_AddOrReplaceOrDeleteCustodyKeyDatesTest {
 
     @BeforeEach
     public void setUp() {
-        convictionService = new ConvictionService(true, eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService);
+        convictionService = new ConvictionService(true, eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient);
         when(lookupSupplier.userSupplier()).thenReturn(() -> User.builder().userId(88L).build());
         when(lookupSupplier.custodyKeyDateTypeSupplier()).thenReturn(code -> Optional.of(StandardReference
                 .builder()

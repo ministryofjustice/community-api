@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -54,6 +55,8 @@ public class OffenderManagerService_switchResponsibleOfficerTest {
     private ReferenceDataService referenceDataService;
     @Mock
     private ContactService contactService;
+    @Mock
+    private TelemetryClient telemetryClient;
     @Captor
     private ArgumentCaptor<ResponsibleOfficer> responsibleOfficerArgumentCaptor;
 
@@ -69,7 +72,8 @@ public class OffenderManagerService_switchResponsibleOfficerTest {
                 staffService,
                 teamService,
                 referenceDataService,
-                contactService);
+                contactService,
+                telemetryClient);
 
     }
 

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -24,10 +25,13 @@ import uk.gov.justice.digital.delius.util.EntityHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aDistrict;
@@ -50,6 +54,8 @@ public class TeamServiceTest {
     private StaffTeamRepository staffTeamRepository;
     @Mock
     private ProbationAreaRepository probationAreaRepository;
+    @Mock
+    private TelemetryClient telemetryClient;
     @Captor
     private ArgumentCaptor<StaffTeam> staffTeamArgumentCaptor;
     @Captor
@@ -65,7 +71,7 @@ public class TeamServiceTest {
 
     @BeforeEach
     public void setup() {
-        teamService = new TeamService(teamRepository, localDeliveryUnitRepository, districtRepository, boroughRepository, staffTeamRepository, probationAreaRepository);
+        teamService = new TeamService(teamRepository, localDeliveryUnitRepository, districtRepository, boroughRepository, staffTeamRepository, probationAreaRepository, telemetryClient);
     }
 
     @Test
@@ -115,6 +121,23 @@ public class TeamServiceTest {
         assertThat(teamArgumentCaptor.getValue().getDescription()).isEqualTo("Prison Offender Managers");
         assertThat(probationArea.getTeams()).hasSize(1);
     }
+    @Test
+    public void telemetryTeamCreatedWillBeRaised() {
+        when(teamRepository.findByCode(any())).thenReturn(Optional.empty());
+        when(districtRepository.findByCode(any())).thenReturn(Optional.of(aDistrict()));
+        when(localDeliveryUnitRepository.findByCode(any())).thenReturn(Optional.of(aLocalDeliveryUnit()));
+
+        final var probationArea = aProbationArea()
+                .toBuilder()
+                .code("N01")
+                .teams(new ArrayList<>())
+                .build();
+
+
+        teamService.findOrCreatePrisonOffenderManagerTeamInArea(probationArea);
+
+        verify(telemetryClient).trackEvent(eq("POMTeamCreated"), eq(Map.of("probationArea", "N01", "code", "N01POM")), isNull());
+    }
 
     @Test
     public void findOrCreatePrisonOffenderManagerTeamInAreaWillCreateDistrictBoroughAndLDUWhenTheyAreNotFound() {
@@ -142,6 +165,28 @@ public class TeamServiceTest {
         assertThat(districtArgumentCaptor.getValue().getDescription()).isEqualTo("Prison Offender Managers");
         assertThat(localDeliveryUnitArgumentCaptor.getValue().getCode()).isEqualTo("N01POM");
         assertThat(localDeliveryUnitArgumentCaptor.getValue().getDescription()).isEqualTo("Prison Offender Managers");
+    }
+
+    @Test
+    public void findOrCreatePrisonOffenderManagerTeamInAreaWillRaiseTelemetryEventsForEachCreated() {
+        when(teamRepository.findByCode(any())).thenReturn(Optional.empty());
+        when(districtRepository.findByCode(any())).thenReturn(Optional.empty());
+        when(localDeliveryUnitRepository.findByCode(any())).thenReturn(Optional.empty());
+        when(boroughRepository.findByCode(any())).thenReturn(Optional.empty());
+
+        final var probationArea = aProbationArea()
+                .toBuilder()
+                .code("N01")
+                .teams(new ArrayList<>())
+                .build();
+
+
+        teamService.findOrCreatePrisonOffenderManagerTeamInArea(probationArea);
+        verify(telemetryClient).trackEvent(eq("POMTeamCreated"), eq(Map.of("probationArea", "N01", "code", "N01POM")), isNull());
+        verify(telemetryClient).trackEvent(eq("POMTeamTypeCreated"), eq(Map.of("probationArea", "N01", "code", "N01POM")), isNull());
+        verify(telemetryClient).trackEvent(eq("POMLDUCreated"), eq(Map.of("probationArea", "N01", "code", "N01POM")), isNull());
+        verify(telemetryClient).trackEvent(eq("POMClusterCreated"), eq(Map.of("probationArea", "N01", "code", "N01POM")), isNull());
+
     }
 
     @Test

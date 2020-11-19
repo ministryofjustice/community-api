@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
+import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -72,6 +73,9 @@ public class ConvictionServiceTest {
     @Mock
     private IAPSNotificationService iapsNotificationService;
 
+    @Mock
+    private TelemetryClient telemetryClient;
+
     @BeforeEach
     void setUp() {
         final var eventEntityBuilder = new EventEntityBuilder(
@@ -80,7 +84,7 @@ public class ConvictionServiceTest {
                 new CourtAppearanceEntityBuilder(lookupSupplier),
                 lookupSupplier
         );
-        convictionService = new ConvictionService(true, eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, keyDateEntityBuilder, iapsNotificationService, contactService );
+        convictionService = new ConvictionService(true, eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, keyDateEntityBuilder, iapsNotificationService, contactService, telemetryClient);
     }
 
     @Test

@@ -1,11 +1,14 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
+import com.microsoft.applicationinsights.TelemetryClient;
 import lombok.val;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -19,10 +22,15 @@ import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -59,10 +67,13 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
     @Mock
     private ContactService contactService;
 
+    @Mock
+    private TelemetryClient telemetryClient;
+
 
     @Before
     public void setUp() {
-        convictionService = new ConvictionService(true, eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService);
+        convictionService = new ConvictionService(true, eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient);
     }
 
 
@@ -98,6 +109,45 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
                 "POM1");
 
         verify(spgNotificationService).notifyDeletedCustodyKeyDate(keyDateToBeRemoved, event);
+    }
+
+    @Test
+    @DisplayName("KeyDateAdded telemetry event raised when adding a key date")
+    public void telemetryEventRaisedWhenUpdatingByOffenderId() throws SingleActiveCustodyConvictionNotFoundException {
+        final ArgumentMatcher<Map<String, String>> standardTelemetryAttributes =
+                attributes ->
+                        Optional
+                                .ofNullable(attributes.get("eventNumber"))
+                                .filter(value -> value.equals("20"))
+                                .isPresent() &&
+                                Optional
+                                        .ofNullable(attributes.get("offenderId"))
+                                        .filter(value -> value.equals("999"))
+                                        .isPresent() &&
+                                Optional
+                                        .ofNullable(attributes.get("eventId"))
+                                        .filter(value -> value.equals("345"))
+                                        .isPresent() &&
+                                Optional
+                                        .ofNullable(attributes.get("type"))
+                                        .filter(value -> value.equals("POM1"))
+                                        .isPresent();
+
+        val event = aCustodyEvent(345L, new ArrayList<>())
+                .toBuilder()
+                .offenderId(999L)
+                .eventNumber("20")
+                .build();
+        event.getDisposal().getCustody().getKeyDates().add(
+                aKeyDate("POM1", "POM Handover expected start date", LocalDate.now().minusDays(1)));
+
+        when(eventRepository.findByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(event));
+
+        convictionService.deleteCustodyKeyDateByOffenderId(
+                999L,
+                "POM1");
+
+        verify(telemetryClient).trackEvent(eq("KeyDateDeleted"), argThat(standardTelemetryAttributes), isNull());
     }
 
     @Test

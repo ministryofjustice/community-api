@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +34,8 @@ public class OffenderManagerService_isPrisonOffenderManagerAtInstitutionTest {
     private ReferenceDataService referenceDataService;
     @Mock
     private ContactService contactService;
+    @Mock
+    private TelemetryClient telemetryClient;
 
     private OffenderManagerService offenderManagerService;
 
@@ -46,7 +49,8 @@ public class OffenderManagerService_isPrisonOffenderManagerAtInstitutionTest {
                 staffService,
                 teamService,
                 referenceDataService,
-                contactService);
+                contactService,
+                telemetryClient);
     }
 
     @Test
