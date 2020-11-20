@@ -143,7 +143,7 @@ public class CustodyKeyDatesController {
     public CustodyKeyDate getCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber,
                                                         final @PathVariable String typeCode) {
         log.info("Call to getCustodyKeyDateByNomsNumber for {} code {}", nomsNumber, typeCode);
-        return getCustodyKeyDate(offenderService.offenderIdOfNomsNumber(nomsNumber), typeCode);
+        return getCustodyKeyDate(offenderService.currentOffenderIdOfNomsNumber(nomsNumber).get(), typeCode);
     }
 
     @RequestMapping(value = "offenders/offenderId/{offenderId}/custody/keyDates/{typeCode}", method = RequestMethod.GET)
@@ -195,7 +195,7 @@ public class CustodyKeyDatesController {
     @ApiOperation(value = "Gets a all custody key dates for the active custodial conviction")
     public List<CustodyKeyDate> getAllCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber) {
         log.info("Call to getAllCustodyKeyDateByNomsNumber for {}", nomsNumber);
-        return getCustodyKeyDates(offenderService.offenderIdOfNomsNumber(nomsNumber));
+        return getCustodyKeyDates(offenderService.currentOffenderIdOfNomsNumber(nomsNumber).get());
     }
 
     @RequestMapping(value = "offenders/offenderId/{offenderId}/custody/keyDates", method = RequestMethod.GET)
@@ -252,7 +252,7 @@ public class CustodyKeyDatesController {
     public void deleteCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber,
                                                  final @PathVariable String typeCode) {
         log.info("Call to deleteCustodyKeyDateByNomsNumber for {} code {}", nomsNumber, typeCode);
-        deleteCustodyKeyDate(offenderService.offenderIdOfNomsNumber(nomsNumber), typeCode);
+        deleteCustodyKeyDate(offenderService.currentOffenderIdOfNomsNumber(nomsNumber).get(), typeCode);
     }
 
     @RequestMapping(value = "offenders/offenderId/{offenderId}/custody/keyDates/{typeCode}", method = RequestMethod.DELETE)

@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.microsoft.applicationinsights.TelemetryClient;
+import io.vavr.control.Either;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -89,7 +90,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
     class AllocatePrisonOffenderManagerByStaffId {
         @BeforeEach
         public void setup() {
-            when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(anOffender()));
+            when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(anOffender())));
             when(staffService.findByStaffId(anyLong())).thenReturn(Optional.of(aStaff()));
             when(probationAreaRepository.findByInstitutionByNomsCDECode(any())).thenAnswer(args -> {
                 final var code = args.getArgument(0).toString();
@@ -103,7 +104,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
 
         @Test
         public void willReturnEmptyWhenOffenderNotFound() {
-            when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.empty());
+            when(offenderRepository.findMostLikelyByNomsNumber("G9542VP")).thenReturn(Either.right(Optional.empty()));
             when(staffService.findByStaffId(anyLong())).thenReturn(Optional.of(aStaff()));
             when(probationAreaRepository.findByInstitutionByNomsCDECode("BWI")).thenReturn(Optional.of(aProbationArea()));
 
@@ -119,7 +120,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
 
         @Test
         public void willReturnEmptyWhenStaffNotFound() {
-            when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.of(anOffender()));
+            when(offenderRepository.findMostLikelyByNomsNumber("G9542VP")).thenReturn(Either.right(Optional.of(anOffender())));
             when(staffService.findByStaffId(anyLong())).thenReturn(Optional.empty());
             when(probationAreaRepository.findByInstitutionByNomsCDECode("BWI")).thenReturn(Optional.of(aProbationArea()));
 
@@ -135,7 +136,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
 
         @Test
         public void willThrowInvalidRequestWhenPrisonProbationAreaNotFound() {
-            when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.of(anOffender()));
+            when(offenderRepository.findMostLikelyByNomsNumber("G9542VP")).thenReturn(Either.right(Optional.of(anOffender())));
             when(staffService.findByStaffId(anyLong())).thenReturn(Optional.of(aStaff()));
             when(probationAreaRepository.findByInstitutionByNomsCDECode("BWI")).thenReturn(Optional.empty());
 
@@ -152,7 +153,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
 
         @Test
         public void willNotAllowAllocationOfStaffInDifferentProbationArea() {
-            when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.of(anOffender()));
+            when(offenderRepository.findMostLikelyByNomsNumber("G9542VP")).thenReturn(Either.right(Optional.of(anOffender())));
             when(staffService.findByStaffId(anyLong())).thenReturn(Optional.of(aStaff()
                     .toBuilder()
                     .probationArea(
@@ -221,12 +222,12 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                     .codeValue("AUT")
                     .build());
 
-            when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
+            when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
                             .prisonOffenderManagers(List.of())
                             .build()
-            ));
+            )));
             when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
             when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
 
@@ -262,12 +263,12 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                             .build())
                     .build();
 
-            when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
+            when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
                             .prisonOffenderManagers(List.of(existingPOM))
                             .build()
-            ));
+            )));
             when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
             when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
             when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
@@ -304,12 +305,12 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                             .build())
                     .build();
 
-            when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
+            when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
                             .prisonOffenderManagers(List.of(existingPOM))
                             .build()
-            ));
+            )));
             when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
             when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
             when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
@@ -335,12 +336,12 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
         public void existingPrisonerOffenderManagerIsDeactivated() {
             final var existingPOM = anActivePrisonOffenderManager();
 
-            when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
+            when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
                             .prisonOffenderManagers(List.of(existingPOM))
                             .build()
-            ));
+            )));
             when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
             when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
             when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
@@ -368,12 +369,12 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                     .responsibleOfficers(List.of(existingPOMResponsibleOfficer))
                     .build();
 
-            when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
+            when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
                             .prisonOffenderManagers(List.of(existingPOM))
                             .build()
-            ));
+            )));
             when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
             when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
             when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
@@ -401,12 +402,12 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                     .responsibleOfficers(List.of(existingPOMResponsibleOfficer))
                     .build();
 
-            when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
+            when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
                             .prisonOffenderManagers(List.of(existingPOM))
                             .build()
-            ));
+            )));
 
             when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> {
                 final PrisonOffenderManager newPOM = args.getArgument(0);
@@ -432,11 +433,11 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
 
         @Test
         public void shouldAddAPOMAllocationContact() {
-            when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
+            when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
                             .prisonOffenderManagers(List.of())
-                            .build()));
+                            .build())));
             when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
             when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
 
@@ -454,12 +455,12 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
 
         @Test
         public void shouldAddTelemetryEventForPOMAllocation() {
-            when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
+            when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
                             .prisonOffenderManagers(List.of())
                             .crn("X12345")
-                            .build()));
+                            .build())));
             when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
             when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam()
                     .toBuilder()
@@ -481,11 +482,11 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
         @Test
         public void shouldAddAPOMAllocationContactNotingOldPOM() {
             final var existingPOM = anActivePrisonOffenderManager();
-            when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
+            when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
                             .prisonOffenderManagers(List.of(existingPOM))
-                            .build()));
+                            .build())));
             when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
             when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
             when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
@@ -513,12 +514,12 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                     .responsibleOfficers(List.of(existingPOMResponsibleOfficer))
                     .build();
 
-            when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
+            when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
                             .prisonOffenderManagers(List.of(existingPOM))
                             .build()
-            ));
+            )));
 
             when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> {
                 final PrisonOffenderManager newPOM = args.getArgument(0);
@@ -550,13 +551,13 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                     .responsibleOfficers(List.of(existingPOMResponsibleOfficer))
                     .build();
 
-            when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
+            when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
                             .crn("X12345")
                             .prisonOffenderManagers(List.of(existingPOM))
                             .build()
-            ));
+            )));
 
             when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> {
                 final PrisonOffenderManager newPOM = args.getArgument(0);
@@ -587,11 +588,11 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
 
         @BeforeEach
         public void setup() {
-            when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.of(
+            when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
                             .prisonOffenderManagers(List.of())
-                            .build()));
+                            .build())));
             when(probationAreaRepository.findByInstitutionByNomsCDECode(any())).thenAnswer(args -> {
                 final var code = args.getArgument(0).toString();
                 return Optional.of(aPrisonProbationArea()
@@ -603,7 +604,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
 
         @Test
         public void willReturnEmptyWhenOffenderNotFound() {
-            when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.empty());
+            when(offenderRepository.findMostLikelyByNomsNumber("G9542VP")).thenReturn(Either.right(Optional.empty()));
 
             assertThat(offenderManagerService.allocatePrisonOffenderManagerByName(
                     "G9542VP",

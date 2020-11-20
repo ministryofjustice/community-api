@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import io.vavr.control.Either;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderPrimaryIdentifiersRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository.DuplicateOffenderException;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 import uk.gov.justice.digital.delius.transformers.ReleaseTransformer;
 
@@ -104,6 +106,10 @@ public class OffenderService {
 
     public Optional<Long> offenderIdOfNomsNumber(String nomsNumber) {
         return offenderRepository.findByNomsNumber(nomsNumber).map(Offender::getOffenderId);
+    }
+
+    public Either<DuplicateOffenderException, Optional<Long>> currentOffenderIdOfNomsNumber(String nomsNumber) {
+        return Either.right(offenderRepository.findByNomsNumber(nomsNumber).map(Offender::getOffenderId));
     }
 
     public List<BigDecimal> allOffenderIds(int pageSize, int page) {

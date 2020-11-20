@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.jpa.standard.repository;
 
+import io.vavr.control.Either;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +14,9 @@ import java.util.Optional;
 
 @Repository
 public interface OffenderRepository extends JpaRepository<Offender, Long>, JpaSpecificationExecutor<Offender> {
+    class DuplicateOffenderException extends RuntimeException {
+
+    }
     Optional<Offender> findByOffenderId(Long offenderId);
 
     Optional<Offender> findByCrn(String crn);
@@ -27,4 +31,9 @@ public interface OffenderRepository extends JpaRepository<Offender, Long>, JpaSp
 
     @Query(value = "SELECT OFFENDER_ID FROM (SELECT QRY_PAG.*, ROWNUM rnum FROM (SELECT OFFENDER_ID FROM OFFENDER) QRY_PAG WHERE ROWNUM <= ?2) WHERE rnum >= ?1", nativeQuery = true)
     List<BigDecimal> listOffenderIds(int lower, int upper);
+
+    default Either<DuplicateOffenderException, Optional<Offender>> findMostLikelyByNomsNumber(String nomsNumber) {
+        return Either.right(findByNomsNumber(nomsNumber));
+    }
+
 }

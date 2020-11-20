@@ -60,7 +60,7 @@ public class OffenderManagerService {
     @Transactional
     public Optional<CommunityOrPrisonOffenderManager> allocatePrisonOffenderManagerByStaffId(final String nomsNumber, final Long staffId, final CreatePrisonOffenderManager prisonOffenderManager) {
         final var maybeStaff = staffService.findByStaffId(staffId);
-        final var maybeOffender = offenderRepository.findByNomsNumber(nomsNumber);
+        final var maybeOffender = offenderRepository.findMostLikelyByNomsNumber(nomsNumber).get();
         final var probationArea = probationAreaRepository.findByInstitutionByNomsCDECode(prisonOffenderManager.getNomsPrisonInstitutionCode())
                 .orElseThrow(() -> new InvalidRequestException(String.format("Prison NOMS code %s not found", prisonOffenderManager.getNomsPrisonInstitutionCode())));
 
@@ -72,7 +72,7 @@ public class OffenderManagerService {
     @Transactional
     public Optional<CommunityOrPrisonOffenderManager> allocatePrisonOffenderManagerByName(final String nomsNumber, final CreatePrisonOffenderManager prisonOffenderManager) {
 
-        final var maybeOffender = offenderRepository.findByNomsNumber(nomsNumber);
+        final var maybeOffender = offenderRepository.findMostLikelyByNomsNumber(nomsNumber).get();
         final var probationArea = probationAreaRepository.findByInstitutionByNomsCDECode(prisonOffenderManager.getNomsPrisonInstitutionCode())
                 .orElseThrow(() -> new InvalidRequestException(String.format("Prison NOMS code %s not found", prisonOffenderManager.getNomsPrisonInstitutionCode())));
 
