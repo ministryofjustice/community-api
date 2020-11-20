@@ -11,6 +11,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.InvalidRequestException;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Human;
@@ -618,6 +621,27 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                                     .build())
                             .build()))
                     .isNotPresent();
+        }
+
+        @Test
+        @DisplayName("will throw a conflict if multiple active offenders found for NOMS number")
+        @MockitoSettings(strictness = Strictness.LENIENT)
+        void willThrowAConflictIfMultipleActiveOffendersFoundForNOMSNumber() {
+            when(offenderRepository.findMostLikelyByNomsNumber("G9542VP")).thenReturn(Either.left(new OffenderRepository.DuplicateOffenderException("two found!")));
+
+            assertThatThrownBy(() -> offenderManagerService.allocatePrisonOffenderManagerByName(
+                    "G9542VP",
+                    CreatePrisonOffenderManager
+                            .builder()
+                            .nomsPrisonInstitutionCode("BWI")
+                            .officer(Human
+                                    .builder()
+                                    .surname("Smith")
+                                    .forenames("John")
+                                    .build())
+                            .build()))
+                    .isInstanceOf(ConflictingRequestException.class);
+
         }
 
         @Test

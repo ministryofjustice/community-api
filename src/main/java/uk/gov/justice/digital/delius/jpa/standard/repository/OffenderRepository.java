@@ -12,10 +12,14 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.stream.Collectors.toList;
+
 @Repository
 public interface OffenderRepository extends JpaRepository<Offender, Long>, JpaSpecificationExecutor<Offender> {
     class DuplicateOffenderException extends RuntimeException {
-
+        public DuplicateOffenderException(String message) {
+            super(message);
+        }
     }
     Optional<Offender> findByOffenderId(Long offenderId);
 
@@ -33,7 +37,21 @@ public interface OffenderRepository extends JpaRepository<Offender, Long>, JpaSp
     List<BigDecimal> listOffenderIds(int lower, int upper);
 
     default Either<DuplicateOffenderException, Optional<Offender>> findMostLikelyByNomsNumber(String nomsNumber) {
-        return Either.right(findByNomsNumber(nomsNumber));
+        final var offenders = findAllByNomsNumber(nomsNumber);
+        switch (offenders.size()) {
+            case 0:
+                return Either.right(Optional.empty());
+            case 1:
+                return Either.right(Optional.of(offenders.get(0)));
+            default: {
+                final var activeOffenders = offenders.stream().filter(Offender::hasActiveSentence).collect(toList());
+                if (activeOffenders.size() == 1) {
+                    return Either.right(Optional.of(activeOffenders.get(0)));
+                } else {
+                    return Either.left(new DuplicateOffenderException(String.format("Expecting only a single active offender but found %d offenders with noms number %s", offenders.size(), nomsNumber)));
+                }
+            }
+        }
     }
 
 }

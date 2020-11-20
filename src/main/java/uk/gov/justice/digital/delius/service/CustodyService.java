@@ -113,6 +113,9 @@ public class CustodyService {
                 case OffenderNotFound:
                     telemetryClient.trackEvent("P2PTransferOffenderNotFound", telemetryProperties, null);
                     break;
+                case MultipleOffendersFound:
+                    telemetryClient.trackEvent("P2PTransferMultipleOffendersFound", telemetryProperties, null);
+                    break;
             }
             return new NotFoundException(error.getMessage());
         }));
@@ -138,6 +141,8 @@ public class CustodyService {
                     return Optional.of("POMLocationMultipleEvents");
                 case OffenderNotFound:
                     return Optional.of("POMLocationOffenderNotFound");
+                case MultipleOffendersFound:
+                    return Optional.of("POMLocationMultipleOffenders");
             }
             return Optional.empty();
         }, success -> {
@@ -299,9 +304,13 @@ public class CustodyService {
     }
 
     private Either<PrisonLocationUpdateError, Offender> findByNomsNumber(String nomsNumber) {
-        return offenderRepository.findByNomsNumber(nomsNumber)
-                .map((Function<Offender, Either<PrisonLocationUpdateError, Offender>>) Either::right)
-                .orElseGet(() -> Either.left(new PrisonLocationUpdateError(PrisonLocationUpdateError.Reason.OffenderNotFound, String.format("offender with nomsNumber %s not found", nomsNumber))));
+        return offenderRepository
+                .findMostLikelyByNomsNumber(nomsNumber)
+                .fold(duplicateError -> Either.left(new PrisonLocationUpdateError(PrisonLocationUpdateError.Reason.MultipleOffendersFound, duplicateError
+                        .getMessage())), maybeOffender -> maybeOffender
+                        .map((Function<Offender, Either<PrisonLocationUpdateError, Offender>>) Either::right)
+                        .orElseGet(() -> Either.left(new PrisonLocationUpdateError(PrisonLocationUpdateError.Reason.OffenderNotFound, String
+                                .format("offender with nomsNumber %s not found", nomsNumber)))));
     }
 
     private Either<PrisonLocationUpdateError, Event> getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(Long offenderId, String bookingNumber) {
@@ -360,7 +369,8 @@ public class CustodyService {
             CustodialSentenceNotFoundInCorrectState,
             ConvictionNotFound,
             MultipleCustodialSentences,
-            OffenderNotFound
+            OffenderNotFound,
+            MultipleOffendersFound
         }
         final private Reason reason;
         final private String message;
