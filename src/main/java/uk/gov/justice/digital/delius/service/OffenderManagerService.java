@@ -79,7 +79,7 @@ public class OffenderManagerService {
         return maybeOffender.map(offender ->
                 allocatePrisonOffenderManager(
                         probationArea,
-                        staffService.findOrCreateStaffInArea(prisonOffenderManager.getOfficer(), probationArea),
+                        staffService.findOrCreateStaffInArea(prisonOffenderManager.getOfficer().capitalise(), probationArea),
                         offender));
     }
 

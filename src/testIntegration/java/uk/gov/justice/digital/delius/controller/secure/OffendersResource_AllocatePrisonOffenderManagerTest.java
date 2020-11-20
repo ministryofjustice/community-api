@@ -1,7 +1,10 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import uk.gov.justice.digital.delius.FlywayRestoreExtension;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Contact;
@@ -19,8 +22,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@SuppressWarnings("SameParameterValue")
 @ExtendWith(FlywayRestoreExtension.class)
 public class OffendersResource_AllocatePrisonOffenderManagerTest extends IntegrationTestBase {
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @Test
     public void mustHaveUpdateRoleToAllocatedPOM() {
         given()
@@ -274,6 +281,75 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
 
         assertThat(contacts).hasSize(1);
         assertThat(contacts[0].getContactType().getDescription()).isEqualTo("Prison Offender Manager - Automatic Transfer");
+    }
+    @Test
+    @DisplayName("Case is normalized when adding a new staff member, but existing staff members with names in a non standard case will be honoured")
+    public void shouldIgnoreCaseWhenAddingAPOM() {
+        // When I assign a POM with a name in upper case
+        given()
+                .auth()
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
+                .contentType(APPLICATION_JSON_VALUE)
+                .contentType("application/json")
+                .body(createPrisonOffenderManagerOf(Human.builder().forenames("JANE").surname("MACDONALD").build(), "BWI"))
+                .when()
+                .put("/offenders/nomsNumber/G4340UK/prisonOffenderManager")
+                .then()
+                .statusCode(200);
+
+        // THEN the name will be saved as standard name capitalisation
+        final var offenderManagers = given()
+                .auth()
+                .oauth2(tokenWithRoleCommunity())
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/nomsNumber/G4340UK/allOffenderManagers")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(CommunityOrPrisonOffenderManager[].class);
+
+        assertThat(prisonOffenderManager(offenderManagers).orElseThrow().getStaff()).isEqualTo(Human.builder().forenames("Jane").surname("Macdonald").build());
+
+        // GIVEN the name was originally created with saved with a non-standard case
+        jdbcTemplate.update("UPDATE STAFF SET FORENAME = ?,  SURNAME = ? WHERE STAFF_ID = ?", "Jane", "MacDonald", prisonOffenderManager(offenderManagers).orElseThrow().getStaffId());
+
+
+        given()
+                .auth()
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
+                .contentType(APPLICATION_JSON_VALUE)
+                .contentType("application/json")
+                .body(createPrisonOffenderManagerOf(Human.builder().forenames("Someone").surname("Else").build(), "BWI"))
+                .when()
+                .put("/offenders/nomsNumber/G4340UK/prisonOffenderManager")
+                .then()
+                .statusCode(200);
+
+        given()
+                .auth()
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
+                .contentType(APPLICATION_JSON_VALUE)
+                .contentType("application/json")
+                .body(createPrisonOffenderManagerOf(Human.builder().forenames("JANE").surname("MACDONALD").build(), "BWI"))
+                .when()
+                .put("/offenders/nomsNumber/G4340UK/prisonOffenderManager")
+                .then()
+                .statusCode(200);
+
+        // THEN the name will be the original saved name
+        assertThat(prisonOffenderManager(given()
+                .auth()
+                .oauth2(tokenWithRoleCommunity())
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/nomsNumber/G4340UK/allOffenderManagers")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(CommunityOrPrisonOffenderManager[].class)).orElseThrow().getStaff()).isEqualTo(Human.builder().forenames("Jane").surname("MacDonald").build());
     }
 
     public Optional<CommunityOrPrisonOffenderManager> prisonOffenderManager(final CommunityOrPrisonOffenderManager[] offenderManagers) {
