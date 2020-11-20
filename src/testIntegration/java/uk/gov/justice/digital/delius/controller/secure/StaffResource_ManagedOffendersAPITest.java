@@ -63,7 +63,7 @@ public class StaffResource_ManagedOffendersAPITest extends IntegrationTestBase {
     public void getManagedOffendersSoftDeletedCheck() {
 
         /*
-         This officer has two offenders assigned but one is SOFT_DELETED in seed data.
+         This officer has six offenders assigned but one is SOFT_DELETED in seed data.
          The response should be only one managed offender - G3232VA.
         */
 
@@ -81,8 +81,7 @@ public class StaffResource_ManagedOffendersAPITest extends IntegrationTestBase {
                         .as(ManagedOffender[].class);
 
         List<ManagedOffender> mos = Arrays.asList(managedOffenders);
-        assertThat(mos).hasSize(1);
-        assertThat(mos.get(0).getNomsNumber()).isEqualToIgnoringCase("G3232VA");
+        assertThat(mos).hasSize(5).extracting(ManagedOffender::getNomsNumber).contains("G3232VA").doesNotContain("G3333VA");
     }
 
     @Test
