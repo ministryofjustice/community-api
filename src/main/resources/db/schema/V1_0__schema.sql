@@ -96,7 +96,7 @@ create sequence SC_PROVIDER_ID_SEQ
     ;
 
 create sequence STAFF_ID_SEQ
-    minvalue 2500000000
+    minvalue 2600000000
     maxvalue 900000000000000000
     cache 500
     ;

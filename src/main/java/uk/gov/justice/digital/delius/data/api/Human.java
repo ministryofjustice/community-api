@@ -6,8 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import static org.apache.commons.text.WordUtils.capitalizeFully;
+
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class Human {
@@ -15,4 +17,11 @@ public class Human {
     private String forenames;
     @ApiModelProperty(value = "Family name", example = "Hancock")    
     private String surname;
+
+    public Human capitalise() {
+        return this.toBuilder()
+                .surname(capitalizeFully(surname))
+                .forenames(capitalizeFully(forenames))
+                .build();
+    }
 }

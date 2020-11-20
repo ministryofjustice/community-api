@@ -223,7 +223,7 @@ public class StaffServiceTest {
     @Test
     public void willReturnStaffIfFoundWithoutCreatingANewOne() {
         when(staffRepository
-                .findFirstBySurnameAndForenameAndProbationArea(any(), any(), any(ProbationArea.class)))
+                .findFirstBySurnameIgnoreCaseAndForenameIgnoreCaseAndProbationArea(any(), any(), any(ProbationArea.class)))
                 .thenReturn(Optional.of(aStaff("N01A123456")));
 
         assertThat(staffService.findOrCreateStaffInArea(Human
@@ -232,14 +232,14 @@ public class StaffServiceTest {
                 .surname("Biggins")
                 .build(), aProbationArea()).getOfficerCode()).isEqualTo("N01A123456");
 
-        verify(staffRepository).findFirstBySurnameAndForenameAndProbationArea(eq("Biggins"), eq("Sandra"), isA(ProbationArea.class));
+        verify(staffRepository).findFirstBySurnameIgnoreCaseAndForenameIgnoreCaseAndProbationArea(eq("Biggins"), eq("Sandra"), isA(ProbationArea.class));
         verify(staffRepository, never()).save(any());
     }
 
     @Test
     public void willLookupByFirstForenameWhenSpaceSeparatedWhenSearchingStaffByName() {
         when(staffRepository
-                .findFirstBySurnameAndForenameAndProbationArea(any(), any(), any(ProbationArea.class)))
+                .findFirstBySurnameIgnoreCaseAndForenameIgnoreCaseAndProbationArea(any(), any(), any(ProbationArea.class)))
                 .thenReturn(Optional.of(aStaff("N01A123456")));
 
         assertThat(staffService.findOrCreateStaffInArea(Human
@@ -248,14 +248,14 @@ public class StaffServiceTest {
                 .surname("Biggins")
                 .build(), aProbationArea()).getOfficerCode()).isEqualTo("N01A123456");
 
-        verify(staffRepository).findFirstBySurnameAndForenameAndProbationArea(eq("Biggins"), eq("Sandra"), isA(ProbationArea.class));
+        verify(staffRepository).findFirstBySurnameIgnoreCaseAndForenameIgnoreCaseAndProbationArea(eq("Biggins"), eq("Sandra"), isA(ProbationArea.class));
         verify(staffRepository, never()).save(any());
     }
 
     @Test
     public void willLookupByFirstForenameWhenCommaSeparatedWhenSearchingStaffByName() {
         when(staffRepository
-                .findFirstBySurnameAndForenameAndProbationArea(any(), any(), any(ProbationArea.class)))
+                .findFirstBySurnameIgnoreCaseAndForenameIgnoreCaseAndProbationArea(any(), any(), any(ProbationArea.class)))
                 .thenReturn(Optional.of(aStaff("N01A123456")));
 
         assertThat(staffService.findOrCreateStaffInArea(Human
@@ -264,14 +264,14 @@ public class StaffServiceTest {
                 .surname("Biggins")
                 .build(), aProbationArea()).getOfficerCode()).isEqualTo("N01A123456");
 
-        verify(staffRepository).findFirstBySurnameAndForenameAndProbationArea(eq("Biggins"), eq("Sandra"), isA(ProbationArea.class));
+        verify(staffRepository).findFirstBySurnameIgnoreCaseAndForenameIgnoreCaseAndProbationArea(eq("Biggins"), eq("Sandra"), isA(ProbationArea.class));
         verify(staffRepository, never()).save(any());
     }
 
     @Test
     public void willGenerateNewStaffCodeCreateNewStaffWhenNotFoundByName( ) {
         when(staffRepository
-                .findFirstBySurnameAndForenameAndProbationArea(any(), any(), any(ProbationArea.class)))
+                .findFirstBySurnameIgnoreCaseAndForenameIgnoreCaseAndProbationArea(any(), any(), any(ProbationArea.class)))
                 .thenReturn(Optional.empty());
         when(staffHelperRepository.getNextStaffCode("N02")).thenReturn("N02A123456");
         when(staffRepository.save(any())).then(params -> params.getArgument(0));
@@ -291,7 +291,7 @@ public class StaffServiceTest {
     @Test
     public void willSetStaffNamesWhenCreateNewStaffWhenNotFoundByName( ) {
         when(staffRepository
-                .findFirstBySurnameAndForenameAndProbationArea(any(), any(), any(ProbationArea.class)))
+                .findFirstBySurnameIgnoreCaseAndForenameIgnoreCaseAndProbationArea(any(), any(), any(ProbationArea.class)))
                 .thenReturn(Optional.empty());
         when(staffHelperRepository.getNextStaffCode(any())).thenReturn("N02A123456");
 
@@ -315,7 +315,7 @@ public class StaffServiceTest {
     @Test
     public void willSetProbationAreaWhenCreateNewStaffWhenNotFoundByName( ) {
         when(staffRepository
-                .findFirstBySurnameAndForenameAndProbationArea(any(), any(), any(ProbationArea.class)))
+                .findFirstBySurnameIgnoreCaseAndForenameIgnoreCaseAndProbationArea(any(), any(), any(ProbationArea.class)))
                 .thenReturn(Optional.empty());
         when(staffHelperRepository.getNextStaffCode(any())).thenReturn("N02A123456");
 
