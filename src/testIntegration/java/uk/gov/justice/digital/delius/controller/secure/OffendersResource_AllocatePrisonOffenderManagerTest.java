@@ -416,6 +416,37 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .statusCode(400);
     }
 
+    @Test
+    @DisplayName("Will update the active offender when two found with same NOMS number")
+    void willUpdateTheActiveOffenderWhenTwoFoundWithSameNOMSNumber() {
+        given()
+                .auth()
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
+                .contentType(APPLICATION_JSON_VALUE)
+                .contentType("application/json")
+                .body(createPrisonOffenderManagerOf(Human.builder().forenames("Bob").surname("Grindle").build(), "BWI"))
+                .when()
+                .put("/offenders/nomsNumber/G3232DD/prisonOffenderManager")
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("Will return a 409 conflict when supplying a NOMS number with duplicate active offenders")
+    void willReturnAConflictWhenSupplyingANOMSNumberWithDuplicateActiveOffenders() {
+        given()
+                .auth()
+                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
+                .contentType(APPLICATION_JSON_VALUE)
+                .contentType("application/json")
+                .body(createPrisonOffenderManagerOf(Human.builder().forenames("Bob").surname("Grindle").build(), "BWI"))
+                .when()
+                .put("/offenders/nomsNumber/G3636DD/prisonOffenderManager")
+                .then()
+                .statusCode(409);
+    }
+
+
     private String createPrisonOffenderManagerOf(final Long staffId) {
         return writeValueAsString(CreatePrisonOffenderManager
                 .builder()

@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius.controller.secure;
 
 import io.restassured.path.json.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -649,6 +650,115 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                 .jsonPath();
 
         assertThat(errorMessage.getString("developerMessage")).isEqualTo(String.format("Expected offender %s to have a single custody related event but found 0 events", OFFENDER_ID_NO_EVENTS));
+    }
+
+    @Nested
+    @DisplayName("CRUD operations for keydates when multiple offenders found for the same NOMS number")
+    class DuplicateNOMSNumbers {
+        @Nested
+        @DisplayName("and one offender is on an active sentence and the other is not")
+        class WhenOneIsActiveAndOneIsInactive {
+            @Test
+            @DisplayName("adding a new date will succeed")
+            void addingANewDate() {
+                given()
+                        .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
+                        .contentType("application/json")
+                        .body(createCustodyKeyDateOf(LocalDate.now()))
+                        .when()
+                        .put("offenders/nomsNumber/{nomsNumber}/custody/keyDates/POM1",  "G3232DD")
+                        .then()
+                        .statusCode(200);
+
+            }
+
+            @Test
+            @DisplayName("deleting a date will succeed")
+            void deletingADate() {
+                given()
+                        .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
+                        .contentType("application/json")
+                        .body(createCustodyKeyDateOf(LocalDate.now()))
+                        .when()
+                        .put("offenders/nomsNumber/{nomsNumber}/custody/keyDates/POM1",  "G3232DD")
+                        .then()
+                        .statusCode(200);
+
+                given()
+                        .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
+                        .contentType("application/json")
+                        .when()
+                        .delete("offenders/nomsNumber/{nomsNumber}/custody/keyDates/POM1",  "G3232DD")
+                        .then()
+                        .statusCode(200);
+
+            }
+
+            @Test
+            @DisplayName("retrieving a date will succeed")
+            void retrievingADate() {
+                given()
+                        .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
+                        .contentType("application/json")
+                        .body(createCustodyKeyDateOf(LocalDate.now()))
+                        .when()
+                        .put("offenders/nomsNumber/{nomsNumber}/custody/keyDates/POM1",  "G3232DD")
+                        .then()
+                        .statusCode(200);
+
+                given()
+                        .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
+                        .contentType("application/json")
+                        .when()
+                        .get("offenders/nomsNumber/{nomsNumber}/custody/keyDates/POM1",  "G3232DD")
+                        .then()
+                        .statusCode(200);
+
+            }
+
+        }
+        @Nested
+        @DisplayName("and both offenders are on an active sentence")
+        class WhenBothAreActive {
+            @Test
+            @DisplayName("adding a new date results in a conflict response")
+            void addingANewDate() {
+                given()
+                        .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
+                        .contentType("application/json")
+                        .body(createCustodyKeyDateOf(LocalDate.now()))
+                        .when()
+                        .put("offenders/nomsNumber/{nomsNumber}/custody/keyDates/POM1",  "G3636DD")
+                        .then()
+                        .statusCode(409);
+
+            }
+
+            @Test
+            @DisplayName("deleting a date results in a conflicting response 409")
+            void deletingADate() {
+                given()
+                        .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
+                        .contentType("application/json")
+                        .when()
+                        .delete("offenders/nomsNumber/{nomsNumber}/custody/keyDates/POM1",  "G3636DD")
+                        .then()
+                        .statusCode(409);
+
+            }
+
+            @Test
+            @DisplayName("retrieving a date results in a conflicting response 409")
+            void retrievingADate() {
+                given()
+                        .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
+                        .contentType("application/json")
+                        .when()
+                        .get("offenders/nomsNumber/{nomsNumber}/custody/keyDates/POM1",  "G3636DD")
+                        .then()
+                        .statusCode(409);
+            }
+        }
     }
 
     @Nested

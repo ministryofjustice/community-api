@@ -251,4 +251,8 @@ public class Offender {
             return this;
         }
     }
+
+    public boolean hasActiveSentence() {
+        return currentDisposal == 1L;
+    }
 }

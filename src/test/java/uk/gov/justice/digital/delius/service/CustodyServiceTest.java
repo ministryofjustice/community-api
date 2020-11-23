@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.microsoft.applicationinsights.TelemetryClient;
+import io.vavr.control.Either;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -84,12 +85,13 @@ public class CustodyServiceTest {
             when(referenceDataService.getPrisonLocationChangeCustodyEvent()).thenReturn(StandardReference.builder().codeValue("CPL").codeDescription("Change prison location").build());
             when(referenceDataService.getCustodyStatusChangeCustodyEvent()).thenReturn(StandardReference.builder().codeValue("TSC").codeDescription("Custody status change").build());
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
+            when(offenderRepository.findMostLikelyByNomsNumber(anyString())).thenReturn(Either.right(Optional.of(Offender.builder().offenderId(99L).build())));
         }
 
 
         @Test
         public void willCreateTelemetryEventWhenOffenderNotFound() {
-            when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.empty());
+            when(offenderRepository.findMostLikelyByNomsNumber("G9542VP")).thenReturn(Either.right(Optional.empty()));
 
             assertThatThrownBy(() ->
                     custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()));
@@ -99,7 +101,27 @@ public class CustodyServiceTest {
 
         @Test
         public void willThrowExceptionWhenOffenderNotFound() {
-            when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.empty());
+            when(offenderRepository.findMostLikelyByNomsNumber("G9542VP")).thenReturn(Either.right(Optional.empty()));
+
+            assertThatThrownBy(() ->
+                    custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()))
+                    .isInstanceOf(NotFoundException.class);
+
+        }
+
+        @Test
+        public void willCreateTelemetryEventWhenMultipleActiveOffendersFound() {
+            when(offenderRepository.findMostLikelyByNomsNumber("G9542VP")).thenReturn(Either.left(new OffenderRepository.DuplicateOffenderException("Two found!")));
+
+            assertThatThrownBy(() ->
+                    custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()));
+
+            verify(telemetryClient).trackEvent(eq("P2PTransferMultipleOffendersFound"), argThat(standardTelemetryAttributes), isNull());
+        }
+
+        @Test
+        public void willThrowExceptionWhenMultipleOffendersFound() {
+            when(offenderRepository.findMostLikelyByNomsNumber("G9542VP")).thenReturn(Either.left(new OffenderRepository.DuplicateOffenderException("Two found!")));
 
             assertThatThrownBy(() ->
                     custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()))
@@ -225,7 +247,7 @@ public class CustodyServiceTest {
         public void willCreateContactAboutPrisonLocationChange() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
             final var offender = anOffender();
             final var event = aCustodyEvent();
-            when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(offender));
+            when(offenderRepository.findMostLikelyByNomsNumber("G9542VP")).thenReturn(Either.right(Optional.of(offender)));
             when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
                     .thenReturn(Optional.of(event));
 
@@ -356,18 +378,28 @@ public class CustodyServiceTest {
             when(referenceDataService.getPrisonLocationChangeCustodyEvent()).thenReturn(StandardReference.builder().codeValue("CPL").codeDescription("Change prison location").build());
             when(referenceDataService.getCustodyStatusChangeCustodyEvent()).thenReturn(StandardReference.builder().codeValue("TSC").codeDescription("Custody status change").build());
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(aPrisonInstitution()));
-            when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).prisonOffenderManagers(List.of(aPrisonOffenderManager(aStaff(), aTeam()))).build()));
+            when(offenderRepository.findMostLikelyByNomsNumber(anyString())).thenReturn(Either.right(Optional.of(Offender.builder().offenderId(99L).prisonOffenderManagers(List.of(aPrisonOffenderManager(aStaff(), aTeam()))).build())));
         }
 
 
         @Test
-        @DisplayName("will offender add not found telemetry when offender not found")
+        @DisplayName("will add not found telemetry when offender not found")
         public void willCreateTelemetryEventWhenOffenderNotFound() {
-            when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.empty());
+            when(offenderRepository.findMostLikelyByNomsNumber("G9542VP")).thenReturn(Either.right(Optional.empty()));
 
             custodyService.updateCustodyPrisonLocation("G9542VP", "MDI");
 
             verify(telemetryClient).trackEvent(eq("POMLocationOffenderNotFound"), argThat(standardTelemetryAttributes), isNull());
+        }
+
+        @Test
+        @DisplayName("will add duplicate offender telemetry when multiple offenders found")
+        public void willCreateTelemetryEventWhenMultipleOffendersFound() {
+            when(offenderRepository.findMostLikelyByNomsNumber("G9542VP")).thenReturn(Either.left(new OffenderRepository.DuplicateOffenderException("Two have been found")));
+
+            custodyService.updateCustodyPrisonLocation("G9542VP", "MDI");
+
+            verify(telemetryClient).trackEvent(eq("POMLocationMultipleOffenders"), argThat(standardTelemetryAttributes), isNull());
         }
 
         @Test

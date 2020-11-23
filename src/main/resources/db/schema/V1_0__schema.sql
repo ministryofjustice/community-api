@@ -3896,8 +3896,10 @@ create table OFFENDER
     CRO_NUMBER                     VARCHAR2(12),
     SURNAME                        VARCHAR2(35)     not null,
     NOMS_NUMBER                    CHAR(7)
-        constraint XAK2OFFENDER
-            unique,
+-- in production this constraint is disabled there are real duplicates
+--        constraint XAK2OFFENDER
+--           unique
+    ,
     PREVIOUS_SURNAME               VARCHAR2(35),
     ALLOW_SMS                      CHAR
         constraint YES_OR_NO_OR_UNKNOWN9

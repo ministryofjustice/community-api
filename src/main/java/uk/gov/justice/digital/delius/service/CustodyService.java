@@ -20,6 +20,8 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.RInstitution;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CustodyHistoryRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository.DuplicateOffenderException;
+import uk.gov.justice.digital.delius.service.ConvictionService.DuplicateActiveCustodialConvictionsException;
 import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
 
 import java.time.LocalDate;
@@ -28,6 +30,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
+
+import static uk.gov.justice.digital.delius.service.CustodyService.PrisonLocationUpdateError.Reason.ConvictionNotFound;
+import static uk.gov.justice.digital.delius.service.CustodyService.PrisonLocationUpdateError.Reason.MultipleCustodialSentences;
+import static uk.gov.justice.digital.delius.service.CustodyService.PrisonLocationUpdateError.Reason.MultipleOffendersFound;
+import static uk.gov.justice.digital.delius.service.CustodyService.PrisonLocationUpdateError.Reason.OffenderNotFound;
 
 @Service
 @Slf4j
@@ -113,6 +121,9 @@ public class CustodyService {
                 case OffenderNotFound:
                     telemetryClient.trackEvent("P2PTransferOffenderNotFound", telemetryProperties, null);
                     break;
+                case MultipleOffendersFound:
+                    telemetryClient.trackEvent("P2PTransferMultipleOffendersFound", telemetryProperties, null);
+                    break;
             }
             return new NotFoundException(error.getMessage());
         }));
@@ -138,6 +149,8 @@ public class CustodyService {
                     return Optional.of("POMLocationMultipleEvents");
                 case OffenderNotFound:
                     return Optional.of("POMLocationOffenderNotFound");
+                case MultipleOffendersFound:
+                    return Optional.of("POMLocationMultipleOffenders");
             }
             return Optional.empty();
         }, success -> {
@@ -209,7 +222,7 @@ public class CustodyService {
             final var event = convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(offender.getOffenderId(), bookingNumber)
                     .orElseThrow(() -> new NotFoundException(String.format("conviction with bookNumber %s not found", bookingNumber)));
             return ConvictionTransformer.custodyOf(event.getDisposal().getCustody());
-        } catch (ConvictionService.DuplicateActiveCustodialConvictionsException e) {
+        } catch (DuplicateActiveCustodialConvictionsException e) {
             throw new NotFoundException(String.format("no single conviction with bookingNumber %s found, instead %d duplicates found", bookingNumber, e.getConvictionCount()));
         }
     }
@@ -299,18 +312,28 @@ public class CustodyService {
     }
 
     private Either<PrisonLocationUpdateError, Offender> findByNomsNumber(String nomsNumber) {
-        return offenderRepository.findByNomsNumber(nomsNumber)
+        final Supplier<Either<PrisonLocationUpdateError, Offender>> notFoundError = () -> Either
+                .left(PrisonLocationUpdateError.offenderNotFound(nomsNumber));
+
+        final Function<DuplicateOffenderException, Either<PrisonLocationUpdateError, Offender>> multipleOffenderError = duplicateError -> Either
+                .left(PrisonLocationUpdateError.multipleOffenders(duplicateError));
+
+        final Function<Optional<Offender>, Either<PrisonLocationUpdateError, Offender>> offenderOrNotFoundError = maybeOffender -> maybeOffender
                 .map((Function<Offender, Either<PrisonLocationUpdateError, Offender>>) Either::right)
-                .orElseGet(() -> Either.left(new PrisonLocationUpdateError(PrisonLocationUpdateError.Reason.OffenderNotFound, String.format("offender with nomsNumber %s not found", nomsNumber))));
+                .orElseGet(notFoundError);
+
+        return offenderRepository
+                .findMostLikelyByNomsNumber(nomsNumber)
+                .fold(multipleOffenderError, offenderOrNotFoundError);
     }
 
     private Either<PrisonLocationUpdateError, Event> getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(Long offenderId, String bookingNumber) {
         try {
             return convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(offenderId, bookingNumber)
                     .map((Function<Event, Either<PrisonLocationUpdateError, Event>>) Either::right)
-                    .orElseGet(() -> Either.left(new PrisonLocationUpdateError(PrisonLocationUpdateError.Reason.ConvictionNotFound, String.format("conviction with bookingNumber %s not found", bookingNumber))));
-        } catch (ConvictionService.DuplicateActiveCustodialConvictionsException e) {
-            return Either.left(new PrisonLocationUpdateError(PrisonLocationUpdateError.Reason.MultipleCustodialSentences, String.format("no single conviction with bookingNumber %s found, instead %d duplicates found", bookingNumber, e.getConvictionCount())));
+                    .orElseGet(() -> Either.left(PrisonLocationUpdateError.convictionNotFound(bookingNumber)));
+        } catch (DuplicateActiveCustodialConvictionsException e) {
+            return Either.left(PrisonLocationUpdateError.multipleCustodialSentences(bookingNumber, e));
         }
     }
 
@@ -318,12 +341,12 @@ public class CustodyService {
         final var events = convictionService.getAllActiveCustodialEvents(offender.getOffenderId());
         switch (events.size()) {
             case 0:
-                return Either.left(new PrisonLocationUpdateError(PrisonLocationUpdateError.Reason.ConvictionNotFound, String
+                return Either.left(new PrisonLocationUpdateError(ConvictionNotFound, String
                         .format("No active custodial events found for offender %s", offender.getCrn())));
             case 1:
                 return Either.right(events.get(0));
             default:
-                return Either.left(new PrisonLocationUpdateError(PrisonLocationUpdateError.Reason.MultipleCustodialSentences, String
+                return Either.left(new PrisonLocationUpdateError(MultipleCustodialSentences, String
                         .format("Multiple active custodial events found for offender %s. %d found", offender.getCrn(), events.size())));
         }
     }
@@ -360,10 +383,26 @@ public class CustodyService {
             CustodialSentenceNotFoundInCorrectState,
             ConvictionNotFound,
             MultipleCustodialSentences,
-            OffenderNotFound
+            OffenderNotFound,
+            MultipleOffendersFound
         }
         final private Reason reason;
         final private String message;
+
+        public static PrisonLocationUpdateError offenderNotFound(String nomsNumber) {
+            return new PrisonLocationUpdateError(OffenderNotFound, String.format("offender with nomsNumber %s not found", nomsNumber));
+        }
+
+        public static PrisonLocationUpdateError multipleOffenders(DuplicateOffenderException duplicateError) {
+            return new PrisonLocationUpdateError(MultipleOffendersFound, duplicateError.getMessage());
+        }
+
+        public static  PrisonLocationUpdateError convictionNotFound(String bookingNumber) {
+            return new PrisonLocationUpdateError(ConvictionNotFound, String.format("conviction with bookingNumber %s not found", bookingNumber));
+        }
+        public static  PrisonLocationUpdateError multipleCustodialSentences(String bookingNumber, DuplicateActiveCustodialConvictionsException error) {
+            return  new PrisonLocationUpdateError(MultipleCustodialSentences, String.format("no single conviction with bookingNumber %s found, instead %d duplicates found", bookingNumber, error.getConvictionCount()));
+        }
     }
     @Data
     static class PrisonLocationUpdateSuccess {
