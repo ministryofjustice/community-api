@@ -589,7 +589,7 @@ Insert into CUSTODY (CUSTODY_ID, DISPOSAL_ID, STATUS_CHANGE_DATE, PRISONER_NUMBE
                      INSTITUTION_ID, CREATED_BY_USER_ID, ESTABLISHMENT, LAST_UPDATED_USER_ID, TRAINING_SESSION_ID,
                      OFFENDER_ID, ORGANISATIONS, PSS_START_DATE)
 values (135, 135, to_date('04-SEP-19', 'DD-MON-RR'), 'V74112', null, to_date('04-SEP-19', 'DD-MON-RR'), 0,
-        0, 3, 2500000632, null, null, null, null, to_date('04-SEP-19', 'DD-MON-RR'), to_date('27-SEP-19', 'DD-MON-RR'),
+        0, 3, 324, null, null, null, null, to_date('04-SEP-19', 'DD-MON-RR'), to_date('27-SEP-19', 'DD-MON-RR'),
         2500004521, 2500040507, 'Y', 2500040507, null, 2600343964, ('2600007020', '1500001001'),
         to_date('03-NOV-19', 'DD-MON-RR'));
 Insert into MAIN_OFFENCE (MAIN_OFFENCE_ID, OFFENCE_DATE, OFFENCE_COUNT, EVENT_ID, TICS, VERDICT, SOFT_DELETED,

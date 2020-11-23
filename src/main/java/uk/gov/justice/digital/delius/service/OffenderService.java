@@ -108,8 +108,9 @@ public class OffenderService {
         return offenderRepository.findByNomsNumber(nomsNumber).map(Offender::getOffenderId);
     }
 
-    public Either<DuplicateOffenderException, Optional<Long>> currentOffenderIdOfNomsNumber(String nomsNumber) {
-        return Either.right(offenderRepository.findByNomsNumber(nomsNumber).map(Offender::getOffenderId));
+    public Either<DuplicateOffenderException, Optional<Long>> mostLikelyOffenderIdOfNomsNumber(String nomsNumber) {
+        return offenderRepository.findMostLikelyByNomsNumber(nomsNumber).fold(Either::left,
+                offender -> Either.right(offender.map(Offender::getOffenderId)));
     }
 
     public List<BigDecimal> allOffenderIds(int pageSize, int page) {

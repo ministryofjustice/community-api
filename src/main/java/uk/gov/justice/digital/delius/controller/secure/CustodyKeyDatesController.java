@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.service.ConvictionService;
@@ -61,7 +62,7 @@ public class CustodyKeyDatesController {
                                                         final @PathVariable String typeCode,
                                                         final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
         log.info("Call to putCustodyKeyDateByNomsNumber for {} code {}", nomsNumber, typeCode);
-        return addOrReplaceCustodyKeyDate(offenderService.offenderIdOfNomsNumber(nomsNumber), typeCode, custodyKeyDate);
+        return addOrReplaceCustodyKeyDate(offenderService.mostLikelyOffenderIdOfNomsNumber(nomsNumber).getOrElseThrow(e -> new ConflictingRequestException(e.getMessage())), typeCode, custodyKeyDate);
     }
 
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/bookingNumber/{bookingNumber}/custody/keyDates", method = RequestMethod.POST, consumes = "application/json")
@@ -143,7 +144,7 @@ public class CustodyKeyDatesController {
     public CustodyKeyDate getCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber,
                                                         final @PathVariable String typeCode) {
         log.info("Call to getCustodyKeyDateByNomsNumber for {} code {}", nomsNumber, typeCode);
-        return getCustodyKeyDate(offenderService.currentOffenderIdOfNomsNumber(nomsNumber).get(), typeCode);
+        return getCustodyKeyDate(offenderService.mostLikelyOffenderIdOfNomsNumber(nomsNumber).getOrElseThrow(e -> new ConflictingRequestException(e.getMessage())), typeCode);
     }
 
     @RequestMapping(value = "offenders/offenderId/{offenderId}/custody/keyDates/{typeCode}", method = RequestMethod.GET)
@@ -192,10 +193,10 @@ public class CustodyKeyDatesController {
             @ApiResponse(code = 400, message = "The the offender does not have a single custody event"),
             @ApiResponse(code = 404, message = "The requested offender was not found.")
     })
-    @ApiOperation(value = "Gets a all custody key dates for the active custodial conviction")
+    @ApiOperation(value = "Gets all custody key dates for the active custodial conviction")
     public List<CustodyKeyDate> getAllCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber) {
         log.info("Call to getAllCustodyKeyDateByNomsNumber for {}", nomsNumber);
-        return getCustodyKeyDates(offenderService.currentOffenderIdOfNomsNumber(nomsNumber).get());
+        return getCustodyKeyDates(offenderService.mostLikelyOffenderIdOfNomsNumber(nomsNumber).getOrElseThrow(e -> new ConflictingRequestException(e.getMessage())));
     }
 
     @RequestMapping(value = "offenders/offenderId/{offenderId}/custody/keyDates", method = RequestMethod.GET)
@@ -252,7 +253,7 @@ public class CustodyKeyDatesController {
     public void deleteCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber,
                                                  final @PathVariable String typeCode) {
         log.info("Call to deleteCustodyKeyDateByNomsNumber for {} code {}", nomsNumber, typeCode);
-        deleteCustodyKeyDate(offenderService.currentOffenderIdOfNomsNumber(nomsNumber).get(), typeCode);
+        deleteCustodyKeyDate(offenderService.mostLikelyOffenderIdOfNomsNumber(nomsNumber).getOrElseThrow(e -> new ConflictingRequestException(e.getMessage())), typeCode);
     }
 
     @RequestMapping(value = "offenders/offenderId/{offenderId}/custody/keyDates/{typeCode}", method = RequestMethod.DELETE)
