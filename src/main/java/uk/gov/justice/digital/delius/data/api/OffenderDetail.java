@@ -37,4 +37,7 @@ public class OffenderDetail {
     private String exclusionMessage;
     @ApiModelProperty(value = "current tier", example = "D2")
     private String currentTier;
+    public boolean isActiveProbationManagedSentence() {
+        return "1".equals(currentDisposal);
+    }
 }

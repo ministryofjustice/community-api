@@ -31,4 +31,7 @@ public class OffenderDetailSummary {
     private String partitionArea;
     private Boolean currentRestriction;
     private Boolean currentExclusion;
+    public boolean isActiveProbationManagedSentence() {
+        return "1".equals(currentDisposal);
+    }
 }
