@@ -38,6 +38,7 @@ public class ContactService {
     private static final String RESPONSIBLE_OFFICER_CHANGE_CONTACT_TYPE = "ROC";
     private static final String PRISON_LOCATION_CHANGE_CONTACT_TYPE = "ETCP";
     private static final String CUSTODY_AUTO_UPDATE_CONTACT_TYPE = "EDSS";
+    public static final String DELIUS_DATE_FORMAT = "E MMM dd yyyy"; // e.g. "Tue Nov 24 2020"
     private final ContactRepository contactRepository;
     private final ContactTypeRepository contactTypeRepository;
 
@@ -314,7 +315,7 @@ public class ContactService {
         return String.format("%s%s%s-------------------------------",
                 Optional.ofNullable(custody.getCustodialStatus()).map(status -> String.format("Custodial Status: %s\n", status.getCodeDescription())).orElse(""),
                 Optional.ofNullable(custody.getInstitution()).map(institution -> String.format("Custodial Establishment: %s\n", institution.getDescription())).orElse(""),
-                Optional.ofNullable(custody.getLocationChangeDate()).map(date -> String.format("Location Change Date: %s\n", date.format(DateTimeFormatter.ISO_LOCAL_DATE))).orElse(""));
+                Optional.ofNullable(custody.getLocationChangeDate()).map(date -> String.format("Location Change Date: %s\n", date.format(DateTimeFormatter.ofPattern(DELIUS_DATE_FORMAT)))).orElse(""));
     }
 
     private String notesForBookingNumbUpdate(final Event event) {
