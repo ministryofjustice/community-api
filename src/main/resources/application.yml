@@ -7,7 +7,19 @@ spring:
     hikari:
       leak-detection-threshold: 20000
   profiles:
-    include: stdout
+    groups:
+      dev:
+        - "stdout"
+        - "dev-seed"
+      dev-schema:
+        - "stdout"
+      dev-seed:
+        - "stdout"
+      oracle:
+        - "stdout"
+
+
+#    include: stdout
 
   jpa:
     hibernate:
