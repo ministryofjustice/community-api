@@ -1,5 +1,5 @@
 plugins {
-    id("uk.gov.justice.hmpps.gradle-spring-boot") version "1.0.6"
+    id("uk.gov.justice.hmpps.gradle-spring-boot") version "1.1.2"
     id 'groovy'
     id 'org.unbroken-dome.test-sets' version '3.0.1'
 }
@@ -46,9 +46,9 @@ dependencies {
     testImplementation ('io.rest-assured:rest-assured:3.3.0'){
         exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
     }
-    testImplementation 'io.rest-assured:spring-mock-mvc:3.3.0'
+    testImplementation 'io.rest-assured:spring-mock-mvc:4.3.2'
     testIntegrationImplementation "com.github.tomakehurst:wiremock:2.27.2"
-    testImplementation 'io.swagger.parser.v3:swagger-parser-v2-converter:2.0.22'
+    testImplementation 'io.swagger.parser.v3:swagger-parser-v2-converter:2.0.23'
 }
 
 testIntegration {

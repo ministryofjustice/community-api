@@ -23,7 +23,7 @@ public class ApplicationInsightsConfiguration {
 
         @Override
         public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-            final var telemetryKey = context.getEnvironment().getProperty("appinsights.instrumentationkey");
+            final var telemetryKey = context.getEnvironment().getProperty("applicationinsights.connection.string");
             return StringUtils.isBlank(telemetryKey);
         }
     }
