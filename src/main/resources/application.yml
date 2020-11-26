@@ -1,25 +1,15 @@
 spring:
   application:
     name: community-api
+  config:
+    use-legacy-processing: true
   datasource:
     url: 'jdbc:h2:mem:testdb;Mode=Oracle'
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       leak-detection-threshold: 20000
   profiles:
-    groups:
-      dev:
-        - "stdout"
-        - "dev-seed"
-      dev-schema:
-        - "stdout"
-      dev-seed:
-        - "stdout"
-      oracle:
-        - "stdout"
-
-
-#    include: stdout
+    include: stdout
 
   jpa:
     hibernate:
