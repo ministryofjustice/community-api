@@ -58,7 +58,7 @@ public class ConvictionService_GetCustodyKeyDateTest {
     @Before
     public void setUp() {
         convictionService = new ConvictionService(true, eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient);
-        when(eventRepository.findByOffenderIdWithCustody(anyLong())).thenReturn(ImmutableList.of(aCustodyEvent()));
+        when(eventRepository.findActiveByOffenderIdWithCustody(anyLong())).thenReturn(ImmutableList.of(aCustodyEvent()));
     }
 
 
@@ -68,7 +68,7 @@ public class ConvictionService_GetCustodyKeyDateTest {
         val event = aCustodyEvent(1L, new ArrayList<>());
         event.getDisposal().getCustody().getKeyDates().add(aKeyDate("POM1", "POM Handover expected start date", today));
 
-        when(eventRepository.findByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(event));
+        when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(event));
 
         val custodyKeyDate = convictionService.getCustodyKeyDateByOffenderId(999L, "POM1");
 
@@ -91,7 +91,7 @@ public class ConvictionService_GetCustodyKeyDateTest {
         event.getDisposal().getCustody().getKeyDates().add(aKeyDate("POM1", "POM Handover expected start date", today));
         event.getDisposal().getCustody().getKeyDates().add(aKeyDate("POM2", "RO responsibility handover from POM to OM expected date", today));
 
-        when(eventRepository.findByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(event));
+        when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(event));
 
         val custodyKeyDates = convictionService.getCustodyKeyDatesByOffenderId(999L);
 
@@ -178,7 +178,7 @@ public class ConvictionService_GetCustodyKeyDateTest {
         val event = aCustodyEvent(1L, new ArrayList<>());
         event.getDisposal().getCustody().getKeyDates().clear();
 
-        when(eventRepository.findByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(event));
+        when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(event));
 
         val custodyKeyDate = convictionService.getCustodyKeyDateByOffenderId(999L, "POM1");
 
@@ -191,7 +191,7 @@ public class ConvictionService_GetCustodyKeyDateTest {
         val event = aCustodyEvent(1L, new ArrayList<>());
         event.getDisposal().getCustody().getKeyDates().clear();
 
-        when(eventRepository.findByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(event));
+        when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(event));
 
         val custodyKeyDates = convictionService.getCustodyKeyDatesByOffenderId(999L);
 
@@ -237,7 +237,7 @@ public class ConvictionService_GetCustodyKeyDateTest {
                 .activeFlag(1L)
                 .build();
 
-        when(eventRepository.findByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEvent1, activeCustodyEvent2));
+        when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEvent1, activeCustodyEvent2));
 
         assertThatThrownBy(() -> convictionService.getCustodyKeyDateByOffenderId(999L, "POM1"))
                 .isInstanceOf(SingleActiveCustodyConvictionNotFoundException.class);
@@ -255,7 +255,7 @@ public class ConvictionService_GetCustodyKeyDateTest {
                 .activeFlag(1L)
                 .build();
 
-        when(eventRepository.findByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEvent1, activeCustodyEvent2));
+        when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEvent1, activeCustodyEvent2));
 
         assertThatThrownBy(() -> convictionService.getCustodyKeyDatesByOffenderId(999L))
                 .isInstanceOf(SingleActiveCustodyConvictionNotFoundException.class);
@@ -271,10 +271,6 @@ public class ConvictionService_GetCustodyKeyDateTest {
                 .build();
         activeCustodyEvent.getDisposal().getCustody().getKeyDates().add(aKeyDate("POM1", "POM Handover expected start date", today));
 
-        val inactiveCustodyEvent = aCustodyEvent(2L, new ArrayList<>())
-                .toBuilder()
-                .activeFlag(0L)
-                .build();
         val event = aCustodyEvent(2L, new ArrayList<>())
                 .toBuilder()
                 .activeFlag(0L)
@@ -282,7 +278,7 @@ public class ConvictionService_GetCustodyKeyDateTest {
         val terminatedDisposal = event.getDisposal().toBuilder().terminationDate(LocalDate.now()).build();
         val activeEventButTerminatedCustodyEvent = event.toBuilder().disposal(terminatedDisposal).build();
 
-        when(eventRepository.findByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEvent, inactiveCustodyEvent, activeEventButTerminatedCustodyEvent));
+        when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEvent, activeEventButTerminatedCustodyEvent));
 
         val custodyKeyDate = convictionService.getCustodyKeyDateByOffenderId(999L, "POM1");
 
@@ -298,7 +294,7 @@ public class ConvictionService_GetCustodyKeyDateTest {
 
     }
     @Test
-    public void keyDatesRetrievedFromToActiveCustodyRecord() throws SingleActiveCustodyConvictionNotFoundException {
+    public void keyDatesRetrievedFromActiveCustodyRecord() throws SingleActiveCustodyConvictionNotFoundException {
         val today = LocalDate.now();
         val activeCustodyEvent = aCustodyEvent(1L, new ArrayList<>())
                 .toBuilder()
@@ -306,18 +302,14 @@ public class ConvictionService_GetCustodyKeyDateTest {
                 .build();
         activeCustodyEvent.getDisposal().getCustody().getKeyDates().add(aKeyDate("POM1", "POM Handover expected start date", today));
 
-        val inactiveCustodyEvent = aCustodyEvent(2L, new ArrayList<>())
-                .toBuilder()
-                .activeFlag(0L)
-                .build();
         val event = aCustodyEvent(2L, new ArrayList<>())
                 .toBuilder()
-                .activeFlag(0L)
+                .activeFlag(1L)
                 .build();
         val terminatedDisposal = event.getDisposal().toBuilder().terminationDate(LocalDate.now()).build();
         val activeEventButTerminatedCustodyEvent = event.toBuilder().disposal(terminatedDisposal).build();
 
-        when(eventRepository.findByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEvent, inactiveCustodyEvent, activeEventButTerminatedCustodyEvent));
+        when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEvent, activeEventButTerminatedCustodyEvent));
 
         val custodyKeyDates = convictionService.getCustodyKeyDatesByOffenderId(999L);
 

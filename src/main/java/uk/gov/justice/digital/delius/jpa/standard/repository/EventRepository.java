@@ -12,6 +12,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("select event from Event event join DISPOSAL disposal on disposal.event = event join CUSTODY custody on custody.disposal = disposal where custody.prisonerNumber = :prisonBookingNumber")
     List<Event> findByPrisonBookingNumber(@Param("prisonBookingNumber") String prisonBookingNumber);
-    @Query("select event from Event event join DISPOSAL disposal on disposal.event = event join CUSTODY custody on custody.disposal = disposal where event.offenderId  = :offenderId")
-    List<Event> findByOffenderIdWithCustody(@Param("offenderId") Long offenderId);
+    @Query("select event from Event event join DISPOSAL disposal on disposal.event = event join CUSTODY custody on custody.disposal = disposal where event.offenderId  = :offenderId and event.activeFlag = 1 and event.softDeleted = 0")
+    List<Event> findActiveByOffenderIdWithCustody(@Param("offenderId") Long offenderId);
 }

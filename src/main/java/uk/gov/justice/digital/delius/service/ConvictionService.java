@@ -345,9 +345,8 @@ public class ConvictionService {
     }
 
     private List<Event> activeCustodyEvents(Long offenderId) {
-        return eventRepository.findByOffenderIdWithCustody(offenderId)
+        return eventRepository.findActiveByOffenderIdWithCustody(offenderId)
                 .stream()
-                .filter(Event::isActive)
                 .filter(event -> event.getDisposal().getTerminationDate() == null)
                 .filter(event -> !event.getDisposal().getCustody().isPostSentenceSupervision())
                 .collect(toList());
