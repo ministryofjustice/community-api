@@ -100,7 +100,7 @@ public class ContactService_addContactForPrisonLocationChangeTest {
 
         verify(contactRepository).save(contactArgumentCaptor.capture());
 
-        assertThat(contactArgumentCaptor.getValue().getNotes()).contains("Location Change Date: 2020-01-31\n");
+        assertThat(contactArgumentCaptor.getValue().getNotes()).contains("Location Change Date: Fri Jan 31 2020\n");
     }
 
     @Test
