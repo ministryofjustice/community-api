@@ -32,9 +32,13 @@ public class TeamResource {
             @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
             @ApiResponse(code = 400, message = "The custody request is invalid")
     })
-    @ApiOperation(value = "Creates teams in each prison for prison offender managers. Only teams that are missing will be created. This only needs to run once per environment or when a new prison is added to Delius")
+    @ApiOperation(value = "Creates teams in each prison for prison offender managers. For each team the Unallocated staff member will also be created. Only teams or staff that are missing will be created. This only needs to run once per environment or when a new prison is added to Delius")
     public TeamCreationResult createMissingPrisonOffenderManagerTeams() {
-        return teamService.createMissingPrisonOffenderManagerTeams();
+        return TeamCreationResult
+            .builder()
+            .teams(teamService.createMissingPrisonOffenderManagerTeams())
+            .unallocatedStaff(teamService.createMissingPrisonOffenderManagerUnallocatedStaff())
+            .build();
     }
 
 }

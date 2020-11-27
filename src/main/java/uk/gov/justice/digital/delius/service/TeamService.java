@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.justice.digital.delius.data.api.TeamCreationResult;
+import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
@@ -19,8 +19,10 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.LocalDeliveryUnitRe
 import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffTeamRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.TeamRepository;
+import uk.gov.justice.digital.delius.transformers.StaffTransformer;
 import uk.gov.justice.digital.delius.transformers.TeamTransformer;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,6 +42,7 @@ public class TeamService {
     private final StaffTeamRepository staffTeamRepository;
     private final ProbationAreaRepository probationAreaRepository;
     private final TelemetryClient telemetryClient;
+    private final StaffService staffService;
 
 
 
@@ -62,6 +65,10 @@ public class TeamService {
         return teamRepository.findByCode(teamCode).isEmpty();
     }
 
+    private boolean isPOMTeamMissingUnallocatedStaff(Team team) {
+        return staffService.findUnallocatedForTeam(team).isEmpty();
+    }
+
     Optional<Team> findUnallocatedTeam(uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea probationArea) {
         final String teamCode = String.format("%s%s", probationArea.getCode(), UNALLOCATED_TEAM_SUFFIX);
         return teamRepository.findByCode(teamCode);
@@ -80,16 +87,24 @@ public class TeamService {
 
 
     @Transactional
-    public TeamCreationResult createMissingPrisonOffenderManagerTeams() {
-        return TeamCreationResult
-                .builder()
-                .teams(probationAreaRepository
+    public List<uk.gov.justice.digital.delius.data.api.Team> createMissingPrisonOffenderManagerTeams() {
+        return probationAreaRepository
                         .findAllWithNomsCDECodeExcludeOut()
                         .stream()
                         .filter(this::isPOMTeamMissingForArea)
                         .map(probationArea -> TeamTransformer.teamOf(createPrisonOffenderManagerTeamInArea(probationArea)))
-                        .collect(Collectors.toList()))
-                .build();
+                        .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<StaffHuman> createMissingPrisonOffenderManagerUnallocatedStaff() {
+        return probationAreaRepository
+            .findAllWithNomsCDECodeExcludeOut()
+            .stream()
+            .map(this::findOrCreatePrisonOffenderManagerTeamInArea)
+            .filter(this::isPOMTeamMissingUnallocatedStaff)
+            .map(team -> StaffTransformer.staffOf(createUnallocatedStaffInTeam(team)))
+            .collect(Collectors.toList());
     }
 
     private Team createPOMTeamInArea(String code, ProbationArea probationArea) {
@@ -108,6 +123,14 @@ public class TeamService {
 
         return teamRepository.save(team);
     }
+
+    private Staff createUnallocatedStaffInTeam(Team team) {
+        final var staff = staffService.createUnallocatedStaffInArea(POM_TEAM_SUFFIX, team.getProbationArea());
+        addStaffToTeam(staff, team);
+        telemetryClient.trackEvent("POMTeamUnallocatedStaffCreated", Map.of("probationArea", team.getProbationArea().getCode(), "code", staff.getOfficerCode()), null);
+        return staff;
+    }
+
 
     private LocalDeliveryUnit findOrCreatePOMLDUInArea(String code, ProbationArea probationArea) {
         return localDeliveryUnitRepository.findByCode(code)

@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StaffTeam;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import uk.gov.justice.digital.delius.jpa.standard.repository.BoroughRepository;
@@ -56,6 +57,8 @@ public class TeamServiceTest {
     private ProbationAreaRepository probationAreaRepository;
     @Mock
     private TelemetryClient telemetryClient;
+    @Mock
+    private StaffService staffService;
     @Captor
     private ArgumentCaptor<StaffTeam> staffTeamArgumentCaptor;
     @Captor
@@ -71,7 +74,7 @@ public class TeamServiceTest {
 
     @BeforeEach
     public void setup() {
-        teamService = new TeamService(teamRepository, localDeliveryUnitRepository, districtRepository, boroughRepository, staffTeamRepository, probationAreaRepository, telemetryClient);
+        teamService = new TeamService(teamRepository, localDeliveryUnitRepository, districtRepository, boroughRepository, staffTeamRepository, probationAreaRepository, telemetryClient, staffService);
     }
 
     @Test
@@ -243,7 +246,7 @@ public class TeamServiceTest {
         @DisplayName("Will create any missing teams")
         void willCreateTheMissingTeam() {
             final var createdTeams = teamService.createMissingPrisonOffenderManagerTeams();
-            assertThat(createdTeams.getTeams()).hasSize(1);
+            assertThat(createdTeams).hasSize(1);
 
             verify(teamRepository).save(teamArgumentCaptor.capture());
             final var newTeam = teamArgumentCaptor.getValue();
@@ -261,6 +264,61 @@ public class TeamServiceTest {
             verify(boroughRepository).save(any());
             verify(districtRepository).save(any());
             verify(localDeliveryUnitRepository).save(any());
+        }
+    }
+
+    @DisplayName("createMissingPrisonOffenderManagerUnallocatedStaff")
+    @Nested
+    class CreateMissingPrisonOffenderManagerUnallocatedPOMStaff {
+        private ProbationArea probationAreaWithoutUnallocatedPOMStaff = null;
+        @BeforeEach
+        void setUp() {
+            final var probationAreaWithUnallocatedPOMStaff = EntityHelper
+                .aPrisonProbationArea()
+                .toBuilder()
+                .code("A01")
+                .build();
+            probationAreaWithoutUnallocatedPOMStaff = EntityHelper
+                .aPrisonProbationArea()
+                .toBuilder()
+                .code("Z01")
+                .build();
+            final var teamWithUnallocatedStaff = EntityHelper.aTeam("A01POM").toBuilder().probationArea(probationAreaWithUnallocatedPOMStaff).build();
+            final var teamWithoutUnallocatedStaff = EntityHelper.aTeam("Z01POM").toBuilder().probationArea(probationAreaWithoutUnallocatedPOMStaff).teamId(88L).build();
+            when(probationAreaRepository.findAllWithNomsCDECodeExcludeOut()).thenReturn(List.of(probationAreaWithUnallocatedPOMStaff, probationAreaWithoutUnallocatedPOMStaff));
+            when(teamRepository.findByCode("A01POM")).thenReturn(Optional.of(teamWithUnallocatedStaff));
+            when(teamRepository.findByCode("Z01POM")).thenReturn(Optional.of(teamWithoutUnallocatedStaff));
+
+            when(staffService.findUnallocatedForTeam(teamWithUnallocatedStaff)).thenReturn(Optional.of(aStaff()));
+            when(staffService.findUnallocatedForTeam(teamWithoutUnallocatedStaff)).thenReturn(Optional.empty());
+
+            when(staffService.createUnallocatedStaffInArea(any(), any())).thenReturn(aStaff().toBuilder().officerCode("N01POMU").staffId(99L).build());
+        }
+
+        @Test
+        @DisplayName("Will create the staff record and create team link")
+        void willCreateAStaffAndCreateTeamLink() {
+          teamService.createMissingPrisonOffenderManagerUnallocatedStaff();
+
+          verify(staffService).createUnallocatedStaffInArea("POM", probationAreaWithoutUnallocatedPOMStaff);
+        }
+
+        @Test
+        @DisplayName("Will add new staff to team")
+        void willAddNewStaffToTeam() {
+            teamService.createMissingPrisonOffenderManagerUnallocatedStaff();
+
+            verify(staffTeamRepository).save(staffTeamArgumentCaptor.capture());
+            assertThat(staffTeamArgumentCaptor.getValue().getStaffId()).isEqualTo(99L);
+            assertThat(staffTeamArgumentCaptor.getValue().getTeamId()).isEqualTo(88L);
+        }
+
+        @Test
+        @DisplayName("Will raise a telemetry event")
+        void willRaiseATelemetryEvent() {
+            teamService.createMissingPrisonOffenderManagerUnallocatedStaff();
+
+            verify(telemetryClient).trackEvent(eq("POMTeamUnallocatedStaffCreated"), eq(Map.of("probationArea", "Z01", "code", "N01POMU")), isNull());
         }
     }
 }

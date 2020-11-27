@@ -1,13 +1,15 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
@@ -31,7 +33,7 @@ import static uk.gov.justice.digital.delius.util.EntityHelper.aProbationArea;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aStaff;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aUser;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class StaffServiceTest {
 
     private StaffService staffService;
@@ -48,7 +50,7 @@ public class StaffServiceTest {
     @Captor
     private ArgumentCaptor<Staff> staffCaptor;
 
-    @Before
+    @BeforeEach
     public void setup() {
         staffService = new StaffService(
                 staffRepository,
@@ -335,5 +337,30 @@ public class StaffServiceTest {
 
         assertThat(staffCaptor.getValue().getProbationArea().getCode()).isEqualTo("C02");
         assertThat(staffCaptor.getValue().getPrivateSector()).isEqualTo(1L);
+    }
+
+    @DisplayName("createUnallocatedStaffInArea")
+    @Nested
+    class CreateUnallocatedStaffInArea {
+        @BeforeEach
+        void setUp() {
+
+            staffService.createUnallocatedStaffInArea("POM", aProbationArea().toBuilder().code("MDI").build());
+            verify(staffRepository).save(staffCaptor.capture());
+
+        }
+
+        @Test
+        @DisplayName("Will create staff with unallocated name")
+        void willCreateStaffWithUnallocatedName() {
+            assertThat(staffCaptor.getValue().getForename()).isEqualTo("Unallocated");
+            assertThat(staffCaptor.getValue().getSurname()).isEqualTo("Staff");
+        }
+
+        @Test
+        @DisplayName("Will create staff with code from prefix and probation area code with U at the end")
+        void willCreateStaffWithCodeFromPrefixAndProbationAreaCode() {
+            assertThat(staffCaptor.getValue().getOfficerCode()).isEqualTo("MDIPOMU");
+        }
     }
 }
