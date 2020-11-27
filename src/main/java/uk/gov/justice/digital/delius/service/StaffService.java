@@ -90,6 +90,22 @@ public class StaffService {
         return staffRepository.findByStaffId(staffId);
     }
 
+    @Transactional
+    public Staff createUnallocatedStaffInArea(final String teamPrefix, final ProbationArea probationArea) {
+        return staffRepository.save(
+            Staff
+                .builder()
+                .officerCode(String.format("%s%sU", probationArea.getCode(), teamPrefix))
+                .forename("Unallocated")
+                .surname("Staff")
+                .privateSector(probationArea.getPrivateSector())
+                .probationArea(probationArea)
+                .teams(List.of())
+                .build()
+        );
+    }
+
+
     Optional<Staff> findUnallocatedForTeam(final Team team) {
         return staffRepository.findByUnallocatedByTeam(team.getTeamId());
     }
