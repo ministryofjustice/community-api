@@ -108,9 +108,9 @@ public class CustodyReplaceNomsNumberAPITest extends IntegrationTestBase {
         final var newNomsNumber = given()
             .auth().oauth2(token)
             .contentType("application/json")
-            .body(createUpdateNomsNumber("G9992VP"))
+            .body(createUpdateNomsNumber("G7772VP"))
             .when()
-            .put(String.format("offenders/nomsNumber/%s/nomsNumber", "g0560uo"))
+            .put(String.format("offenders/nomsNumber/%s/nomsNumber", "g4106un"))
             .then()
             .statusCode(200)
             .extract()
@@ -120,7 +120,7 @@ public class CustodyReplaceNomsNumberAPITest extends IntegrationTestBase {
 
 
         // The Offender with now have the NOMS_NUMBER assigned
-        assertThat(newNomsNumber).isEqualTo("G9992VP");
+        assertThat(newNomsNumber).isEqualTo("G7772VP");
     }
 
     private String createUpdateNomsNumber(String nomsNumber) {
