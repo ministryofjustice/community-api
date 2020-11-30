@@ -10,7 +10,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class OffendersResource_getOffenderByNomsNumber extends IntegrationTestBase {
     @Test
-    public void canGetOffenderDetailsByNomsNumber() {
+    public void canGetOffenderDetailsWhenSearchByNomsNumberInUpperCase() {
         final var offenderDetail = given()
                 .auth()
                 .oauth2(tokenWithRoleCommunity())
@@ -27,7 +27,24 @@ public class OffendersResource_getOffenderByNomsNumber extends IntegrationTestBa
       final var offenderManager = offenderDetail.getOffenderManagers().stream().filter(OffenderManager::getActive).findAny();
       assertThat(offenderManager).isPresent();
     }
+    @Test
+    public void canGetOffenderDetailsWhenSearchByNomsNumberInLowerCase() {
+        final var offenderDetail = given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get("/offenders/nomsNumber/g9542vp/all")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(OffenderDetail.class);
 
+        assertThat(offenderDetail.getOtherIds().getNomsNumber()).isEqualTo("G9542VP");
+        final var offenderManager = offenderDetail.getOffenderManagers().stream().filter(OffenderManager::getActive).findAny();
+        assertThat(offenderManager).isPresent();
+    }
 
     @Test
     public void getOffenderDetailsByNomsNumber_offenderNotFound_returnsNotFound() {

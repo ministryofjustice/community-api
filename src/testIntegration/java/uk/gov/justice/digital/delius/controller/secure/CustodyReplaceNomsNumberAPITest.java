@@ -98,6 +98,31 @@ public class CustodyReplaceNomsNumberAPITest extends IntegrationTestBase {
         assertThat(newAdditionalIdentifier.get("CODE_VALUE")).isEqualTo("XNOMS");
     }
 
+    @Test
+    @DisplayName("Will update noms number replacing the existing noms number, even though existing noms number in path param has different case ")
+    public void replaceNomsNumberWhenOriginalNomsNumberCaseMismatch() {
+        final var token = createJwt("ROLE_COMMUNITY_CUSTODY_UPDATE");
+        // Given Offender with CRN = CRN11 has NOMS_NUMBER = G0560UO
+
+        // When I replace NOMS_NUMBER = G9992VP to Offender with original  = G0560UO
+        final var newNomsNumber = given()
+            .auth().oauth2(token)
+            .contentType("application/json")
+            .body(createUpdateNomsNumber("G9992VP"))
+            .when()
+            .put(String.format("offenders/nomsNumber/%s/nomsNumber", "g0560uo"))
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .jsonPath()
+            .get("[0].nomsNumber");
+
+
+        // The Offender with now have the NOMS_NUMBER assigned
+        assertThat(newNomsNumber).isEqualTo("G9992VP");
+    }
+
     private String createUpdateNomsNumber(String nomsNumber) {
         return writeValueAsString(UpdateOffenderNomsNumber
                 .builder()
