@@ -11,11 +11,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficerSwitch;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
-import uk.gov.justice.digital.delius.service.AlfrescoService;
 import uk.gov.justice.digital.delius.service.ContactService;
 import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.CustodyService;
-import uk.gov.justice.digital.delius.service.DocumentService;
 import uk.gov.justice.digital.delius.service.NsiService;
 import uk.gov.justice.digital.delius.service.OffenderManagerService;
 import uk.gov.justice.digital.delius.service.OffenderService;
@@ -35,10 +33,6 @@ public class OffendersResource_SwitchResponsibleOfficerAPITest {
     private final ObjectMapper objectMapper = new ObjectMapper();
     @Mock
     private OffenderService offenderService;
-    @Mock
-    private AlfrescoService alfrescoService;
-    @Mock
-    private DocumentService documentService;
     @Mock
     private ContactService contactService;
     @Mock
@@ -60,7 +54,7 @@ public class OffendersResource_SwitchResponsibleOfficerAPITest {
     public void setup() {
         RestAssuredMockMvc.config = newConfig().encoderConfig(encoderConfig().defaultContentCharset("UTF-8"));
         RestAssuredMockMvc.standaloneSetup(
-                new OffendersResource(offenderService, alfrescoService, documentService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier, custodyService),
+                new OffendersResource(offenderService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier, custodyService),
                 new SecureControllerAdvice()
         );
     }

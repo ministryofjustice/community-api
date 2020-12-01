@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
+import uk.gov.justice.digital.delius.data.filters.DocumentFilter;
 import uk.gov.justice.digital.delius.jpa.national.repository.DocumentRepository;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CourtReportDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
@@ -130,7 +131,7 @@ public class DocumentServiceTest {
 
     @Test
     public void noConvictionsAddedWhenNoEventTypeDocuments() {
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getConvictions()).isEmpty();
     }
@@ -139,7 +140,7 @@ public class DocumentServiceTest {
     public void singleConvictionAddedWhenSingleCourtReport() {
         when(courtReportDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(aCourtReportDocument()));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getConvictions()).hasSize(1);
     }
@@ -154,7 +155,7 @@ public class DocumentServiceTest {
         when(eventRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(event));
         when(courtReportDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(courtReportDocument));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getConvictions()).hasSize(1);
     }
@@ -169,7 +170,7 @@ public class DocumentServiceTest {
         when(eventRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(event));
         when(courtReportDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(courtReportDocument));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getConvictions()).hasSize(2);
     }
@@ -178,7 +179,7 @@ public class DocumentServiceTest {
     public void singleConvictionAddedWhenSingleInstitutionalReport() {
         when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(anInstitutionalReportDocument()));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getConvictions()).hasSize(1);
     }
@@ -193,7 +194,7 @@ public class DocumentServiceTest {
         when(eventRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(event));
         when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(institutionalReportDocument));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getConvictions()).hasSize(1);
     }
@@ -208,7 +209,7 @@ public class DocumentServiceTest {
         when(eventRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(event));
         when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(institutionalReportDocument));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getConvictions()).hasSize(2);
     }
@@ -220,7 +221,7 @@ public class DocumentServiceTest {
 
         when(eventRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(event));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getConvictions()).hasSize(0);
     }
@@ -232,7 +233,7 @@ public class DocumentServiceTest {
 
         when(eventRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(event));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getConvictions()).hasSize(1);
     }
@@ -244,7 +245,7 @@ public class DocumentServiceTest {
 
         when(offenderRepository.findByOffenderId(any())).thenReturn(Optional.of(offender));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getDocuments()).hasSize(1);
     }
@@ -256,7 +257,7 @@ public class DocumentServiceTest {
 
         when(offenderRepository.findByOffenderId(any())).thenReturn(Optional.of(offender));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getDocuments()).hasSize(0);
     }
@@ -270,7 +271,7 @@ public class DocumentServiceTest {
                 anEventDocument(2L)
         ));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getConvictions()).hasSize(2);
         assertThat(documents.getConvictions().get(0).getDocuments()).hasSize(1);
@@ -286,7 +287,7 @@ public class DocumentServiceTest {
                 aCourtReportDocument(2L)
         ));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getConvictions()).hasSize(2);
         assertThat(documents.getConvictions().get(0).getDocuments()).hasSize(1);
@@ -302,7 +303,7 @@ public class DocumentServiceTest {
                 anInstitutionalReportDocument(2L)
         ));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getConvictions()).hasSize(2);
         assertThat(documents.getConvictions().get(0).getDocuments()).hasSize(1);
@@ -316,7 +317,7 @@ public class DocumentServiceTest {
                 anAddressAssessmentDocument()
         ));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getDocuments()).hasSize(2);
     }
@@ -330,7 +331,7 @@ public class DocumentServiceTest {
                 anApprovedPremisesReferralDocument(2L)
         ));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getConvictions()).hasSize(2);
         assertThat(documents.getConvictions().get(0).getDocuments()).hasSize(1);
@@ -346,7 +347,7 @@ public class DocumentServiceTest {
                 anAssessmentDocument(2L)
         ));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getConvictions()).hasSize(2);
         assertThat(documents.getConvictions().get(0).getDocuments()).hasSize(1);
@@ -362,7 +363,7 @@ public class DocumentServiceTest {
                 aCaseAllocationDocument(2L)
         ));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getConvictions()).hasSize(2);
         assertThat(documents.getConvictions().get(0).getDocuments()).hasSize(1);
@@ -376,7 +377,7 @@ public class DocumentServiceTest {
                 aPersonalContactDocument()
         ));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getDocuments()).hasSize(2);
     }
@@ -390,7 +391,7 @@ public class DocumentServiceTest {
                 aReferralDocument(2L)
         ));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getConvictions()).hasSize(2);
         assertThat(documents.getConvictions().get(0).getDocuments()).hasSize(1);
@@ -408,7 +409,7 @@ public class DocumentServiceTest {
                 aNsiDocument()
         ));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getConvictions()).hasSize(2);
         assertThat(documents.getConvictions().get(0).getDocuments()).hasSize(1);
@@ -423,7 +424,7 @@ public class DocumentServiceTest {
                 aPersonalCircumstanceDocument()
         ));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getDocuments()).hasSize(2);
     }
@@ -437,7 +438,7 @@ public class DocumentServiceTest {
                 aUPWAppointmentDocument(2L)
         ));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getConvictions()).hasSize(2);
         assertThat(documents.getConvictions().get(0).getDocuments()).hasSize(1);
@@ -455,7 +456,7 @@ public class DocumentServiceTest {
                 aContactDocument()
         ));
 
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L);
+        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
         assertThat(documents.getConvictions()).hasSize(2);
         assertThat(documents.getConvictions().get(0).getDocuments()).hasSize(1);
