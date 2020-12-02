@@ -11,12 +11,12 @@ import static java.lang.String.format;
 
 public class AlfrescoMockServer extends WireMockServer {
 
-    public AlfrescoMockServer(final int port) {
-        super(WireMockConfiguration.wireMockConfig().port(port));
+    public AlfrescoMockServer(final int port, final String fileDirectory) {
+        super(WireMockConfiguration.wireMockConfig().port(port).usingFilesUnderDirectory(fileDirectory).jettyStopTimeout(10000L));
     }
 
     public void stubDetailsSuccess(final String documentId, final String crn, final String documentName) {
-        stubFor(get(urlMatching(format("/details/%s", documentId)))
+        stubFor(get(urlMatching(format("/alfresco/s/noms-spg/details/%s", documentId)))
                 .willReturn(aResponse()
                         .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
                         .withHeader(HttpHeaders.CONTENT_DISPOSITION, format("attachment; filename=\\%s\\", documentId))
@@ -26,7 +26,7 @@ public class AlfrescoMockServer extends WireMockServer {
     }
 
     public void stubFetchDocument(final String documentId, final byte[] body) {
-        stubFor(get(urlMatching(format("/fetch/%s", documentId)))
+        stubFor(get(urlMatching(format("/alfresco/s/noms-spg/fetch/%s", documentId)))
                 .willReturn(aResponse()
                         .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
                         .withStatus(200)
