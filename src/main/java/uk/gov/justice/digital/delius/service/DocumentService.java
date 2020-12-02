@@ -3,9 +3,9 @@ package uk.gov.justice.digital.delius.service;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import lombok.AllArgsConstructor;
-import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import uk.gov.justice.digital.delius.data.api.ConvictionDocuments;
 import uk.gov.justice.digital.delius.data.api.DocumentLink;
@@ -26,7 +26,6 @@ import java.util.function.Predicate;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.helpers.FluentHelper.not;
 
-@SuppressWarnings("unused")
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class DocumentService {
@@ -78,26 +77,27 @@ public class DocumentService {
         documentRepository.save(documentEntity);
     }
 
+    @Transactional(readOnly = true)
     public OffenderDocuments offenderDocumentsFor(Long offenderId, DocumentFilter filter) {
         final Predicate<Event> eventCpsPackFilter = Event::hasCpsPack;
-        val eventDocuments = eventDocumentsFor(offenderId, filter);
-        val courtReportDocuments = courtReportDocumentsFor(offenderId, filter);
-        val institutionReportDocuments = institutionReportDocumentsFor(offenderId, filter);
-        val approvedPremisesReferralDocuments = approvedPremisesReferralDocumentsFor(offenderId, filter);
-        val assessmentDocuments = assessmentDocumentsFor(offenderId, filter);
-        val caseAllocationDocuments = caseAllocationDocumentsFor(offenderId, filter);
-        val referralDocuments = referralDocumentsFor(offenderId, filter);
-        val allNsiDocuments = nsiDocumentsFor(offenderId, filter);
-        val nsiEventDocuments = allNsiDocuments.stream().filter(this::isEventRelated).collect(toList());
-        val upwAppointmentDocuments = upwAppointmentDocumentsFor(offenderId, filter);
-        val allContactDocuments = contactDocumentsFor(offenderId, filter);
-        val contactEventDocuments = allContactDocuments.stream().filter(this::isEventRelated).collect(toList());
-        val events = eventRepository.findByOffenderId(offenderId);
-        val offender = offenderRepository
+        final var eventDocuments = eventDocumentsFor(offenderId, filter);
+        final var courtReportDocuments = courtReportDocumentsFor(offenderId, filter);
+        final var institutionReportDocuments = institutionReportDocumentsFor(offenderId, filter);
+        final var approvedPremisesReferralDocuments = approvedPremisesReferralDocumentsFor(offenderId, filter);
+        final var assessmentDocuments = assessmentDocumentsFor(offenderId, filter);
+        final var caseAllocationDocuments = caseAllocationDocumentsFor(offenderId, filter);
+        final var referralDocuments = referralDocumentsFor(offenderId, filter);
+        final var allNsiDocuments = nsiDocumentsFor(offenderId, filter);
+        final var nsiEventDocuments = allNsiDocuments.stream().filter(this::isEventRelated).collect(toList());
+        final var upwAppointmentDocuments = upwAppointmentDocumentsFor(offenderId, filter);
+        final var allContactDocuments = contactDocumentsFor(offenderId, filter);
+        final var contactEventDocuments = allContactDocuments.stream().filter(this::isEventRelated).collect(toList());
+        final var events = eventRepository.findByOffenderId(offenderId);
+        final var offender = offenderRepository
                 .findByOffenderId(offenderId)
                 .orElseThrow(() -> new RuntimeException(String.format("offenderDocumentsFor could not find offender %d", offenderId)));
 
-        val setOfRelatedEventIds = ImmutableSet
+        final var setOfRelatedEventIds = ImmutableSet
                 .<Long>builder()
                 .addAll(events.stream().filter(eventCpsPackFilter).map(Event::getEventId).collect(toList()))
                 .addAll(eventDocuments.stream().map(this::eventId).collect(toList()))
@@ -112,7 +112,7 @@ public class DocumentService {
                 .addAll(contactEventDocuments.stream().map(this::eventId).collect(toList()))
                 .build();
 
-        val convictions = setOfRelatedEventIds
+        final var convictions = setOfRelatedEventIds
                 .stream()
                 .map(eventId -> ConvictionDocuments
                         .builder()

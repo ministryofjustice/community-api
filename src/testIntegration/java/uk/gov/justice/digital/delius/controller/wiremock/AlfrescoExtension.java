@@ -7,11 +7,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 
 public class AlfrescoExtension implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
 
-    public AlfrescoMockServer alfrescoMockServer;
-
-    public AlfrescoExtension(AlfrescoMockServer alfrescoMockServer) {
-        this.alfrescoMockServer = alfrescoMockServer;
-    }
+    public static AlfrescoMockServer alfrescoMockServer = new AlfrescoMockServer(8088, "src/testIntegration/resources");
 
     @Override
     public void beforeAll(ExtensionContext extensionContext) {
