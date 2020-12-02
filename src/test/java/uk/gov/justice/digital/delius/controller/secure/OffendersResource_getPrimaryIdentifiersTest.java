@@ -15,11 +15,9 @@ import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
 import uk.gov.justice.digital.delius.data.api.PrimaryIdentifiers;
 import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
-import uk.gov.justice.digital.delius.service.AlfrescoService;
 import uk.gov.justice.digital.delius.service.ContactService;
 import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.CustodyService;
-import uk.gov.justice.digital.delius.service.DocumentService;
 import uk.gov.justice.digital.delius.service.NsiService;
 import uk.gov.justice.digital.delius.service.OffenderManagerService;
 import uk.gov.justice.digital.delius.service.OffenderService;
@@ -47,7 +45,7 @@ class OffendersResource_getPrimaryIdentifiersTest {
     void setUp() {
         RestAssuredMockMvc.standaloneSetup(
                 MockMvcBuilders.standaloneSetup(
-                        new OffendersResource(offenderService, mock(AlfrescoService.class), mock(DocumentService.class), mock(ContactService.class), mock(ConvictionService.class), mock(NsiService.class), mock(OffenderManagerService.class), mock(SentenceService.class), mock(UserService.class), mock(CurrentUserSupplier.class), mock(CustodyService.class)),
+                        new OffendersResource(offenderService, mock(ContactService.class), mock(ConvictionService.class), mock(NsiService.class), mock(OffenderManagerService.class), mock(SentenceService.class), mock(UserService.class), mock(CurrentUserSupplier.class), mock(CustodyService.class)),
                         new SecureControllerAdvice())
                         .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
         );
