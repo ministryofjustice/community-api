@@ -75,6 +75,110 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
     @DisplayName("/offenders/crn/{crn}/documents/grouped")
     @Nested
     class DocumentsGrouped {
+        @DisplayName("Validation of request")
+        @Nested
+        class ValidationOfRequest {
+            @Test
+            @DisplayName("ok when no category or type supplied")
+            void oKWhenNoCategoryOrTypeSupplied() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
+            }
+
+            @Test
+            @DisplayName("ok with a known category is supplied")
+            void okWithAKnownCategoryIsSupplied() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("category", "COURT_REPORT_DOCUMENT")
+                    .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
+            }
+
+            @Test
+            @DisplayName("ok with a known category with a related known type")
+            void okWithAKnownCategoryWithARelatedKnownType() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("category", "COURT_REPORT_DOCUMENT")
+                    .param("type", "PSR")
+                    .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
+            }
+
+            @Test
+            @DisplayName("bad request when category is unknown")
+            void badRequestWhenCategoryIsUnknown() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("category", "BANANAS")
+                    .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+
+            }
+
+            @Test
+            @DisplayName("bad request when type is unknown")
+            void badRequestWhenTypeIsUnknown() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("category", "COURT_REPORT_DOCUMENT")
+                    .param("type", "BANANAS")
+                    .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+            }
+
+            @Test
+            @DisplayName("bad request when only type is supplied")
+            void badRequestWhenOnlyTypeIsSupplied() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("type", "PSR")
+                    .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+            }
+
+            @Test
+            @DisplayName("bad request when type does no belong with category")
+            void badRequestWhenTypeDoesNoBelongWithCategory() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("category", "CASE_ALLOCATION_DOCUMENT")
+                    .param("type", "PSR")
+                    .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+            }
+        }
 
         @Test
         @DisplayName("Will return 404 for a offender that is not found")
@@ -229,6 +333,8 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
             }
         }
     }
+
+
 
     private long countAllDocuments(OffenderDocuments offenderDocuments) {
         return allDocuments(offenderDocuments).size();

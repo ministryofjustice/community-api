@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius.jpa.filters;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.domain.Specification;
+import uk.gov.justice.digital.delius.data.filters.DocumentFilter.SubType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CourtReportDocument;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -15,14 +16,14 @@ import static uk.gov.justice.digital.delius.jpa.standard.entity.RCourtReportType
 
 public class CourtReportDocumentFilterTransformer implements Specification<CourtReportDocument> {
     private final Long offenderId;
-    private final Optional<String> type;
+    private final Optional<SubType> type;
 
-    private CourtReportDocumentFilterTransformer(Long offenderId, Optional<String> type) {
+    private CourtReportDocumentFilterTransformer(Long offenderId, Optional<SubType> type) {
         this.offenderId = offenderId;
         this.type = type;
     }
 
-    public static Specification<CourtReportDocument> of(Long offenderId, String type) {
+    public static Specification<CourtReportDocument> of(Long offenderId, SubType type) {
         return new CourtReportDocumentFilterTransformer(offenderId, Optional.ofNullable(type));
     }
 
@@ -32,7 +33,7 @@ public class CourtReportDocumentFilterTransformer implements Specification<Court
 
         predicateBuilder.add(criteriaBuilder.equal(documentRoot.get("offenderId"), offenderId));
 
-        type.filter(type -> type.equals("PSR")).ifPresent(type -> {
+        type.filter(type -> type == SubType.PSR).ifPresent(type -> {
             final var courtReportTypeCodeIn = criteriaBuilder.in(documentRoot
                 .join("courtReport")
                 .join("courtReportType")

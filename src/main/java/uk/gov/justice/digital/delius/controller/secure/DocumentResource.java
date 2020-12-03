@@ -94,7 +94,7 @@ public class DocumentResource {
         @RequestParam(required = false) final String type) {
 
         return offenderService.offenderIdOfNomsNumber(nomsNumber)
-            .map(offenderId -> documentService.offenderDocumentsFor(offenderId, DocumentFilter.of(category, type).orElseThrow(() -> new BadRequestException("category or type when present must be a valid value"))))
+            .map(offenderId -> documentService.offenderDocumentsFor(offenderId, DocumentFilter.of(category, type).getOrElseThrow(BadRequestException::new)))
             .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
     }
 
@@ -116,7 +116,7 @@ public class DocumentResource {
         @RequestParam(required = false) final String type) {
 
         return offenderService.offenderIdOfCrn(crn)
-            .map(offenderId -> documentService.offenderDocumentsFor(offenderId, DocumentFilter.of(category, type).orElseThrow(() -> new BadRequestException("category or type when present must be a valid value"))))
+            .map(offenderId -> documentService.offenderDocumentsFor(offenderId, DocumentFilter.of(category, type).getOrElseThrow(BadRequestException::new)))
             .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 
