@@ -2,10 +2,14 @@ package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
 import uk.gov.justice.digital.delius.data.filters.DocumentFilter;
 import uk.gov.justice.digital.delius.jpa.national.repository.DocumentRepository;
@@ -30,10 +34,13 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.PersonalContactDocu
 import uk.gov.justice.digital.delius.jpa.standard.repository.ReferralDocumentRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.UPWAppointmentDocumentRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aCaseAllocationDocument;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aContactDocument;
@@ -49,6 +56,7 @@ import static uk.gov.justice.digital.delius.util.EntityHelper.anAssessmentDocume
 import static uk.gov.justice.digital.delius.util.EntityHelper.anEvent;
 import static uk.gov.justice.digital.delius.util.EntityHelper.anEventDocument;
 import static uk.gov.justice.digital.delius.util.EntityHelper.anInstitutionalReportDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anOffenderDocument;
 import static uk.gov.justice.digital.delius.util.OffenderHelper.anOffender;
 
 @ExtendWith(MockitoExtension.class)
@@ -464,4 +472,96 @@ public class DocumentServiceTest {
         assertThat(documents.getDocuments()).hasSize(2);
     }
 
+    @DisplayName("Filters")
+    @Nested
+    @MockitoSettings(strictness = Strictness.LENIENT)
+    class Filters {
+        @BeforeEach
+        void setUp() {
+            when(eventDocumentRepository.findByOffenderId(any())).thenReturn(List.of(anEventDocument(1L)));
+            when(courtReportDocumentRepository.findByOffenderId(any())).thenReturn(List.of(aCourtReportDocument(1L)));
+            when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(List.of(anInstitutionalReportDocument(1L)));
+            when(approvedPremisesReferralDocumentRepository.findByOffenderId(any())).thenReturn(List.of(anApprovedPremisesReferralDocument(1L)));
+            when(assessmentDocumentRepository.findByOffenderId(any())).thenReturn(List.of(anAssessmentDocument(1L)));
+            when(caseAllocationDocumentRepository.findByOffenderId(any())).thenReturn(List.of(aCaseAllocationDocument(1L)));
+            when(referralDocumentRepository.findByOffenderId(any())).thenReturn(List.of(aReferralDocument(1L)));
+            when(nsiDocumentRepository.findByOffenderId(any())).thenReturn(List.of(aNsiDocument(1L), aNsiDocument()));
+            when(upwAppointmentDocumentRepository.findByOffenderId(any())).thenReturn(List.of(aUPWAppointmentDocument(1L)));
+            when(contactDocumentRepository.findByOffenderId(any())).thenReturn(List.of(aContactDocument(1L), aContactDocument()));
+            when(offenderDocumentRepository.findByOffenderId(any())).thenReturn(List.of(anOffenderDocument()));
+            when(addressAssessmentRepository.findByOffenderId(any())).thenReturn(List.of(anAddressAssessmentDocument()));
+            when(personalContactDocumentRepository.findByOffenderId(any())).thenReturn(List.of(aPersonalContactDocument()));
+            when(personalCircumstanceDocumentRepository.findByOffenderId(any())).thenReturn(List.of(aPersonalCircumstanceDocument()));
+            when(offenderRepository.findByOffenderId(any())).thenReturn(Optional.of(anOffender().toBuilder().previousConvictionsAlfrescoDocumentId("123").build()));
+            when(eventRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(anEvent().toBuilder().eventId(1L).cpsAlfrescoDocumentId("123").build()));
+        }
+
+        @DisplayName("No filter supplied")
+        @Nested
+        class NoFilterSupplied {
+            @Test
+            @DisplayName("When no filter all repositories are queried")
+            void whenNoFilterAllRepositoriesAreQueried() {
+                documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
+
+                verify(eventDocumentRepository).findByOffenderId(1L);
+                verify(courtReportDocumentRepository).findByOffenderId(1L);
+                verify(institutionReportDocumentRepository).findByOffenderId(1L);
+                verify(approvedPremisesReferralDocumentRepository).findByOffenderId(1L);
+                verify(assessmentDocumentRepository).findByOffenderId(1L);
+                verify(caseAllocationDocumentRepository).findByOffenderId(1L);
+                verify(referralDocumentRepository).findByOffenderId(1L);
+                verify(nsiDocumentRepository).findByOffenderId(1L);
+                verify(upwAppointmentDocumentRepository).findByOffenderId(1L);
+                verify(contactDocumentRepository).findByOffenderId(1L);
+                verify(offenderDocumentRepository).findByOffenderId(1L);
+                verify(addressAssessmentRepository).findByOffenderId(1L);
+                verify(personalContactDocumentRepository).findByOffenderId(1L);
+                verify(personalCircumstanceDocumentRepository).findByOffenderId(1L);
+            }
+            @Test
+            @DisplayName("Will return all documents types")
+            void willReturnAllDocumentsTypes() {
+                final var documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
+                assertThat(documents.getConvictions()).hasSize(1);
+                assertThat(documents.getConvictions().get(0).getDocuments()).hasSize(11);
+                assertThat(documents.getDocuments()).hasSize(7);
+            }
+        }
+
+        @DisplayName("Filter with just category")
+        @Nested
+        class FilterWithJustCategory {
+            @Test
+            @DisplayName("Will only query the repository related to the category")
+            void willOnlyQueryTheRepositoryRelatedToTheCategory() {
+                documentService.offenderDocumentsFor(1L, DocumentFilter.of("COURT_REPORT_DOCUMENT", null));
+
+                verify(courtReportDocumentRepository).findByOffenderId(1L);
+                verifyNoInteractions(eventDocumentRepository,
+                    institutionReportDocumentRepository,
+                    approvedPremisesReferralDocumentRepository,
+                    assessmentDocumentRepository,
+                    caseAllocationDocumentRepository,
+                    referralDocumentRepository,
+                    nsiDocumentRepository,
+                    upwAppointmentDocumentRepository,
+                    contactDocumentRepository,
+                    offenderDocumentRepository,
+                    addressAssessmentRepository,
+                    personalContactDocumentRepository,
+                    personalCircumstanceDocumentRepository
+                );
+            }
+
+            @Test
+            @DisplayName("Will only return documents for the category")
+            void willOnlyReturnDocumentsForTheCategory() {
+                final var documents = documentService.offenderDocumentsFor(1L, DocumentFilter.of("COURT_REPORT_DOCUMENT", null));
+                assertThat(documents.getConvictions()).hasSize(1);
+                assertThat(documents.getConvictions().get(0).getDocuments()).hasSize(1);
+                assertThat(documents.getDocuments()).hasSize(0);
+            }
+        }
+    }
 }
