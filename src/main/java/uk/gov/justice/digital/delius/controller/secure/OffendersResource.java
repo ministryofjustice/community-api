@@ -18,8 +18,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -55,12 +56,14 @@ import uk.gov.justice.digital.delius.service.NsiService;
 import uk.gov.justice.digital.delius.service.OffenderManagerService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.SentenceService;
+import uk.gov.justice.digital.delius.service.UserAccessService;
 import uk.gov.justice.digital.delius.service.UserService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,6 +88,7 @@ public class OffendersResource {
     private final UserService userService;
     private final CurrentUserSupplier currentUserSupplier;
     private final CustodyService custodyService;
+    private final UserAccessService userAccessService;
 
     @ApiOperation(
             value = "Return the responsible officer (RO) for an offender",
@@ -284,14 +288,8 @@ public class OffendersResource {
     })
     @ApiOperation(value = "Returns the offender summary for the given crn", tags = "-- Popular core APIs --")
 
-    public OffenderDetailSummary getOffenderSummaryByCrn(final @PathVariable("crn") String crn) {
-        final var unauthorised = offenderService.getOffenderByCrn(crn)
-            .map(offender -> userService.accessLimitationOf(currentUserSupplier.username().orElseThrow(), offender))
-            .filter(AccessLimitation::isUserExcluded)
-            .map(accessLimitation -> new AccessDeniedException(accessLimitation.getExclusionMessage()));
-
-        if (unauthorised.isPresent())
-            throw unauthorised.get();
+    public OffenderDetailSummary getOffenderSummaryByCrn(final @PathVariable("crn") String crn, Authentication authentication) {
+        userAccessService.checkExclusionsAndRestrictions(crn, authentication.getAuthorities());
 
         return offenderService.getOffenderSummaryByCrn(crn)
             .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
