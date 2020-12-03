@@ -276,6 +276,7 @@ public class OffendersResource {
         }
     }
 
+    // TODO: Update this
     @RequestMapping(value = "/offenders/crn/{crn}", method = RequestMethod.GET)
     @ApiResponses(value = {
             @ApiResponse(code = 404, message = "The offender not found")
@@ -287,6 +288,8 @@ public class OffendersResource {
         return offender.orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 
+
+    // TODO: Update this
     @RequestMapping(value = "/offenders/crn/{crn}/all", method = RequestMethod.GET)
     @ApiResponses(value = {
             @ApiResponse(code = 404, message = "The offender is not found")

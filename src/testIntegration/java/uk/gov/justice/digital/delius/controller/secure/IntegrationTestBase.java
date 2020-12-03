@@ -82,10 +82,6 @@ public class IntegrationTestBase {
                 .uid("bobby.davro").build());
     }
 
-    protected String tokenWithRoleCommunityAndUser(final String username) {
-        return createJwtWithUsername(username,"ROLE_COMMUNITY");
-    }
-
     protected String createJwtWithUsername(final String username, final String... roles ) {
         return jwtAuthenticationHelper.createJwt(
                 createJwtBuilder(roles)
