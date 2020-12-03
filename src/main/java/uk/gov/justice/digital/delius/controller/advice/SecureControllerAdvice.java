@@ -15,8 +15,8 @@ import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.InvalidRequestException;
-import uk.gov.justice.digital.delius.controller.UnauthorisedException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
+import uk.gov.justice.digital.delius.controller.UnauthorisedException;
 import uk.gov.justice.digital.delius.service.OffenderDeltaLockedException;
 
 @RestControllerAdvice(basePackages = { "uk.gov.justice.digital.delius.controller.secure" } )
@@ -67,6 +67,7 @@ public class SecureControllerAdvice {
                 .status(HttpStatus.FORBIDDEN)
                 .body(ErrorResponse
                         .builder()
+                        .developerMessage(e.getMessage())
                         .status(HttpStatus.FORBIDDEN.value())
                         .build());
     }

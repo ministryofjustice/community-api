@@ -56,7 +56,7 @@ public class OffendersResource_getOffenderByCrn extends IntegrationTestBase {
 
     @Test
     public void givenUserIsNotExcluded_thenAccessAllowedWithAllRoles(){
-        final var username = "bob.dole";
+        final var username = "bernard.beaks";
         final var path = "/offenders/crn/X440877";
 
         assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_EXCLUDED"), "X440877");
