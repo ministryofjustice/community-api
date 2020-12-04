@@ -10,8 +10,10 @@ import org.springframework.util.StringUtils;
 import uk.gov.justice.digital.delius.data.api.ConvictionDocuments;
 import uk.gov.justice.digital.delius.data.api.DocumentLink;
 import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail;
+import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail.Type;
 import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
 import uk.gov.justice.digital.delius.data.filters.DocumentFilter;
+import uk.gov.justice.digital.delius.jpa.filters.CourtReportDocumentFilterTransformer;
 import uk.gov.justice.digital.delius.jpa.national.repository.DocumentRepository;
 import uk.gov.justice.digital.delius.jpa.oracle.annotations.NationalUserOverride;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
@@ -79,7 +81,9 @@ public class DocumentService {
 
     @Transactional(readOnly = true)
     public OffenderDocuments offenderDocumentsFor(Long offenderId, DocumentFilter filter) {
-        final Predicate<Event> eventCpsPackFilter = Event::hasCpsPack;
+        final var eventCpsPackFilter = filter.hasDocument(Type.CPSPACK_DOCUMENT, Event::hasCpsPack);
+        final var hasPreviousConvictionsFilter = filter.hasDocument(Type.PRECONS_DOCUMENT, this::hasPreviousConvictions);
+
         final var eventDocuments = eventDocumentsFor(offenderId, filter);
         final var courtReportDocuments = courtReportDocumentsFor(offenderId, filter);
         final var institutionReportDocuments = institutionReportDocumentsFor(offenderId, filter);
@@ -199,7 +203,7 @@ public class DocumentService {
                 .builder()
                 .documents(
                         ImmutableList.<OffenderDocumentDetail>builder()
-                                .addAll(previousConvictions(offender))
+                                .addAll(previousConvictions(offender, hasPreviousConvictionsFilter))
                                 .addAll(DocumentTransformer
                                         .offenderDocumentsDetailsOfOffenderDocuments(
                                             offenderRelatedDocumentsFor(offenderId, filter)))
@@ -225,59 +229,59 @@ public class DocumentService {
     }
 
     private List<PersonalCircumstanceDocument> personalCircumstanceDocumentsFor(Long offenderId, DocumentFilter filter) {
-        return personalCircumstanceDocumentRepository.findByOffenderId(offenderId);
+        return filter.documentsFor(Type.PERSONAL_CIRCUMSTANCE_DOCUMENT, () -> personalCircumstanceDocumentRepository.findByOffenderId(offenderId));
     }
 
     private List<PersonalContactDocument> personalContactDocumentsFor(Long offenderId, DocumentFilter filter) {
-        return personalContactDocumentRepository.findByOffenderId(offenderId);
+        return filter.documentsFor(Type.PERSONAL_CONTACT_DOCUMENT, () -> personalContactDocumentRepository.findByOffenderId(offenderId));
     }
 
     private List<AddressAssessmentDocument> addressAssessmentDocumentsFor(Long offenderId, DocumentFilter filter) {
-        return addressAssessmentDocumentRepository.findByOffenderId(offenderId);
+        return filter.documentsFor(Type.ADDRESS_ASSESSMENT_DOCUMENT, () -> addressAssessmentDocumentRepository.findByOffenderId(offenderId));
     }
 
     private List<OffenderDocument> offenderRelatedDocumentsFor(Long offenderId, DocumentFilter filter) {
-        return offenderDocumentRepository.findByOffenderId(offenderId);
+        return filter.documentsFor(Type.OFFENDER_DOCUMENT, () -> offenderDocumentRepository.findByOffenderId(offenderId));
     }
 
     private List<ContactDocument> contactDocumentsFor(Long offenderId, DocumentFilter filter) {
-        return contactDocumentRepository.findByOffenderId(offenderId);
+        return filter.documentsFor(Type.CONTACT_DOCUMENT, () -> contactDocumentRepository.findByOffenderId(offenderId));
     }
 
     private List<UPWAppointmentDocument> upwAppointmentDocumentsFor(Long offenderId, DocumentFilter filter) {
-        return upwAppointmentDocumentRepository.findByOffenderId(offenderId);
+        return filter.documentsFor(Type.UPW_APPOINTMENT_DOCUMENT, () -> upwAppointmentDocumentRepository.findByOffenderId(offenderId));
     }
 
     private List<NsiDocument> nsiDocumentsFor(Long offenderId, DocumentFilter filter) {
-        return nsiDocumentRepository.findByOffenderId(offenderId);
+        return filter.documentsFor(Type.NSI_DOCUMENT, () -> nsiDocumentRepository.findByOffenderId(offenderId));
     }
 
     private List<ReferralDocument> referralDocumentsFor(Long offenderId, DocumentFilter filter) {
-        return referralDocumentRepository.findByOffenderId(offenderId);
+        return filter.documentsFor(Type.REFERRAL_DOCUMENT, () -> referralDocumentRepository.findByOffenderId(offenderId));
     }
 
     private List<CaseAllocationDocument> caseAllocationDocumentsFor(Long offenderId, DocumentFilter filter) {
-        return caseAllocationDocumentRepository.findByOffenderId(offenderId);
+        return filter.documentsFor(Type.CASE_ALLOCATION_DOCUMENT, () -> caseAllocationDocumentRepository.findByOffenderId(offenderId));
     }
 
     private List<AssessmentDocument> assessmentDocumentsFor(Long offenderId, DocumentFilter filter) {
-        return assessmentDocumentRepository.findByOffenderId(offenderId);
+        return filter.documentsFor(Type.ASSESSMENT_DOCUMENT, () -> assessmentDocumentRepository.findByOffenderId(offenderId));
     }
 
     private List<ApprovedPremisesReferralDocument> approvedPremisesReferralDocumentsFor(Long offenderId, DocumentFilter filter) {
-        return approvedPremisesReferralDocumentRepository.findByOffenderId(offenderId);
+        return filter.documentsFor(Type.APPROVED_PREMISES_REFERRAL_DOCUMENT, () -> approvedPremisesReferralDocumentRepository.findByOffenderId(offenderId));
     }
 
     private List<InstitutionalReportDocument> institutionReportDocumentsFor(Long offenderId, DocumentFilter filter) {
-        return institutionReportDocumentRepository.findByOffenderId(offenderId);
+        return filter.documentsFor(Type.INSTITUTION_REPORT_DOCUMENT, () -> institutionReportDocumentRepository.findByOffenderId(offenderId));
     }
 
     private List<CourtReportDocument> courtReportDocumentsFor(Long offenderId, DocumentFilter filter) {
-        return courtReportDocumentRepository.findByOffenderId(offenderId);
+        return filter.documentsFor(Type.COURT_REPORT_DOCUMENT, type -> courtReportDocumentRepository.findAll(CourtReportDocumentFilterTransformer.of(offenderId, type)));
     }
 
     private List<EventDocument> eventDocumentsFor(Long offenderId, DocumentFilter filter) {
-        return eventDocumentRepository.findByOffenderId(offenderId);
+        return filter.documentsFor(Type.CONVICTION_DOCUMENT, () -> eventDocumentRepository.findByOffenderId(offenderId));
     }
 
     private boolean isEventRelated(ContactDocument contactDocument) {
@@ -341,9 +345,9 @@ public class DocumentService {
                 .orElseGet(ImmutableList::of);
     }
 
-    private List<OffenderDocumentDetail> previousConvictions(Offender offender) {
+    private List<OffenderDocumentDetail> previousConvictions(Offender offender, Predicate<Offender> previousConvictionCheck) {
         return Optional.of(offender)
-                .filter(this::hasPreviousConvictions)
+                .filter(previousConvictionCheck)
                 .map(offenderWithPreCPns -> ImmutableList.of(DocumentTransformer.offenderDocumentDetailsOfPreviousConvictions(offenderWithPreCPns)))
                 .orElseGet(ImmutableList::of);
     }

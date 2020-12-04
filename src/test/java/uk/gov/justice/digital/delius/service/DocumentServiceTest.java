@@ -1,11 +1,22 @@
 package uk.gov.justice.digital.delius.service;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.springframework.data.jpa.domain.Specification;
+import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail;
+import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail.Type;
 import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
 import uk.gov.justice.digital.delius.data.filters.DocumentFilter;
 import uk.gov.justice.digital.delius.jpa.national.repository.DocumentRepository;
@@ -30,10 +41,18 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.PersonalContactDocu
 import uk.gov.justice.digital.delius.jpa.standard.repository.ReferralDocumentRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.UPWAppointmentDocumentRepository;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aCaseAllocationDocument;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aContactDocument;
@@ -49,6 +68,7 @@ import static uk.gov.justice.digital.delius.util.EntityHelper.anAssessmentDocume
 import static uk.gov.justice.digital.delius.util.EntityHelper.anEvent;
 import static uk.gov.justice.digital.delius.util.EntityHelper.anEventDocument;
 import static uk.gov.justice.digital.delius.util.EntityHelper.anInstitutionalReportDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anOffenderDocument;
 import static uk.gov.justice.digital.delius.util.OffenderHelper.anOffender;
 
 @ExtendWith(MockitoExtension.class)
@@ -89,44 +109,48 @@ public class DocumentServiceTest {
     private UPWAppointmentDocumentRepository upwAppointmentDocumentRepository;
     @Mock
     private ContactDocumentRepository contactDocumentRepository;
+    @Captor
+    private ArgumentCaptor<Specification<CourtReportDocument>> courtReportDocumentSpecification;
 
 
     @BeforeEach
     public void before() {
+
         documentService = new DocumentService(
-                documentRepository,
-                offenderRepository,
-                offenderDocumentRepository,
-                eventDocumentRepository,
-                courtReportDocumentRepository,
-                institutionReportDocumentRepository,
-                eventRepository,
-                addressAssessmentRepository,
-                approvedPremisesReferralDocumentRepository,
-                assessmentDocumentRepository,
-                caseAllocationDocumentRepository,
-                personalContactDocumentRepository,
-                referralDocumentRepository,
-                nsiDocumentRepository,
-                personalCircumstanceDocumentRepository,
-                upwAppointmentDocumentRepository,
-                contactDocumentRepository
+            documentRepository,
+            offenderRepository,
+            offenderDocumentRepository,
+            eventDocumentRepository,
+            courtReportDocumentRepository,
+            institutionReportDocumentRepository,
+            eventRepository,
+            addressAssessmentRepository,
+            approvedPremisesReferralDocumentRepository,
+            assessmentDocumentRepository,
+            caseAllocationDocumentRepository,
+            personalContactDocumentRepository,
+            referralDocumentRepository,
+            nsiDocumentRepository,
+            personalCircumstanceDocumentRepository,
+            upwAppointmentDocumentRepository,
+            contactDocumentRepository
         );
         when(offenderRepository.findByOffenderId(any())).thenReturn(Optional.of(anOffender()));
-        when(offenderDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of());
-        when(eventDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of());
-        when(courtReportDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of());
-        when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of());
-        when(eventRepository.findByOffenderId(any())).thenReturn(ImmutableList.of());
-        when(addressAssessmentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of());
-        when(approvedPremisesReferralDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of());
-        when(assessmentDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of());
-        when(personalContactDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of());
-        when(referralDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of());
-        when(nsiDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of());
-        when(personalCircumstanceDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of());
-        when(upwAppointmentDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of());
-        when(contactDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of());
+        when(offenderDocumentRepository.findByOffenderId(any())).thenReturn(List.of());
+        when(eventDocumentRepository.findByOffenderId(any())).thenReturn(List.of());
+        when(courtReportDocumentRepository.findAll(courtReportDocumentSpecification.capture())).thenReturn(List
+            .of());
+        when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(List.of());
+        when(eventRepository.findByOffenderId(any())).thenReturn(List.of());
+        when(addressAssessmentRepository.findByOffenderId(any())).thenReturn(List.of());
+        when(approvedPremisesReferralDocumentRepository.findByOffenderId(any())).thenReturn(List.of());
+        when(assessmentDocumentRepository.findByOffenderId(any())).thenReturn(List.of());
+        when(personalContactDocumentRepository.findByOffenderId(any())).thenReturn(List.of());
+        when(referralDocumentRepository.findByOffenderId(any())).thenReturn(List.of());
+        when(nsiDocumentRepository.findByOffenderId(any())).thenReturn(List.of());
+        when(personalCircumstanceDocumentRepository.findByOffenderId(any())).thenReturn(List.of());
+        when(upwAppointmentDocumentRepository.findByOffenderId(any())).thenReturn(List.of());
+        when(contactDocumentRepository.findByOffenderId(any())).thenReturn(List.of());
     }
 
     @Test
@@ -138,7 +162,7 @@ public class DocumentServiceTest {
 
     @Test
     public void singleConvictionAddedWhenSingleCourtReport() {
-        when(courtReportDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(aCourtReportDocument()));
+        when(courtReportDocumentRepository.findAll(courtReportDocumentSpecification.capture())).thenReturn(List.of(aCourtReportDocument()));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
@@ -152,8 +176,8 @@ public class DocumentServiceTest {
         final Event event = anEvent();
         event.setEventId(99L);
 
-        when(eventRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(event));
-        when(courtReportDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(courtReportDocument));
+        when(eventRepository.findByOffenderId(any())).thenReturn(List.of(event));
+        when(courtReportDocumentRepository.findAll(courtReportDocumentSpecification.capture())).thenReturn(List.of(courtReportDocument));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
@@ -167,8 +191,9 @@ public class DocumentServiceTest {
         final Event event = anEvent();
         event.setEventId(99L);
 
-        when(eventRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(event));
-        when(courtReportDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(courtReportDocument));
+        when(eventRepository.findByOffenderId(any())).thenReturn(List.of(event));
+        when(courtReportDocumentRepository.findAll(courtReportDocumentSpecification.capture())).thenReturn(List
+            .of(courtReportDocument));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
@@ -177,7 +202,7 @@ public class DocumentServiceTest {
 
     @Test
     public void singleConvictionAddedWhenSingleInstitutionalReport() {
-        when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(anInstitutionalReportDocument()));
+        when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(List.of(anInstitutionalReportDocument()));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
@@ -191,8 +216,8 @@ public class DocumentServiceTest {
         final Event event = anEvent();
         event.setEventId(99L);
 
-        when(eventRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(event));
-        when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(institutionalReportDocument));
+        when(eventRepository.findByOffenderId(any())).thenReturn(List.of(event));
+        when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(List.of(institutionalReportDocument));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
@@ -206,8 +231,8 @@ public class DocumentServiceTest {
         final Event event = anEvent();
         event.setEventId(99L);
 
-        when(eventRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(event));
-        when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(institutionalReportDocument));
+        when(eventRepository.findByOffenderId(any())).thenReturn(List.of(event));
+        when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(List.of(institutionalReportDocument));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
@@ -219,7 +244,7 @@ public class DocumentServiceTest {
         final Event event = anEvent();
         event.setCpsAlfrescoDocumentId(null);
 
-        when(eventRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(event));
+        when(eventRepository.findByOffenderId(any())).thenReturn(List.of(event));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
@@ -231,7 +256,7 @@ public class DocumentServiceTest {
         final Event event = anEvent();
         event.setCpsAlfrescoDocumentId("123");
 
-        when(eventRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(event));
+        when(eventRepository.findByOffenderId(any())).thenReturn(List.of(event));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
@@ -264,11 +289,11 @@ public class DocumentServiceTest {
 
     @Test
     public void eventDocumentsDistributedToEachConviction() {
-        when(eventDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(
-                anEventDocument(1L),
-                anEventDocument(2L),
-                anEventDocument(2L),
-                anEventDocument(2L)
+        when(eventDocumentRepository.findByOffenderId(any())).thenReturn(List.of(
+            anEventDocument(1L),
+            anEventDocument(2L),
+            anEventDocument(2L),
+            anEventDocument(2L)
         ));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
@@ -280,12 +305,13 @@ public class DocumentServiceTest {
 
     @Test
     public void courtReportsDocumentsDistributedToEachConviction() {
-        when(courtReportDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(
+        when(courtReportDocumentRepository.findAll(courtReportDocumentSpecification.capture())).thenReturn(List
+            .of(
                 aCourtReportDocument(1L),
                 aCourtReportDocument(2L),
                 aCourtReportDocument(2L),
                 aCourtReportDocument(2L)
-        ));
+            ));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
@@ -296,11 +322,11 @@ public class DocumentServiceTest {
 
     @Test
     public void institutionReportDocumentsDistributedToEachConviction() {
-        when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(
-                anInstitutionalReportDocument(1L),
-                anInstitutionalReportDocument(2L),
-                anInstitutionalReportDocument(2L),
-                anInstitutionalReportDocument(2L)
+        when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(List.of(
+            anInstitutionalReportDocument(1L),
+            anInstitutionalReportDocument(2L),
+            anInstitutionalReportDocument(2L),
+            anInstitutionalReportDocument(2L)
         ));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
@@ -312,9 +338,9 @@ public class DocumentServiceTest {
 
     @Test
     public void addressAssessmentDocumentsAddedToOffenderDocuments() {
-        when(addressAssessmentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(
-                anAddressAssessmentDocument(),
-                anAddressAssessmentDocument()
+        when(addressAssessmentRepository.findByOffenderId(any())).thenReturn(List.of(
+            anAddressAssessmentDocument(),
+            anAddressAssessmentDocument()
         ));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
@@ -324,11 +350,11 @@ public class DocumentServiceTest {
 
     @Test
     public void approvedPremisesReferralDocumentsDistributedToEachConviction() {
-        when(approvedPremisesReferralDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(
-                anApprovedPremisesReferralDocument(1L),
-                anApprovedPremisesReferralDocument(2L),
-                anApprovedPremisesReferralDocument(2L),
-                anApprovedPremisesReferralDocument(2L)
+        when(approvedPremisesReferralDocumentRepository.findByOffenderId(any())).thenReturn(List.of(
+            anApprovedPremisesReferralDocument(1L),
+            anApprovedPremisesReferralDocument(2L),
+            anApprovedPremisesReferralDocument(2L),
+            anApprovedPremisesReferralDocument(2L)
         ));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
@@ -340,11 +366,11 @@ public class DocumentServiceTest {
 
     @Test
     public void assessmentDocumentsDistributedToEachConviction() {
-        when(assessmentDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(
-                anAssessmentDocument(1L),
-                anAssessmentDocument(2L),
-                anAssessmentDocument(2L),
-                anAssessmentDocument(2L)
+        when(assessmentDocumentRepository.findByOffenderId(any())).thenReturn(List.of(
+            anAssessmentDocument(1L),
+            anAssessmentDocument(2L),
+            anAssessmentDocument(2L),
+            anAssessmentDocument(2L)
         ));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
@@ -356,11 +382,11 @@ public class DocumentServiceTest {
 
     @Test
     public void caseAllocationDocumentsDistributedToEachConviction() {
-        when(caseAllocationDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(
-                aCaseAllocationDocument(1L),
-                aCaseAllocationDocument(2L),
-                aCaseAllocationDocument(2L),
-                aCaseAllocationDocument(2L)
+        when(caseAllocationDocumentRepository.findByOffenderId(any())).thenReturn(List.of(
+            aCaseAllocationDocument(1L),
+            aCaseAllocationDocument(2L),
+            aCaseAllocationDocument(2L),
+            aCaseAllocationDocument(2L)
         ));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
@@ -372,9 +398,9 @@ public class DocumentServiceTest {
 
     @Test
     public void personalContactDocumentsAddedToOffenderDocuments() {
-        when(personalContactDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(
-                aPersonalContactDocument(),
-                aPersonalContactDocument()
+        when(personalContactDocumentRepository.findByOffenderId(any())).thenReturn(List.of(
+            aPersonalContactDocument(),
+            aPersonalContactDocument()
         ));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
@@ -384,11 +410,11 @@ public class DocumentServiceTest {
 
     @Test
     public void referralDocumentsDistributedToEachConviction() {
-        when(referralDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(
-                aReferralDocument(1L),
-                aReferralDocument(2L),
-                aReferralDocument(2L),
-                aReferralDocument(2L)
+        when(referralDocumentRepository.findByOffenderId(any())).thenReturn(List.of(
+            aReferralDocument(1L),
+            aReferralDocument(2L),
+            aReferralDocument(2L),
+            aReferralDocument(2L)
         ));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
@@ -400,13 +426,13 @@ public class DocumentServiceTest {
 
     @Test
     public void nsiDocumentsDistributedToEachConvictionAndOffender() {
-        when(nsiDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(
-                aNsiDocument(1L),
-                aNsiDocument(2L),
-                aNsiDocument(2L),
-                aNsiDocument(2L),
-                aNsiDocument(),
-                aNsiDocument()
+        when(nsiDocumentRepository.findByOffenderId(any())).thenReturn(List.of(
+            aNsiDocument(1L),
+            aNsiDocument(2L),
+            aNsiDocument(2L),
+            aNsiDocument(2L),
+            aNsiDocument(),
+            aNsiDocument()
         ));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
@@ -419,9 +445,9 @@ public class DocumentServiceTest {
 
     @Test
     public void personalCircumstanceDocumentsAddedToOffenderDocuments() {
-        when(personalCircumstanceDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(
-                aPersonalCircumstanceDocument(),
-                aPersonalCircumstanceDocument()
+        when(personalCircumstanceDocumentRepository.findByOffenderId(any())).thenReturn(List.of(
+            aPersonalCircumstanceDocument(),
+            aPersonalCircumstanceDocument()
         ));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
@@ -431,11 +457,11 @@ public class DocumentServiceTest {
 
     @Test
     public void upwAppointmentDocumentsDistributedToEachConviction() {
-        when(upwAppointmentDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(
-                aUPWAppointmentDocument(1L),
-                aUPWAppointmentDocument(2L),
-                aUPWAppointmentDocument(2L),
-                aUPWAppointmentDocument(2L)
+        when(upwAppointmentDocumentRepository.findByOffenderId(any())).thenReturn(List.of(
+            aUPWAppointmentDocument(1L),
+            aUPWAppointmentDocument(2L),
+            aUPWAppointmentDocument(2L),
+            aUPWAppointmentDocument(2L)
         ));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
@@ -447,13 +473,13 @@ public class DocumentServiceTest {
 
     @Test
     public void contactDocumentsDistributedToEachConvictionAndOffender() {
-        when(contactDocumentRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(
-                aContactDocument(1L),
-                aContactDocument(2L),
-                aContactDocument(2L),
-                aContactDocument(2L),
-                aContactDocument(),
-                aContactDocument()
+        when(contactDocumentRepository.findByOffenderId(any())).thenReturn(List.of(
+            aContactDocument(1L),
+            aContactDocument(2L),
+            aContactDocument(2L),
+            aContactDocument(2L),
+            aContactDocument(),
+            aContactDocument()
         ));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
@@ -462,6 +488,165 @@ public class DocumentServiceTest {
         assertThat(documents.getConvictions().get(0).getDocuments()).hasSize(1);
         assertThat(documents.getConvictions().get(1).getDocuments()).hasSize(3);
         assertThat(documents.getDocuments()).hasSize(2);
+    }
+
+    private List<OffenderDocumentDetail> allDocuments(OffenderDocuments offenderDocuments) {
+        final var convictionDocuments =
+            offenderDocuments
+                .getConvictions()
+                .stream()
+                .flatMap(cd -> cd.getDocuments().stream())
+                .collect(toList());
+
+        return Stream
+            .of(offenderDocuments.getDocuments(), convictionDocuments)
+            .flatMap(Collection::stream)
+            .collect(toList());
+    }
+
+    @DisplayName("Filters")
+    @Nested
+    @MockitoSettings(strictness = Strictness.LENIENT)
+    class Filters {
+        @BeforeEach
+        void setUp() {
+            when(eventDocumentRepository.findByOffenderId(any())).thenReturn(List.of(anEventDocument(1L)));
+            when(courtReportDocumentRepository.findAll(courtReportDocumentSpecification.capture())).thenReturn(List.of(aCourtReportDocument(1L)));
+            when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(List.of(anInstitutionalReportDocument(1L)));
+            when(approvedPremisesReferralDocumentRepository.findByOffenderId(any())).thenReturn(List.of(anApprovedPremisesReferralDocument(1L)));
+            when(assessmentDocumentRepository.findByOffenderId(any())).thenReturn(List.of(anAssessmentDocument(1L)));
+            when(caseAllocationDocumentRepository.findByOffenderId(any())).thenReturn(List.of(aCaseAllocationDocument(1L)));
+            when(referralDocumentRepository.findByOffenderId(any())).thenReturn(List.of(aReferralDocument(1L)));
+            when(nsiDocumentRepository.findByOffenderId(any())).thenReturn(List.of(aNsiDocument(1L), aNsiDocument()));
+            when(upwAppointmentDocumentRepository.findByOffenderId(any())).thenReturn(List.of(aUPWAppointmentDocument(1L)));
+            when(contactDocumentRepository.findByOffenderId(any())).thenReturn(List.of(aContactDocument(1L), aContactDocument()));
+            when(offenderDocumentRepository.findByOffenderId(any())).thenReturn(List.of(anOffenderDocument()));
+            when(addressAssessmentRepository.findByOffenderId(any())).thenReturn(List.of(anAddressAssessmentDocument()));
+            when(personalContactDocumentRepository.findByOffenderId(any())).thenReturn(List.of(aPersonalContactDocument()));
+            when(personalCircumstanceDocumentRepository.findByOffenderId(any())).thenReturn(List.of(aPersonalCircumstanceDocument()));
+            when(offenderRepository.findByOffenderId(any())).thenReturn(Optional.of(anOffender()
+                .toBuilder()
+                .previousConvictionsAlfrescoDocumentId("123")
+                .build()));
+            when(eventRepository.findByOffenderId(any())).thenReturn(List.of(anEvent()
+                .toBuilder()
+                .eventId(1L)
+                .cpsAlfrescoDocumentId("123")
+                .build()));
+        }
+
+        @DisplayName("No filter supplied")
+        @Nested
+        class NoFilterSupplied {
+            @Test
+            @DisplayName("When no filter all repositories are queried")
+            void whenNoFilterAllRepositoriesAreQueried() {
+                documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
+
+                verify(eventDocumentRepository).findByOffenderId(1L);
+                verify(courtReportDocumentRepository).findAll(courtReportDocumentSpecification.capture());
+                verify(institutionReportDocumentRepository).findByOffenderId(1L);
+                verify(approvedPremisesReferralDocumentRepository).findByOffenderId(1L);
+                verify(assessmentDocumentRepository).findByOffenderId(1L);
+                verify(caseAllocationDocumentRepository).findByOffenderId(1L);
+                verify(referralDocumentRepository).findByOffenderId(1L);
+                verify(nsiDocumentRepository).findByOffenderId(1L);
+                verify(upwAppointmentDocumentRepository).findByOffenderId(1L);
+                verify(contactDocumentRepository).findByOffenderId(1L);
+                verify(offenderDocumentRepository).findByOffenderId(1L);
+                verify(addressAssessmentRepository).findByOffenderId(1L);
+                verify(personalContactDocumentRepository).findByOffenderId(1L);
+                verify(personalCircumstanceDocumentRepository).findByOffenderId(1L);
+            }
+
+            @Test
+            @DisplayName("Will return all documents types")
+            void willReturnAllDocumentsTypes() {
+                final var documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
+                assertThat(documents.getConvictions()).hasSize(1);
+                assertThat(documents.getConvictions().get(0).getDocuments()).hasSize(11);
+                assertThat(documents.getDocuments()).hasSize(7);
+            }
+        }
+
+        @DisplayName("Filter with just category")
+        @Nested
+        @TestInstance(PER_CLASS)
+        class FilterWithJustCategory {
+            @Test
+            @DisplayName("Will only query the repository related to the category")
+            void willOnlyQueryTheRepositoryRelatedToTheCourtReportCategory() {
+                documentService.offenderDocumentsFor(1L, DocumentFilter.of("COURT_REPORT_DOCUMENT", null).get());
+
+                verify(courtReportDocumentRepository).findAll(courtReportDocumentSpecification.capture());
+                verifyNoInteractions(eventDocumentRepository,
+                    institutionReportDocumentRepository,
+                    approvedPremisesReferralDocumentRepository,
+                    assessmentDocumentRepository,
+                    caseAllocationDocumentRepository,
+                    referralDocumentRepository,
+                    nsiDocumentRepository,
+                    upwAppointmentDocumentRepository,
+                    contactDocumentRepository,
+                    offenderDocumentRepository,
+                    addressAssessmentRepository,
+                    personalContactDocumentRepository,
+                    personalCircumstanceDocumentRepository
+                );
+            }
+
+            @Test
+            @DisplayName("Will only query the repository related to other categories")
+            void willOnlyQueryTheRepositoryRelatedToOtherDocumentCategory() {
+                documentService.offenderDocumentsFor(1L, DocumentFilter.of("ASSESSMENT_DOCUMENT", null).get());
+
+                verify(assessmentDocumentRepository).findByOffenderId(any());
+                verifyNoInteractions(eventDocumentRepository,
+                    institutionReportDocumentRepository,
+                    approvedPremisesReferralDocumentRepository,
+                    courtReportDocumentRepository,
+                    caseAllocationDocumentRepository,
+                    referralDocumentRepository,
+                    nsiDocumentRepository,
+                    upwAppointmentDocumentRepository,
+                    contactDocumentRepository,
+                    offenderDocumentRepository,
+                    addressAssessmentRepository,
+                    personalContactDocumentRepository,
+                    personalCircumstanceDocumentRepository
+                );
+            }
+
+            @Test
+            @DisplayName("Will only return documents for the category")
+            void willOnlyReturnDocumentsForTheCategory() {
+                final var documents = documentService.offenderDocumentsFor(1L, DocumentFilter
+                    .of("COURT_REPORT_DOCUMENT", null)
+                    .get());
+                assertThat(documents.getConvictions()).hasSize(1);
+                assertThat(documents.getConvictions().get(0).getDocuments()).hasSize(1);
+                assertThat(documents.getDocuments()).hasSize(0);
+            }
+
+            @DisplayName("Supplying a category will only bring back documents of that category")
+            @ParameterizedTest(name = "Category {0}")
+            @MethodSource("allCategories")
+            void supplyingACategoryWillOnlyBringBackDocumentsOfThatCategory(String category) {
+                final var documents = documentService.offenderDocumentsFor(1L, DocumentFilter
+                    .of(category, null)
+                    .get());
+                // some types have 1 others 2
+                assertThat(allDocuments(documents)).hasSizeBetween(1, 2);
+                // all documents have the right type
+                assertThat(allDocuments(documents))
+                    .extracting(document -> document.getType().getCode())
+                    .containsAnyOf(category);
+            }
+
+            private Stream<String> allCategories() {
+                return Arrays.stream(Type.values()).map(Enum::name);
+            }
+        }
     }
 
 }

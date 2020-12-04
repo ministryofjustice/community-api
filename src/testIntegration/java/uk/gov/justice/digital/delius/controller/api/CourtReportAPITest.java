@@ -55,7 +55,7 @@ public class CourtReportAPITest {
             .body()
             .as(CourtReport[].class);
 
-        assertThat(courtReports).hasSize(1);
+        assertThat(courtReports).hasSizeGreaterThan(1);
     }
 
     @Test

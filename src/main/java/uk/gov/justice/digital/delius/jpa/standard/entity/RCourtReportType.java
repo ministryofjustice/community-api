@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -18,6 +19,13 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "R_COURT_REPORT_TYPE")
 public class RCourtReportType {
+    public static final List<String> PRE_SENTENCE_REPORT_TYPES = List.of(
+        "CJF", // Pre-Sentence Report - Fast
+        "CJO", // Pre-Sentence Report - Oral
+        "CJS", // Pre-Sentence Report - Standard
+        "PSA"  // PSR - Addendum
+    );
+
     @Id@Column(name = "COURT_REPORT_TYPE_ID")
     private Long courtReportTypeId;
     @Column(name = "CODE")

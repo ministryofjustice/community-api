@@ -11,12 +11,34 @@ import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
 
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class DocumentResourceAPITest extends IntegrationTestBase {
+
+    private long countAllDocuments(OffenderDocuments offenderDocuments) {
+        return allDocuments(offenderDocuments).size();
+    }
+
+    private List<OffenderDocumentDetail> allDocuments(OffenderDocuments offenderDocuments) {
+        final var convictionDocuments =
+            offenderDocuments
+                .getConvictions()
+                .stream()
+                .flatMap(cd -> cd.getDocuments().stream())
+                .collect(toList());
+
+        return Stream
+            .of(offenderDocuments.getDocuments(), convictionDocuments)
+            .flatMap(Collection::stream)
+            .collect(toList());
+    }
 
     @DisplayName("/offenders/crn/{crn}/documents/{documentId}")
     @Nested
@@ -67,11 +89,9 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
 
     }
 
-
     @DisplayName("/offenders/crn/{crn}/documents/grouped")
     @Nested
     class DocumentsGrouped {
-
         @Test
         @DisplayName("Will return 404 for a offender that is not found")
         public void givenUnknownCrnThenReturn404() {
@@ -100,8 +120,8 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
                 .body()
                 .as(OffenderDocuments.class);
 
-            assertThat(offenderDocuments.getDocuments()).isNull();
-            assertThat(offenderDocuments.getConvictions()).isNull();
+            assertThat(offenderDocuments.getDocuments()).isEmpty();
+            assertThat(offenderDocuments.getConvictions()).isEmpty();
         }
 
         @Test
@@ -147,6 +167,191 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
             assertThat(courtReportDocument
                 .getReportDocumentDates()
                 .getRequiredDate()).isEqualTo(LocalDate.of(2019, 9, 4));
+        }
+
+        @DisplayName("Validation of request")
+        @Nested
+        class ValidationOfRequest {
+            @Test
+            @DisplayName("ok when no category or type supplied")
+            void oKWhenNoCategoryOrTypeSupplied() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
+            }
+
+            @Test
+            @DisplayName("ok with a known category is supplied")
+            void okWithAKnownCategoryIsSupplied() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("category", "COURT_REPORT_DOCUMENT")
+                    .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
+            }
+
+            @Test
+            @DisplayName("ok with a known category with a related known type")
+            void okWithAKnownCategoryWithARelatedKnownType() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("category", "COURT_REPORT_DOCUMENT")
+                    .param("type", "PSR")
+                    .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
+            }
+
+            @Test
+            @DisplayName("bad request when category is unknown")
+            void badRequestWhenCategoryIsUnknown() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("category", "BANANAS")
+                    .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+
+            }
+
+            @Test
+            @DisplayName("bad request when type is unknown")
+            void badRequestWhenTypeIsUnknown() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("category", "COURT_REPORT_DOCUMENT")
+                    .param("type", "BANANAS")
+                    .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+            }
+
+            @Test
+            @DisplayName("bad request when only type is supplied")
+            void badRequestWhenOnlyTypeIsSupplied() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("type", "PSR")
+                    .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+            }
+
+            @Test
+            @DisplayName("bad request when type does no belong with category")
+            void badRequestWhenTypeDoesNoBelongWithCategory() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("category", "CASE_ALLOCATION_DOCUMENT")
+                    .param("type", "PSR")
+                    .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+            }
+        }
+
+        @DisplayName("Filters")
+        @Nested
+        class Filters {
+            static final int NSI_DOCUMENT_COUNT = 3;
+            static final int ALL_COURT_REPORT_DOCUMENT_COUNT = 2;
+            static final int PSR_COURT_REPORT_DOCUMENT_COUNT = 1;
+
+            @Test
+            @DisplayName("With no filter all documents will be returned")
+            void withNoFilterAllDocumentsWillBeReturned() {
+                final var offenderDocuments = given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .body()
+                    .as(OffenderDocuments.class);
+
+                assertThat(countAllDocuments(offenderDocuments)).isGreaterThan(ALL_COURT_REPORT_DOCUMENT_COUNT + PSR_COURT_REPORT_DOCUMENT_COUNT);
+            }
+
+            @Test
+            @DisplayName("With category filter only documents in that category will be returned")
+            void withCategoryFilterOnlyDocumentsInThatCategoryWillBeReturned() {
+                final var courtReportDocuments = given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("category", "COURT_REPORT_DOCUMENT")
+                    .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .body()
+                    .as(OffenderDocuments.class);
+
+                assertThat(countAllDocuments(courtReportDocuments)).isEqualTo(ALL_COURT_REPORT_DOCUMENT_COUNT);
+
+                final var nsiDocuments = given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("category", "NSI_DOCUMENT")
+                    .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .body()
+                    .as(OffenderDocuments.class);
+
+                assertThat(countAllDocuments(nsiDocuments)).isEqualTo(NSI_DOCUMENT_COUNT);
+            }
+
+            @Test
+            @DisplayName("With category and type supplied only documents in that category that match the type will be returned")
+            void withCategoryAndTypeSuppliedOnlyDocumentsInThatCategoryThatMatchTheTypeWillBeReturned() {
+                final var courtReportDocuments = given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("category", "COURT_REPORT_DOCUMENT")
+                    .param("type", "PSR")
+                    .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .body()
+                    .as(OffenderDocuments.class);
+
+                assertThat(countAllDocuments(courtReportDocuments)).isEqualTo(PSR_COURT_REPORT_DOCUMENT_COUNT);
+            }
         }
     }
 }
