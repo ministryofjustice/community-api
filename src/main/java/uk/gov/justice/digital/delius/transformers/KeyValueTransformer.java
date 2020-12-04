@@ -10,6 +10,7 @@ public class KeyValueTransformer {
         return Optional.ofNullable(standardReference).map(reason -> KeyValue.builder()
                     .description(reason.getCodeDescription())
                     .code(reason.getCodeValue()).build())
+
         .orElse(null);
     }
 }
