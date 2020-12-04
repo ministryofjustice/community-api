@@ -4,7 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -12,6 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.data.jpa.domain.Specification;
+import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail;
+import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail.Type;
 import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
 import uk.gov.justice.digital.delius.data.filters.DocumentFilter;
 import uk.gov.justice.digital.delius.jpa.national.repository.DocumentRepository;
@@ -36,10 +41,15 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.PersonalContactDocu
 import uk.gov.justice.digital.delius.jpa.standard.repository.ReferralDocumentRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.UPWAppointmentDocumentRepository;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -480,6 +490,20 @@ public class DocumentServiceTest {
         assertThat(documents.getDocuments()).hasSize(2);
     }
 
+    private List<OffenderDocumentDetail> allDocuments(OffenderDocuments offenderDocuments) {
+        final var convictionDocuments =
+            offenderDocuments
+                .getConvictions()
+                .stream()
+                .flatMap(cd -> cd.getDocuments().stream())
+                .collect(toList());
+
+        return Stream
+            .of(offenderDocuments.getDocuments(), convictionDocuments)
+            .flatMap(Collection::stream)
+            .collect(toList());
+    }
+
     @DisplayName("Filters")
     @Nested
     @MockitoSettings(strictness = Strictness.LENIENT)
@@ -547,6 +571,7 @@ public class DocumentServiceTest {
 
         @DisplayName("Filter with just category")
         @Nested
+        @TestInstance(PER_CLASS)
         class FilterWithJustCategory {
             @Test
             @DisplayName("Will only query the repository related to the category")
@@ -602,6 +627,26 @@ public class DocumentServiceTest {
                 assertThat(documents.getConvictions().get(0).getDocuments()).hasSize(1);
                 assertThat(documents.getDocuments()).hasSize(0);
             }
+
+            @DisplayName("Supplying a category will only bring back documents of that category")
+            @ParameterizedTest(name = "Category {0}")
+            @MethodSource("allCategories")
+            void supplyingACategoryWillOnlyBringBackDocumentsOfThatCategory(String category) {
+                final var documents = documentService.offenderDocumentsFor(1L, DocumentFilter
+                    .of(category, null)
+                    .get());
+                // some types have 1 others 2
+                assertThat(allDocuments(documents)).hasSizeBetween(1, 2);
+                // all documents have the right type
+                assertThat(allDocuments(documents))
+                    .extracting(document -> document.getType().getCode())
+                    .containsAnyOf(category);
+            }
+
+            private Stream<String> allCategories() {
+                return Arrays.stream(Type.values()).map(Enum::name);
+            }
         }
     }
+
 }

@@ -347,7 +347,6 @@ public class DocumentService {
 
     private List<OffenderDocumentDetail> previousConvictions(Offender offender, Predicate<Offender> previousConvictionCheck) {
         return Optional.of(offender)
-                .filter(this::hasPreviousConvictions)
                 .filter(previousConvictionCheck)
                 .map(offenderWithPreCPns -> ImmutableList.of(DocumentTransformer.offenderDocumentDetailsOfPreviousConvictions(offenderWithPreCPns)))
                 .orElseGet(ImmutableList::of);

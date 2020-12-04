@@ -2,11 +2,13 @@ package uk.gov.justice.digital.delius.data.filters;
 
 import io.vavr.control.Either;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail.Type;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -45,10 +47,10 @@ public class DocumentFilter {
             return Either.left(String.format("Type of %s was supplied but no category. Type can only be supplied when a valida category is supplied", type));
         }
 
-        final var maybeCategory = Arrays.stream(Type.values()).filter(v -> v.name().equals(category)).findFirst();
+        final var maybeCategory = enumOf(Type.class, category);
         return maybeCategory.map(documentCategory -> {
             if (StringUtils.isNotBlank(type)) {
-                final var maybeType = Arrays.stream(SubType.values()).filter(v -> v.name().equals(type)).findFirst();
+                final var maybeType = enumOf(SubType.class, type);
                 return maybeType
                     .map(documentType -> {
                         if (isRelated(documentCategory, documentType)) {
@@ -63,6 +65,16 @@ public class DocumentFilter {
             return Either.<String, DocumentFilter>right(new DocumentFilter(documentCategory));
 
         }).orElse(Either.left(String.format("Category of %s was not valid", category)));
+    }
+
+    @NotNull
+    private static <T extends Enum<T>> Optional<T> enumOf(Class<T> enumType,
+                                         String name) {
+        try {
+            return Optional.of(Enum.valueOf(enumType, name));
+        } catch (IllegalArgumentException e) {
+            return Optional.empty();
+        }
     }
 
     private static boolean isRelated(Type documentCategory, SubType documentType) {
