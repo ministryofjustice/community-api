@@ -20,6 +20,7 @@ import uk.gov.justice.digital.delius.service.NsiService;
 import uk.gov.justice.digital.delius.service.OffenderManagerService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.SentenceService;
+import uk.gov.justice.digital.delius.service.UserAccessService;
 import uk.gov.justice.digital.delius.service.UserService;
 
 import java.time.LocalDate;
@@ -52,11 +53,12 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffenderAPITest {
     private final UserService userService = mock(UserService.class);
     private final CurrentUserSupplier currentUserSupplier = mock(CurrentUserSupplier.class);
     private final CustodyService custodyService = mock(CustodyService.class);
+    private final UserAccessService userAccessService = mock(UserAccessService.class);
 
     @Before
     public void setup() {
         RestAssuredMockMvc.standaloneSetup(
-                new OffendersResource(offenderService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier, custodyService),
+                new OffendersResource(offenderService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier, custodyService, userAccessService),
                 new SecureControllerAdvice()
         );
     }

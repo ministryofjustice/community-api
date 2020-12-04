@@ -20,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -63,7 +62,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -281,7 +279,6 @@ public class OffendersResource {
         }
     }
 
-    // TODO: Update this
     @RequestMapping(value = "/offenders/crn/{crn}", method = RequestMethod.GET)
     @ApiResponses(value = {
             @ApiResponse(code = 404, message = "The offender not found")
@@ -295,16 +292,14 @@ public class OffendersResource {
             .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 
-
-    // TODO: Update this
     @RequestMapping(value = "/offenders/crn/{crn}/all", method = RequestMethod.GET)
     @ApiResponses(value = {
             @ApiResponse(code = 404, message = "The offender is not found"),
             @ApiResponse(code = 403, message = "Forbidden, the offender may have exclusions or restrictions in place preventing some users from viewing. Adopting client role ROLE_COMMUNITY_API_OPEN can bypass these restrictions."),
     })
     @ApiOperation(value = "Returns the full offender detail for the given crn", tags = "-- Popular core APIs --")
-    public OffenderDetail getOffenderDetailByCrn(final @PathVariable("crn") String crn) {
-        checkUserAccessByCrn(crn);
+    public OffenderDetail getOffenderDetailByCrn(final @PathVariable("crn") String crn, Authentication authentication) {
+        userAccessService.checkExclusionsAndRestrictions(crn, authentication.getAuthorities());
 
         final var offender = offenderService.getOffenderByCrn(crn);
         return offender.orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));

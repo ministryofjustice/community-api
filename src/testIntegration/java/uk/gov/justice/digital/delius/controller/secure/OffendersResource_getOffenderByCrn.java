@@ -59,11 +59,11 @@ public class OffendersResource_getOffenderByCrn extends IntegrationTestBase {
         final var username = "bernard.beaks";
         final var path = "/offenders/crn/X440877";
 
-        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_EXCLUDED"), "X440877");
-        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_EXCLUDED_RESTRICTED"), "X440877");
-        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_RESTRICTED"), "X440877");
-        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_OPEN"), "X440877");
-        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY"), "X440877");
+        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_EXCLUDED"));
+        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_EXCLUDED_RESTRICTED"));
+        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_RESTRICTED"));
+        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_OPEN"));
+        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY"));
     }
 
     @Test
@@ -74,37 +74,34 @@ public class OffendersResource_getOffenderByCrn extends IntegrationTestBase {
         assertAccessForbiddenFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_EXCLUDED"), "You are excluded from viewing this offender record. Please contact a system administrator");
         assertAccessForbiddenFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_EXCLUDED_RESTRICTED"), "You are excluded from viewing this offender record. Please contact a system administrator");
 
-        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_RESTRICTED"), "X440877");
-        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_OPEN"), "X440877");
-        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY"), "X440877");
+        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_RESTRICTED"));
+        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_OPEN"));
+        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY"));
     }
-
 
     @Test
     public void givenOffenderIsRestricted_andUserIsOnAllowList_thenAccessAllowedWithAllRoles(){
         final var username = "bobby.davro";
         final var path = "/offenders/crn/X440890";
 
-        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_EXCLUDED"), "X440890");
-        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_EXCLUDED_RESTRICTED"), "X440890");
-        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_RESTRICTED"), "X440890");
-        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_OPEN"), "X440890");
-        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY"), "X440890");
+        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_EXCLUDED"));
+        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_EXCLUDED_RESTRICTED"));
+        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_RESTRICTED"));
+        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_OPEN"));
+        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY"));
     }
-
-
 
     @Test
     public void givenOffenderIsRestricted_andUserIsNotOnAllowList_thenAccessDeniedForRestrictedRolesOnly(){
         final var username = "bob.jones";
         final var path = "/offenders/crn/X440890";
 
-        assertAccessForbiddenFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_EXCLUDED_RESTRICTED"), "You are excluded from viewing this offender record. Please contact a system administrator");
-        assertAccessForbiddenFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_RESTRICTED"), "You are excluded from viewing this offender record. Please contact a system administrator");
+        assertAccessForbiddenFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_EXCLUDED_RESTRICTED"), "This is a restricted offender record. Please contact a system administrator");
+        assertAccessForbiddenFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_RESTRICTED"), "This is a restricted offender record. Please contact a system administrator");
 
-        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_EXCLUDED"), "X440890");
-        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_OPEN"), "X440890");
-        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY"), "X440890");
+        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_EXCLUDED"));
+        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_OPEN"));
+        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY"));
     }
 
     @Test
@@ -131,8 +128,24 @@ public class OffendersResource_getOffenderByCrn extends IntegrationTestBase {
         .statusCode(404);
     }
 
-    private void assertAccessAllowedFor(String path, String accessToken, String crn) {
-        final var offenderDetail = given()
+    @Test
+    public void givenUserIsExcluded_andRoleIsExcluded_whenAllEndpointCalled_thenAccessDenied(){
+        final var username = "bob.jones";
+        final var path = "/offenders/crn/X440877/all";
+
+        assertAccessForbiddenFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_EXCLUDED"), "You are excluded from viewing this offender record. Please contact a system administrator");
+    }
+
+    @Test
+    public void givenOffenderIsRestricted_andRoleIsRestricted_andUserIsNotOnAllowList_whenAllEndpointCalled_thenAccessDenied(){
+        final var username = "bob.jones";
+        final var path = "/offenders/crn/X440890/all";
+
+        assertAccessForbiddenFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY_API_RESTRICTED"), "This is a restricted offender record. Please contact a system administrator");
+    }
+
+    private void assertAccessAllowedFor(String path, String accessToken) {
+        given()
                 .auth()
                 .oauth2(accessToken)
                 .contentType(APPLICATION_JSON_VALUE)
@@ -144,8 +157,6 @@ public class OffendersResource_getOffenderByCrn extends IntegrationTestBase {
                 .body()
                 .as(OffenderDetailSummary.class);
 
-        // TODO: Remove this assertion and crn param once it's all working
-        assertThat(offenderDetail.getOtherIds().getCrn()).isEqualTo(crn);
     }
 
     private void assertAccessForbiddenFor(String path, String accessToken, String message) {

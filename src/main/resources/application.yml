@@ -100,3 +100,8 @@ features:
 smoke:
   test:
     aware: false
+
+user-access:
+  roles:
+    apply-exclusions-for: "ROLE_COMMUNITY_API_EXCLUDED,ROLE_COMMUNITY_API_EXCLUDED_RESTRICTED"
+    apply-restrictions-for: "ROLE_COMMUNITY_API_RESTRICTED,ROLE_COMMUNITY_API_EXCLUDED_RESTRICTED"
