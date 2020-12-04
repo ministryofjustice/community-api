@@ -23,10 +23,11 @@ public class UserAccessService {
     private final Set<String> restrictingRoles;
 
     public void checkExclusionsAndRestrictions(String crn, Collection<? extends GrantedAuthority> authorities) {
-        if (shouldCheckExclusion(authorities)) {
+        final var username = currentUserSupplier.username();
+        if (username.isPresent() && shouldCheckExclusion(authorities)) {
 
             final var excludedException = offenderService.getOffenderByCrn(crn)
-                .map(offender -> userService.accessLimitationOf(currentUserSupplier.username().orElseThrow(), offender))
+                .map(offender -> userService.accessLimitationOf(username.get(), offender))
                 .filter(AccessLimitation::isUserExcluded)
                 .map(accessLimitation -> new AccessDeniedException(accessLimitation.getExclusionMessage()));
 
@@ -36,7 +37,8 @@ public class UserAccessService {
 
         if (shouldCheckRestriction(authorities)) {
             final var restrictedException = offenderService.getOffenderByCrn(crn)
-                .map(offender -> userService.accessLimitationOf(currentUserSupplier.username().orElseThrow(), offender))
+                .map(offender -> username.map(u -> userService.accessLimitationOf(u, offender))
+                                         .orElseGet(() -> buildAnonymousUserAccessLimitation(offender)))
                 .filter(AccessLimitation::isUserRestricted)
                 .map(accessLimitation -> new AccessDeniedException(accessLimitation.getRestrictionMessage()));
 
@@ -46,10 +48,25 @@ public class UserAccessService {
     }
 
     private boolean shouldCheckExclusion(Collection<? extends GrantedAuthority> authorities) {
-        return authorities.stream().anyMatch(grantedAuthority -> excludingRoles.contains(grantedAuthority.getAuthority().toUpperCase()));
+        return authorities.stream()
+            .map(GrantedAuthority::getAuthority)
+            .map(String::toUpperCase)
+            .anyMatch(excludingRoles::contains);
     }
 
     private boolean shouldCheckRestriction(Collection<? extends GrantedAuthority> authorities) {
-        return authorities.stream().anyMatch(grantedAuthority -> restrictingRoles.contains(grantedAuthority.getAuthority().toUpperCase()));
+        return authorities.stream()
+            .map(GrantedAuthority::getAuthority)
+            .map(String::toUpperCase)
+            .anyMatch(restrictingRoles::contains);
+    }
+
+    private AccessLimitation buildAnonymousUserAccessLimitation(uk.gov.justice.digital.delius.data.api.OffenderDetail offender) {
+        return AccessLimitation.builder()
+            .userRestricted(offender.getCurrentRestriction())
+            .restrictionMessage(offender.getRestrictionMessage())
+            .userExcluded(false)    // Can't exclude without a username
+            .exclusionMessage(offender.getExclusionMessage())
+            .build();
     }
 }

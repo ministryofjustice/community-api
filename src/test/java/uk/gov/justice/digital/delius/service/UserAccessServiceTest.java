@@ -18,7 +18,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOf
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -30,9 +29,10 @@ class UserAccessServiceTest {
     private static final String DO_RESTRICT_AND_EXCLUDE = "ROLE_RESTRICT_AND_EXCLUDE";
     private static final String CRN = "CRN";
     private static final String USER_NAME = "su.metal";
-    private static final String RESTRICTED_MESSAGE = "Restricted message";
-    private static final String EXCLUDED_MESSAGE = "Excluded message";
+    private static final String RESTRICTION_MESSAGE = "Restricted message";
+    private static final String EXCLUSION_MESSAGE = "Excluded message";
     private UserAccessService userAccessService;
+
     @Mock
     private UserService userService;
     @Mock
@@ -50,17 +50,21 @@ class UserAccessServiceTest {
 
     @Test
     public void givenRoleIsNotInExcludedOrRestricted_thenAccessAllowed(){
+        when(currentUserSupplier.username()).thenReturn(Optional.of(USER_NAME));
+
         userAccessService.checkExclusionsAndRestrictions(CRN, Set.of(new SimpleGrantedAuthority("ROLE_WHATEVER")));
-        verifyNoInteractions(offenderService, userService, currentUserSupplier);
+
+        verifyNoMoreInteractions(offenderService, userService, currentUserSupplier);
     }
 
     @Test
     public void givenRoleIsInExcluded_andUserIsNotExcluded_thenAccessAllowed(){
-        final var accessLimitation = new AccessLimitation(false, RESTRICTED_MESSAGE, false, EXCLUDED_MESSAGE);
+        final var accessLimitation = new AccessLimitation(false, RESTRICTION_MESSAGE, false, EXCLUSION_MESSAGE);
 
-        when(offenderService.getOffenderByCrn(CRN)).thenReturn(Optional.of(offender));
         when(currentUserSupplier.username()).thenReturn(Optional.of(USER_NAME));
+        when(offenderService.getOffenderByCrn(CRN)).thenReturn(Optional.of(offender));
         when(userService.accessLimitationOf(USER_NAME, offender)).thenReturn(accessLimitation);
+
         userAccessService.checkExclusionsAndRestrictions(CRN, Set.of(new SimpleGrantedAuthority(DO_EXCLUDE)));
 
         verify(offenderService, atMostOnce()).getOffenderByCrn(CRN);
@@ -68,15 +72,45 @@ class UserAccessServiceTest {
     }
 
     @Test
-    public void givenRoleIsInExcluded_andUserIsExcluded_thenAccessDENIED(){
-        final var accessLimitation = new AccessLimitation(false, RESTRICTED_MESSAGE, true, EXCLUDED_MESSAGE);
+    public void givenRoleIsInExcluded_andNoUser_thenAccessAllowed(){
+        when(currentUserSupplier.username()).thenReturn(Optional.empty());
 
-        when(offenderService.getOffenderByCrn(CRN)).thenReturn(Optional.of(offender));
+        userAccessService.checkExclusionsAndRestrictions(CRN, Set.of(new SimpleGrantedAuthority(DO_EXCLUDE)));
+
+        verifyNoMoreInteractions(offenderService, userService, currentUserSupplier, offender);
+    }
+
+    @Test
+    public void givenRoleIsInExcluded_andUserIsExcluded_thenAccessDENIED(){
+        final var accessLimitation = new AccessLimitation(false, RESTRICTION_MESSAGE, true, EXCLUSION_MESSAGE);
+
         when(currentUserSupplier.username()).thenReturn(Optional.of(USER_NAME));
+        when(offenderService.getOffenderByCrn(CRN)).thenReturn(Optional.of(offender));
         when(userService.accessLimitationOf(USER_NAME, offender)).thenReturn(accessLimitation);
+
         assertThatExceptionOfType(AccessDeniedException.class)
             .isThrownBy(() -> userAccessService.checkExclusionsAndRestrictions(CRN, Set.of(new SimpleGrantedAuthority(DO_EXCLUDE))))
-            .withMessage(EXCLUDED_MESSAGE);
+            .withMessage(EXCLUSION_MESSAGE);
+
+        verify(offenderService, atMostOnce()).getOffenderByCrn(CRN);
+        verifyNoMoreInteractions(offenderService, userService, currentUserSupplier, offender);
+    }
+
+    @Test
+    public void givenFirstRoleNotExcluded_andSecondRoleIsExcluded_andUserIsExcluded_thenAccessDENIED(){
+        final var accessLimitation = new AccessLimitation(false, RESTRICTION_MESSAGE, true, EXCLUSION_MESSAGE);
+
+        when(currentUserSupplier.username()).thenReturn(Optional.of(USER_NAME));
+        when(offenderService.getOffenderByCrn(CRN)).thenReturn(Optional.of(offender));
+        when(userService.accessLimitationOf(USER_NAME, offender)).thenReturn(accessLimitation);
+
+        final var authorities = Set.of(
+            new SimpleGrantedAuthority(DO_EXCLUDE),
+            new SimpleGrantedAuthority("ROLE_WHATEVER")
+        );
+        assertThatExceptionOfType(AccessDeniedException.class)
+            .isThrownBy(() -> userAccessService.checkExclusionsAndRestrictions(CRN, authorities))
+            .withMessage(EXCLUSION_MESSAGE);
 
         verify(offenderService, atMostOnce()).getOffenderByCrn(CRN);
         verifyNoMoreInteractions(offenderService, userService, currentUserSupplier, offender);
@@ -84,11 +118,12 @@ class UserAccessServiceTest {
 
     @Test
     public void givenRoleIsInRestricted_andUserIsNotRestricted_thenAccessAllowed(){
-        final var accessLimitation = new AccessLimitation(false, RESTRICTED_MESSAGE, false, EXCLUDED_MESSAGE);
+        final var accessLimitation = new AccessLimitation(false, RESTRICTION_MESSAGE, false, EXCLUSION_MESSAGE);
 
-        when(offenderService.getOffenderByCrn(CRN)).thenReturn(Optional.of(offender));
         when(currentUserSupplier.username()).thenReturn(Optional.of(USER_NAME));
+        when(offenderService.getOffenderByCrn(CRN)).thenReturn(Optional.of(offender));
         when(userService.accessLimitationOf(USER_NAME, offender)).thenReturn(accessLimitation);
+
         userAccessService.checkExclusionsAndRestrictions(CRN, Set.of(new SimpleGrantedAuthority(DO_RESTRICT)));
 
         verify(offenderService, atMostOnce()).getOffenderByCrn(CRN);
@@ -96,15 +131,32 @@ class UserAccessServiceTest {
     }
 
     @Test
-    public void givenRoleIsInRestricted_andUserIsRestricted_thenAccessDENIED(){
-        final var accessLimitation = new AccessLimitation(true, RESTRICTED_MESSAGE, true, EXCLUDED_MESSAGE);
-
+    public void givenRoleIsInRestricted_andNoUser_thenAccessDenied(){
+        when(currentUserSupplier.username()).thenReturn(Optional.empty());
         when(offenderService.getOffenderByCrn(CRN)).thenReturn(Optional.of(offender));
-        when(currentUserSupplier.username()).thenReturn(Optional.of(USER_NAME));
-        when(userService.accessLimitationOf(USER_NAME, offender)).thenReturn(accessLimitation);
+        when(offender.getCurrentRestriction()).thenReturn(true);
+        when(offender.getRestrictionMessage()).thenReturn(RESTRICTION_MESSAGE);
+        when(offender.getExclusionMessage()).thenReturn(EXCLUSION_MESSAGE);
+
         assertThatExceptionOfType(AccessDeniedException.class)
             .isThrownBy(() -> userAccessService.checkExclusionsAndRestrictions(CRN, Set.of(new SimpleGrantedAuthority(DO_RESTRICT))))
-            .withMessage(RESTRICTED_MESSAGE);
+            .withMessage(RESTRICTION_MESSAGE);
+
+        verify(offenderService, atMostOnce()).getOffenderByCrn(CRN);
+        verifyNoMoreInteractions(offenderService, userService, currentUserSupplier, offender);
+    }
+
+    @Test
+    public void givenRoleIsInRestricted_andUserIsRestricted_thenAccessDENIED(){
+        final var accessLimitation = new AccessLimitation(true, RESTRICTION_MESSAGE, true, EXCLUSION_MESSAGE);
+
+        when(currentUserSupplier.username()).thenReturn(Optional.of(USER_NAME));
+        when(offenderService.getOffenderByCrn(CRN)).thenReturn(Optional.of(offender));
+        when(userService.accessLimitationOf(USER_NAME, offender)).thenReturn(accessLimitation);
+
+        assertThatExceptionOfType(AccessDeniedException.class)
+            .isThrownBy(() -> userAccessService.checkExclusionsAndRestrictions(CRN, Set.of(new SimpleGrantedAuthority(DO_RESTRICT))))
+            .withMessage(RESTRICTION_MESSAGE);
 
         verify(offenderService, atMostOnce()).getOffenderByCrn(CRN);
         verifyNoMoreInteractions(offenderService, userService, currentUserSupplier, offender);
@@ -112,32 +164,53 @@ class UserAccessServiceTest {
 
     @Test
     public void givenRoleIsInRestrictedAndExcluded_andUserIsRestrictedAndExcluded_thenAccessDENIEDAndRestrictionNotChecked(){
-        // Note - this test is primarily to document the actual behaviour and is not based on a specific requirement
-        final var accessLimitation = new AccessLimitation(true, RESTRICTED_MESSAGE, true, EXCLUDED_MESSAGE);
+        final var accessLimitation = new AccessLimitation(true, RESTRICTION_MESSAGE, true, EXCLUSION_MESSAGE);
 
-        when(offenderService.getOffenderByCrn(CRN)).thenReturn(Optional.of(offender));
         when(currentUserSupplier.username()).thenReturn(Optional.of(USER_NAME));
+        when(offenderService.getOffenderByCrn(CRN)).thenReturn(Optional.of(offender));
         when(userService.accessLimitationOf(USER_NAME, offender)).thenReturn(accessLimitation);
+
         assertThatExceptionOfType(AccessDeniedException.class)
             .isThrownBy(() -> userAccessService.checkExclusionsAndRestrictions(CRN, Set.of(new SimpleGrantedAuthority(DO_RESTRICT_AND_EXCLUDE))))
-            .withMessage(EXCLUDED_MESSAGE);
+            .withMessage(EXCLUSION_MESSAGE);
 
         verify(offenderService, atMostOnce()).getOffenderByCrn(CRN);
         verifyNoMoreInteractions(offenderService, userService, currentUserSupplier, offender);
     }
 
     @Test
-    public void givenRoleIsInRestrictedAndExcluded_andUserIsNotExcluded_thenAccessDENIEDAndOneCallToGetOffender(){
-        final var accessLimitation = new AccessLimitation(true, RESTRICTED_MESSAGE, false, EXCLUDED_MESSAGE);
+    public void givenRoleIsInRestrictedAndExcluded_andUserIsNotExcluded_thenAccessDENIED(){
+        final var accessLimitation = new AccessLimitation(true, RESTRICTION_MESSAGE, false, EXCLUSION_MESSAGE);
 
-        when(offenderService.getOffenderByCrn(CRN)).thenReturn(Optional.of(offender));
         when(currentUserSupplier.username()).thenReturn(Optional.of(USER_NAME));
+        when(offenderService.getOffenderByCrn(CRN)).thenReturn(Optional.of(offender));
         when(userService.accessLimitationOf(USER_NAME, offender)).thenReturn(accessLimitation);
+
         assertThatExceptionOfType(AccessDeniedException.class)
             .isThrownBy(() -> userAccessService.checkExclusionsAndRestrictions(CRN, Set.of(new SimpleGrantedAuthority(DO_RESTRICT_AND_EXCLUDE))))
-            .withMessage(RESTRICTED_MESSAGE);
+            .withMessage(RESTRICTION_MESSAGE);
 
-        // TODO: Check JPA caching behaviour to see if this will make two DB calls
+        verify(offenderService, times(2)).getOffenderByCrn(CRN);
+        verifyNoMoreInteractions(offenderService, userService, currentUserSupplier, offender);
+    }
+
+    @Test
+    public void givenFirstRoleNotRestricted_andSecondRoleRestricted_andUserIsRestricted_thenAccessDENIED(){
+        final var accessLimitation = new AccessLimitation(true, RESTRICTION_MESSAGE, false, EXCLUSION_MESSAGE);
+
+        when(currentUserSupplier.username()).thenReturn(Optional.of(USER_NAME));
+        when(offenderService.getOffenderByCrn(CRN)).thenReturn(Optional.of(offender));
+        when(userService.accessLimitationOf(USER_NAME, offender)).thenReturn(accessLimitation);
+
+        final var authorities = Set.of(
+            new SimpleGrantedAuthority(DO_RESTRICT_AND_EXCLUDE),
+            new SimpleGrantedAuthority("ROLE_WHATEVER")
+        );
+
+        assertThatExceptionOfType(AccessDeniedException.class)
+            .isThrownBy(() -> userAccessService.checkExclusionsAndRestrictions(CRN, authorities))
+            .withMessage(RESTRICTION_MESSAGE);
+
         verify(offenderService, times(2)).getOffenderByCrn(CRN);
         verifyNoMoreInteractions(offenderService, userService, currentUserSupplier, offender);
     }
