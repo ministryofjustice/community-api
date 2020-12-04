@@ -139,6 +139,7 @@ public class ContactTransformer {
                 .createdDateTime(lc.getCreatedDateTime())
                 .licenceConditionNotes(lc.getLicenceConditionNotes())
                 .licenceConditionTypeMainCat(licenceConditionTypeMainCatOf(lc.getLicenceConditionTypeMainCat()))
+                .licenceConditionTypeSubCat(KeyValueTransformer.keyValueOf(lc.getLicenceConditionTypeSubCat()))
                 .startDate(lc.getStartDate())
                 .terminationDate(lc.getTerminationDate())
                 .terminationNotes(lc.getTerminationNotes())

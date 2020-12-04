@@ -22,5 +22,6 @@ public class LicenceCondition {
     private LocalDateTime createdDateTime;
     private Boolean active;
     private KeyValue licenceConditionTypeMainCat;
+    private KeyValue licenceConditionTypeSubCat;
 
 }
