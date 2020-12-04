@@ -18,6 +18,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.PssRequirement;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PssRequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PssRequirementTypeSubCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 
@@ -78,6 +79,10 @@ public class RequirementServiceTest {
                         .description("Main Cat")
                         .code("A")
                         .build())
+                .licenceConditionTypeSubCat(StandardReference.builder()
+                        .codeDescription("Building Better Relationships (BBR)")
+                        .codeValue("LC77")
+                        .build())
                 .commencementDate(commencementDate)
                 .commencementNotes("Commencement notes")
                 .startDate(startDate)
@@ -93,6 +98,8 @@ public class RequirementServiceTest {
 
         assertThat(licenceCondition.getLicenceConditionTypeMainCat().getDescription()).isEqualTo("Main Cat");
         assertThat(licenceCondition.getLicenceConditionTypeMainCat().getCode()).isEqualTo("A");
+        assertThat(licenceCondition.getLicenceConditionTypeSubCat().getDescription()).isEqualTo("Building Better Relationships (BBR)");
+        assertThat(licenceCondition.getLicenceConditionTypeSubCat().getCode()).isEqualTo("LC77");
         assertThat(licenceCondition.getActive()).isEqualTo(true);
         assertThat(licenceCondition.getCommencementDate()).isEqualTo(commencementDate);
         assertThat(licenceCondition.getCommencementNotes()).isEqualTo("Commencement notes");

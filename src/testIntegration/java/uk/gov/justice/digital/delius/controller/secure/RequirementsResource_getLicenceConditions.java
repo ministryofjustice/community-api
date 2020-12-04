@@ -25,6 +25,8 @@ public class RequirementsResource_getLicenceConditions extends IntegrationTestBa
                 .statusCode(200)
                 .body("licenceConditions[0].licenceConditionTypeMainCat.description", equalTo( "Local - Enforcement Activity"))
                 .body("licenceConditions[0].licenceConditionTypeMainCat.code", equalTo( "LC19"))
+                .body("licenceConditions[0].licenceConditionTypeSubCat.description", equalTo("Licence"))
+                .body("licenceConditions[0].licenceConditionTypeSubCat.code", equalTo("L"))
                 .body("licenceConditions[0].active", equalTo(true))
                 ;
     }
