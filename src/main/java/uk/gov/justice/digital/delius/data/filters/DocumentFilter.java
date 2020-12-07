@@ -5,7 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail.Type;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,53 +17,53 @@ import static uk.gov.justice.digital.delius.data.filters.DocumentFilter.SubType.
 
 public class DocumentFilter {
     private static final DocumentFilter NO_FILTER = new DocumentFilter();
-    private static final Map<Type, List<SubType>> categoryTypeMap = Map.of(COURT_REPORT_DOCUMENT, List.of(PSR));
-    private final Type category;
-    private final SubType type;
-    private DocumentFilter(Type category, SubType type) {
-        this.category = category;
+    private static final Map<Type, List<SubType>> typeSubTypeMap = Map.of(COURT_REPORT_DOCUMENT, List.of(PSR));
+    private final Type type;
+    private final SubType subType;
+    private DocumentFilter(Type type, SubType subType) {
         this.type = type;
+        this.subType = subType;
     }
-    private DocumentFilter(Type category) {
-        this.category = category;
-        this.type = null;
+    private DocumentFilter(Type type) {
+        this.type = type;
+        this.subType = null;
     }
 
     private DocumentFilter() {
-        category = null;
         type = null;
+        subType = null;
     }
 
     public static DocumentFilter noFilter() {
         return NO_FILTER;
     }
 
-    public static Either<String, DocumentFilter> of(String category, String type) {
-        if (StringUtils.isBlank(category) && StringUtils.isBlank(type)) {
+    public static Either<String, DocumentFilter> of(String type, String subType) {
+        if (StringUtils.isBlank(type) && StringUtils.isBlank(subType)) {
             return Either.right(NO_FILTER);
         }
-        if (StringUtils.isBlank(category) && StringUtils.isNotBlank(type)) {
-            return Either.left(String.format("Type of %s was supplied but no category. Type can only be supplied when a valida category is supplied", type));
+        if (StringUtils.isBlank(type) && StringUtils.isNotBlank(subType)) {
+            return Either.left(String.format("subtype of %s was supplied but no type. subtype can only be supplied when a valid type is supplied", subType));
         }
 
-        final var maybeCategory = enumOf(Type.class, category);
-        return maybeCategory.map(documentCategory -> {
-            if (StringUtils.isNotBlank(type)) {
-                final var maybeType = enumOf(SubType.class, type);
-                return maybeType
-                    .map(documentType -> {
-                        if (isRelated(documentCategory, documentType)) {
-                            return Either.<String, DocumentFilter>right(new DocumentFilter(documentCategory, documentType));
+        final var maybeType = enumOf(Type.class, type);
+        return maybeType.map(documentType -> {
+            if (StringUtils.isNotBlank(subType)) {
+                final var maybeSubType = enumOf(SubType.class, subType);
+                return maybeSubType
+                    .map(documentSubType -> {
+                        if (isRelated(documentType, documentSubType)) {
+                            return Either.<String, DocumentFilter>right(new DocumentFilter(documentType, documentSubType));
                         } else {
-                            return Either.<String, DocumentFilter>left(String.format("Type of %s was not valid for category %s", type, category));
+                            return Either.<String, DocumentFilter>left(String.format("subtype of %s was not valid for type %s", subType, type));
                         }
                     })
-                    .orElse(Either.left(String.format("Type of %s was not valid", type)));
+                    .orElse(Either.left(String.format("subtype of %s was not valid", subType)));
             }
 
-            return Either.<String, DocumentFilter>right(new DocumentFilter(documentCategory));
+            return Either.<String, DocumentFilter>right(new DocumentFilter(documentType));
 
-        }).orElse(Either.left(String.format("Category of %s was not valid", category)));
+        }).orElse(Either.left(String.format("type of %s was not valid", type)));
     }
 
     @NotNull
@@ -77,32 +76,32 @@ public class DocumentFilter {
         }
     }
 
-    private static boolean isRelated(Type documentCategory, SubType documentType) {
-        return categoryTypeMap.containsKey(documentCategory) && categoryTypeMap
-            .get(documentCategory)
-            .contains(documentType);
+    private static boolean isRelated(Type documentType, SubType documentSubType) {
+        return typeSubTypeMap.containsKey(documentType) && typeSubTypeMap
+            .get(documentType)
+            .contains(documentSubType);
     }
 
-    public <T> List<T> documentsFor(Type category, Supplier<List<T>> documentReader) {
-        if (allowCategory(category)) {
+    public <T> List<T> documentsFor(Type type, Supplier<List<T>> documentReader) {
+        if (allowType(type)) {
             return documentReader.get();
         }
         return List.of();
     }
 
-    public <T> List<T> documentsFor(Type category, Function<SubType, List<T>> documentReader) {
-        if (allowCategory(category)) {
-            return documentReader.apply(type);
+    public <T> List<T> documentsFor(Type type, Function<SubType, List<T>> documentReader) {
+        if (allowType(type)) {
+            return documentReader.apply(subType);
         }
         return List.of();
     }
 
-    public <T> Predicate<T> hasDocument(Type category, Predicate<T> predicate) {
-        return (entity) -> allowCategory(category) && predicate.test(entity);
+    public <T> Predicate<T> hasDocument(Type type, Predicate<T> predicate) {
+        return (entity) -> allowType(type) && predicate.test(entity);
     }
 
-    private boolean allowCategory(Type category) {
-        return this == NO_FILTER || category == this.category;
+    private boolean allowType(Type type) {
+        return this == NO_FILTER || type == this.type;
     }
 
     public enum SubType {

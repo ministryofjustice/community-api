@@ -36,8 +36,8 @@ import java.util.Optional;
 @AllArgsConstructor
 @PreAuthorize("hasRole('ROLE_COMMUNITY')")
 public class DocumentResource {
-    private static final String categoryDocumentation = "" +
-        "<div>Supported categories are " +
+    private static final String typeDocumentation = "" +
+        "<div>Supported types are " +
         "<ul>" +
         "<li>OFFENDER_DOCUMENT</li>" +
         "<li>CONVICTION_DOCUMENT</li>" +
@@ -58,10 +58,10 @@ public class DocumentResource {
         "</ul>" +
         "</div>";
 
-    private static final String typeDocumentation = "" +
-        "<div>Supported types are " +
+    private static final String subtypeDocumentation = "" +
+        "<div>Supported sub-types are " +
         "<ul>" +
-        "   <li>for category <b>COURT_REPORT_DOCUMENT</b>" +
+        "   <li>for type <b>COURT_REPORT_DOCUMENT</b>" +
         "       <ul>" +
         "           <li><b>PSR</b> - for Pre-Sentence Reports</li>" +
         "       </ul>" +
@@ -78,7 +78,7 @@ public class DocumentResource {
     @ApiOperation(
         value = "Returns all document's meta data for an offender by NOMS number",
         tags = "Documents",
-        notes = categoryDocumentation)
+        notes = typeDocumentation)
     @ApiResponses(
         value = {
             @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
@@ -88,13 +88,13 @@ public class DocumentResource {
     public OffenderDocuments getOffenderDocumentsByNomsNumber(
         @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
         @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber,
-        @ApiParam(name = "category", value = "Optional filter for category" + categoryDocumentation, example = "COURT_REPORT_DOCUMENT")
-        @RequestParam(required = false) final String category,
-        @ApiParam(name = "type", value = "Optional filter for type within a category. Can only be used if category is also present" + typeDocumentation, example = "PSR")
-        @RequestParam(required = false) final String type) {
+        @ApiParam(name = "type", value = "Optional filter for type" + typeDocumentation, example = "COURT_REPORT_DOCUMENT")
+        @RequestParam(required = false) final String type,
+        @ApiParam(name = "subtype", value = "Optional filter for subtype within a type. Can only be used if type is also present" + subtypeDocumentation, example = "PSR")
+        @RequestParam(required = false) final String subtype) {
 
         return offenderService.offenderIdOfNomsNumber(nomsNumber)
-            .map(offenderId -> documentService.offenderDocumentsFor(offenderId, DocumentFilter.of(category, type).getOrElseThrow(BadRequestException::new)))
+            .map(offenderId -> documentService.offenderDocumentsFor(offenderId, DocumentFilter.of(type, subtype).getOrElseThrow(BadRequestException::new)))
             .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
     }
 
@@ -110,13 +110,13 @@ public class DocumentResource {
         @ApiParam(name = "crn", value = "CRN for the offender", example = "X340906", required = true)
         @NotNull
         @PathVariable(value = "crn") final String crn,
-        @ApiParam(name = "category", value = "Optional filter for category" + categoryDocumentation, example = "COURT_REPORT_DOCUMENT")
-        @RequestParam(required = false) final String category,
-        @ApiParam(name = "type", value = "Optional filter for type within a category. Can only be used if category is also present" + typeDocumentation, example = "PSR")
-        @RequestParam(required = false) final String type) {
+        @ApiParam(name = "type", value = "Optional filter for type" + typeDocumentation, example = "COURT_REPORT_DOCUMENT")
+        @RequestParam(required = false) final String type,
+        @ApiParam(name = "subtype", value = "Optional filter for subtype within a type. Can only be used if type is also present" + subtypeDocumentation, example = "PSR")
+        @RequestParam(required = false) final String subtype) {
 
         return offenderService.offenderIdOfCrn(crn)
-            .map(offenderId -> documentService.offenderDocumentsFor(offenderId, DocumentFilter.of(category, type).getOrElseThrow(BadRequestException::new)))
+            .map(offenderId -> documentService.offenderDocumentsFor(offenderId, DocumentFilter.of(type, subtype).getOrElseThrow(BadRequestException::new)))
             .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 

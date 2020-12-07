@@ -569,13 +569,13 @@ public class DocumentServiceTest {
             }
         }
 
-        @DisplayName("Filter with just category")
+        @DisplayName("Filter with just type")
         @Nested
         @TestInstance(PER_CLASS)
-        class FilterWithJustCategory {
+        class FilterWithJustType {
             @Test
-            @DisplayName("Will only query the repository related to the category")
-            void willOnlyQueryTheRepositoryRelatedToTheCourtReportCategory() {
+            @DisplayName("Will only query the repository related to the type")
+            void willOnlyQueryTheRepositoryRelatedToTheCourtReportType() {
                 documentService.offenderDocumentsFor(1L, DocumentFilter.of("COURT_REPORT_DOCUMENT", null).get());
 
                 verify(courtReportDocumentRepository).findAll(courtReportDocumentSpecification.capture());
@@ -596,8 +596,8 @@ public class DocumentServiceTest {
             }
 
             @Test
-            @DisplayName("Will only query the repository related to other categories")
-            void willOnlyQueryTheRepositoryRelatedToOtherDocumentCategory() {
+            @DisplayName("Will only query the repository related to other types")
+            void willOnlyQueryTheRepositoryRelatedToOtherDocumentTypes() {
                 documentService.offenderDocumentsFor(1L, DocumentFilter.of("ASSESSMENT_DOCUMENT", null).get());
 
                 verify(assessmentDocumentRepository).findByOffenderId(any());
@@ -618,8 +618,8 @@ public class DocumentServiceTest {
             }
 
             @Test
-            @DisplayName("Will only return documents for the category")
-            void willOnlyReturnDocumentsForTheCategory() {
+            @DisplayName("Will only return documents for the type")
+            void willOnlyReturnDocumentsForTheType() {
                 final var documents = documentService.offenderDocumentsFor(1L, DocumentFilter
                     .of("COURT_REPORT_DOCUMENT", null)
                     .get());
@@ -628,22 +628,22 @@ public class DocumentServiceTest {
                 assertThat(documents.getDocuments()).hasSize(0);
             }
 
-            @DisplayName("Supplying a category will only bring back documents of that category")
-            @ParameterizedTest(name = "Category {0}")
-            @MethodSource("allCategories")
-            void supplyingACategoryWillOnlyBringBackDocumentsOfThatCategory(String category) {
+            @DisplayName("Supplying a type will only bring back documents of that type")
+            @ParameterizedTest(name = "Type {0}")
+            @MethodSource("allTypes")
+            void supplyingATypeWillOnlyBringBackDocumentsOfThatType(String type) {
                 final var documents = documentService.offenderDocumentsFor(1L, DocumentFilter
-                    .of(category, null)
+                    .of(type, null)
                     .get());
                 // some types have 1 others 2
                 assertThat(allDocuments(documents)).hasSizeBetween(1, 2);
                 // all documents have the right type
                 assertThat(allDocuments(documents))
                     .extracting(document -> document.getType().getCode())
-                    .containsAnyOf(category);
+                    .containsAnyOf(type);
             }
 
-            private Stream<String> allCategories() {
+            private Stream<String> allTypes() {
                 return Arrays.stream(Type.values()).map(Enum::name);
             }
         }
