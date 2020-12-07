@@ -56,7 +56,7 @@ public class LicenceCondition {
     private LicenceConditionTypeMainCat licenceConditionTypeMainCat;
 
     @JoinColumn(name = "LIC_COND_TYPE_SUB_CAT_ID")
-    @OneToOne
+    @ManyToOne
     private StandardReference licenceConditionTypeSubCat;
 
     @JoinColumn(name = "DISPOSAL_ID", referencedColumnName = "DISPOSAL_ID")
