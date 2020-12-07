@@ -173,8 +173,8 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
         @Nested
         class ValidationOfRequest {
             @Test
-            @DisplayName("ok when no category or type supplied")
-            void oKWhenNoCategoryOrTypeSupplied() {
+            @DisplayName("ok when no type or subtype supplied")
+            void oKWhenNoTypeOrSubTypeSupplied() {
                 given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
@@ -186,8 +186,8 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
             }
 
             @Test
-            @DisplayName("ok with a known category is supplied")
-            void okWithAKnownCategoryIsSupplied() {
+            @DisplayName("ok with a known type is supplied")
+            void okWithAKnownTypeIsSupplied() {
                 given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
@@ -200,8 +200,8 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
             }
 
             @Test
-            @DisplayName("ok with a known category with a related known type")
-            void okWithAKnownCategoryWithARelatedKnownType() {
+            @DisplayName("ok with a known type with a related known subtype")
+            void okWithAKnownTypeWithARelatedKnownSubType() {
                 given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
@@ -215,8 +215,8 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
             }
 
             @Test
-            @DisplayName("bad request when category is unknown")
-            void badRequestWhenCategoryIsUnknown() {
+            @DisplayName("bad request when type is unknown")
+            void badRequestWhenTypeIsUnknown() {
                 given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
@@ -230,8 +230,8 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
             }
 
             @Test
-            @DisplayName("bad request when type is unknown")
-            void badRequestWhenTypeIsUnknown() {
+            @DisplayName("bad request when subtype is unknown")
+            void badRequestWhenSubTypeIsUnknown() {
                 given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
@@ -245,8 +245,8 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
             }
 
             @Test
-            @DisplayName("bad request when only type is supplied")
-            void badRequestWhenOnlyTypeIsSupplied() {
+            @DisplayName("bad request when only subtype is supplied")
+            void badRequestWhenOnlySubTypeIsSupplied() {
                 given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
@@ -258,20 +258,20 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
                     .statusCode(HttpStatus.BAD_REQUEST.value());
             }
 
-            @Test
-            @DisplayName("bad request when type does no belong with category")
-            void badRequestWhenTypeDoesNoBelongWithCategory() {
-                given()
-                    .auth()
-                    .oauth2(tokenWithRoleCommunity())
-                    .contentType(APPLICATION_JSON_VALUE)
-                    .when()
-                    .param("type", "CASE_ALLOCATION_DOCUMENT")
-                    .param("subtype", "PSR")
-                    .get("/offenders/crn/{crn}/documents/grouped", "X320741")
-                    .then()
-                    .statusCode(HttpStatus.BAD_REQUEST.value());
-            }
+        }
+        @Test
+        @DisplayName("bad request when subtype does no belong with type")
+        void badRequestWhenSubTypeDoesNoBelongWithType() {
+            given()
+                .auth()
+                .oauth2(tokenWithRoleCommunity())
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .param("type", "CASE_ALLOCATION_DOCUMENT")
+                .param("subtype", "PSR")
+                .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
         }
 
         @DisplayName("Filters")
@@ -300,8 +300,8 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
             }
 
             @Test
-            @DisplayName("With category filter only documents in that category will be returned")
-            void withCategoryFilterOnlyDocumentsInThatCategoryWillBeReturned() {
+            @DisplayName("With type filter only documents in that type will be returned")
+            void withTypeFilterOnlyDocumentsInThatTypeWillBeReturned() {
                 final var courtReportDocuments = given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
@@ -334,8 +334,8 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
             }
 
             @Test
-            @DisplayName("With category and type supplied only documents in that category that match the type will be returned")
-            void withCategoryAndTypeSuppliedOnlyDocumentsInThatCategoryThatMatchTheTypeWillBeReturned() {
+            @DisplayName("With type and subtype supplied only documents in that type that match the subtype will be returned")
+            void withTypeAndSubTypeSuppliedOnlyDocumentsInThatTypeThatMatchTheSubTypeWillBeReturned() {
                 final var courtReportDocuments = given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
@@ -438,8 +438,8 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
         @Nested
         class ValidationOfRequest {
             @Test
-            @DisplayName("ok when no category or type supplied")
-            void oKWhenNoCategoryOrTypeSupplied() {
+            @DisplayName("ok when no type or subtype supplied")
+            void oKWhenNoTypeOrSubTypeSupplied() {
                 given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
@@ -451,8 +451,8 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
             }
 
             @Test
-            @DisplayName("ok with a known category is supplied")
-            void okWithAKnownCategoryIsSupplied() {
+            @DisplayName("ok with a known type is supplied")
+            void okWithAKnownTypeIsSupplied() {
                 given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
@@ -465,8 +465,8 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
             }
 
             @Test
-            @DisplayName("ok with a known category with a related known type")
-            void okWithAKnownCategoryWithARelatedKnownType() {
+            @DisplayName("ok with a known type with a related known subtype")
+            void okWithAKnownTypeWithARelatedKnownSubType() {
                 given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
@@ -480,8 +480,8 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
             }
 
             @Test
-            @DisplayName("bad request when category is unknown")
-            void badRequestWhenCategoryIsUnknown() {
+            @DisplayName("bad request when type is unknown")
+            void badRequestWhenTypeIsUnknown() {
                 given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
@@ -495,8 +495,8 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
             }
 
             @Test
-            @DisplayName("bad request when type is unknown")
-            void badRequestWhenTypeIsUnknown() {
+            @DisplayName("bad request when subtype is unknown")
+            void badRequestWhenSubTypeIsUnknown() {
                 given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
@@ -510,8 +510,8 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
             }
 
             @Test
-            @DisplayName("bad request when only type is supplied")
-            void badRequestWhenOnlyTypeIsSupplied() {
+            @DisplayName("bad request when only subtype is supplied")
+            void badRequestWhenOnlySubTypeIsSupplied() {
                 given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
@@ -524,8 +524,8 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
             }
 
             @Test
-            @DisplayName("bad request when type does no belong with category")
-            void badRequestWhenTypeDoesNoBelongWithCategory() {
+            @DisplayName("bad request when subtype does no belong with type")
+            void badRequestWhenSubTypeDoesNoBelongWithType() {
                 given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
@@ -565,8 +565,8 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
             }
 
             @Test
-            @DisplayName("With category filter only documents in that category will be returned")
-            void withCategoryFilterOnlyDocumentsInThatCategoryWillBeReturned() {
+            @DisplayName("With type filter only documents in that type will be returned")
+            void withTypeFilterOnlyDocumentsInThatTypeWillBeReturned() {
                 final var courtReportDocuments = given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
@@ -599,8 +599,8 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
             }
 
             @Test
-            @DisplayName("With category and type supplied only documents in that category that match the type will be returned")
-            void withCategoryAndTypeSuppliedOnlyDocumentsInThatCategoryThatMatchTheTypeWillBeReturned() {
+            @DisplayName("With type and type supplied only documents in that type that match the subtype will be returned")
+            void withTypeAndSubTypeSuppliedOnlyDocumentsInThatTypeThatMatchTheSubTypeWillBeReturned() {
                 final var courtReportDocuments = given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
