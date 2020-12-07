@@ -38,68 +38,68 @@ class DocumentFilterTest {
         }
 
         @Test
-        @DisplayName("filter is created for valid category")
-        void filterIsCreatedForValidCategory() {
+        @DisplayName("filter is created for valid type")
+        void filterIsCreatedForValidType() {
             assertThat(DocumentFilter
                 .of("ASSESSMENT_DOCUMENT", "")
                 .getOrElseThrow(shouldBeRight)).isNotNull().isNotEqualTo(noFilter());
         }
 
         @Test
-        @DisplayName("filter is created for valid category with related type")
-        void filterIsCreatedForValidCategoryWithRelatedType() {
+        @DisplayName("filter is created for valid type with related subtype")
+        void filterIsCreatedForValidTypeWithRelatedSubType() {
             assertThat(DocumentFilter
                 .of("COURT_REPORT_DOCUMENT", "PSR")
                 .getOrElseThrow(shouldBeRight)).isNotNull().isNotEqualTo(noFilter());
         }
 
         @Test
-        @DisplayName("filter where type is not related to category is rejected")
-        void filterWhereTypeIsNotRelatedToCategoryIsRejected() {
+        @DisplayName("filter where subtype is not related to type is rejected")
+        void filterWhereSubTypeIsNotRelatedToTypeIsRejected() {
             assertThat(DocumentFilter
                 .of("ASSESSMENT_DOCUMENT", "PSR")
-                .getLeft()).isEqualTo("Type of PSR was not valid for category ASSESSMENT_DOCUMENT");
+                .getLeft()).isEqualTo("subtype of PSR was not valid for type ASSESSMENT_DOCUMENT");
         }
 
         @Test
-        @DisplayName("Type where no category is supplied is rejected")
-        void typeWhereNoCategoryIsSuppliedIsRejected() {
+        @DisplayName("SubType where no type is supplied is rejected")
+        void subTypeWhereNoTypeIsSuppliedIsRejected() {
             assertThat(DocumentFilter
                 .of(null, "PSR")
-                .getLeft()).isEqualTo("Type of PSR was supplied but no category. Type can only be supplied when a valida category is supplied");
+                .getLeft()).isEqualTo("subtype of PSR was supplied but no type. subtype can only be supplied when a valid type is supplied");
         }
     }
 
-    @DisplayName("documents for category")
+    @DisplayName("documents for type")
     @Nested
-    class DocumentsForCategory {
+    class DocumentsForType {
         private final Supplier<List<String>> documentSupplier = () -> List.of("one", "two", "three");
         private final DocumentFilter documentFilter = DocumentFilter
             .of("ASSESSMENT_DOCUMENT", null)
             .getOrElseThrow(shouldBeRight);
 
         @Test
-        @DisplayName("documents returned when matching category")
-        void documentsReturnedWhenMatchingCategory() {
+        @DisplayName("documents returned when matching type")
+        void documentsReturnedWhenMatchingType() {
             assertThat(documentFilter.documentsFor(Type.ASSESSMENT_DOCUMENT, documentSupplier)).containsExactly("one", "two", "three");
         }
 
         @Test
-        @DisplayName("empty list returned when not matching category")
-        void emptyListReturnedWhenNotMatchingCategory() {
+        @DisplayName("empty list returned when not matching type")
+        void emptyListReturnedWhenNotMatchingType() {
             assertThat(documentFilter.documentsFor(Type.OFFENDER_DOCUMENT, documentSupplier)).isEmpty();
         }
     }
 
-    @DisplayName("documents for category and type")
+    @DisplayName("documents for type and subtype")
     @Nested
-    class DocumentsForCategoryAndType {
-        private final Function<SubType, List<String>> documentSupplier = (type) -> type == PSR ? List.of("one", "two", "three") : List
+    class DocumentsForTypeAndSubType {
+        private final Function<SubType, List<String>> documentSupplier = (subType) -> subType == PSR ? List.of("one", "two", "three") : List
             .of("one", "two", "three", "four");
 
         @Test
-        @DisplayName("allows filtering by type")
-        void allowsFilteringByType() {
+        @DisplayName("allows filtering by subtype")
+        void allowsFilteringBySubType() {
             assertThat(DocumentFilter
                 .of("COURT_REPORT_DOCUMENT", "PSR")
                 .getOrElseThrow(shouldBeRight)
@@ -108,8 +108,8 @@ class DocumentFilterTest {
         }
 
         @Test
-        @DisplayName("allows filtering by just category")
-        void allowsFilteringByJustCategory() {
+        @DisplayName("allows filtering by just type")
+        void allowsFilteringByJustType() {
             assertThat(DocumentFilter
                 .of("COURT_REPORT_DOCUMENT", null)
                 .getOrElseThrow(shouldBeRight)
@@ -117,8 +117,8 @@ class DocumentFilterTest {
         }
 
         @Test
-        @DisplayName("empty list returned when not matching category")
-        void emptyListReturnedWhenNotMatchingCategory() {
+        @DisplayName("empty list returned when not matching type")
+        void emptyListReturnedWhenNotMatchingType() {
             assertThat(DocumentFilter
                 .of("COURT_REPORT_DOCUMENT", "PSR")
                 .getOrElseThrow(shouldBeRight)
@@ -136,20 +136,20 @@ class DocumentFilterTest {
             .getOrElseThrow(shouldBeRight);
 
         @Test
-        @DisplayName("predicate can be evaluated true when matching category")
-        void predicateCanBeEvaluatedTrueWhenMatchingCategory() {
+        @DisplayName("predicate can be evaluated true when matching type")
+        void predicateCanBeEvaluatedTrueWhenMatchingType() {
             assertThat(documentFilter.hasDocument(Type.ASSESSMENT_DOCUMENT, predicate).test("CORRECT!")).isTrue();
         }
 
         @Test
-        @DisplayName("predicate can be evaluated false when matching category")
-        void predicateCanBeEvaluatedFalseWhenMatchingCategory() {
+        @DisplayName("predicate can be evaluated false when matching type")
+        void predicateCanBeEvaluatedFalseWhenMatchingType() {
             assertThat(documentFilter.hasDocument(Type.ASSESSMENT_DOCUMENT, predicate).test("WRONG!")).isFalse();
         }
 
         @Test
-        @DisplayName("predicate can be always false when not matching category")
-        void predicateCanBeAlwaysFalseWhenNotMatchingCategory() {
+        @DisplayName("predicate can be always false when not matching type")
+        void predicateCanBeAlwaysFalseWhenNotMatchingType() {
             assertThat(documentFilter.hasDocument(Type.CONTACT_DOCUMENT, predicate).test("CORRECT!")).isFalse();
         }
 

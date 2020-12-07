@@ -16,11 +16,11 @@ import static uk.gov.justice.digital.delius.jpa.standard.entity.RCourtReportType
 
 public class CourtReportDocumentFilterTransformer implements Specification<CourtReportDocument> {
     private final Long offenderId;
-    private final Optional<SubType> type;
+    private final Optional<SubType> subType;
 
-    private CourtReportDocumentFilterTransformer(Long offenderId, Optional<SubType> type) {
+    private CourtReportDocumentFilterTransformer(Long offenderId, Optional<SubType> subType) {
         this.offenderId = offenderId;
-        this.type = type;
+        this.subType = subType;
     }
 
     public static Specification<CourtReportDocument> of(Long offenderId, SubType type) {
@@ -33,7 +33,7 @@ public class CourtReportDocumentFilterTransformer implements Specification<Court
 
         predicateBuilder.add(criteriaBuilder.equal(documentRoot.get("offenderId"), offenderId));
 
-        type.filter(type -> type == SubType.PSR).ifPresent(type -> {
+        subType.filter(type -> type == SubType.PSR).ifPresent(type -> {
             final var courtReportTypeCodeIn = criteriaBuilder.in(documentRoot
                 .join("courtReport")
                 .join("courtReportType")

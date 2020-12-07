@@ -91,7 +91,7 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
 
     @DisplayName("/offenders/crn/{crn}/documents/grouped")
     @Nested
-    class DocumentsGrouped {
+    class DocumentsGroupedByCRN {
         @Test
         @DisplayName("Will return 404 for a offender that is not found")
         public void givenUnknownCrnThenReturn404() {
@@ -173,8 +173,8 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
         @Nested
         class ValidationOfRequest {
             @Test
-            @DisplayName("ok when no category or type supplied")
-            void oKWhenNoCategoryOrTypeSupplied() {
+            @DisplayName("ok when no type or subtype supplied")
+            void oKWhenNoTypeOrSubTypeSupplied() {
                 given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
@@ -186,47 +186,32 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
             }
 
             @Test
-            @DisplayName("ok with a known category is supplied")
-            void okWithAKnownCategoryIsSupplied() {
+            @DisplayName("ok with a known type is supplied")
+            void okWithAKnownTypeIsSupplied() {
                 given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
                     .contentType(APPLICATION_JSON_VALUE)
                     .when()
-                    .param("category", "COURT_REPORT_DOCUMENT")
+                    .param("type", "COURT_REPORT_DOCUMENT")
                     .get("/offenders/crn/{crn}/documents/grouped", "X320741")
                     .then()
                     .statusCode(HttpStatus.OK.value());
             }
 
             @Test
-            @DisplayName("ok with a known category with a related known type")
-            void okWithAKnownCategoryWithARelatedKnownType() {
+            @DisplayName("ok with a known type with a related known subtype")
+            void okWithAKnownTypeWithARelatedKnownSubType() {
                 given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
                     .contentType(APPLICATION_JSON_VALUE)
                     .when()
-                    .param("category", "COURT_REPORT_DOCUMENT")
-                    .param("type", "PSR")
+                    .param("type", "COURT_REPORT_DOCUMENT")
+                    .param("subtype", "PSR")
                     .get("/offenders/crn/{crn}/documents/grouped", "X320741")
                     .then()
                     .statusCode(HttpStatus.OK.value());
-            }
-
-            @Test
-            @DisplayName("bad request when category is unknown")
-            void badRequestWhenCategoryIsUnknown() {
-                given()
-                    .auth()
-                    .oauth2(tokenWithRoleCommunity())
-                    .contentType(APPLICATION_JSON_VALUE)
-                    .when()
-                    .param("category", "BANANAS")
-                    .get("/offenders/crn/{crn}/documents/grouped", "X320741")
-                    .then()
-                    .statusCode(HttpStatus.BAD_REQUEST.value());
-
             }
 
             @Test
@@ -237,41 +222,56 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
                     .oauth2(tokenWithRoleCommunity())
                     .contentType(APPLICATION_JSON_VALUE)
                     .when()
-                    .param("category", "COURT_REPORT_DOCUMENT")
                     .param("type", "BANANAS")
                     .get("/offenders/crn/{crn}/documents/grouped", "X320741")
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value());
+
             }
 
             @Test
-            @DisplayName("bad request when only type is supplied")
-            void badRequestWhenOnlyTypeIsSupplied() {
+            @DisplayName("bad request when subtype is unknown")
+            void badRequestWhenSubTypeIsUnknown() {
                 given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
                     .contentType(APPLICATION_JSON_VALUE)
                     .when()
-                    .param("type", "PSR")
+                    .param("type", "COURT_REPORT_DOCUMENT")
+                    .param("subtype", "BANANAS")
                     .get("/offenders/crn/{crn}/documents/grouped", "X320741")
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value());
             }
 
             @Test
-            @DisplayName("bad request when type does no belong with category")
-            void badRequestWhenTypeDoesNoBelongWithCategory() {
+            @DisplayName("bad request when only subtype is supplied")
+            void badRequestWhenOnlySubTypeIsSupplied() {
                 given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
                     .contentType(APPLICATION_JSON_VALUE)
                     .when()
-                    .param("category", "CASE_ALLOCATION_DOCUMENT")
-                    .param("type", "PSR")
+                    .param("subtype", "PSR")
                     .get("/offenders/crn/{crn}/documents/grouped", "X320741")
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value());
             }
+
+        }
+        @Test
+        @DisplayName("bad request when subtype does no belong with type")
+        void badRequestWhenSubTypeDoesNoBelongWithType() {
+            given()
+                .auth()
+                .oauth2(tokenWithRoleCommunity())
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .param("type", "CASE_ALLOCATION_DOCUMENT")
+                .param("subtype", "PSR")
+                .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
         }
 
         @DisplayName("Filters")
@@ -300,14 +300,14 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
             }
 
             @Test
-            @DisplayName("With category filter only documents in that category will be returned")
-            void withCategoryFilterOnlyDocumentsInThatCategoryWillBeReturned() {
+            @DisplayName("With type filter only documents in that type will be returned")
+            void withTypeFilterOnlyDocumentsInThatTypeWillBeReturned() {
                 final var courtReportDocuments = given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
                     .contentType(APPLICATION_JSON_VALUE)
                     .when()
-                    .param("category", "COURT_REPORT_DOCUMENT")
+                    .param("type", "COURT_REPORT_DOCUMENT")
                     .get("/offenders/crn/{crn}/documents/grouped", "X320741")
                     .then()
                     .statusCode(HttpStatus.OK.value())
@@ -322,7 +322,7 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
                     .oauth2(tokenWithRoleCommunity())
                     .contentType(APPLICATION_JSON_VALUE)
                     .when()
-                    .param("category", "NSI_DOCUMENT")
+                    .param("type", "NSI_DOCUMENT")
                     .get("/offenders/crn/{crn}/documents/grouped", "X320741")
                     .then()
                     .statusCode(HttpStatus.OK.value())
@@ -334,16 +334,281 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
             }
 
             @Test
-            @DisplayName("With category and type supplied only documents in that category that match the type will be returned")
-            void withCategoryAndTypeSuppliedOnlyDocumentsInThatCategoryThatMatchTheTypeWillBeReturned() {
+            @DisplayName("With type and subtype supplied only documents in that type that match the subtype will be returned")
+            void withTypeAndSubTypeSuppliedOnlyDocumentsInThatTypeThatMatchTheSubTypeWillBeReturned() {
                 final var courtReportDocuments = given()
                     .auth()
                     .oauth2(tokenWithRoleCommunity())
                     .contentType(APPLICATION_JSON_VALUE)
                     .when()
-                    .param("category", "COURT_REPORT_DOCUMENT")
-                    .param("type", "PSR")
+                    .param("type", "COURT_REPORT_DOCUMENT")
+                    .param("subtype", "PSR")
                     .get("/offenders/crn/{crn}/documents/grouped", "X320741")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .body()
+                    .as(OffenderDocuments.class);
+
+                assertThat(countAllDocuments(courtReportDocuments)).isEqualTo(PSR_COURT_REPORT_DOCUMENT_COUNT);
+            }
+        }
+    }
+    @DisplayName("/offenders/nomsNumber/{nomsNumber}/documents/grouped")
+    @Nested
+    class DocumentsGroupedByNOMSNumber {
+        @Test
+        @DisplayName("Will return 404 for a offender that is not found")
+        public void givenUnknownNomsNumberThenReturn404() {
+            given()
+                .auth()
+                .oauth2(tokenWithRoleCommunity())
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/nomsNumber/{nomsNumber}/documents/grouped", "G9999XX")
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+        }
+
+        @Test
+        @DisplayName("Will return empty list for a offender with no documents")
+        public void givenKnownNomsNumberWithNoDocuments() {
+            final OffenderDocuments offenderDocuments = given()
+                .auth()
+                .oauth2(tokenWithRoleCommunity())
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/nomsNumber/{nomsNumber}/documents/grouped", "G4106UN")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .body()
+                .as(OffenderDocuments.class);
+
+            assertThat(offenderDocuments.getDocuments()).isEmpty();
+            assertThat(offenderDocuments.getConvictions()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("Will return documents for an offender grouped by convictions")
+        public void givenKnownNomsNumberThenReturnDocuments() {
+            final OffenderDocuments offenderDocuments = given()
+                .auth()
+                .oauth2(tokenWithRoleCommunity())
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/nomsNumber/{nomsNumber}/documents/grouped", "G9542VP")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .body()
+                .as(OffenderDocuments.class);
+
+            assertThat(offenderDocuments.getConvictions()).hasSize(2);
+            assertThat(offenderDocuments.getDocuments()).hasSize(7);
+
+            final ConvictionDocuments convictionDocuments = offenderDocuments
+                .getConvictions()
+                .stream()
+                .filter(convictionDocument -> convictionDocument.getConvictionId().equals("2500295345"))
+                .findFirst()
+                .orElseThrow();
+
+            final OffenderDocumentDetail institutionalDocument = convictionDocuments.getDocuments().stream()
+                .filter(doc -> doc.getId().equals("e6cf2802-32d5-4a91-a7a9-00064d27bb19")).findFirst().orElseThrow();
+            assertThat(institutionalDocument.getSubType().getCode()).isEqualTo("PAR");
+            assertThat(institutionalDocument.getSubType().getDescription()).isEqualTo("Parole Assessment Report");
+            assertThat(institutionalDocument
+                .getReportDocumentDates()
+                .getRequestedDate()).isEqualTo(LocalDate.of(2019, 9, 5));
+
+            final OffenderDocumentDetail courtReportDocument = convictionDocuments.getDocuments().stream()
+                .filter(doc -> doc.getId().equals("1d842fce-ec2d-45dc-ac9a-748d3076ca6b")).findFirst().orElseThrow();
+            assertThat(courtReportDocument.getSubType().getCode()).isEqualTo("CJF");
+            assertThat(courtReportDocument.getSubType().getDescription()).isEqualTo("Pre-Sentence Report - Fast");
+            assertThat(courtReportDocument
+                .getReportDocumentDates()
+                .getRequestedDate()).isEqualTo(LocalDate.of(2018, 9, 4));
+            assertThat(courtReportDocument
+                .getReportDocumentDates()
+                .getRequiredDate()).isEqualTo(LocalDate.of(2019, 9, 4));
+        }
+
+        @DisplayName("Validation of request")
+        @Nested
+        class ValidationOfRequest {
+            @Test
+            @DisplayName("ok when no type or subtype supplied")
+            void oKWhenNoTypeOrSubTypeSupplied() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .get("/offenders/nomsNumber/{nomsNumber}/documents/grouped", "G9542VP")
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
+            }
+
+            @Test
+            @DisplayName("ok with a known type is supplied")
+            void okWithAKnownTypeIsSupplied() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("type", "COURT_REPORT_DOCUMENT")
+                    .get("/offenders/nomsNumber/{nomsNumber}/documents/grouped", "G9542VP")
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
+            }
+
+            @Test
+            @DisplayName("ok with a known type with a related known subtype")
+            void okWithAKnownTypeWithARelatedKnownSubType() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("type", "COURT_REPORT_DOCUMENT")
+                    .param("subtype", "PSR")
+                    .get("/offenders/nomsNumber/{nomsNumber}/documents/grouped", "G9542VP")
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
+            }
+
+            @Test
+            @DisplayName("bad request when type is unknown")
+            void badRequestWhenTypeIsUnknown() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("type", "BANANAS")
+                    .get("/offenders/nomsNumber/{nomsNumber}/documents/grouped", "G9542VP")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+
+            }
+
+            @Test
+            @DisplayName("bad request when subtype is unknown")
+            void badRequestWhenSubTypeIsUnknown() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("type", "COURT_REPORT_DOCUMENT")
+                    .param("subtype", "BANANAS")
+                    .get("/offenders/nomsNumber/{nomsNumber}/documents/grouped", "G9542VP")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+            }
+
+            @Test
+            @DisplayName("bad request when only subtype is supplied")
+            void badRequestWhenOnlySubTypeIsSupplied() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("subtype", "PSR")
+                    .get("/offenders/nomsNumber/{nomsNumber}/documents/grouped", "G9542VP")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+            }
+
+            @Test
+            @DisplayName("bad request when subtype does no belong with type")
+            void badRequestWhenSubTypeDoesNoBelongWithType() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("type", "CASE_ALLOCATION_DOCUMENT")
+                    .param("subtype", "PSR")
+                    .get("/offenders/nomsNumber/{nomsNumber}/documents/grouped", "G9542VP")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value());
+            }
+        }
+
+        @DisplayName("Filters")
+        @Nested
+        class Filters {
+            static final int NSI_DOCUMENT_COUNT = 3;
+            static final int ALL_COURT_REPORT_DOCUMENT_COUNT = 2;
+            static final int PSR_COURT_REPORT_DOCUMENT_COUNT = 1;
+
+            @Test
+            @DisplayName("With no filter all documents will be returned")
+            void withNoFilterAllDocumentsWillBeReturned() {
+                final var offenderDocuments = given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .get("/offenders/nomsNumber/{nomsNumber}/documents/grouped", "G9542VP")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .body()
+                    .as(OffenderDocuments.class);
+
+                assertThat(countAllDocuments(offenderDocuments)).isGreaterThan(ALL_COURT_REPORT_DOCUMENT_COUNT + PSR_COURT_REPORT_DOCUMENT_COUNT);
+            }
+
+            @Test
+            @DisplayName("With type filter only documents in that type will be returned")
+            void withTypeFilterOnlyDocumentsInThatTypeWillBeReturned() {
+                final var courtReportDocuments = given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("type", "COURT_REPORT_DOCUMENT")
+                    .get("/offenders/nomsNumber/{nomsNumber}/documents/grouped", "G9542VP")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .body()
+                    .as(OffenderDocuments.class);
+
+                assertThat(countAllDocuments(courtReportDocuments)).isEqualTo(ALL_COURT_REPORT_DOCUMENT_COUNT);
+
+                final var nsiDocuments = given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("type", "NSI_DOCUMENT")
+                    .get("/offenders/nomsNumber/{nomsNumber}/documents/grouped", "G9542VP")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .body()
+                    .as(OffenderDocuments.class);
+
+                assertThat(countAllDocuments(nsiDocuments)).isEqualTo(NSI_DOCUMENT_COUNT);
+            }
+
+            @Test
+            @DisplayName("With type and type supplied only documents in that type that match the subtype will be returned")
+            void withTypeAndSubTypeSuppliedOnlyDocumentsInThatTypeThatMatchTheSubTypeWillBeReturned() {
+                final var courtReportDocuments = given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .param("type", "COURT_REPORT_DOCUMENT")
+                    .param("subtype", "PSR")
+                    .get("/offenders/nomsNumber/{nomsNumber}/documents/grouped", "G9542VP")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract()
