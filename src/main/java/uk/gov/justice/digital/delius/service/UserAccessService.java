@@ -17,17 +17,18 @@ public class UserAccessService {
     private final UserService userService;
     private final OffenderService offenderService;
     private final CurrentUserSupplier currentUserSupplier;
-    @Value("${user-access.roles.apply-exclusions-for}")
-    private final Set<String> excludingRoles;
-    @Value("${user-access.roles.apply-restrictions-for}")
-    private final Set<String> restrictingRoles;
+    @Value("${user-access.scopes.dont-apply-exclusions-for}")
+    private final Set<String> ignoreExclusionRoles;
+    @Value("${user-access.scopes.dont-apply-restrictions-for}")
+    private final Set<String> ignoreRestrictionRoles;
 
     public void checkExclusionsAndRestrictions(String crn, Collection<? extends GrantedAuthority> authorities) {
         final var username = currentUserSupplier.username();
+        final var offender = offenderService.getOffenderByCrn(crn);
         if (username.isPresent() && shouldCheckExclusion(authorities)) {
 
-            final var excludedException = offenderService.getOffenderByCrn(crn)
-                .map(offender -> userService.accessLimitationOf(username.get(), offender))
+            final var excludedException = offender
+                .map(o -> userService.accessLimitationOf(username.get(), o))
                 .filter(AccessLimitation::isUserExcluded)
                 .map(accessLimitation -> new AccessDeniedException(accessLimitation.getExclusionMessage()));
 
@@ -36,9 +37,9 @@ public class UserAccessService {
         }
 
         if (shouldCheckRestriction(authorities)) {
-            final var restrictedException = offenderService.getOffenderByCrn(crn)
-                .map(offender -> username.map(u -> userService.accessLimitationOf(u, offender))
-                                         .orElseGet(() -> buildAnonymousUserAccessLimitation(offender)))
+            final var restrictedException = offender
+                .map(o -> username.map(u -> userService.accessLimitationOf(u, o))
+                                         .orElseGet(() -> buildAnonymousUserAccessLimitation(o)))
                 .filter(AccessLimitation::isUserRestricted)
                 .map(accessLimitation -> new AccessDeniedException(accessLimitation.getRestrictionMessage()));
 
@@ -51,14 +52,14 @@ public class UserAccessService {
         return authorities.stream()
             .map(GrantedAuthority::getAuthority)
             .map(String::toUpperCase)
-            .anyMatch(excludingRoles::contains);
+            .noneMatch(ignoreExclusionRoles::contains);
     }
 
     private boolean shouldCheckRestriction(Collection<? extends GrantedAuthority> authorities) {
         return authorities.stream()
             .map(GrantedAuthority::getAuthority)
             .map(String::toUpperCase)
-            .anyMatch(restrictingRoles::contains);
+            .noneMatch(ignoreRestrictionRoles::contains);
     }
 
     private AccessLimitation buildAnonymousUserAccessLimitation(uk.gov.justice.digital.delius.data.api.OffenderDetail offender) {
