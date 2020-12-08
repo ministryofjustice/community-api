@@ -74,7 +74,7 @@ import static org.springframework.http.HttpStatus.OK;
 @Slf4j
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
-@PreAuthorize("hasAnyRole('ROLE_COMMUNITY','ROLE_COMMUNITY_API_OPEN','ROLE_COMMUNITY_API_EXCLUDED','ROLE_COMMUNITY_API_EXCLUDED_RESTRICTED','ROLE_COMMUNITY_API_RESTRICTED')")
+@PreAuthorize("hasRole('ROLE_COMMUNITY')")
 public class OffendersResource {
 
     private final OffenderService offenderService;
@@ -281,6 +281,7 @@ public class OffendersResource {
 
     @RequestMapping(value = "/offenders/crn/{crn}", method = RequestMethod.GET)
     @ApiResponses(value = {
+            @ApiResponse(code = 403, message = "Forbidden, the offender may have exclusions or restrictions in place preventing some users from viewing. Adopting the client scopes SCOPE_IGNORE_DELIUS_INCLUSIONS_ALWAYS and SCOPE_IGNORE_DELIUS_EXCLUSIONS_ALWAYS can bypass these restrictions."),
             @ApiResponse(code = 404, message = "The offender not found")
     })
     @ApiOperation(value = "Returns the offender summary for the given crn", tags = "-- Popular core APIs --")
@@ -295,7 +296,7 @@ public class OffendersResource {
     @RequestMapping(value = "/offenders/crn/{crn}/all", method = RequestMethod.GET)
     @ApiResponses(value = {
             @ApiResponse(code = 404, message = "The offender is not found"),
-            @ApiResponse(code = 403, message = "Forbidden, the offender may have exclusions or restrictions in place preventing some users from viewing. Adopting client role ROLE_COMMUNITY_API_OPEN can bypass these restrictions."),
+            @ApiResponse(code = 403, message = "Forbidden, the offender may have exclusions or restrictions in place preventing some users from viewing. Adopting the client scopes SCOPE_IGNORE_DELIUS_INCLUSIONS_ALWAYS and SCOPE_IGNORE_DELIUS_EXCLUSIONS_ALWAYS can bypass these restrictions."),
     })
     @ApiOperation(value = "Returns the full offender detail for the given crn", tags = "-- Popular core APIs --")
     public OffenderDetail getOffenderDetailByCrn(final @PathVariable("crn") String crn, Authentication authentication) {

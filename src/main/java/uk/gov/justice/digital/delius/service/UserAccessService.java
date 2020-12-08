@@ -24,10 +24,9 @@ public class UserAccessService {
 
     public void checkExclusionsAndRestrictions(String crn, Collection<? extends GrantedAuthority> authorities) {
         final var username = currentUserSupplier.username();
-        final var offender = offenderService.getOffenderByCrn(crn);
         if (username.isPresent() && shouldCheckExclusion(authorities)) {
 
-            final var excludedException = offender
+            final var excludedException = offenderService.getOffenderByCrn(crn)
                 .map(o -> userService.accessLimitationOf(username.get(), o))
                 .filter(AccessLimitation::isUserExcluded)
                 .map(accessLimitation -> new AccessDeniedException(accessLimitation.getExclusionMessage()));
@@ -37,7 +36,7 @@ public class UserAccessService {
         }
 
         if (shouldCheckRestriction(authorities)) {
-            final var restrictedException = offender
+            final var restrictedException = offenderService.getOffenderByCrn(crn)
                 .map(o -> username.map(u -> userService.accessLimitationOf(u, o))
                                          .orElseGet(() -> buildAnonymousUserAccessLimitation(o)))
                 .filter(AccessLimitation::isUserRestricted)
