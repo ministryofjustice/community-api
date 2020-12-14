@@ -1,12 +1,12 @@
 package uk.gov.justice.digital.delius.service;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
@@ -26,7 +26,7 @@ import static uk.gov.justice.digital.delius.util.EntityHelper.aStaff;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aTeam;
 import static uk.gov.justice.digital.delius.util.EntityHelper.anActivePrisonOffenderManager;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ContactService_addContactForPOMAllocationTest {
 
     private ContactService contactService;
@@ -38,7 +38,7 @@ public class ContactService_addContactForPOMAllocationTest {
     @Captor
     private ArgumentCaptor<Contact> contactArgumentCaptor;
 
-    @Before
+    @BeforeEach
     public void setup() {
         contactService = new ContactService(contactRepository, contactTypeRepository);
         when(contactTypeRepository.findByCode(any())).thenReturn(Optional.of(aContactType()));

@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Court;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CourtAppearanceBasicTransformerTest {
 
     public static final LocalDateTime APPEARANCE_DATE = LocalDateTime.of(1975, 9, 6, 20, 45);

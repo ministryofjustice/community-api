@@ -1,11 +1,11 @@
 
 package uk.gov.justice.digital.delius.service;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.controller.CustodyNotFoundException;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
@@ -22,11 +22,12 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class OffenderServiceTest_getOffenderLatestRecall {
 
     private static final Long ANY_OFFENDER_ID = 123L;
@@ -44,7 +45,7 @@ public class OffenderServiceTest_getOffenderLatestRecall {
 
     private OffenderService offenderService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         offenderService = new OffenderService(
                 mockOffenderRepository,
@@ -117,47 +118,52 @@ public class OffenderServiceTest_getOffenderLatestRecall {
                 .build()));
     }
 
-    @Test(expected = ConvictionService.SingleActiveCustodyConvictionNotFoundException.class)
+    @Test
     public void getOffenderLatestRecall_withNoCustodyRecord_propagatesNoCustodyException() {
         given(mockConvictionService.getActiveCustodialEvent(ANY_OFFENDER_ID)).willThrow(ConvictionService.SingleActiveCustodyConvictionNotFoundException.class);
 
-        offenderService.getOffenderLatestRecall(ANY_OFFENDER_ID);
+        assertThrows(ConvictionService.SingleActiveCustodyConvictionNotFoundException.class,
+            () -> { offenderService.getOffenderLatestRecall(ANY_OFFENDER_ID); });
     }
 
-    @Test(expected = CustodyNotFoundException.class)
+    @Test
     public void getOffenderLatestRecall_custodialEventNoDisposal_throwsException() {
         given(mockConvictionService.getActiveCustodialEvent(ANY_OFFENDER_ID)).willReturn(mockCustodialEvent);
         given(mockCustodialEvent.getDisposal()).willReturn(null);
 
-        offenderService.getOffenderLatestRecall(ANY_OFFENDER_ID);
+        assertThrows(CustodyNotFoundException.class,
+            () -> { offenderService.getOffenderLatestRecall(ANY_OFFENDER_ID); });
     }
 
-    @Test(expected = CustodyNotFoundException.class)
+    @Test
     public void getOffenderLatestRecall_disposalSoftDeleted_throwsException() {
         given(mockConvictionService.getActiveCustodialEvent(ANY_OFFENDER_ID)).willReturn(mockCustodialEvent);
         given(mockCustodialEvent.getDisposal()).willReturn(mockDisposal);
         given(mockDisposal.isSoftDeleted()).willReturn(true);
 
-        offenderService.getOffenderLatestRecall(ANY_OFFENDER_ID);
+        assertThrows(CustodyNotFoundException.class,
+            () -> { offenderService.getOffenderLatestRecall(ANY_OFFENDER_ID); });
     }
 
-    @Test(expected = CustodyNotFoundException.class)
+    @Test
     public void getOffenderLatestRecall_disposalNoCustody_throwsException() {
         given(mockConvictionService.getActiveCustodialEvent(ANY_OFFENDER_ID)).willReturn(mockCustodialEvent);
         given(mockCustodialEvent.getDisposal()).willReturn(mockDisposal);
         given(mockDisposal.getCustody()).willReturn(null);
 
-        offenderService.getOffenderLatestRecall(ANY_OFFENDER_ID);
+        assertThrows(CustodyNotFoundException.class,
+            () -> { offenderService.getOffenderLatestRecall(ANY_OFFENDER_ID); });
     }
 
-    @Test(expected = CustodyNotFoundException.class)
+    @Test
     public void getOffenderLatestRecall_custodySoftDeleted_throwsException() {
         given(mockConvictionService.getActiveCustodialEvent(ANY_OFFENDER_ID)).willReturn(mockCustodialEvent);
         given(mockCustodialEvent.getDisposal()).willReturn(mockDisposal);
         given(mockDisposal.getCustody()).willReturn(mockCustody);
         given(mockCustody.isSoftDeleted()).willReturn(true);
 
-        offenderService.getOffenderLatestRecall(ANY_OFFENDER_ID);
+        assertThrows(CustodyNotFoundException.class,
+            () -> { offenderService.getOffenderLatestRecall(ANY_OFFENDER_ID); });
     }
 
     @Test

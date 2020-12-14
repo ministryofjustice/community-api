@@ -1,27 +1,26 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
-import uk.gov.justice.digital.delius.transformers.AppointmentTransformer;
-import uk.gov.justice.digital.delius.transformers.ContactTransformer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AppointmentServiceTest {
     @Mock
     private ContactRepository contactRepository;
@@ -32,7 +31,7 @@ public class AppointmentServiceTest {
     private ArgumentCaptor<Sort> sortArgumentCaptor;
     private AppointmentService service;
 
-    @Before
+    @BeforeEach
     @SuppressWarnings("unchecked")
     public void before(){
         service = new AppointmentService(contactRepository);

@@ -10,7 +10,7 @@ import uk.gov.justice.digital.delius.data.api.Attendances;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class AttendanceResourceAPITest extends IntegrationTestBase {

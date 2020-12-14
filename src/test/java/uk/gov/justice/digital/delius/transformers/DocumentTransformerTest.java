@@ -1,8 +1,9 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
 
@@ -10,13 +11,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.gov.justice.digital.delius.util.EntityHelper.*;
 
 public class DocumentTransformerTest {
     private DocumentTransformer documentTransformer;
 
-    @Before
+    @BeforeEach
     public void before() {
         documentTransformer = new DocumentTransformer();
     }

@@ -1,11 +1,12 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.microsoft.applicationinsights.TelemetryClient;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.PrisonOffenderManagerRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
@@ -16,7 +17,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.digital.delius.util.EntityHelper.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class OffenderManagerService_isPrisonOffenderManagerAtInstitutionTest {
     @Mock
     private OffenderRepository offenderRepository;
@@ -39,7 +40,7 @@ public class OffenderManagerService_isPrisonOffenderManagerAtInstitutionTest {
 
     private OffenderManagerService offenderManagerService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         offenderManagerService = new OffenderManagerService(
                 offenderRepository,

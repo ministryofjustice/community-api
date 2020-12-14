@@ -5,7 +5,8 @@ import static uk.gov.justice.digital.delius.util.EntityHelper.aStaff;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aTeam;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.jpa.standard.entity.User;
 

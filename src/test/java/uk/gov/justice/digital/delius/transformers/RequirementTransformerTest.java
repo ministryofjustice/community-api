@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AdRequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PssRequirement;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PssRequirementTypeMainCategory;

@@ -3,15 +3,15 @@ package uk.gov.justice.digital.delius.service;
 import com.google.common.collect.ImmutableList;
 import com.microsoft.applicationinsights.TelemetryClient;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aCustodyEvent;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aKeyDate;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ConvictionService_DeleteCustodyKeyDateTest {
 
     private ConvictionService convictionService;
@@ -71,7 +71,7 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
     private TelemetryClient telemetryClient;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         convictionService = new ConvictionService(true, eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient);
     }
