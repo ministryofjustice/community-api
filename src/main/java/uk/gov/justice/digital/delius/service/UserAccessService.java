@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,17 +11,31 @@ import java.util.Collection;
 import java.util.Set;
 
 @Service
-@AllArgsConstructor
 public class UserAccessService {
     private final UserService userService;
     private final OffenderService offenderService;
     private final CurrentUserSupplier currentUserSupplier;
-    @Value("${user-access.scopes.dont-apply-exclusions-for}")
     private final Set<String> ignoreExclusionRoles;
-    @Value("${user-access.scopes.dont-apply-restrictions-for}")
     private final Set<String> ignoreRestrictionRoles;
+    private final boolean applyLimitedAccessMarkers;
+
+    public UserAccessService(UserService userService,
+                             OffenderService offenderService,
+                             CurrentUserSupplier currentUserSupplier,
+                             @Value("${user-access.scopes.dont-apply-exclusions-for}") Set<String> ignoreExclusionRoles,
+                             @Value("${user-access.scopes.dont-apply-restrictions-for}") Set<String> ignoreRestrictionRoles,
+                             @Value("${features.apply-limited-access-markers}") boolean applyLimitedAccessMarkers) {
+        this.userService = userService;
+        this.offenderService = offenderService;
+        this.currentUserSupplier = currentUserSupplier;
+        this.ignoreExclusionRoles = ignoreExclusionRoles;
+        this.ignoreRestrictionRoles = ignoreRestrictionRoles;
+        this.applyLimitedAccessMarkers = applyLimitedAccessMarkers;
+    }
 
     public void checkExclusionsAndRestrictions(String crn, Collection<? extends GrantedAuthority> authorities) {
+        if (!applyLimitedAccessMarkers) return;
+
         final var username = currentUserSupplier.username();
         if (username.isPresent() && shouldCheckExclusion(authorities)) {
 

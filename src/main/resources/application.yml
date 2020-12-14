@@ -96,6 +96,7 @@ features:
       booking.number: false
       keydates: false
       noms.number: false
+  apply-limited-access-markers: false
 
 smoke:
   test:

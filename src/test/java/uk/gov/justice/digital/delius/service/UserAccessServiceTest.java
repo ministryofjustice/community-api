@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
+import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -31,6 +32,7 @@ class UserAccessServiceTest {
     private static final String RESTRICTION_MESSAGE = "Restricted message";
     private static final String EXCLUSION_MESSAGE = "Excluded message";
     private UserAccessService userAccessService;
+    private UserAccessService userAccessServiceToggleOff;
 
     @Mock
     private UserService userService;
@@ -44,7 +46,9 @@ class UserAccessServiceTest {
     @BeforeEach
     public void setUp(){
         userAccessService = new UserAccessService(userService, offenderService, currentUserSupplier,
-            Set.of(SCOPE_IGNORE_EXCLUSIONS), Set.of(SCOPE_IGNORE_RESTRICTIONS));
+            Set.of(SCOPE_IGNORE_EXCLUSIONS), Set.of(SCOPE_IGNORE_RESTRICTIONS), true);
+        userAccessServiceToggleOff = new UserAccessService(userService, offenderService, currentUserSupplier,
+            Set.of(SCOPE_IGNORE_EXCLUSIONS), Set.of(SCOPE_IGNORE_RESTRICTIONS), false);
     }
 
     @Test
@@ -57,7 +61,7 @@ class UserAccessServiceTest {
 
         userAccessService.checkExclusionsAndRestrictions(CRN, Collections.emptySet());
 
-        verify(offenderService, atMostOnce()).getOffenderByCrn(CRN);
+        verify(offenderService, atMost(2)).getOffenderByCrn(CRN);
         verifyNoMoreInteractions(offenderService, userService, currentUserSupplier, offender);
     }
 
@@ -74,6 +78,13 @@ class UserAccessServiceTest {
             .withMessage(EXCLUSION_MESSAGE);
 
         verify(offenderService, atMostOnce()).getOffenderByCrn(CRN);
+        verifyNoMoreInteractions(offenderService, userService, currentUserSupplier, offender);
+    }
+
+    @Test
+    public void givenUserIsExcluded_andToggleOff_thenAccessAllowed(){
+        userAccessServiceToggleOff.checkExclusionsAndRestrictions(CRN, Collections.emptySet());
+
         verifyNoMoreInteractions(offenderService, userService, currentUserSupplier, offender);
     }
 
@@ -119,7 +130,13 @@ class UserAccessServiceTest {
             .isThrownBy(() -> userAccessService.checkExclusionsAndRestrictions(CRN, Collections.emptySet()))
             .withMessage(RESTRICTION_MESSAGE);
 
-        verify(offenderService, atMostOnce()).getOffenderByCrn(CRN);
+        verify(offenderService, atMost(2)).getOffenderByCrn(CRN);
+        verifyNoMoreInteractions(offenderService, userService, currentUserSupplier, offender);
+    }
+
+    @Test
+    public void givenUserIsRestricted_andToggleOff_thenAccessAllowed(){
+        userAccessServiceToggleOff.checkExclusionsAndRestrictions(CRN, Collections.emptySet());
         verifyNoMoreInteractions(offenderService, userService, currentUserSupplier, offender);
     }
 
