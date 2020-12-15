@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CircumstanceSubType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CircumstanceType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalCircumstance;

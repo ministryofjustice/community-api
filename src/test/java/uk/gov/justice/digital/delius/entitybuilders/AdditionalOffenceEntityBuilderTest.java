@@ -1,13 +1,12 @@
 package uk.gov.justice.digital.delius.entitybuilders;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.OffenceDetail;
-import uk.gov.justice.digital.delius.entitybuilders.AdditionalOffenceEntityBuilder;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offence;
@@ -16,14 +15,14 @@ import uk.gov.justice.digital.delius.service.LookupSupplier;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AdditionalOffenceEntityBuilderTest {
     @Mock
     private LookupSupplier lookupSupplier;
 
     private AdditionalOffenceEntityBuilder additionalOffenceEntityBuilder;
 
-    @Before
+    @BeforeEach
     public void setup() {
         additionalOffenceEntityBuilder = new AdditionalOffenceEntityBuilder(lookupSupplier);
         when(lookupSupplier.userSupplier()).thenReturn(() -> User.builder().userId(99L).build());

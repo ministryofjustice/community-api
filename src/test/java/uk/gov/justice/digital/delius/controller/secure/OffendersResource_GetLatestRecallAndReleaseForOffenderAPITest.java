@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.controller.CustodyNotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
@@ -55,7 +55,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffenderAPITest {
     private final CustodyService custodyService = mock(CustodyService.class);
     private final UserAccessService userAccessService = mock(UserAccessService.class);
 
-    @Before
+    @BeforeEach
     public void setup() {
         RestAssuredMockMvc.standaloneSetup(
                 new OffendersResource(offenderService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier, custodyService, userAccessService),

@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.Human;
 
 import java.time.LocalDateTime;

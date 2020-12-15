@@ -42,7 +42,6 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok:1.18.16'
 
     testImplementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
-    testImplementation 'junit:junit:4.13'
     testImplementation ('io.rest-assured:rest-assured:3.3.0'){
         exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
     }

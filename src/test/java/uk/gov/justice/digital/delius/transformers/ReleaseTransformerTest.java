@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
 import uk.gov.justice.digital.delius.data.api.OffenderRelease;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RInstitution;
@@ -16,7 +16,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ReleaseTransformerTest {
 
     private static final Long SOME_RELEASE_ID = 123L;

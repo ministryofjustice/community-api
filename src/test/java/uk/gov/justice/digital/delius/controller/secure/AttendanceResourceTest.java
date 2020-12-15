@@ -3,8 +3,8 @@ package uk.gov.justice.digital.delius.controller.secure;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -19,11 +19,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
 import uk.gov.justice.digital.delius.data.api.Attendance;
@@ -34,7 +35,7 @@ import uk.gov.justice.digital.delius.service.AttendanceServiceTest;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
 @SuppressWarnings("OptionalGetWithoutIsPresent")
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AttendanceResourceTest {
 
     private static final Long SOME_EVENT_ID = 12342L;
@@ -53,7 +54,7 @@ public class AttendanceResourceTest {
     @Mock
     private OffenderService offenderService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         RestAssuredMockMvc.standaloneSetup(
                 new AttendanceResource(attendanceService, offenderService),
