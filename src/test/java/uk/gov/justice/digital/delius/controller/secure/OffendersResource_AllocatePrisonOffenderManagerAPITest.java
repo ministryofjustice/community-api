@@ -22,6 +22,7 @@ import uk.gov.justice.digital.delius.service.NsiService;
 import uk.gov.justice.digital.delius.service.OffenderManagerService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.SentenceService;
+import uk.gov.justice.digital.delius.service.UserAccessService;
 import uk.gov.justice.digital.delius.service.UserService;
 
 import java.util.Optional;
@@ -63,6 +64,8 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     private CurrentUserSupplier currentUserSupplier;
     @Mock
     private CustodyService custodyService;
+    @Mock
+    private UserAccessService userAccessService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -70,7 +73,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     public void setup() {
         RestAssuredMockMvc.config = newConfig().encoderConfig(encoderConfig().defaultContentCharset("UTF-8"));
         RestAssuredMockMvc.standaloneSetup(
-                new OffendersResource(offenderService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier, custodyService),
+                new OffendersResource(offenderService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier, custodyService, userAccessService),
                 new SecureControllerAdvice()
         );
     }

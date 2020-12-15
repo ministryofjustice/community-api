@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -54,6 +55,7 @@ import uk.gov.justice.digital.delius.service.NsiService;
 import uk.gov.justice.digital.delius.service.OffenderManagerService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.SentenceService;
+import uk.gov.justice.digital.delius.service.UserAccessService;
 import uk.gov.justice.digital.delius.service.UserService;
 
 import javax.validation.Valid;
@@ -84,6 +86,7 @@ public class OffendersResource {
     private final UserService userService;
     private final CurrentUserSupplier currentUserSupplier;
     private final CustodyService custodyService;
+    private final UserAccessService userAccessService;
 
     @ApiOperation(
             value = "Return the responsible officer (RO) for an offender",
@@ -278,21 +281,27 @@ public class OffendersResource {
 
     @RequestMapping(value = "/offenders/crn/{crn}", method = RequestMethod.GET)
     @ApiResponses(value = {
+            @ApiResponse(code = 403, message = "Forbidden, the offender may have exclusions or restrictions in place preventing some users from viewing. Adopting the client scopes SCOPE_IGNORE_DELIUS_INCLUSIONS_ALWAYS and SCOPE_IGNORE_DELIUS_EXCLUSIONS_ALWAYS can bypass these restrictions."),
             @ApiResponse(code = 404, message = "The offender not found")
     })
     @ApiOperation(value = "Returns the offender summary for the given crn", tags = "-- Popular core APIs --")
 
-    public OffenderDetailSummary getOffenderSummaryByCrn(final @PathVariable("crn") String crn) {
-        final var offender = offenderService.getOffenderSummaryByCrn(crn);
-        return offender.orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
+    public OffenderDetailSummary getOffenderSummaryByCrn(final @PathVariable("crn") String crn, Authentication authentication) {
+        userAccessService.checkExclusionsAndRestrictions(crn, authentication.getAuthorities());
+
+        return offenderService.getOffenderSummaryByCrn(crn)
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 
     @RequestMapping(value = "/offenders/crn/{crn}/all", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "The offender is not found")
+            @ApiResponse(code = 404, message = "The offender is not found"),
+            @ApiResponse(code = 403, message = "Forbidden, the offender may have exclusions or restrictions in place preventing some users from viewing. Adopting the client scopes SCOPE_IGNORE_DELIUS_INCLUSIONS_ALWAYS and SCOPE_IGNORE_DELIUS_EXCLUSIONS_ALWAYS can bypass these restrictions."),
     })
     @ApiOperation(value = "Returns the full offender detail for the given crn", tags = "-- Popular core APIs --")
-    public OffenderDetail getOffenderDetailByCrn(final @PathVariable("crn") String crn) {
+    public OffenderDetail getOffenderDetailByCrn(final @PathVariable("crn") String crn, Authentication authentication) {
+        userAccessService.checkExclusionsAndRestrictions(crn, authentication.getAuthorities());
+
         final var offender = offenderService.getOffenderByCrn(crn);
         return offender.orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
@@ -439,9 +448,9 @@ public class OffendersResource {
     })
     public ResponseEntity<AccessLimitation> checkUserAccessByCrn(
             final @PathVariable("crn") String crn) {
-        final var maybeOffender = offenderService.getOffenderByCrn(crn);
-
-        return maybeOffender.isEmpty() ? new ResponseEntity<>(NOT_FOUND) : accessLimitationResponseEntityOf(maybeOffender.get());
+        return offenderService.getOffenderByCrn(crn)
+            .map(this::accessLimitationResponseEntityOf)
+            .orElse(new ResponseEntity<>(NOT_FOUND));
     }
 
     private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(final OffenderDetail offender) {
