@@ -18,5 +18,7 @@ spring:
           public-key-location: classpath:local-public-key.pub
 
 
-
 logging.level.org.hibernate.SQL: DEBUG
+
+features:
+  apply-limited-access-markers: true

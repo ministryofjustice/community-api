@@ -13,7 +13,7 @@ public class OffendersResource_checkUserAccessByCrn extends IntegrationTestBase 
     public void canCheckUserAccessByCrnNoRestrictionsOrExclusions() {
         final var accessLimitation = given()
                 .auth()
-                .oauth2(tokenWithRoleCommunityAndUser("bob.jones"))
+                .oauth2(createJwtWithUsername("bob.jones", "ROLE_COMMUNITY"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("/offenders/crn/X320741/userAccess")
@@ -33,7 +33,7 @@ public class OffendersResource_checkUserAccessByCrn extends IntegrationTestBase 
     public void canCheckUserAccessByCrnUserExcluded() {
         final var accessLimitation = given()
                 .auth()
-                .oauth2(tokenWithRoleCommunityAndUser("bob.jones"))
+                .oauth2(createJwtWithUsername("bob.jones", "ROLE_COMMUNITY"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("/offenders/crn/X440877/userAccess")
@@ -53,7 +53,7 @@ public class OffendersResource_checkUserAccessByCrn extends IntegrationTestBase 
     public void canCheckUserAccessByCrnNotRestrictedUserForOffenderSoCannotSeeDetails() {
         final var accessLimitation = given()
                 .auth()
-                .oauth2(tokenWithRoleCommunityAndUser("bob.jones"))
+                .oauth2(createJwtWithUsername("bob.jones", "ROLE_COMMUNITY"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("/offenders/crn/X440890/userAccess")
@@ -73,7 +73,7 @@ public class OffendersResource_checkUserAccessByCrn extends IntegrationTestBase 
     public void canCheckUserAccessByCrnRestrictedUserForOffenderSoCanSeeDetails() {
         final var accessLimitation = given()
                 .auth()
-                .oauth2(tokenWithRoleCommunityAndUser("bobby.davro"))
+                .oauth2(createJwtWithUsername("bobby.davro", "ROLE_COMMUNITY"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("/offenders/crn/X440890/userAccess")
@@ -91,9 +91,9 @@ public class OffendersResource_checkUserAccessByCrn extends IntegrationTestBase 
 
     @Test
     public void getOffenderDetailsByCrn_offenderNotFound_returnsNotFound() {
-      given()
+        given()
         .auth()
-              .oauth2(tokenWithRoleCommunityAndUser("bob.jones"))
+              .oauth2(createJwtWithUsername("bob.jones", "ROLE_COMMUNITY"))
         .contentType(APPLICATION_JSON_VALUE)
         .when()
         .get("/offenders/crn/X777777/userAccess")
@@ -105,7 +105,7 @@ public class OffendersResource_checkUserAccessByCrn extends IntegrationTestBase 
     public void canCheckUserAccessByCrnInvalidUser() {
         final var responseText = given()
                 .auth()
-                .oauth2(tokenWithRoleCommunityAndUser("bob"))
+                .oauth2(createJwtWithUsername("bob", "ROLE_COMMUNITY"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get("/offenders/crn/X440877/userAccess")
