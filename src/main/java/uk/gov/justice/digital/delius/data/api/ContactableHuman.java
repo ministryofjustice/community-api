@@ -26,7 +26,6 @@ public class ContactableHuman {
         return this.toBuilder()
                 .surname(capitalizeFully(surname))
                 .forenames(capitalizeFully(forenames))
-                .email(capitalizeFully(email))
                 .build();
     }
 }
