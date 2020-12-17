@@ -17,7 +17,7 @@ public class ContactableHuman {
     private String forenames;
     @ApiModelProperty(value = "Family name", example = "Hancock")    
     private String surname;
-    @ApiModelProperty(value = "Email id", example = "officer@gov.uk")
+    @ApiModelProperty(value = "Email address", example = "officer@gov.uk")
     private String email;
     @ApiModelProperty(value = "Phone number", example = "0123411278")
     private String phoneNumber;
