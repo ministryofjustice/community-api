@@ -10,6 +10,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
@@ -228,7 +229,7 @@ public class StaffServiceTest {
                 .findFirstBySurnameIgnoreCaseAndForenameIgnoreCaseAndProbationArea(any(), any(), any(ProbationArea.class)))
                 .thenReturn(Optional.of(aStaff("N01A123456")));
 
-        assertThat(staffService.findOrCreateStaffInArea(Human
+        assertThat(staffService.findOrCreateStaffInArea(ContactableHuman
                 .builder()
                 .forenames("Sandra")
                 .surname("Biggins")
@@ -244,7 +245,7 @@ public class StaffServiceTest {
                 .findFirstBySurnameIgnoreCaseAndForenameIgnoreCaseAndProbationArea(any(), any(), any(ProbationArea.class)))
                 .thenReturn(Optional.of(aStaff("N01A123456")));
 
-        assertThat(staffService.findOrCreateStaffInArea(Human
+        assertThat(staffService.findOrCreateStaffInArea(ContactableHuman
                 .builder()
                 .forenames("Sandra Jane")
                 .surname("Biggins")
@@ -260,7 +261,7 @@ public class StaffServiceTest {
                 .findFirstBySurnameIgnoreCaseAndForenameIgnoreCaseAndProbationArea(any(), any(), any(ProbationArea.class)))
                 .thenReturn(Optional.of(aStaff("N01A123456")));
 
-        assertThat(staffService.findOrCreateStaffInArea(Human
+        assertThat(staffService.findOrCreateStaffInArea(ContactableHuman
                 .builder()
                 .forenames("Sandra, Jane")
                 .surname("Biggins")
@@ -279,7 +280,7 @@ public class StaffServiceTest {
         when(staffRepository.save(any())).then(params -> params.getArgument(0));
 
         assertThat(staffService.findOrCreateStaffInArea(
-                Human
+            ContactableHuman
                         .builder()
                         .forenames("Sandra")
                         .surname("Biggins")
@@ -298,7 +299,7 @@ public class StaffServiceTest {
         when(staffHelperRepository.getNextStaffCode(any())).thenReturn("N02A123456");
 
         staffService.findOrCreateStaffInArea(
-                Human
+            ContactableHuman
                         .builder()
                         .forenames("Sandra Jane")
                         .surname("Biggins")
@@ -322,7 +323,7 @@ public class StaffServiceTest {
         when(staffHelperRepository.getNextStaffCode(any())).thenReturn("N02A123456");
 
         staffService.findOrCreateStaffInArea(
-                Human
+            ContactableHuman
                         .builder()
                         .forenames("Sandra Jane")
                         .surname("Biggins")

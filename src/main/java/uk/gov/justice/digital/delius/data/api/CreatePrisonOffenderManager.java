@@ -22,7 +22,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public class CreatePrisonOffenderManager {
     // This annotation appears to be ignored by swagger docs and nobody seems to care: https://github.com/springfox/springfox/issues/2237
     @ApiModelProperty(value = "Name of offender manager. If passed then must contain both forename(s) and surname", example = "officer: {\"forenames\": \"John\", \"surname\": \"Smith\" }")
-    private Human officer;
+    private ContactableHuman officer;
     @ApiModelProperty(value = "Officer staff ID. If not present officer will be used to lookup staff member", example = "1234567")
     private Long staffId;
     @ApiModelProperty(value = "Prison institution code in NOMIS", required = true, example = "MDI")

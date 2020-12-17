@@ -8,8 +8,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import uk.gov.justice.digital.delius.FlywayRestoreExtension;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Contact;
+import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
-import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 
 import java.time.LocalDateTime;
@@ -164,7 +164,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
-                .body(createPrisonOffenderManagerOf(Human
+                .body(createPrisonOffenderManagerOf(ContactableHuman
                                 .builder()
                                 .surname("Marke")
                                 .forenames("Joe")
@@ -291,7 +291,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
-                .body(createPrisonOffenderManagerOf(Human.builder().forenames("JANE").surname("MACDONALD").build(), "BWI"))
+                .body(createPrisonOffenderManagerOf(ContactableHuman.builder().forenames("JANE").surname("MACDONALD").build(), "BWI"))
                 .when()
                 .put("/offenders/nomsNumber/G4340UK/prisonOffenderManager")
                 .then()
@@ -310,7 +310,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .body()
                 .as(CommunityOrPrisonOffenderManager[].class);
 
-        assertThat(prisonOffenderManager(offenderManagers).orElseThrow().getStaff()).isEqualTo(Human.builder().forenames("Jane").surname("Macdonald").build());
+        assertThat(prisonOffenderManager(offenderManagers).orElseThrow().getStaff()).isEqualTo(ContactableHuman.builder().forenames("Jane").surname("Macdonald").build());
 
         // GIVEN the name was originally created with saved with a non-standard case
         jdbcTemplate.update("UPDATE STAFF SET FORENAME = ?,  SURNAME = ? WHERE STAFF_ID = ?", "Jane", "MacDonald", prisonOffenderManager(offenderManagers).orElseThrow().getStaffId());
@@ -321,7 +321,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
-                .body(createPrisonOffenderManagerOf(Human.builder().forenames("Someone").surname("Else").build(), "BWI"))
+                .body(createPrisonOffenderManagerOf(ContactableHuman.builder().forenames("Someone").surname("Else").build(), "BWI"))
                 .when()
                 .put("/offenders/nomsNumber/G4340UK/prisonOffenderManager")
                 .then()
@@ -332,7 +332,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
-                .body(createPrisonOffenderManagerOf(Human.builder().forenames("JANE").surname("MACDONALD").build(), "BWI"))
+                .body(createPrisonOffenderManagerOf(ContactableHuman.builder().forenames("JANE").surname("MACDONALD").build(), "BWI"))
                 .when()
                 .put("/offenders/nomsNumber/G4340UK/prisonOffenderManager")
                 .then()
@@ -349,7 +349,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(CommunityOrPrisonOffenderManager[].class)).orElseThrow().getStaff()).isEqualTo(Human.builder().forenames("Jane").surname("MacDonald").build());
+                .as(CommunityOrPrisonOffenderManager[].class)).orElseThrow().getStaff()).isEqualTo(ContactableHuman.builder().forenames("Jane").surname("MacDonald").build());
     }
 
     public Optional<CommunityOrPrisonOffenderManager> prisonOffenderManager(final CommunityOrPrisonOffenderManager[] offenderManagers) {
@@ -424,7 +424,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
-                .body(createPrisonOffenderManagerOf(Human.builder().forenames("Bob").surname("Grindle").build(), "BWI"))
+                .body(createPrisonOffenderManagerOf(ContactableHuman.builder().forenames("Bob").surname("Grindle").build(), "BWI"))
                 .when()
                 .put("/offenders/nomsNumber/G3232DD/prisonOffenderManager")
                 .then()
@@ -439,7 +439,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
                 .contentType(APPLICATION_JSON_VALUE)
                 .contentType("application/json")
-                .body(createPrisonOffenderManagerOf(Human.builder().forenames("Bob").surname("Grindle").build(), "BWI"))
+                .body(createPrisonOffenderManagerOf(ContactableHuman.builder().forenames("Bob").surname("Grindle").build(), "BWI"))
                 .when()
                 .put("/offenders/nomsNumber/G3636DD/prisonOffenderManager")
                 .then()
@@ -463,7 +463,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .build());
     }
 
-    private String createPrisonOffenderManagerOf(final Human staff, final String nomsPrisonInstitutionCode) {
+    private String createPrisonOffenderManagerOf(final ContactableHuman staff, final String nomsPrisonInstitutionCode) {
         return writeValueAsString(CreatePrisonOffenderManager
                 .builder()
                 .officer(staff)

@@ -3,7 +3,7 @@ package uk.gov.justice.digital.delius.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.justice.digital.delius.data.api.Human;
+import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.ManagedOffender;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
@@ -80,7 +80,7 @@ public class StaffService {
     }
 
     @Transactional
-    public Staff findOrCreateStaffInArea(final Human staff, final ProbationArea probationArea) {
+    public Staff findOrCreateStaffInArea(final ContactableHuman staff, final ProbationArea probationArea) {
         return staffRepository.findFirstBySurnameIgnoreCaseAndForenameIgnoreCaseAndProbationArea(staff.getSurname(), firstNameIn(staff.getForenames()), probationArea)
                 .orElseGet(() -> createStaffInArea(staff.getSurname(), firstNameIn(staff.getForenames()), probationArea));
     }

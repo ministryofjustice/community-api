@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.controller.InvalidRequestException;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
+import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
@@ -367,9 +368,9 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
 
 
     private CreatePrisonOffenderManager createPrisonOffenderManagerOf(final Long staffId, final String officerForenames, final String officerSurname, final String prisonCode) {
-        Human officer = null;
+        ContactableHuman officer = null;
         if (officerForenames != null || officerSurname != null) {
-            officer = Human.builder().forenames(officerForenames).surname(officerSurname).build();
+            officer = ContactableHuman.builder().forenames(officerForenames).surname(officerSurname).build();
         }
         return CreatePrisonOffenderManager
                 .builder()
@@ -387,7 +388,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
         return objectMapper.writeValueAsString(
                 CreatePrisonOffenderManager
                         .builder()
-                        .officer(Human.builder().build())
+                        .officer(ContactableHuman.builder().build())
                         .nomsPrisonInstitutionCode(SOME_PRISON_NOMS_CODE)
                         .build()
         );
