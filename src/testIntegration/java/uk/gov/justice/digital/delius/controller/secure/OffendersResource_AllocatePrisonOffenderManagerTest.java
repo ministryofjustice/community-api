@@ -10,6 +10,7 @@ import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
+import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 
 import java.time.LocalDateTime;
@@ -310,7 +311,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .body()
                 .as(CommunityOrPrisonOffenderManager[].class);
 
-        assertThat(prisonOffenderManager(offenderManagers).orElseThrow().getStaff()).isEqualTo(ContactableHuman.builder().forenames("Jane").surname("Macdonald").build());
+        assertThat(prisonOffenderManager(offenderManagers).orElseThrow().getStaff()).isEqualTo(Human.builder().forenames("Jane").surname("Macdonald").build());
 
         // GIVEN the name was originally created with saved with a non-standard case
         jdbcTemplate.update("UPDATE STAFF SET FORENAME = ?,  SURNAME = ? WHERE STAFF_ID = ?", "Jane", "MacDonald", prisonOffenderManager(offenderManagers).orElseThrow().getStaffId());
