@@ -23,8 +23,8 @@ public class CommunityOrPrisonOffenderManager {
     private Boolean isPrisonOffenderManager;
     @ApiModelProperty(value = "True if no real offender manager has been allocated and this is just a placeholder", example = "true")
     private Boolean isUnallocated;
-    @ApiModelProperty(value = "staff name details")
-    private Human staff;
+    @ApiModelProperty(value = "staff name and contact details")
+    private ContactableHuman staff;
     @ApiModelProperty(value = "Team details for this offender manager")
     private Team team;
     @ApiModelProperty(value = "Probation area / prison institution for this OM")

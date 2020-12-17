@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.transformers;
 
+import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.data.api.StaffHuman;
@@ -38,6 +39,11 @@ public class StaffTransformer {
         return Human.builder()
                 .forenames(combinedMiddleNamesOf(staff.getForename(), staff.getForname2()))
                 .surname(staff.getSurname()).build();
+    }
+    static ContactableHuman contactableHumanOf(Staff staff) {
+        return ContactableHuman.builder()
+            .forenames(combinedMiddleNamesOf(staff.getForename(), staff.getForname2()))
+            .surname(staff.getSurname()).build();
     }
 
     public static StaffHuman staffOf(Staff staff) {
