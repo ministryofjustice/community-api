@@ -350,7 +350,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(CommunityOrPrisonOffenderManager[].class)).orElseThrow().getStaff()).isEqualTo(ContactableHuman.builder().forenames("Jane").surname("MacDonald").build());
+                .as(CommunityOrPrisonOffenderManager[].class)).orElseThrow().getStaff()).isEqualTo(Human.builder().forenames("Jane").surname("MacDonald").build());
     }
 
     public Optional<CommunityOrPrisonOffenderManager> prisonOffenderManager(final CommunityOrPrisonOffenderManager[] offenderManagers) {
