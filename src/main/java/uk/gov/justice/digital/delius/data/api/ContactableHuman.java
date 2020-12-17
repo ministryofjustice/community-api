@@ -20,12 +20,13 @@ public class ContactableHuman {
     @ApiModelProperty(value = "Email id", example = "officer@gov.uk")
     private String email;
     @ApiModelProperty(value = "Phone number", example = "0123411278")
-    private  String phoneNumber;
+    private String phoneNumber;
 
     public ContactableHuman capitalise() {
         return this.toBuilder()
                 .surname(capitalizeFully(surname))
                 .forenames(capitalizeFully(forenames))
+                .email(capitalizeFully(email))
                 .build();
     }
 }
