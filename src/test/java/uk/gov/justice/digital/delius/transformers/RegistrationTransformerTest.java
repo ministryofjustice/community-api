@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Deregistration;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RegisterType;

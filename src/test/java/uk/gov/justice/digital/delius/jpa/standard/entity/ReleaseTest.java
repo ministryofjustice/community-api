@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;

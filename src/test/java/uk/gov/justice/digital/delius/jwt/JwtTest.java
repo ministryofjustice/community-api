@@ -6,7 +6,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.user.UserData;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class JwtTest {
 
@@ -26,7 +26,7 @@ public class JwtTest {
 
         String token = jwt.buildToken(UserData.builder().distinguishedName("Colin").build());
 
-        //Looks like a token
+        // Looks like a token
         assertThat(token.split("\\.").length).isEqualTo(3);
     }
 
@@ -44,38 +44,37 @@ public class JwtTest {
 
     }
 
-    @Test(expected = SignatureException.class)
+    @Test
     public void cannotDecodeSomebodyElsesSignedJwt() {
         Jwt jwt = new Jwt("a secret", 1);
 
         String token = jwt.buildToken(UserData.builder().distinguishedName("Colin").build());
 
         Jwt jwtOther = new Jwt("a different secret", 1);
-        jwtOther.parseToken(token);
 
-        fail("Should have failed signature validation.");
+        assertThrows(SignatureException.class,
+            () -> { jwtOther.parseToken(token); }, "Should have failed signature validation.");
     }
 
-    @Test(expected = MalformedJwtException.class)
+    @Test
     public void cannotDecodeRubbishJwt() {
         Jwt jwt = new Jwt("a secret", 1);
 
-        jwt.parseToken("utter rubbish..");
-
-        fail("Should have failed to parse malformed token");
+        assertThrows(MalformedJwtException.class,
+            () -> { jwt.parseToken("utter rubbish.."); },
+            "Should have failed to parse malformed token");
     }
 
-    @Test(expected = ExpiredJwtException.class)
-    public void cannotDecodeExpiredJwt() throws InterruptedException {
+    @Test
+        public void cannotDecodeExpiredJwt() throws InterruptedException {
         Jwt jwt = new Jwt("a secret", 1);
 
         String token = jwt.buildToken(UserData.builder().distinguishedName("Colin").build());
 
         Thread.sleep(1000);
 
-        jwt.parseToken(token);
-
-        fail("Should have failed to parse expired token");
+        assertThrows(ExpiredJwtException.class,
+            () -> { jwt.parseToken(token); },"Should have failed to parse expired token");
     }
 
     @Test
@@ -97,7 +96,7 @@ public class JwtTest {
 
     }
 
-    @Test(expected = SignatureException.class)
+    @Test
     public void cannotModifyClaimsAndStillHaveValidToken() throws IOException {
         Jwt jwt = new Jwt("a secret", 1);
 
@@ -125,8 +124,8 @@ public class JwtTest {
 
         String tinkeredToken = String.join(".", tokenParts);
 
-        jwt.parseToken(tinkeredToken);
-
-        fail("Should have rejected modified content with invalid signature.");
+        assertThrows(SignatureException.class,
+            () -> { jwt.parseToken(tinkeredToken); },
+            "Should have rejected modified content with invalid signature.");
     }
 }

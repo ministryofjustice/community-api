@@ -1,15 +1,14 @@
 package uk.gov.justice.digital.delius.info;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class HealthInfoTest {
 
-
     private HealthInfo healthInfo;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         healthInfo = new HealthInfo();
     }

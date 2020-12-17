@@ -10,17 +10,16 @@ import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,7 +41,6 @@ import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.data.api.NsiWrapper;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
-import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
 import uk.gov.justice.digital.delius.data.api.PrimaryIdentifiers;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
@@ -50,15 +48,14 @@ import uk.gov.justice.digital.delius.data.api.ResponsibleOfficerSwitch;
 import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
-import uk.gov.justice.digital.delius.service.AlfrescoService;
 import uk.gov.justice.digital.delius.service.ContactService;
 import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.CustodyService;
-import uk.gov.justice.digital.delius.service.DocumentService;
 import uk.gov.justice.digital.delius.service.NsiService;
 import uk.gov.justice.digital.delius.service.OffenderManagerService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.SentenceService;
+import uk.gov.justice.digital.delius.service.UserAccessService;
 import uk.gov.justice.digital.delius.service.UserService;
 
 import javax.validation.Valid;
@@ -81,8 +78,6 @@ import static org.springframework.http.HttpStatus.OK;
 public class OffendersResource {
 
     private final OffenderService offenderService;
-    private final AlfrescoService alfrescoService;
-    private final DocumentService documentService;
     private final ContactService contactService;
     private final ConvictionService convictionService;
     private final NsiService nsiService;
@@ -91,6 +86,7 @@ public class OffendersResource {
     private final UserService userService;
     private final CurrentUserSupplier currentUserSupplier;
     private final CustodyService custodyService;
+    private final UserAccessService userAccessService;
 
     @ApiOperation(
             value = "Return the responsible officer (RO) for an offender",
@@ -157,60 +153,6 @@ public class OffendersResource {
         final var offender = offenderService.getOffenderSummaryByNomsNumber(nomsNumber);
         return offender.map(
                 offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(new ResponseEntity<>(OffenderDetailSummary.builder().build(), NOT_FOUND));
-    }
-
-    @ApiOperation(value = "Returns all document's meta data for an offender by NOMS number", tags = "Documents")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
-            })
-    @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/documents/grouped")
-    public ResponseEntity<OffenderDocuments> getOffenderDocuments(
-            @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
-            @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber) {
-
-        return offenderService.offenderIdOfNomsNumber(nomsNumber)
-                .map(offenderId -> new ResponseEntity<>(documentService.offenderDocumentsFor(offenderId), HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-
-    @ApiOperation(value = "Returns all documents' meta data for an offender by CRN", tags = "Documents")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 404, message = "Not Found. For example if the CRN is not known.", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
-            })
-    @GetMapping(path = "/offenders/crn/{crn}/documents/grouped")
-    public ResponseEntity<OffenderDocuments> getOffenderDocumentsByCrn(
-            @ApiParam(name = "crn", value = "CRN for the offender", example = "X340906", required = true)
-            @NotNull @PathVariable(value = "crn") final String crn) {
-
-        return offenderService.offenderIdOfCrn(crn)
-                .map(offenderId -> new ResponseEntity<>(documentService.offenderDocumentsFor(offenderId), HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-
-    @ApiOperation(value = "Returns the document contents meta data for a given document associated with an offender", tags = "Documents")
-    @GetMapping(value = "/offenders/nomsNumber/{nomsNumber}/documents/{documentId}")
-    public HttpEntity<Resource> getOffenderDocument(
-            @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true) @NotNull final @PathVariable("nomsNumber") String nomsNumber,
-            @ApiParam(name = "documentId", value = "Document Id", example = "12312322", required = true) @NotNull final @PathVariable("documentId") String documentId) {
-
-        return offenderService.crnOf(nomsNumber)
-                .map(crn -> alfrescoService.getDocument(documentId, crn))
-                .orElse(new ResponseEntity<>(NOT_FOUND));
-    }
-
-    @ApiOperation(value = "Returns the document contents meta data for a given document associated with an offender", tags = "Documents")
-    @GetMapping(value = "/offenders/crn/{crn}/documents/{documentId}")
-    public HttpEntity<Resource> getOffenderDocumentByCrn(
-            @ApiParam(name = "crn", value = "CRN for the offender", example = "G9542VP", required = true) @NotNull final @PathVariable("crn") String crn,
-            @ApiParam(name = "documentId", value = "Document Id", example = "12312322", required = true) @NotNull final @PathVariable("documentId") String documentId) {
-
-        return Optional.ofNullable(alfrescoService.getDocument(documentId, crn))
-                .orElse(new ResponseEntity<>(NOT_FOUND));
     }
 
     @ApiOperation(value = "Returns the contact details for an offender", tags = "Contact and attendance")
@@ -339,21 +281,27 @@ public class OffendersResource {
 
     @RequestMapping(value = "/offenders/crn/{crn}", method = RequestMethod.GET)
     @ApiResponses(value = {
+            @ApiResponse(code = 403, message = "Forbidden, the offender may have exclusions or restrictions in place preventing some users from viewing. Adopting the client scopes SCOPE_IGNORE_DELIUS_INCLUSIONS_ALWAYS and SCOPE_IGNORE_DELIUS_EXCLUSIONS_ALWAYS can bypass these restrictions."),
             @ApiResponse(code = 404, message = "The offender not found")
     })
     @ApiOperation(value = "Returns the offender summary for the given crn", tags = "-- Popular core APIs --")
 
-    public OffenderDetailSummary getOffenderSummaryByCrn(final @PathVariable("crn") String crn) {
-        final var offender = offenderService.getOffenderSummaryByCrn(crn);
-        return offender.orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
+    public OffenderDetailSummary getOffenderSummaryByCrn(final @PathVariable("crn") String crn, Authentication authentication) {
+        userAccessService.checkExclusionsAndRestrictions(crn, authentication.getAuthorities());
+
+        return offenderService.getOffenderSummaryByCrn(crn)
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 
     @RequestMapping(value = "/offenders/crn/{crn}/all", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "The offender is not found")
+            @ApiResponse(code = 404, message = "The offender is not found"),
+            @ApiResponse(code = 403, message = "Forbidden, the offender may have exclusions or restrictions in place preventing some users from viewing. Adopting the client scopes SCOPE_IGNORE_DELIUS_INCLUSIONS_ALWAYS and SCOPE_IGNORE_DELIUS_EXCLUSIONS_ALWAYS can bypass these restrictions."),
     })
     @ApiOperation(value = "Returns the full offender detail for the given crn", tags = "-- Popular core APIs --")
-    public OffenderDetail getOffenderDetailByCrn(final @PathVariable("crn") String crn) {
+    public OffenderDetail getOffenderDetailByCrn(final @PathVariable("crn") String crn, Authentication authentication) {
+        userAccessService.checkExclusionsAndRestrictions(crn, authentication.getAuthorities());
+
         final var offender = offenderService.getOffenderByCrn(crn);
         return offender.orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
@@ -500,14 +448,14 @@ public class OffendersResource {
     })
     public ResponseEntity<AccessLimitation> checkUserAccessByCrn(
             final @PathVariable("crn") String crn) {
-        final var maybeOffender = offenderService.getOffenderByCrn(crn);
-
-        return maybeOffender.isEmpty() ? new ResponseEntity<>(NOT_FOUND) : accessLimitationResponseEntityOf(maybeOffender.get());
+        return offenderService.getOffenderByCrn(crn)
+            .map(this::accessLimitationResponseEntityOf)
+            .orElse(new ResponseEntity<>(NOT_FOUND));
     }
 
     private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(final OffenderDetail offender) {
 
-        final var accessLimitation = userService.accessLimitationOf(currentUserSupplier.username().get(), offender);
+        final var accessLimitation = userService.accessLimitationOf(currentUserSupplier.username().orElseThrow(), offender);
 
         return new ResponseEntity<>(accessLimitation, (accessLimitation.isUserExcluded() || accessLimitation.isUserRestricted()) ? FORBIDDEN : OK);
     }

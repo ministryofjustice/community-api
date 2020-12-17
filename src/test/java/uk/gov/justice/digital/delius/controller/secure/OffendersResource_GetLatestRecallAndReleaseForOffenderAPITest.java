@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.controller.CustodyNotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
@@ -13,15 +13,14 @@ import uk.gov.justice.digital.delius.data.api.OffenderRecall;
 import uk.gov.justice.digital.delius.data.api.OffenderRelease;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
-import uk.gov.justice.digital.delius.service.AlfrescoService;
 import uk.gov.justice.digital.delius.service.ContactService;
 import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.CustodyService;
-import uk.gov.justice.digital.delius.service.DocumentService;
 import uk.gov.justice.digital.delius.service.NsiService;
 import uk.gov.justice.digital.delius.service.OffenderManagerService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.SentenceService;
+import uk.gov.justice.digital.delius.service.UserAccessService;
 import uk.gov.justice.digital.delius.service.UserService;
 
 import java.time.LocalDate;
@@ -46,8 +45,6 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffenderAPITest {
     private static final Event SOME_CUSTODIAL_EVENT = Event.builder().eventId(SOME_CUSTODIAL_EVENT_ID).build();
 
     private final OffenderService offenderService = mock(OffenderService.class);
-    private final AlfrescoService alfrescoService = mock(AlfrescoService.class);
-    private final DocumentService documentService = mock(DocumentService.class);
     private final ContactService contactService = mock(ContactService.class);
     private final ConvictionService convictionService = mock(ConvictionService.class);
     private final OffenderManagerService offenderManagerService = mock(OffenderManagerService.class);
@@ -56,11 +53,12 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffenderAPITest {
     private final UserService userService = mock(UserService.class);
     private final CurrentUserSupplier currentUserSupplier = mock(CurrentUserSupplier.class);
     private final CustodyService custodyService = mock(CustodyService.class);
+    private final UserAccessService userAccessService = mock(UserAccessService.class);
 
-    @Before
+    @BeforeEach
     public void setup() {
         RestAssuredMockMvc.standaloneSetup(
-                new OffendersResource(offenderService, alfrescoService, documentService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier, custodyService),
+                new OffendersResource(offenderService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier, custodyService, userAccessService),
                 new SecureControllerAdvice()
         );
     }

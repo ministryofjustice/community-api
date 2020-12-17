@@ -3,8 +3,8 @@ package uk.gov.justice.digital.delius.jwt;
 import io.jsonwebtoken.Claims;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import uk.gov.justice.digital.delius.config.SecurityUserContext;
 import uk.gov.justice.digital.delius.exception.JwtTokenMissingException;
@@ -13,6 +13,7 @@ import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -28,7 +29,7 @@ public class JwtValidatorTest {
     private JwtValidator jwtValidator = new JwtValidator(jwt);
     private CurrentUserSupplier currentUserSupplier = new CurrentUserSupplier(securityUserContext);
 
-    @Before
+    @BeforeEach
     public void setup() {
         given(joinPoint.getArgs()).willReturn(new Object[]{httpHeaders});
         when(signature.getName()).thenReturn("myMethod");
@@ -40,17 +41,16 @@ public class JwtValidatorTest {
 
     @Test
     public void parsesJwtTokenSuccessfullyWhenAuthorizationHeaderIsPresent() {
+        given(joinPoint.getArgs()).willReturn(new Object[]{httpHeaders});
         given(httpHeaders.getFirst("Authorization")).willReturn("some.jwt.token");
-
         jwtValidator.validateJwt(joinPoint);
-
         assertThat(currentUserSupplier.username()).isPresent();
     }
 
-    @Test(expected = JwtTokenMissingException.class)
+    @Test
     public void throwsExceptionIfAuthorizationTokenIsMissing() {
         given(httpHeaders.getFirst("Authorization")).willReturn(null);
-
-        jwtValidator.validateJwt(joinPoint);
+        assertThrows(JwtTokenMissingException.class,
+                     () -> { jwtValidator.validateJwt(joinPoint); });
     }
 }

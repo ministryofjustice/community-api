@@ -11,15 +11,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficerSwitch;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
-import uk.gov.justice.digital.delius.service.AlfrescoService;
 import uk.gov.justice.digital.delius.service.ContactService;
 import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.CustodyService;
-import uk.gov.justice.digital.delius.service.DocumentService;
 import uk.gov.justice.digital.delius.service.NsiService;
 import uk.gov.justice.digital.delius.service.OffenderManagerService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.SentenceService;
+import uk.gov.justice.digital.delius.service.UserAccessService;
 import uk.gov.justice.digital.delius.service.UserService;
 
 import static io.restassured.config.EncoderConfig.encoderConfig;
@@ -36,10 +35,6 @@ public class OffendersResource_SwitchResponsibleOfficerAPITest {
     @Mock
     private OffenderService offenderService;
     @Mock
-    private AlfrescoService alfrescoService;
-    @Mock
-    private DocumentService documentService;
-    @Mock
     private ContactService contactService;
     @Mock
     private ConvictionService convictionService;
@@ -55,12 +50,14 @@ public class OffendersResource_SwitchResponsibleOfficerAPITest {
     private CurrentUserSupplier currentUserSupplier;
     @Mock
     private CustodyService custodyService;
+    @Mock
+    private UserAccessService userAccessService;
 
     @BeforeEach
     public void setup() {
         RestAssuredMockMvc.config = newConfig().encoderConfig(encoderConfig().defaultContentCharset("UTF-8"));
         RestAssuredMockMvc.standaloneSetup(
-                new OffendersResource(offenderService, alfrescoService, documentService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier, custodyService),
+                new OffendersResource(offenderService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier, custodyService, userAccessService),
                 new SecureControllerAdvice()
         );
     }

@@ -1,13 +1,12 @@
 package uk.gov.justice.digital.delius.entitybuilders;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
-import uk.gov.justice.digital.delius.entitybuilders.CourtAppearanceEntityBuilder;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Court;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance;
@@ -19,21 +18,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CourtAppearanceEntityBuilderTest {
     @Mock
     private LookupSupplier lookupSupplier;
 
     private CourtAppearanceEntityBuilder courtAppearanceEntityBuilder;
 
-    @Before
+    @BeforeEach
     public void setup() {
         courtAppearanceEntityBuilder = new CourtAppearanceEntityBuilder(lookupSupplier);
         when(lookupSupplier.userSupplier()).thenReturn(() -> User.builder().userId(99L).build());
-        when(lookupSupplier.courtAppearanceOutcomeSupplier()).thenReturn(code -> StandardReference.builder().codeValue(code).build());
         when(lookupSupplier.courtSupplier()).thenReturn(courtId -> Court.builder().courtId(courtId).build());
-
     }
+
     @Test
     public void setsSensibleDefaults() {
         final CourtAppearance courtAppearance = courtAppearanceEntityBuilder.courtAppearanceOf(1L, aEvent(), aApiCourtAppearance());
@@ -52,6 +50,7 @@ public class CourtAppearanceEntityBuilderTest {
 
     @Test
     public void outcomeIsMappedWhenPresent() {
+        when(lookupSupplier.courtAppearanceOutcomeSupplier()).thenReturn(code -> StandardReference.builder().codeValue(code).build());
         final CourtAppearance courtAppearance = courtAppearanceEntityBuilder.courtAppearanceOf(1L, aEvent(), aApiCourtAppearance().toBuilder().outcome(KeyValue.builder().code("AA").build()).build());
 
         assertThat(courtAppearance.getOutcome()).isNotNull();
@@ -60,6 +59,7 @@ public class CourtAppearanceEntityBuilderTest {
 
     @Test
     public void setsAuditFields() {
+        when(lookupSupplier.courtAppearanceOutcomeSupplier()).thenReturn(code -> StandardReference.builder().codeValue(code).build());
         when(lookupSupplier.userSupplier()).thenReturn(() -> User.builder().userId(99L).build());
 
         final CourtAppearance courtAppearance = courtAppearanceEntityBuilder.courtAppearanceOf(1L, aEvent(), aApiCourtAppearance().toBuilder().outcome(KeyValue.builder().code("AA").build()).build());
@@ -69,7 +69,6 @@ public class CourtAppearanceEntityBuilderTest {
         assertThat(courtAppearance.getCreatedDatetime()).isNotNull();
         assertThat(courtAppearance.getLastUpdatedDatetime()).isNotNull();
     }
-
 
     private uk.gov.justice.digital.delius.data.api.CourtAppearance aApiCourtAppearance() {
         return uk.gov.justice.digital.delius.data.api.CourtAppearance

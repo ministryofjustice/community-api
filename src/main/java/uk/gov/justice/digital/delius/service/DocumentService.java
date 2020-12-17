@@ -3,14 +3,17 @@ package uk.gov.justice.digital.delius.service;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import lombok.AllArgsConstructor;
-import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import uk.gov.justice.digital.delius.data.api.ConvictionDocuments;
 import uk.gov.justice.digital.delius.data.api.DocumentLink;
 import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail;
+import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail.Type;
 import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
+import uk.gov.justice.digital.delius.data.filters.DocumentFilter;
+import uk.gov.justice.digital.delius.jpa.filters.CourtReportDocumentFilterTransformer;
 import uk.gov.justice.digital.delius.jpa.national.repository.DocumentRepository;
 import uk.gov.justice.digital.delius.jpa.oracle.annotations.NationalUserOverride;
 import uk.gov.justice.digital.delius.jpa.standard.entity.*;
@@ -20,6 +23,7 @@ import uk.gov.justice.digital.delius.transformers.DocumentTransformer;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.helpers.FluentHelper.not;
@@ -75,27 +79,31 @@ public class DocumentService {
         documentRepository.save(documentEntity);
     }
 
-    public OffenderDocuments offenderDocumentsFor(Long offenderId) {
-        val eventDocuments = eventDocumentRepository.findByOffenderId(offenderId);
-        val courtReportDocuments = courtReportDocumentRepository.findByOffenderId(offenderId);
-        val institutionReportDocuments = institutionReportDocumentRepository.findByOffenderId(offenderId);
-        val approvedPremisesReferralDocuments = approvedPremisesReferralDocumentRepository.findByOffenderId(offenderId);
-        val assessmentDocuments = assessmentDocumentRepository.findByOffenderId(offenderId);
-        val caseAllocationDocuments = caseAllocationDocumentRepository.findByOffenderId(offenderId);
-        val referralDocuments = referralDocumentRepository.findByOffenderId(offenderId);
-        val allNsiDocuments = nsiDocumentRepository.findByOffenderId(offenderId);
-        val nsiEventDocuments = allNsiDocuments.stream().filter(this::isEventRelated).collect(toList());
-        val upwAppointmentDocuments = upwAppointmentDocumentRepository.findByOffenderId(offenderId);
-        val allContactDocuments = contactDocumentRepository.findByOffenderId(offenderId);
-        val contactEventDocuments = allContactDocuments.stream().filter(this::isEventRelated).collect(toList());
-        val events = eventRepository.findByOffenderId(offenderId);
-        val offender = offenderRepository
+    @Transactional(readOnly = true)
+    public OffenderDocuments offenderDocumentsFor(Long offenderId, DocumentFilter filter) {
+        final var eventCpsPackFilter = filter.hasDocument(Type.CPSPACK_DOCUMENT, Event::hasCpsPack);
+        final var hasPreviousConvictionsFilter = filter.hasDocument(Type.PRECONS_DOCUMENT, this::hasPreviousConvictions);
+
+        final var eventDocuments = eventDocumentsFor(offenderId, filter);
+        final var courtReportDocuments = courtReportDocumentsFor(offenderId, filter);
+        final var institutionReportDocuments = institutionReportDocumentsFor(offenderId, filter);
+        final var approvedPremisesReferralDocuments = approvedPremisesReferralDocumentsFor(offenderId, filter);
+        final var assessmentDocuments = assessmentDocumentsFor(offenderId, filter);
+        final var caseAllocationDocuments = caseAllocationDocumentsFor(offenderId, filter);
+        final var referralDocuments = referralDocumentsFor(offenderId, filter);
+        final var allNsiDocuments = nsiDocumentsFor(offenderId, filter);
+        final var nsiEventDocuments = allNsiDocuments.stream().filter(this::isEventRelated).collect(toList());
+        final var upwAppointmentDocuments = upwAppointmentDocumentsFor(offenderId, filter);
+        final var allContactDocuments = contactDocumentsFor(offenderId, filter);
+        final var contactEventDocuments = allContactDocuments.stream().filter(this::isEventRelated).collect(toList());
+        final var events = eventRepository.findByOffenderId(offenderId);
+        final var offender = offenderRepository
                 .findByOffenderId(offenderId)
                 .orElseThrow(() -> new RuntimeException(String.format("offenderDocumentsFor could not find offender %d", offenderId)));
 
-        val setOfRelatedEventIds = ImmutableSet
+        final var setOfRelatedEventIds = ImmutableSet
                 .<Long>builder()
-                .addAll(events.stream().filter(Event::hasCpsPack).map(Event::getEventId).collect(toList()))
+                .addAll(events.stream().filter(eventCpsPackFilter).map(Event::getEventId).collect(toList()))
                 .addAll(eventDocuments.stream().map(this::eventId).collect(toList()))
                 .addAll(courtReportDocuments.stream().map(this::eventId).collect(toList()))
                 .addAll(institutionReportDocuments.stream().map(this::eventId).collect(toList()))
@@ -108,14 +116,14 @@ public class DocumentService {
                 .addAll(contactEventDocuments.stream().map(this::eventId).collect(toList()))
                 .build();
 
-        val convictions = setOfRelatedEventIds
+        final var convictions = setOfRelatedEventIds
                 .stream()
                 .map(eventId -> ConvictionDocuments
                         .builder()
                         .convictionId(String.valueOf(eventId))
                         .documents(
                                 ImmutableList.<OffenderDocumentDetail>builder()
-                                        .addAll(toOffenderDocumentDetailList(eventWithCPsPack(events, eventId)))
+                                        .addAll(toOffenderDocumentDetailList(eventWithCPsPack(events, eventId, eventCpsPackFilter)))
                                         .addAll(
                                             DocumentTransformer
                                             .offenderDocumentsDetailsOfEventDocuments(
@@ -195,19 +203,19 @@ public class DocumentService {
                 .builder()
                 .documents(
                         ImmutableList.<OffenderDocumentDetail>builder()
-                                .addAll(previousConvictions(offender))
+                                .addAll(previousConvictions(offender, hasPreviousConvictionsFilter))
                                 .addAll(DocumentTransformer
                                         .offenderDocumentsDetailsOfOffenderDocuments(
-                                                offenderDocumentRepository.findByOffenderId(offenderId)))
+                                            offenderRelatedDocumentsFor(offenderId, filter)))
                                 .addAll(DocumentTransformer
                                         .offenderDocumentsDetailsOfAddressAssessmentDocuments(
-                                                addressAssessmentDocumentRepository.findByOffenderId(offenderId)))
+                                            addressAssessmentDocumentsFor(offenderId, filter)))
                                 .addAll(DocumentTransformer
                                         .offenderDocumentsDetailsOfPersonalContactDocuments(
-                                                personalContactDocumentRepository.findByOffenderId(offenderId)))
+                                            personalContactDocumentsFor(offenderId, filter)))
                                 .addAll(DocumentTransformer
                                         .offenderDocumentsDetailsOfPersonalCircumstanceDocuments(
-                                                personalCircumstanceDocumentRepository.findByOffenderId(offenderId)))
+                                            personalCircumstanceDocumentsFor(offenderId, filter)))
                                 .addAll(DocumentTransformer
                                         .offenderDocumentsDetailsOfContactDocuments(
                                                 allContactDocuments.stream().filter(not(this::isEventRelated)).collect(toList())))
@@ -218,6 +226,62 @@ public class DocumentService {
                 )
                 .convictions(convictions)
                 .build();
+    }
+
+    private List<PersonalCircumstanceDocument> personalCircumstanceDocumentsFor(Long offenderId, DocumentFilter filter) {
+        return filter.documentsFor(Type.PERSONAL_CIRCUMSTANCE_DOCUMENT, () -> personalCircumstanceDocumentRepository.findByOffenderId(offenderId));
+    }
+
+    private List<PersonalContactDocument> personalContactDocumentsFor(Long offenderId, DocumentFilter filter) {
+        return filter.documentsFor(Type.PERSONAL_CONTACT_DOCUMENT, () -> personalContactDocumentRepository.findByOffenderId(offenderId));
+    }
+
+    private List<AddressAssessmentDocument> addressAssessmentDocumentsFor(Long offenderId, DocumentFilter filter) {
+        return filter.documentsFor(Type.ADDRESS_ASSESSMENT_DOCUMENT, () -> addressAssessmentDocumentRepository.findByOffenderId(offenderId));
+    }
+
+    private List<OffenderDocument> offenderRelatedDocumentsFor(Long offenderId, DocumentFilter filter) {
+        return filter.documentsFor(Type.OFFENDER_DOCUMENT, () -> offenderDocumentRepository.findByOffenderId(offenderId));
+    }
+
+    private List<ContactDocument> contactDocumentsFor(Long offenderId, DocumentFilter filter) {
+        return filter.documentsFor(Type.CONTACT_DOCUMENT, () -> contactDocumentRepository.findByOffenderId(offenderId));
+    }
+
+    private List<UPWAppointmentDocument> upwAppointmentDocumentsFor(Long offenderId, DocumentFilter filter) {
+        return filter.documentsFor(Type.UPW_APPOINTMENT_DOCUMENT, () -> upwAppointmentDocumentRepository.findByOffenderId(offenderId));
+    }
+
+    private List<NsiDocument> nsiDocumentsFor(Long offenderId, DocumentFilter filter) {
+        return filter.documentsFor(Type.NSI_DOCUMENT, () -> nsiDocumentRepository.findByOffenderId(offenderId));
+    }
+
+    private List<ReferralDocument> referralDocumentsFor(Long offenderId, DocumentFilter filter) {
+        return filter.documentsFor(Type.REFERRAL_DOCUMENT, () -> referralDocumentRepository.findByOffenderId(offenderId));
+    }
+
+    private List<CaseAllocationDocument> caseAllocationDocumentsFor(Long offenderId, DocumentFilter filter) {
+        return filter.documentsFor(Type.CASE_ALLOCATION_DOCUMENT, () -> caseAllocationDocumentRepository.findByOffenderId(offenderId));
+    }
+
+    private List<AssessmentDocument> assessmentDocumentsFor(Long offenderId, DocumentFilter filter) {
+        return filter.documentsFor(Type.ASSESSMENT_DOCUMENT, () -> assessmentDocumentRepository.findByOffenderId(offenderId));
+    }
+
+    private List<ApprovedPremisesReferralDocument> approvedPremisesReferralDocumentsFor(Long offenderId, DocumentFilter filter) {
+        return filter.documentsFor(Type.APPROVED_PREMISES_REFERRAL_DOCUMENT, () -> approvedPremisesReferralDocumentRepository.findByOffenderId(offenderId));
+    }
+
+    private List<InstitutionalReportDocument> institutionReportDocumentsFor(Long offenderId, DocumentFilter filter) {
+        return filter.documentsFor(Type.INSTITUTION_REPORT_DOCUMENT, () -> institutionReportDocumentRepository.findByOffenderId(offenderId));
+    }
+
+    private List<CourtReportDocument> courtReportDocumentsFor(Long offenderId, DocumentFilter filter) {
+        return filter.documentsFor(Type.COURT_REPORT_DOCUMENT, type -> courtReportDocumentRepository.findAll(CourtReportDocumentFilterTransformer.of(offenderId, type)));
+    }
+
+    private List<EventDocument> eventDocumentsFor(Long offenderId, DocumentFilter filter) {
+        return filter.documentsFor(Type.CONVICTION_DOCUMENT, () -> eventDocumentRepository.findByOffenderId(offenderId));
     }
 
     private boolean isEventRelated(ContactDocument contactDocument) {
@@ -264,14 +328,14 @@ public class DocumentService {
         return document.getUpwAppointment().getUpwDetails().getDisposal().getEvent().getEventId();
     }
     private Long eventId(ContactDocument document) {
-        return Optional.ofNullable(document.getContact().getEvent()).map(Event::getEventId).orElseThrow(() -> new RuntimeException("requested eventid even when this is offender related"));
+        return Optional.ofNullable(document.getContact().getEvent()).map(Event::getEventId).orElseThrow(() -> new RuntimeException("requested eventId even when this is offender related"));
     }
 
-    private Optional<Event> eventWithCPsPack(List<Event> events, Long eventId) {
+    private Optional<Event> eventWithCPsPack(List<Event> events, Long eventId, Predicate<Event> eventCpsPackFilter) {
         return events
                 .stream()
                 .filter(event -> event.getEventId().equals(eventId))
-                .filter(Event::hasCpsPack)
+                .filter(eventCpsPackFilter)
                 .findAny();
     }
 
@@ -281,15 +345,15 @@ public class DocumentService {
                 .orElseGet(ImmutableList::of);
     }
 
-    private List<OffenderDocumentDetail> previousConvictions(Offender offender) {
+    private List<OffenderDocumentDetail> previousConvictions(Offender offender, Predicate<Offender> previousConvictionCheck) {
         return Optional.of(offender)
-                .filter(this::hasPreviousConvictions)
+                .filter(previousConvictionCheck)
                 .map(offenderWithPreCPns -> ImmutableList.of(DocumentTransformer.offenderDocumentDetailsOfPreviousConvictions(offenderWithPreCPns)))
                 .orElseGet(ImmutableList::of);
     }
 
     private boolean hasPreviousConvictions(Offender offender) {
-        return !StringUtils.isEmpty(offender.getPreviousConvictionsAlfrescoDocumentId());
+        return StringUtils.hasText(offender.getPreviousConvictionsAlfrescoDocumentId());
     }
 }
 

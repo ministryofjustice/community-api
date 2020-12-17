@@ -1,13 +1,13 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.microsoft.applicationinsights.TelemetryClient;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.util.EntityHelper.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstitutionTest {
     @Mock
     private OffenderRepository offenderRepository;
@@ -52,7 +52,7 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
 
     private OffenderManagerService offenderManagerService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         offenderManagerService = new OffenderManagerService(
                 offenderRepository,
@@ -73,7 +73,6 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
                     .build());
         });
         when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
-        when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
         when(teamService.findUnallocatedTeam(any())).thenReturn(Optional.of(aTeam()));
         when(staffService.findUnallocatedForTeam(any())).thenReturn(Optional.of(aStaff()));
     }
@@ -81,6 +80,7 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
 
     @Test
     public void allocationReasonIsAutomaticTransfer() {
+        when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
         when(referenceDataService.pomAllocationAutoTransferReason()).thenReturn(StandardReference
                 .builder()
                 .codeValue("AUT")
@@ -97,6 +97,7 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
 
     @Test
     public void unallocatedTeamWillBeUsed() {
+        when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
         when(teamService.findUnallocatedTeam(any())).thenReturn(Optional.of(aTeam("NO2ALL")));
 
         offenderManagerService.autoAllocatePrisonOffenderManagerAtInstitution(anOffender(), aPrisonInstitution());
@@ -110,6 +111,7 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
         final var team = aTeam("NO2ALL");
         when(teamService.findUnallocatedTeam(any())).thenReturn(Optional.of(team));
         when(staffService.findUnallocatedForTeam(any())).thenReturn(Optional.of(aStaff("NO2ALLU")));
+        when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
 
         offenderManagerService.autoAllocatePrisonOffenderManagerAtInstitution(anOffender(), aPrisonInstitution());
 
@@ -124,8 +126,8 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
         var existingPOM  = anActivePrisonOffenderManager();
         var offender = anOffender(List.of(), List.of(existingPOM));
 
+        when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
         offenderManagerService.autoAllocatePrisonOffenderManagerAtInstitution(offender, aPrisonInstitution());
-
 
         assertThat(existingPOM.getEndDate()).isNotNull();
         assertThat(existingPOM.getActiveFlag()).isEqualTo(0L);
@@ -143,6 +145,7 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
                 .build();
         var offender = anOffender(List.of(), List.of(existingPOM));
 
+        when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
         offenderManagerService.autoAllocatePrisonOffenderManagerAtInstitution(offender, aPrisonInstitution());
 
         assertThat(existingPOMResponsibleOfficer.getEndDateTime()).isNotNull();
@@ -161,16 +164,13 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
 
         var offender = anOffender(List.of(), List.of(existingPOM));
 
-
-
         when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> {
             final PrisonOffenderManager newPOM = args.getArgument(0);
             newPOM.setPrisonOffenderManagerId(99L);
             return newPOM;
         });
-
+        when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
         var newPrisonOffenderManager = offenderManagerService.autoAllocatePrisonOffenderManagerAtInstitution(offender, aPrisonInstitution());
-
 
         verify(responsibleOfficerRepository).save(responsibleOfficerArgumentCaptor.capture());
         assertThat(responsibleOfficerArgumentCaptor.getValue().getPrisonOffenderManagerId()).isEqualTo(99L);
@@ -186,6 +186,7 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
 
     @Test
     public void shouldAddAPOMAllocationContactNotingOldPOM() {
+        when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
         final var existingPOM = anActivePrisonOffenderManager();
 
         var offender = anOffender(List.of(), List.of(existingPOM));
@@ -214,9 +215,8 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
 
         var offender = anOffender(List.of(), List.of(existingPOM));
 
+        when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
         offenderManagerService.autoAllocatePrisonOffenderManagerAtInstitution(offender, aPrisonInstitution());
-
-
 
         verify(contactService).addContactForResponsibleOfficerChange(isA(PrisonOffenderManager.class), eq(existingPOM));
     }

@@ -8,15 +8,14 @@ import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
 import uk.gov.justice.digital.delius.data.api.AccessLimitation;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
-import uk.gov.justice.digital.delius.service.AlfrescoService;
 import uk.gov.justice.digital.delius.service.ContactService;
 import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.CustodyService;
-import uk.gov.justice.digital.delius.service.DocumentService;
 import uk.gov.justice.digital.delius.service.NsiService;
 import uk.gov.justice.digital.delius.service.OffenderManagerService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.SentenceService;
+import uk.gov.justice.digital.delius.service.UserAccessService;
 import uk.gov.justice.digital.delius.service.UserService;
 
 import java.util.Optional;
@@ -32,8 +31,6 @@ public class OffenderResource_CheckUserAccess {
     private static final String SOME_CRN_NUMBER = "X320741";
 
     private final OffenderService offenderService = mock(OffenderService.class);
-    private final AlfrescoService alfrescoService = mock(AlfrescoService.class);
-    private final DocumentService documentService = mock(DocumentService.class);
     private final ContactService contactService = mock(ContactService.class);
     private final ConvictionService convictionService = mock(ConvictionService.class);
     private final OffenderManagerService offenderManagerService = mock(OffenderManagerService.class);
@@ -42,11 +39,12 @@ public class OffenderResource_CheckUserAccess {
     private final UserService userService = mock(UserService.class);
     private final CustodyService custodyService = mock(CustodyService.class);
     private final CurrentUserSupplier currentUserSupplier = mock(CurrentUserSupplier.class);
+    private final UserAccessService userAccessService = mock(UserAccessService.class);
 
     @BeforeEach
     public void setup() {
         RestAssuredMockMvc.standaloneSetup(
-                new OffendersResource(offenderService, alfrescoService, documentService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier, custodyService),
+                new OffendersResource(offenderService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier, custodyService, userAccessService),
                 new SecureControllerAdvice()
         );
     }
@@ -56,7 +54,7 @@ public class OffenderResource_CheckUserAccess {
         final var offender = theOffender();
         given(offenderService.getOffenderByCrn(SOME_CRN_NUMBER)).willReturn(offender);
         given(currentUserSupplier.username()).willReturn(Optional.of("BOB"));
-        given(userService.accessLimitationOf("BOB", offender.get())).willReturn(accessLimitationNone());
+        given(userService.accessLimitationOf("BOB", offender.orElseThrow())).willReturn(accessLimitationNone());
 
         final var accessLimitation =  given()
                 .contentType(APPLICATION_JSON_VALUE)
@@ -80,7 +78,7 @@ public class OffenderResource_CheckUserAccess {
         final var offender = theOffender();
         given(offenderService.getOffenderByCrn(SOME_CRN_NUMBER)).willReturn(offender);
         given(currentUserSupplier.username()).willReturn(Optional.of("BOB"));
-        given(userService.accessLimitationOf("BOB", offender.get())).willReturn(accessLimitationRestrictedAndExcluded());
+        given(userService.accessLimitationOf("BOB", offender.orElseThrow())).willReturn(accessLimitationRestrictedAndExcluded());
 
         final var accessLimitation =  given()
                 .contentType(APPLICATION_JSON_VALUE)
@@ -98,12 +96,12 @@ public class OffenderResource_CheckUserAccess {
         assertThat(accessLimitation.getRestrictionMessage()).isEqualTo("Your Restricted");
 
 
-    }    @Test
+    }
+    @Test
     void willCheckUserAccessOffenderNotFound(){
-        final var offender = theOffender();
         given(offenderService.getOffenderByCrn("34562X")).willReturn(Optional.empty());
 
-        final var accessLimitation =  given()
+        given()
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
                 .get(String.format("/secure/offenders/crn/%s/userAccess", "34562X"))
