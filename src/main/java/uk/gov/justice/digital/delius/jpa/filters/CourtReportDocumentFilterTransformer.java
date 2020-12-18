@@ -32,6 +32,7 @@ public class CourtReportDocumentFilterTransformer implements Specification<Court
         final var predicateBuilder = new ArrayList<Predicate>();
 
         predicateBuilder.add(criteriaBuilder.equal(documentRoot.get("offenderId"), offenderId));
+        predicateBuilder.add(criteriaBuilder.equal(documentRoot.get("softDeleted"), false));
 
         subType.filter(type -> type == SubType.PSR).ifPresent(type -> {
             final var courtReportTypeCodeIn = criteriaBuilder.in(documentRoot
