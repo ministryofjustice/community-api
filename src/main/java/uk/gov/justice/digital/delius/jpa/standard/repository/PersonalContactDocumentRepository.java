@@ -8,6 +8,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalContactDocument
 import java.util.List;
 
 public interface PersonalContactDocumentRepository extends JpaRepository<PersonalContactDocument, Long> {
-    @Query("select document from PersonalContactDocument document, PersonalContact entity where document.personalContact = entity and document.offenderId = :offenderId")
+    @Query("select document from PersonalContactDocument document, PersonalContact entity where document.personalContact = entity and document.offenderId = :offenderId and document.softDeleted = false")
     List<PersonalContactDocument> findByOffenderId(@Param("offenderId") Long offenderId);
 }
