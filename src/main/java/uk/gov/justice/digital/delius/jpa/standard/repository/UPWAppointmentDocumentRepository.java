@@ -8,6 +8,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.UPWAppointmentDocument;
 import java.util.List;
 
 public interface UPWAppointmentDocumentRepository extends JpaRepository<UPWAppointmentDocument, Long> {
-    @Query("select document from UPWAppointmentDocument document, UpwAppointment entity where document.upwAppointment = entity and document.offenderId = :offenderId")
+    @Query("select document from UPWAppointmentDocument document, UpwAppointment entity where document.upwAppointment = entity and document.offenderId = :offenderId and document.softDeleted = 0")
     List<UPWAppointmentDocument> findByOffenderId(@Param("offenderId") Long offenderId);
 }

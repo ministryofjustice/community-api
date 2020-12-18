@@ -140,33 +140,7 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
                 .as(OffenderDocuments.class);
 
             assertThat(offenderDocuments.getConvictions()).hasSize(2);
-            assertThat(offenderDocuments.getDocuments()).hasSize(7);
-
-            final ConvictionDocuments convictionDocuments = offenderDocuments
-                .getConvictions()
-                .stream()
-                .filter(convictionDocument -> convictionDocument.getConvictionId().equals("2500295345"))
-                .findFirst()
-                .orElseThrow();
-
-            final OffenderDocumentDetail institutionalDocument = convictionDocuments.getDocuments().stream()
-                .filter(doc -> doc.getId().equals("e6cf2802-32d5-4a91-a7a9-00064d27bb19")).findFirst().orElseThrow();
-            assertThat(institutionalDocument.getSubType().getCode()).isEqualTo("PAR");
-            assertThat(institutionalDocument.getSubType().getDescription()).isEqualTo("Parole Assessment Report");
-            assertThat(institutionalDocument
-                .getReportDocumentDates()
-                .getRequestedDate()).isEqualTo(LocalDate.of(2019, 9, 5));
-
-            final OffenderDocumentDetail courtReportDocument = convictionDocuments.getDocuments().stream()
-                .filter(doc -> doc.getId().equals("1d842fce-ec2d-45dc-ac9a-748d3076ca6b")).findFirst().orElseThrow();
-            assertThat(courtReportDocument.getSubType().getCode()).isEqualTo("CJF");
-            assertThat(courtReportDocument.getSubType().getDescription()).isEqualTo("Pre-Sentence Report - Fast");
-            assertThat(courtReportDocument
-                .getReportDocumentDates()
-                .getRequestedDate()).isEqualTo(LocalDate.of(2018, 9, 4));
-            assertThat(courtReportDocument
-                .getReportDocumentDates()
-                .getRequiredDate()).isEqualTo(LocalDate.of(2019, 9, 4));
+            assertMultiDocuments(offenderDocuments);
         }
 
         @DisplayName("Validation of request")
@@ -405,33 +379,7 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
                 .as(OffenderDocuments.class);
 
             assertThat(offenderDocuments.getConvictions()).hasSize(2);
-            assertThat(offenderDocuments.getDocuments()).hasSize(7);
-
-            final ConvictionDocuments convictionDocuments = offenderDocuments
-                .getConvictions()
-                .stream()
-                .filter(convictionDocument -> convictionDocument.getConvictionId().equals("2500295345"))
-                .findFirst()
-                .orElseThrow();
-
-            final OffenderDocumentDetail institutionalDocument = convictionDocuments.getDocuments().stream()
-                .filter(doc -> doc.getId().equals("e6cf2802-32d5-4a91-a7a9-00064d27bb19")).findFirst().orElseThrow();
-            assertThat(institutionalDocument.getSubType().getCode()).isEqualTo("PAR");
-            assertThat(institutionalDocument.getSubType().getDescription()).isEqualTo("Parole Assessment Report");
-            assertThat(institutionalDocument
-                .getReportDocumentDates()
-                .getRequestedDate()).isEqualTo(LocalDate.of(2019, 9, 5));
-
-            final OffenderDocumentDetail courtReportDocument = convictionDocuments.getDocuments().stream()
-                .filter(doc -> doc.getId().equals("1d842fce-ec2d-45dc-ac9a-748d3076ca6b")).findFirst().orElseThrow();
-            assertThat(courtReportDocument.getSubType().getCode()).isEqualTo("CJF");
-            assertThat(courtReportDocument.getSubType().getDescription()).isEqualTo("Pre-Sentence Report - Fast");
-            assertThat(courtReportDocument
-                .getReportDocumentDates()
-                .getRequestedDate()).isEqualTo(LocalDate.of(2018, 9, 4));
-            assertThat(courtReportDocument
-                .getReportDocumentDates()
-                .getRequiredDate()).isEqualTo(LocalDate.of(2019, 9, 4));
+            assertMultiDocuments(offenderDocuments);
         }
 
         @DisplayName("Validation of request")
@@ -618,5 +566,42 @@ public class DocumentResourceAPITest extends IntegrationTestBase {
                 assertThat(countAllDocuments(courtReportDocuments)).isEqualTo(PSR_COURT_REPORT_DOCUMENT_COUNT);
             }
         }
+    }
+
+    private void assertMultiDocuments(OffenderDocuments offenderDocuments) {
+
+        assertThat(offenderDocuments.getDocuments()).hasSize(7);
+        assertThat(offenderDocuments.getDocuments()).extracting(OffenderDocumentDetail::getId)
+            .doesNotContain("4191easd-6e03-4bd8-b52d-9e050eefa745");
+        assertThat(offenderDocuments.getDocuments()).extracting(OffenderDocumentDetail::getId)
+            .contains("1e593ff6-d5d6-4048-a671-cdeb8f65608b", "0ec9b16c-b292-4d27-b11a-c0ddde852804", "aeb43e06-a4a1-460f-9acf-e2495de84604",
+                "b2d92238-215c-4d6d-b91c-208ea747087e", "5152b060-9650-4f22-9974-038a38590d9f", "7ceda384-3624-4a62-849d-7c729b6d0dd1",
+                "2b167448-31a5-45a5-85a5-dcdd4a783f1d");
+
+        final ConvictionDocuments convictionDocuments = offenderDocuments
+            .getConvictions()
+            .stream()
+            .filter(convictionDocument -> convictionDocument.getConvictionId().equals("2500295345"))
+            .findFirst()
+            .orElseThrow();
+
+        final OffenderDocumentDetail institutionalDocument = convictionDocuments.getDocuments().stream()
+            .filter(doc -> doc.getId().equals("e6cf2802-32d5-4a91-a7a9-00064d27bb19")).findFirst().orElseThrow();
+        assertThat(institutionalDocument.getSubType().getCode()).isEqualTo("PAR");
+        assertThat(institutionalDocument.getSubType().getDescription()).isEqualTo("Parole Assessment Report");
+        assertThat(institutionalDocument
+            .getReportDocumentDates()
+            .getRequestedDate()).isEqualTo(LocalDate.of(2019, 9, 5));
+
+        final OffenderDocumentDetail courtReportDocument = convictionDocuments.getDocuments().stream()
+            .filter(doc -> doc.getId().equals("1d842fce-ec2d-45dc-ac9a-748d3076ca6b")).findFirst().orElseThrow();
+        assertThat(courtReportDocument.getSubType().getCode()).isEqualTo("CJF");
+        assertThat(courtReportDocument.getSubType().getDescription()).isEqualTo("Pre-Sentence Report - Fast");
+        assertThat(courtReportDocument
+            .getReportDocumentDates()
+            .getRequestedDate()).isEqualTo(LocalDate.of(2018, 9, 4));
+        assertThat(courtReportDocument
+            .getReportDocumentDates()
+            .getRequiredDate()).isEqualTo(LocalDate.of(2019, 9, 4));
     }
 }

@@ -8,6 +8,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.AddressAssessmentDocume
 import java.util.List;
 
 public interface AddressAssessmentDocumentRepository extends JpaRepository<AddressAssessmentDocument, Long> {
-    @Query("select document from AddressAssessmentDocument document, AddressAssessment entity where document.addressAssessment = entity and document.offenderId = :offenderId")
+    @Query("select document from AddressAssessmentDocument document, AddressAssessment entity where document.addressAssessment = entity and document.offenderId = :offenderId and document.softDeleted = 0")
     List<AddressAssessmentDocument> findByOffenderId(@Param("offenderId") Long offenderId);
 }
