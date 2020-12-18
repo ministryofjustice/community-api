@@ -15,8 +15,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.InvalidRequestException;
+import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
-import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
@@ -587,7 +587,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
     @DisplayName("allocatePrisonOffenderManagerByName")
     class AllocatePrisonOffenderManagerByName {
         @Captor
-        private ArgumentCaptor<Human> humanCaptor;
+        private ArgumentCaptor<ContactableHuman> humanCaptor;
 
         @BeforeEach
         public void setup() {
@@ -614,7 +614,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                     CreatePrisonOffenderManager
                             .builder()
                             .nomsPrisonInstitutionCode("BWI")
-                            .officer(Human
+                            .officer(ContactableHuman
                                     .builder()
                                     .surname("Smith")
                                     .forenames("John")
@@ -634,7 +634,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                     CreatePrisonOffenderManager
                             .builder()
                             .nomsPrisonInstitutionCode("BWI")
-                            .officer(Human
+                            .officer(ContactableHuman
                                     .builder()
                                     .surname("Smith")
                                     .forenames("John")
@@ -653,7 +653,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                     CreatePrisonOffenderManager
                             .builder()
                             .nomsPrisonInstitutionCode("BWI")
-                            .officer(Human
+                            .officer(ContactableHuman
                                     .builder()
                                     .build())
                             .build()))
@@ -678,7 +678,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                         CreatePrisonOffenderManager
                                 .builder()
                                 .nomsPrisonInstitutionCode("N01")
-                                .officer(Human
+                                .officer(ContactableHuman
                                         .builder()
                                         .surname("SMITH")
                                         .forenames("JOHN")

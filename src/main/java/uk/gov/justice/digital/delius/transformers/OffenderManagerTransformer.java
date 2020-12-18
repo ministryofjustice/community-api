@@ -20,7 +20,7 @@ public class OffenderManagerTransformer {
                 .isUnallocated(isUnallocated(offenderManager))
                 .staff(Optional
                         .ofNullable(offenderManager.getStaff())
-                        .map(StaffTransformer::humanOf)
+                        .map(StaffTransformer::contactableHumanOf)
                         .orElse(null))
                 .team(Optional
                         .ofNullable(offenderManager.getTeam())
@@ -44,7 +44,7 @@ public class OffenderManagerTransformer {
                 .isUnallocated(isUnallocated(offenderManager))
                 .staff(Optional
                         .ofNullable(offenderManager.getStaff())
-                        .map(StaffTransformer::humanOf)
+                        .map(StaffTransformer::contactableHumanOf)
                         .orElse(null))
                 .team(Optional
                         .ofNullable(offenderManager.getTeam())
