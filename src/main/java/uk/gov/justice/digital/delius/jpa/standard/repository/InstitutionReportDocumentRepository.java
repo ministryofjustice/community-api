@@ -8,6 +8,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReportDocu
 import java.util.List;
 
 public interface InstitutionReportDocumentRepository extends JpaRepository<InstitutionalReportDocument, Long> {
-    @Query("select document from InstitutionalReportDocument document, InstitutionalReport entity where document.institutionalReport = entity and document.offenderId = :offenderId and document.softDeleted = 0")
+    @Query("select document from InstitutionalReportDocument document, InstitutionalReport entity where document.institutionalReport = entity and document.offenderId = :offenderId and document.softDeleted = false")
     List<InstitutionalReportDocument> findByOffenderId(@Param("offenderId") Long offenderId);
 }

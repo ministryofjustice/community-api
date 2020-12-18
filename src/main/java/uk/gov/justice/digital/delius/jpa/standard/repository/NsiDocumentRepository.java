@@ -8,6 +8,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.NsiDocument;
 import java.util.List;
 
 public interface NsiDocumentRepository extends JpaRepository<NsiDocument, Long> {
-    @Query("select document from NsiDocument document, Nsi entity where document.nsi = entity and document.offenderId = :offenderId and document.softDeleted = 0")
+    @Query("select document from NsiDocument document, Nsi entity where document.nsi = entity and document.offenderId = :offenderId and document.softDeleted = false")
     List<NsiDocument> findByOffenderId(@Param("offenderId") Long offenderId);
 }

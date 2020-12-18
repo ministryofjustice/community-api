@@ -10,6 +10,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderPrimaryIdentifi
 import java.util.List;
 
 public interface CourtReportDocumentRepository extends JpaRepository<CourtReportDocument, Long>, JpaSpecificationExecutor<CourtReportDocument> {
-    @Query("select document from CourtReportDocument document, CourtReport entity where document.courtReport = entity and document.offenderId = :offenderId and document.softDeleted = 0")
+    @Query("select document from CourtReportDocument document, CourtReport entity where document.courtReport = entity and document.offenderId = :offenderId and document.softDeleted = false")
     List<CourtReportDocument> findByOffenderId(@Param("offenderId") Long offenderId);
 }

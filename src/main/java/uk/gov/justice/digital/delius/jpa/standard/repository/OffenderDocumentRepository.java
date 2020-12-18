@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface OffenderDocumentRepository extends JpaRepository<OffenderDocument, Long> {
 
-    @Query("select document from OffenderDocument document where document.offenderId = :offenderId and document.softDeleted = 0")
+    @Query("select document from OffenderDocument document where document.offenderId = :offenderId and document.softDeleted = false")
     List<OffenderDocument> findByOffenderId(Long offenderId);
 }

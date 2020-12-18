@@ -8,6 +8,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ApprovedPremisesReferra
 import java.util.List;
 
 public interface ApprovedPremisesReferralDocumentRepository extends JpaRepository<ApprovedPremisesReferralDocument, Long> {
-    @Query("select document from ApprovedPremisesReferralDocument document, ApprovedPremisesReferral entity where document.approvedPremisesReferral = entity and document.offenderId = :offenderId and document.softDeleted = 0")
+    @Query("select document from ApprovedPremisesReferralDocument document, ApprovedPremisesReferral entity where document.approvedPremisesReferral = entity and document.offenderId = :offenderId and document.softDeleted = false")
     List<ApprovedPremisesReferralDocument> findByOffenderId(@Param("offenderId") Long offenderId);
 }
