@@ -183,7 +183,7 @@ public class ConvictionService {
         }
     }
 
-    public List<Event> getAllActiveConvictionByOffenderIdAndPrisonBookingNumber(long offenderId, String prisonBookingNumber) {
+    public List<Event> getAllActiveConvictionsByOffenderIdAndPrisonBookingNumber(long offenderId, String prisonBookingNumber) {
         return activeCustodyEvents(offenderId)
             .stream()
             .filter(event -> prisonBookingNumber.equals(event.getDisposal().getCustody().getPrisonerNumber()))

@@ -96,7 +96,7 @@ public class CustodyService {
                 "toAgency", updateCustody.getNomsPrisonInstitutionCode());
 
         final var result = updateCustodyPrisonLocation(nomsNumber,
-                offender  -> getAllActiveConvictionByOffenderIdAndPrisonBookingNumber(offender.getOffenderId(), bookingNumber),
+                offender  -> getAllActiveConvictionsByOffenderIdAndPrisonBookingNumber(offender.getOffenderId(), bookingNumber),
                 updateCustody.getNomsPrisonInstitutionCode());
         return result.map(success -> {
             switch (success.outcome) {
@@ -104,7 +104,7 @@ public class CustodyService {
                     telemetryClient.trackEvent("P2PTransferPrisonUpdated", add(telemetryProperties, "updatedCount", String.valueOf(success.custodyRecordsUpdated.size())), null);
                     break;
                 case NoUpdateRequired:
-                    telemetryClient.trackEvent("P2PTransferPrisonUpdateIgnored", add(telemetryProperties, "noUpdatedCount", String.valueOf(success.custodyRecordsUpdated.size())), null);
+                    telemetryClient.trackEvent("P2PTransferPrisonUpdateIgnored", telemetryProperties, null);
                     break;
             }
             return success.custodyRecordsUpdated
@@ -140,7 +140,7 @@ public class CustodyService {
         final var additionalTelemetryProperties = new HashMap<String, String>();
 
         final var result = updateCustodyPrisonLocation(nomsNumber,
-                this::getAllActiveCustodialEvent,
+                this::getAllActiveCustodialEvents,
                 nomsPrisonInstitutionCode);
         final Optional<String> telemetryName = result.fold(error -> {
             switch (error.reason) {
@@ -179,7 +179,7 @@ public class CustodyService {
                 .flatMap(offender -> eventSupplier.apply(offender)
                         .flatMap(events -> atLeastOneInCustodyOrAboutToStartACustodySentence(events)
                                 .flatMap(eventsToUpdate -> findByNomisCdeCode(nomsPrisonInstitutionCode)
-                                        .flatMap(institution -> updateInstitutionWhenDifferent(offender, eventsToUpdate, institution)))
+                                        .flatMap(institution -> updateInstitutionsWhenDifferent(offender, eventsToUpdate, institution)))
                         ));
     }
 
@@ -329,8 +329,8 @@ public class CustodyService {
                 .fold(multipleOffenderError, offenderOrNotFoundError);
     }
 
-    private Either<PrisonLocationUpdateError, List<Event>> getAllActiveConvictionByOffenderIdAndPrisonBookingNumber(Long offenderId, String bookingNumber) {
-        final var events = convictionService.getAllActiveConvictionByOffenderIdAndPrisonBookingNumber(offenderId, bookingNumber);
+    private Either<PrisonLocationUpdateError, List<Event>> getAllActiveConvictionsByOffenderIdAndPrisonBookingNumber(Long offenderId, String bookingNumber) {
+        final var events = convictionService.getAllActiveConvictionsByOffenderIdAndPrisonBookingNumber(offenderId, bookingNumber);
         if (events.isEmpty()) {
             return Either.left(PrisonLocationUpdateError.convictionNotFound(bookingNumber));
         } else {
@@ -338,7 +338,7 @@ public class CustodyService {
         }
     }
 
-    private Either<PrisonLocationUpdateError, List<Event>> getAllActiveCustodialEvent(Offender offender) {
+    private Either<PrisonLocationUpdateError, List<Event>> getAllActiveCustodialEvents(Offender offender) {
         final var events = convictionService.getAllActiveCustodialEvents(offender.getOffenderId());
         if (events.isEmpty()) {
             return Either.left(new PrisonLocationUpdateError(ConvictionNotFound, String
@@ -372,7 +372,7 @@ public class CustodyService {
                 .orElseGet(() -> Either.left(new PrisonLocationUpdateError(PrisonLocationUpdateError.Reason.TransferPrisonNotFound, String.format("prison institution with nomis code  %s not found", nomisCdeCode))));
     }
 
-    private Either<PrisonLocationUpdateError, PrisonLocationUpdateSuccess> updateInstitutionWhenDifferent(Offender offender, List<Event> events, RInstitution institution) {
+    private Either<PrisonLocationUpdateError, PrisonLocationUpdateSuccess> updateInstitutionsWhenDifferent(Offender offender, List<Event> events, RInstitution institution) {
         final var allAtDifferentInstitution = events
             .stream()
             .filter(event -> currentlyAtDifferentInstitution(event, institution))
