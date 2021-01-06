@@ -27,7 +27,7 @@ This will grab the latest versions of auth and community api and start both - au
 
 ## Testing locally
 
-We use [Postman](https://www.postman.com/) to test the API calls.  The swagger docs (http://localhost:8080/v2/api-docs)
+We use [Postman](https://www.postman.com/) to test the API calls.  The swagger docs (http://localhost:8080/v2/api-docs?group=Community%20API)
 can be imported as a collection to make it easier to test out a single call.
 
 Calling the API is a two step process - obtaining a token from auth and then using the token in community API.  
