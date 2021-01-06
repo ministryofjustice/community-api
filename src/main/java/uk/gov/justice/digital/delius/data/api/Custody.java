@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
@@ -20,4 +22,6 @@ public class Custody {
     private CustodyRelatedKeyDates keyDates;
     @ApiModelProperty(value = "Custodial status")
     private KeyValue status;
+    @ApiModelProperty(value = "Date when related sentence started")
+    private LocalDate sentenceStartDate;
 }

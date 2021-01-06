@@ -8,7 +8,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
-import uk.gov.justice.digital.delius.data.api.*;
+import uk.gov.justice.digital.delius.data.api.Conviction;
+import uk.gov.justice.digital.delius.data.api.CourtCase;
+import uk.gov.justice.digital.delius.data.api.CreateCustodyKeyDate;
+import uk.gov.justice.digital.delius.data.api.Custody;
+import uk.gov.justice.digital.delius.data.api.CustodyKeyDate;
+import uk.gov.justice.digital.delius.data.api.ReplaceCustodyKeyDates;
+import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
+import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.KeyDate;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
@@ -16,8 +23,6 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
 import uk.gov.justice.digital.delius.transformers.CustodyKeyDateTransformer;
-import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
-import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,7 +35,10 @@ import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.stream.Collectors.toList;
-import static uk.gov.justice.digital.delius.service.CustodyKeyDatesMapper.*;
+import static uk.gov.justice.digital.delius.service.CustodyKeyDatesMapper.custodyManagedKeyDates;
+import static uk.gov.justice.digital.delius.service.CustodyKeyDatesMapper.descriptionOf;
+import static uk.gov.justice.digital.delius.service.CustodyKeyDatesMapper.keyDatesOf;
+import static uk.gov.justice.digital.delius.service.CustodyKeyDatesMapper.missingKeyDateTypesCodes;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
 
 @Service
@@ -173,6 +181,13 @@ public class ConvictionService {
             default:
                 throw new DuplicateActiveCustodialConvictionsException(events.size());
         }
+    }
+
+    public List<Event> getAllActiveConvictionByOffenderIdAndPrisonBookingNumber(long offenderId, String prisonBookingNumber) {
+        return activeCustodyEvents(offenderId)
+            .stream()
+            .filter(event -> prisonBookingNumber.equals(event.getDisposal().getCustody().getPrisonerNumber()))
+            .collect(toList());
     }
 
     @Transactional(readOnly = true)
