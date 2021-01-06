@@ -178,6 +178,11 @@ public class EntityHelper {
     public static Event aCustodyEvent() {
         return aCustodyEvent(100L, 99L, new ArrayList<>());
     }
+    public static Event aCustodyEvent(LocalDate sentenceStartDate) {
+        final var event = aCustodyEvent();
+        final var disposal = event.getDisposal().toBuilder().startDate(sentenceStartDate).build();
+        return event.toBuilder().disposal(disposal).build();
+    }
 
     public static Event aCustodyEvent(final StandardReference custodialStatus) {
         return aCustodyEvent(100L, 99L, new ArrayList<>(), custodialStatus);

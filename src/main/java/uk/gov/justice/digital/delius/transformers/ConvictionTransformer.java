@@ -186,10 +186,11 @@ public class ConvictionTransformer {
     public static Custody custodyOf(uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody) {
         return Custody.builder().bookingNumber(custody.getPrisonerNumber())
                 .institution(Optional.ofNullable(custody.getInstitution()).map(InstitutionTransformer::institutionOf)
-                        .orElse(null))
+                    .orElse(null))
                 .status(KeyValueTransformer.keyValueOf(custody.getCustodialStatus()))
+                .sentenceStartDate(custody.getDisposal().getStartDate())
                 .keyDates(Optional.ofNullable(custody.getKeyDates()).map(ConvictionTransformer::custodyRelatedKeyDatesOf)
-                        .orElse(CustodyRelatedKeyDates.builder().build())).build();
+                    .orElse(CustodyRelatedKeyDates.builder().build())).build();
     }
 
     private static CustodyRelatedKeyDates custodyRelatedKeyDatesOf(List<KeyDate> keyDates) {
