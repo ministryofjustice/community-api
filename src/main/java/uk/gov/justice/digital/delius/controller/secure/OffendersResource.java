@@ -39,6 +39,7 @@ import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.CustodialStatus;
 import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.data.api.NsiWrapper;
+import uk.gov.justice.digital.delius.data.api.OffenderAssessments;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
@@ -351,6 +352,21 @@ public class OffendersResource {
                 .map((offenderId) -> convictionService.convictionFor(offenderId, convictionId))
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)))
                 .orElseThrow(() -> new NotFoundException(String.format("Conviction with ID %s for Offender with crn %s not found", convictionId, crn)));
+    }
+
+    @ApiOperation(value = "Return the assessments for a CRN", tags = {"Assessments"})
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "The offender CRN is not found", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+    @GetMapping(path = "/offenders/crn/{crn}/assessments")
+    public OffenderAssessments getAssessmentsByCrn(
+        @ApiParam(value = "CRN for the offender", example = "A123456", required = true)
+        @NotNull @PathVariable(value = "crn") final String crn) {
+        return offenderService.getAssessments(crn)
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 
     @ApiOperation(value = "Return the NSIs for a conviction ID and a CRN, filtering by NSI codes", tags = "Sentence requirements and breach")

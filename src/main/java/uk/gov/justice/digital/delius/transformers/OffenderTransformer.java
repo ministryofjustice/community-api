@@ -10,6 +10,7 @@ import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.IDs;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.ManagedOffender;
+import uk.gov.justice.digital.delius.data.api.OffenderAssessments;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderLanguages;
@@ -507,4 +508,7 @@ public class OffenderTransformer {
         return result;
     }
 
+    public static OffenderAssessments assessmentsOf(Offender offender) {
+        return OffenderAssessments.builder().rsrScore(offender.getDynamicRsrScore()).build();
+    }
 }
