@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class OffendersResource_getAssessmentsByCrn extends IntegrationTestBase {
-    
+
     @Test
     public void canGetOffenderAssessmentsByCrn() {
         final var offenderAssessments = given()
@@ -25,9 +25,7 @@ public class OffendersResource_getAssessmentsByCrn extends IntegrationTestBase {
 
       assertThat(offenderAssessments.getRsrScore()).isEqualTo(1);
     }
-
-
-
+    
     @Test
     public void canGetOffenderAssessmentsByCrn_offenderNotFound_returnsNotFound() {
         given()
