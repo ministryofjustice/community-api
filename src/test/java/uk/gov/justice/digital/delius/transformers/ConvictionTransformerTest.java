@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.Conviction;
-import uk.gov.justice.digital.delius.data.api.CourtCase;
 import uk.gov.justice.digital.delius.data.api.Sentence;
 import uk.gov.justice.digital.delius.data.api.UnpaidWork;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalOffence;
@@ -436,13 +435,6 @@ public class ConvictionTransformerTest {
                 .build();
     }
 
-    private uk.gov.justice.digital.delius.data.api.Offence anApiMainOffence() {
-        return uk.gov.justice.digital.delius.data.api.Offence
-                .builder()
-                .mainOffence(true)
-                .build();
-    }
-
     private Event anEvent() {
         return Event
                 .builder()
@@ -464,16 +456,8 @@ public class ConvictionTransformerTest {
                 .softDeleted(0L);
     }
 
-    private CourtCase aCourtCase() {
-        return CourtCase
-                .builder()
-                .offences(ImmutableList.of(anApiMainOffence()))
-                .orderManager(uk.gov.justice.digital.delius.data.api.OrderManager.builder().build())
-                .build();
-    }
-
     private Custody aCustody() {
-        return Custody.builder().build();
+        return Custody.builder().disposal(aDisposal()).build();
     }
 
     private RInstitution anInstitution() {
