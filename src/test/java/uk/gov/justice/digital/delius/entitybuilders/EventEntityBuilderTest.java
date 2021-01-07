@@ -211,6 +211,25 @@ public class EventEntityBuilderTest {
     }
 
     @Test
+    public void sentenceStartDateCopiedFromDisposalWithinCustody() {
+        final var sentenceStartDate = LocalDate.now();
+        assertThat(
+            ConvictionTransformer.convictionOf(
+                anEvent()
+                    .toBuilder()
+                    .disposal(Disposal
+                        .builder()
+                        .custody(aCustody()
+                            .toBuilder()
+                            .disposal(aDisposal().toBuilder().startDate(sentenceStartDate).build())
+                            .build())
+                        .build())
+                    .build()
+            ).getCustody().getSentenceStartDate()
+        ).isEqualTo(sentenceStartDate);
+    }
+
+    @Test
     public void institutionCopiedFromCustodyWhenPresent() {
         assertThat(
                 ConvictionTransformer.convictionOf(
@@ -581,7 +600,7 @@ public class EventEntityBuilderTest {
     }
 
     private Custody aCustody() {
-        return Custody.builder().build();
+        return Custody.builder().disposal(aDisposal()).build();
     }
 
     private RInstitution anInstitution() {
