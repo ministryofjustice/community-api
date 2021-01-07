@@ -96,7 +96,7 @@ public class CustodyService {
                 "toAgency", updateCustody.getNomsPrisonInstitutionCode());
 
         final var result = updateCustodyPrisonLocation(nomsNumber,
-                offender  -> getAllActiveConvictionsByOffenderIdAndPrisonBookingNumber(offender.getOffenderId(), bookingNumber),
+                this::getAllActiveCustodialEvents,
                 updateCustody.getNomsPrisonInstitutionCode());
         return result.map(success -> {
             switch (success.outcome) {
@@ -329,15 +329,6 @@ public class CustodyService {
                 .fold(multipleOffenderError, offenderOrNotFoundError);
     }
 
-    private Either<PrisonLocationUpdateError, List<Event>> getAllActiveConvictionsByOffenderIdAndPrisonBookingNumber(Long offenderId, String bookingNumber) {
-        final var events = convictionService.getAllActiveConvictionsByOffenderIdAndPrisonBookingNumber(offenderId, bookingNumber);
-        if (events.isEmpty()) {
-            return Either.left(PrisonLocationUpdateError.convictionNotFound(bookingNumber));
-        } else {
-            return Either.right(events);
-        }
-    }
-
     private Either<PrisonLocationUpdateError, List<Event>> getAllActiveCustodialEvents(Offender offender) {
         final var events = convictionService.getAllActiveCustodialEvents(offender.getOffenderId());
         if (events.isEmpty()) {
@@ -411,9 +402,6 @@ public class CustodyService {
             return new PrisonLocationUpdateError(MultipleOffendersFound, duplicateError.getMessage());
         }
 
-        public static  PrisonLocationUpdateError convictionNotFound(String bookingNumber) {
-            return new PrisonLocationUpdateError(ConvictionNotFound, String.format("conviction with bookingNumber %s not found", bookingNumber));
-        }
     }
     @Data
     static class PrisonLocationUpdateSuccess {
@@ -432,7 +420,7 @@ public class CustodyService {
         final private List<Custody> custodyRecordsUpdated;
     }
 
-    static <K, V> Map<K, V> add(Map<K, V> map, K key, V value) {
+    static <K, V> Map<K, V> add(Map<K, V> map, @SuppressWarnings("SameParameterValue") K key, V value) {
         final var all = new HashMap<>(map);
         all.put(key, value);
         return Map.copyOf(all);

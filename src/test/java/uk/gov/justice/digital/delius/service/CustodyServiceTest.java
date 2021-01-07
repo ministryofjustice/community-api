@@ -69,7 +69,7 @@ public class CustodyServiceTest {
     public void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
         custodyService = new CustodyService(true, true, telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService);
         when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
-        when(convictionService.getAllActiveConvictionsByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+        when(convictionService.getAllActiveCustodialEvents(anyLong()))
                 .thenReturn(List.of(EntityHelper.aCustodyEvent()));
     }
 
@@ -131,7 +131,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willCreateTelemetryEventWhenConvictionNotFound() {
-            when(convictionService.getAllActiveConvictionsByOffenderIdAndPrisonBookingNumber(99L, "44463B")).thenReturn(List.of());
+            when(convictionService.getAllActiveCustodialEvents(99L)).thenReturn(List.of());
 
             assertThatThrownBy(() ->
                     custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()));
@@ -141,7 +141,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willThrowExceptionWhenBookingNumberNotFound() {
-            when(convictionService.getAllActiveConvictionsByOffenderIdAndPrisonBookingNumber(99L, "44463B")).thenReturn(List.of());
+            when(convictionService.getAllActiveCustodialEvents(99L)).thenReturn(List.of());
 
             assertThatThrownBy(() ->
                     custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()))
@@ -155,7 +155,7 @@ public class CustodyServiceTest {
             final LocalDate latestEventSentenceStartDate = LocalDate.now();
             @BeforeEach
             void setUp() {
-                when(convictionService.getAllActiveConvictionsByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+                when(convictionService.getAllActiveCustodialEvents(anyLong()))
                     .thenReturn(List.of(EntityHelper.aCustodyEvent(latestEventSentenceStartDate), EntityHelper.aCustodyEvent(LocalDate.now().minusYears(1))));
 
             }
@@ -219,7 +219,7 @@ public class CustodyServiceTest {
             @Test
             @DisplayName("will ignore events with the incorrect status but others will be updated")
             public void willUpdateOneEventEvenWhenTheOtherIsInWrongStatus() {
-                when(convictionService.getAllActiveConvictionsByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+                when(convictionService.getAllActiveCustodialEvents(anyLong()))
                     .thenReturn(List.of(
                         EntityHelper.aCustodyEvent(),
                         EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("B").codeDescription("Released on Licence").build())));
@@ -259,7 +259,7 @@ public class CustodyServiceTest {
             final var currentInstitution = aPrisonInstitution();
             final var event = EntityHelper.aCustodyEvent();
             event.getDisposal().getCustody().setInstitution(currentInstitution);
-            when(convictionService.getAllActiveConvictionsByOffenderIdAndPrisonBookingNumber(anyLong(), anyString())).thenReturn(List
+            when(convictionService.getAllActiveCustodialEvents(anyLong())).thenReturn(List
                 .of(event));
 
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(newInstitution));
@@ -313,7 +313,7 @@ public class CustodyServiceTest {
             final var offender = anOffender();
             final var event = aCustodyEvent();
             when(offenderRepository.findMostLikelyByNomsNumber("G9542VP")).thenReturn(Either.right(Optional.of(offender)));
-            when(convictionService.getAllActiveConvictionsByOffenderIdAndPrisonBookingNumber(anyLong(), anyString())).thenReturn(List.of(event));
+            when(convictionService.getAllActiveCustodialEvents(anyLong())).thenReturn(List.of(event));
 
             custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
 
@@ -347,7 +347,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willCreateCustodyHistoryChangeCustodyStatusWhenCurrentlyOnlySentenced() {
-            when(convictionService.getAllActiveConvictionsByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+            when(convictionService.getAllActiveCustodialEvents(anyLong()))
                 .thenReturn(List.of(EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("A").codeDescription("Sentenced in custody").build())));
 
             custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
@@ -367,7 +367,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willGetInCustodyStatusWhenCurrentlyOnlySentenced() {
-            when(convictionService.getAllActiveConvictionsByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+            when(convictionService.getAllActiveCustodialEvents(anyLong()))
                 .thenReturn(List.of(EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("A").codeDescription("Sentenced in custody").build())));
 
             custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
@@ -377,7 +377,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willNotifySPGOfCustodyLocationChangeWhenCurrentlyOnlySentenced() {
-            when(convictionService.getAllActiveConvictionsByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+            when(convictionService.getAllActiveCustodialEvents(anyLong()))
                 .thenReturn(List.of(EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("A").codeDescription("Sentenced in custody").build())));
 
             custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
@@ -387,7 +387,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willNotifySPGOfCustodyLocationChangeWhenCurrentlyInCustody() {
-            when(convictionService.getAllActiveConvictionsByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+            when(convictionService.getAllActiveCustodialEvents(anyLong()))
                 .thenReturn(List.of(EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("D").codeDescription("In Custody").build())));
 
             custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
@@ -397,7 +397,7 @@ public class CustodyServiceTest {
 
         @Test
         public void willCreateTelemetryEventWhenPrisonLocationChangesButStatusNotCurrentlyInPrison() {
-            when(convictionService.getAllActiveConvictionsByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
+            when(convictionService.getAllActiveCustodialEvents(anyLong()))
                 .thenReturn(List.of(EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("B").codeDescription("Released on Licence").build())));
 
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
