@@ -28,7 +28,7 @@ This will grab the latest versions of auth and community api and start both - au
 ## Testing locally
 
 We use [Postman](https://www.postman.com/) to test the API calls.  The swagger docs (http://localhost:8080/v2/api-docs?group=Community%20API)
-can be imported as a collection to make it easier to test out a single call.
+can be imported as a collection to make it easier to test out a single call. If using browser based postman, you may need to copy the response from that URL and import the collection as raw text.
 
 Calling the API is a two step process - obtaining a token from auth and then using the token in community API.  
 
@@ -36,7 +36,7 @@ Calling the API is a two step process - obtaining a token from auth and then usi
 
 Within Postman in the Authorization tab select OAuth 2.0 type and add the authorization data to request headers.
 The grant type should be Client Credentials, access token URL http://localhost:9090/auth/oauth/token, client ID
-and secret both set to `community-api-client` and client authentication set to Send as Basic Auth header.
+and secret both set to `community-api-client` and client authentication set to Send as Basic Auth header. Then click "Get new access token" and "Use access token". 
 
 Alternatively using `curl`:
 ```
