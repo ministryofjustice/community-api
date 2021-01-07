@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.controller.CustodyNotFoundException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
+import uk.gov.justice.digital.delius.data.api.OffenderAssessments;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderIdentifiers;
@@ -90,6 +91,11 @@ public class OffenderService {
         Optional<Offender> maybeOffender = offenderRepository.findByNomsNumber(nomsNumber);
 
         return maybeOffender.map(OffenderTransformer::offenderSummaryOf);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<OffenderAssessments> getAssessments(String crn) {
+        return offenderRepository.findByCrn(crn).map(OffenderTransformer::assessmentsOf);
     }
 
     public Optional<String> crnOf(Long offenderId) {

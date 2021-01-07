@@ -195,6 +195,9 @@ public class Offender {
     @Column(name = "CURRENT_REMAND_STATUS")
     private String currentRemandStatus;
 
+    @Column(name = "DYNAMIC_RSR_SCORE")
+    private Integer dynamicRsrScore;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARTITION_AREA_ID")
     private PartitionArea partitionArea;
@@ -232,6 +235,7 @@ public class Offender {
                 .filter(OffenderManager::isActive)
                 .findFirst();
     }
+
     public Optional<OffenderManager> getResponsibleOfficerWhoIsCommunityOffenderManager() {
         return getActiveCommunityOffenderManager()
                 .filter(com -> com.getActiveResponsibleOfficer() != null);
@@ -243,6 +247,7 @@ public class Offender {
                 .filter(PrisonOffenderManager::isActive)
                 .findFirst();
     }
+
     public static class OffenderBuilder {
         private List<PrisonOffenderManager> prisonOffenderManagers = new ArrayList<>();
         public OffenderBuilder prisonOffenderManagers(List<PrisonOffenderManager> prisonOffenderManagers) {
