@@ -93,11 +93,6 @@ public class OffenderService {
         return maybeOffender.map(OffenderTransformer::offenderSummaryOf);
     }
 
-    @Transactional(readOnly = true)
-    public Optional<OffenderAssessments> getAssessments(String crn) {
-        return offenderRepository.findByCrn(crn).map(OffenderTransformer::assessmentsOf);
-    }
-
     public Optional<String> crnOf(Long offenderId) {
         return offenderRepository.findByOffenderId(offenderId).map(Offender::getCrn);
     }
