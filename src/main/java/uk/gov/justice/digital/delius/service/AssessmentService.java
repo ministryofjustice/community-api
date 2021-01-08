@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.data.api.OffenderAssessments;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OGRSAssessment;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OGRSAssessmentRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 
@@ -16,9 +19,14 @@ import java.util.Optional;
 public class AssessmentService {
 
     private final OffenderRepository offenderRepository;
+    private final OGRSAssessmentRepository OGRSAssessmentRepository;
 
     @Transactional(readOnly = true)
     public Optional<OffenderAssessments> getAssessments(String crn) {
-        return offenderRepository.findByCrn(crn).map(OffenderTransformer::assessmentsOf);
+        Optional<Offender> offender= offenderRepository.findByCrn(crn);
+        return offender.map(off -> {
+            OGRSAssessment OGRSAssessment = OGRSAssessmentRepository.findByOffenderId(off.getOffenderId());
+            return OffenderTransformer.assessmentsOf(off, OGRSAssessment);
+        });
     }
 }

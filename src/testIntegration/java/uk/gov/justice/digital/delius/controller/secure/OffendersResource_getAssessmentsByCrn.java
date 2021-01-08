@@ -23,7 +23,8 @@ public class OffendersResource_getAssessmentsByCrn extends IntegrationTestBase {
                 .body()
                 .as(OffenderAssessments.class);
 
-      assertThat(offenderAssessments.getRsrScore()).isEqualTo(1);
+      OffenderAssessments expectedAssessments = OffenderAssessments.builder().rsrScore(1).OGRSScore(39).build();
+      assertThat(offenderAssessments).isEqualTo(expectedAssessments);
     }
     
     @Test

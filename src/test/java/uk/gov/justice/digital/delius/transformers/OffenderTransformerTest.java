@@ -4,8 +4,10 @@ import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
+import uk.gov.justice.digital.delius.data.api.OffenderAssessments;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalIdentifier;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OGRSAssessment;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
@@ -510,9 +512,9 @@ public class OffenderTransformerTest {
     }
 
     @Test
-    void rsrScore() {
+    void assessments() {
         assertThat(OffenderTransformer.assessmentsOf(Offender.builder()
             .dynamicRsrScore(1)
-            .build()).getRsrScore()).isEqualTo(1);
+            .build(),OGRSAssessment.builder().OGRS3Score2(2).build())).isEqualTo(OffenderAssessments.builder().rsrScore(1).OGRSScore(2).build());
     }
 }
