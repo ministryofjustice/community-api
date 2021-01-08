@@ -509,7 +509,4 @@ public class OffenderTransformer {
         return result;
     }
 
-    public static OffenderAssessments assessmentsOf(Offender offender, OGRSAssessment OGRSAssessment) {
-        return OffenderAssessments.builder().rsrScore(offender.getDynamicRsrScore()).OGRSScore(OGRSAssessment.getOGRS3Score2()).build();
-    }
 }

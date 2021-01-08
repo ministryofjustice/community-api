@@ -9,7 +9,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.OGRSAssessment;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OGRSAssessmentRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
-import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
+import uk.gov.justice.digital.delius.transformers.AssessmentTransformer;
 
 import java.util.Optional;
 
@@ -26,7 +26,7 @@ public class AssessmentService {
         Optional<Offender> offender= offenderRepository.findByCrn(crn);
         return offender.map(off -> {
             OGRSAssessment OGRSAssessment = OGRSAssessmentRepository.findByOffenderId(off.getOffenderId());
-            return OffenderTransformer.assessmentsOf(off, OGRSAssessment);
+            return AssessmentTransformer.assessmentsOf(off, OGRSAssessment);
         });
     }
 }
