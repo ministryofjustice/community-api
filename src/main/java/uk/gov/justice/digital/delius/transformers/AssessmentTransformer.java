@@ -32,8 +32,8 @@ public class AssessmentTransformer {
         LocalDate finalOASYSAssessmentDate = OASYSAssessmentDate;
 
         return OGRSAssessment.map(OGRS -> {
-            final var OGRSAssessmentScore = OGRSAssessment.get().getOGRS3Score2();
-            final var OGRSAssessmentDate = OGRSAssessment.get().getAssessmentDate();
+            final var OGRSAssessmentScore = OGRS.getOGRS3Score2();
+            final var OGRSAssessmentDate = OGRS.getAssessmentDate();
             if (null == finalOASYSAssessmentScore) {
                 return OGRSAssessmentScore;
             }
