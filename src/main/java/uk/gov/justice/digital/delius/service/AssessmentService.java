@@ -5,9 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.data.api.OffenderAssessments;
-import uk.gov.justice.digital.delius.jpa.standard.entity.OASYSAssessment;
-import uk.gov.justice.digital.delius.jpa.standard.entity.OGRSAssessment;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OASYSAssessmentRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OGRSAssessmentRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
@@ -26,10 +23,10 @@ public class AssessmentService {
 
     @Transactional(readOnly = true)
     public Optional<OffenderAssessments> getAssessments(String crn) {
-        Optional<Offender> offender = offenderRepository.findByCrn(crn);
+        final var offender = offenderRepository.findByCrn(crn);
         return offender.map(off -> {
-            Optional<OGRSAssessment> OGRSAssessment = OGRSAssessmentRepository.findLatestByOffenderId(off.getOffenderId());
-            OASYSAssessment OASYSAssessment = OASYSAssessmentRepository.findByOffenderId(off.getOffenderId());
+            final var OGRSAssessment = OGRSAssessmentRepository.findLatestByOffenderId(off.getOffenderId());
+            final var OASYSAssessment = OASYSAssessmentRepository.findByOffenderId(off.getOffenderId());
             return AssessmentTransformer.assessmentsOf(off, OGRSAssessment, OASYSAssessment);
         });
     }
