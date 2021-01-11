@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AssessmentTransfomerTest {
 
     @Test
-    void noOasysAssessmentUsesOGRSAssessment() {
+    void noOASYSAssessmentUsesOGRSAssessment() {
         assertThat(AssessmentTransformer.assessmentsOf(Offender.builder()
             .dynamicRsrScore(1.65)
             .build(), OGRSAssessment.builder().OGRS3Score2(2).build(), null))

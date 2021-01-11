@@ -31,15 +31,13 @@ public class AssessmentTransformer {
             OASYSAssessmentScore = OASYSAssessment.getOGRSScore2();
             OASYSAssessmentDate = OASYSAssessment.getAssessmentDate();
         }
-        if(null == OASYSAssessmentScore) {
+        if (null == OASYSAssessmentScore) {
             return OGRSAssessmentScore;
         }
 
         if (null != OGRSAssessmentScore) {
-            if(OGRSAssessmentDate != null) {
-                if (OGRSAssessmentDate.isAfter(OASYSAssessmentDate)) {
-                    return OGRSAssessmentScore;
-                }
+            if (OGRSAssessmentDate.isAfter(OASYSAssessmentDate)) {
+                return OGRSAssessmentScore;
             }
         }
         if (null != OASYSAssessmentScore) {
