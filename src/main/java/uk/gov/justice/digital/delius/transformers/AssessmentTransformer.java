@@ -6,10 +6,11 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.OGRSAssessment;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 public class AssessmentTransformer {
 
-    public static OffenderAssessments assessmentsOf(Offender offender, OGRSAssessment OGRSAssessment, OASYSAssessment OASYSAssessment) {
+    public static OffenderAssessments assessmentsOf(Offender offender, Optional<OGRSAssessment> OGRSAssessment, OASYSAssessment OASYSAssessment) {
         return OffenderAssessments
             .builder()
             .rsrScore(offender.getDynamicRsrScore())
@@ -17,15 +18,15 @@ public class AssessmentTransformer {
             .build();
     }
 
-    private static Integer getOGRSScore(OGRSAssessment OGRSAssessment, OASYSAssessment OASYSAssessment) {
+    private static Integer getOGRSScore(Optional<OGRSAssessment> OGRSAssessment, OASYSAssessment OASYSAssessment) {
         Integer OGRSAssessmentScore = null;
         Integer OASYSAssessmentScore = null;
         LocalDate OGRSAssessmentDate = null;
         LocalDate OASYSAssessmentDate = null;
 
-        if (null != OGRSAssessment) {
-            OGRSAssessmentScore = OGRSAssessment.getOGRS3Score2();
-            OGRSAssessmentDate = OGRSAssessment.getAssessmentDate();
+        if (OGRSAssessment.isPresent()) {
+            OGRSAssessmentScore = OGRSAssessment.get().getOGRS3Score2();
+            OGRSAssessmentDate = OGRSAssessment.get().getAssessmentDate();
         }
 
         if (null != OASYSAssessment) {
