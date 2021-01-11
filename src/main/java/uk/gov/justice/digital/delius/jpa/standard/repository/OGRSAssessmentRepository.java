@@ -15,6 +15,6 @@ public interface OGRSAssessmentRepository extends JpaRepository<OGRSAssessment, 
         "    inner join assessmentLatest.event eventLatest \n" +
         "    where eventLatest.offenderId = :offenderId \n" +
         "    and assessmentLatest.softDeleted = 0)")
-    OGRSAssessment findByOffenderId(@Param("offenderId") Long offenderId);
+    OGRSAssessment findLatestByOffenderId(@Param("offenderId") Long offenderId);
 
 }

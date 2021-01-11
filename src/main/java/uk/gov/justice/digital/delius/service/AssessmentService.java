@@ -28,7 +28,7 @@ public class AssessmentService {
     public Optional<OffenderAssessments> getAssessments(String crn) {
         Optional<Offender> offender = offenderRepository.findByCrn(crn);
         return offender.map(off -> {
-            OGRSAssessment OGRSAssessment = OGRSAssessmentRepository.findByOffenderId(off.getOffenderId());
+            OGRSAssessment OGRSAssessment = OGRSAssessmentRepository.findLatestByOffenderId(off.getOffenderId());
             OASYSAssessment OASYSAssessment = OASYSAssessmentRepository.findByOffenderId(off.getOffenderId());
             return AssessmentTransformer.assessmentsOf(off, OGRSAssessment, OASYSAssessment);
         });
