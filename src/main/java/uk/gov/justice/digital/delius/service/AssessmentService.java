@@ -26,7 +26,7 @@ public class AssessmentService {
         Optional<Offender> offender= offenderRepository.findByCrn(crn);
         return offender.map(off -> {
             OGRSAssessment OGRSAssessment = OGRSAssessmentRepository.findByOffenderId(off.getOffenderId());
-            return AssessmentTransformer.assessmentsOf(off, OGRSAssessment);
+            return AssessmentTransformer.assessmentsOf(off, OGRSAssessment, null);
         });
     }
 }

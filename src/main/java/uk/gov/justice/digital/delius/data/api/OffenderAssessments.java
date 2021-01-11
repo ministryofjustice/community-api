@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 public class OffenderAssessments {
 
     @ApiModelProperty(value = "Risk of Serious Recidivism")
-    private int rsrScore;
+    private Integer rsrScore;
     @ApiModelProperty(value = "Offender Group Reconviction Scale")
-    private int OGRSScore;
+    private Integer OGRSScore;
 
 }
