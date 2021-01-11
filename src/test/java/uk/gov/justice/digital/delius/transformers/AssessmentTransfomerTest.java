@@ -17,7 +17,7 @@ public class AssessmentTransfomerTest {
     void noOASYSAssessmentUsesOGRSAssessment() {
         assertThat(AssessmentTransformer.assessmentsOf(Offender.builder()
             .dynamicRsrScore(1.65)
-            .build(), Optional.of(OGRSAssessment.builder().OGRS3Score2(2).build()), null))
+            .build(), Optional.of(OGRSAssessment.builder().OGRS3Score2(2).build()), Optional.empty()))
             .isEqualTo(OffenderAssessments.builder().rsrScore(1.65).OGRSScore(2).build());
     }
 
@@ -25,7 +25,7 @@ public class AssessmentTransfomerTest {
     void noOGRSAssessmentUsesOASYSAssessment() {
         assertThat(AssessmentTransformer.assessmentsOf(Offender.builder()
             .dynamicRsrScore(1D)
-            .build(), Optional.empty(), OASYSAssessment.builder().OGRSScore2(44).build()))
+            .build(), Optional.empty(), Optional.of(OASYSAssessment.builder().OGRSScore2(44).build())))
             .isEqualTo(OffenderAssessments.builder().rsrScore(1D).OGRSScore(44).build());
     }
 
@@ -33,7 +33,7 @@ public class AssessmentTransfomerTest {
     void noOASYSScoreUsesOGRSAssessment() {
         assertThat(AssessmentTransformer.assessmentsOf(Offender.builder()
             .dynamicRsrScore(1.65)
-            .build(), Optional.of(OGRSAssessment.builder().OGRS3Score2(2).build()), OASYSAssessment.builder().build()))
+            .build(), Optional.of(OGRSAssessment.builder().OGRS3Score2(2).build()), Optional.of(OASYSAssessment.builder().build())))
             .isEqualTo(OffenderAssessments.builder().rsrScore(1.65).OGRSScore(2).build());
     }
 
@@ -41,7 +41,7 @@ public class AssessmentTransfomerTest {
     void noOGRSScoreUsesOASYSAssessment() {
         assertThat(AssessmentTransformer.assessmentsOf(Offender.builder()
             .dynamicRsrScore(1.65)
-            .build(), Optional.of(OGRSAssessment.builder().build()), OASYSAssessment.builder().OGRSScore2(4).build()))
+            .build(), Optional.of(OGRSAssessment.builder().build()), Optional.of(OASYSAssessment.builder().OGRSScore2(4).build())))
             .isEqualTo(OffenderAssessments.builder().rsrScore(1.65).OGRSScore(4).build());
     }
 
@@ -49,7 +49,8 @@ public class AssessmentTransfomerTest {
     void bothPresentBothHaveAssessmentOGRSIsMoreRecent() {
         assertThat(AssessmentTransformer.assessmentsOf(Offender.builder()
             .dynamicRsrScore(0.12)
-            .build(), Optional.of(OGRSAssessment.builder().assessmentDate(LocalDate.of(2020,1,1)).OGRS3Score2(11).build()), OASYSAssessment.builder().assessmentDate(LocalDate.of(2018,1,1)).OGRSScore2(33).build()))
+            .build(), Optional.of(OGRSAssessment.builder().assessmentDate(LocalDate.of(2020,1,1)).OGRS3Score2(11).build()),
+            Optional.of(OASYSAssessment.builder().assessmentDate(LocalDate.of(2018,1,1)).OGRSScore2(33).build())))
             .isEqualTo(OffenderAssessments.builder().rsrScore(0.12).OGRSScore(11).build());
     }
 
@@ -57,7 +58,8 @@ public class AssessmentTransfomerTest {
     void bothPresentBothHaveAssessmentOASYSIsMoreRecent() {
         assertThat(AssessmentTransformer.assessmentsOf(Offender.builder()
             .dynamicRsrScore(0.12)
-            .build(), Optional.of(OGRSAssessment.builder().assessmentDate(LocalDate.of(2018,1,1)).OGRS3Score2(11).build()), OASYSAssessment.builder().assessmentDate(LocalDate.of(2020,1,1)).OGRSScore2(33).build()))
+            .build(), Optional.of(OGRSAssessment.builder().assessmentDate(LocalDate.of(2018,1,1)).OGRS3Score2(11).build()),
+            Optional.of(OASYSAssessment.builder().assessmentDate(LocalDate.of(2020,1,1)).OGRSScore2(33).build())))
             .isEqualTo(OffenderAssessments.builder().rsrScore(0.12).OGRSScore(33).build());
     }
 
@@ -65,7 +67,7 @@ public class AssessmentTransfomerTest {
     void neitherPresentReturnsNull() {
         assertThat(AssessmentTransformer.assessmentsOf(Offender.builder()
             .dynamicRsrScore(0.12)
-            .build(), Optional.empty(), null))
+            .build(), Optional.empty(), Optional.empty()))
             .isEqualTo(OffenderAssessments.builder().rsrScore(0.12).build());
     }
 

@@ -5,9 +5,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OASYSAssessment;
 
+import java.util.Optional;
+
 @Repository
 public interface OASYSAssessmentRepository extends JpaRepository<OASYSAssessment, Long> {
 
-    OASYSAssessment findByOffenderId(@Param("offenderId") Long offenderId);
+    Optional<OASYSAssessment> findByOffenderId(@Param("offenderId") Long offenderId);
 
 }

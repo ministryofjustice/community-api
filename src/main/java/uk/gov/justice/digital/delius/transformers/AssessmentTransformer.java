@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class AssessmentTransformer {
 
-    public static OffenderAssessments assessmentsOf(Offender offender, Optional<OGRSAssessment> OGRSAssessment, OASYSAssessment OASYSAssessment) {
+    public static OffenderAssessments assessmentsOf(Offender offender, Optional<OGRSAssessment> OGRSAssessment, Optional<OASYSAssessment> OASYSAssessment) {
         return OffenderAssessments
             .builder()
             .rsrScore(offender.getDynamicRsrScore())
@@ -18,14 +18,14 @@ public class AssessmentTransformer {
             .build();
     }
 
-    private static Integer getOGRSScore(Optional<OGRSAssessment> OGRSAssessment, OASYSAssessment OASYSAssessment) {
+    private static Integer getOGRSScore(Optional<OGRSAssessment> OGRSAssessment, Optional<OASYSAssessment> OASYSAssessment) {
 
         Integer OASYSAssessmentScore = null;
         LocalDate OASYSAssessmentDate = null;
 
-        if (null != OASYSAssessment) {
-            OASYSAssessmentScore = OASYSAssessment.getOGRSScore2();
-            OASYSAssessmentDate = OASYSAssessment.getAssessmentDate();
+        if (OASYSAssessment.isPresent()) {
+            OASYSAssessmentScore = OASYSAssessment.get().getOGRSScore2();
+            OASYSAssessmentDate = OASYSAssessment.get().getAssessmentDate();
         }
 
         Integer finalOASYSAssessmentScore = OASYSAssessmentScore;
