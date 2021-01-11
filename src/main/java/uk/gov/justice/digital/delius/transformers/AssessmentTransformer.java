@@ -17,7 +17,9 @@ public class AssessmentTransformer {
 
     private static Integer getOGRSScore(OGRSAssessment OGRSAssessment, OASYSAssessment OASYSAssessment) {
         if (null != OGRSAssessment) {
-            return OGRSAssessment.getOGRS3Score2();
+            if(null != OGRSAssessment.getOGRS3Score2()){
+                return OGRSAssessment.getOGRS3Score2();
+            }
         }
         if (null != OASYSAssessment) {
             return OASYSAssessment.getOGRSScore2();

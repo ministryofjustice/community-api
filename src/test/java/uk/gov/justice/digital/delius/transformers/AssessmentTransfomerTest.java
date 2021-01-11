@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AssessmentTransfomerTest {
 
     @Test
-    void noOasysScoreUsesOGRSAssessment() {
+    void noOasysAssessmentUsesOGRSAssessment() {
         assertThat(AssessmentTransformer.assessmentsOf(Offender.builder()
             .dynamicRsrScore(1.65)
             .build(), OGRSAssessment.builder().OGRS3Score2(2).build(), null))
@@ -18,11 +18,27 @@ public class AssessmentTransfomerTest {
     }
 
     @Test
-    void noOGRSScoreUsesOasysAssessment() {
+    void noOGRSAssessmentUsesOASYSAssessment() {
         assertThat(AssessmentTransformer.assessmentsOf(Offender.builder()
             .dynamicRsrScore(1D)
             .build(), null, OASYSAssessment.builder().OGRSScore2(44).build()))
             .isEqualTo(OffenderAssessments.builder().rsrScore(1D).OGRSScore(44).build());
+    }
+
+    @Test
+    void noOASYSScoreUsesOGRSAssessment() {
+        assertThat(AssessmentTransformer.assessmentsOf(Offender.builder()
+            .dynamicRsrScore(1.65)
+            .build(), OGRSAssessment.builder().OGRS3Score2(2).build(), OASYSAssessment.builder().build()))
+            .isEqualTo(OffenderAssessments.builder().rsrScore(1.65).OGRSScore(2).build());
+    }
+
+    @Test
+    void noOGRSScoreUsesOASYSAssessment() {
+        assertThat(AssessmentTransformer.assessmentsOf(Offender.builder()
+            .dynamicRsrScore(1.65)
+            .build(), OGRSAssessment.builder().build(), OASYSAssessment.builder().OGRSScore2(4).build()))
+            .isEqualTo(OffenderAssessments.builder().rsrScore(1.65).OGRSScore(4).build());
     }
 
     @Test
