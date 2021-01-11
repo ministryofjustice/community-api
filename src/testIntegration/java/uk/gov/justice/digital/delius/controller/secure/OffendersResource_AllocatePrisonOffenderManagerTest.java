@@ -446,6 +446,48 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .statusCode(409);
     }
 
+    //TODO - ignore this test before merge to main. To be enabled when EMAIL_ADDRESS and TELEPHONE_NUMBER columns are added in production
+    @Test
+    @DisplayName("Will allocate PrisonOffenderManagers with ContactDetails by NOMSNumber and StaffName")
+    public void canAllocatePrisonOffenderManagersWithContactDetailsByNOMSNumberAndStaffName() {
+
+        final var newPrisonOffenderManager = given()
+            .auth()
+            .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
+            .contentType(APPLICATION_JSON_VALUE)
+            .contentType("application/json")
+            .body(createPrisonOffenderManagerOf(ContactableHuman
+                    .builder()
+                    .surname("Marke")
+                    .forenames("Joe")
+                    .email("joe@digital.justice.gov.uk")
+                    .phoneNumber("01234112456")
+                    .build(),
+                "MDI"))
+            .when()
+            .put("/offenders/nomsNumber/G4340UK/prisonOffenderManager")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(CommunityOrPrisonOffenderManager.class);
+
+        final var offenderManagersAfterAllocation = given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get("/offenders/nomsNumber/G4340UK/allOffenderManagers")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(CommunityOrPrisonOffenderManager[].class);
+
+        assertThat(prisonOffenderManager(offenderManagersAfterAllocation).orElseThrow().getStaff().getEmail()).isEqualTo("joe@digital.justice.gov.uk");
+        assertThat(prisonOffenderManager(offenderManagersAfterAllocation).orElseThrow().getStaff().getPhoneNumber()).isEqualTo("01234112456");
+
+    }
 
     private String createPrisonOffenderManagerOf(final Long staffId) {
         return writeValueAsString(CreatePrisonOffenderManager

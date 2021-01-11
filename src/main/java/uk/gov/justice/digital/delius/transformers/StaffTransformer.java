@@ -40,10 +40,13 @@ public class StaffTransformer {
                 .forenames(combinedMiddleNamesOf(staff.getForename(), staff.getForname2()))
                 .surname(staff.getSurname()).build();
     }
-    static ContactableHuman contactableHumanOf(Staff staff) {
+    static ContactableHuman contactableHumanOf(Staff staff, Optional<String> email, Optional<String> phoneNumber) {
         return ContactableHuman.builder()
             .forenames(combinedMiddleNamesOf(staff.getForename(), staff.getForname2()))
-            .surname(staff.getSurname()).build();
+            .surname(staff.getSurname())
+            .email(email.orElse(null))
+            .phoneNumber(phoneNumber.orElse(null))
+            .build();
     }
 
     public static StaffHuman staffOf(Staff staff) {

@@ -3,11 +3,12 @@ package uk.gov.justice.digital.delius.transformers;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
-import uk.gov.justice.digital.delius.jpa.standard.entity.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 
 import java.util.Objects;
 import java.util.Optional;
+
+import static java.util.Optional.empty;
 
 public class OffenderManagerTransformer {
     private static final String UNALLOCATED_STAFF_CODE_SUFFIX = "U";
@@ -20,7 +21,9 @@ public class OffenderManagerTransformer {
                 .isUnallocated(isUnallocated(offenderManager))
                 .staff(Optional
                         .ofNullable(offenderManager.getStaff())
-                        .map(StaffTransformer::contactableHumanOf)
+                        .map(staff -> StaffTransformer.contactableHumanOf(staff,
+                            empty(),
+                            empty()))
                         .orElse(null))
                 .team(Optional
                         .ofNullable(offenderManager.getTeam())
@@ -44,7 +47,9 @@ public class OffenderManagerTransformer {
                 .isUnallocated(isUnallocated(offenderManager))
                 .staff(Optional
                         .ofNullable(offenderManager.getStaff())
-                        .map(StaffTransformer::contactableHumanOf)
+                        .map(staff -> StaffTransformer.contactableHumanOf(staff,
+                            Optional.ofNullable(offenderManager.getEmailAddress()),
+                            Optional.ofNullable(offenderManager.getTelephoneNumber())))
                         .orElse(null))
                 .team(Optional
                         .ofNullable(offenderManager.getTeam())

@@ -9,6 +9,7 @@ import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.InvalidRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
+import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficerSwitch;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
@@ -36,6 +37,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
+import static java.util.Optional.empty;
 
 @Service
 @Slf4j
@@ -66,7 +68,7 @@ public class OffenderManagerService {
 
         return maybeStaff
                 .flatMap(staff -> maybeOffender
-                        .map(offender -> allocatePrisonOffenderManager(probationArea, staff, offender)));
+                        .map(offender -> allocatePrisonOffenderManager(probationArea, staff, offender, Optional.ofNullable(prisonOffenderManager.getOfficer()))));
     }
 
     @Transactional
@@ -80,7 +82,7 @@ public class OffenderManagerService {
                 allocatePrisonOffenderManager(
                         probationArea,
                         staffService.findOrCreateStaffInArea(prisonOffenderManager.getOfficer().capitalise(), probationArea),
-                        offender));
+                        offender, Optional.ofNullable(prisonOffenderManager.getOfficer())));
     }
 
 
@@ -101,19 +103,20 @@ public class OffenderManagerService {
         final var team = teamService.findUnallocatedTeam(probationArea).orElseThrow();
         final var staff = staffService.findUnallocatedForTeam(team).orElseThrow();
 
-        return allocatePrisonOffenderManager(probationArea, staff, offender, team, allocationReason);
+        return allocatePrisonOffenderManager(probationArea, staff, offender, team, allocationReason, empty());
     }
 
-    private CommunityOrPrisonOffenderManager allocatePrisonOffenderManager(final ProbationArea probationArea, final Staff staff, final Offender offender) {
+    private CommunityOrPrisonOffenderManager allocatePrisonOffenderManager(final ProbationArea probationArea, final Staff staff, final Offender offender, final Optional<ContactableHuman> officer) {
         return allocatePrisonOffenderManager(
                 probationArea,
                 staff,
                 offender,
                 teamService.findOrCreatePrisonOffenderManagerTeamInArea(probationArea),
-                getAllocationReason(probationArea, findExistingPrisonOffenderManager(offender)));
+                getAllocationReason(probationArea, findExistingPrisonOffenderManager(offender)),
+                officer);
     }
 
-    private CommunityOrPrisonOffenderManager allocatePrisonOffenderManager(final ProbationArea probationArea, final Staff staff, final Offender offender, final Team team, final StandardReference allocationReason) {
+    private CommunityOrPrisonOffenderManager allocatePrisonOffenderManager(final ProbationArea probationArea, final Staff staff, final Offender offender, final Team team, final StandardReference allocationReason, final Optional<ContactableHuman> officer) {
         if (!probationArea.getProbationAreaId().equals(staff.getProbationArea().getProbationAreaId())) {
             throw new InvalidRequestException(
                     String.format("Staff with code %s is in probation area %s but was expected to be in prison area of %s", staff.getOfficerCode(), staff.getProbationArea().getDescription(), probationArea.getDescription()));
@@ -134,6 +137,8 @@ public class OffenderManagerService {
                 .allocationReason(allocationReason)
                 .managedOffender(offender)
                 .offenderId(offender.getOffenderId())
+                .emailAddress(officer.map(ContactableHuman::getEmail).orElse(null))
+                .telephoneNumber(officer.map(ContactableHuman::getPhoneNumber).orElse(null))
                 .build());
 
 
