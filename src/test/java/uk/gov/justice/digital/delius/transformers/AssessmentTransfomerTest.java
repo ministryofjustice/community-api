@@ -12,25 +12,25 @@ public class AssessmentTransfomerTest {
     @Test
     void noOasysScoreUsesOGRSAssessment() {
         assertThat(AssessmentTransformer.assessmentsOf(Offender.builder()
-            .dynamicRsrScore(1)
+            .dynamicRsrScore(1.65)
             .build(), OGRSAssessment.builder().OGRS3Score2(2).build(), null))
-            .isEqualTo(OffenderAssessments.builder().rsrScore(1).OGRSScore(2).build());
+            .isEqualTo(OffenderAssessments.builder().rsrScore(1.65).OGRSScore(2).build());
     }
 
     @Test
     void noOGRSScoreUsesOasysAssessment() {
         assertThat(AssessmentTransformer.assessmentsOf(Offender.builder()
-            .dynamicRsrScore(1)
+            .dynamicRsrScore(1D)
             .build(), null, OASYSAssessment.builder().OGRSScore2(44).build()))
-            .isEqualTo(OffenderAssessments.builder().rsrScore(1).OGRSScore(44).build());
+            .isEqualTo(OffenderAssessments.builder().rsrScore(1D).OGRSScore(44).build());
     }
 
     @Test
     void neitherPresentReturnsNull() {
         assertThat(AssessmentTransformer.assessmentsOf(Offender.builder()
-            .dynamicRsrScore(1)
+            .dynamicRsrScore(0.12)
             .build(), null, null))
-            .isEqualTo(OffenderAssessments.builder().rsrScore(1).build());
+            .isEqualTo(OffenderAssessments.builder().rsrScore(0.12).build());
     }
 
 

@@ -196,7 +196,7 @@ public class Offender {
     private String currentRemandStatus;
 
     @Column(name = "DYNAMIC_RSR_SCORE")
-    private Integer dynamicRsrScore;
+    private Double dynamicRsrScore;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARTITION_AREA_ID")
