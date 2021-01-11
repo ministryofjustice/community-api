@@ -27,10 +27,12 @@ public class AssessmentTransformer {
             OGRSAssessmentScore = OGRSAssessment.getOGRS3Score2();
             OGRSAssessmentDate = OGRSAssessment.getAssessmentDate();
         }
+
         if (null != OASYSAssessment) {
             OASYSAssessmentScore = OASYSAssessment.getOGRSScore2();
             OASYSAssessmentDate = OASYSAssessment.getAssessmentDate();
         }
+
         if (null == OASYSAssessmentScore) {
             return OGRSAssessmentScore;
         }
@@ -40,11 +42,8 @@ public class AssessmentTransformer {
                 return OGRSAssessmentScore;
             }
         }
-        if (null != OASYSAssessmentScore) {
-            return OASYSAssessmentScore;
-        }
+        return OASYSAssessmentScore;
 
-        return null;
     }
 
 }
