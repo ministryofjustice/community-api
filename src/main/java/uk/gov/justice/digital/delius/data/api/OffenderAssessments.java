@@ -15,6 +15,6 @@ public class OffenderAssessments {
     @ApiModelProperty(value = "Risk of Serious Recidivism")
     private Double rsrScore;
     @ApiModelProperty(value = "Offender Group Reconviction Scale")
-    private Integer OGRSScore;
+    private Integer ogrsScore;
 
 }

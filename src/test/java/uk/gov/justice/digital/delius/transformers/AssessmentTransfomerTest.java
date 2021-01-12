@@ -18,7 +18,7 @@ public class AssessmentTransfomerTest {
         assertThat(AssessmentTransformer.assessmentsOf(Offender.builder()
             .dynamicRsrScore(1.65)
             .build(), Optional.of(OGRSAssessment.builder().OGRS3Score2(2).build()), Optional.empty()))
-            .isEqualTo(OffenderAssessments.builder().rsrScore(1.65).OGRSScore(2).build());
+            .isEqualTo(OffenderAssessments.builder().rsrScore(1.65).ogrsScore(2).build());
     }
 
     @Test
@@ -26,7 +26,7 @@ public class AssessmentTransfomerTest {
         assertThat(AssessmentTransformer.assessmentsOf(Offender.builder()
             .dynamicRsrScore(1D)
             .build(), Optional.empty(), Optional.of(OASYSAssessment.builder().OGRSScore2(44).build())))
-            .isEqualTo(OffenderAssessments.builder().rsrScore(1D).OGRSScore(44).build());
+            .isEqualTo(OffenderAssessments.builder().rsrScore(1D).ogrsScore(44).build());
     }
 
     @Test
@@ -34,7 +34,7 @@ public class AssessmentTransfomerTest {
         assertThat(AssessmentTransformer.assessmentsOf(Offender.builder()
             .dynamicRsrScore(1.65)
             .build(), Optional.of(OGRSAssessment.builder().OGRS3Score2(2).build()), Optional.of(OASYSAssessment.builder().build())))
-            .isEqualTo(OffenderAssessments.builder().rsrScore(1.65).OGRSScore(2).build());
+            .isEqualTo(OffenderAssessments.builder().rsrScore(1.65).ogrsScore(2).build());
     }
 
     @Test
@@ -42,7 +42,7 @@ public class AssessmentTransfomerTest {
         assertThat(AssessmentTransformer.assessmentsOf(Offender.builder()
             .dynamicRsrScore(1.65)
             .build(), Optional.of(OGRSAssessment.builder().build()), Optional.of(OASYSAssessment.builder().OGRSScore2(4).build())))
-            .isEqualTo(OffenderAssessments.builder().rsrScore(1.65).OGRSScore(4).build());
+            .isEqualTo(OffenderAssessments.builder().rsrScore(1.65).ogrsScore(4).build());
     }
 
     @Test
@@ -51,7 +51,7 @@ public class AssessmentTransfomerTest {
             .dynamicRsrScore(0.12)
             .build(), Optional.of(OGRSAssessment.builder().assessmentDate(LocalDate.of(2020,1,1)).OGRS3Score2(11).build()),
             Optional.of(OASYSAssessment.builder().assessmentDate(LocalDate.of(2018,1,1)).OGRSScore2(33).build())))
-            .isEqualTo(OffenderAssessments.builder().rsrScore(0.12).OGRSScore(11).build());
+            .isEqualTo(OffenderAssessments.builder().rsrScore(0.12).ogrsScore(11).build());
     }
 
     @Test
@@ -60,7 +60,7 @@ public class AssessmentTransfomerTest {
             .dynamicRsrScore(0.12)
             .build(), Optional.of(OGRSAssessment.builder().assessmentDate(LocalDate.of(2018,1,1)).OGRS3Score2(11).build()),
             Optional.of(OASYSAssessment.builder().assessmentDate(LocalDate.of(2020,1,1)).OGRSScore2(33).build())))
-            .isEqualTo(OffenderAssessments.builder().rsrScore(0.12).OGRSScore(33).build());
+            .isEqualTo(OffenderAssessments.builder().rsrScore(0.12).ogrsScore(33).build());
     }
 
     @Test
