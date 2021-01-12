@@ -26,7 +26,7 @@ public class AssessmentService {
         final var offender = offenderRepository.findByCrn(crn);
         return offender.map(off -> {
             final var OGRSAssessment = OGRSAssessmentRepository.findLatestByOffenderId(off.getOffenderId());
-            final var OASYSAssessment = OASYSAssessmentRepository.findLatestByOffenderId(off.getOffenderId());
+            final var OASYSAssessment = OASYSAssessmentRepository.findFirstByOffenderIdAndSoftDeletedEqualsOrderByAssessmentDateDescLastUpdatedDateDesc(off.getOffenderId(),0);
             return AssessmentTransformer.assessmentsOf(off, OGRSAssessment, OASYSAssessment);
         });
     }
