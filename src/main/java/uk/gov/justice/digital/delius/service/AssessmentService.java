@@ -24,8 +24,9 @@ public class AssessmentService {
     @Transactional(readOnly = true)
     public Optional<OffenderAssessments> getAssessments(String crn) {
         final var offender = offenderRepository.findByCrn(crn);
+
         return offender.map(off -> {
-            final var OGRSAssessment = OGRSAssessmentRepository.findLatestByOffenderId(off.getOffenderId());
+            final var OGRSAssessment = OGRSAssessmentRepository.findFirstByEventOffenderIdAndSoftDeletedEqualsAndEventSoftDeletedEqualsOrderByAssessmentDateDescLastUpdatedDateDesc(off.getOffenderId(),0,0L);
             final var OASYSAssessment = OASYSAssessmentRepository.findFirstByOffenderIdAndSoftDeletedEqualsOrderByAssessmentDateDescLastUpdatedDateDesc(off.getOffenderId(),0);
             return AssessmentTransformer.assessmentsOf(off, OGRSAssessment, OASYSAssessment);
         });
