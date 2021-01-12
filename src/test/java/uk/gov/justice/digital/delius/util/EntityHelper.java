@@ -224,7 +224,7 @@ public class EntityHelper {
                 .builder()
                 .disposal(disposal)
                 .custodyId(9999L)
-                .keyDates(keyDates)
+                .keyDates(new ArrayList<>(keyDates))
                 .institution(aPrisonInstitution())
                 .custodialStatus(custodialStatus)
                 .build();
@@ -498,17 +498,6 @@ public class EntityHelper {
                 .build();
     }
 
-    public static Disposal aCommunityDisposal(final Long eventId) {
-        return aDisposal(eventId)
-                .toBuilder()
-                .disposalType(
-                        DisposalType
-                                .builder()
-                                .sentenceType("SP")
-                                .build())
-                .build();
-    }
-
     public static ContactDocument aContactDocument(final Long eventId) {
         final var document = new ContactDocument();
         populateBasics(document);
@@ -569,6 +558,19 @@ public class EntityHelper {
                 .keyDateType(StandardReference
                         .builder()
                         .codeDescription("description")
+                        .codeValue(typeCode)
+                        .build())
+                .build();
+    }
+
+    public static KeyDate aKeyDate(final String typeCode, final String typeDescription) {
+        return KeyDate
+                .builder()
+                .keyDateId(99L)
+                .keyDate(LocalDate.now())
+                .keyDateType(StandardReference
+                        .builder()
+                        .codeDescription(typeDescription)
                         .codeValue(typeCode)
                         .build())
                 .build();
