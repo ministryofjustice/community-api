@@ -19,27 +19,19 @@ public class AssessmentTransformer {
     }
 
     private static Integer getOGRSScore(Optional<OGRSAssessment> OGRSAssessment, Optional<OASYSAssessment> OASYSAssessment) {
-
-        Integer OASYSAssessmentScore = null;
-        LocalDate OASYSAssessmentDate = null;
-
-        if (OASYSAssessment.isPresent()) {
-            OASYSAssessmentScore = OASYSAssessment.get().getOGRSScore2();
-            OASYSAssessmentDate = OASYSAssessment.get().getAssessmentDate();
-        }
-
-        Integer finalOASYSAssessmentScore = OASYSAssessmentScore;
-        LocalDate finalOASYSAssessmentDate = OASYSAssessmentDate;
+        
+        Integer OASYSAssessmentScore = OASYSAssessment.map(o -> o.getOGRSScore2()).orElse(null);
+        LocalDate OASYSAssessmentDate = OASYSAssessment.map(o -> o.getAssessmentDate()).orElse(null);;
 
         return OGRSAssessment.map(OGRS -> {
             final var OGRSAssessmentScore = OGRS.getOGRS3Score2();
             final var OGRSAssessmentDate = OGRS.getAssessmentDate();
-            if (null == finalOASYSAssessmentScore) {
+            if (null == OASYSAssessmentScore) {
                 return OGRSAssessmentScore;
             }
 
             if (null != OGRSAssessmentScore) {
-                if (OGRSAssessmentDate.isAfter(finalOASYSAssessmentDate)) {
+                if (OGRSAssessmentDate.isAfter(OASYSAssessmentDate)) {
                     return OGRSAssessmentScore;
                 }
             }
