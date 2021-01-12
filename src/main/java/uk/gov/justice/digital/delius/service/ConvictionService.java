@@ -183,13 +183,6 @@ public class ConvictionService {
         }
     }
 
-    public List<Event> getAllActiveConvictionsByOffenderIdAndPrisonBookingNumber(long offenderId, String prisonBookingNumber) {
-        return activeCustodyEvents(offenderId)
-            .stream()
-            .filter(event -> prisonBookingNumber.equals(event.getDisposal().getCustody().getPrisonerNumber()))
-            .collect(toList());
-    }
-
     @Transactional(readOnly = true)
     public Optional<Long> getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(Long offenderId, String prisonBookingNumber) throws DuplicateActiveCustodialConvictionsException {
         return getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(offenderId, prisonBookingNumber).map(Event::getEventId);
@@ -219,7 +212,23 @@ public class ConvictionService {
 
     @Transactional
     public CustodyKeyDate addOrReplaceCustodyKeyDateByOffenderId(Long offenderId, String typeCode, CreateCustodyKeyDate custodyKeyDate) throws CustodyTypeCodeIsNotValidException {
-        return addOrReplaceCustodyKeyDate(getActiveCustodialEvent(offenderId), typeCode, custodyKeyDate, true);
+        var custodialEvents = getAllActiveCustodialEvents(offenderId);
+        if (custodialEvents.isEmpty()) {
+            throw new SingleActiveCustodyConvictionNotFoundException(offenderId, 0);
+        }
+
+        val custodyKeyDateType = lookupSupplier.custodyKeyDateTypeSupplier().apply(typeCode)
+            .orElseThrow(() -> new CustodyTypeCodeIsNotValidException(String.format("%s is not a valid custody key date", typeCode)));
+
+        return custodialEvents
+            .stream()
+            .map(event -> addOrReplaceCustodyKeyDate(event, custodyKeyDateType, custodyKeyDate, true))
+            .reduce(this::any)
+            .orElseThrow();
+    }
+
+    private CustodyKeyDate any(CustodyKeyDate one, CustodyKeyDate two) {
+        return one;
     }
 
     @Transactional
@@ -249,7 +258,12 @@ public class ConvictionService {
 
     @Transactional
     public void deleteCustodyKeyDateByOffenderId(Long offenderId, String typeCode) {
-        deleteCustodyKeyDate(getActiveCustodialEvent(offenderId), typeCode, true);
+        var custodialEvents = getAllActiveCustodialEvents(offenderId);
+        if (custodialEvents.isEmpty()) {
+            throw new SingleActiveCustodyConvictionNotFoundException(offenderId, 0);
+        }
+
+        custodialEvents.forEach(event -> deleteCustodyKeyDate(event, typeCode, true));
     }
 
     @Transactional
@@ -393,6 +407,10 @@ public class ConvictionService {
         val custodyKeyDateType = lookupSupplier.custodyKeyDateTypeSupplier().apply(typeCode)
                 .orElseThrow(() -> new CustodyTypeCodeIsNotValidException(String.format("%s is not a valid custody key date", typeCode)));
 
+        return addOrReplaceCustodyKeyDate(event, custodyKeyDateType, custodyKeyDate, shouldNotifyIAPS);
+    }
+    private CustodyKeyDate addOrReplaceCustodyKeyDate(Event event, StandardReference custodyKeyDateType, CreateCustodyKeyDate custodyKeyDate, boolean shouldNotifyIAPS) {
+        final var typeCode = custodyKeyDateType.getCodeValue();
         final var telemetryProperties = Map.of("offenderId", event.getOffenderId().toString(),
                 "eventId", event.getEventId().toString(),
                 "eventNumber", event.getEventNumber(),
