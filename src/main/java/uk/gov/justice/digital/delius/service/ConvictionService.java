@@ -258,7 +258,12 @@ public class ConvictionService {
 
     @Transactional
     public void deleteCustodyKeyDateByOffenderId(Long offenderId, String typeCode) {
-        deleteCustodyKeyDate(getActiveCustodialEvent(offenderId), typeCode, true);
+        var custodialEvents = getAllActiveCustodialEvents(offenderId);
+        if (custodialEvents.isEmpty()) {
+            throw new SingleActiveCustodyConvictionNotFoundException(offenderId, 0);
+        }
+
+        custodialEvents.forEach(event -> deleteCustodyKeyDate(event, typeCode, true));
     }
 
     @Transactional

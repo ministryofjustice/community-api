@@ -12,12 +12,12 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
+import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.service.ConvictionService.SingleActiveCustodyConvictionNotFoundException;
-import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
-import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -33,6 +33,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aCustodyEvent;
@@ -277,22 +278,22 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
     }
 
     @Test
-    public void shouldNotAllowKeyDateToBeDeletedWhenMoreThanOneActiveCustodialEvent() {
-        val activeCustodyEvent1 = aCustodyEvent(1L, new ArrayList<>())
-                .toBuilder()
-                .activeFlag(1L)
-                .build();
-        val activeCustodyEvent2 = aCustodyEvent(2L, new ArrayList<>())
-                .toBuilder()
-                .activeFlag(1L)
-                .build();
+    @DisplayName("Will delete key dates for each active custodial event")
+    public void shouldAllowKeyDateToBeDeletedWhenMoreThanOneActiveCustodialEvent() {
+        val activeCustodyEvent1 = aCustodyEvent(1L, List.of(aKeyDate("POM1", "POM Handover expected start date")));
+        val activeCustodyEvent2 = aCustodyEvent(2L, List.of(aKeyDate("POM1", "POM Handover expected start date")));
 
         when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEvent1, activeCustodyEvent2));
 
-        assertThatThrownBy(() -> convictionService.deleteCustodyKeyDateByOffenderId(
-                999L,
-                "POM1")).isInstanceOf(SingleActiveCustodyConvictionNotFoundException.class);
+        convictionService.deleteCustodyKeyDateByOffenderId(999L, "POM1");
 
+        verify(eventRepository).save(activeCustodyEvent1);
+        verify(eventRepository).save(activeCustodyEvent2);
+
+        verify(spgNotificationService).notifyDeletedCustodyKeyDate(any(), eq(activeCustodyEvent1));
+        verify(spgNotificationService).notifyDeletedCustodyKeyDate(any(), eq(activeCustodyEvent2));
+
+        verify(telemetryClient, times(2)).trackEvent(eq("KeyDateDeleted"), any(), isNull());
     }
 
     @Test
