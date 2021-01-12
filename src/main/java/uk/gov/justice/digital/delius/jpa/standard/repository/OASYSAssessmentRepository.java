@@ -14,8 +14,8 @@ public interface OASYSAssessmentRepository extends JpaRepository<OASYSAssessment
     @Query("select assessment from OASYSAssessment assessment " +
         "where assessment.softDeleted = 0 " +
         "and assessment.offenderId = :offenderId " +
-        "and assessment.lastUpdatedDate = \n" +
-        "    (select max(assessmentLatest.lastUpdatedDate) \n" +
+        "and assessment.assessmentDate = \n" +
+        "    (select max(assessmentLatest.assessmentDate) \n" +
         "    from OASYSAssessment assessmentLatest \n" +
         "    where assessmentLatest.offenderId = :offenderId \n" +
         "    and assessmentLatest.softDeleted = 0)")
