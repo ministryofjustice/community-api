@@ -22,6 +22,7 @@ import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.data.api.Team;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disability;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OGRSAssessment;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAddress;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
@@ -508,7 +509,4 @@ public class OffenderTransformer {
         return result;
     }
 
-    public static OffenderAssessments assessmentsOf(Offender offender) {
-        return OffenderAssessments.builder().rsrScore(offender.getDynamicRsrScore()).build();
-    }
 }

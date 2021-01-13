@@ -74,6 +74,9 @@ public class Event {
     @OneToOne(mappedBy = "event", cascade = {CascadeType.ALL})
     private Disposal disposal;
 
+    @OneToOne(mappedBy = "event", cascade = {CascadeType.ALL})
+    private OGRSAssessment OGRSAssessment;
+
     @OneToMany(mappedBy = "event", cascade = {CascadeType.ALL})
     private List<CourtAppearance> courtAppearances;
 

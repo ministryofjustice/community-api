@@ -23,7 +23,26 @@ public class OffendersResource_getAssessmentsByCrn extends IntegrationTestBase {
                 .body()
                 .as(OffenderAssessments.class);
 
-      assertThat(offenderAssessments.getRsrScore()).isEqualTo(1);
+      OffenderAssessments expectedAssessments = OffenderAssessments.builder().rsrScore(1D).ogrsScore(27).build();
+      assertThat(offenderAssessments).isEqualTo(expectedAssessments);
+    }
+
+    @Test
+    public void noOGRSAssessmentSoUsesOasysAssessment() {
+        final var offenderAssessments = given()
+                .auth()
+                .oauth2(tokenWithRoleCommunity())
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/crn/X320811/assessments")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(OffenderAssessments.class);
+
+      OffenderAssessments expectedAssessments = OffenderAssessments.builder().rsrScore(1D).ogrsScore(2).build();
+      assertThat(offenderAssessments).isEqualTo(expectedAssessments);
     }
     
     @Test

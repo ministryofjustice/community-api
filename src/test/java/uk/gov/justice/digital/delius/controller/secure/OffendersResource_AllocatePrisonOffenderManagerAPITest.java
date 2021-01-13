@@ -15,6 +15,7 @@ import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
+import uk.gov.justice.digital.delius.service.AssessmentService;
 import uk.gov.justice.digital.delius.service.ContactService;
 import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.CustodyService;
@@ -33,6 +34,7 @@ import static io.restassured.module.mockmvc.config.RestAssuredMockMvcConfig.newC
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -66,6 +68,8 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     private CustodyService custodyService;
     @Mock
     private UserAccessService userAccessService;
+    @Mock
+    private AssessmentService assessmentService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -73,7 +77,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     public void setup() {
         RestAssuredMockMvc.config = newConfig().encoderConfig(encoderConfig().defaultContentCharset("UTF-8"));
         RestAssuredMockMvc.standaloneSetup(
-                new OffendersResource(offenderService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier, custodyService, userAccessService),
+                new OffendersResource(offenderService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier, custodyService, userAccessService, assessmentService),
                 new SecureControllerAdvice()
         );
     }

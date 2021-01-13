@@ -49,6 +49,7 @@ import uk.gov.justice.digital.delius.data.api.ResponsibleOfficerSwitch;
 import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
+import uk.gov.justice.digital.delius.service.AssessmentService;
 import uk.gov.justice.digital.delius.service.ContactService;
 import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.CustodyService;
@@ -88,6 +89,7 @@ public class OffendersResource {
     private final CurrentUserSupplier currentUserSupplier;
     private final CustodyService custodyService;
     private final UserAccessService userAccessService;
+    private final AssessmentService assessmentService;
 
     @ApiOperation(
             value = "Return the responsible officer (RO) for an offender",
@@ -365,7 +367,7 @@ public class OffendersResource {
     public OffenderAssessments getAssessmentsByCrn(
         @ApiParam(value = "CRN for the offender", example = "A123456", required = true)
         @NotNull @PathVariable(value = "crn") final String crn) {
-        return offenderService.getAssessments(crn)
+        return assessmentService.getAssessments(crn)
             .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 

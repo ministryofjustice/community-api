@@ -509,10 +509,4 @@ public class OffenderTransformerTest {
                 );
     }
 
-    @Test
-    void rsrScore() {
-        assertThat(OffenderTransformer.assessmentsOf(Offender.builder()
-            .dynamicRsrScore(1)
-            .build()).getRsrScore()).isEqualTo(1);
-    }
 }
