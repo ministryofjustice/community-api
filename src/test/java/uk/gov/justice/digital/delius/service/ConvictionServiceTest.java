@@ -12,6 +12,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.CourtCase;
 import uk.gov.justice.digital.delius.data.api.OffenceDetail;
+import uk.gov.justice.digital.delius.entitybuilders.AdditionalOffenceEntityBuilder;
+import uk.gov.justice.digital.delius.entitybuilders.CourtAppearanceEntityBuilder;
+import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
+import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
+import uk.gov.justice.digital.delius.entitybuilders.MainOffenceEntityBuilder;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Court;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
@@ -27,11 +32,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.TransferReason;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.service.ConvictionService.DuplicateActiveCustodialConvictionsException;
-import uk.gov.justice.digital.delius.entitybuilders.AdditionalOffenceEntityBuilder;
-import uk.gov.justice.digital.delius.entitybuilders.CourtAppearanceEntityBuilder;
-import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
-import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
-import uk.gov.justice.digital.delius.entitybuilders.MainOffenceEntityBuilder;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -552,6 +552,20 @@ public class ConvictionServiceTest {
 
     }
 
+    @Nested
+    class GetAllActiveCustodialEventsWithBookingNumber {
+        @Test
+        @DisplayName("will return all matching with bookNumber")
+        void willReturnAllMatchingWithBookNumber() {
+            when(eventRepository.findActiveByOffenderIdWithCustody(ANY_OFFENDER_ID)).thenReturn(List.of(anActiveCustodialEventWithBookNumber("12345T"),
+                anActiveCustodialEventWithBookNumber("12345T"),
+                anActiveCustodialEventWithBookNumber("99999T")));
+
+            assertThat(convictionService.getAllActiveCustodialEventsWithBookingNumber(ANY_OFFENDER_ID, "12345T")).hasSize(2);
+            assertThat(convictionService.getAllActiveCustodialEventsWithBookingNumber(ANY_OFFENDER_ID, "99999T")).hasSize(1);
+        }
+    }
+
     private Event aEvent() {
         return Event.builder()
                 .referralDate(LocalDate.now())
@@ -578,6 +592,14 @@ public class ConvictionServiceTest {
     private Event anActiveCustodialEvent() {
         return anActiveCustodialEvent("D");
     }
+
+    private Event anActiveCustodialEventWithBookNumber(String bookNumber) {
+        final var event = anActiveCustodialEvent("D");
+        final var custody = event.getDisposal().getCustody().toBuilder().prisonerNumber(bookNumber).build();
+        final var disposal = event.getDisposal().toBuilder().custody(custody).build();
+        return event.toBuilder().disposal(disposal).build();
+    }
+
     private Event anActiveCustodialEvent(String custodialStatus) {
         Disposal disposal = Disposal.builder()
                 .terminationDate(null)

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
+import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,8 @@ import uk.gov.justice.digital.delius.data.api.ReplaceCustodyKeyDates;
 import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static io.restassured.config.EncoderConfig.encoderConfig;
@@ -25,14 +28,18 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.config.RestAssuredMockMvcConfig.newConfig;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aCustodyEvent;
 
 class CustodyKeyDatesControllerTest {
 
-    private OffenderService offenderService = mock(OffenderService.class);
-    private ConvictionService convictionService = mock(ConvictionService.class);
-    private ObjectMapper objectMapper = new ObjectMapper()
+    private final OffenderService offenderService = mock(OffenderService.class);
+    private final ConvictionService convictionService = mock(ConvictionService.class);
+    private final ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
@@ -56,8 +63,9 @@ class CustodyKeyDatesControllerTest {
         @BeforeEach
         void setUp() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
             when(offenderService.offenderIdOfNomsNumber(any())).thenReturn(Optional.of(99L));
-            when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(any(), any())).thenReturn(Optional.of(88L));
-            when(convictionService.addOrReplaceOrDeleteCustodyKeyDates(any(), any(), any())).thenReturn(Custody.builder().build());
+            when(convictionService.getAllActiveCustodialEventsWithBookingNumber(any(), any())).thenReturn(List.of(aCustodyEvent(88L, LocalDate
+                .now())));
+            when(convictionService.addOrReplaceOrDeleteCustodyKeyDates(any(), any(), any())).thenReturn(Custody.builder().sentenceStartDate(LocalDate.now()).build());
         }
 
         @Test
@@ -77,9 +85,9 @@ class CustodyKeyDatesControllerTest {
         }
 
         @Test
-        void WillReturn404WhenConvictionForBookingNotFound() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
+        void WillReturn404WhenConvictionForBookingNotFound() {
             when(offenderService.offenderIdOfNomsNumber(any())).thenReturn(Optional.of(99L));
-            when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(any(), any())).thenReturn(Optional.empty());
+            when(convictionService.getAllActiveCustodialEventsWithBookingNumber(any(), any())).thenReturn(List.of());
 
             given()
                     .contentType(APPLICATION_JSON_VALUE)
@@ -90,12 +98,14 @@ class CustodyKeyDatesControllerTest {
                     .statusCode(404)
                     .body("developerMessage", containsString("Conviction with bookingNumber 44463B not found for offender with NOMS number G9542VP"));
 
-            verify(convictionService).getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(99L, "44463B");
+            verify(convictionService).getAllActiveCustodialEventsWithBookingNumber(99L, "44463B");
         }
 
         @Test
-        void WillReturn404WhenASingleConvictionForBookingNotFoundButHasDuplicates() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
-            when(convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(any(), any())).thenThrow(new ConvictionService.DuplicateActiveCustodialConvictionsException(2));
+        void WillUpdateAllActiveCustodialEvents() {
+            when(convictionService.getAllActiveCustodialEventsWithBookingNumber(any(), any())).thenReturn(List.of(aCustodyEvent(88L, LocalDate
+                .now()
+                .minusMonths(2)), aCustodyEvent(89L, LocalDate.now())));
 
             given()
                     .contentType(APPLICATION_JSON_VALUE)
@@ -103,8 +113,25 @@ class CustodyKeyDatesControllerTest {
                     .when()
                     .post("/secure/offenders/nomsNumber/{nomsNumber}/bookingNumber/{bookingNumber}/custody/keyDates", "G9542VP", "44463B")
                     .then()
-                    .statusCode(404)
-                    .body("developerMessage", containsString("Single active conviction for G9542VP with booking number 44463B not found. Instead has 2 convictions"));
+                    .statusCode(200);
+
+            verify(convictionService).addOrReplaceOrDeleteCustodyKeyDates(any(), eq(88L), any());
+            verify(convictionService).addOrReplaceOrDeleteCustodyKeyDates(any(), eq(89L), any());
+        }
+
+        @Test
+        void WillReturnLatestSentence() {
+            when(convictionService.getAllActiveCustodialEventsWithBookingNumber(any(), any())).thenReturn(List.of(aCustodyEvent(88L, LocalDate
+                .parse("2020-05-22")), aCustodyEvent(89L, LocalDate.parse("2021-01-13"))));
+
+            given()
+                .contentType(APPLICATION_JSON_VALUE)
+                .body(json(ReplaceCustodyKeyDates.builder().build()))
+                .when()
+                .post("/secure/offenders/nomsNumber/{nomsNumber}/bookingNumber/{bookingNumber}/custody/keyDates", "G9542VP", "44463B")
+                .then()
+                .statusCode(200)
+                .body("sentenceStartDate", CoreMatchers.equalTo("2021-01-13"));
         }
 
         @Test
