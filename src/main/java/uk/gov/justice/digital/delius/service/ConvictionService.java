@@ -29,9 +29,11 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.stream.Collectors.toList;
@@ -310,6 +312,7 @@ public class ConvictionService {
             final var keyDatesToBeAddedOrUpdated = keyDatesToBeAddedOrUpdated(replaceCustodyKeyDates, currentKeyDates);
 
             addContactForBulkCustodyKeyDateUpdate(offenderId, event, currentKeyDates, keyDatesToDelete, keyDatesToBeAddedOrUpdated);
+            addBulkTelemetry(offenderId, event, currentKeyDates, keyDatesToDelete, keyDatesToBeAddedOrUpdated);
 
             keyDatesToDelete
                     .forEach(keyDate -> deleteCustodyKeyDate(event, keyDate, false));
@@ -326,8 +329,55 @@ public class ConvictionService {
                 .getCustody());
     }
 
+    private void addBulkTelemetry(Long offenderId, Event event, List<KeyDate> currentKeyDates, List<String> keyDatesToDelete, Map<String, LocalDate> keyDatesToBeAddedOrUpdated) {
+        final var offender = offenderRepository.findByOffenderId(offenderId).orElseThrow();
+        final var currentManagedDates = currentManagedKeyDates(custodyManagedKeyDates(), currentKeyDates);
+        final var datesAmendedOrUpdated = datesAddedOrUpdated(keyDatesToBeAddedOrUpdated);
+        final var keyDatesToBeAdded = keyDatesToBeAdded(keyDatesToBeAddedOrUpdated, currentKeyDates);
+        final var datesRemoved = datesRemoved(currentKeyDates, keyDatesToDelete);
+        final var numberOfDatesUpdated = datesAmendedOrUpdated.size() - keyDatesToBeAdded.size();
+        final var attributes = Map.of(
+            "crn", offender.getCrn(),
+            "nomsNumber", Optional.ofNullable(offender.getNomsNumber()).orElse(""),
+            "eventId", String.valueOf(event.getEventId()),
+            "eventNumber", event.getEventNumber(),
+            "updated", String.valueOf(numberOfDatesUpdated),
+            "deleted", String.valueOf(datesRemoved.size()),
+            "inserted", String.valueOf(keyDatesToBeAdded.size()),
+            "unchanged", String.valueOf(currentManagedDates.size() - datesRemoved.size() - numberOfDatesUpdated)
+        );
+
+        if (keyDatesToDelete.isEmpty() && keyDatesToBeAddedOrUpdated.isEmpty()) {
+            telemetryClient.trackEvent("keyDatesBulkUnchanged",
+                attributes,
+                null);
+        } else {
+            telemetryClient.trackEvent("keyDatesBulkSummary",
+                attributes,
+                null);
+
+            if (!datesRemoved.isEmpty()) {
+                final Map<String, String> attributesWithDates = Stream
+                    .concat(datesRemoved.entrySet().stream(), attributes.entrySet().stream())
+                    .collect(Collectors.toMap(
+                        Entry::getKey,
+                        e -> e.getValue().toString()
+                    ));
+                if (currentManagedDates.size() == datesRemoved.size()) {
+                    telemetryClient.trackEvent("keyDatesBulkAllRemoved",
+                        attributesWithDates,
+                        null);
+                } else {
+                    telemetryClient.trackEvent("keyDatesBulkSomeRemoved",
+                        attributesWithDates,
+                        null);
+                }
+            }
+        }
+    }
+
     private void addContactForBulkCustodyKeyDateUpdate(Long offenderId, Event event, List<KeyDate> currentKeyDates, List<String> keyDatesToDelete, Map<String, LocalDate> keyDatesToBeAddedOrUpdated) {
-        final var datesAmendedOrUpdated = datesAmendedOrUpdated(keyDatesToBeAddedOrUpdated);
+        final var datesAmendedOrUpdated = datesAddedOrUpdated(keyDatesToBeAddedOrUpdated);
         final var datesRemoved = datesRemoved(currentKeyDates, keyDatesToDelete);
 
 
@@ -337,7 +387,7 @@ public class ConvictionService {
         }
     }
 
-    private Map<String, LocalDate> datesAmendedOrUpdated(Map<String, LocalDate> keyDatesToBeAddedOrUpdated) {
+    private Map<String, LocalDate> datesAddedOrUpdated(Map<String, LocalDate> keyDatesToBeAddedOrUpdated) {
         return keyDatesToBeAddedOrUpdated.entrySet().stream()
                 .collect(Collectors.toMap(entry -> descriptionOf(entry.getKey()), Map.Entry::getValue));
     }
@@ -356,6 +406,12 @@ public class ConvictionService {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    private List<String> keyDatesToBeAdded(Map<String, LocalDate> keyDatesToBeAddedOrUpdated, List<KeyDate> currentKeyDates) {
+        return keyDatesToBeAddedOrUpdated.keySet().stream()
+                .filter(keyDateCode -> isNew(currentKeyDates, keyDateCode))
+                .collect(toList());
+    }
+
     private List<String> keyDatesToDelete(List<String> custodyManagedKeyDates, List<String> missingKeyDateTypesCodes, List<KeyDate> currentKeyDates) {
         return currentKeyDates
                 .stream()
@@ -366,11 +422,27 @@ public class ConvictionService {
                 .collect(toList());
     }
 
+    private List<String> currentManagedKeyDates(List<String> custodyManagedKeyDates, List<KeyDate> currentKeyDates) {
+        return currentKeyDates
+                .stream()
+                .map(KeyDate::getKeyDateType)
+                .map(StandardReference::getCodeValue)
+                .filter(custodyManagedKeyDates::contains)  // all key dates managed by this service
+                .collect(toList());
+    }
+
     private boolean hasChangedOrIsNew(List<KeyDate> currentKeyDates, Map.Entry<String, LocalDate> entry) {
         // if can't find item with matching code and date then must be new or changed
         return currentKeyDates.stream()
                 .filter(keyDate -> keyDate.getKeyDateType().getCodeValue().equals(entry.getKey()))
                 .filter(keyDate -> keyDate.getKeyDate().equals(entry.getValue())).findAny().isEmpty();
+    }
+
+    private boolean isNew(List<KeyDate> currentKeyDates, String keyDateCode) {
+        // if can't find item with matching code then must be new
+        return currentKeyDates.stream()
+                .filter(keyDate -> keyDate.getKeyDateType().getCodeValue().equals(keyDateCode))
+                .findAny().isEmpty();
     }
 
     private String calculateNextEventNumber(Long offenderId) {
