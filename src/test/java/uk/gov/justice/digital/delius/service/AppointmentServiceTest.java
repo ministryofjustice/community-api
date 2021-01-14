@@ -14,6 +14,13 @@ import org.springframework.data.jpa.domain.Specification;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OfficeLocationRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.TeamRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,6 +32,27 @@ public class AppointmentServiceTest {
     @Mock
     private ContactRepository contactRepository;
 
+    @Mock
+    private OffenderRepository offenderRepository;
+
+    @Mock
+    private ContactTypeRepository contactTypeRepository;
+
+    @Mock
+    private OfficeLocationRepository officeLocationRepository;
+
+    @Mock
+    private StaffRepository staffRepository;
+
+    @Mock
+    private TeamRepository teamRepository;
+
+    @Mock
+    private ProbationAreaRepository probationAreaRepository;
+
+    @Mock
+    private EventRepository eventRepository;
+
     @Captor
     private ArgumentCaptor<Specification<Contact>> specificationArgumentCaptor;
     @Captor
@@ -34,7 +62,7 @@ public class AppointmentServiceTest {
     @BeforeEach
     @SuppressWarnings("unchecked")
     public void before(){
-        service = new AppointmentService(contactRepository);
+        service = new AppointmentService(contactRepository, offenderRepository, contactTypeRepository, officeLocationRepository, staffRepository, teamRepository, probationAreaRepository, eventRepository);
         when(contactRepository.findAll(any(Specification.class), any(Sort.class))).thenReturn(ImmutableList.of());
     }
 
