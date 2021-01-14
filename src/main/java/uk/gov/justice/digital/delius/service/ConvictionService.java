@@ -286,6 +286,14 @@ public class ConvictionService {
         return activeCustodyEvents(offenderId);
     }
 
+    @Transactional(readOnly = true)
+    public List<Event> getAllActiveCustodialEventsWithBookingNumber(Long offenderId, String bookingNumber) {
+        return activeCustodyEvents(offenderId)
+            .stream()
+            .filter(event -> bookingNumber.equals(event.getDisposal().getCustody().getPrisonerNumber()))
+            .collect(toList());
+    }
+
     @Transactional
     public Custody addOrReplaceOrDeleteCustodyKeyDates(Long offenderId, Long convictionId, ReplaceCustodyKeyDates replaceCustodyKeyDates) {
         var event = eventRepository.findById(convictionId).orElseThrow();

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,5 +24,6 @@ public class Custody {
     @ApiModelProperty(value = "Custodial status")
     private KeyValue status;
     @ApiModelProperty(value = "Date when related sentence started")
+    @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate sentenceStartDate;
 }

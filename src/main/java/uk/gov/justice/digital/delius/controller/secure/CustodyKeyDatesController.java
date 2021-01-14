@@ -1,21 +1,34 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
-import uk.gov.justice.digital.delius.data.api.*;
+import uk.gov.justice.digital.delius.data.api.CreateCustodyKeyDate;
+import uk.gov.justice.digital.delius.data.api.Custody;
+import uk.gov.justice.digital.delius.data.api.CustodyKeyDate;
+import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.data.api.ReplaceCustodyKeyDates;
 import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.ConvictionService.CustodyTypeCodeIsNotValidException;
 import uk.gov.justice.digital.delius.service.ConvictionService.DuplicateActiveCustodialConvictionsException;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -78,13 +91,16 @@ public class CustodyKeyDatesController {
         log.info("Call to replaceAllCustodyKeyDateByNomsNumberAndBookingNumber for {} booking {} with dates {}", nomsNumber, bookingNumber, replaceCustodyKeyDates);
 
         var offenderId = offenderService.offenderIdOfNomsNumber(nomsNumber).orElseThrow(() -> new NotFoundException(String.format("Offender with NOMS number %s not found", nomsNumber)));
-        try {
-            var convictionId = convictionService.getSingleActiveConvictionIdByOffenderIdAndPrisonBookingNumber(offenderId, bookingNumber).orElseThrow(() -> new NotFoundException(String.format("Conviction with bookingNumber %s not found for offender with NOMS number %s", bookingNumber, nomsNumber)));
-            return convictionService.addOrReplaceOrDeleteCustodyKeyDates(offenderId, convictionId, replaceCustodyKeyDates);
-        } catch (DuplicateActiveCustodialConvictionsException e) {
-            log.warn("Multiple active custodial convictions found for {} for offender {}", bookingNumber, nomsNumber);
-            throw new NotFoundException(String.format("Single active conviction for %s with booking number %s not found. Instead has %d convictions", nomsNumber, bookingNumber, e.getConvictionCount()));
+        final var activeCustodialEvents = convictionService.getAllActiveCustodialEventsWithBookingNumber(offenderId, bookingNumber);
+        if (activeCustodialEvents.isEmpty()) {
+            throw new NotFoundException(String.format("Conviction with bookingNumber %s not found for offender with NOMS number %s", bookingNumber, nomsNumber));
         }
+
+        return activeCustodialEvents
+            .stream()
+            .map(event -> convictionService.addOrReplaceOrDeleteCustodyKeyDates(offenderId, event.getEventId(), replaceCustodyKeyDates))
+            .max(Comparator.comparing(Custody::getSentenceStartDate))
+            .orElseThrow();
     }
 
     @RequestMapping(value = "offenders/offenderId/{offenderId}/custody/keyDates/{typeCode}", method = RequestMethod.PUT, consumes = "application/json")

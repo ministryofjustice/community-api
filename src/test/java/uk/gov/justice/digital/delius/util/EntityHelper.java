@@ -192,6 +192,16 @@ public class EntityHelper {
         return aCustodyEvent(eventId, 99L, keyDates);
     }
 
+    public static Event aCustodyEvent(final Long eventId, LocalDate sentenceStartDate) {
+        final var event = aCustodyEvent(eventId);
+        final var disposal = event.getDisposal().toBuilder().startDate(sentenceStartDate).build();
+        return event.toBuilder().disposal(disposal).build();
+    }
+
+    public static Event aCustodyEvent(final Long eventId) {
+        return aCustodyEvent(eventId, 99L, List.of());
+    }
+
     public static Event aCustodyEvent(final Long eventId, final Long offenderId, final List<KeyDate> keyDates) {
         final var disposal = aDisposal(eventId);
         return anEvent(eventId, offenderId)
@@ -215,6 +225,7 @@ public class EntityHelper {
                         .builder()
                         .sentenceType("NC")
                         .build())
+                .startDate(LocalDate.now())
                 .custody(aCustody(disposal, keyDates, custodialStatus))
                 .build();
     }
