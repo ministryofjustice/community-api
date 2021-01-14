@@ -68,6 +68,7 @@ workflows:
             branches:
               only:
                 - main
+
   scheduled:
     triggers:
       - schedule:
