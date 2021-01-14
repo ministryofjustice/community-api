@@ -121,6 +121,9 @@ class CustodyKeyDatesControllerTest {
 
         @Test
         void WillReturnLatestSentence() {
+            when(convictionService.addOrReplaceOrDeleteCustodyKeyDates(any(), eq(88L), any())).thenReturn(Custody.builder().sentenceStartDate(LocalDate.parse("2020-05-22")).build());
+            when(convictionService.addOrReplaceOrDeleteCustodyKeyDates(any(), eq(89L), any())).thenReturn(Custody.builder().sentenceStartDate(LocalDate.parse("2021-01-13")).build());
+
             when(convictionService.getAllActiveCustodialEventsWithBookingNumber(any(), any())).thenReturn(List.of(aCustodyEvent(88L, LocalDate
                 .parse("2020-05-22")), aCustodyEvent(89L, LocalDate.parse("2021-01-13"))));
 
