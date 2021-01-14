@@ -15,7 +15,6 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AppointmentCreateRequest {
-    private Long eventId;
     @ApiModelProperty(required = true)
     private String appointmentType;
     @JsonFormat(pattern="yyyy-MM-dd")

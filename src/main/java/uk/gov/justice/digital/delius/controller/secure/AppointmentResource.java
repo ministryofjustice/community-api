@@ -22,9 +22,10 @@ import uk.gov.justice.digital.delius.service.AppointmentService;
 public class AppointmentResource {
     private final AppointmentService appointmentService;
 
-    @RequestMapping(value = "/offenders/crn/{crn}/appointments", method = RequestMethod.POST, consumes = "application/json")
+    @RequestMapping(value = "/offenders/crn/{crn}/conviction/{conviction}/appointments", method = RequestMethod.POST, consumes = "application/json")
     public void createAppointment(final @PathVariable("crn") String crn,
+                                  final @PathVariable("conviction") Long conviction,
                                   final @RequestBody AppointmentCreateRequest appointmentCreateRequest) {
-        appointmentService.createAppointment(crn, appointmentCreateRequest);
+        appointmentService.createAppointment(crn, conviction, appointmentCreateRequest);
     }
 }

@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.Appointment;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
@@ -35,6 +36,14 @@ public class AppointmentService {
     private final ProbationAreaRepository probationAreaRepository;
     private final EventRepository eventRepository;
 
+    public static final String MSG_OFFENDER_NOT_FOUND = "Offender ID not found for CRN %s";
+    public static final String CONTACT_TYPE_NOT_FOUND = "Contact type not found for code %s";
+    public static final String STAFF_NOT_FOUND = "Staff not found for code %s";
+    public static final String TEAM_NOT_FOUND = "Team not found for code %s";
+    public static final String PROBATION_AREA_NOT_FOUND = "Probation area not found for code %s";
+    public static final String EVENT_NOT_FOUND = "Event not found for ID %s";
+    public static final String OFFICE_LOCATION_NOT_FOUND = "Office location not found for code %s";
+
     public List<Appointment> appointmentsFor(Long offenderId, AppointmentFilter filter) {
         return AppointmentTransformer.appointmentsOf(
                 contactRepository.findAll(
@@ -42,66 +51,38 @@ public class AppointmentService {
                         Sort.by(DESC, "contactDate")));
     }
 
-    public void createAppointment(final String offenderCrn, final AppointmentCreateRequest appointment) {
+    public void createAppointment(final String offenderCrn, final Long eventId, final AppointmentCreateRequest appointment) {
+            var offender = offenderRepository.findByCrn(offenderCrn).orElseThrow(() -> new NotFoundException(String.format(MSG_OFFENDER_NOT_FOUND, offenderCrn)));
+            var contactType = contactTypeRepository.findByCode(appointment.getAppointmentType()).orElseThrow(() -> new NotFoundException(String.format(CONTACT_TYPE_NOT_FOUND, appointment.getAppointmentType())));
+            var staff = staffRepository.findByOfficerCode(appointment.getStaffCode()).orElseThrow(() -> new NotFoundException(String.format(STAFF_NOT_FOUND, appointment.getStaffCode())));
+            var team = teamRepository.findByCode(appointment.getTeamCode()).orElseThrow(() -> new NotFoundException(String.format(TEAM_NOT_FOUND, appointment.getTeamCode())));
+            var probationArea = probationAreaRepository.findByCode(appointment.getProbationAreaCode()).orElseThrow(() -> new NotFoundException(String.format(PROBATION_AREA_NOT_FOUND, appointment.getProbationAreaCode())));
+            var event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException(String.format(EVENT_NOT_FOUND, eventId)));
 
-            var offender = offenderRepository.findByCrn(offenderCrn);
-
-            if (!offender.isPresent()) {
-                throw new RuntimeException("Offender not found");
-            }
-
-            var contactType = contactTypeRepository.findByCode(appointment.getAppointmentType());
-
-            if (!contactType.isPresent()) {
-                throw new RuntimeException("Contact type not found");
-            }
-
-            var staff = staffRepository.findByOfficerCode(appointment.getStaffCode());
-
-            if (!staff.isPresent()) {
-                throw new RuntimeException("Staff not found");
-            }
-
-            var team = teamRepository.findByCode(appointment.getTeamCode());
-
-            if (!team.isPresent()) {
-                throw new RuntimeException("Team not found");
-            }
-
-            var probationArea = probationAreaRepository.findByCode(appointment.getProbationAreaCode());
-
-            if (!probationArea.isPresent()) {
-                throw new RuntimeException("Probation Area not found");
-            }
+            //TODO: Validate the event belongs to the offender
+            //TODO: Validate the member of staff is an officer
+            //TODO: Validate the member of staff belongs to the given team
+            //TODO: Validate the team belongs to the given provider
+            //TODO: Validate the location belongs to the given team
 
             var contactBuilder =  uk.gov.justice.digital.delius.jpa.standard.entity.Contact.builder()
-                .offenderId(offender.get().getOffenderId())
-                .contactType(contactType.get())
+                .offenderId(offender.getOffenderId())
+                .event(event)
+                .contactType(contactType)
                 .contactStartTime(appointment.getAppointmentStartTime())
                 .contactDate(appointment.getAppointmentDate())
-                .contactEndTime(appointment.getAppointmentStartTime())
-                .staff(staff.get())
-                .team(team.get())
-                .probationArea(probationArea.get())
-                .staffEmployeeId(staff.get().getStaffId())
-                .teamProviderId(team.get().getTeamId());
+                .contactEndTime(appointment.getAppointmentEndTime())
+                .staff(staff)
+                .team(team)
+                .probationArea(probationArea)
+                .staffEmployeeId(staff.getStaffId())
+                .teamProviderId(team.getTeamId());
 
-            if (appointment.getEventId() > 0) {
-                var event = eventRepository.findById(appointment.getEventId());
-
-                if (!event.isPresent()) {
-                    throw new RuntimeException("Event not found");
-                }
-                contactBuilder.event(event.get());
-            }
 
             if (StringUtils.isNotEmpty(appointment.getOfficeLocationCode())) {
-                var officeLocation = officeLocationRepository.findByCode(appointment.getOfficeLocationCode());
+                var officeLocation = officeLocationRepository.findByCode(appointment.getOfficeLocationCode()).orElseThrow(() -> new NotFoundException(String.format(OFFICE_LOCATION_NOT_FOUND, appointment.getOfficeLocationCode())));
 
-                if (!officeLocation.isPresent()) {
-                    throw new RuntimeException("Office location not found");
-                }
-                contactBuilder.officeLocation(officeLocation.get());
+                contactBuilder.officeLocation(officeLocation);
             }
 
         contactRepository.save(contactBuilder.build());
