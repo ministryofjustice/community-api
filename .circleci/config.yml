@@ -68,7 +68,7 @@ workflows:
             branches:
               only:
                 - main
-
+                - appointment-booking
   scheduled:
     triggers:
       - schedule:
@@ -77,7 +77,7 @@ workflows:
             branches:
               only:
                 - main
-                - appointment-booking
+
     jobs:
       - owasp/gradle_owasp_dependency_check:
           executor: hmpps/java
