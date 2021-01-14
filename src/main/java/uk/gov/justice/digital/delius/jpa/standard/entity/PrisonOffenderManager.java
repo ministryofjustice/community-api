@@ -102,14 +102,13 @@ public class PrisonOffenderManager implements Serializable {
     @LastModifiedDate
     private LocalDateTime lastUpdatedDatetime;
 
-    //TODO - Make emailAddress and telephoneNumber transient before merging to main.
-    // To be made persistent when EMAIL_ADDRESS and TELEPHONE_NUMBER columns are added in production
-    //@Transient
-    @Column(name = "EMAIL_ADDRESS")
+    //TODO - Make EMAIL_ADDRESS and TELEPHONE_NUMBER persistent when columns are available in production
+    @Transient
+    //@Column(name = "EMAIL_ADDRESS")
     private String emailAddress;
 
-    //@Transient
-    @Column(name = "TELEPHONE_NUMBER")
+    @Transient
+    //@Column(name = "TELEPHONE_NUMBER")
     private String telephoneNumber;
 
     public boolean isActive() {

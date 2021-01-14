@@ -69,8 +69,6 @@ workflows:
               only:
                 - main
                 - DT-1424-pom-contact-details
-                # TODO - Remove the branch before merge
-
   scheduled:
     triggers:
       - schedule:

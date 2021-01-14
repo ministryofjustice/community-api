@@ -446,8 +446,8 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .statusCode(409);
     }
 
-    //TODO - ignore this test before merge to main. To be enabled when EMAIL_ADDRESS and TELEPHONE_NUMBER columns are added in production
-    @Test
+    //TODO - Enable this test when EMAIL_ADDRESS and TELEPHONE_NUMBER columns are added in production
+    //@Test
     @DisplayName("Will allocate PrisonOffenderManagers with ContactDetails by NOMSNumber and StaffName")
     public void canAllocatePrisonOffenderManagersWithContactDetailsByNOMSNumberAndStaffName() {
 
