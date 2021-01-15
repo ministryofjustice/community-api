@@ -280,7 +280,7 @@ public class ConvictionService_AddOrReplaceOrDeleteCustodyKeyDatesTest {
                 entry("eventId", "88"),
                 entry("eventNumber", "5"),
                 entry("crn", "X12345"),
-                entry("nomsNumber", "A1234DY"));
+                entry("offenderNo", "A1234DY"));
         }
 
         @Test
@@ -306,7 +306,7 @@ public class ConvictionService_AddOrReplaceOrDeleteCustodyKeyDatesTest {
                 entry("eventId", "88"),
                 entry("eventNumber", "5"),
                 entry("crn", "X12345"),
-                entry("nomsNumber", "A1234DY"),
+                entry("offenderNo", "A1234DY"),
                 entry("Licence Expiry Date", "2039-09-30"),
                 entry("Sentence Expiry Date", "2039-10-30"),
                 entry("Parole Eligibility Date", "2030-01-04"),
@@ -338,7 +338,7 @@ public class ConvictionService_AddOrReplaceOrDeleteCustodyKeyDatesTest {
                 entry("eventId", "88"),
                 entry("eventNumber", "5"),
                 entry("crn", "X12345"),
-                entry("nomsNumber", "A1234DY"),
+                entry("offenderNo", "A1234DY"),
                 entry("Parole Eligibility Date", "2030-01-04"),
                 entry("PSS End Date", "2039-08-30")
             );
@@ -371,7 +371,7 @@ public class ConvictionService_AddOrReplaceOrDeleteCustodyKeyDatesTest {
                 entry("eventId", "88"),
                 entry("eventNumber", "5"),
                 entry("crn", "X12345"),
-                entry("nomsNumber", "A1234DY"),
+                entry("offenderNo", "A1234DY"),
                 entry("updated", "1"), // PED
                 entry("inserted", "2"), //CRD, ERD
                 entry("deleted", "1"), // PSS
