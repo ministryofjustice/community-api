@@ -180,6 +180,28 @@ public class OffendersResource {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @ApiOperation(value = "Returns the contact details for an offender", tags = "Contact and attendance")
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+    @GetMapping(value = "/offenders/crn/{crn}/contacts")
+    public ResponseEntity<List<Contact>> getOffenderContactReportByCrn(@ApiParam(name = "crn", value = "CRN for the offender", example = "D001022", required = true) @NotNull final @PathVariable("crn") String crn,
+                                                                              final @RequestParam("contactTypes") Optional<List<String>> contactTypes,
+                                                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final @RequestParam("from") Optional<LocalDateTime> from,
+                                                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final @RequestParam("to") Optional<LocalDateTime> to) {
+        final var contactFilter = ContactFilter.builder()
+            .contactTypes(contactTypes)
+            .from(from)
+            .to(to)
+            .build();
+
+        return offenderService.offenderIdOfCrn(crn)
+            .map(offenderId -> new ResponseEntity<>(contactService.contactsFor(offenderId, contactFilter), HttpStatus.OK))
+            .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
     @ApiOperation(
             value = "Returns the latest recall and release details for an offender",
             notes = "Accepts a NOMIS offender nomsNumber in the format A9999AA",
