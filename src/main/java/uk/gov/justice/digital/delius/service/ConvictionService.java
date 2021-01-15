@@ -338,7 +338,7 @@ public class ConvictionService {
         final var numberOfDatesUpdated = datesAmendedOrUpdated.size() - keyDatesToBeAdded.size();
         final var attributes = Map.of(
             "crn", offender.getCrn(),
-            "nomsNumber", Optional.ofNullable(offender.getNomsNumber()).orElse(""),
+            "offenderNo", Optional.ofNullable(offender.getNomsNumber()).orElse(""),
             "eventId", String.valueOf(event.getEventId()),
             "eventNumber", event.getEventNumber(),
             "updated", String.valueOf(numberOfDatesUpdated),
