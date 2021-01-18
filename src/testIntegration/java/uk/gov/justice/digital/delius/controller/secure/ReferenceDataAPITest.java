@@ -282,9 +282,6 @@ public class ReferenceDataAPITest extends IntegrationTestBase {
         class ProbationAreasAndLocalDeliveryUnits {
             private static final String ACTIVE_PROBATION_AREA = "N01";
             private static final String INACTIVE_PROBATION_AREA = "BED";
-            private static final String ACTIVE_PRISON = "MDI";
-            private static final String EXISTING_LDU = "YSS_SHF";
-            private static final String MISSING_LDU = "NOT_EXISTING";
 
             @Test
             public void canGetActiveProbationAreasAndLocalDeliveryUnits() {
