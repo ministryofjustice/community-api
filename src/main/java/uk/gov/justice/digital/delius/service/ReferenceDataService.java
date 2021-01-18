@@ -168,7 +168,7 @@ public class ReferenceDataService {
         final var filter = ProbationAreaFilter
                 .builder()
                 .restrictActive(restrictActive)
-                .excludeEstablishments(true).build();    //do probation areas ever include estblishments?
+                .excludeEstablishments(true).build();
         final var probationAreas =  probationAreaRepository.findAll(filter);
 
         return probationAreas.stream().map(
