@@ -13,6 +13,7 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @ExtendWith(SpringExtension.class)
@@ -275,6 +276,45 @@ public class ReferenceDataAPITest extends IntegrationTestBase {
                     .developerMessage(String
                             .format("Could not find local delivery unit in probation area: '%s', with code: '%s'", ACTIVE_PROBATION_AREA, MISSING_LDU))
                     .build());
+        }
+
+        @Nested
+        class ProbationAreasAndLocalDeliveryUnits {
+            private static final String ACTIVE_PROBATION_AREA = "N01";
+            private static final String INACTIVE_PROBATION_AREA = "BED";
+            private static final String ACTIVE_PRISON = "MDI";
+            private static final String EXISTING_LDU = "YSS_SHF";
+            private static final String MISSING_LDU = "NOT_EXISTING";
+
+            @Test
+            public void canGetActiveProbationAreasAndLocalDeliveryUnits() {
+                given()
+                        .when()
+                        .auth()
+                        .oauth2(createJwt("ROLE_COMMUNITY"))
+                        .param("active", true)
+                        //should we be including this parameter - why are does probation area include prisons without?
+                        .get("/probationAreas/localDeliveryUnits")
+                        .then()
+                        .assertThat()
+                        .body("size()", is(45))
+                        .body(String.format("find { it.code == \"%s\" }.localDeliveryUnits.size()",ACTIVE_PROBATION_AREA), is(72))
+                        .body(String.format("find { it.code == \"%s\" }.localDeliveryUnits[0].code",ACTIVE_PROBATION_AREA), notNullValue())
+                        .body(String.format("find { it.code == \"%s\" }",INACTIVE_PROBATION_AREA), nullValue());
+            }
+
+            @Test
+            public void canGetAllProbationAreasAndLocalDeliveryUnits() {
+                given()
+                        .when()
+                        .auth()
+                        .oauth2(createJwt("ROLE_COMMUNITY"))
+                        .get("/probationAreas/localDeliveryUnits")
+                        .then()
+                        .assertThat()
+                        .body("size()", is(112))
+                        .body(String.format("find { it.code == \"%s\" }",INACTIVE_PROBATION_AREA), notNullValue());
+            }
         }
     }
 }

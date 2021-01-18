@@ -7,7 +7,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
+import uk.gov.justice.digital.delius.data.api.LocalDeliveryUnit;
 import uk.gov.justice.digital.delius.data.api.ProbationArea;
+import uk.gov.justice.digital.delius.data.api.ProbationAreaWithLocalDeliveryUnits;
 import uk.gov.justice.digital.delius.data.api.ReferenceData;
 import uk.gov.justice.digital.delius.jpa.filters.ProbationAreaFilter;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
@@ -22,8 +24,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static java.lang.String.*;
-import static java.util.stream.Collectors.*;
+import static java.lang.String.format;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
 
 @Service
@@ -159,5 +162,28 @@ public class ReferenceDataService {
 
     public List<KeyValue> getReferenceDataSets() {
         return ReferenceDataTransformer.referenceDataSetsOf(referenceDataMasterRepository.findAll());
+    }
+
+    public List<ProbationAreaWithLocalDeliveryUnits> getProbationAreasAndLocalDeliveryUnits(boolean restrictActive) {
+        final var filter = ProbationAreaFilter
+                .builder()
+                .restrictActive(restrictActive)
+                .excludeEstablishments(true).build();    //do probation areas ever include estblishments?
+        final var probationAreas =  probationAreaRepository.findAll(filter);
+
+        return probationAreas.stream().map(
+                pa -> {
+                    final var ldus = pa.getBoroughs().stream()
+                            // LDUs are represented as districts in the delius schema
+                            .flatMap(borough -> borough.getDistricts().stream())
+                            .filter(district -> ynToBoolean(district.getSelectable())) // current (non-historic) only
+                            .map(ldu -> LocalDeliveryUnit.builder().localDeliveryUnitId(ldu.getDistrictId()).code(ldu.getCode()).description(ldu.getDescription()).build())
+                            .collect(toList());
+
+                    return ProbationAreaWithLocalDeliveryUnits.builder().code(pa.getCode()).description(pa.getDescription()).localDeliveryUnits(ldus).build();
+
+
+                }
+        ).collect(toList());
     }
 }
