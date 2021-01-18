@@ -3,6 +3,7 @@ package uk.gov.justice.digital.delius.jpa.filters;
 import com.google.common.collect.ImmutableList;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.springframework.data.jpa.domain.Specification;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Builder(toBuilder = true)
+@Getter
 @EqualsAndHashCode
 public class ProbationAreaFilter implements Specification<ProbationArea> {
 

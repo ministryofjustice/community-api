@@ -19,9 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
+import uk.gov.justice.digital.delius.data.api.ProbationAreaWithLocalDeliveryUnits;
 import uk.gov.justice.digital.delius.data.api.ReferenceDataList;
 import uk.gov.justice.digital.delius.data.api.ReferenceDataSets;
 import uk.gov.justice.digital.delius.service.ReferenceDataService;
+
+import java.util.List;
 
 @Slf4j
 @Api(tags = "Reference data", authorizations = {@Authorization("ROLE_COMMUNITY")})
@@ -48,6 +51,22 @@ public class ReferenceDataResource {
 
         log.info("Call to getProbationAreaCodes");
         return referenceDataService.getProbationAreasCodes(restrictActive, excludeEstablishments);
+    }
+
+    @ApiOperation(
+            value = "Return Probation Areas and associated Local Delivery Units. Establishments are excluded.",
+            notes = "Accepts filtering to only return active areas")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            })
+    @GetMapping("/probationAreas/localDeliveryUnits")
+    public List<ProbationAreaWithLocalDeliveryUnits> getProbationAreasAndLocalDeliveryUnits(
+            @ApiParam(name = "active", value = "Restricts to active areas only", example = "true") final @RequestParam(name = "active", required = false) boolean restrictActive) {
+
+        log.info("Call to getProbationAreasAndLocalDeliveryUnits");
+        return referenceDataService.getProbationAreasAndLocalDeliveryUnits(restrictActive);
     }
 
     @ApiOperation(

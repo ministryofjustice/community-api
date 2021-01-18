@@ -1,13 +1,18 @@
 package uk.gov.justice.digital.delius.service;
 
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
+import uk.gov.justice.digital.delius.data.api.LocalDeliveryUnit;
+import uk.gov.justice.digital.delius.data.api.ProbationAreaWithLocalDeliveryUnits;
 import uk.gov.justice.digital.delius.jpa.filters.ProbationAreaFilter;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ReferenceDataMaster;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
@@ -42,6 +47,10 @@ public class ReferenceDataServiceTest {
 
     @Mock
     private ReferenceDataMasterRepository referenceDataMasterRepository;
+
+    @Captor
+    private ArgumentCaptor<ProbationAreaFilter> probationAreaFilterArgumentCaptor;
+
 
     @BeforeEach
     public void setup() {
@@ -338,5 +347,68 @@ public class ReferenceDataServiceTest {
 
             verify(referenceDataMasterRepository).findAll();
         }
+    }
+
+    @Test
+    public void getProbationAreasAndLocalDeliveryUnits() {
+        final var filter = ProbationAreaFilter.builder().restrictActive(false).excludeEstablishments(true).build();
+
+        when(probationAreaRepository.findAll(filter)).thenReturn(List.of(aProbationArea().toBuilder().boroughs(List.of(
+                aBorough("BB-1").toBuilder()
+                        .districts(List.of(
+                                aDistrict().toBuilder()
+                                        .districtId(3L)
+                                        .code("LDU-1")
+                                        .description("LDU1 description")
+                                        .build(),
+                                aDistrict().toBuilder()
+                                        .districtId(4L)
+                                        .code("LDU-2")
+                                        .description("LDU2 description")
+                                        .build())).build())).build()));
+
+
+        assertThat(referenceDataService.getProbationAreasAndLocalDeliveryUnits(false))
+                .hasSize(1)
+                .first()
+                .isEqualTo(ProbationAreaWithLocalDeliveryUnits.builder().code(aProbationArea().getCode()).description(aProbationArea().getDescription()).
+                        localDeliveryUnits(List.of(LocalDeliveryUnit.builder().localDeliveryUnitId(3L).code("LDU-1").description("LDU1 description").build(),
+                                LocalDeliveryUnit.builder().localDeliveryUnitId(4L).code("LDU-2").description("LDU2 description").build())).build());
+    }
+
+
+    @Test
+    public void getProbationAreasAndLocalDeliveryUnits_unselectableLdusAreNotReturned() {
+
+        final var filter = ProbationAreaFilter.builder().restrictActive(true).excludeEstablishments(true).build();
+
+        when(probationAreaRepository.findAll(filter)).thenReturn(
+                List.of(aProbationArea().toBuilder()
+                                .boroughs(List.of(
+                                        aBorough("BB-1").toBuilder()
+                                                .districts(List.of(
+                                                        aDistrict().toBuilder()
+                                                                .code("LDU-1")
+                                                                .selectable("N")
+                                                                .teams(List.of(
+                                                                        aTeam("TEAM-1"),
+                                                                        aTeam("TEAM-2")
+                                                                ))
+                                                                .build()))
+                                                .build()))
+                                .build()));
+
+        assertThat(referenceDataService.getProbationAreasAndLocalDeliveryUnits(true))
+                .hasSize(1)
+                .first()
+                .isEqualTo(ProbationAreaWithLocalDeliveryUnits.builder().code(aProbationArea().getCode()).description(aProbationArea().getDescription()).localDeliveryUnits(List.of()).build());
+    }
+
+    @Test
+    public void getProbationAreasAndLocalDeliveryUnits_includeInactiveProbationAreas() {
+        referenceDataService.getProbationAreasAndLocalDeliveryUnits(false);
+        verify(probationAreaRepository).findAll(probationAreaFilterArgumentCaptor.capture());
+
+        AssertionsForClassTypes.assertThat(probationAreaFilterArgumentCaptor.getValue().getRestrictActive()).isFalse();
     }
 }
