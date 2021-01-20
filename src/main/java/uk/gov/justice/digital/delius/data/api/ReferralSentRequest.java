@@ -1,34 +1,32 @@
 package uk.gov.justice.digital.delius.data.api;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReferralSent {
-    @ApiModelProperty(required = false)
-    private Long referralSentId;
+public class ReferralSentRequest {
+    @ApiModelProperty(required = true)
+    private String probationAreaCode;
 
     @ApiModelProperty(required = true)
-    private String contactType;
+    private String referralType;
 
     @ApiModelProperty(required = true)
-    private String probationArea;
+    private String staffCode;
 
     @ApiModelProperty(required = true)
-    private String providerTeam;
+    private String teamCode;
 
     @ApiModelProperty(required = true)
-    private String probationOfficer;
-
-    @ApiModelProperty(required = true)
-    private String employeeId;
-
-    @ApiModelProperty(required = true)
-    private String context;
+    @JsonFormat(pattern="yyyy-MM-dd")
+    private LocalDate date;
 }

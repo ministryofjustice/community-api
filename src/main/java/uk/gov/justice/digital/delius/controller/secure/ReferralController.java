@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
-import uk.gov.justice.digital.delius.data.api.ReferralSent;
+import uk.gov.justice.digital.delius.data.api.ReferralSentRequest;
 import uk.gov.justice.digital.delius.service.ReferralService;
 
 import javax.validation.Valid;
@@ -23,7 +23,9 @@ public class ReferralController {
 
     private final ReferralService referralService;
 
-    @RequestMapping(value = "referrals/sent/{offenderId}", method = RequestMethod.PUT, consumes = "application/json")
+    @RequestMapping(value = "/offenders/crn/{crn}/referral/sent",
+                    method = RequestMethod.POST,
+                    consumes = "application/json")
     @ApiResponses(
             value = {
                 @ApiResponse(code = 201, message = "Created", response = String.class),
@@ -32,9 +34,9 @@ public class ReferralController {
                 @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
 
-    @ApiOperation(value = "Adds referral to delius")
-    public void addReferralSentContactToDelius(final @PathVariable("offenderId") Long offenderId,
-                                               final @RequestBody @Valid ReferralSent referralSent) {
-        referralService.addReferralSentContactEntry(offenderId, referralSent);
+    @ApiOperation(value = "Adds a sent referral contact entry to the contact log")
+    public void createReferralSent(final @PathVariable("crn") String crn,
+                                   final @RequestBody @Valid ReferralSentRequest referralSentRequest) {
+        referralService.createReferralSent(crn, referralSentRequest);
     }
 }

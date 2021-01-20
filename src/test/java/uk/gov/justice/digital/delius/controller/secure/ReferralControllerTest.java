@@ -17,11 +17,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class ReferralControllerTest {
 
     private ReferralService referralService = mock(ReferralService.class);
-    private static final Long SOME_OFFENDER_ID = 3000L;
+    private static final String SOME_OFFENDER_CRN = "X0OOM";
 
     @BeforeEach
     public void setup() {
-        RestAssuredMockMvc.config =  newConfig().encoderConfig(encoderConfig().defaultContentCharset("UTF-8"));
+        RestAssuredMockMvc.config = newConfig().encoderConfig(encoderConfig().defaultContentCharset("UTF-8"));
         RestAssuredMockMvc.standaloneSetup(
             new ReferralController(referralService),
             new SecureControllerAdvice()
@@ -32,10 +32,11 @@ public class ReferralControllerTest {
     public void createReferral_returnsBadRequest() throws JsonProcessingException {
         given()
             .contentType(APPLICATION_JSON_VALUE)
-            .body("{}")
+            .body("")
             .when()
-            .put("/secure/referrals/sent/noOffenderID")
+            .post(String.format("/secure/offenders/crn/%s/referral/sent", SOME_OFFENDER_CRN))
             .then()
+            .log().all()
             .statusCode(400);
     }
 
@@ -45,7 +46,7 @@ public class ReferralControllerTest {
             .contentType(APPLICATION_JSON_VALUE)
             .body("{}")
             .when()
-            .put(String.format("/secure/referrals/sent/%s", SOME_OFFENDER_ID))
+            .post(String.format("/secure/offenders/crn/%s/referral/sent", SOME_OFFENDER_CRN))
             .then()
             .statusCode(200);
     }

@@ -4,13 +4,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import uk.gov.justice.digital.delius.JwtParameters;
-import uk.gov.justice.digital.delius.data.api.ReferralSent;
+import uk.gov.justice.digital.delius.data.api.ReferralSentRequest;
 
 import static io.restassured.RestAssured.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.Arrays;
 
 public class ReferralTest extends IntegrationTestBase {
@@ -24,7 +25,7 @@ public class ReferralTest extends IntegrationTestBase {
             .contentType(APPLICATION_JSON_VALUE)
             .body(createReferralSent())
             .when()
-            .put("referrals/sent/3000")
+            .post("offenders/crn/X320741/referral/sent")
             .then()
             .statusCode(200);
     }
@@ -40,14 +41,13 @@ public class ReferralTest extends IntegrationTestBase {
     }
 
     private String createReferralSent() {
-        return writeValueAsString(ReferralSent
+        return writeValueAsString(ReferralSentRequest
                                   .builder()
-                                  .probationArea("51")
-                                  .contactType("418")
-                                  .providerTeam("2500000000")
-                                  .probationOfficer("2500000000")
-                                  .employeeId("2500000000")
-                                  .context("2500000000")
+                                  .probationAreaCode("YSS")
+                                  .referralType("C116")
+                                  .staffCode("N06AAFU")
+                                  .teamCode("N05MKU")
+                                  .date(LocalDate.now())
                                   .build());
     }
 }
