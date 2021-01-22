@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Getter
 @Builder
-public class CustodialStatus {
+public class SentenceStatus {
     private Long sentenceId;
     private KeyValue custodialType;
     private KeyValue sentence;

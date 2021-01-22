@@ -2,7 +2,7 @@ package uk.gov.justice.digital.delius.transformers;
 
 
 import org.junit.jupiter.api.Test;
-import uk.gov.justice.digital.delius.data.api.CustodialStatus;
+import uk.gov.justice.digital.delius.data.api.SentenceStatus;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.DisposalType;
@@ -20,7 +20,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CustodialStatusTransformerTest {
+class SentenceStatusTransformerTest {
 
     public static final long SENTENCE_ID = 12345678L;
     public static final String CUSTODIAL_TYPE_CODE = "P";
@@ -39,18 +39,32 @@ class CustodialStatusTransformerTest {
                 .actualReleaseDate(ACTUAL_RELEASE_DATE.atTime(13, 0))
                 .build()));
 
-        CustodialStatus custodialStatus = CustodialStatusTransformer.custodialStatusOf(disposal);
+        SentenceStatus sentenceStatus = SentenceStatusTransformer.sentenceStatusOf(disposal);
 
-        assertThat(custodialStatus.getSentenceId()).isEqualTo(SENTENCE_ID);
-        assertThat(custodialStatus.getCustodialType().getCode()).isEqualTo(CUSTODIAL_TYPE_CODE);
-        assertThat(custodialStatus.getCustodialType().getDescription()).isEqualTo(CUSTODIAL_TYPE_DESCRIPTION);
-        assertThat(custodialStatus.getSentence().getDescription()).isEqualTo(SENTENCE_DESCRIPTION);
-        assertThat(custodialStatus.getMainOffence().getDescription()).isEqualTo(OFFENCE_DESCRIPTION);
-        assertThat(custodialStatus.getSentenceDate()).isEqualTo(SENTENCE_DATE);
-        assertThat(custodialStatus.getActualReleaseDate()).isEqualTo(ACTUAL_RELEASE_DATE);
-        assertThat(custodialStatus.getLicenceExpiryDate()).isEqualTo(LICENCE_EXPIRY_DATE);
-        assertThat(custodialStatus.getLength()).isEqualTo(LENGTH);
-        assertThat(custodialStatus.getLengthUnit()).isEqualTo(LENGTH_UNIT);
+        assertThat(sentenceStatus.getSentenceId()).isEqualTo(SENTENCE_ID);
+        assertThat(sentenceStatus.getCustodialType().getCode()).isEqualTo(CUSTODIAL_TYPE_CODE);
+        assertThat(sentenceStatus.getCustodialType().getDescription()).isEqualTo(CUSTODIAL_TYPE_DESCRIPTION);
+        assertThat(sentenceStatus.getSentence().getDescription()).isEqualTo(SENTENCE_DESCRIPTION);
+        assertThat(sentenceStatus.getMainOffence().getDescription()).isEqualTo(OFFENCE_DESCRIPTION);
+        assertThat(sentenceStatus.getSentenceDate()).isEqualTo(SENTENCE_DATE);
+        assertThat(sentenceStatus.getActualReleaseDate()).isEqualTo(ACTUAL_RELEASE_DATE);
+        assertThat(sentenceStatus.getLicenceExpiryDate()).isEqualTo(LICENCE_EXPIRY_DATE);
+        assertThat(sentenceStatus.getLength()).isEqualTo(LENGTH);
+        assertThat(sentenceStatus.getLengthUnit()).isEqualTo(LENGTH_UNIT);
+    }
+
+    @Test
+    public void givenNullCustodyOnSentence_whenMap_thenReturnNotInCustody() {
+        Disposal disposal = buildDisposal(Collections.singletonList(Release.builder()
+            .actualReleaseDate(ACTUAL_RELEASE_DATE.atTime(13, 0))
+            .build()), false);
+
+        SentenceStatus sentenceStatus = SentenceStatusTransformer.sentenceStatusOf(disposal);
+
+        assertThat(sentenceStatus.getCustodialType().getCode()).isEqualTo(SentenceStatusTransformer.NO_CUSTODY_CODE);
+        assertThat(sentenceStatus.getCustodialType().getDescription()).isEqualTo(SentenceStatusTransformer.NO_CUSTODY_DESCRIPTION);
+        assertThat(sentenceStatus.getActualReleaseDate()).isNull();
+        assertThat(sentenceStatus.getLicenceExpiryDate()).isNull();
     }
 
     @Test
@@ -67,34 +81,44 @@ class CustodialStatusTransformerTest {
                         .build()
         ));
 
-        CustodialStatus custodialStatus = CustodialStatusTransformer.custodialStatusOf(disposal);
+        SentenceStatus sentenceStatus = SentenceStatusTransformer.sentenceStatusOf(disposal);
 
-        assertThat(custodialStatus.getActualReleaseDate()).isEqualTo(ACTUAL_RELEASE_DATE);
+        assertThat(sentenceStatus.getActualReleaseDate()).isEqualTo(ACTUAL_RELEASE_DATE);
     }
 
     @Test
     public void givenNoReleases_thenActualReleaseDateIsNull() {
         Disposal disposal = buildDisposal(Collections.emptyList());
 
-        CustodialStatus custodialStatus = CustodialStatusTransformer.custodialStatusOf(disposal);
+        SentenceStatus sentenceStatus = SentenceStatusTransformer.sentenceStatusOf(disposal);
 
-        assertThat(custodialStatus.getActualReleaseDate()).isNull();
+        assertThat(sentenceStatus.getActualReleaseDate()).isNull();
     }
 
     private Disposal buildDisposal(List<Release> releases) {
+        return buildDisposal(releases, true);
+    }
+
+    private Disposal buildDisposal(List<Release> releases, boolean addCustody) {
+
+        Custody custody = null;
+        if (addCustody) {
+            custody = Custody.builder()
+                .releases(releases)
+                .custodialStatus(StandardReference.builder()
+                    .codeValue(CUSTODIAL_TYPE_CODE)
+                    .codeDescription(CUSTODIAL_TYPE_DESCRIPTION)
+                    .build())
+                .pssStartDate(LICENCE_EXPIRY_DATE)
+                .build();
+        }
+
         return Disposal.builder()
                 .disposalId(SENTENCE_ID)
                 .disposalType(DisposalType.builder()
                         .description(SENTENCE_DESCRIPTION)
                         .build())
-                .custody(Custody.builder()
-                        .releases(releases)
-                        .custodialStatus(StandardReference.builder()
-                                .codeValue(CUSTODIAL_TYPE_CODE)
-                                .codeDescription(CUSTODIAL_TYPE_DESCRIPTION)
-                                .build())
-                        .pssStartDate(LICENCE_EXPIRY_DATE)
-                        .build())
+                .custody(custody)
                 .event(Event.builder()
                         .mainOffence(MainOffence.builder()
                                 .offence(Offence.builder()
