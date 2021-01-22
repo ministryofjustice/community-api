@@ -54,6 +54,20 @@ class CustodialStatusTransformerTest {
     }
 
     @Test
+    public void givenNullCustodyOnSentence_whenMap_thenReturnNotInCustody() {
+        Disposal disposal = buildDisposal(Collections.singletonList(Release.builder()
+            .actualReleaseDate(ACTUAL_RELEASE_DATE.atTime(13, 0))
+            .build()), false);
+
+        CustodialStatus custodialStatus = CustodialStatusTransformer.custodialStatusOf(disposal);
+
+        assertThat(custodialStatus.getCustodialType().getCode()).isEqualTo(CustodialStatusTransformer.NO_CUSTODY_CODE);
+        assertThat(custodialStatus.getCustodialType().getDescription()).isEqualTo(CustodialStatusTransformer.NO_CUSTODY_DESCRIPTION);
+        assertThat(custodialStatus.getActualReleaseDate()).isNull();
+        assertThat(custodialStatus.getLicenceExpiryDate()).isNull();
+    }
+
+    @Test
     public void givenMultipleReleases_thenActualReleaseDateIsTheLatest() {
         Disposal disposal = buildDisposal(Arrays.asList(
                 Release.builder()
@@ -82,19 +96,29 @@ class CustodialStatusTransformerTest {
     }
 
     private Disposal buildDisposal(List<Release> releases) {
+        return buildDisposal(releases, true);
+    }
+
+    private Disposal buildDisposal(List<Release> releases, boolean addCustody) {
+
+        Custody custody = null;
+        if (addCustody) {
+            custody = Custody.builder()
+                .releases(releases)
+                .custodialStatus(StandardReference.builder()
+                    .codeValue(CUSTODIAL_TYPE_CODE)
+                    .codeDescription(CUSTODIAL_TYPE_DESCRIPTION)
+                    .build())
+                .pssStartDate(LICENCE_EXPIRY_DATE)
+                .build();
+        }
+
         return Disposal.builder()
                 .disposalId(SENTENCE_ID)
                 .disposalType(DisposalType.builder()
                         .description(SENTENCE_DESCRIPTION)
                         .build())
-                .custody(Custody.builder()
-                        .releases(releases)
-                        .custodialStatus(StandardReference.builder()
-                                .codeValue(CUSTODIAL_TYPE_CODE)
-                                .codeDescription(CUSTODIAL_TYPE_DESCRIPTION)
-                                .build())
-                        .pssStartDate(LICENCE_EXPIRY_DATE)
-                        .build())
+                .custody(custody)
                 .event(Event.builder()
                         .mainOffence(MainOffence.builder()
                                 .offence(Offence.builder()
