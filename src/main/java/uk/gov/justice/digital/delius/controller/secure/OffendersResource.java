@@ -435,6 +435,27 @@ public class OffendersResource {
         return offenderService.getAllPrimaryIdentifiers(filter, pageable);
     }
 
+    @ApiIgnore("This endpoint is is to be removed as soon as court case service has moved to the /offenders/crn/{crn}/convictions/{convictionId}/sentences/{sentenceId}/status version")
+    @Deprecated(forRemoval = true)
+    @ApiOperation(value = "Return sentence and custodial status information by crn, convictionId and sentenceId.")
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "The offender CRN / conviction ID / sentence ID is not found", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+    @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/sentences/{sentenceId}/custodialStatus")
+    public SentenceStatus getSentenceStatusBySentenceIdToRemove(
+        @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
+        @PathVariable(value = "crn") final String crn,
+        @ApiParam(name = "convictionId", value = "ID for the conviction / event", example = "2500295345", required = true)
+        @PathVariable(value = "convictionId") final Long convictionId,
+        @ApiParam(name = "sentenceId", value = "ID for the sentence", example = "2500295123", required = true)
+        @PathVariable(value = "sentenceId") final Long sentenceId) {
+
+        return sentenceService.getSentenceStatus(crn, convictionId, sentenceId)
+            .orElseThrow(() -> new NotFoundException(String.format("Sentence not found for crn '%s', convictionId '%s', and sentenceId '%s'", crn, convictionId, sentenceId)));
+    }
 
     @ApiIgnore("This endpoint is too specific to use case and does not reflect best practice so is deprecated for new use")
     @Deprecated
