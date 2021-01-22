@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import uk.gov.justice.digital.delius.data.api.CustodialStatus;
+import uk.gov.justice.digital.delius.data.api.SentenceStatus;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
@@ -10,13 +10,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public class CustodialStatusTransformer {
+public class SentenceStatusTransformer {
 
     public static final String NO_CUSTODY_CODE = "NOT_IN_CUSTODY";
     public static final String NO_CUSTODY_DESCRIPTION = "Not in custody";
 
-    public static CustodialStatus custodialStatusOf(Disposal disposal) {
-        return CustodialStatus.builder()
+    public static SentenceStatus sentenceStatusOf(Disposal disposal) {
+        return SentenceStatus.builder()
                 .sentenceId(disposal.getDisposalId())
                 .custodialType(custodialTypeOf(disposal))
                 .sentence(sentenceOf(disposal))

@@ -3,13 +3,13 @@ package uk.gov.justice.digital.delius.controller.secure;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import uk.gov.justice.digital.delius.data.api.CustodialStatus;
+import uk.gov.justice.digital.delius.data.api.SentenceStatus;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static uk.gov.justice.digital.delius.transformers.CustodialStatusTransformer.NO_CUSTODY_CODE;
-import static uk.gov.justice.digital.delius.transformers.CustodialStatusTransformer.NO_CUSTODY_DESCRIPTION;
+import static uk.gov.justice.digital.delius.transformers.SentenceStatusTransformer.NO_CUSTODY_CODE;
+import static uk.gov.justice.digital.delius.transformers.SentenceStatusTransformer.NO_CUSTODY_DESCRIPTION;
 
 public class OffendersResource_getOffenderCustodialStatusByCrnTest extends IntegrationTestBase{
     private static final Long KNOWN_CONVICTION_ID = 2600295124L;
@@ -17,7 +17,7 @@ public class OffendersResource_getOffenderCustodialStatusByCrnTest extends Integ
     private static final Long CONVICTION_ID_NO_CUSTODY = 2600295125L;
     private static final Long SENTENCE_ID_NO_CUSTODY = 2600282124L;
     private static final String KNOWN_CRN = "X320811";
-    public static final String URL_TEMPLATE = "/offenders/crn/%s/convictions/%s/sentences/%s/custodialStatus";
+    public static final String URL_TEMPLATE = "/offenders/crn/%s/convictions/%s/sentences/%s/status";
 
 
     @Test
@@ -33,7 +33,7 @@ public class OffendersResource_getOffenderCustodialStatusByCrnTest extends Integ
                 .statusCode(HttpStatus.OK.value())
                 .extract()
                 .body()
-                .as(CustodialStatus.class);
+                .as(SentenceStatus.class);
 
         assertThat(custodialStatus.getSentenceId()).isEqualTo(KNOWN_SENTENCE_ID);
         assertThat(custodialStatus.getSentence().getDescription()).isEqualTo("CJA - Indeterminate Public Prot.");
@@ -61,7 +61,7 @@ public class OffendersResource_getOffenderCustodialStatusByCrnTest extends Integ
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
-            .as(CustodialStatus.class);
+            .as(SentenceStatus.class);
 
         assertThat(custodialStatus.getSentenceId()).isEqualTo(SENTENCE_ID_NO_CUSTODY);
         assertThat(custodialStatus.getCustodialType().getCode()).isEqualTo(NO_CUSTODY_CODE);

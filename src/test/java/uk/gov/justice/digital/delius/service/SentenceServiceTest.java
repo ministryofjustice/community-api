@@ -7,7 +7,7 @@ import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.justice.digital.delius.data.api.CustodialStatus;
+import uk.gov.justice.digital.delius.data.api.SentenceStatus;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
@@ -17,8 +17,8 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.digital.delius.transformers.CustodialStatusTransformer.NO_CUSTODY_CODE;
-import static uk.gov.justice.digital.delius.transformers.CustodialStatusTransformer.NO_CUSTODY_DESCRIPTION;
+import static uk.gov.justice.digital.delius.transformers.SentenceStatusTransformer.NO_CUSTODY_CODE;
+import static uk.gov.justice.digital.delius.transformers.SentenceStatusTransformer.NO_CUSTODY_DESCRIPTION;
 
 @ExtendWith(MockitoExtension.class)
 class SentenceServiceTest {
@@ -45,7 +45,7 @@ class SentenceServiceTest {
     @Test
     public void whenNoOffenderFound_thenReturnEmpty() {
         when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.empty());
-        Optional<CustodialStatus> status = sentenceService.getCustodialStatus(CRN, CONVICTION_ID, SENTENCE_ID);
+        Optional<SentenceStatus> status = sentenceService.getSentenceStatus(CRN, CONVICTION_ID, SENTENCE_ID);
 
         assertThat(status).isEmpty();
     }
@@ -54,7 +54,7 @@ class SentenceServiceTest {
     public void whenNoDisposalFound_thenReturnEmpty() {
         when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
         when(disposalRepository.findByDisposalId(SENTENCE_ID)).thenReturn(Optional.empty());
-        Optional<CustodialStatus> status = sentenceService.getCustodialStatus(CRN, CONVICTION_ID, SENTENCE_ID);
+        Optional<SentenceStatus> status = sentenceService.getSentenceStatus(CRN, CONVICTION_ID, SENTENCE_ID);
 
         assertThat(status).isEmpty();
     }
@@ -65,7 +65,7 @@ class SentenceServiceTest {
         when(disposalRepository.findByDisposalId(SENTENCE_ID)).thenReturn(Optional.of(disposal));
         when(offender.getOffenderId()).thenReturn(OFFENDER_ID);
         when(disposal.getOffenderId()).thenReturn(999999L);
-        Optional<CustodialStatus> status = sentenceService.getCustodialStatus(CRN, CONVICTION_ID, SENTENCE_ID);
+        Optional<SentenceStatus> status = sentenceService.getSentenceStatus(CRN, CONVICTION_ID, SENTENCE_ID);
 
         assertThat(status).isEmpty();
     }
@@ -79,7 +79,7 @@ class SentenceServiceTest {
         when(disposal.getEvent()).thenReturn(Event.builder()
                 .eventId(9999999L)
                 .build());
-        Optional<CustodialStatus> status = sentenceService.getCustodialStatus(CRN, CONVICTION_ID, SENTENCE_ID);
+        Optional<SentenceStatus> status = sentenceService.getSentenceStatus(CRN, CONVICTION_ID, SENTENCE_ID);
 
         assertThat(status).isEmpty();
     }
@@ -93,7 +93,7 @@ class SentenceServiceTest {
         when(disposal.getEvent()).thenReturn(event);
         when(disposal.getEvent().getEventId()).thenReturn(CONVICTION_ID);
         when(disposal.isSoftDeleted()).thenReturn(true);
-        Optional<CustodialStatus> status = sentenceService.getCustodialStatus(CRN, CONVICTION_ID, SENTENCE_ID);
+        Optional<SentenceStatus> status = sentenceService.getSentenceStatus(CRN, CONVICTION_ID, SENTENCE_ID);
 
         assertThat(status).isEmpty();
     }
@@ -110,7 +110,7 @@ class SentenceServiceTest {
         when(disposal.getCustody()).thenReturn(null);
         when(disposal.getDisposalId()).thenReturn(SENTENCE_ID);
 
-        CustodialStatus status = sentenceService.getCustodialStatus(CRN, CONVICTION_ID, SENTENCE_ID).orElse(null);
+        SentenceStatus status = sentenceService.getSentenceStatus(CRN, CONVICTION_ID, SENTENCE_ID).orElse(null);
 
         assertThat(status).isNotNull();
         assertThat(status.getSentenceId()).isEqualTo(SENTENCE_ID);
@@ -131,7 +131,7 @@ class SentenceServiceTest {
         when(disposal.isSoftDeleted()).thenReturn(false);
         when(disposal.getCustody()).thenReturn(custody);
         when(custody.isSoftDeleted()).thenReturn(true);
-        Optional<CustodialStatus> status = sentenceService.getCustodialStatus(CRN, CONVICTION_ID, SENTENCE_ID);
+        Optional<SentenceStatus> status = sentenceService.getSentenceStatus(CRN, CONVICTION_ID, SENTENCE_ID);
 
         assertThat(status).isEmpty();
     }
@@ -149,7 +149,7 @@ class SentenceServiceTest {
         when(disposal.getCustody()).thenReturn(custody);
         when(custody.isSoftDeleted()).thenReturn(false);
 
-        Optional<CustodialStatus> status = sentenceService.getCustodialStatus(CRN, CONVICTION_ID, SENTENCE_ID);
+        Optional<SentenceStatus> status = sentenceService.getSentenceStatus(CRN, CONVICTION_ID, SENTENCE_ID);
 
         assertThat(status).isNotEmpty();
         assertThat(status.get().getSentenceId()).isEqualTo(SENTENCE_ID);
