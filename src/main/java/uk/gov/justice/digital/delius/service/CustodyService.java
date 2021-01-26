@@ -84,8 +84,6 @@ public class CustodyService {
         this.contactService = contactService;
         this.offenderPrisonerService = offenderPrisonerService;
         this.featureSwitches = featureSwitches;
-        log.info("NOMIS update custody location feature is {}", updateCustodyFeatureSwitch ? "ON" : "OFF");
-        log.info("NOMIS update booking number feature is {}", updateBookingNumberFeatureSwitch ? "ON" : "OFF");
     }
 
     @Transactional

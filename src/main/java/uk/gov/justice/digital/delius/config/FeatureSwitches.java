@@ -2,12 +2,16 @@ package uk.gov.justice.digital.delius.config;
 
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+
+import javax.annotation.PostConstruct;
 
 @Configuration
 @ConfigurationProperties(prefix = "features")
 @Data
+@Slf4j
 public class FeatureSwitches {
     @Data
     public static class NomsFeatures {
@@ -34,4 +38,9 @@ public class FeatureSwitches {
     }
     private NomsFeatures noms = new NomsFeatures();
     private boolean applyLimitedAccessMarkers;
+
+    @PostConstruct
+    private void postConstruct() {
+        log.info("Feature switches set as " + toString());
+    }
 }

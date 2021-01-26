@@ -116,7 +116,6 @@ public class ConvictionService {
         this.contactService = contactService;
         this.telemetryClient = telemetryClient;
         this.featureSwitches = featureSwitches;
-        log.info("NOMIS update custody key dates feature is {}", updateCustodyKeyDatesFeatureSwitch ? "ON" : "OFF");
     }
 
     @Transactional(readOnly = true)
