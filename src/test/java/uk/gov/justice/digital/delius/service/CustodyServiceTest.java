@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
+import uk.gov.justice.digital.delius.config.FeatureSwitches;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.Conviction;
@@ -67,7 +68,10 @@ public class CustodyServiceTest {
 
     @BeforeEach
     public void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
-        custodyService = new CustodyService(true, true, telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService);
+        final var featureSwitches = new FeatureSwitches();
+        featureSwitches.getNoms().getUpdate().setCustody(true);
+        featureSwitches.getNoms().getUpdate().getBooking().setNumber(true);
+        custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches);
         when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
         when(convictionService.getAllActiveCustodialEvents(anyLong()))
                 .thenReturn(List.of(EntityHelper.aCustodyEvent()));
@@ -160,78 +164,138 @@ public class CustodyServiceTest {
 
             }
 
-            @Test
-            @DisplayName("will create a single telemetry event for all records updated")
-            public void willCreateSingleTelemetryEventWhenMultipleConvictionsAreUpdated() {
-                final ArgumentMatcher<Map<String, String>> telemetryAttributes =
-                    attributes -> Optional.ofNullable(attributes.get("offenderNo")).filter(value -> value.equals("G9542VP")).isPresent() &&
-                        Optional.ofNullable(attributes.get("bookingNumber")).filter(value -> value.equals("44463B")).isPresent() &&
-                        Optional.ofNullable(attributes.get("updatedCount")).filter(value -> value.equals("2")).isPresent() &&
-                        Optional.ofNullable(attributes.get("toAgency")).filter(value -> value.equals("MDI")).isPresent();
+            @Nested
+            class WhenAllowMultipleEventUpdateFeatureSwitchOn {
+                @BeforeEach
+                void setUp() {
+                    final var featureSwitches = new FeatureSwitches();
+                    featureSwitches.getNoms().getUpdate().setCustody(true);
+                    featureSwitches.getNoms().getUpdate().getMultipleEvents().setUpdatePrisonLocation(true);
+                    custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches);
+                }
 
-                custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+                @Test
+                @DisplayName("will create a single telemetry event for all records updated")
+                public void willCreateSingleTelemetryEventWhenMultipleConvictionsAreUpdated() {
+                    final ArgumentMatcher<Map<String, String>> telemetryAttributes =
+                        attributes -> Optional.ofNullable(attributes.get("offenderNo")).filter(value -> value.equals("G9542VP")).isPresent() &&
+                            Optional.ofNullable(attributes.get("bookingNumber")).filter(value -> value.equals("44463B")).isPresent() &&
+                            Optional.ofNullable(attributes.get("updatedCount")).filter(value -> value.equals("2")).isPresent() &&
+                            Optional.ofNullable(attributes.get("toAgency")).filter(value -> value.equals("MDI")).isPresent();
 
-                verify(telemetryClient).trackEvent(eq("P2PTransferPrisonUpdated"), argThat(telemetryAttributes), isNull());
+                    custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+
+                    verify(telemetryClient).trackEvent(eq("P2PTransferPrisonUpdated"), argThat(telemetryAttributes), isNull());
+                }
+
+                @Test
+                @DisplayName("will return the latest updated custody record")
+                public void willReturnLatestUpdatedEvent() {
+                    when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
+
+                    final var updatedCustody = custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+
+                    assertThat(updatedCustody.getInstitution().getDescription()).isEqualTo("HMP Highland");
+                    assertThat(updatedCustody.getSentenceStartDate()).isEqualTo(latestEventSentenceStartDate);
+                }
+
+                @Test
+                @DisplayName("will create custodial history record for each event updated")
+                public void willCreateCustodyHistoryChangeLocationForEachEvent() {
+                    when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
+                    custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+
+                    verify(custodyHistoryRepository, times(2)).save(custodyHistoryArgumentCaptor.capture());
+
+                    final var custodyHistoryEvent = custodyHistoryArgumentCaptor.getValue();
+
+                    assertThat(custodyHistoryEvent.getCustodyEventType().getCodeValue()).isEqualTo("CPL");
+                    assertThat(custodyHistoryEvent.getDetail()).isEqualTo("HMP Highland");
+                    assertThat(custodyHistoryEvent.getWhen()).isEqualTo(LocalDate.now());
+                }
+
+                @Test
+                @DisplayName("will notify SPG for each event updated")
+                public void willNotifySPGOfCustodyChangeForEachEvent() {
+                    custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+
+                    verify(spgNotificationService, times(2)).notifyUpdateOfCustody(any(), any());
+                }
+
+                @Test
+                @DisplayName("will create a contact for each event updated")
+                public void willCreateContactAboutPrisonLocationChangeForEachEvent() {
+                    custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+
+                    verify(contactService, times(2)).addContactForPrisonLocationChange(any(), any());
+                }
+
+                @Test
+                @DisplayName("will ignore events with the incorrect status but others will be updated")
+                public void willUpdateOneEventEvenWhenTheOtherIsInWrongStatus() {
+                    when(convictionService.getAllActiveCustodialEvents(anyLong()))
+                        .thenReturn(List.of(
+                            EntityHelper.aCustodyEvent(),
+                            EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("B").codeDescription("Released on Licence").build())));
+
+
+                    custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+
+                    verify(telemetryClient).trackEvent(eq("P2PTransferPrisonUpdated"), argThat(standardTelemetryAttributes), isNull());
+                    verify(spgNotificationService).notifyUpdateOfCustody(any(), any());
+                    verify(contactService).addContactForPrisonLocationChange(any(), any());
+                    verify(custodyHistoryRepository).save(any());
+                }
             }
 
-            @Test
-            @DisplayName("will return the latest updated custody record")
-            public void willReturnLatestUpdatedEvent() {
-                when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
+            @Nested
+            class WhenAllowMultipleEventUpdateFeatureSwitchOff {
+                @BeforeEach
+                void setUp() {
+                    final var featureSwitches = new FeatureSwitches();
+                    featureSwitches.getNoms().getUpdate().setCustody(true);
+                    featureSwitches.getNoms().getUpdate().getMultipleEvents().setUpdatePrisonLocation(false);
+                    custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches);
+                }
 
-                final var updatedCustody = custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
+                @Test
+                @DisplayName("will throw an exception and create a single telemetry event")
+                public void willCreateSingleTelemetryEventWhenMultipleConvictionsAreUpdated() {
+                    final ArgumentMatcher<Map<String, String>> telemetryAttributes =
+                        attributes -> Optional.ofNullable(attributes.get("offenderNo")).filter(value -> value.equals("G9542VP")).isPresent() &&
+                            Optional.ofNullable(attributes.get("bookingNumber")).filter(value -> value.equals("44463B")).isPresent() &&
+                            Optional.ofNullable(attributes.get("toAgency")).filter(value -> value.equals("MDI")).isPresent();
 
-                assertThat(updatedCustody.getInstitution().getDescription()).isEqualTo("HMP Highland");
-                assertThat(updatedCustody.getSentenceStartDate()).isEqualTo(latestEventSentenceStartDate);
+                    assertThatThrownBy(() -> custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build())).isInstanceOf(NotFoundException.class);
+
+                    verify(telemetryClient).trackEvent(eq("P2PTransferBookingNumberHasDuplicates"), argThat(telemetryAttributes), isNull());
+                }
+
+                @Test
+                @DisplayName("will not create custodial history record for any event")
+                public void willCreateCustodyHistoryChangeLocationForEachEvent() {
+                    assertThatThrownBy(() -> custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()));
+
+                    verify(custodyHistoryRepository, never()).save(custodyHistoryArgumentCaptor.capture());
+                }
+
+                @Test
+                @DisplayName("will not notify SPG for each any event")
+                public void willNotifySPGOfCustodyChangeForEachEvent() {
+                    assertThatThrownBy(() -> custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()));
+
+                    verify(spgNotificationService, never()).notifyUpdateOfCustody(any(), any());
+                }
+
+                @Test
+                @DisplayName("will not create a contact for any event")
+                public void willCreateContactAboutPrisonLocationChangeForEachEvent() {
+                    assertThatThrownBy(() -> custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build()));
+
+                    verify(contactService, never()).addContactForPrisonLocationChange(any(), any());
+                }
             }
 
-            @Test
-            @DisplayName("will create custodial history record for each event updated")
-            public void willCreateCustodyHistoryChangeLocationForEachEvent() {
-                when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
-                custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
-
-                verify(custodyHistoryRepository, times(2)).save(custodyHistoryArgumentCaptor.capture());
-
-                final var custodyHistoryEvent = custodyHistoryArgumentCaptor.getValue();
-
-                assertThat(custodyHistoryEvent.getCustodyEventType().getCodeValue()).isEqualTo("CPL");
-                assertThat(custodyHistoryEvent.getDetail()).isEqualTo("HMP Highland");
-                assertThat(custodyHistoryEvent.getWhen()).isEqualTo(LocalDate.now());
-            }
-
-            @Test
-            @DisplayName("will notify SPG for each event updated")
-            public void willNotifySPGOfCustodyChangeForEachEvent() {
-                custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
-
-                verify(spgNotificationService, times(2)).notifyUpdateOfCustody(any(), any());
-            }
-
-            @Test
-            @DisplayName("will create a contact for each event updated")
-            public void willCreateContactAboutPrisonLocationChangeForEachEvent() {
-                custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
-
-                verify(contactService, times(2)).addContactForPrisonLocationChange(any(), any());
-            }
-
-            @Test
-            @DisplayName("will ignore events with the incorrect status but others will be updated")
-            public void willUpdateOneEventEvenWhenTheOtherIsInWrongStatus() {
-                when(convictionService.getAllActiveCustodialEvents(anyLong()))
-                    .thenReturn(List.of(
-                        EntityHelper.aCustodyEvent(),
-                        EntityHelper.aCustodyEvent(StandardReference.builder().codeValue("B").codeDescription("Released on Licence").build())));
-
-
-                custodyService.updateCustodyPrisonLocation("G9542VP", "44463B", UpdateCustody.builder().nomsPrisonInstitutionCode("MDI").build());
-
-                verify(telemetryClient).trackEvent(eq("P2PTransferPrisonUpdated"), argThat(standardTelemetryAttributes), isNull());
-                verify(spgNotificationService).notifyUpdateOfCustody(any(), any());
-                verify(contactService).addContactForPrisonLocationChange(any(), any());
-                verify(custodyHistoryRepository).save(any());
-            }
         }
 
         @Test
@@ -411,7 +475,11 @@ public class CustodyServiceTest {
 
         @Test
         public void willUpdatePrisonInstitutionWillBeUpdatedWhenFeatureSwitchedOn() {
-            custodyService = new CustodyService(true, true, telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService);
+            final var featureSwitches = new FeatureSwitches();
+            featureSwitches.getNoms().getUpdate().setCustody(true);
+            featureSwitches.getNoms().getUpdate().getBooking().setNumber(true);
+
+            custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches);
 
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
 
@@ -422,7 +490,10 @@ public class CustodyServiceTest {
 
         @Test
         public void willNotUpdatePrisonInstitutionWillBeUpdatedWhenFeatureSwitchedOff() {
-            custodyService = new CustodyService(false, true, telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService);
+            final var featureSwitches = new FeatureSwitches();
+            featureSwitches.getNoms().getUpdate().setCustody(false);
+            featureSwitches.getNoms().getUpdate().getBooking().setNumber(true);
+            custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches);
 
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
 
@@ -523,46 +594,102 @@ public class CustodyServiceTest {
 
         @Nested
         class OnSuccessfulChangeWithMultipleCustodialEvents {
-            @BeforeEach
-            void setUp() {
-                final var event1 = EntityHelper.aCustodyEvent();
-                event1.getDisposal().getCustody().setInstitution(aPrisonInstitution().toBuilder().nomisCdeCode("MDI").build());
-                final var event2 = EntityHelper.aCustodyEvent();
-                event2.getDisposal().getCustody().setInstitution(aPrisonInstitution().toBuilder().nomisCdeCode("MDI").build());
-                when(convictionService.getAllActiveCustodialEvents(99L)).thenReturn(List.of(event1, event2));
-                when(institutionRepository.findByNomisCdeCode("WWI")).thenReturn(Optional.of(aPrisonInstitution()));
-                when(offenderManagerService.isPrisonOffenderManagerAtInstitution(any(), any())).thenCallRealMethod();
+            @Nested
+            class WhenAllowMultipleEventUpdateFeatureSwitchOn {
+                @BeforeEach
+                void setUp() {
+                    final var featureSwitches = new FeatureSwitches();
+                    featureSwitches.getNoms().getUpdate().setCustody(true);
+                    featureSwitches.getNoms().getUpdate().getMultipleEvents().setUpdatePrisonLocation(true);
+                    custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches);
 
-                custodyService.updateCustodyPrisonLocation("G9542VP", "WWI");
+                    final var event1 = EntityHelper.aCustodyEvent();
+                    event1.getDisposal().getCustody().setInstitution(aPrisonInstitution().toBuilder().nomisCdeCode("MDI").build());
+                    final var event2 = EntityHelper.aCustodyEvent();
+                    event2.getDisposal().getCustody().setInstitution(aPrisonInstitution().toBuilder().nomisCdeCode("MDI").build());
+                    when(convictionService.getAllActiveCustodialEvents(99L)).thenReturn(List.of(event1, event2));
+                    when(institutionRepository.findByNomisCdeCode("WWI")).thenReturn(Optional.of(aPrisonInstitution()));
+                    when(offenderManagerService.isPrisonOffenderManagerAtInstitution(any(), any())).thenCallRealMethod();
+
+                    custodyService.updateCustodyPrisonLocation("G9542VP", "WWI");
+                }
+
+                @Test
+                @DisplayName("will add a single location change telemetry when location changes")
+                public void willCreateTelemetryEventWhenMultipleConvictionsFound() {
+                    final ArgumentMatcher<Map<String, String>> telemetryAttributes =
+                        attributes -> Optional.ofNullable(attributes.get("offenderNo")).filter(value -> value.equals("G9542VP")).isPresent() &&
+                            Optional.ofNullable(attributes.get("updatedCount")).filter(value -> value.equals("2")).isPresent() &&
+                            Optional.ofNullable(attributes.get("toAgency")).filter(value -> value.equals("WWI")).isPresent();
+
+                    verify(telemetryClient).trackEvent(eq("POMLocationUpdated"), argThat(telemetryAttributes), isNull());
+                }
+
+                @Test
+                @DisplayName("will created custody history record for each event updated")
+                public void willCreateCustodyHistoryChangeLocationEvent() {
+                    verify(custodyHistoryRepository, times(2)).save(custodyHistoryArgumentCaptor.capture());
+                }
+
+                @Test
+                @DisplayName("will notify SPG of change for each event")
+                public void willNotifySPGOfCustodyChange() {
+                    verify(spgNotificationService, times(2)).notifyUpdateOfCustody(any(), any());
+                }
+
+                @Test
+                @DisplayName("will create contact for each event")
+                public void willCreateContactAboutPrisonLocationChange() {
+                    verify(contactService, times(2)).addContactForPrisonLocationChange(any(), any());
+                }
             }
+            @Nested
+            class WhenAllowMultipleEventUpdateFeatureSwitchOff {
+                @BeforeEach
+                void setUp() {
+                    final var featureSwitches = new FeatureSwitches();
+                    featureSwitches.getNoms().getUpdate().setCustody(true);
+                    featureSwitches.getNoms().getUpdate().getMultipleEvents().setUpdatePrisonLocation(false);
+                    custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches);
 
-            @Test
-            @DisplayName("will add a single location change telemetry when location changes")
-            public void willCreateTelemetryEventWhenMultipleConvictionsFound() {
-                final ArgumentMatcher<Map<String, String>> telemetryAttributes =
-                    attributes -> Optional.ofNullable(attributes.get("offenderNo")).filter(value -> value.equals("G9542VP")).isPresent() &&
-                        Optional.ofNullable(attributes.get("updatedCount")).filter(value -> value.equals("2")).isPresent() &&
-                        Optional.ofNullable(attributes.get("toAgency")).filter(value -> value.equals("WWI")).isPresent();
+                    final var event1 = EntityHelper.aCustodyEvent();
+                    event1.getDisposal().getCustody().setInstitution(aPrisonInstitution().toBuilder().nomisCdeCode("MDI").build());
+                    final var event2 = EntityHelper.aCustodyEvent();
+                    event2.getDisposal().getCustody().setInstitution(aPrisonInstitution().toBuilder().nomisCdeCode("MDI").build());
+                    when(convictionService.getAllActiveCustodialEvents(99L)).thenReturn(List.of(event1, event2));
+                    when(institutionRepository.findByNomisCdeCode("WWI")).thenReturn(Optional.of(aPrisonInstitution()));
+                    when(offenderManagerService.isPrisonOffenderManagerAtInstitution(any(), any())).thenCallRealMethod();
 
-                verify(telemetryClient).trackEvent(eq("POMLocationUpdated"), argThat(telemetryAttributes), isNull());
-            }
+                    custodyService.updateCustodyPrisonLocation("G9542VP", "WWI");
+                }
 
-            @Test
-            @DisplayName("will created custody history record for each event updated")
-            public void willCreateCustodyHistoryChangeLocationEvent() {
-                verify(custodyHistoryRepository, times(2)).save(custodyHistoryArgumentCaptor.capture());
-            }
+                @Test
+                @DisplayName("will add a single location change telemetry when location changes")
+                public void willCreateTelemetryEventWhenMultipleConvictionsFound() {
+                    final ArgumentMatcher<Map<String, String>> telemetryAttributes =
+                        attributes -> Optional.ofNullable(attributes.get("offenderNo")).filter(value -> value.equals("G9542VP")).isPresent() &&
+                            Optional.ofNullable(attributes.get("toAgency")).filter(value -> value.equals("WWI")).isPresent();
 
-            @Test
-            @DisplayName("will notify SPG of change for each event")
-            public void willNotifySPGOfCustodyChange() {
-                verify(spgNotificationService, times(2)).notifyUpdateOfCustody(any(), any());
-            }
+                    verify(telemetryClient).trackEvent(eq("POMLocationMultipleEvents"), argThat(telemetryAttributes), isNull());
+                }
 
-            @Test
-            @DisplayName("will create contact for each event")
-            public void willCreateContactAboutPrisonLocationChange() {
-                verify(contactService, times(2)).addContactForPrisonLocationChange(any(), any());
+                @Test
+                @DisplayName("will not create custody history record for any event")
+                public void willCreateCustodyHistoryChangeLocationEvent() {
+                    verify(custodyHistoryRepository, never()).save(custodyHistoryArgumentCaptor.capture());
+                }
+
+                @Test
+                @DisplayName("will not notify SPG of change for any event")
+                public void willNotifySPGOfCustodyChange() {
+                    verify(spgNotificationService, never()).notifyUpdateOfCustody(any(), any());
+                }
+
+                @Test
+                @DisplayName("will not create contact for any  event")
+                public void willCreateContactAboutPrisonLocationChange() {
+                    verify(contactService, never()).addContactForPrisonLocationChange(any(), any());
+                }
             }
         }
 
@@ -756,7 +883,10 @@ public class CustodyServiceTest {
             class WhenFeatureSwitchedOff {
                 @BeforeEach
                 void setup() {
-                    custodyService = new CustodyService(true, false, telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService);
+                    final var featureSwitches = new FeatureSwitches();
+                    featureSwitches.getNoms().getUpdate().setCustody(true);
+                    featureSwitches.getNoms().getUpdate().getBooking().setNumber(false);
+                    custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches);
                 }
 
                 @Test

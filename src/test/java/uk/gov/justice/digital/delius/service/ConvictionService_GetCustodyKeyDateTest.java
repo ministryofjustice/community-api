@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.digital.delius.config.FeatureSwitches;
 import uk.gov.justice.digital.delius.data.api.CustodyKeyDate;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
@@ -60,7 +60,9 @@ public class ConvictionService_GetCustodyKeyDateTest {
     @Nested class CustodyTests {
         @BeforeEach
         public void setUp() {
-            convictionService = new ConvictionService(true, eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient);
+            final var featureSwitches = new FeatureSwitches();
+            featureSwitches.getNoms().getUpdate().setKeyDates(true);
+            convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient, featureSwitches);
             when(eventRepository.findActiveByOffenderIdWithCustody(anyLong())).thenReturn(ImmutableList.of(aCustodyEvent()));
         }
 
@@ -248,7 +250,9 @@ public class ConvictionService_GetCustodyKeyDateTest {
     @Nested class ConvictionTests {
         @BeforeEach
         public void setUp() {
-            convictionService = new ConvictionService(true, eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient);
+            final var featureSwitches = new FeatureSwitches();
+            featureSwitches.getNoms().getUpdate().setKeyDates(true);
+            convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient, featureSwitches);
         }
 
         @Test

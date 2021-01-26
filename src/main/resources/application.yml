@@ -96,6 +96,10 @@ features:
       booking.number: false
       keydates: false
       noms.number: false
+      multiple-events:
+        update-bulk-key-dates: false
+        update-key-dates: false
+        update-prison-location: false
   apply-limited-access-markers: false
 
 smoke:

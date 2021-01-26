@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.justice.digital.delius.config.FeatureSwitches;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.Custody;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.service.CustodyService.PrisonLocationUpdateError.Reason.ConvictionNotFound;
+import static uk.gov.justice.digital.delius.service.CustodyService.PrisonLocationUpdateError.Reason.MultipleCustodialSentences;
 import static uk.gov.justice.digital.delius.service.CustodyService.PrisonLocationUpdateError.Reason.MultipleOffendersFound;
 import static uk.gov.justice.digital.delius.service.CustodyService.PrisonLocationUpdateError.Reason.OffenderNotFound;
 
@@ -56,12 +58,9 @@ public class CustodyService {
     private final OffenderManagerService offenderManagerService;
     private final ContactService contactService;
     private final OffenderPrisonerService offenderPrisonerService;
+    private final FeatureSwitches featureSwitches;
 
     public CustodyService(
-            @Value("${features.noms.update.custody}")
-                    Boolean updateCustodyFeatureSwitch,
-            @Value("${features.noms.update.booking.number}")
-                    Boolean updateBookingNumberFeatureSwitch,
             TelemetryClient telemetryClient,
             OffenderRepository offenderRepository,
             ConvictionService convictionService,
@@ -70,9 +69,10 @@ public class CustodyService {
             ReferenceDataService referenceDataService,
             SpgNotificationService spgNotificationService,
             OffenderManagerService offenderManagerService,
-            ContactService contactService, OffenderPrisonerService offenderPrisonerService) {
-        this.updateCustodyFeatureSwitch = updateCustodyFeatureSwitch;
-        this.updateBookingNumberFeatureSwitch = updateBookingNumberFeatureSwitch;
+            ContactService contactService, OffenderPrisonerService offenderPrisonerService,
+            FeatureSwitches featureSwitches) {
+        this.updateCustodyFeatureSwitch = featureSwitches.getNoms().getUpdate().isCustody();
+        this.updateBookingNumberFeatureSwitch = featureSwitches.getNoms().getUpdate().getBooking().isNumber();
         this.telemetryClient = telemetryClient;
         this.offenderRepository = offenderRepository;
         this.convictionService = convictionService;
@@ -83,8 +83,7 @@ public class CustodyService {
         this.offenderManagerService = offenderManagerService;
         this.contactService = contactService;
         this.offenderPrisonerService = offenderPrisonerService;
-        log.info("NOMIS update custody location feature is {}", updateCustodyFeatureSwitch ? "ON" : "OFF");
-        log.info("NOMIS update booking number feature is {}", updateBookingNumberFeatureSwitch ? "ON" : "OFF");
+        this.featureSwitches = featureSwitches;
     }
 
     @Transactional
@@ -122,6 +121,9 @@ public class CustodyService {
                 case ConvictionNotFound:
                     telemetryClient.trackEvent("P2PTransferBookingNumberNotFound", telemetryProperties, null);
                     break;
+                case MultipleCustodialSentences:
+                    telemetryClient.trackEvent("P2PTransferBookingNumberHasDuplicates", telemetryProperties, null);
+                    break;
                 case OffenderNotFound:
                     telemetryClient.trackEvent("P2PTransferOffenderNotFound", telemetryProperties, null);
                     break;
@@ -150,6 +152,8 @@ public class CustodyService {
                     return Optional.of("POMLocationCustodialStatusNotCorrect");
                 case ConvictionNotFound:
                     return Optional.of("POMLocationNoEvents");
+                case MultipleCustodialSentences:
+                    return Optional.of("POMLocationMultipleEvents");
                 case OffenderNotFound:
                     return Optional.of("POMLocationOffenderNotFound");
                 case MultipleOffendersFound:
@@ -335,6 +339,11 @@ public class CustodyService {
             return Either.left(new PrisonLocationUpdateError(ConvictionNotFound, String
                 .format("No active custodial events found for offender %s", offender.getCrn())));
         } else {
+            // legacy behaviour throw NotFoundException
+            if (events.size() > 1 && !featureSwitches.getNoms().getUpdate().getMultipleEvents().isUpdatePrisonLocation()) {
+                return Either.left(new PrisonLocationUpdateError(MultipleCustodialSentences, String
+                    .format("Multiple active custodial events found for offender %s. %d found", offender.getCrn(), events.size())));
+            }
             return Either.right(events);
         }
     }
@@ -388,6 +397,7 @@ public class CustodyService {
             TransferPrisonNotFound,
             CustodialSentenceNotFoundInCorrectState,
             ConvictionNotFound,
+            MultipleCustodialSentences,
             OffenderNotFound,
             MultipleOffendersFound
         }
@@ -401,7 +411,6 @@ public class CustodyService {
         public static PrisonLocationUpdateError multipleOffenders(DuplicateOffenderException duplicateError) {
             return new PrisonLocationUpdateError(MultipleOffendersFound, duplicateError.getMessage());
         }
-
     }
     @Data
     static class PrisonLocationUpdateSuccess {

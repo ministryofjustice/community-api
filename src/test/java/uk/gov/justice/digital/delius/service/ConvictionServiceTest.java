@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.digital.delius.config.FeatureSwitches;
 import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.CourtCase;
 import uk.gov.justice.digital.delius.data.api.OffenceDetail;
@@ -84,7 +85,9 @@ public class ConvictionServiceTest {
                 new CourtAppearanceEntityBuilder(lookupSupplier),
                 lookupSupplier
         );
-        convictionService = new ConvictionService(true, eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, keyDateEntityBuilder, iapsNotificationService, contactService, telemetryClient);
+        final var featureSwitches = new FeatureSwitches();
+        featureSwitches.getNoms().getUpdate().setKeyDates(true);
+        convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, keyDateEntityBuilder, iapsNotificationService, contactService, telemetryClient, featureSwitches);
     }
 
     @Test

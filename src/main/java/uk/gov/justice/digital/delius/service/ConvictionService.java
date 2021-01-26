@@ -4,9 +4,9 @@ import com.microsoft.applicationinsights.TelemetryClient;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.justice.digital.delius.config.FeatureSwitches;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.CourtCase;
@@ -57,6 +57,7 @@ public class ConvictionService {
     private final LookupSupplier lookupSupplier;
     private final ContactService contactService;
     private final TelemetryClient telemetryClient;
+    private final FeatureSwitches featureSwitches;
 
     public static class SingleActiveCustodyConvictionNotFoundException extends BadRequestException {
         public SingleActiveCustodyConvictionNotFoundException(Long offenderId, int activeCustodyConvictionCount) {
@@ -96,17 +97,15 @@ public class ConvictionService {
     }
     @Autowired
     public ConvictionService(
-            @Value("${features.noms.update.keydates}")
-                    Boolean updateCustodyKeyDatesFeatureSwitch,
-            EventRepository eventRepository,
-            OffenderRepository offenderRepository,
-            EventEntityBuilder eventEntityBuilder,
-            SpgNotificationService spgNotificationService,
-            LookupSupplier lookupSupplier,
-            KeyDateEntityBuilder keyDateEntityBuilder,
-            IAPSNotificationService iapsNotificationService,
-            ContactService contactService, TelemetryClient telemetryClient) {
-        this.updateCustodyKeyDatesFeatureSwitch = updateCustodyKeyDatesFeatureSwitch;
+        EventRepository eventRepository,
+        OffenderRepository offenderRepository,
+        EventEntityBuilder eventEntityBuilder,
+        SpgNotificationService spgNotificationService,
+        LookupSupplier lookupSupplier,
+        KeyDateEntityBuilder keyDateEntityBuilder,
+        IAPSNotificationService iapsNotificationService,
+        ContactService contactService, TelemetryClient telemetryClient, FeatureSwitches featureSwitches) {
+        this.updateCustodyKeyDatesFeatureSwitch = featureSwitches.getNoms().getUpdate().isKeyDates();
         this.eventRepository = eventRepository;
         this.offenderRepository = offenderRepository;
         this.eventEntityBuilder = eventEntityBuilder;
@@ -116,7 +115,7 @@ public class ConvictionService {
         this.iapsNotificationService = iapsNotificationService;
         this.contactService = contactService;
         this.telemetryClient = telemetryClient;
-        log.info("NOMIS update custody key dates feature is {}", updateCustodyKeyDatesFeatureSwitch ? "ON" : "OFF");
+        this.featureSwitches = featureSwitches;
     }
 
     @Transactional(readOnly = true)
@@ -219,6 +218,11 @@ public class ConvictionService {
             throw new SingleActiveCustodyConvictionNotFoundException(offenderId, 0);
         }
 
+        // legacy behaviour - do not update multiple events
+        if (!featureSwitches.getNoms().getUpdate().getMultipleEvents().isUpdateKeyDates() && custodialEvents.size() > 1) {
+            throw new SingleActiveCustodyConvictionNotFoundException(offenderId, custodialEvents.size());
+        }
+
         val custodyKeyDateType = lookupSupplier.custodyKeyDateTypeSupplier().apply(typeCode)
             .orElseThrow(() -> new CustodyTypeCodeIsNotValidException(String.format("%s is not a valid custody key date", typeCode)));
 
@@ -263,6 +267,11 @@ public class ConvictionService {
         var custodialEvents = getAllActiveCustodialEvents(offenderId);
         if (custodialEvents.isEmpty()) {
             throw new SingleActiveCustodyConvictionNotFoundException(offenderId, 0);
+        }
+
+        // legacy behaviour - do not update multiple events
+        if (!featureSwitches.getNoms().getUpdate().getMultipleEvents().isUpdateKeyDates() && custodialEvents.size() > 1) {
+            throw new SingleActiveCustodyConvictionNotFoundException(offenderId, custodialEvents.size());
         }
 
         custodialEvents.forEach(event -> deleteCustodyKeyDate(event, typeCode, true));
