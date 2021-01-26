@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.ReferralSentRequest;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
@@ -67,6 +66,7 @@ public class ReferralServiceTest {
                                                "C116", // Contact Type
                                                "N00UATUW", // Staff Code
                                                "N00UAT",  // Team Code
+                                               "A test note", // Notes
                                                LocalDate.now()); // Date
 
         var offender = Offender.builder().offenderId(1L).build();

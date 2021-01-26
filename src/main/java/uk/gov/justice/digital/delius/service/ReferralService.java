@@ -58,6 +58,8 @@ public class ReferralService {
                   .probationArea(probationArea)
                   .teamProviderId(team.getTeamId())
                   .team(team)
-                  .staffEmployeeId(staff.getStaffId()).build());
+                  .staffEmployeeId(staff.getStaffId())
+                  .notes(referralSent.getNotes())
+                  .build());
     }
 }

@@ -26,6 +26,9 @@ public class ReferralSentRequest {
     @ApiModelProperty(required = true)
     private String teamCode;
 
+    @ApiModelProperty(required = false)
+    private String notes;
+
     @ApiModelProperty(required = true)
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate date;

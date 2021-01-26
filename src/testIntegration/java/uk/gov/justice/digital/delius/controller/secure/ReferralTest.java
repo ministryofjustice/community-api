@@ -48,6 +48,7 @@ public class ReferralTest extends IntegrationTestBase {
                                   .staffCode("N06AAFU")
                                   .teamCode("N05MKU")
                                   .date(LocalDate.now())
+                                  .notes("A test note")
                                   .build());
     }
 }
