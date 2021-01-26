@@ -5,6 +5,7 @@ import com.microsoft.applicationinsights.TelemetryClient;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -12,6 +13,7 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.digital.delius.config.FeatureSwitches;
 import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
 import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
@@ -35,6 +37,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aCustodyEvent;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aKeyDate;
@@ -74,7 +77,9 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
 
     @BeforeEach
     public void setUp() {
-        convictionService = new ConvictionService(true, eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient);
+        final var featureSwitches = new FeatureSwitches();
+        featureSwitches.getNoms().getUpdate().setKeyDates(true);
+        convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient, featureSwitches);
     }
 
 
@@ -277,24 +282,65 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
 
     }
 
-    @Test
-    @DisplayName("Will delete key dates for each active custodial event")
-    public void shouldAllowKeyDateToBeDeletedWhenMoreThanOneActiveCustodialEvent() {
-        val activeCustodyEvent1 = aCustodyEvent(1L, List.of(aKeyDate("POM1", "POM Handover expected start date")));
-        val activeCustodyEvent2 = aCustodyEvent(2L, List.of(aKeyDate("POM1", "POM Handover expected start date")));
+    @Nested
+    class WithMultipleEvents {
 
-        when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEvent1, activeCustodyEvent2));
+        @Nested
+        class WhenAllowMultipleEventUpdateFeatureSwitchOn {
+            @BeforeEach
+            void setUp() {
+                final var featureSwitches = new FeatureSwitches();
+                featureSwitches.getNoms().getUpdate().setCustody(true);
+                featureSwitches.getNoms().getUpdate().getMultipleEvents().setUpdateKeyDates(true);
+                convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient, featureSwitches);
+            }
 
-        convictionService.deleteCustodyKeyDateByOffenderId(999L, "POM1");
+            @Test
+            @DisplayName("Will delete key dates for each active custodial event")
+            public void shouldAllowKeyDateToBeDeletedWhenMoreThanOneActiveCustodialEvent() {
+                val activeCustodyEvent1 = aCustodyEvent(1L, List.of(aKeyDate("POM1", "POM Handover expected start date")));
+                val activeCustodyEvent2 = aCustodyEvent(2L, List.of(aKeyDate("POM1", "POM Handover expected start date")));
 
-        verify(eventRepository).save(activeCustodyEvent1);
-        verify(eventRepository).save(activeCustodyEvent2);
+                when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEvent1, activeCustodyEvent2));
 
-        verify(spgNotificationService).notifyDeletedCustodyKeyDate(any(), eq(activeCustodyEvent1));
-        verify(spgNotificationService).notifyDeletedCustodyKeyDate(any(), eq(activeCustodyEvent2));
+                convictionService.deleteCustodyKeyDateByOffenderId(999L, "POM1");
 
-        verify(telemetryClient, times(2)).trackEvent(eq("KeyDateDeleted"), any(), isNull());
+                verify(eventRepository).save(activeCustodyEvent1);
+                verify(eventRepository).save(activeCustodyEvent2);
+
+                verify(spgNotificationService).notifyDeletedCustodyKeyDate(any(), eq(activeCustodyEvent1));
+                verify(spgNotificationService).notifyDeletedCustodyKeyDate(any(), eq(activeCustodyEvent2));
+
+                verify(telemetryClient, times(2)).trackEvent(eq("KeyDateDeleted"), any(), isNull());
+            }
+        }
+
+        @Nested
+        class WhenAllowMultipleEventUpdateFeatureSwitchOff {
+            @BeforeEach
+            void setUp() {
+                final var featureSwitches = new FeatureSwitches();
+                featureSwitches.getNoms().getUpdate().getMultipleEvents().setUpdateKeyDates(false);
+                convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient, featureSwitches);
+            }
+
+            @Test
+            @DisplayName("Will not delete key dates for any active custodial event")
+            public void shouldNotAllowKeyDateToBeDeletedWhenMoreThanOneActiveCustodialEvent() {
+                val activeCustodyEvent1 = aCustodyEvent(1L, List.of(aKeyDate("POM1", "POM Handover expected start date")));
+                val activeCustodyEvent2 = aCustodyEvent(2L, List.of(aKeyDate("POM1", "POM Handover expected start date")));
+
+                when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEvent1, activeCustodyEvent2));
+
+                assertThatThrownBy(() -> convictionService.deleteCustodyKeyDateByOffenderId(999L, "POM1")).isInstanceOf(SingleActiveCustodyConvictionNotFoundException.class);
+
+                verify(eventRepository, never()).save(any());
+                verifyNoInteractions(spgNotificationService);
+                verifyNoInteractions(telemetryClient);
+            }
+        }
     }
+
 
     @Test
     public void shouldAllowKeyDateToBeDeletedByConvictionIdWhenEvenWhenCustodialEventIsNoLongerActive() {

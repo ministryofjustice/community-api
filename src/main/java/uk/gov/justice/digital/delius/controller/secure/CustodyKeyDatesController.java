@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import uk.gov.justice.digital.delius.config.FeatureSwitches;
 import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.CreateCustodyKeyDate;
@@ -41,11 +42,13 @@ import java.util.function.Function;
 public class CustodyKeyDatesController {
     private final OffenderService offenderService;
     private final ConvictionService convictionService;
+    private final FeatureSwitches featureSwitches;
 
     @Autowired
-    public CustodyKeyDatesController(OffenderService offenderService, ConvictionService convictionService) {
+    public CustodyKeyDatesController(OffenderService offenderService, ConvictionService convictionService, FeatureSwitches featureSwitches) {
         this.offenderService = offenderService;
         this.convictionService = convictionService;
+        this.featureSwitches = featureSwitches;
     }
 
     @RequestMapping(value = "offenders/crn/{crn}/custody/keyDates/{typeCode}", method = RequestMethod.PUT, consumes = "application/json")
@@ -94,6 +97,12 @@ public class CustodyKeyDatesController {
         final var activeCustodialEvents = convictionService.getAllActiveCustodialEventsWithBookingNumber(offenderId, bookingNumber);
         if (activeCustodialEvents.isEmpty()) {
             throw new NotFoundException(String.format("Conviction with bookingNumber %s not found for offender with NOMS number %s", bookingNumber, nomsNumber));
+        }
+
+        // legacy behaviour - do not update multiple events
+        if (activeCustodialEvents.size() > 1 && !featureSwitches.getNoms().getUpdate().getMultipleEvents().isUpdateBulkKeyDates()) {
+            log.warn("Multiple active custodial convictions found for {} for offender {}", bookingNumber, nomsNumber);
+            throw new NotFoundException(String.format("Single active conviction for %s with booking number %s not found. Instead has %d convictions", nomsNumber, bookingNumber, activeCustodialEvents.size()));
         }
 
         return activeCustodialEvents
