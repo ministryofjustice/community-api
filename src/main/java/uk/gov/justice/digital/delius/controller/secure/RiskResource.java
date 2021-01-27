@@ -19,9 +19,9 @@ import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.RiskService;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
+// TODO - DT-1542 Remove BETA from the API description once the service has been fully implemented
 @Api(tags = "Risks and Registrations")
 @RestController
 @Slf4j
@@ -33,7 +33,7 @@ public class RiskResource {
     private final OffenderService offenderService;
 
     @ApiOperation(
-        value = "Return the MAPPA details for an offender using offenderId", notes = "requires ROLE_COMMUNITY")
+        value = "*** BETA - coming soon *** Return the MAPPA details for an offender using offenderId", notes = "requires ROLE_COMMUNITY")
     @ApiResponses(
         value = {
             @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
@@ -48,7 +48,7 @@ public class RiskResource {
     }
 
     @ApiOperation(
-        value = "Return the MAPPA details for an offender using NOMS number", notes = "requires ROLE_COMMUNITY")
+        value = "*** BETA - coming soon *** Return the MAPPA details for an offender using NOMS number", notes = "requires ROLE_COMMUNITY")
     @ApiResponses(
         value = {
             @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
@@ -62,7 +62,7 @@ public class RiskResource {
     }
 
     @ApiOperation(
-        value = "Return the MAPPA details for an offender using CRN", notes = "requires ROLE_COMMUNITY")
+        value = "*** BETA - coming soon *** Return the MAPPA details for an offender using CRN", notes = "requires ROLE_COMMUNITY")
     @ApiResponses(
         value = {
             @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),

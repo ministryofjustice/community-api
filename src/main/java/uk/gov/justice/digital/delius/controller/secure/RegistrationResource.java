@@ -21,7 +21,7 @@ import uk.gov.justice.digital.delius.service.RegistrationService;
 
 import java.util.Optional;
 
-@Api(tags = "Risk and Registrations")
+@Api(tags = "Risks and Registrations")
 @RestController
 @Slf4j
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
