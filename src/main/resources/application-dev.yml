@@ -1,7 +1,4 @@
 spring:
-  profiles:
-    include: dev-seed
-
   jpa:
     properties:
       hibernate:
