@@ -5,10 +5,13 @@ ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
 
 WORKDIR /app
 ADD . .
-RUN ./gradlew clean assemble -Dorg.gradle.daemon=false
+RUN ./gradlew assemble -Dorg.gradle.daemon=false
 
 FROM openjdk:11-slim
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
+
+ARG BUILD_NUMBER
+ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
 
 RUN apt-get update && \
     apt-get install -y curl && \
@@ -24,7 +27,7 @@ WORKDIR /app
 
 COPY --from=builder --chown=appuser:appgroup /app/build/libs/community-api-*.jar /app/app.jar
 COPY --from=builder --chown=appuser:appgroup /app/build/libs/applicationinsights-agent*.jar /app/agent.jar
-COPY --from=builder --chown=appuser:appgroup /app/AI-Agent.xml /app
+COPY --from=builder --chown=appuser:appgroup /app/applicationinsights.json /app
 
 USER 2000
 
