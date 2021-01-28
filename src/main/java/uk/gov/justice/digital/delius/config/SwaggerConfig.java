@@ -46,7 +46,7 @@ public class SwaggerConfig {
                         new Tag("Documents", "Documents related to a offender and their sentence"),
                         new Tag("Sentence requirements and breach", "Offender sentence requires and breaches of those requirements"),
                         new Tag("Personal circumstances", "Offender personal circumstances, e.g. medical condition"),
-                        new Tag("Registrations", "Offender registers, e.g sex offenders register, TACT, MAPPA etc"),
+                        new Tag("Risks and Registrations", "Offender registers, e.g sex offenders register, TACT, MAPPA etc"),
                         new Tag("Authentication and users", "Authentication and authorisation endpoints for access roles and user details"),
                         new Tag("Court appearances", "Offender court appearances that have been recorded by probation"),
                         new Tag("Staff", "Staff related endpoints. Staff are typically offender managers and maybe users of Delius"),
