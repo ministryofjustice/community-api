@@ -10,6 +10,9 @@ spring:
       leak-detection-threshold: 20000
   profiles:
     include: stdout
+    group:
+      dev:
+        - "dev-seed"
 
   jpa:
     hibernate:
@@ -83,11 +86,6 @@ delius:
   baseurl: 'http://localhost:8999'
   username: 'default'
   password: 'default'
-
-azure:
-  application-insights:
-    web:
-      enable-W3C: true
 
 features:
   noms:
