@@ -38,7 +38,6 @@ public class RiskAPITest extends IntegrationTestBase {
 
         private Stream<Arguments> secureEndpoints() {
             return Stream.of(
-                Arguments.of("/offenders/offenderId/1/risk/mappa"),
                 Arguments.of("/offenders/nomsNumber/NOMS/risk/mappa"),
                 Arguments.of("/offenders/crn/CRN/risk/mappa")
             );
@@ -84,20 +83,6 @@ public class RiskAPITest extends IntegrationTestBase {
     class OffenderFound {
 
         @Test
-        void offenderIdFound_ok() {
-            when(offenderService.getOffenderByOffenderId(1L)).thenReturn(Optional.of(OffenderDetail.builder().offenderId(1L).build()));
-            when(riskService.getMappaDetails(1L)).thenReturn(someMappaDetails());
-
-            given()
-                .auth().oauth2(createJwt("ROLE_COMMUNITY"))
-                .contentType(APPLICATION_JSON_VALUE)
-                .when()
-                .get("/offenders/offenderId/1/risk/mappa")
-                .then()
-                .statusCode(200);
-        }
-
-        @Test
         void nomsNumberFound_ok() {
             when(offenderService.offenderIdOfNomsNumber("NOMS")).thenReturn(Optional.of(1L));
             when(riskService.getMappaDetails(1L)).thenReturn(someMappaDetails());
@@ -127,14 +112,14 @@ public class RiskAPITest extends IntegrationTestBase {
 
         @Test
         void mappaDetailsReturned() {
-            when(offenderService.getOffenderByOffenderId(1L)).thenReturn(Optional.of(OffenderDetail.builder().offenderId(1L).build()));
+            when(offenderService.offenderIdOfNomsNumber("NOMS")).thenReturn(Optional.of(1L));
             when(riskService.getMappaDetails(1L)).thenReturn(someMappaDetails());
 
             given()
                 .auth().oauth2(createJwt("ROLE_COMMUNITY"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .get("/offenders/offenderId/1/risk/mappa")
+                .get("/offenders/nomsNumber/NOMS/risk/mappa")
                 .then()
                 .statusCode(200)
                 .body("level", equalTo(1))
