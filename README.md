@@ -8,13 +8,13 @@ Spring Boot 2, Java 11 API for accessing Probation offenders information
 
 The service provides REST access to the Delius Oracle DB.
 
-Documentation for the various endpoints can be found on the test instance at
+Documentation including URLs for the various endpoints can be found on the test instance at
 https://community-api-public.test.delius.probation.hmpps.dsd.io/swagger-ui/index.html (VPN / trusted network required).
 We are in the process of switching to using HMPPS Auth for all the endpoints in the service, these are identified by
 (secure) after the name and are under `/secure` rather than `/api`.  The test instance is connected to the test instance
 of Delius and the dev (t3) instance of Auth.
 
-For credentials to access the test service or any questions on the service please ask at #dps_tech_team channel in slack - https://mojdt.slack.com/archives/CK0QLCQ1G.
+For credentials to access the test service or any questions on the service please ask at [#ask-hmpps-api in slack](https://mojdt.slack.com/archives/CR5ESQ8T1).
 
 ## Running locally
 
@@ -27,7 +27,7 @@ This will grab the latest versions of auth and community api and start both - au
 
 ## Testing locally
 
-We use [Postman](https://www.postman.com/) to test the API calls.  The swagger docs (http://localhost:8080/v2/api-docs?group=Community%20API)
+We use [Postman](https://www.postman.com/) to test the API calls.  The [swagger docs](http://localhost:8080/v2/api-docs?group=Community%20API)
 can be imported as a collection to make it easier to test out a single call. If using browser based postman, you may need to copy the response from that URL and import the collection as raw text.
 
 Calling the API is a two step process - obtaining a token from auth and then using the token in community API.  

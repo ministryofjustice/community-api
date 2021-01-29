@@ -33,4 +33,6 @@ public class Requirement {
     private Long length;
     @ApiModelProperty(value = "The temporal unit corresponding to the length field")
     private String lengthUnit;
+    @ApiModelProperty(value = "Is the main category restrictive")
+    private Boolean restrictive;
 }

@@ -33,8 +33,15 @@ public class RequirementTransformer {
                         .terminationReason(KeyValueTransformer.keyValueOf(req.getTerminationReason()))
                         .length(req.getLength())
                         .lengthUnit(lengthUnitOf(req))
+                        .restrictive(restrictiveOf(req.getRequirementTypeMainCategory()))
                         .build())
                 .orElse(null);
+    }
+
+    private static Boolean restrictiveOf(RequirementTypeMainCategory category) {
+        return Optional.ofNullable(category)
+            .map(cat -> "Y".equals(cat.getRestrictive()))
+        .orElse(null);
     }
 
     public static uk.gov.justice.digital.delius.data.api.PssRequirement pssRequirementOf(PssRequirement pssRequirement) {

@@ -27,4 +27,7 @@ public class RequirementTypeMainCategory {
     @JoinColumn(name = "UNITS_ID")
     @OneToOne
     private StandardReference units;
+
+    @Column(name="RESTRICTIVE")
+    private String restrictive;
 }
