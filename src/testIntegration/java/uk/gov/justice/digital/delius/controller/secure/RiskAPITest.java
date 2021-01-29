@@ -10,6 +10,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import uk.gov.justice.digital.delius.data.api.MappaDetails;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.data.api.ProbationArea;
+import uk.gov.justice.digital.delius.data.api.StaffHuman;
+import uk.gov.justice.digital.delius.data.api.Team;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.RiskService;
 
@@ -38,7 +41,6 @@ public class RiskAPITest extends IntegrationTestBase {
 
         private Stream<Arguments> secureEndpoints() {
             return Stream.of(
-                Arguments.of("/offenders/offenderId/1/risk/mappa"),
                 Arguments.of("/offenders/nomsNumber/NOMS/risk/mappa"),
                 Arguments.of("/offenders/crn/CRN/risk/mappa")
             );
@@ -84,20 +86,6 @@ public class RiskAPITest extends IntegrationTestBase {
     class OffenderFound {
 
         @Test
-        void offenderIdFound_ok() {
-            when(offenderService.getOffenderByOffenderId(1L)).thenReturn(Optional.of(OffenderDetail.builder().offenderId(1L).build()));
-            when(riskService.getMappaDetails(1L)).thenReturn(someMappaDetails());
-
-            given()
-                .auth().oauth2(createJwt("ROLE_COMMUNITY"))
-                .contentType(APPLICATION_JSON_VALUE)
-                .when()
-                .get("/offenders/offenderId/1/risk/mappa")
-                .then()
-                .statusCode(200);
-        }
-
-        @Test
         void nomsNumberFound_ok() {
             when(offenderService.offenderIdOfNomsNumber("NOMS")).thenReturn(Optional.of(1L));
             when(riskService.getMappaDetails(1L)).thenReturn(someMappaDetails());
@@ -127,28 +115,28 @@ public class RiskAPITest extends IntegrationTestBase {
 
         @Test
         void mappaDetailsReturned() {
-            when(offenderService.getOffenderByOffenderId(1L)).thenReturn(Optional.of(OffenderDetail.builder().offenderId(1L).build()));
+            when(offenderService.offenderIdOfNomsNumber("NOMS")).thenReturn(Optional.of(1L));
             when(riskService.getMappaDetails(1L)).thenReturn(someMappaDetails());
 
             given()
                 .auth().oauth2(createJwt("ROLE_COMMUNITY"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .get("/offenders/offenderId/1/risk/mappa")
+                .get("/offenders/nomsNumber/NOMS/risk/mappa")
                 .then()
                 .statusCode(200)
                 .body("level", equalTo(1))
                 .body("category", equalTo(3))
                 .body("startDate", equalTo(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)))
                 .body("reviewDate", equalTo(LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)))
-                .body("teamCode", equalTo("SOME_TEAM"))
-                .body("officerCode", equalTo("SOME_OFFICER"))
-                .body("probationAreaCode", equalTo("SOME_PROBATION_AREA"));
+                .body("team.code", equalTo("SOME_TEAM"))
+                .body("officer.code", equalTo("SOME_OFFICER"))
+                .body("probationArea.code", equalTo("SOME_PROBATION_AREA"));
         }
 
         @NotNull
         private MappaDetails someMappaDetails() {
-            return new MappaDetails(1, 3, LocalDate.now(), LocalDate.now().plusDays(1L), "SOME_TEAM", "SOME_OFFICER", "SOME_PROBATION_AREA");
+            return new MappaDetails(1, 3, LocalDate.now(), LocalDate.now().plusDays(1L), Team.builder().code("SOME_TEAM").build(), StaffHuman.builder().code("SOME_OFFICER").build(), ProbationArea.builder().code("SOME_PROBATION_AREA").build());
         }
     }
 }
