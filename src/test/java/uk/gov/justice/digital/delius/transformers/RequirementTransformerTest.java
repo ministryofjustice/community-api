@@ -17,17 +17,17 @@ public class RequirementTransformerTest {
     @Test
     public void whenGetPssRequirementsByConvictionId_thenReturnRequirements() {
         PssRequirement requirement = PssRequirement.builder()
-                .pssRequirementId(88L)
-                .pssRequirementTypeMainCategory(PssRequirementTypeMainCategory.builder()
-                        .description("Standard 7 Conditions")
-                        .code("A")
-                        .build())
-                .pssRequirementTypeSubCategory(PssRequirementTypeSubCategory.builder()
-                        .description("SubType")
-                        .code("B")
-                        .build())
-                .activeFlag(1L)
-                .build();
+            .pssRequirementId(88L)
+            .pssRequirementTypeMainCategory(PssRequirementTypeMainCategory.builder()
+                .description("Standard 7 Conditions")
+                .code("A")
+                .build())
+            .pssRequirementTypeSubCategory(PssRequirementTypeSubCategory.builder()
+                .description("SubType")
+                .code("B")
+                .build())
+            .activeFlag(1L)
+            .build();
         uk.gov.justice.digital.delius.data.api.PssRequirement pssRequirement = RequirementTransformer.pssRequirementOf(requirement);
 
         assertThat(pssRequirement.getType().getDescription()).isEqualTo("Standard 7 Conditions");
@@ -37,6 +37,12 @@ public class RequirementTransformerTest {
         assertThat(pssRequirement.getActive()).isEqualTo(true);
     }
 
+    @Test
+    public void nonRestrictiveRequirements() {
+        Requirement requirement = Requirement.builder().requirementTypeMainCategory(RequirementTypeMainCategory.builder().restrictive("N").build()).build();
+        uk.gov.justice.digital.delius.data.api.Requirement actual = RequirementTransformer.requirementOf(requirement);
+        assertThat(actual.getRestrictive()).isEqualTo(false);
+    }
 
     @Test
     public void whenGetRequirementsByConvictionId_thenReturnRequirements() {
@@ -46,31 +52,32 @@ public class RequirementTransformerTest {
         LocalDate terminationDate = LocalDate.of(2020, 4, 1);
         LocalDate expectedStartDate = LocalDate.of(2020, 5, 1);
         Requirement requirement = Requirement.builder()
-                .requirementId(88L)
-                .activeFlag(1L)
-                .commencementDate(commencementDate)
-                .expectedStartDate(expectedStartDate)
-                .expectedEndDate(expectedEndDate)
-                .startDate(startDate)
-                .terminationDate(terminationDate)
-                .length(6L)
-                .requirementNotes("Notes")
-                .adRequirementTypeMainCategory(AdRequirementTypeMainCategory.builder()
-                        .description("AdMain")
-                        .build())
-                .adRequirementTypeSubCategory(StandardReference.builder()
-                        .codeDescription("AdSub")
-                        .build())
-                .requirementTypeMainCategory(RequirementTypeMainCategory.builder()
-                        .description("Main")
-                        .units(StandardReference.builder()
-                                .codeDescription("Months")
-                                .build())
-                        .build())
-                .requirementTypeSubCategory(StandardReference.builder()
-                        .codeDescription("Sub")
-                        .build())
-                .build();
+            .requirementId(88L)
+            .activeFlag(1L)
+            .commencementDate(commencementDate)
+            .expectedStartDate(expectedStartDate)
+            .expectedEndDate(expectedEndDate)
+            .startDate(startDate)
+            .terminationDate(terminationDate)
+            .length(6L)
+            .requirementNotes("Notes")
+            .adRequirementTypeMainCategory(AdRequirementTypeMainCategory.builder()
+                .description("AdMain")
+                .build())
+            .adRequirementTypeSubCategory(StandardReference.builder()
+                .codeDescription("AdSub")
+                .build())
+            .requirementTypeMainCategory(RequirementTypeMainCategory.builder()
+                .description("Main")
+                .units(StandardReference.builder()
+                    .codeDescription("Months")
+                    .build())
+                .restrictive("Y")
+                .build())
+            .requirementTypeSubCategory(StandardReference.builder()
+                .codeDescription("Sub")
+                .build())
+            .build();
         uk.gov.justice.digital.delius.data.api.Requirement pssRequirement = RequirementTransformer.requirementOf(requirement);
 
         assertThat(pssRequirement.getRequirementId()).isEqualTo(88L);
@@ -87,6 +94,7 @@ public class RequirementTransformerTest {
         assertThat(pssRequirement.getAdRequirementTypeSubCategory().getDescription()).isEqualTo("AdSub");
         assertThat(pssRequirement.getRequirementTypeMainCategory().getDescription()).isEqualTo("Main");
         assertThat(pssRequirement.getRequirementTypeSubCategory().getDescription()).isEqualTo("Sub");
+        assertThat(pssRequirement.getRestrictive()).isEqualTo(true);
     }
 
 }
