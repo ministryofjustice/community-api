@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.delius.config;
 
 import com.microsoft.applicationinsights.TelemetryClient;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.*;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
@@ -10,21 +12,12 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * we don't get a telemetry bean and application won't start.  Therefore need this backup configuration.
  */
 @Configuration
+@Log4j2
 public class ApplicationInsightsConfiguration {
-
-
     @Bean
-    @Conditional(AppInsightKeyAbsentCondition.class)
+    @ConditionalOnExpression("T(org.apache.commons.lang3.StringUtils).isBlank('${applicationinsights.connection.string:}')")
     public TelemetryClient telemetryClient() {
+        log.warn("Application insights configuration missing, returning dummy bean instead");
         return new TelemetryClient();
-    }
-
-    private static class AppInsightKeyAbsentCondition implements Condition {
-
-        @Override
-        public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-            final var telemetryKey = context.getEnvironment().getProperty("appinsights.instrumentationkey");
-            return StringUtils.isBlank(telemetryKey);
-        }
     }
 }
