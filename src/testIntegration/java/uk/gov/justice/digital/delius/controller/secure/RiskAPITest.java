@@ -10,6 +10,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import uk.gov.justice.digital.delius.data.api.MappaDetails;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.data.api.ProbationArea;
+import uk.gov.justice.digital.delius.data.api.StaffHuman;
+import uk.gov.justice.digital.delius.data.api.Team;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.RiskService;
 
@@ -126,14 +129,14 @@ public class RiskAPITest extends IntegrationTestBase {
                 .body("category", equalTo(3))
                 .body("startDate", equalTo(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)))
                 .body("reviewDate", equalTo(LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)))
-                .body("teamCode", equalTo("SOME_TEAM"))
-                .body("officerCode", equalTo("SOME_OFFICER"))
-                .body("probationAreaCode", equalTo("SOME_PROBATION_AREA"));
+                .body("team.code", equalTo("SOME_TEAM"))
+                .body("officer.code", equalTo("SOME_OFFICER"))
+                .body("probationArea.code", equalTo("SOME_PROBATION_AREA"));
         }
 
         @NotNull
         private MappaDetails someMappaDetails() {
-            return new MappaDetails(1, 3, LocalDate.now(), LocalDate.now().plusDays(1L), "SOME_TEAM", "SOME_OFFICER", "SOME_PROBATION_AREA");
+            return new MappaDetails(1, 3, LocalDate.now(), LocalDate.now().plusDays(1L), Team.builder().code("SOME_TEAM").build(), StaffHuman.builder().code("SOME_OFFICER").build(), ProbationArea.builder().code("SOME_PROBATION_AREA").build());
         }
     }
 }
