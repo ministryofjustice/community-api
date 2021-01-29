@@ -60,7 +60,7 @@ public class RiskResource {
         return mappaDetailsFor(offenderService.offenderIdOfCrn(crn));
     }
 
-    private MappaDetails mappaDetailsFor(Optional<Long> maybeOffenderId) {
+    private MappaDetails mappaDetailsFor(final Optional<Long> maybeOffenderId) {
         return maybeOffenderId
             .map(riskService::getMappaDetails)
             .orElseThrow(() -> new NotFoundException("Offender not found"));
