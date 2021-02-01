@@ -342,12 +342,12 @@ public class ConvictionTransformerTest {
     public void sentenceType(){
         Event event = EntityHelper.anEvent().toBuilder()
             .disposal(Disposal.builder()
-                .disposalType(DisposalType.builder().sentenceType("SC").build())
+                .disposalType(DisposalType.builder().sentenceType("SC").description("SC Description").build())
                 .build())
             .build();
         final var conviction = ConvictionTransformer.convictionOf(event);
-        assertThat(conviction.getSentence().getSentenceType()).isEqualTo("SC");
-
+        assertThat(conviction.getSentence().getSentenceType().getCode()).isEqualTo("SC");
+        assertThat(conviction.getSentence().getSentenceType().getDescription()).isEqualTo("SC Description");
     }
 
     @Nested

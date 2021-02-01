@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius.controller.secure;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.Conviction;
+import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Offence;
 
 import java.util.stream.Stream;
@@ -30,7 +31,9 @@ public class OffendersResource_getOffenderConvictionsByCrn extends IntegrationTe
         final var conviction = Stream.of(convictions).filter(Conviction::getActive).findAny().orElseThrow();
         final var offence = conviction.getOffences().stream().filter(Offence::getMainOffence).findAny().orElseThrow();
         assertThat(offence.getDetail().getCode()).isEqualTo("00102");
-        assertThat(conviction.getSentence().getSentenceType()).isEqualTo("SC");
+        KeyValue sentenceType = conviction.getSentence().getSentenceType();
+        assertThat(sentenceType.getCode()).isEqualTo("SC");
+        assertThat(sentenceType.getDescription()).isEqualTo("CJA - Indeterminate Public Prot.");
     }
 
     @Test
