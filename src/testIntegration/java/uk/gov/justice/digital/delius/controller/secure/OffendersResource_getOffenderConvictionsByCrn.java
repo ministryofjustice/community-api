@@ -30,6 +30,7 @@ public class OffendersResource_getOffenderConvictionsByCrn extends IntegrationTe
         final var conviction = Stream.of(convictions).filter(Conviction::getActive).findAny().orElseThrow();
         final var offence = conviction.getOffences().stream().filter(Offence::getMainOffence).findAny().orElseThrow();
         assertThat(offence.getDetail().getCode()).isEqualTo("00102");
+        assertThat(conviction.getSentence().getSentenceType()).isEqualTo("SC");
     }
 
     @Test
@@ -48,6 +49,7 @@ public class OffendersResource_getOffenderConvictionsByCrn extends IntegrationTe
 
         final var offence = conviction.getOffences().stream().filter(Offence::getMainOffence).findAny().orElseThrow();
         assertThat(offence.getDetail().getCode()).isEqualTo("05600");
+
     }
 
     @Test
