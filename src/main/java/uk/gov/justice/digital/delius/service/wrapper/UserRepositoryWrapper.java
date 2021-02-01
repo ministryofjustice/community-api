@@ -23,9 +23,7 @@ public class UserRepositoryWrapper {
 
     @NationalUserOverride
     public User getUser(final String userDistinguishedName) {
-        log.info("Looking up user by distinguished name {}...", userDistinguishedName);
         final var maybeUser = userRepository.findByDistinguishedNameIgnoreCase(userDistinguishedName);
-        log.info("... found {}: {}", userDistinguishedName, maybeUser.isPresent());
         return maybeUser.orElseThrow(() -> new NoSuchUserException("Can't resolve user: " + userDistinguishedName));
     }
 

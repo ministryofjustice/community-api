@@ -27,7 +27,6 @@ public class OffenderUpdatesService {
         var maybeOffenderUpdate = lockNext(offenderDeltaService::lockNextUpdate);
         if (maybeOffenderUpdate.isEmpty()) {
             maybeOffenderUpdate = lockNext(offenderDeltaService::lockNextFailedUpdate);
-            log.info("Attempted to lock a failed offender update, found {} ", maybeOffenderUpdate.isPresent() ? maybeOffenderUpdate.get().getOffenderDeltaId() : "nothing");
         }
         return maybeOffenderUpdate;
     }

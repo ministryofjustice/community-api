@@ -108,3 +108,5 @@ user-access:
   scopes:
     dont-apply-exclusions-for: "SCOPE_IGNORE_DELIUS_EXCLUSIONS_ALWAYS"
     dont-apply-restrictions-for: "SCOPE_IGNORE_DELIUS_INCLUSIONS_ALWAYS"
+
+applicationinsights.connection.string: "InstrumentationKey=${APPINSIGHTS_INSTRUMENTATIONKEY}"
