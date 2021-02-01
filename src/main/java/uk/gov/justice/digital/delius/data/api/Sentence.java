@@ -30,4 +30,6 @@ public class Sentence {
     private LocalDate startDate;
     private LocalDate terminationDate;
     private String terminationReason;
+    @ApiModelProperty(value = "Type of sentence")
+    private String sentenceType;
 }

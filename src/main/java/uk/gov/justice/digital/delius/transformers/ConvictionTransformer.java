@@ -147,6 +147,7 @@ public class ConvictionTransformer {
                         .orElse(null))
                 .expectedSentenceEndDate(Optional.ofNullable(disposal.getEnteredSentenceEndDate())
                         .orElse(disposal.getExpectedSentenceEndDate()))
+                .sentenceType(disposal.getDisposalType().getSentenceType())
                 .build();
     }
 
