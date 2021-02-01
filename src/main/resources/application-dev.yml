@@ -19,3 +19,5 @@ logging.level.org.hibernate.SQL: DEBUG
 
 features:
   apply-limited-access-markers: true
+
+applicationinsights.connection.string: ""

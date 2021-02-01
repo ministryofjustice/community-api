@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Import({ClientTrackingInterceptor.class, ClientTrackingConfiguration.class})
 @ContextConfiguration(initializers = {ConfigDataApplicationContextInitializer.class})
-@ActiveProfiles("test")
+@ActiveProfiles("dev")
 @ExtendWith(SpringExtension.class)
 class ClientTrackingConfigurationTest {
     @Autowired
