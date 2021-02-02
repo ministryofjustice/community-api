@@ -15,9 +15,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MappaDetails {
-    @ApiModelProperty(value = "MAPPA Level", example = "1")
+    @ApiModelProperty(value = "MAPPA Level", example = "1", allowableValues = "0,1,2,3")
     private Integer level;
-    @ApiModelProperty(value = "MAPPA Category", example = "3")
+    @ApiModelProperty(value = "MAPPA Category", example = "3", allowableValues = "0,1,2,3")
     private Integer category;
     @ApiModelProperty(value = "Start date", example = "2021-01-27")
     private LocalDate startDate;
