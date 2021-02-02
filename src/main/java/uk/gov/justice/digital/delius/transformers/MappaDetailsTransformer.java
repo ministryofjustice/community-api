@@ -7,8 +7,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Registration;
 
 import java.util.Arrays;
 
-import static java.lang.String.format;
-
 
 public class MappaDetailsTransformer {
 
@@ -19,7 +17,9 @@ public class MappaDetailsTransformer {
         final var probationArea = registration.getRegisteringTeam().getProbationArea();
         return MappaDetails.builder()
             .level(MappaLevel.toCommunityLevel(registration.getRegisterLevel().getCodeValue()))
+            .levelDescription(registration.getRegisterLevel().getCodeDescription())
             .category(MappaCategory.toCommunityCategory(registration.getRegisterCategory().getCodeValue()))
+            .categoryDescription(registration.getRegisterCategory().getCodeDescription())
             .startDate(registration.getRegistrationDate())
             .reviewDate(registration.getNextReviewDate())
             .team(KeyValue.builder().code(team.getCode()).description(team.getDescription()).build())
@@ -49,12 +49,12 @@ public class MappaDetailsTransformer {
                 .filter(level -> level.deliusValue.equals(deliusLevel))
                 .findFirst()
                 .map(level -> level.communityValue)
-                .orElseThrow(() -> new IllegalArgumentException(format("Did not expect Delius MAPPA level %s", deliusLevel)));
+                .orElseGet(() -> NOMINAL.communityValue);
         }
     }
 
     enum MappaCategory {
-        NOMINAL(0, "M0"),
+        NOMINAL(0, "X9"),
         ONE(1, "M1"),
         TWO(2, "M2"),
         THREE(3, "M3");
@@ -72,7 +72,7 @@ public class MappaDetailsTransformer {
                 .filter(category -> category.deliusValue.equals(deliusCategory))
                 .findFirst()
                 .map(category -> category.communityValue)
-                .orElseThrow(() -> new IllegalArgumentException(format("Did not expect Delius MAPPA category %s", deliusCategory)));
+                .orElseGet(() -> NOMINAL.communityValue);
         }
     }
 
