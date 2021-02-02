@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.MappaDetails;
@@ -15,8 +16,10 @@ public class RiskService {
     }
 
     public MappaDetails getMappaDetails(Long offenderId) {
-        final var reg = registrationRepository.findActiveMappaRegistrationByOffenderId(offenderId);
-        return reg.map(registration -> MappaDetailsTransformer.mappaDetailsOf(registration))
-            .orElseThrow(() -> new NotFoundException("MAPPA details for offender not found"));
+        final var reg = registrationRepository.findActiveMappaRegistrationByOffenderId(offenderId, PageRequest.of(0, 1));
+            return reg.stream()
+                .findFirst()
+                .map(registration -> MappaDetailsTransformer.mappaDetailsOf(registration))
+                .orElseThrow(() -> new NotFoundException("MAPPA details for offender not found"));
     }
 }
