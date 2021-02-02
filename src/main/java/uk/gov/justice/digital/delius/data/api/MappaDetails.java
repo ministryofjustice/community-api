@@ -24,9 +24,11 @@ public class MappaDetails {
     @ApiModelProperty(value = "Next review date", example = "2021-04-27")
     private LocalDate reviewDate;
     @ApiModelProperty(value = "Team")
-    private Team team;
+    private KeyValue team;
     @ApiModelProperty(value = "Officer")
     private StaffHuman officer;
     @ApiModelProperty(value = "Probation area")
-    private ProbationArea probationArea;
+    private KeyValue probationArea;
+    @ApiModelProperty(value = "Notes")
+    private String notes;
 }

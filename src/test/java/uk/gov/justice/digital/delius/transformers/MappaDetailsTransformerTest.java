@@ -31,10 +31,11 @@ public class MappaDetailsTransformerTest {
             .registeringStaff(Staff.builder().officerCode("N02AAMU").forename("Unallocated").surname("Staff").build())
             .registerLevel(StandardReference.builder().codeValue("M2").codeDescription("MAPPA Level 2").build())
             .registerCategory(StandardReference.builder().codeValue("M2").codeDescription("MAPPA Cat 2").build())
+            .registrationNotes("X320741 registering MAPPA cat 2 level 2")
             .softDeleted(0L)
             .build();
 
-        MappaDetails mappaDetails = MappaDetailsTransformer.transform(registration);
+        MappaDetails mappaDetails = MappaDetailsTransformer.mappaDetailsOf(registration);
 
         assertThat(mappaDetails.getLevel()).isEqualTo(2);
         assertThat(mappaDetails.getCategory()).isEqualTo(2);
@@ -43,7 +44,6 @@ public class MappaDetailsTransformerTest {
         assertThat(mappaDetails.getTeam()).isEqualTo(KeyValue.builder().code("N02AAM").description("OMIC OMU A").build());
         assertThat(mappaDetails.getOfficer()).isEqualTo(StaffHuman.builder().code("N02AAMU").forenames("Unallocated").surname("Staff").build());
         assertThat(mappaDetails.getProbationArea()).isEqualTo(KeyValue.builder().code("NPS").description("NPS North East").build());
-
-
+        assertThat(mappaDetails.getNotes()).isEqualTo("X320741 registering MAPPA cat 2 level 2");
     }
 }

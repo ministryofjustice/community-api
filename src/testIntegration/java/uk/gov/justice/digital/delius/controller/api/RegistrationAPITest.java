@@ -14,6 +14,7 @@ import uk.gov.justice.digital.delius.data.api.Registration;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.user.UserData;
 
+import java.util.List;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
@@ -54,7 +55,7 @@ public class RegistrationAPITest {
             .body()
             .as(Registration[].class);
 
-        assertThat(registrations).extracting(Registration::getRegistrationId).containsExactlyInAnyOrder(2500094761L, 2500094760L);
+        assertThat(registrations).extracting(Registration::getRegistrationId).containsAll(List.of(2500094761L, 2500094760L));
     }
 
     @Test
