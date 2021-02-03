@@ -147,7 +147,12 @@ public class ConvictionTransformer {
                         .orElse(null))
                 .expectedSentenceEndDate(Optional.ofNullable(disposal.getEnteredSentenceEndDate())
                         .orElse(disposal.getExpectedSentenceEndDate()))
+                .sentenceType(sentenceTypeOf(disposal.getDisposalType()))
                 .build();
+    }
+
+    private static KeyValue sentenceTypeOf(DisposalType disposalType) {
+        return new KeyValue(disposalType.getSentenceType(), disposalType.getDescription());
     }
 
     private static UnpaidWork unpaidWorkOf(UpwDetails upwDetails) {
