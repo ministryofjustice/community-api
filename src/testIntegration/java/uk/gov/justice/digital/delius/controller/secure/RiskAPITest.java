@@ -1,39 +1,22 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-import uk.gov.justice.digital.delius.data.api.MappaDetails;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
-import uk.gov.justice.digital.delius.data.api.ProbationArea;
-import uk.gov.justice.digital.delius.data.api.StaffHuman;
-import uk.gov.justice.digital.delius.data.api.Team;
-import uk.gov.justice.digital.delius.service.OffenderService;
-import uk.gov.justice.digital.delius.service.RiskService;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
-import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class RiskAPITest extends IntegrationTestBase {
-
-    @SpyBean
-    private OffenderService offenderService;
-
-    @SpyBean
-    private RiskService riskService;
 
     @Nested
     @TestInstance(PER_CLASS)
@@ -68,18 +51,38 @@ public class RiskAPITest extends IntegrationTestBase {
                 .then()
                 .statusCode(403);
         }
+    }
 
-        @ParameterizedTest
-        @MethodSource("secureEndpoints")
-        void noOffender_notFound(String uri) {
+
+    @Nested
+    class NotFound {
+
+        @Test
+        void noOffender_notFound() {
             given()
                 .auth().oauth2(createJwt("ROLE_COMMUNITY"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .get(uri)
+                .get("/offenders/nomsNumber/UNKNOWN_OFFENDER/risk/mappa")
                 .then()
-                .statusCode(404);
+                .statusCode(404)
+                .body("status", equalTo(404))
+                .body("developerMessage", equalTo("Offender not found"));
         }
+
+        @Test
+        void noMappaDetails_notFound() {
+            given()
+                .auth().oauth2(createJwt("ROLE_COMMUNITY"))
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/nomsNumber/G9642VP/risk/mappa")
+                .then()
+                .statusCode(404)
+                .body("status", equalTo(404))
+                .body("developerMessage", equalTo("MAPPA details for offender not found"));
+        }
+
     }
 
     @Nested
@@ -87,56 +90,50 @@ public class RiskAPITest extends IntegrationTestBase {
 
         @Test
         void nomsNumberFound_ok() {
-            when(offenderService.offenderIdOfNomsNumber("NOMS")).thenReturn(Optional.of(1L));
-            when(riskService.getMappaDetails(1L)).thenReturn(someMappaDetails());
-
             given()
                 .auth().oauth2(createJwt("ROLE_COMMUNITY"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .get("/offenders/nomsNumber/NOMS/risk/mappa")
+                .get("/offenders/nomsNumber/G9542VP/risk/mappa")
                 .then()
                 .statusCode(200);
         }
 
         @Test
         void crnFound_ok() {
-            when(offenderService.offenderIdOfCrn("CRN")).thenReturn(Optional.of(1L));
-            when(riskService.getMappaDetails(1L)).thenReturn(someMappaDetails());
-
             given()
                 .auth().oauth2(createJwt("ROLE_COMMUNITY"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .get("/offenders/crn/CRN/risk/mappa")
+                .get("/offenders/crn/X320741/risk/mappa")
                 .then()
                 .statusCode(200);
         }
 
         @Test
         void mappaDetailsReturned() {
-            when(offenderService.offenderIdOfNomsNumber("NOMS")).thenReturn(Optional.of(1L));
-            when(riskService.getMappaDetails(1L)).thenReturn(someMappaDetails());
-
             given()
                 .auth().oauth2(createJwt("ROLE_COMMUNITY"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .get("/offenders/nomsNumber/NOMS/risk/mappa")
+                .get("/offenders/nomsNumber/G9542VP/risk/mappa")
                 .then()
                 .statusCode(200)
-                .body("level", equalTo(1))
-                .body("category", equalTo(3))
-                .body("startDate", equalTo(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)))
-                .body("reviewDate", equalTo(LocalDate.now().plusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)))
-                .body("team.code", equalTo("SOME_TEAM"))
-                .body("officer.code", equalTo("SOME_OFFICER"))
-                .body("probationArea.code", equalTo("SOME_PROBATION_AREA"));
+                .body("level", equalTo(2))
+                .body("levelDescription", equalTo("MAPPA Level 2"))
+                .body("category", equalTo(2))
+                .body("categoryDescription", equalTo("MAPPA Cat 2"))
+                .body("startDate", equalTo(LocalDate.of(2021, 2, 1).format(ISO_LOCAL_DATE)))
+                .body("reviewDate", equalTo(LocalDate.of(2021, 5, 1).format(ISO_LOCAL_DATE)))
+                .body("team.code", equalTo("N02AAM"))
+                .body("team.description", equalTo("OMIC OMU A "))
+                .body("officer.code", equalTo("N02AAMU"))
+                .body("officer.forenames", equalTo("Unallocated"))
+                .body("officer.surname", equalTo("Staff"))
+                .body("probationArea.code", equalTo("N02"))
+                .body("probationArea.description", equalTo("NPS North East"))
+                .body("notes", equalTo("X320741 registering MAPPA cat 2 level 2"));
         }
 
-        @NotNull
-        private MappaDetails someMappaDetails() {
-            return new MappaDetails(1, 3, LocalDate.now(), LocalDate.now().plusDays(1L), Team.builder().code("SOME_TEAM").build(), StaffHuman.builder().code("SOME_OFFICER").build(), ProbationArea.builder().code("SOME_PROBATION_AREA").build());
-        }
     }
 }
