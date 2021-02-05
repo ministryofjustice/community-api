@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius.service;
 
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
+import uk.gov.justice.digital.delius.data.api.UpdateOffenderDetails;
 import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StandardReferenceRepository;
@@ -38,5 +39,15 @@ public class SmokeTestHelperService {
         custody.setInstitution(institutionRepository.findByCode("UNKNOW").orElseThrow());
         custody.setCustodialStatus(standardReferenceRepository.findByCodeAndCodeSetName(SENTENCED_IN_CUSTODY, CUSTODY_STATUS_DATASET).orElseThrow());
         offender.setNomsNumber(null);
+    }
+
+    @Transactional
+    public void updateOffenderDetails(String crn, UpdateOffenderDetails offenderDetails) {
+        final var offender = offenderRepository
+            .findByCrn(crn)
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
+
+        offender.setFirstName(offenderDetails.getFirstName());
+        offender.setSurname(offenderDetails.getSurname());
     }
 }
