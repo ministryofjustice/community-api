@@ -109,7 +109,7 @@ public class CourtAppearance {
     @JoinColumn(name = "APPEARANCE_TYPE_ID", insertable = false, updatable = false)
     private StandardReference appearanceType;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "OFFENDER_ID", insertable = false, updatable = false)
-    @ManyToOne
     private Offender offender;
 }

@@ -5,10 +5,11 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.data.api.CourtAppearance;
-import uk.gov.justice.digital.delius.data.api.CourtAppearanceBasic;
 import uk.gov.justice.digital.delius.data.api.CourtAppearanceBasicWrapper;
+import uk.gov.justice.digital.delius.data.api.CourtAppearanceMinimal;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CourtAppearanceRepository;
 import uk.gov.justice.digital.delius.transformers.CourtAppearanceBasicTransformer;
+import uk.gov.justice.digital.delius.transformers.CourtAppearanceMinimalTransformer;
 import uk.gov.justice.digital.delius.transformers.CourtAppearanceTransformer;
 
 import java.time.LocalDate;
@@ -53,14 +54,14 @@ public class CourtAppearanceService {
             .map(CourtAppearanceBasicWrapper::new);
     }
 
-    public List<CourtAppearanceBasic> courtAppearances(LocalDate fromDate) {
+    public List<CourtAppearanceMinimal> courtAppearances(LocalDate fromDate) {
 
         var courtAppearances = courtAppearanceRepository.findByAppearanceDateGreaterThanEqual(fromDate.atStartOfDay());
         return courtAppearances
                 .stream()
                 .filter(courtAppearance -> !convertToBoolean(courtAppearance.getSoftDeleted()))
                 .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance::getAppearanceDate))
-                .map(CourtAppearanceBasicTransformer::courtAppearanceOf)
+                .map(CourtAppearanceMinimalTransformer::courtAppearanceOf)
                 .collect(toList());
     }
 
