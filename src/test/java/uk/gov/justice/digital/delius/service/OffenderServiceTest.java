@@ -81,6 +81,22 @@ class OffenderServiceTest {
                 verify(telemetryClient).trackEvent("TierUpdateFailureTierNotFound", telemetryProperties, null);
             }
         }
+
+        @Test
+        @DisplayName("fires failure telemetry event when offender not found")
+        void firesFailureTelemetryEventWhenOffenderNotFound() {
+            String crn = "NOTFOUND";
+            String tier = "A1";
+            final var telemetryProperties = Map.of(
+                "tier", tier, "crn", crn);
+            when(offenderRepository.findByCrn(crn)).thenReturn(Optional.ofNullable(null));
+            try {
+                service.updateTier(crn, tier);
+                fail("Should have thrown a NotFoundException");
+            } catch (NotFoundException e) {
+                verify(telemetryClient).trackEvent("TierUpdateFailureOffenderNotFound", telemetryProperties, null);
+            }
+        }
     }
 
     @Nested

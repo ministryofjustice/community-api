@@ -221,6 +221,9 @@ public class OffenderService {
                telemetryClient.trackEvent("TierUpdateFailureTierNotFound", telemetryProperties, null);
                return new NotFoundException(String.format("Tier %s not found",tier));
            }))
-           .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN %s not found",crn)));
+           .orElseThrow(() -> {
+               telemetryClient.trackEvent("TierUpdateFailureOffenderNotFound", telemetryProperties, null);
+               return new NotFoundException(String.format("Offender with CRN %s not found",crn));
+           });
     }
 }
