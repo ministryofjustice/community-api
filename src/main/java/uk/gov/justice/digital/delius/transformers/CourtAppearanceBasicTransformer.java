@@ -19,7 +19,7 @@ public class CourtAppearanceBasicTransformer {
             .build();
     }
 
-    private static KeyValue appearanceTypeOf(StandardReference establishmentType) {
+    static KeyValue appearanceTypeOf(StandardReference establishmentType) {
         return Optional.ofNullable(establishmentType).map(et -> KeyValue.builder()
                 .code(et.getCodeValue())
                 .description(et.getCodeDescription())
