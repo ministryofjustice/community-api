@@ -176,7 +176,7 @@ public class ReferenceDataService {
                     final var ldus = pa.getBoroughs().stream()
                             // LDUs are represented as districts in the delius schema
                             .flatMap(borough -> borough.getDistricts().stream())
-                            .filter(district -> ynToBoolean(district.getSelectable())) // current (non-historic) only
+                            .filter(district -> getPossibleActiveLdus(district)) // current (non-historic) only
                             .map(ldu -> LocalDeliveryUnit.builder().localDeliveryUnitId(ldu.getDistrictId()).code(ldu.getCode()).description(ldu.getDescription()).build())
                             .collect(toList());
 
@@ -185,5 +185,9 @@ public class ReferenceDataService {
 
                 }
         ).collect(toList());
+    }
+
+    private boolean getPossibleActiveLdus(District district) {
+        return ynToBoolean(district.getSelectable()) || district.getCode().endsWith("UAT") || district.getCode().endsWith("UNA") || district.getCode().endsWith("IAV");
     }
 }

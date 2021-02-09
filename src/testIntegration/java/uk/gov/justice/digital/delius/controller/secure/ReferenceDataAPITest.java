@@ -295,7 +295,7 @@ public class ReferenceDataAPITest extends IntegrationTestBase {
                         .then()
                         .assertThat()
                         .body("size()", is(45))
-                        .body(String.format("find { it.code == \"%s\" }.localDeliveryUnits.size()",ACTIVE_PROBATION_AREA), is(72))
+                        .body(String.format("find { it.code == \"%s\" }.localDeliveryUnits.size()",ACTIVE_PROBATION_AREA), is(74))
                         .body(String.format("find { it.code == \"%s\" }.localDeliveryUnits[0].code",ACTIVE_PROBATION_AREA), notNullValue())
                         .body(String.format("find { it.code == \"%s\" }",INACTIVE_PROBATION_AREA), nullValue());
             }
