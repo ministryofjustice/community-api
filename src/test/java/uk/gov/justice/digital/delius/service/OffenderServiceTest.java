@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderPrimaryIdentifiersRepository;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,7 +61,25 @@ class OffenderServiceTest {
             when(standardReferenceRepository.findByCodeAndCodeSetName(tier, "TIER")).thenReturn(Optional.of(new StandardReference()));
             when(offenderRepository.save(offender.get())).thenReturn(anOffender());
             service.updateTier(crn, tier);
-            verify(telemetryClient).trackEvent("TierUpdated", telemetryProperties, null);
+            verify(telemetryClient).trackEvent("TierUpdateSuccess", telemetryProperties, null);
+        }
+
+        @Test
+        @DisplayName("fires failure telemetry event when tier not found")
+        void firesFailureTelemetryEventWhenTierNotFound() {
+            String crn = "X123456";
+            String tier = "NOTFOUND";
+            final var telemetryProperties = Map.of(
+                "tier", tier, "crn", crn);
+            Optional<Offender> offender = Optional.of(anOffender());
+            when(offenderRepository.findByCrn(crn)).thenReturn(offender);
+            when(standardReferenceRepository.findByCodeAndCodeSetName(tier, "TIER")).thenReturn(Optional.ofNullable(null));
+            try {
+                service.updateTier(crn, tier);
+                fail("Should have thrown a NotFoundException");
+            } catch (NotFoundException e) {
+                verify(telemetryClient).trackEvent("TierUpdateFailureTierNotFound", telemetryProperties, null);
+            }
         }
     }
 

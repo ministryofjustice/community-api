@@ -214,10 +214,13 @@ public class OffenderService {
        return offenderRepository.findByCrn(crn).map(offender -> standardReferenceRepository.findByCodeAndCodeSetName(tier, "TIER").map(t -> {
            offender.setCurrentTier(t);
            Offender updated = offenderRepository.save(offender);
-           telemetryClient.trackEvent("TierUpdated", telemetryProperties, null);
+           telemetryClient.trackEvent("TierUpdateSuccess", telemetryProperties, null);
            return OffenderTransformer.fullOffenderOf(updated);
        })
-           .orElseThrow(() -> new NotFoundException(String.format("Tier %s not found",tier))))
+           .orElseThrow(() -> {
+               telemetryClient.trackEvent("TierUpdateFailureTierNotFound", telemetryProperties, null);
+               return new NotFoundException(String.format("Tier %s not found",tier));
+           }))
            .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN %s not found",crn)));
     }
 }
