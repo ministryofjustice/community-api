@@ -6,6 +6,7 @@ public class CourtAppearanceMinimalTransformer {
 
     public static CourtAppearanceMinimal courtAppearanceOf(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance courtAppearance) {
         return CourtAppearanceMinimal.builder()
+            .offenderId(courtAppearance.getOffenderId())
             .courtAppearanceId(courtAppearance.getCourtAppearanceId())
             .appearanceDate(courtAppearance.getAppearanceDate())
             .courtCode(courtAppearance.getCourt().getCode())

@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CourtAppearanceMinimal {
+    private Long offenderId;
     private Long courtAppearanceId;
     private LocalDateTime appearanceDate;
     private String courtCode;

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.justice.digital.delius.data.api.CourtAppearanceBasic;
 import uk.gov.justice.digital.delius.data.api.CourtAppearanceBasicWrapper;
+import uk.gov.justice.digital.delius.data.api.CourtAppearanceMinimalWrapper;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,8 +44,9 @@ public class CourtAppearancesAPITest extends IntegrationTestBase {
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(CourtAppearanceBasicWrapper.class);
+                .as(CourtAppearanceMinimalWrapper.class);
             assertThat(result.getCourtAppearances()).extracting("courtAppearanceId").containsExactly(2500316926L, 2500319107L);
+            assertThat(result.getCourtAppearances()).extracting("offenderId").containsExactly(2500343964L, 2500343964L);
         }
 
         @Test
