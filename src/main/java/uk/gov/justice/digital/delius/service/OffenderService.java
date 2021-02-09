@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.controller.CustodyNotFoundException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
-import uk.gov.justice.digital.delius.data.api.OffenderAssessments;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderIdentifiers;
@@ -215,7 +214,5 @@ public class OffenderService {
        })
            .orElseThrow(() -> new NotFoundException(String.format("Tier %s not found",tier))))
            .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN %s not found",crn)));
-
-
     }
 }

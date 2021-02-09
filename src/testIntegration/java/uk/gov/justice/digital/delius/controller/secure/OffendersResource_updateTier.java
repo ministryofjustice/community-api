@@ -37,6 +37,20 @@ public class OffendersResource_updateTier extends IntegrationTestBase {
             .as(OffenderDetail.class);
 
         assertThat(updatedTierOffender.getCurrentTier()).isEqualTo("B1");
+
+        final var updatedOffender = given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get("/offenders/crn/X320741/all")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(OffenderDetail.class);
+
+        assertThat(updatedOffender.getCurrentTier()).isEqualTo("B1");
     }
 
 
