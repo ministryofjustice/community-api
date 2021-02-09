@@ -50,7 +50,7 @@ public class OffenderServiceTest_getOffenderLatestRecall {
         offenderService = new OffenderService(
                 mockOffenderRepository,
                 mockOffenderPrimaryIdentifiersRepository,
-                mockConvictionService
+                mockConvictionService,null
         );
     }
 

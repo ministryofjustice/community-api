@@ -24,9 +24,11 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderPrimaryIdentifiersRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository.DuplicateOffenderException;
+import uk.gov.justice.digital.delius.jpa.standard.repository.StandardReferenceRepository;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 import uk.gov.justice.digital.delius.transformers.ReleaseTransformer;
 
@@ -44,6 +46,7 @@ public class OffenderService {
     private final OffenderRepository offenderRepository;
     private final OffenderPrimaryIdentifiersRepository offenderPrimaryIdentifiersRepository;
     private final ConvictionService convictionService;
+    private final StandardReferenceRepository standardReferenceRepository;
 
     @Transactional(readOnly = true)
     public Optional<OffenderDetail> getOffenderByOffenderId(Long offenderId) {
@@ -202,5 +205,22 @@ public class OffenderService {
                         .crn(offender.getCrn())
                         .offenderId(offender.getOffenderId())
                         .build());
+    }
+
+    @Transactional
+    public OffenderDetail updateTier(String crn, String currentTier) {
+
+        Optional<Offender> offender = offenderRepository.findByCrn(crn);
+
+        Optional<Optional<Offender>> updatedOffender = offender.map(o -> {
+
+            Optional<StandardReference> tier = standardReferenceRepository.findByCodeAndCodeSetName(currentTier, "TIER");
+            return tier.map(newTier -> {
+                o.setCurrentTier(newTier);
+                return offenderRepository.save(o);
+            });
+
+        });
+        return updatedOffender.map(o -> o.map(OffenderTransformer::fullOffenderOf).orElse(null)).orElse(null);
     }
 }

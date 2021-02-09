@@ -31,7 +31,7 @@ class OffenderServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new OffenderService(offenderRepository, offenderPrimaryIdentifiersRepository, convictionService);
+        service = new OffenderService(offenderRepository, offenderPrimaryIdentifiersRepository, convictionService, null);
     }
 
     @Nested
