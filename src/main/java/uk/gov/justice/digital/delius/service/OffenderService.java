@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import com.microsoft.applicationinsights.TelemetryClient;
 import io.vavr.control.Either;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
-import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderPrimaryIdentifiersRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository.DuplicateOffenderException;
@@ -33,6 +33,7 @@ import uk.gov.justice.digital.delius.transformers.ReleaseTransformer;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.util.function.Predicate.not;
@@ -46,6 +47,7 @@ public class OffenderService {
     private final OffenderPrimaryIdentifiersRepository offenderPrimaryIdentifiersRepository;
     private final ConvictionService convictionService;
     private final StandardReferenceRepository standardReferenceRepository;
+    private final TelemetryClient telemetryClient;
 
     @Transactional(readOnly = true)
     public Optional<OffenderDetail> getOffenderByOffenderId(Long offenderId) {
@@ -208,9 +210,12 @@ public class OffenderService {
 
     @Transactional
     public OffenderDetail updateTier(String crn, String tier) {
+        Map<String, String> telemetryProperties = Map.of("crn", crn,"tier", tier);
        return offenderRepository.findByCrn(crn).map(offender -> standardReferenceRepository.findByCodeAndCodeSetName(tier, "TIER").map(t -> {
            offender.setCurrentTier(t);
-           return OffenderTransformer.fullOffenderOf(offenderRepository.save(offender));
+           Offender updated = offenderRepository.save(offender);
+           telemetryClient.trackEvent("TierUpdated", telemetryProperties, null);
+           return OffenderTransformer.fullOffenderOf(updated);
        })
            .orElseThrow(() -> new NotFoundException(String.format("Tier %s not found",tier))))
            .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN %s not found",crn)));
