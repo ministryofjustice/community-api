@@ -208,19 +208,19 @@ public class OffenderService {
     }
 
     @Transactional
-    public OffenderDetail updateTier(String crn, String currentTier) {
+    public OffenderDetail updateTier(String crn, String tier) {
 
         Optional<Offender> offender = offenderRepository.findByCrn(crn);
 
-        Optional<Offender> updatedOffender = offender.map(o -> {
+        Offender updatedOffender = offender.map(o -> {
 
-            Optional<StandardReference> tier = standardReferenceRepository.findByCodeAndCodeSetName(currentTier, "TIER");
-            return tier.map(newTier -> {
-                o.setCurrentTier(newTier);
+            Optional<StandardReference> referenceTier = standardReferenceRepository.findByCodeAndCodeSetName(tier, "TIER");
+            return referenceTier.map(t -> {
+                o.setCurrentTier(t);
                 return offenderRepository.save(o);
-            });
+            }).orElseThrow(() -> new NotFoundException(String.format("Tier %s not found",tier)));
 
         }).orElseThrow(() -> new NotFoundException(String.format("Offender with CRN %s not found",crn)));
-        return updatedOffender.map(OffenderTransformer::fullOffenderOf).orElse(null);
+        return OffenderTransformer.fullOffenderOf(updatedOffender);
     }
 }

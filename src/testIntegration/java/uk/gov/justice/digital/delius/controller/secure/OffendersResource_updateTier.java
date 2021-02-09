@@ -64,4 +64,16 @@ public class OffendersResource_updateTier extends IntegrationTestBase {
             .statusCode(403);
     }
 
+    @Test
+    public void updatesTier_tierNotFound_returns404() {
+        given()
+            .auth()
+            .oauth2(tokenWithRoleManagementTierUpdate())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .post("/offenders/crn/X320741/tier/NOTFOUND")
+            .then()
+            .statusCode(404);
+    }
+
 }
