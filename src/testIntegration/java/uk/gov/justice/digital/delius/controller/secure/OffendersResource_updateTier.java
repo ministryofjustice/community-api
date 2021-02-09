@@ -32,24 +32,36 @@ public class OffendersResource_updateTier extends IntegrationTestBase {
             .when()
             .post("/offenders/crn/X320741/tier/B1")
             .then()
-            .statusCode(200)    .extract()
+            .statusCode(200).extract()
             .body()
             .as(OffenderDetail.class);
 
         assertThat(updatedTierOffender.getCurrentTier()).isEqualTo("B1");
     }
 
+
     @Test
     public void updatesTier_offenderNotFound_returnsNotFound() {
-        // TODO
-//        given()
-//                .auth()
-//                .oauth2(tokenWithRoleCommunity())
-//                .contentType(APPLICATION_JSON_VALUE)
-//                .when()
-//                .get("/offenders/crn/X777777/assessments")
-//                .then()
-//                .statusCode(404);
+        given()
+            .auth()
+            .oauth2(tokenWithRoleManagementTierUpdate())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .post("/offenders/crn/XNOTFOUND/tier/B1")
+            .then()
+            .statusCode(404);
+    }
+
+    @Test
+    public void updatesTier_wrongRole_returnsForbidden() {
+        given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .post("/offenders/crn/X320741/tier/B1")
+            .then()
+            .statusCode(403);
     }
 
 }

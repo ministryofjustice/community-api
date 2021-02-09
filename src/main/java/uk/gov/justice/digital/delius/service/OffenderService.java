@@ -212,7 +212,7 @@ public class OffenderService {
 
         Optional<Offender> offender = offenderRepository.findByCrn(crn);
 
-        Optional<Optional<Offender>> updatedOffender = offender.map(o -> {
+        Optional<Offender> updatedOffender = offender.map(o -> {
 
             Optional<StandardReference> tier = standardReferenceRepository.findByCodeAndCodeSetName(currentTier, "TIER");
             return tier.map(newTier -> {
@@ -220,7 +220,7 @@ public class OffenderService {
                 return offenderRepository.save(o);
             });
 
-        });
-        return updatedOffender.map(o -> o.map(OffenderTransformer::fullOffenderOf).orElse(null)).orElse(null);
+        }).orElseThrow(() -> new NotFoundException(String.format("Offender with CRN %s not found",crn)));
+        return updatedOffender.map(OffenderTransformer::fullOffenderOf).orElse(null);
     }
 }
