@@ -22,6 +22,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -369,6 +370,24 @@ public class OffendersResource {
         @NotNull @PathVariable(value = "crn") final String crn) {
         return assessmentService.getAssessments(crn)
             .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
+    }
+
+    @ApiOperation(value = "Update offender tier. Requires ROLE_MANAGEMENT_TIER_UPDATE", tags = {"Assessments"})
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Forbidden, requires ROLE_MANAGEMENT_TIER_UPDATE"),
+            @ApiResponse(code = 404, message = "The offender CRN or Tier is not found", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+    @PostMapping(path = "/offenders/crn/{crn}/tier/{tier}")
+    @PreAuthorize("hasRole('ROLE_MANAGEMENT_TIER_UPDATE')")
+    public OffenderDetail updateTier(
+        @ApiParam(value = "CRN for the offender", example = "A123456", required = true)
+        @NotNull @PathVariable(value = "crn") final String crn,
+        @ApiParam(value = "New tier", example = "A1", required = true, allowableValues="A0, A1, A2, A3, B0, B1, B2, B3, C0, C1, C2, C3, D0, D1, D2, D3")
+        @NotNull @PathVariable(value = "tier") final String tier) {
+        return offenderService.updateTier(crn,tier);
     }
 
     @ApiOperation(value = "Return the NSIs for a conviction ID and a CRN, filtering by NSI codes", tags = "Sentence requirements and breach")

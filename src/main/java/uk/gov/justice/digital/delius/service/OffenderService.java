@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import com.microsoft.applicationinsights.TelemetryClient;
 import io.vavr.control.Either;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.controller.CustodyNotFoundException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
-import uk.gov.justice.digital.delius.data.api.OffenderAssessments;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderIdentifiers;
@@ -27,11 +27,13 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderPrimaryIdentifiersRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository.DuplicateOffenderException;
+import uk.gov.justice.digital.delius.jpa.standard.repository.StandardReferenceRepository;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 import uk.gov.justice.digital.delius.transformers.ReleaseTransformer;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.util.function.Predicate.not;
@@ -44,6 +46,8 @@ public class OffenderService {
     private final OffenderRepository offenderRepository;
     private final OffenderPrimaryIdentifiersRepository offenderPrimaryIdentifiersRepository;
     private final ConvictionService convictionService;
+    private final StandardReferenceRepository standardReferenceRepository;
+    private final TelemetryClient telemetryClient;
 
     @Transactional(readOnly = true)
     public Optional<OffenderDetail> getOffenderByOffenderId(Long offenderId) {
@@ -202,5 +206,24 @@ public class OffenderService {
                         .crn(offender.getCrn())
                         .offenderId(offender.getOffenderId())
                         .build());
+    }
+
+    @Transactional
+    public OffenderDetail updateTier(String crn, String tier) {
+        Map<String, String> telemetryProperties = Map.of("crn", crn,"tier", tier);
+       return offenderRepository.findByCrn(crn).map(offender -> standardReferenceRepository.findByCodeAndCodeSetName(tier, "TIER").map(t -> {
+           offender.setCurrentTier(t);
+           Offender updated = offenderRepository.save(offender);
+           telemetryClient.trackEvent("TierUpdateSuccess", telemetryProperties, null);
+           return OffenderTransformer.fullOffenderOf(updated);
+       })
+           .orElseThrow(() -> {
+               telemetryClient.trackEvent("TierUpdateFailureTierNotFound", telemetryProperties, null);
+               return new NotFoundException(String.format("Tier %s not found",tier));
+           }))
+           .orElseThrow(() -> {
+               telemetryClient.trackEvent("TierUpdateFailureOffenderNotFound", telemetryProperties, null);
+               return new NotFoundException(String.format("Offender with CRN %s not found",crn));
+           });
     }
 }
