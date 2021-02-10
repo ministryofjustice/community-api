@@ -14,6 +14,7 @@ import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.LocalDeliveryUnit;
 import uk.gov.justice.digital.delius.data.api.ProbationAreaWithLocalDeliveryUnits;
 import uk.gov.justice.digital.delius.jpa.filters.ProbationAreaFilter;
+import uk.gov.justice.digital.delius.jpa.standard.entity.District;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ReferenceDataMaster;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
@@ -402,6 +403,31 @@ public class ReferenceDataServiceTest {
                 .hasSize(1)
                 .first()
                 .isEqualTo(ProbationAreaWithLocalDeliveryUnits.builder().code(aProbationArea().getCode()).description(aProbationArea().getDescription()).localDeliveryUnits(List.of()).build());
+    }
+
+    @Test
+    public void getProbationAreasAndLocalDeliveryUnits_unallocatedLdusAreReturnedWithUnselectableStatus() {
+
+        final var filter = ProbationAreaFilter.builder().restrictActive(true).excludeEstablishments(true).build();
+        final var unallocationLdu = District.builder()
+                .code("XXUAT")
+                .description("XXUAT description")
+                .borough(aBorough())
+                .build();
+
+        when(probationAreaRepository.findAll(filter)).thenReturn(
+                List.of(aProbationArea().toBuilder()
+                        .boroughs(List.of(
+                                aBorough("BB-1").toBuilder()
+                                        .districts(List.of(unallocationLdu))
+                                        .build()))
+                        .build()));
+
+        assertThat(referenceDataService.getProbationAreasAndLocalDeliveryUnits(true))
+                .hasSize(1)
+                .first()
+                .isEqualTo(ProbationAreaWithLocalDeliveryUnits.builder().code(aProbationArea().getCode()).description(aProbationArea().getDescription())
+                        .localDeliveryUnits(List.of(LocalDeliveryUnit.builder().code(unallocationLdu.getCode()).description(unallocationLdu.getDescription()).build())).build());
     }
 
     @Test
