@@ -76,7 +76,7 @@ public class OffendersResource_getOffenderByCrn extends IntegrationTestBase {
         final var username = "bob.jones";
         final var path = "/offenders/crn/X440877";
 
-        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY", "SCOPE_IGNORE_DELIUS_EXCLUSIONS_ALWAYS"));
+        assertAccessAllowedFor(path, createJwtWithUsernameAndScope(username,  "IGNORE_DELIUS_EXCLUSIONS_ALWAYS", "ROLE_COMMUNITY"));
 
     }
 
@@ -101,7 +101,7 @@ public class OffendersResource_getOffenderByCrn extends IntegrationTestBase {
         final var username = "bob.jones";
         final var path = "/offenders/crn/X440890";
 
-        assertAccessAllowedFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY", "SCOPE_IGNORE_DELIUS_INCLUSIONS_ALWAYS"));
+        assertAccessAllowedFor(path, createJwtWithUsernameAndScope(username,  "IGNORE_DELIUS_INCLUSIONS_ALWAYS", "ROLE_COMMUNITY"));
     }
 
     @Test
