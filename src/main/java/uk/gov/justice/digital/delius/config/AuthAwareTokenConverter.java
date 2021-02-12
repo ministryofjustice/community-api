@@ -5,12 +5,16 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class AuthAwareTokenConverter implements Converter<Jwt, AbstractAuthenticationToken> {
+
+    private final Converter<Jwt, Collection<GrantedAuthority>> jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 
     @Override
     public AbstractAuthenticationToken convert(final Jwt jwt) {
@@ -20,7 +24,10 @@ public class AuthAwareTokenConverter implements Converter<Jwt, AbstractAuthentic
     }
 
     private Collection<GrantedAuthority> extractAuthorities(final Jwt jwt) {
-        @SuppressWarnings("unchecked") final Collection<String> authorities = (Collection<String>)jwt.getClaims().getOrDefault("authorities", List.of());
-        return authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toUnmodifiableSet());
+        final var authorities = new HashSet<>(this.jwtGrantedAuthoritiesConverter.convert(jwt));
+        if (jwt.getClaims().containsKey("authorities")) {
+            authorities.addAll(((Collection<String>) jwt.getClaims().get("authorities")).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet()));
+        }
+        return Set.copyOf(authorities);
     }
 }
