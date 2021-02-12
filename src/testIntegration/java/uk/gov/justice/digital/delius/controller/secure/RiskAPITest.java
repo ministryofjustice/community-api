@@ -135,5 +135,22 @@ public class RiskAPITest extends IntegrationTestBase {
                 .body("notes", equalTo("X320741 registering MAPPA cat 2 level 2"));
         }
 
+
+        @Test
+        void categoryAndLevelNull_okWithNominalValues() {
+            given()
+                .auth().oauth2(createJwt("ROLE_COMMUNITY"))
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/crn/X320811/risk/mappa")
+                .then()
+                .statusCode(200)
+                .body("level", equalTo(0))
+                .body("levelDescription", equalTo("Missing level"))
+                .body("category", equalTo(0))
+                .body("categoryDescription", equalTo("Missing category"));
+
+        }
+
     }
 }

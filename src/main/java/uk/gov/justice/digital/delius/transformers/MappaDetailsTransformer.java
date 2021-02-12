@@ -1,11 +1,14 @@
 package uk.gov.justice.digital.delius.transformers;
 
+import org.jetbrains.annotations.NotNull;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.MappaDetails;
 import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Registration;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 
 public class MappaDetailsTransformer {
@@ -15,11 +18,13 @@ public class MappaDetailsTransformer {
         final var team = registration.getRegisteringTeam();
         final var staff = registration.getRegisteringStaff();
         final var probationArea = registration.getRegisteringTeam().getProbationArea();
+        final var maybeLevel = Optional.ofNullable(registration.getRegisterLevel());
+        final var maybeCategory = Optional.ofNullable(registration.getRegisterCategory());
         return MappaDetails.builder()
-            .level(MappaLevel.toCommunityLevel(registration.getRegisterLevel().getCodeValue()))
-            .levelDescription(registration.getRegisterLevel().getCodeDescription())
-            .category(MappaCategory.toCommunityCategory(registration.getRegisterCategory().getCodeValue()))
-            .categoryDescription(registration.getRegisterCategory().getCodeDescription())
+            .level(getLevel(maybeLevel))
+            .levelDescription(getLevelDescription(maybeLevel))
+            .category(getCategory(maybeCategory))
+            .categoryDescription(getCategoryDescription(maybeCategory))
             .startDate(registration.getRegistrationDate())
             .reviewDate(registration.getNextReviewDate())
             .team(KeyValue.builder().code(team.getCode()).description(team.getDescription()).build())
@@ -28,6 +33,26 @@ public class MappaDetailsTransformer {
             .notes(registration.getRegistrationNotes())
             .build();
 
+    }
+
+    private static String getCategoryDescription(Optional<StandardReference> maybeCategory) {
+        return maybeCategory.map(StandardReference::getCodeDescription).orElse("Missing category");
+    }
+
+    private static Integer getCategory(Optional<StandardReference> maybeCategory) {
+        return MappaCategory.toCommunityCategory(
+            maybeCategory.map(StandardReference::getCodeValue).orElse("0")
+        );
+    }
+
+    private static String getLevelDescription(Optional<StandardReference> maybeLevel) {
+        return maybeLevel.map(StandardReference::getCodeDescription).orElse("Missing level");
+    }
+
+    private static Integer getLevel(Optional<StandardReference> maybeLevel) {
+        return MappaLevel.toCommunityLevel(
+            maybeLevel.map(StandardReference::getCodeValue).orElse("0")
+        );
     }
 
     enum MappaLevel {
