@@ -76,7 +76,7 @@ public class RiskAPITest extends IntegrationTestBase {
                 .auth().oauth2(createJwt("ROLE_COMMUNITY"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .get("/offenders/nomsNumber/G9642VP/risk/mappa")
+                .get("/offenders/nomsNumber/G9643VP/risk/mappa")
                 .then()
                 .statusCode(404)
                 .body("status", equalTo(404))
