@@ -76,7 +76,7 @@ public class RiskAPITest extends IntegrationTestBase {
                 .auth().oauth2(createJwt("ROLE_COMMUNITY"))
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .get("/offenders/nomsNumber/G9642VP/risk/mappa")
+                .get("/offenders/nomsNumber/G9643VP/risk/mappa")
                 .then()
                 .statusCode(404)
                 .body("status", equalTo(404))
@@ -133,6 +133,23 @@ public class RiskAPITest extends IntegrationTestBase {
                 .body("probationArea.code", equalTo("N02"))
                 .body("probationArea.description", equalTo("NPS North East"))
                 .body("notes", equalTo("X320741 registering MAPPA cat 2 level 2"));
+        }
+
+
+        @Test
+        void categoryAndLevelNull_okWithNominalValues() {
+            given()
+                .auth().oauth2(createJwt("ROLE_COMMUNITY"))
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/offenders/crn/X320811/risk/mappa")
+                .then()
+                .statusCode(200)
+                .body("level", equalTo(0))
+                .body("levelDescription", equalTo("Missing level"))
+                .body("category", equalTo(0))
+                .body("categoryDescription", equalTo("Missing category"));
+
         }
 
     }

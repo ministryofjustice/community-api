@@ -55,6 +55,22 @@ public class MappaDetailsTransformerTest {
     }
 
     @Test
+    @DisplayName("Null MAPPA category and level map to zero with missing description")
+    void nullMappaCategoryAndLevel_MapToZeroWithMissingDescription() {
+        Registration registration = aRegistration().toBuilder()
+            .registerLevel(null)
+            .registerCategory(null)
+            .build();
+
+        MappaDetails mappaDetails = MappaDetailsTransformer.mappaDetailsOf(registration);
+
+        assertThat(mappaDetails.getLevel()).isEqualTo(0);
+        assertThat(mappaDetails.getLevelDescription()).isEqualTo("Missing level");
+        assertThat(mappaDetails.getCategory()).isEqualTo(0);
+        assertThat(mappaDetails.getCategoryDescription()).isEqualTo("Missing category");
+    }
+
+    @Test
     void MappaLevel_toCommunityLevel() {
         assertThat(MappaLevel.toCommunityLevel("M0")).isEqualTo(0);
         assertThat(MappaLevel.toCommunityLevel("M1")).isEqualTo(1);
