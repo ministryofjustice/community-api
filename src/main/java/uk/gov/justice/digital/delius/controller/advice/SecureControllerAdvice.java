@@ -74,7 +74,6 @@ public class SecureControllerAdvice {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleException(final NotFoundException e) {
-        log.debug("Not Found (404) returned", e);
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(ErrorResponse
