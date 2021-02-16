@@ -84,6 +84,9 @@ delius:
   username: 'default'
   password: 'default'
 
+deliusApi:
+  baseurl: 'https://delius-api.dev.probation.service.justice.gov.uk/'
+
 features:
   noms:
     update:

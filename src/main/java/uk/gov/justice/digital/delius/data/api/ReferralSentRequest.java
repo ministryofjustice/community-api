@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class ReferralSentRequest {
     @ApiModelProperty(required = true)
-    private String probationAreaCode;
+    private String providerCode;
 
     @ApiModelProperty(required = true)
     private String referralType;
