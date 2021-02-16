@@ -1,8 +1,6 @@
 spring:
   application:
     name: community-api
-  config:
-    use-legacy-processing: true
   datasource:
     url: 'jdbc:h2:mem:testdb;Mode=Oracle'
     type: com.zaxxer.hikari.HikariDataSource
@@ -19,7 +17,6 @@ spring:
       ddl-auto: none
     properties:
       hibernate:
-  #        show_sql: true
   h2:
     console:
       enabled: true
