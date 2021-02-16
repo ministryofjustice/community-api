@@ -524,7 +524,8 @@ public class OffendersResource {
     @ApiOperation(value = "Returns the probation status for the given crn", tags = "-- Popular core APIs --")
 
     public ProbationStatusDetail getOffenderProbationStatusByCrn(final @PathVariable("crn") String crn) {
-        return null;
+        return convictionService.probationStatusFor(crn)
+            .orElseThrow(() -> new NotFoundException("Offender not found"));
     }
 
     private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(final OffenderDetail offender) {

@@ -13,6 +13,7 @@ import uk.gov.justice.digital.delius.data.api.CourtCase;
 import uk.gov.justice.digital.delius.data.api.CreateCustodyKeyDate;
 import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.CustodyKeyDate;
+import uk.gov.justice.digital.delius.data.api.ProbationStatusDetail;
 import uk.gov.justice.digital.delius.data.api.ReplaceCustodyKeyDates;
 import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
 import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
@@ -336,6 +337,10 @@ public class ConvictionService {
         return ConvictionTransformer.custodyOf(event
                 .getDisposal()
                 .getCustody());
+    }
+
+    public Optional<ProbationStatusDetail> probationStatusFor(String crn) {
+        return null;
     }
 
     private void addBulkTelemetry(Long offenderId, Event event, List<KeyDate> currentKeyDates, List<String> keyDatesToDelete, Map<String, LocalDate> keyDatesToBeAddedOrUpdated) {
