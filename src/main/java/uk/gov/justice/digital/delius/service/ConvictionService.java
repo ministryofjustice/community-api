@@ -13,12 +13,14 @@ import uk.gov.justice.digital.delius.data.api.CourtCase;
 import uk.gov.justice.digital.delius.data.api.CreateCustodyKeyDate;
 import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.CustodyKeyDate;
+import uk.gov.justice.digital.delius.data.api.ProbationStatus;
 import uk.gov.justice.digital.delius.data.api.ProbationStatusDetail;
 import uk.gov.justice.digital.delius.data.api.ReplaceCustodyKeyDates;
 import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
 import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.KeyDate;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
@@ -27,6 +29,7 @@ import uk.gov.justice.digital.delius.transformers.CustodyKeyDateTransformer;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -340,7 +343,43 @@ public class ConvictionService {
     }
 
     public Optional<ProbationStatusDetail> probationStatusFor(String crn) {
-        return null;
+        return offenderRepository.findByCrn(crn)
+            .map((offender) -> new ProbationStatusDetail(
+                probationStatusOf(offender),
+                previouslyKnownTerminationDateOf(offender),
+                inBreachOf(offender),
+                null));
+    }
+
+    private ProbationStatus probationStatusOf(Offender offender) {
+        if (offender.getCurrentDisposal() == 1)
+            return ProbationStatus.CURRENT;
+        if (offender.getEvents().stream().anyMatch(event -> event.getDisposal() != null))
+            return ProbationStatus.PREVIOUSLY_KNOWN;
+        return ProbationStatus.NOT_SENTENCED;
+    }
+
+    private LocalDate previouslyKnownTerminationDateOf(Offender offender) {
+        if (!probationStatusOf(offender).equals(ProbationStatus.PREVIOUSLY_KNOWN))
+            return null;
+        return Optional.ofNullable(offender.getEvents())
+            .orElse(Collections.emptyList())
+            .stream()
+            .filter(conviction -> conviction.getDisposal() != null && conviction.getDisposal().getTerminationDate() != null)
+            .map(conviction -> conviction.getDisposal().getTerminationDate())
+            .max(Comparator.comparing(LocalDate::toEpochDay))
+            .orElse(null);
+    }
+
+    private Boolean inBreachOf(Offender offender) {
+        if (!probationStatusOf(offender).equals(ProbationStatus.CURRENT))
+            return null;
+        return Optional.of(offender)
+            .map(o ->
+                activeEvents(o.getEvents())
+                    .stream()
+                    .anyMatch(event -> event.getInBreach() == 1L)
+            ).orElse(null);
     }
 
     private void addBulkTelemetry(Long offenderId, Event event, List<KeyDate> currentKeyDates, List<String> keyDatesToDelete, Map<String, LocalDate> keyDatesToBeAddedOrUpdated) {
