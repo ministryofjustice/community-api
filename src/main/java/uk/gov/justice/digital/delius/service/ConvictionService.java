@@ -348,7 +348,7 @@ public class ConvictionService {
                 probationStatusOf(offender),
                 previouslyKnownTerminationDateOf(offender),
                 inBreachOf(offender),
-                null));
+                preSentenceActivityOf(offender)));
     }
 
     private ProbationStatus probationStatusOf(Offender offender) {
@@ -380,6 +380,14 @@ public class ConvictionService {
                     .stream()
                     .anyMatch(event -> event.getInBreach() == 1L)
             ).orElse(null);
+    }
+
+    private Boolean preSentenceActivityOf(Offender offender) {
+        return Optional.of(offender)
+            .map((o) -> o.getEvents()
+                .stream()
+                .anyMatch(event -> event.getDisposal() == null)
+            ).orElse(false);
     }
 
     private void addBulkTelemetry(Long offenderId, Event event, List<KeyDate> currentKeyDates, List<String> keyDatesToDelete, Map<String, LocalDate> keyDatesToBeAddedOrUpdated) {

@@ -10,6 +10,7 @@ import uk.gov.justice.digital.delius.config.FeatureSwitches;
 import uk.gov.justice.digital.delius.data.api.ProbationStatus;
 import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
 import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
@@ -64,6 +65,8 @@ public class ConvictionService_GetProbationStatus {
     private Event event2;
     @Mock
     private Event event3;
+    @Mock
+    private Disposal disposal;
 
     @BeforeEach
     public void setUp(){
@@ -74,10 +77,10 @@ public class ConvictionService_GetProbationStatus {
     @Test
     public void canGetProbationStatusForCurrentOffender() {
         when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
-        when(offender.getOffenderId()).thenReturn(OFFENDER_ID);
         when(offender.getCurrentDisposal()).thenReturn(1L);
         when(offender.getEvents()).thenReturn(List.of(event));
         when(event.getActiveFlag()).thenReturn(1L);
+        when(event.getDisposal()).thenReturn(Disposal.builder().build());
         when(event.getInBreach()).thenReturn(1L);
 
         final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
@@ -91,7 +94,6 @@ public class ConvictionService_GetProbationStatus {
     @Test
     public void canGetProbationStatusForCurrentOffenderWithMultipleEventsInBreach() {
         when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
-        when(offender.getOffenderId()).thenReturn(OFFENDER_ID);
         when(offender.getCurrentDisposal()).thenReturn(1L);
         when(offender.getEvents()).thenReturn(List.of(event, event2, event3));
         when(event.getActiveFlag()).thenReturn(1L);
@@ -99,18 +101,23 @@ public class ConvictionService_GetProbationStatus {
         when(event2.getActiveFlag()).thenReturn(1L);
         when(event2.getInBreach()).thenReturn(1L);
         when(event3.getActiveFlag()).thenReturn(0L);
-        when(event3.getInBreach()).thenReturn(0L);
 
         final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
 
         assertThat(probationStatusDetail.getProbationStatus()).isEqualTo(ProbationStatus.CURRENT);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isNull();
         assertThat(probationStatusDetail.getInBreach()).isEqualTo(true);
-        assertThat(probationStatusDetail.getPreSentenceActivity()).isEqualTo(false);
+        assertThat(probationStatusDetail.getPreSentenceActivity()).isEqualTo(true);
     }
 
     @Test
     public void canGetProbationStatusForPreviouslyKnownOffender() {
+        when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
+        when(offender.getCurrentDisposal()).thenReturn(0L);
+        when(offender.getEvents()).thenReturn(List.of(event));
+        when(event.getDisposal()).thenReturn(disposal);
+        when(disposal.getTerminationDate()).thenReturn(LocalDate.of(2020, 1, 4));
+
         final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
 
         assertThat(probationStatusDetail.getProbationStatus()).isEqualTo(ProbationStatus.PREVIOUSLY_KNOWN);
@@ -121,6 +128,11 @@ public class ConvictionService_GetProbationStatus {
 
     @Test
     public void canGetProbationStatusForOffenderWithPreSentenceActivity() {
+        when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
+        when(offender.getCurrentDisposal()).thenReturn(0L);
+        when(offender.getEvents()).thenReturn(List.of(event));
+        when(event.getDisposal()).thenReturn(null);
+
         final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
 
         assertThat(probationStatusDetail.getProbationStatus()).isEqualTo(ProbationStatus.NOT_SENTENCED);
@@ -132,9 +144,8 @@ public class ConvictionService_GetProbationStatus {
     @Test
     public void canGetProbationStatusForOffenderWithNoEvents() {
         when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
-        when(offender.getOffenderId()).thenReturn(OFFENDER_ID);
         when(offender.getCurrentDisposal()).thenReturn(0L);
-        when(convictionService.convictionsFor(OFFENDER_ID)).thenReturn(Collections.emptyList());
+        when(offender.getEvents()).thenReturn(Collections.emptyList());
 
         final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
 
