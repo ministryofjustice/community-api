@@ -344,6 +344,7 @@ public class ConvictionService {
 
     public Optional<ProbationStatusDetail> probationStatusFor(String crn) {
         return offenderRepository.findByCrn(crn)
+            .filter(offender -> offender.getSoftDeleted() == 0L)
             .map((offender) -> new ProbationStatusDetail(
                 probationStatusOf(offender),
                 previouslyKnownTerminationDateOf(offender),
@@ -511,7 +512,10 @@ public class ConvictionService {
     }
 
     private List<Event> activeEvents(List<Event> events) {
-        return events.stream().filter(event -> event.getActiveFlag() == 1L).collect(toList());
+        return events.stream()
+            .filter(event -> event.getSoftDeleted() == 0L)
+            .filter(event -> event.getActiveFlag() == 1L)
+            .collect(toList());
     }
 
     private List<Event> activeCustodyEvents(Long offenderId) {

@@ -5,8 +5,6 @@ import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.ProbationStatus;
 import uk.gov.justice.digital.delius.data.api.ProbationStatusDetail;
 
-import java.time.LocalDate;
-
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -29,7 +27,7 @@ public class OffendersResource_getProbationStatus extends IntegrationTestBase {
 
         assertThat(offenderDetail).isNotNull();
         assertThat(offenderDetail.getProbationStatus()).isEqualTo(ProbationStatus.CURRENT);
-        assertThat(offenderDetail.getPreviouslyKnownTerminationDate()).isEqualTo(LocalDate.of(2019, 9, 17));
+        assertThat(offenderDetail.getPreviouslyKnownTerminationDate()).isNull();
         assertThat(offenderDetail.getInBreach()).isEqualTo(false);
         assertThat(offenderDetail.getPreSentenceActivity()).isEqualTo(false);
     }
