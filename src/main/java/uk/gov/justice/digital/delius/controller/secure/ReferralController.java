@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
@@ -35,8 +36,8 @@ public class ReferralController {
             })
 
     @ApiOperation(value = "Adds a sent referral contact entry to the contact log")
-    public void createReferralSent(final @PathVariable("crn") String crn,
-                                   final @RequestBody @Valid ReferralSentRequest referralSentRequest) {
-        referralService.createReferralSent(crn, referralSentRequest);
+    public ResponseEntity<String> createReferralSent(final @PathVariable("crn") String crn,
+                                                     final @RequestBody @Valid ReferralSentRequest referralSentRequest) {
+        return referralService.createReferralSent(crn, referralSentRequest);
     }
 }

@@ -85,7 +85,7 @@ delius:
   password: 'default'
 
 deliusApi:
-  baseurl: 'https://delius-api.dev.probation.service.justice.gov.uk/'
+  baseurl: 'http://localhost:7999'
 
 features:
   noms:
