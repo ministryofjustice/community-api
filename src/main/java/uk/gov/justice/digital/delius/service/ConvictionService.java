@@ -353,16 +353,19 @@ public class ConvictionService {
     }
 
     private ProbationStatus probationStatusOf(Offender offender) {
-        if (offender.getCurrentDisposal() == 1)
+        if (offender.getCurrentDisposal() == 1) {
             return ProbationStatus.CURRENT;
-        if (offender.getEvents().stream().anyMatch(event -> event.getDisposal() != null))
+        }
+        if (offender.getEvents().stream().anyMatch(event -> event.getDisposal() != null)) {
             return ProbationStatus.PREVIOUSLY_KNOWN;
+        }
         return ProbationStatus.NOT_SENTENCED;
     }
 
     private LocalDate previouslyKnownTerminationDateOf(Offender offender) {
-        if (!probationStatusOf(offender).equals(ProbationStatus.PREVIOUSLY_KNOWN))
+        if (!probationStatusOf(offender).equals(ProbationStatus.PREVIOUSLY_KNOWN)) {
             return null;
+        }
         return Optional.ofNullable(offender.getEvents())
             .orElse(Collections.emptyList())
             .stream()
@@ -373,8 +376,9 @@ public class ConvictionService {
     }
 
     private Boolean inBreachOf(Offender offender) {
-        if (!probationStatusOf(offender).equals(ProbationStatus.CURRENT))
+        if (!probationStatusOf(offender).equals(ProbationStatus.CURRENT)) {
             return null;
+        }
         return Optional.of(offender)
             .map(o ->
                 activeEvents(o.getEvents())
