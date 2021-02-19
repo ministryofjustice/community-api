@@ -37,7 +37,6 @@ import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
-import uk.gov.justice.digital.delius.data.api.SentenceStatus;
 import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.data.api.NsiWrapper;
 import uk.gov.justice.digital.delius.data.api.OffenderAssessments;
@@ -45,8 +44,10 @@ import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
 import uk.gov.justice.digital.delius.data.api.PrimaryIdentifiers;
+import uk.gov.justice.digital.delius.data.api.ProbationStatusDetail;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficerSwitch;
+import uk.gov.justice.digital.delius.data.api.SentenceStatus;
 import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
@@ -512,6 +513,19 @@ public class OffendersResource {
         return offenderService.getOffenderByCrn(crn)
             .map(this::accessLimitationResponseEntityOf)
             .orElse(new ResponseEntity<>(NOT_FOUND));
+    }
+
+
+
+    @RequestMapping(value = "/offenders/crn/{crn}/probationStatus", method = RequestMethod.GET)
+    @ApiResponses(value = {
+        @ApiResponse(code = 404, message = "The offender was not found")
+    })
+    @ApiOperation(value = "Returns the probation status for the given crn", tags = "-- Popular core APIs --")
+
+    public ProbationStatusDetail getOffenderProbationStatusByCrn(final @PathVariable("crn") String crn) {
+        return convictionService.probationStatusFor(crn)
+            .orElseThrow(() -> new NotFoundException("Offender not found"));
     }
 
     private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(final OffenderDetail offender) {
