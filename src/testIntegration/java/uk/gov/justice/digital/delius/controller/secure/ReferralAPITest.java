@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
@@ -52,7 +52,7 @@ public class ReferralAPITest extends IntegrationTestBase {
 
         deliusApiMockServer.stubPostContactToDeliusApi();
 
-        final var token = createJwt("bob", Collections.singletonList("ROLE_COMMUNITY"));
+        final var token = createJwt("bob", Collections.singletonList("ROLE_COMMUNITY_INTERVENTIONS_UPDATE"));
 
         final var response = given()
                 .when()
@@ -71,26 +71,20 @@ public class ReferralAPITest extends IntegrationTestBase {
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .body()
-                .asString();
-
-        assertThat(response).isEqualTo("{\n" +
-            "    \"id\": 2503596167,\n" +
-            "    \"offenderCrn\": \"X371505\",\n" +
-            "    \"type\": \"COAP\",\n" +
-            "    \"provider\": \"N07\",\n" +
-            "    \"team\": \"N07CHT\",\n" +
-            "    \"staff\": \"N07A007\",\n" +
-            "    \"officeLocation\": \"LDN_BCS\",\n" +
-            "    \"date\": \"2021-06-02\",\n" +
-            "    \"startTime\": \"10:00:00\",\n" +
-            "    \"endTime\": \"12:00:00\",\n" +
-            "    \"alert\": false,\n" +
-            "    \"sensitive\": false,\n" +
-            "    \"eventId\": 2500428188,\n" +
-            "    \"requirementId\": 2500185174\n" +
-            "}");
+                .body("id", equalTo(2503596167L),
+                      "offenderCrn", equalTo("X371505"),
+                      "type", equalTo("COAP"),
+                      "provider", equalTo("N07"),
+                      "team", equalTo("N07CHT"),
+                      "staff", equalTo("N07A007"),                      
+                      "officeLocation", equalTo("LDN_BCS"),
+                      "date", equalTo("2021-06-02"),
+                      "startTime", equalTo("10:00:00"),
+                      "endTime", equalTo("12:00:00"),
+                      "alert", equalTo(false),
+                      "sensitive", equalTo(false),
+                      "eventId", equalTo(2500428188L),   
+                      "requirementId", equalTo(2500185174L));
     }
 
     private String createJwt(final String user, final List<String> roles) {

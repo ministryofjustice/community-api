@@ -17,7 +17,7 @@ import javax.validation.Valid;
 
 @RestController
 @Api(tags = {"Referrals"})
-@PreAuthorize("hasRole('ROLE_COMMUNITY')")
+@PreAuthorize("hasRole('ROLE_COMMUNITY_INTERVENTIONS_UPDATE')")
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 public class ReferralController {
@@ -31,7 +31,7 @@ public class ReferralController {
             value = {
                 @ApiResponse(code = 201, message = "Created", response = String.class),
                 @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY"),
+                @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_INTERVENTIONS_UPDATE"),
                 @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
 

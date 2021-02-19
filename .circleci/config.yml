@@ -68,7 +68,6 @@ workflows:
             branches:
               only:
                 - main
-                - IC-633-create-referral-notification
 
   scheduled:
     triggers:
