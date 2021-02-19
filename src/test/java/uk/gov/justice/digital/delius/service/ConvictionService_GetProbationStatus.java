@@ -25,7 +25,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ConvictionService_GetProbationStatus {
+public class ConvictionService_GetProbationStatusTest {
 
     private static final String CRN = "CRN";
 
