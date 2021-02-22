@@ -33,11 +33,6 @@ spring:
       pageable:
         max-page-size: 10000
 
-  jackson:
-    date-format: "yyyy-MM-dd HH:mm:ss"
-    serialization:
-      WRITE_DATES_AS_TIMESTAMPS: false
-
 jwt:
   secret: 'ChangeMe!'
   lifetimeSeconds: 60000
