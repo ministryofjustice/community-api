@@ -88,7 +88,7 @@ public class ConvictionService_GetProbationStatusTest {
 
         final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
 
-        assertThat(probationStatusDetail.getProbationStatus()).isEqualTo(ProbationStatus.CURRENT);
+        assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.CURRENT);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isNull();
         assertThat(probationStatusDetail.getInBreach()).isEqualTo(true);
         assertThat(probationStatusDetail.getPreSentenceActivity()).isEqualTo(false);
@@ -111,7 +111,7 @@ public class ConvictionService_GetProbationStatusTest {
 
         final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
 
-        assertThat(probationStatusDetail.getProbationStatus()).isEqualTo(ProbationStatus.CURRENT);
+        assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.CURRENT);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isNull();
         assertThat(probationStatusDetail.getInBreach()).isEqualTo(true);
         assertThat(probationStatusDetail.getPreSentenceActivity()).isEqualTo(true);
@@ -137,7 +137,7 @@ public class ConvictionService_GetProbationStatusTest {
 
         final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
 
-        assertThat(probationStatusDetail.getProbationStatus()).isEqualTo(ProbationStatus.CURRENT);
+        assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.CURRENT);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isNull();
         assertThat(probationStatusDetail.getInBreach()).isEqualTo(false);
         assertThat(probationStatusDetail.getPreSentenceActivity()).isEqualTo(true);
@@ -154,7 +154,7 @@ public class ConvictionService_GetProbationStatusTest {
 
         final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
 
-        assertThat(probationStatusDetail.getProbationStatus()).isEqualTo(ProbationStatus.PREVIOUSLY_KNOWN);
+        assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.PREVIOUSLY_KNOWN);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isEqualTo(LocalDate.of(2020, 1, 4));
         assertThat(probationStatusDetail.getInBreach()).isNull();
         assertThat(probationStatusDetail.getPreSentenceActivity()).isEqualTo(false);
@@ -173,7 +173,7 @@ public class ConvictionService_GetProbationStatusTest {
 
         final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
 
-        assertThat(probationStatusDetail.getProbationStatus()).isEqualTo(ProbationStatus.PREVIOUSLY_KNOWN);
+        assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.PREVIOUSLY_KNOWN);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isEqualTo(LocalDate.of(2020, 1, 4));
         assertThat(probationStatusDetail.getInBreach()).isNull();
         assertThat(probationStatusDetail.getPreSentenceActivity()).isEqualTo(true);
@@ -189,7 +189,7 @@ public class ConvictionService_GetProbationStatusTest {
 
         final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
 
-        assertThat(probationStatusDetail.getProbationStatus()).isEqualTo(ProbationStatus.NOT_SENTENCED);
+        assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.NOT_SENTENCED);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isNull();
         assertThat(probationStatusDetail.getInBreach()).isNull();
         assertThat(probationStatusDetail.getPreSentenceActivity()).isEqualTo(true);
@@ -203,7 +203,7 @@ public class ConvictionService_GetProbationStatusTest {
 
         final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
 
-        assertThat(probationStatusDetail.getProbationStatus()).isEqualTo(ProbationStatus.NOT_SENTENCED);
+        assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.NOT_SENTENCED);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isNull();
         assertThat(probationStatusDetail.getInBreach()).isNull();
         assertThat(probationStatusDetail.getPreSentenceActivity()).isEqualTo(false);
