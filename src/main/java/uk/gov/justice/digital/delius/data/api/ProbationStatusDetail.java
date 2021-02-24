@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 public class ProbationStatusDetail {
-    private final ProbationStatus probationStatus;
+    private final ProbationStatus status;
     @ApiModelProperty(value = "The termination date of the most recently terminated sentence")
     private final LocalDate previouslyKnownTerminationDate;
     @ApiModelProperty(value = "True if the offender is in breach of a current sentence")

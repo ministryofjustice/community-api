@@ -26,7 +26,7 @@ public class OffendersResource_getProbationStatus extends IntegrationTestBase {
             .as(ProbationStatusDetail.class);
 
         assertThat(offenderDetail).isNotNull();
-        assertThat(offenderDetail.getProbationStatus()).isEqualTo(ProbationStatus.CURRENT);
+        assertThat(offenderDetail.getStatus()).isEqualTo(ProbationStatus.CURRENT);
         assertThat(offenderDetail.getPreviouslyKnownTerminationDate()).isNull();
         assertThat(offenderDetail.getInBreach()).isEqualTo(false);
         assertThat(offenderDetail.getPreSentenceActivity()).isEqualTo(false);
