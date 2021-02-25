@@ -9,5 +9,4 @@ import java.util.Optional;
 
 @Repository
 public interface ManagementTierRepository extends JpaRepository<ManagementTier, Long> {
-    Optional<ManagementTier> findFirstByOffenderIdAndSoftDeletedEqualsOrderByDateChangedDesc(@Param("offenderId") Long offenderId, @Param("softDeleted") int softDeleted);
 }
