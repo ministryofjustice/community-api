@@ -19,6 +19,7 @@ public class OffendersResource_updateTier extends IntegrationTestBase {
 
     @Test
     public void createsTier() {
+
         List<String> originalTier =  jdbcTemplate.query("SELECT CODE_VALUE FROM MANAGEMENT_TIER m \n" +
             "JOIN r_standard_reference_list s \n" +
             "ON m.tier_id=s.standard_reference_list_id\n" +

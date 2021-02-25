@@ -79,7 +79,7 @@ public class TierServiceTest {
         }
 
         @Test
-        @DisplayName("fires failure telemetry event when tier not found")
+        @DisplayName("fires failure telemetry event when tier change reason not found")
         void firesFailureTelemetryEventWhenTierChangeReasonNotFound() {
             String crn = "X123456";
             String tier = "A2";
