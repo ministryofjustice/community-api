@@ -1,10 +1,10 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import lombok.Builder;
-import lombok.Data;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ManagementTier;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ManagementTierRepository;
 
 import java.util.List;
 
@@ -17,16 +17,15 @@ public class OffendersResource_updateTier extends IntegrationTestBase {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private ManagementTierRepository managementTierRepository;
+
     @Test
     public void createsTier() {
 
-        List<String> originalTier =  jdbcTemplate.query("SELECT CODE_VALUE FROM MANAGEMENT_TIER m \n" +
-            "JOIN r_standard_reference_list s \n" +
-            "ON m.tier_id=s.standard_reference_list_id\n" +
-            "WHERE offender_id=2500343964", (resultSet, rowNum) ->
-            resultSet.getString("CODE_VALUE"));
+        List<ManagementTier> tiers = managementTierRepository.findAll();
 
-        assertThat(originalTier.get(0)).isEqualTo("UA2");
+        assertThat(tiers.get(0).getId().getTier().getCodeValue()).isEqualTo("UA2");
 
         given()
             .auth()
@@ -37,18 +36,11 @@ public class OffendersResource_updateTier extends IntegrationTestBase {
             .then()
             .statusCode(200);
 
-        List<Result> updatedTier =  jdbcTemplate.query("SELECT s.CODE_VALUE AS TIER, r.CODE_VALUE AS REASON FROM MANAGEMENT_TIER m \n" +
-            "JOIN r_standard_reference_list s \n" +
-            "ON m.tier_id=s.standard_reference_list_id \n" +
-            "JOIN r_standard_reference_list r \n" +
-            "ON m.tier_change_reason_id=r.standard_reference_list_id \n" +
-            "WHERE offender_id=2500343964", (resultSet, rowNum) ->  Result.builder()
-                .tier(resultSet.getString("TIER"))
-                .reason(resultSet.getString("REASON"))
-                .build());
+        List<ManagementTier> updatedTiers = managementTierRepository.findAll();
 
-        Result expectedTier = Result.builder().tier("UB1").reason("ATS").build();
-        assertThat(updatedTier.contains(expectedTier)).isTrue();
+        assertThat(updatedTiers.get(1).getId().getTier().getCodeValue()).isEqualTo("UB1");
+        assertThat(updatedTiers.get(1).getTierChangeReason().getCodeValue()).isEqualTo("ATS");
+
     }
 
 
@@ -89,11 +81,4 @@ public class OffendersResource_updateTier extends IntegrationTestBase {
     }
 
 
-}
-
-@Data
-@Builder
-class Result {
-    String tier;
-    String reason;
 }
