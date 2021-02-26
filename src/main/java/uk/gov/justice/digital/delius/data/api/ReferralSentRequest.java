@@ -26,10 +26,25 @@ public class ReferralSentRequest {
     @ApiModelProperty(required = true)
     private String teamCode;
 
-    @ApiModelProperty(required = false)
     private String notes;
 
     @ApiModelProperty(required = true)
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate date;
+
+    private String nsiType;
+
+    private String nsiSubType;
+
+    private Long convictionId;
+
+    private Long requirementId;
+
+    private String nsiStatus;
+
+    private String nsiNotes;
+
+    private String intendedProvider;
+
+
 }

@@ -32,6 +32,7 @@ public class NsiTransformer {
                 .lengthUnit(NSI_LENGTH_UNIT)
                 .nsiManagers(nsiManagersOf(n.getNsiManagers()))
                 .notes(n.getNotes())
+                .intendedProvider(ProbationAreaTransformer.probationAreaOf(n.getIntendedProvider()))
                 .build()).orElse(null);
     }
 

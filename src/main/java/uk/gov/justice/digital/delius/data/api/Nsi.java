@@ -27,4 +27,5 @@ public class Nsi {
     private String lengthUnit;
     private List<NsiManager> nsiManagers;
     private String notes;
+    private ProbationArea intendedProvider;
 }

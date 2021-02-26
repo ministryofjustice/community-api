@@ -69,4 +69,8 @@ public class Nsi {
     @Column(name = "NOTES")
     private String notes;
 
+    @JoinColumn(name = "INTENDED_PROVIDER_ID")
+    @ManyToOne
+    private ProbationArea intendedProvider;
+
 }
