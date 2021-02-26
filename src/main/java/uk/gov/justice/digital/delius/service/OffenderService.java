@@ -46,8 +46,6 @@ public class OffenderService {
     private final OffenderRepository offenderRepository;
     private final OffenderPrimaryIdentifiersRepository offenderPrimaryIdentifiersRepository;
     private final ConvictionService convictionService;
-    private final StandardReferenceRepository standardReferenceRepository;
-    private final TelemetryClient telemetryClient;
 
     @Transactional(readOnly = true)
     public Optional<OffenderDetail> getOffenderByOffenderId(Long offenderId) {
@@ -208,22 +206,5 @@ public class OffenderService {
                         .build());
     }
 
-    @Transactional
-    public OffenderDetail updateTier(String crn, String tier) {
-        Map<String, String> telemetryProperties = Map.of("crn", crn,"tier", tier);
-       return offenderRepository.findByCrn(crn).map(offender -> standardReferenceRepository.findByCodeAndCodeSetName(tier, "TIER").map(t -> {
-           offender.setCurrentTier(t);
-           Offender updated = offenderRepository.save(offender);
-           telemetryClient.trackEvent("TierUpdateSuccess", telemetryProperties, null);
-           return OffenderTransformer.fullOffenderOf(updated);
-       })
-           .orElseThrow(() -> {
-               telemetryClient.trackEvent("TierUpdateFailureTierNotFound", telemetryProperties, null);
-               return new NotFoundException(String.format("Tier %s not found",tier));
-           }))
-           .orElseThrow(() -> {
-               telemetryClient.trackEvent("TierUpdateFailureOffenderNotFound", telemetryProperties, null);
-               return new NotFoundException(String.format("Offender with CRN %s not found",crn));
-           });
-    }
+
 }
