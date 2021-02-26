@@ -40,9 +40,7 @@ public class OffendersResource_updateTier extends IntegrationTestBase {
 
         assertThat(updatedTiers.get(1).getId().getTier().getCodeValue()).isEqualTo("UB1");
         assertThat(updatedTiers.get(1).getTierChangeReason().getCodeValue()).isEqualTo("ATS");
-
     }
-
 
     @Test
     public void updatesTier_offenderNotFound_returnsNotFound() {

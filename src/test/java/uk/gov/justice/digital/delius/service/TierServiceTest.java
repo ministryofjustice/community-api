@@ -34,12 +34,14 @@ public class TierServiceTest {
     private StandardReferenceRepository standardReferenceRepository;
     @Mock
     private ManagementTierRepository managementTierRepository;
+    @Mock
+    private ReferenceDataService referenceDataService;
 
     private TierService service;
 
     @BeforeEach
     void setUp() {
-        service = new TierService(managementTierRepository, standardReferenceRepository, telemetryClient, offenderRepository);
+        service = new TierService(managementTierRepository, standardReferenceRepository, telemetryClient, offenderRepository, referenceDataService);
     }
 
     @Nested
@@ -55,7 +57,7 @@ public class TierServiceTest {
             Optional<Offender> offender = Optional.of(anOffender());
             when(offenderRepository.findByCrn(crn)).thenReturn(offender);
             when(standardReferenceRepository.findByCodeAndCodeSetName(String.format("U%s",tier), "TIER")).thenReturn(Optional.of(new StandardReference()));
-            when(standardReferenceRepository.findByCodeAndCodeSetName("ATS", "TIER CHANGE REASON")).thenReturn(Optional.of(new StandardReference()));
+            when(referenceDataService.getAtsTierChangeReason()).thenReturn(Optional.of(new StandardReference()));
             service.updateTier(crn, tier);
             verify(telemetryClient).trackEvent("TierUpdateSuccess", telemetryProperties, null);
         }

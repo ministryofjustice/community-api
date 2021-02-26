@@ -9,7 +9,6 @@ import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ManagementTier;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ManagementTierId;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
-import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ManagementTierRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StandardReferenceRepository;
@@ -26,12 +25,13 @@ public class TierService {
     private final StandardReferenceRepository standardReferenceRepository;
     private final TelemetryClient telemetryClient;
     private final OffenderRepository offenderRepository;
+    private final ReferenceDataService referenceDataService;
 
 
     @Transactional
     public void updateTier(String crn, String tier) {
-        Map<String, String> telemetryProperties = Map.of("crn", crn, "tier", tier);
-        final Long offenderId = getOffender(crn, telemetryProperties);
+        final var telemetryProperties = Map.of("crn", crn, "tier", tier);
+        final var offenderId = getOffender(crn, telemetryProperties);
 
         writeTierUpdate(tier, telemetryProperties, offenderId);
 
@@ -43,9 +43,9 @@ public class TierService {
     }
 
     private void writeTierUpdate(String tier, Map<String, String> telemetryProperties, Long offenderId) {
-        final StandardReference updatedTier = standardReferenceRepository.findByCodeAndCodeSetName(String.format("U%s", tier), "TIER").orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTierNotFound", String.format("Tier %s not found", tier)));
+        final var updatedTier = standardReferenceRepository.findByCodeAndCodeSetName(String.format("U%s", tier), "TIER").orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTierNotFound", String.format("Tier %s not found", tier)));
 
-        final StandardReference changeReason = standardReferenceRepository.findByCodeAndCodeSetName("ATS", "TIER CHANGE REASON").orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTierChangeReasonNotFound", "Tier change reason ATS not found"));
+        final var changeReason = referenceDataService.getAtsTierChangeReason().orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTierChangeReasonNotFound", "Tier change reason ATS not found"));
 
         ManagementTier newTier = ManagementTier
             .builder()
