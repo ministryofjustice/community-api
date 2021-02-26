@@ -9,20 +9,21 @@ import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ManagementTier;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ManagementTierId;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ManagementTierRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StandardReferenceRepository;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
 @AllArgsConstructor
 public class TierService {
 
-    private final ManagementTierRepository managementTierRepository;
-    private final StandardReferenceRepository standardReferenceRepository;
+    private final ManagementTierRepository managementTierRepository;;
     private final TelemetryClient telemetryClient;
     private final OffenderRepository offenderRepository;
     private final ReferenceDataService referenceDataService;
@@ -43,7 +44,7 @@ public class TierService {
     }
 
     private void writeTierUpdate(String tier, Map<String, String> telemetryProperties, Long offenderId) {
-        final var updatedTier = standardReferenceRepository.findByCodeAndCodeSetName(String.format("U%s", tier), "TIER").orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTierNotFound", String.format("Tier %s not found", tier)));
+        final var updatedTier = referenceDataService.getTier(tierWithUPrefix(tier)).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTierNotFound", String.format("Tier %s not found", tier)));
 
         final var changeReason = referenceDataService.getAtsTierChangeReason().orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTierChangeReasonNotFound", "Tier change reason ATS not found"));
 
@@ -59,6 +60,10 @@ public class TierService {
             .build();
 
         managementTierRepository.save(newTier);
+    }
+
+    private String tierWithUPrefix(String tier) {
+        return String.format("U%s", tier);
     }
 
     private NotFoundException logAndThrow(Map<String, String> telemetryProperties, String event, String exceptionReason) {

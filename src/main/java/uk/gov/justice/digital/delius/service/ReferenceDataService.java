@@ -191,6 +191,10 @@ public class ReferenceDataService {
         return standardReferenceRepository.findByCodeAndCodeSetName("ATS", "TIER CHANGE REASON");
     }
 
+    public Optional<StandardReference> getTier(String tier) {
+        return standardReferenceRepository.findByCodeAndCodeSetName(tier, "TIER");
+    }
+
     private boolean getPossibleActiveLdus(District district) {
         return ynToBoolean(district.getSelectable()) || district.getCode().endsWith("UAT") || district.getCode().endsWith("UNA") || district.getCode().endsWith("IAV");
     }

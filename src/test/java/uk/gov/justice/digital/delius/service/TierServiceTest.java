@@ -13,7 +13,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ManagementTierRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
-import uk.gov.justice.digital.delius.jpa.standard.repository.StandardReferenceRepository;
 
 import java.util.Map;
 import java.util.Optional;
@@ -31,8 +30,6 @@ public class TierServiceTest {
     @Mock
     private TelemetryClient telemetryClient;
     @Mock
-    private StandardReferenceRepository standardReferenceRepository;
-    @Mock
     private ManagementTierRepository managementTierRepository;
     @Mock
     private ReferenceDataService referenceDataService;
@@ -41,7 +38,7 @@ public class TierServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new TierService(managementTierRepository, standardReferenceRepository, telemetryClient, offenderRepository, referenceDataService);
+        service = new TierService(managementTierRepository, telemetryClient, offenderRepository, referenceDataService);
     }
 
     @Nested
@@ -56,7 +53,7 @@ public class TierServiceTest {
                 "tier", tier, "crn", crn);
             Optional<Offender> offender = Optional.of(anOffender());
             when(offenderRepository.findByCrn(crn)).thenReturn(offender);
-            when(standardReferenceRepository.findByCodeAndCodeSetName(String.format("U%s",tier), "TIER")).thenReturn(Optional.of(new StandardReference()));
+            when(referenceDataService.getTier(String.format("U%s",tier))).thenReturn(Optional.of(new StandardReference()));
             when(referenceDataService.getAtsTierChangeReason()).thenReturn(Optional.of(new StandardReference()));
             service.updateTier(crn, tier);
             verify(telemetryClient).trackEvent("TierUpdateSuccess", telemetryProperties, null);
@@ -71,7 +68,7 @@ public class TierServiceTest {
                 "tier", tier, "crn", crn);
             Optional<Offender> offender = Optional.of(anOffender());
             when(offenderRepository.findByCrn(crn)).thenReturn(offender);
-            when(standardReferenceRepository.findByCodeAndCodeSetName(String.format("U%s",tier), "TIER")).thenReturn(Optional.ofNullable(null));
+            when(referenceDataService.getTier(String.format("U%s",tier))).thenReturn(Optional.ofNullable(null));
             try {
                 service.updateTier(crn, tier);
                 fail("Should have thrown a NotFoundException");
@@ -89,7 +86,7 @@ public class TierServiceTest {
                 "tier", tier, "crn", crn);
             Optional<Offender> offender = Optional.of(anOffender());
             when(offenderRepository.findByCrn(crn)).thenReturn(offender);
-            when(standardReferenceRepository.findByCodeAndCodeSetName(String.format("U%s",tier), "TIER")).thenReturn(Optional.of(new StandardReference()));
+            when(referenceDataService.getTier(String.format("U%s",tier))).thenReturn(Optional.of(new StandardReference()));
             try {
                 service.updateTier(crn, tier);
                 fail("Should have thrown a NotFoundException");
