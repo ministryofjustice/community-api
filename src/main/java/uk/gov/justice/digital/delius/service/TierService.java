@@ -31,9 +31,19 @@ public class TierService {
     @Transactional
     public void updateTier(String crn, String tier) {
         Map<String, String> telemetryProperties = Map.of("crn", crn, "tier", tier);
-        final Long offenderId = offenderRepository.findByCrn(crn).map(Offender::getOffenderId).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureOffenderNotFound", String.format("Offender with CRN %s not found", crn)));
+        final Long offenderId = getOffender(crn, telemetryProperties);
 
-        final StandardReference updatedTier = standardReferenceRepository.findByCodeAndCodeSetName(String.format("U%s",tier), "TIER").orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTierNotFound", String.format("Tier %s not found", tier)));
+        writeTierUpdate(tier, telemetryProperties, offenderId);
+
+        telemetryClient.trackEvent("TierUpdateSuccess", telemetryProperties, null);
+    }
+
+    private Long getOffender(String crn, Map<String, String> telemetryProperties) {
+        return offenderRepository.findByCrn(crn).map(Offender::getOffenderId).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureOffenderNotFound", String.format("Offender with CRN %s not found", crn)));
+    }
+
+    private void writeTierUpdate(String tier, Map<String, String> telemetryProperties, Long offenderId) {
+        final StandardReference updatedTier = standardReferenceRepository.findByCodeAndCodeSetName(String.format("U%s", tier), "TIER").orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTierNotFound", String.format("Tier %s not found", tier)));
 
         final StandardReference changeReason = standardReferenceRepository.findByCodeAndCodeSetName("ATS", "TIER CHANGE REASON").orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTierChangeReasonNotFound", "Tier change reason ATS not found"));
 
@@ -49,8 +59,6 @@ public class TierService {
             .build();
 
         managementTierRepository.save(newTier);
-
-        telemetryClient.trackEvent("TierUpdateSuccess", telemetryProperties, null);
     }
 
     private NotFoundException logAndThrow(Map<String, String> telemetryProperties, String event, String exceptionReason) {
