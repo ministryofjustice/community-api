@@ -33,13 +33,16 @@ public class ManagementTier {
     @EmbeddedId ManagementTierId id;
 
     @Column(name = "PARTITION_AREA_ID")
-    private Long partitionAreaId;
+    @Builder.Default
+    private Long partitionAreaId = 0L;
 
     @Column(name = "SOFT_DELETED")
-    private Integer softDeleted;
+    @Builder.Default
+    private Long softDeleted = 0L;
 
     @Column(name = "ROW_VERSION")
-    private Long rowVersion;
+    @Builder.Default
+    private Long rowVersion = 1L;
 
     @ManyToOne
     @JoinColumn(name = "TIER_CHANGE_REASON_ID")

@@ -22,10 +22,6 @@ import java.util.Map;
 @AllArgsConstructor
 public class TierService {
 
-    private static final long INSERTED = 1L;
-    private static final int NOT_DELETED = 0;
-    private static final long UNUSED_FIELD = 0L;
-
     private final ManagementTierRepository managementTierRepository;
     private final StandardReferenceRepository standardReferenceRepository;
     private final TelemetryClient telemetryClient;
@@ -50,9 +46,6 @@ public class TierService {
                 .dateChanged(LocalDateTime.now())
                 .build())
             .tierChangeReason(changeReason)
-            .rowVersion(INSERTED)
-            .partitionAreaId(UNUSED_FIELD)
-            .softDeleted(NOT_DELETED)
             .build();
 
         managementTierRepository.save(newTier);
