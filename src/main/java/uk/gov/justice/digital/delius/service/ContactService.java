@@ -40,6 +40,7 @@ public class ContactService {
     private static final String RESPONSIBLE_OFFICER_CHANGE_CONTACT_TYPE = "ROC";
     private static final String PRISON_LOCATION_CHANGE_CONTACT_TYPE = "ETCP";
     private static final String CUSTODY_AUTO_UPDATE_CONTACT_TYPE = "EDSS";
+    private static final String TIER_UPDATE_CONTACT_TYPE = "ETCH20";
     public static final String DELIUS_DATE_FORMAT = "E MMM dd yyyy"; // e.g. "Tue Nov 24 2020"
     private final ContactRepository contactRepository;
     private final ContactTypeRepository contactTypeRepository;
@@ -124,7 +125,7 @@ public class ContactService {
     }
 
     @Transactional
-    public void addContactForTierUpdate(Long offenderId, LocalDateTime date, String tier, String reason, Staff staff, Team team){
+    public void addContactForTierUpdate(final Long offenderId, final LocalDateTime date, final String tier, final String reason, final Staff staff, final Team team){
         contactRepository.save(builder()
             .contactDate(LocalDate.now())
             .offenderId(offenderId)
@@ -137,7 +138,7 @@ public class ContactService {
             .teamProviderId(team.getTeamId())
             .probationArea(team.getProbationArea())
             .team(team)
-            .contactType(contactTypeRepository.findByCode("ETCH20").orElseThrow(() -> new NotFoundException("Cannot find contact type for tier update")))
+            .contactType(contactTypeRepository.findByCode(TIER_UPDATE_CONTACT_TYPE).orElseThrow(() -> new NotFoundException("Cannot find contact type for tier update")))
             .build());
     }
 

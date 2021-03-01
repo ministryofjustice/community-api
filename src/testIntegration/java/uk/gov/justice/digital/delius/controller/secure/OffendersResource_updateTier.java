@@ -3,7 +3,6 @@ package uk.gov.justice.digital.delius.controller.secure;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import uk.gov.justice.digital.delius.FlywayRestoreExtension;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
@@ -21,9 +20,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @ExtendWith(FlywayRestoreExtension.class)
 public class OffendersResource_updateTier extends IntegrationTestBase {
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private ManagementTierRepository managementTierRepository;
@@ -57,14 +53,8 @@ public class OffendersResource_updateTier extends IntegrationTestBase {
         assertThat(tierB1.getTierChangeReason().getCodeValue()).isEqualTo("ATS");
 
         List<Contact> updatedContacts = contactService.contactsFor(2500343964L, contactFilter);
-        System.out.println("+++++++++++++");
-        System.out.println(updatedContacts.size());
-        assertThat(updatedContacts.stream().anyMatch(c -> {
-            System.out.println("============");
-            System.out.println(c.getNotes());
-            return c.getNotes().contains("Tier: UB1");
 
-        })).isTrue();
+        assertThat(updatedContacts.stream().anyMatch(c ->  c.getNotes().contains("Tier: UB1"))).isTrue();
     }
 
     @Test
