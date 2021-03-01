@@ -33,7 +33,6 @@ public class OffendersResource_updateTier extends IntegrationTestBase {
 
     private ContactFilter contactFilter = ContactFilter.builder()
         .contactTypes(Optional.of(Collections.singletonList("ETCH20")))
-
         .build();
 
     @Test

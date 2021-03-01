@@ -10,23 +10,23 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ManagementTier;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ManagementTierId;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ManagementTierRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
-import uk.gov.justice.digital.delius.jpa.standard.repository.StandardReferenceRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.TeamRepository;
 
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @Slf4j
 @AllArgsConstructor
 public class TierService {
 
-    private final ManagementTierRepository managementTierRepository;;
+    private final ManagementTierRepository managementTierRepository;
     private final TelemetryClient telemetryClient;
     private final OffenderRepository offenderRepository;
     private final ReferenceDataService referenceDataService;
@@ -46,13 +46,21 @@ public class TierService {
 
         writeTierUpdate(tierWithUPrefix, telemetryProperties, offenderId, changeReason);
 
-        String areaCode = offender.getActiveCommunityOffenderManager().map(o -> o.getProbationArea().getCode()).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureActiveCommunityOffenderManagerNotFound", String.format("Could not find active community manager for crn %s",crn)));
+        OffenderManager offenderManager = offender.getActiveCommunityOffenderManager().orElseThrow(() ->  logAndThrow(telemetryProperties, "TierUpdateFailureActiveCommunityOffenderManagerNotFound", String.format("Could not find active community manager for crn %s", crn)));
+        Staff staff;
+        Team team;
+        try {
+            String areaCode = offenderManager.getProbationArea().getCode();
+            String staffCode = String.format("%sUTSO", areaCode);
+            staff = staffRepository.findByOfficerCode(staffCode).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureStaffNotFound", String.format("Could not find staff with officer code %s", staffCode)));
+            String teamCode = String.format("%sUTS", areaCode);
+            team = teamRepository.findByCode(teamCode).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTeamNotFound", String.format("Could not find team with code %s", teamCode)));
+        } catch (NotFoundException e) {
+            staff = offenderManager.getStaff();
+            team = offenderManager.getTeam();
+        }
 
-        String staffCode = String.format("%sUTSO", areaCode);
-        final var staff = staffRepository.findByOfficerCode(staffCode).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureStaffNotFound", String.format("Could not find staff with officer code",staffCode)));
-        String teamCode = String.format("%sUTS", areaCode);
-        final var team = teamRepository.findByCode(teamCode).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTeamNotFound", String.format("Could not find team with code",teamCode)));
-        contactService.addContactForTierUpdate(offenderId,LocalDateTime.now(),tierWithUPrefix,changeReason.getCodeDescription(),staff, team);
+        contactService.addContactForTierUpdate(offenderId, LocalDateTime.now(), tierWithUPrefix, changeReason.getCodeDescription(), staff, team);
 
         telemetryClient.trackEvent("TierUpdateSuccess", telemetryProperties, null);
     }
