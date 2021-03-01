@@ -8,8 +8,8 @@ public class RecallTransformer {
 
     public static OffenderRecall offenderRecallOf(Recall recall) {
         final var reason = KeyValue.builder()
-                .code(recall.getReason().getCodeValue())
-                .description(recall.getReason().getCodeDescription())
+                .code(recall.getReason().getCode())
+                .description(recall.getReason().getDescription())
                 .build();
         return OffenderRecall.builder()
                 .date(recall.getRecallDate().toLocalDate())
