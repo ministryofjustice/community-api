@@ -118,7 +118,7 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffenderTest extends 
     private OffenderRecall.OffenderRecallBuilder expectedOffenderRecallBuilder() {
         return OffenderRecall.builder()
                 .date(LocalDate.of(2019, 10, 10))
-                .reason(KeyValue.builder().code("R").description("Rejected").build())
+                .reason(KeyValue.builder().code("S").description("Non-Compliance").build())
                 .notes("Recall notes");
     }
 

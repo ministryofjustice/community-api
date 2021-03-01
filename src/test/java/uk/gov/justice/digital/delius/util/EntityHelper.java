@@ -51,6 +51,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.RCourtReportType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RInstitution;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RReferralType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Recall;
+import uk.gov.justice.digital.delius.jpa.standard.entity.RecallReason;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Referral;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ReferralDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Release;
@@ -832,7 +833,7 @@ public class EntityHelper {
         return Recall
                 .builder()
                 .notes("Naughty")
-                .reason(StandardReference.builder().build())
+                .reason(RecallReason.builder().build())
                 .recallDate(LocalDateTime.now())
                 .releaseId(99L)
                 .softDeleted(0L)
