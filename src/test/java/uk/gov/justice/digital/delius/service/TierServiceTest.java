@@ -13,14 +13,17 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ManagementTierRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.TeamRepository;
 
 import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.fail;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.digital.delius.util.EntityHelper.anOffender;
+import static uk.gov.justice.digital.delius.util.EntityHelper.*;
 
 @ExtendWith(MockitoExtension.class)
 public class TierServiceTest {
@@ -33,12 +36,18 @@ public class TierServiceTest {
     private ManagementTierRepository managementTierRepository;
     @Mock
     private ReferenceDataService referenceDataService;
+    @Mock
+    private ContactService contactService;
+    @Mock
+    private StaffRepository staffRepository;
+    @Mock
+    private TeamRepository teamRepository;
 
     private TierService service;
 
     @BeforeEach
     void setUp() {
-        service = new TierService(managementTierRepository, telemetryClient, offenderRepository, referenceDataService);
+        service = new TierService(managementTierRepository, telemetryClient, offenderRepository, referenceDataService, contactService, staffRepository, teamRepository);
     }
 
     @Nested
@@ -50,11 +59,13 @@ public class TierServiceTest {
             String crn = "X123456";
             String tier = "A1";
             final var telemetryProperties = Map.of(
-                "tier", tier, "crn", crn);
+                "tier", "U" + tier, "crn", crn);
             Optional<Offender> offender = Optional.of(anOffender());
             when(offenderRepository.findByCrn(crn)).thenReturn(offender);
-            when(referenceDataService.getTier(String.format("U%s",tier))).thenReturn(Optional.of(new StandardReference()));
+            when(referenceDataService.getTier(String.format("U%s", tier))).thenReturn(Optional.of(new StandardReference()));
             when(referenceDataService.getAtsTierChangeReason()).thenReturn(Optional.of(new StandardReference()));
+            when(staffRepository.findByOfficerCode(anyString())).thenReturn(Optional.of(aStaff()));
+            when(teamRepository.findByCode(anyString())).thenReturn(Optional.of(aTeam()));
             service.updateTier(crn, tier);
             verify(telemetryClient).trackEvent("TierUpdateSuccess", telemetryProperties, null);
         }
@@ -65,10 +76,12 @@ public class TierServiceTest {
             String crn = "X123456";
             String tier = "NOTFOUND";
             final var telemetryProperties = Map.of(
-                "tier", tier, "crn", crn);
+                "tier", "U" + tier, "crn", crn);
             Optional<Offender> offender = Optional.of(anOffender());
             when(offenderRepository.findByCrn(crn)).thenReturn(offender);
-            when(referenceDataService.getTier(String.format("U%s",tier))).thenReturn(Optional.ofNullable(null));
+            when(referenceDataService.getAtsTierChangeReason()).thenReturn(Optional.of(new StandardReference()));
+
+            when(referenceDataService.getTier(String.format("U%s", tier))).thenReturn(Optional.ofNullable(null));
             try {
                 service.updateTier(crn, tier);
                 fail("Should have thrown a NotFoundException");
@@ -83,10 +96,9 @@ public class TierServiceTest {
             String crn = "X123456";
             String tier = "A2";
             final var telemetryProperties = Map.of(
-                "tier", tier, "crn", crn);
+                "tier", "U" + tier, "crn", crn);
             Optional<Offender> offender = Optional.of(anOffender());
             when(offenderRepository.findByCrn(crn)).thenReturn(offender);
-            when(referenceDataService.getTier(String.format("U%s",tier))).thenReturn(Optional.of(new StandardReference()));
             try {
                 service.updateTier(crn, tier);
                 fail("Should have thrown a NotFoundException");
@@ -101,13 +113,57 @@ public class TierServiceTest {
             String crn = "NOTFOUND";
             String tier = "A1";
             final var telemetryProperties = Map.of(
-                "tier", tier, "crn", crn);
+                "tier", "U" + tier, "crn", crn);
             when(offenderRepository.findByCrn(crn)).thenReturn(Optional.ofNullable(null));
             try {
                 service.updateTier(crn, tier);
                 fail("Should have thrown a NotFoundException");
             } catch (NotFoundException e) {
                 verify(telemetryClient).trackEvent("TierUpdateFailureOffenderNotFound", telemetryProperties, null);
+            }
+        }
+
+        @Nested
+        @DisplayName("writeContact")
+        class WriteContact {
+            @Test
+            @DisplayName("fires failure telemetry event when staff not found")
+            void firesFailureTelemetryEventWhenStaffNotFound() {
+                String crn = "X123456";
+                String tier = "A2";
+                final var telemetryProperties = Map.of(
+                    "tier", "U" + tier, "crn", crn);
+                Optional<Offender> offender = Optional.of(anOffender());
+                when(offenderRepository.findByCrn(crn)).thenReturn(offender);
+                when(referenceDataService.getAtsTierChangeReason()).thenReturn(Optional.of(new StandardReference()));
+                when(referenceDataService.getTier(String.format("U%s", tier))).thenReturn(Optional.ofNullable(new StandardReference()));
+
+                try {
+                    service.updateTier(crn, tier);
+                    fail("Should have thrown a NotFoundException");
+                } catch (NotFoundException e) {
+                    verify(telemetryClient).trackEvent("TierUpdateFailureStaffNotFound", telemetryProperties, null);
+                }
+            }
+
+            @Test
+            @DisplayName("fires failure telemetry event when team not found")
+            void firesFailureTelemetryEventWhenTeamNotFound() {
+                String crn = "X123456";
+                String tier = "A2";
+                final var telemetryProperties = Map.of(
+                    "tier", "U" + tier, "crn", crn);
+                Optional<Offender> offender = Optional.of(anOffender());
+                when(offenderRepository.findByCrn(crn)).thenReturn(offender);
+                when(referenceDataService.getAtsTierChangeReason()).thenReturn(Optional.of(new StandardReference()));
+                when(referenceDataService.getTier(String.format("U%s", tier))).thenReturn(Optional.ofNullable(new StandardReference()));
+                when(staffRepository.findByOfficerCode(anyString())).thenReturn(Optional.of(aStaff()));
+                try {
+                    service.updateTier(crn, tier);
+                    fail("Should have thrown a NotFoundException");
+                } catch (NotFoundException e) {
+                    verify(telemetryClient).trackEvent("TierUpdateFailureTeamNotFound", telemetryProperties, null);
+                }
             }
         }
     }

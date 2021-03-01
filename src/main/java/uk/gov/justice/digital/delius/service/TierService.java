@@ -9,10 +9,13 @@ import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ManagementTier;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ManagementTierId;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ManagementTierRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StandardReferenceRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.TeamRepository;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -27,26 +30,39 @@ public class TierService {
     private final TelemetryClient telemetryClient;
     private final OffenderRepository offenderRepository;
     private final ReferenceDataService referenceDataService;
+    private final ContactService contactService;
+    private final StaffRepository staffRepository;
+    private final TeamRepository teamRepository;
 
 
     @Transactional
     public void updateTier(String crn, String tier) {
-        final var telemetryProperties = Map.of("crn", crn, "tier", tier);
-        final var offenderId = getOffender(crn, telemetryProperties);
+        final var tierWithUPrefix = tierWithUPrefix(tier);
+        final var telemetryProperties = Map.of("crn", crn, "tier", tierWithUPrefix);
+        final var offender = getOffender(crn, telemetryProperties);
 
-        writeTierUpdate(tier, telemetryProperties, offenderId);
+        final var offenderId = offender.getOffenderId();
+        final var changeReason = referenceDataService.getAtsTierChangeReason().orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTierChangeReasonNotFound", "Tier change reason ATS not found"));
+
+        writeTierUpdate(tierWithUPrefix, telemetryProperties, offenderId, changeReason);
+
+        String areaCode = offender.getActiveCommunityOffenderManager().map(o -> o.getProbationArea().getCode()).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureActiveCommunityOffenderManagerNotFound", String.format("Could not find active community manager for crn %s",crn)));
+
+        String staffCode = String.format("%sUTSO", areaCode);
+        final var staff = staffRepository.findByOfficerCode(staffCode).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureStaffNotFound", String.format("Could not find staff with officer code",staffCode)));
+        String teamCode = String.format("%sUTS", areaCode);
+        final var team = teamRepository.findByCode(teamCode).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTeamNotFound", String.format("Could not find team with code",teamCode)));
+        contactService.addContactForTierUpdate(offenderId,LocalDateTime.now(),tierWithUPrefix,changeReason.getCodeDescription(),staff, team);
 
         telemetryClient.trackEvent("TierUpdateSuccess", telemetryProperties, null);
     }
 
-    private Long getOffender(String crn, Map<String, String> telemetryProperties) {
-        return offenderRepository.findByCrn(crn).map(Offender::getOffenderId).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureOffenderNotFound", String.format("Offender with CRN %s not found", crn)));
+    private Offender getOffender(String crn, Map<String, String> telemetryProperties) {
+        return offenderRepository.findByCrn(crn).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureOffenderNotFound", String.format("Offender with CRN %s not found", crn)));
     }
 
-    private void writeTierUpdate(String tier, Map<String, String> telemetryProperties, Long offenderId) {
-        final var updatedTier = referenceDataService.getTier(tierWithUPrefix(tier)).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTierNotFound", String.format("Tier %s not found", tier)));
-
-        final var changeReason = referenceDataService.getAtsTierChangeReason().orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTierChangeReasonNotFound", "Tier change reason ATS not found"));
+    private void writeTierUpdate(String tier, Map<String, String> telemetryProperties, Long offenderId, StandardReference changeReason) {
+        final var updatedTier = referenceDataService.getTier(tier).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTierNotFound", String.format("Tier %s not found", tier)));
 
         ManagementTier newTier = ManagementTier
             .builder()

@@ -3,6 +3,7 @@ package uk.gov.justice.digital.delius.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
@@ -20,6 +21,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeReposito
 import uk.gov.justice.digital.delius.transformers.ContactTransformer;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -45,7 +47,6 @@ public class ContactService {
     public List<Contact> contactsFor(final Long offenderId, final ContactFilter filter) {
         return ContactTransformer.contactsOf(contactRepository.findAll(filter.toBuilder().offenderId(offenderId).build()));
     }
-
 
     @Transactional
     public void addContactForPOMAllocation(final PrisonOffenderManager newPrisonOffenderManager) {
@@ -106,7 +107,6 @@ public class ContactService {
                 notesForPrisonLocationChange(event));
     }
 
-
     @Transactional
     public void addContactForBookingNumberUpdate(final Offender offender, final Event event) {
         addContactForCustodyChange(offender,
@@ -115,13 +115,30 @@ public class ContactService {
                 notesForBookingNumbUpdate(event));
     }
 
-
     @Transactional
     public void addContactForBulkCustodyKeyDateUpdate(final Offender offender, final Event event, final Map<String, LocalDate> datesAmendedOrUpdated, final Map<String, LocalDate> datesRemoved) {
         addContactForCustodyChange(offender,
                 event,
                 contactTypeForCustodyAutoUpdate(),
                 notesForKeyDatesUpdate(datesAmendedOrUpdated, datesRemoved));
+    }
+
+    @Transactional
+    public void addContactForTierUpdate(Long offenderId, LocalDateTime date, String tier, String reason, Staff staff, Team team){
+        contactRepository.save(builder()
+            .contactDate(LocalDate.now())
+            .offenderId(offenderId)
+            .contactStartTime(LocalTime.now())
+            .notes(String.format(
+                "Tier Change Date: %s\n" +
+                "Tier: %s\n" + "Tier Change Reason: %s",DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").format(date),tier,reason))
+            .staff(staff)
+            .staffEmployeeId(staff.getStaffId())
+            .teamProviderId(team.getTeamId())
+            .probationArea(team.getProbationArea())
+            .team(team)
+            .contactType(contactTypeRepository.findByCode("ETCH20").orElseThrow(() -> new NotFoundException("Cannot find contact type for tier update")))
+            .build());
     }
 
     private String notesForKeyDatesUpdate(final Map<String, LocalDate> datesAmendedOrUpdated, final Map<String, LocalDate> datesRemoved) {
