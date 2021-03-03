@@ -33,6 +33,7 @@ public class TierService {
     private final ContactService contactService;
     private final StaffRepository staffRepository;
     private final TeamRepository teamRepository;
+    private final SpgNotificationService spgNotificationService;
 
 
     @Transactional
@@ -61,7 +62,7 @@ public class TierService {
         }
 
         contactService.addContactForTierUpdate(offenderId, LocalDateTime.now(), tierWithUPrefix, changeReason.getCodeDescription(), staff, team);
-
+        spgNotificationService.notifyUpdateOfOffender(offender);
         telemetryClient.trackEvent("TierUpdateSuccess", telemetryProperties, null);
     }
 

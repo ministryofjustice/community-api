@@ -45,12 +45,14 @@ public class TierServiceTest {
     private StaffRepository staffRepository;
     @Mock
     private TeamRepository teamRepository;
+    @Mock
+    private SpgNotificationService spgNotificationService;
 
     private TierService service;
 
     @BeforeEach
     void setUp() {
-        service = new TierService(managementTierRepository, telemetryClient, offenderRepository, referenceDataService, contactService, staffRepository, teamRepository);
+        service = new TierService(managementTierRepository, telemetryClient, offenderRepository, referenceDataService, contactService, staffRepository, teamRepository, spgNotificationService);
     }
 
     @Nested
@@ -71,6 +73,23 @@ public class TierServiceTest {
             when(teamRepository.findByCode(anyString())).thenReturn(Optional.of(aTeam()));
             service.updateTier(crn, tier);
             verify(telemetryClient).trackEvent("TierUpdateSuccess", telemetryProperties, null);
+        }
+
+        @Test
+        @DisplayName("Creates SPG notification message")
+        void createsSpgMessage() {
+            String crn = "X123456";
+            String tier = "A1";
+            final var telemetryProperties = Map.of(
+                "tier", "U" + tier, "crn", crn);
+            Optional<Offender> offender = Optional.of(anOffender());
+            when(offenderRepository.findByCrn(crn)).thenReturn(offender);
+            when(referenceDataService.getTier(String.format("U%s", tier))).thenReturn(Optional.of(new StandardReference()));
+            when(referenceDataService.getAtsTierChangeReason()).thenReturn(Optional.of(new StandardReference()));
+            when(staffRepository.findByOfficerCode(anyString())).thenReturn(Optional.of(aStaff()));
+            when(teamRepository.findByCode(anyString())).thenReturn(Optional.of(aTeam()));
+            service.updateTier(crn, tier);
+            verify(spgNotificationService).notifyUpdateOfOffender(offender.get());
         }
 
         @Test
