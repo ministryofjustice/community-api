@@ -76,7 +76,7 @@ public class TierServiceTest {
         }
 
         @Test
-        @DisplayName("fires success telemetry event")
+        @DisplayName("Creates SPG notification message")
         void createsSpgMessage() {
             String crn = "X123456";
             String tier = "A1";
