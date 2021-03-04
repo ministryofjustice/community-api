@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.delius.data.api.deliusapi;
+package uk.gov.justice.digital.delius.data.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NewNsiManager {
-    private String staff;
-    private String team;
-    private String provider;
+public class ReferralSentResponse {
+    private Long nsiId;
 }

@@ -5,12 +5,18 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.ReferralSentRequest;
+import uk.gov.justice.digital.delius.data.api.ReferralSentResponse;
 import uk.gov.justice.digital.delius.service.ReferralService;
 
 import javax.validation.Valid;
@@ -35,9 +41,9 @@ public class ReferralController {
                 @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
 
-    @ApiOperation(value = "Adds a sent referral contact entry to the contact log")
-    public ResponseEntity<String> createReferralSent(final @PathVariable("crn") String crn,
-                                                     final @RequestBody @Valid ReferralSentRequest referralSentRequest) {
-        return referralService.createReferralSent(crn, referralSentRequest);
+    @ApiOperation(value = "Creates an NSI referral")
+    public ResponseEntity<ReferralSentResponse> createReferralSent(final @PathVariable("crn") String crn,
+                                                                   final @RequestBody @Valid ReferralSentRequest referralSentRequest) {
+        return new ResponseEntity<>(referralService.createNsiReferral(crn, referralSentRequest), HttpStatus.OK);
     }
 }

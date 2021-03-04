@@ -1,100 +1,42 @@
 package uk.gov.justice.digital.delius.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.data.api.ReferralSentRequest;
-import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
+import uk.gov.justice.digital.delius.data.api.ReferralSentResponse;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewNsi;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewNsiManager;
-import uk.gov.justice.digital.delius.data.api.deliusapi.NsiDto;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
 @Service
 public class ReferralService {
-    private final WebClient webClient;
+    DeliusApiClient deliusApiClient;
 
-    private final OffenderService offenderService;
+    NsiService nsiService;
 
-    private final NsiService nsiService;
+    OffenderService offenderService;
 
-    @Autowired
-    public ReferralService(@Qualifier("deliusApiWebClient") final WebClient webClient, final OffenderService offenderService, final NsiService nsiService) {
-        this.webClient = webClient;
-        this.offenderService = offenderService;
+    public ReferralService(final DeliusApiClient deliusApiClient, final NsiService nsiService, final OffenderService offenderService) {
+        this.deliusApiClient = deliusApiClient;
         this.nsiService = nsiService;
+        this.offenderService = offenderService;
     }
 
     @Transactional
-    public ResponseEntity<String> createReferralSent(final String crn,
-                                                     final ReferralSentRequest referralSent) {
-
-        var nsiId = createOrGetNsiId(crn, referralSent);
-
-        var contact = NewContact.builder()
-            .offenderCrn(crn)
-            .type(referralSent.getReferralType())
-            .provider(referralSent.getProviderCode())
-            .team(referralSent.getTeamCode())
-            .staff(referralSent.getStaffCode())
-            .date(referralSent.getDate())
-            .notes(referralSent.getNotes())
-            .eventId(referralSent.getConvictionId())
-            .requirementId(referralSent.getRequirementId())
-            //.nsiId(nsiId) //TODO: currently not possible to associate with NSI
-            .build();
-
-        return webClient.post()
-            .uri("/v1/contact")
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-            .bodyValue(contact)
-            .retrieve()
-            .toEntity(String.class)
-            .block();
-    }
-
-    private Optional<Nsi> getExistingMatchingNsi(String crn, ReferralSentRequest referralSent) {
-        // determine if there is an existing suitable NSI
-        var offenderId = offenderService.offenderIdOfCrn(crn).orElseThrow();
-
-        var existingNsis = nsiService.getNsiByCodes(offenderId, referralSent.getConvictionId(), Arrays.asList(referralSent.getNsiType()))
-            .map(wrapper -> wrapper.getNsis().stream()
-                .filter(nsi -> nsi.getNsiSubType().getCode().equals(referralSent.getNsiSubType()))
-                .filter(nsi -> nsi.getReferralDate().equals(referralSent.getDate()))
-                .filter(nsi -> nsi.getNsiStatus().equals(referralSent.getNsiStatus()))
-                .filter(nsi -> nsi.getRequirement().getRequirementId().equals(referralSent.getRequirementId()))
-                .filter(nsi -> nsi.getIntendedProvider().getCode().equals(referralSent.getIntendedProvider()))
-                .filter(nsi -> nsi.getNsiManagers().stream().anyMatch(nsiManager -> nsiManager.getStaff().getStaffCode().equals(referralSent.getStaffCode())
-                    && nsiManager.getProbationArea().getCode().equals(referralSent.getProviderCode())
-                    && nsiManager.getTeam().getCode().equals(referralSent.getTeamCode())))
-                .collect(toList())
-            ).orElseThrow(() -> new RuntimeException("Offender ID not found"));
-
-        if(existingNsis.size() > 1) {
-            throw new RuntimeException("Multiple existing matching NSIs found");
-        }
-        return Optional.of(existingNsis.get(0));
-    }
-
-    private Long createOrGetNsiId(String crn, ReferralSentRequest referralSent) {
+    public ReferralSentResponse createNsiReferral(final String crn,
+                                                  final ReferralSentRequest referralSent) {
         var existingNsi = getExistingMatchingNsi(crn, referralSent);
 
         if(existingNsi.isPresent()) {
-            return existingNsi.get().getNsiId();
+            return ReferralSentResponse.builder().nsiId(existingNsi.get().getNsiId()).build();
         }
 
-        var newNsi = NewNsi.builder()
+        var newNsiRequest = NewNsi.builder()
             .type(referralSent.getNsiType())
             .subType(referralSent.getNsiSubType())
             .offenderCrn(crn)
@@ -103,8 +45,8 @@ public class ReferralService {
             .referralDate(referralSent.getDate())
             .status(referralSent.getNsiStatus())
             .statusDate(referralSent.getDate().atStartOfDay())
-            .notes(referralSent.getNsiNotes())
-            .intendedProvider(referralSent.getIntendedProvider())
+            .notes(referralSent.getNotes())
+            .intendedProvider(referralSent.getProviderCode())
             .manager(NewNsiManager.builder()
                 .staff(referralSent.getStaffCode())
                 .team(referralSent.getTeamCode())
@@ -112,13 +54,32 @@ public class ReferralService {
                 .build()
             ).build();
 
-        return webClient.post()
-            .uri("/v1/nsi")
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-            .bodyValue(newNsi)
-            .retrieve()
-            .toEntity(NsiDto.class)
-            .block().getBody().getId();
+        var newNsiReponse = deliusApiClient.createNewNsi(newNsiRequest);
+
+        return ReferralSentResponse.builder().nsiId(newNsiReponse.getId()).build();
+    }
+
+    public Optional<Nsi> getExistingMatchingNsi(String crn, ReferralSentRequest referralSent) {
+        // determine if there is an existing suitable NSI
+        var offenderId = offenderService.offenderIdOfCrn(crn).orElseThrow();
+
+        var existingNsis = nsiService.getNsiByCodes(offenderId, referralSent.getConvictionId(), Collections.singletonList(referralSent.getNsiType()))
+            .map(wrapper -> wrapper.getNsis().stream()
+                // eventID, offenderID, nsiID, and callerID are handled in the NSI service
+                .filter(nsi -> Optional.ofNullable(nsi.getNsiSubType()).map(n -> n.getCode().equals(referralSent.getNsiSubType())).orElse(false))
+                .filter(nsi -> Optional.ofNullable(nsi.getReferralDate()).map(n -> n.equals(referralSent.getDate())).orElse(false))
+                .filter(nsi -> Optional.ofNullable(nsi.getNsiStatus()).map(n -> n.getCode().equals(referralSent.getNsiStatus())).orElse(false))
+                .filter(nsi -> Optional.ofNullable(nsi.getRequirement()).map(n -> nsi.getRequirement().getRequirementId().equals(referralSent.getRequirementId())).orElse(false))
+                .filter(nsi -> Optional.ofNullable(nsi.getIntendedProvider()).map(n -> n.getCode().equals(referralSent.getProviderCode())).orElse(false))
+                .filter(nsi -> Optional.ofNullable(nsi.getNsiManagers()).map(n -> n.stream().anyMatch(nsiManager -> nsiManager.getStaff().getStaffCode().equals(referralSent.getStaffCode())
+                    && nsiManager.getProbationArea().getCode().equals(referralSent.getProviderCode())
+                    && nsiManager.getTeam().getCode().equals(referralSent.getTeamCode()))).orElse(false))
+                .collect(toList())
+            ).orElseThrow(() -> new RuntimeException("Offender ID not found"));
+
+        if(existingNsis.size() > 1) {
+            throw new RuntimeException("Multiple existing matching NSIs found");
+        }
+        return existingNsis.stream().findFirst();
     }
 }

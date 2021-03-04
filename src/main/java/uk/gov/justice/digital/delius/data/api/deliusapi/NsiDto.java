@@ -14,40 +14,22 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NsiDto {
-
     private Long id;
-
     private String type;
-
     private String subType;
-
     private String offenderCrn;
-
     private Long eventId;
-
     private Long requirementId;
-
     private LocalDate referralDate;
-
     private LocalDate expectedStartDate;
-
     private LocalDate expectedEndDate;
-
     private LocalDate startDate;
-
     private LocalDate endDate;
-
     private Long length;
-
     private String status;
-
     private LocalDateTime statusDate;
-
     private String outcome;
-
     private String notes;
-
     private String intendedProvider;
-
     private List<NsiManagerDto> managers;
 }

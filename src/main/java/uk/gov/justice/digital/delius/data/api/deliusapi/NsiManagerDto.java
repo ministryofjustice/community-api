@@ -10,12 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NsiManagerDto {
-
     private Long id;
-
     private String staff;
-
     private String team;
-
     private String provider;
 }

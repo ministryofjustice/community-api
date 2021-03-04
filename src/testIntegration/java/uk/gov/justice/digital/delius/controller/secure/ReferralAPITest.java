@@ -48,9 +48,9 @@ public class ReferralAPITest extends IntegrationTestBase {
     }
 
     @Test
-    public void shouldReturnOKWhenSendContactToDeliusApi() {
+    public void shouldReturnOKAfterCreatingANewNsi() {
 
-        deliusApiMockServer.stubPostContactToDeliusApi();
+        deliusApiMockServer.stubPostNsiToDeliusApi();
 
         final var token = createJwt("bob", Collections.singletonList("ROLE_COMMUNITY_INTERVENTIONS_UPDATE"));
 
@@ -61,30 +61,51 @@ public class ReferralAPITest extends IntegrationTestBase {
                 .body(writeValueAsString(ReferralSentRequest
                     .builder()
                     .providerCode("YSS")
-                    .referralType("C116")
                     .staffCode("N06AAFU")
                     .teamCode("N05MKU")
                     .date(LocalDate.now())
+                    .nsiType("IPT")
+                    .nsiSubType("IPT1")
+                    .nsiStatus("REFER")
+                    .convictionId(2500295343L)
+                    .requirementId(2500083652L)
                     .notes("A test note")
                     .build()))
-                .post("offenders/crn/X371505/referral/sent")
+                .post("offenders/crn/X320741/referral/sent")
                 .then()
                 .assertThat()
-                .statusCode(HttpStatus.CREATED.value())
-                .body("id", equalTo(2503596167L),
-                      "offenderCrn", equalTo("X371505"),
-                      "type", equalTo("COAP"),
-                      "provider", equalTo("N07"),
-                      "team", equalTo("N07CHT"),
-                      "staff", equalTo("N07A007"),                      
-                      "officeLocation", equalTo("LDN_BCS"),
-                      "date", equalTo("2021-06-02"),
-                      "startTime", equalTo("10:00:00"),
-                      "endTime", equalTo("12:00:00"),
-                      "alert", equalTo(false),
-                      "sensitive", equalTo(false),
-                      "eventId", equalTo(2500428188L),   
-                      "requirementId", equalTo(2500185174L));
+                .statusCode(HttpStatus.OK.value())
+                .body("nsiId", equalTo(2500029015L));
+    }
+
+    @Test
+    public void shouldReturnOKWhenReturningExistingNsi() {
+
+        deliusApiMockServer.stubPostNsiToDeliusApi();
+
+        final var token = createJwt("bob", Collections.singletonList("ROLE_COMMUNITY_INTERVENTIONS_UPDATE"));
+
+        final var response = given()
+            .when()
+            .auth().oauth2(token)
+            .contentType(String.valueOf(ContentType.APPLICATION_JSON))
+            .body(writeValueAsString(ReferralSentRequest
+                .builder()
+                .providerCode("N02")
+                .staffCode("N02UATU")
+                .teamCode("N02UAT")
+                .date(LocalDate.of(2019,9,2))
+                .nsiType("APCUS")
+                .nsiSubType("APHSP")
+                .nsiStatus("REFER")
+                .convictionId(2500295345L)
+                .notes("A test note")
+                .build()))
+            .post("offenders/crn/X320741/referral/sent")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("nsiId", equalTo(2500029015L));
     }
 
     private String createJwt(final String user, final List<String> roles) {
