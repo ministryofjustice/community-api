@@ -21,10 +21,8 @@ public class ReferralSentRequest {
     @ApiModelProperty(required = true)
     private String providerCode;
 
-    @ApiModelProperty
     private String staffCode;
 
-    @ApiModelProperty
     private String teamCode;
 
     @NotNull
@@ -36,8 +34,6 @@ public class ReferralSentRequest {
     @ApiModelProperty(required = true)
     private String nsiType;
 
-    @NotEmpty
-    @ApiModelProperty(required = true)
     private String nsiSubType;
 
     @Positive

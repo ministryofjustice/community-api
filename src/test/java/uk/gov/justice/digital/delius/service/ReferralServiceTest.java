@@ -23,7 +23,6 @@ import uk.gov.justice.digital.delius.data.api.Team;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewNsi;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewNsiManager;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NsiDto;
-import uk.gov.justice.digital.delius.jpa.standard.entity.NsiStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,7 +34,10 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ReferralServiceTest {
