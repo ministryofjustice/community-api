@@ -61,7 +61,7 @@ class NsiTransformerTest {
         assertThat(nsi.getStatusDateTime()).isEqualTo(statusDate);
         assertThat(nsi.getNsiType()).isEqualTo(KeyValue.builder().code("TYPE").description("Type Desc").build());
         assertThat(nsi.getNsiSubType()).isEqualTo(KeyValue.builder().code("STC").description("Sub Type Desc").build());
-        assertThat(nsi.getNsiSubType()).isEqualTo(KeyValue.builder().code("0C").description("Outcome Type Desc").build());
+        assertThat(nsi.getNsiOutcome()).isEqualTo(KeyValue.builder().code("OC").description("Outcome Type Desc").build());
         assertThat(nsi.getRequirement().getActive()).isEqualTo(true);
         assertThat(nsi.getLength()).isEqualTo(12L);
         assertThat(nsi.getLengthUnit()).isEqualTo("Months");
