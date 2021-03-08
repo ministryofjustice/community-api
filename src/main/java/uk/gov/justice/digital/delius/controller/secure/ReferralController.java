@@ -5,9 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,8 +40,8 @@ public class ReferralController {
             })
 
     @ApiOperation(value = "Creates an NSI referral")
-    public ResponseEntity<ReferralSentResponse> createReferralSent(final @PathVariable("crn") String crn,
+    public ReferralSentResponse createReferralSent(final @PathVariable("crn") String crn,
                                                                    final @RequestBody @Valid ReferralSentRequest referralSentRequest) {
-        return new ResponseEntity<>(referralService.createNsiReferral(crn, referralSentRequest), HttpStatus.OK);
+        return referralService.createNsiReferral(crn, referralSentRequest);
     }
 }

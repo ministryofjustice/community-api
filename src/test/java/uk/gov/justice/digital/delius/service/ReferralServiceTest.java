@@ -1,9 +1,7 @@
 package uk.gov.justice.digital.delius.service;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -32,7 +30,6 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
@@ -140,31 +137,26 @@ public class ReferralServiceTest {
         assertThat(response.getNsiId()).isEqualTo(deliusApiResponse.getId());
     }
 
-    @Nested
-    @TestInstance(PER_CLASS)
-    class NsiMatching {
-        private Stream<Arguments> nsis() {
-            return Stream.of(
-                Arguments.of(MATCHING_NSI, true),
-                Arguments.of(MATCHING_NSI.withNsiSubType(KeyValue.builder().code("NOMATCH").build()), false),
-                Arguments.of(MATCHING_NSI.withReferralDate(LocalDate.of(2017, 1, 1)), false),
-                Arguments.of(MATCHING_NSI.withNsiStatus(KeyValue.builder().code("NOMATCH").build()), false),
-                Arguments.of(MATCHING_NSI.withRequirement(Requirement.builder().requirementId(1L).build()), false),
-                Arguments.of(MATCHING_NSI.withIntendedProvider(ProbationArea.builder().code("NOMATCH").build()), false),
-                Arguments.of(MATCHING_NSI.withNsiManagers(singletonList(MATCHING_NSI.getNsiManagers().get(0).withStaff(StaffDetails.builder().staffCode("NOMATCH").build()))), false),
-                Arguments.of(MATCHING_NSI.withNsiManagers(singletonList(MATCHING_NSI.getNsiManagers().get(0).withTeam(Team.builder().code("NOMATCH").build()))), false),
-                Arguments.of(MATCHING_NSI.withNsiManagers(singletonList(MATCHING_NSI.getNsiManagers().get(0).withProbationArea(ProbationArea.builder().code("NOMATCH").build()))), false)
-            );
-        }
+    @ParameterizedTest
+    @MethodSource("nsis")
+    public void noNsisAreReturnedWhenNotExactMatch(final ReferralSentRequest nsiRequest, final boolean exists) {
+        when(nsiService.getNsiByCodes(any(), any(), any())).thenReturn(Optional.of(NsiWrapper.builder().nsis(singletonList(MATCHING_NSI)).build()));
 
-        @ParameterizedTest
-        @MethodSource("nsis")
-        public void noNsisAreReturnedWhenNotExactMatch(final Nsi nsi, final boolean exists) {
-            when(nsiService.getNsiByCodes(any(), any(), any())).thenReturn(Optional.of(NsiWrapper.builder().nsis(singletonList(nsi)).build()));
+        var response = referralService.getExistingMatchingNsi(OFFENDER_CRN, nsiRequest);
 
-            var response = referralService.getExistingMatchingNsi(OFFENDER_CRN, NSI_REQUEST);
+        assertThat(response.isPresent()).isEqualTo(exists);
+    }
 
-            assertThat(response.isPresent()).isEqualTo(exists);
-        }
+    private static Stream<Arguments> nsis() {
+        return Stream.of(
+            Arguments.of(NSI_REQUEST, true),
+            Arguments.of(NSI_REQUEST.withNsiSubType("NOMATCH"), false),
+            Arguments.of(NSI_REQUEST.withDate(LocalDate.of(2017, 1, 1)), false),
+            Arguments.of(NSI_REQUEST.withNsiStatus("NOMATCH"), false),
+            Arguments.of(NSI_REQUEST.withRequirementId(1L), false),
+            Arguments.of(NSI_REQUEST.withProviderCode("NOMATCH"), false),
+            Arguments.of(NSI_REQUEST.withStaffCode("NOMATCH"), false),
+            Arguments.of(NSI_REQUEST.withTeamCode("NOMATCH"), false)
+        );
     }
 }

@@ -15,11 +15,11 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 public class ReferralService {
-    DeliusApiClient deliusApiClient;
+    private final DeliusApiClient deliusApiClient;
 
-    NsiService nsiService;
+    private final NsiService nsiService;
 
-    OffenderService offenderService;
+    private final OffenderService offenderService;
 
     public ReferralService(final DeliusApiClient deliusApiClient, final NsiService nsiService, final OffenderService offenderService) {
         this.deliusApiClient = deliusApiClient;
@@ -32,31 +32,26 @@ public class ReferralService {
                                                   final ReferralSentRequest referralSent) {
         var existingNsi = getExistingMatchingNsi(crn, referralSent);
 
-        if(existingNsi.isPresent()) {
-            return ReferralSentResponse.builder().nsiId(existingNsi.get().getNsiId()).build();
-        }
+        return ReferralSentResponse.builder().nsiId(existingNsi.map(Nsi::getNsiId).orElseGet(() -> {
+            var newNsiRequest = NewNsi.builder()
+                .type(referralSent.getNsiType())
+                .subType(referralSent.getNsiSubType())
+                .offenderCrn(crn)
+                .eventId(referralSent.getConvictionId())
+                .requirementId(referralSent.getRequirementId())
+                .referralDate(referralSent.getDate())
+                .status(referralSent.getNsiStatus())
+                .statusDate(referralSent.getDate().atStartOfDay())
+                .notes(referralSent.getNotes())
+                .intendedProvider(referralSent.getProviderCode())
+                .manager(NewNsiManager.builder()
+                    .staff(referralSent.getStaffCode())
+                    .team(referralSent.getTeamCode())
+                    .provider(referralSent.getProviderCode())
+                    .build()).build();
 
-        var newNsiRequest = NewNsi.builder()
-            .type(referralSent.getNsiType())
-            .subType(referralSent.getNsiSubType())
-            .offenderCrn(crn)
-            .eventId(referralSent.getConvictionId())
-            .requirementId(referralSent.getRequirementId())
-            .referralDate(referralSent.getDate())
-            .status(referralSent.getNsiStatus())
-            .statusDate(referralSent.getDate().atStartOfDay())
-            .notes(referralSent.getNotes())
-            .intendedProvider(referralSent.getProviderCode())
-            .manager(NewNsiManager.builder()
-                .staff(referralSent.getStaffCode())
-                .team(referralSent.getTeamCode())
-                .provider(referralSent.getProviderCode())
-                .build()
-            ).build();
-
-        var newNsiReponse = deliusApiClient.createNewNsi(newNsiRequest);
-
-        return ReferralSentResponse.builder().nsiId(newNsiReponse.getId()).build();
+            return deliusApiClient.createNewNsi(newNsiRequest).getId();
+        })).build();
     }
 
     public Optional<Nsi> getExistingMatchingNsi(String crn, ReferralSentRequest referralSent) {

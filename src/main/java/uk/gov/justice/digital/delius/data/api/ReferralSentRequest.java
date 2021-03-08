@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.With;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -13,6 +14,7 @@ import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 
 @Data
+@With
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
