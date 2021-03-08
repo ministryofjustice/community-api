@@ -23,6 +23,7 @@ public class NsiTransformer {
                 .requirement(RequirementTransformer.requirementOf(n.getRqmnt()))
                 .nsiType(nsiTypeOf(n.getNsiType()))
                 .nsiSubType(nsiSubtypeOf(n.getNsiSubType()))
+                .nsiOutcome(nsiOutcomeOf(n.getNsiOutcome()))
                 .nsiStatus(nsiStatusOf(n.getNsiStatus()))
                 .actualStartDate(n.getActualStartDate())
                 .expectedStartDate(n.getExpectedStartDate())
@@ -59,6 +60,14 @@ public class NsiTransformer {
             KeyValue.builder()
                 .code(nsist.getCodeValue())
                 .description(nsist.getCodeDescription())
+                .build()).orElse(null);
+    }
+
+    private static KeyValue nsiOutcomeOf(final StandardReference nsiOutcome) {
+        return Optional.ofNullable(nsiOutcome).map(nsio ->
+            KeyValue.builder()
+                .code(nsio.getCodeValue())
+                .description(nsio.getCodeDescription())
                 .build()).orElse(null);
     }
 
