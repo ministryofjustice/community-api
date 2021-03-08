@@ -7,6 +7,7 @@ import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
 import uk.gov.justice.digital.delius.data.api.OffenderRelease;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RInstitution;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Recall;
+import uk.gov.justice.digital.delius.jpa.standard.entity.RecallReason;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Release;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
@@ -24,7 +25,7 @@ public class ReleaseTransformerTest {
     private final LocalDate SOME_DATE = SOME_DATE_TIME.toLocalDate();
     private final RInstitution SOME_R_INSTITUTION = RInstitution.builder().code("MDI").description("HMP Moorland").build();
     private final String SOME_NOTES = "These are notes";
-    private final StandardReference SOME_REASON = StandardReference.builder().codeValue("CODE_VALUE").codeDescription("Code description").build();
+    private final RecallReason SOME_REASON = RecallReason.builder().code("CODE_VALUE").description("Code description").build();
     private final String SOME_RELEASE_TYPE_CODE = "The release type code";
     private final String SOME_RELEASE_TYPE = "The release type";
 

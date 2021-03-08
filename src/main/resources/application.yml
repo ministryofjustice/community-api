@@ -84,6 +84,9 @@ delius:
   username: 'default'
   password: 'default'
 
+deliusApi:
+  baseurl: 'http://localhost:7999'
+
 features:
   noms:
     update:

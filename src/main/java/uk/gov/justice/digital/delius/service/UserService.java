@@ -8,12 +8,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
-import uk.gov.justice.digital.delius.data.api.*;
+import uk.gov.justice.digital.delius.data.api.AccessLimitation;
+import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.data.api.UserDetails;
+import uk.gov.justice.digital.delius.data.api.UserRole;
 import uk.gov.justice.digital.delius.jpa.national.entity.ProbationArea;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
 import uk.gov.justice.digital.delius.service.wrapper.UserRepositoryWrapper;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -59,47 +66,6 @@ public class UserService {
         return accessLimitationBuilder.build();
     }
 
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    @Transactional
-    public List<User> getUsersList(final String surname, final Optional<String> forename) {
-
-        return forename.map(f -> userRepositoryWrapper.findBySurnameIgnoreCaseAndForenameIgnoreCase(surname, f))
-                .orElse(userRepositoryWrapper.findBySurnameIgnoreCase(surname))
-                .stream()
-                .map(user -> User.builder()
-                        .userId(user.getUserId())
-                        .distinguishedName(user.getDistinguishedName())
-                        .endDate(user.getEndDate())
-                        .externalProviderEmployeeFlag(user.getExternalProviderEmployeeFlag())
-                        .externalProviderId(user.getExternalProviderId())
-                        .forename(user.getForename())
-                        .forename2(user.getForename2())
-                        .surname(user.getSurname())
-                        .organisationId(user.getOrganisationId())
-                        .privateFlag(user.getPrivateFlag())
-                        .scProviderId(user.getScProviderId())
-                        .staffId(user.getStaffId())
-                        .probationAreaCodes(probationAreaCodesOf(user.getProbationAreas()))
-                        .build()).collect(toList());
-    }
-
-    public UserDetailsWrapper getUserDetailsList(final Set<String> usernames) {
-        return UserDetailsWrapper.builder().userDetailsList(usernames.stream()
-                .map(username -> ldapRepository.getDeliusUser(username)
-                        .map(user ->
-                        UserDetails
-                            .builder()
-                            .firstName(user.getGivenname())
-                            .surname(user.getSn())
-                            .email(user.getMail())
-                            .enabled(user.isEnabled())
-                            .username(username)
-                            .build()))
-                            .filter(Optional::isPresent)
-                            .map(Optional::get)
-                            .collect(Collectors.toList())).build();
-    }
-
     private List<String> probationAreaCodesOf(final List<ProbationArea> probationAreas) {
         return Optional.ofNullable(probationAreas).map(
                 pas -> pas.stream().map(ProbationArea::getCode).collect(toList())).orElse(Collections.emptyList());
@@ -129,12 +95,12 @@ public class UserService {
         // in the LDAP but not in the delius oracle db are not included in the result.
         return userList.stream()
             .map(user -> {
-                uk.gov.justice.digital.delius.jpa.national.entity.User oracleUser;
-                final String userCn = user.getCn();
+                final uk.gov.justice.digital.delius.jpa.national.entity.User oracleUser;
+                final var userCn = user.getCn();
 
                 try {
                     oracleUser = userRepositoryWrapper.getUser(userCn);
-                } catch (NoSuchUserException e) {
+                } catch (final NoSuchUserException e) {
                     log.error("no entry found in delius USER table for LDAP user '{}'", userCn);
                     return null;
                 }
@@ -149,19 +115,8 @@ public class UserService {
                     .username(userCn)
                     .build();
             })
-            .filter(user -> user != null)
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public Optional<UserAreas> getUserAreas(final String username) {
-        final var userWithAreas = userRepositoryWrapper.getUser(username);
-        return ldapRepository.getDeliusUser(username).map(user ->
-                UserAreas
-                        .builder()
-                        .homeProbationArea(user.getUserHomeArea())
-                        .probationAreas(userWithAreas.getProbationAreas().stream().map(ProbationArea::getCode).collect(toList()))
-                        .build());
     }
 
     public boolean authenticateUser(final String user, final String password) {
@@ -173,14 +128,14 @@ public class UserService {
     }
 
     public void addRole(final String username, final String roleId) {
-        var allRoles = ldapRepository.getAllRoles();
+        final var allRoles = ldapRepository.getAllRoles();
         if (!allRoles.contains(roleId)) {
             log.info("Could not add role with id: '{}' in {}", roleId, allRoles);
             throw new BadRequestException(String.format("Could not find role with id: '%s'", roleId));
         }
         try {
             ldapRepository.addRole(username, roleId);
-        } catch (NameNotFoundException e) {
+        } catch (final NameNotFoundException e) {
             throw new NotFoundException(String.format("Could not find user with username: '%s'", username));
         }
         telemetryClient.trackEvent("RoleAssigned", Map.of("username", username, "roleId", roleId), null);

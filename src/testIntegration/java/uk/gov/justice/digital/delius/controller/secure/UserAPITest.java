@@ -1,109 +1,190 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import lombok.val;
 import org.junit.jupiter.api.Test;
-import uk.gov.justice.digital.delius.data.api.UserDetailsWrapper;
-
-import java.util.Set;
+import org.springframework.test.annotation.DirtiesContext;
+import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
+import uk.gov.justice.digital.delius.data.api.UserDetails;
+import uk.gov.justice.digital.delius.data.api.UserRole;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class UserAPITest extends IntegrationTestBase {
     @Test
-    public void retrieveUserDetailsForMultipleUsers() {
-        var userDetails = given()
-                .auth()
-                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
-                .contentType(APPLICATION_JSON_VALUE)
-                .body(writeValueAsString(Set.of("sheilahancocknps", "JimSnowLdap")))
-                .when()
-                .post("users/list/detail")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(JsonNode.class)
-                .toString();
+    public void usersDetails_success_role_community_users() {
+        final var userDetails = given()
+            .auth()
+            .oauth2(createJwt("ROLE_COMMUNITY_USERS"))
+            .contentType("text/plain")
+            .when()
+            .get("/users/bernard.beaks/details")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(UserDetails.class);
 
-        String expectedJson = "{" +
-                        "\"userDetailsList\":[{" +
-                           "\"firstName\":\"Jim\"," +
-                           "\"surname\":\"Snow\"," +
-                           "\"email\":\"jim.snow@justice.gov.uk\"," +
-                           "\"enabled\":true," +
-                           "\"username\":\"JimSnowLdap\"" +
-                       "},{" +
-                           "\"firstName\":\"Sheila\"," +
-                           "\"surname\":\"Hancock\"," +
-                           "\"email\":\"sheila.hancock@justice.gov.uk\"," +
-                           "\"enabled\":true," +
-                           "\"username\":\"sheilahancocknps\"" +
-                       "}]" +
-                       "}";
-
-        assertThat(userDetails).isEqualTo(expectedJson);
+        assertThat(userDetails.getFirstName()).isEqualTo("Bernard");
+        assertThat(userDetails.getSurname()).isEqualTo("Beaks");
+        assertThat(userDetails.getEmail()).isEqualTo("bernard.beaks@justice.gov.uk");
+        assertThat(userDetails.getRoles()).hasSize(1).contains(UserRole.builder().name("UWBT060").build());
     }
 
     @Test
-    public void retrieveDetailsWhenUsersDoNotExist() {
-        val userDetails = given()
-                .auth()
-                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
-                .contentType(APPLICATION_JSON_VALUE)
-                .body(writeValueAsString(Set.of("xxxyyyzzzuser", "aaabbbcccuser")))
-                .when()
-                .post("users/list/detail")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(UserDetailsWrapper.class)
-                .getUserDetailsList();
+    public void usersDetails_success_role_community_auth_int() {
+        final var userDetails = given()
+            .auth()
+            .oauth2(createJwt("ROLE_COMMUNITY_AUTH_INT"))
+            .contentType("text/plain")
+            .when()
+            .get("/users/bernard.beaks/details")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(UserDetails.class);
 
-        assertThat(userDetails).isEmpty();
+        assertThat(userDetails.getFirstName()).isEqualTo("Bernard");
+        assertThat(userDetails.getSurname()).isEqualTo("Beaks");
+        assertThat(userDetails.getEmail()).isEqualTo("bernard.beaks@justice.gov.uk");
+        assertThat(userDetails.getRoles()).hasSize(1).contains(UserRole.builder().name("UWBT060").build());
     }
 
     @Test
-    public void retrieveDetailsWhenUsersExistAndDoNotExist() {
-        val userDetails = given()
-                .auth()
-                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
-                .contentType(APPLICATION_JSON_VALUE)
-                .body(writeValueAsString(Set.of("xxxyyyzzzuser", "JimSnowLdap")))
-                .when()
-                .post("users/list/detail")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(JsonNode.class)
-                .toString();
+    public void usersDetails_success_role_community_users_roles() {
+        final var userDetails = given()
+            .auth()
+            .oauth2(createJwt("ROLE_COMMUNITY_USERS_ROLES"))
+            .contentType("text/plain")
+            .when()
+            .get("/users/bernard.beaks/details")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(UserDetails.class);
 
-        String expectedJson = "{" +
-                "\"userDetailsList\":[{" +
-                "\"firstName\":\"Jim\"," +
-                "\"surname\":\"Snow\"," +
-                "\"email\":\"jim.snow@justice.gov.uk\"," +
-                "\"enabled\":true," +
-                "\"username\":\"JimSnowLdap\"" +
-                "}]" +
-                "}";
-
-        assertThat(userDetails).isEqualTo(expectedJson);
+        assertThat(userDetails.getFirstName()).isEqualTo("Bernard");
+        assertThat(userDetails.getSurname()).isEqualTo("Beaks");
+        assertThat(userDetails.getEmail()).isEqualTo("bernard.beaks@justice.gov.uk");
+        assertThat(userDetails.getRoles()).hasSize(1).contains(UserRole.builder().name("UWBT060").build());
     }
 
     @Test
-    public void retrieveMultipleUserDetailsWithNoBodyContentReturn400() {
-            given()
-                .auth()
-                .oauth2(createJwt("ROLE_AUTH_DELIUS_LDAP"))
-                .contentType(APPLICATION_JSON_VALUE)
-                .when()
-                .post("users/list/detail")
-                .then()
-                .statusCode(400);
+    public void usersDetails_returns404WhenUserNotFound() {
+        given()
+            .auth()
+            .oauth2(createJwt("ROLE_COMMUNITY_USERS"))
+            .contentType("text/plain")
+            .when()
+            .get("/users/john.smith/details")
+            .then()
+            .statusCode(404);
+    }
+
+    @Test
+    public void usersDetails_returns403WhenForbiddenByRole() {
+        given()
+            .auth()
+            .oauth2(createJwt("ROLE_COMMUNITY"))
+            .contentType("text/plain")
+            .when()
+            .get("/users/john.smith/details")
+            .then()
+            .statusCode(403);
+    }
+
+    @Test
+    public void userDetailsByEmail_success() {
+        final var userDetails = given()
+            .auth()
+            .oauth2(createJwt("ROLE_COMMUNITY_USERS"))
+            .contentType("text/plain")
+            .when()
+            .get("/users/search/email/bernard.beaks@justice.gov.uk/details")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(UserDetails[].class);
+
+        assertThat(userDetails.length).isEqualTo(1);
+        final var bernard = userDetails[0];
+        assertThat(bernard.getFirstName()).isEqualTo("Bernard");
+        assertThat(bernard.getSurname()).isEqualTo("Beaks");
+        assertThat(bernard.getEmail()).isEqualTo("bernard.beaks@justice.gov.uk");
+        assertThat(bernard.getRoles()).hasSize(1).contains(UserRole.builder().name("UWBT060").build());
+    }
+
+    @Test
+    public void usersDetailsByEmail_returns200WhenUserNotFound() {
+        final var userDetails = given()
+            .auth()
+            .oauth2(createJwt("ROLE_COMMUNITY_USERS"))
+            .contentType("text/plain")
+            .when()
+            .get("/users/search/email/missing/details")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(UserDetails[].class);
+
+        assertThat(userDetails.length).isEqualTo(0);
+    }
+
+    @Test
+    @DirtiesContext
+    public void addRole() {
+
+        given()
+            .auth()
+            .oauth2(createJwt("ROLE_COMMUNITY_USERS_ROLES"))
+            .contentType("text/plain")
+            .when()
+            .put("/users/bernard.beaks/roles/CWBT001")
+            .then()
+            .statusCode(200);
+
+
+        final var userDetails = given()
+            .auth()
+            .oauth2(createJwt("ROLE_COMMUNITY_USERS_ROLES"))
+            .contentType("text/plain")
+            .when()
+            .get("/users/bernard.beaks/details")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(UserDetails.class);
+
+        assertThat(userDetails.getFirstName()).isEqualTo("Bernard");
+        assertThat(userDetails.getSurname()).isEqualTo("Beaks");
+        assertThat(userDetails.getEmail()).isEqualTo("bernard.beaks@justice.gov.uk");
+        assertThat(userDetails.getRoles()).hasSize(2).contains(
+            UserRole.builder().name("CWBT001").build(),
+            UserRole.builder().name("UWBT060").build());
+    }
+
+    @Test
+    public void addRole_whenUserDoesNotExist() {
+
+        final var response = given()
+            .auth()
+            .oauth2(createJwt("ROLE_COMMUNITY_USERS_ROLES"))
+            .contentType("text/plain")
+            .when()
+            .put("/users/usernoexist/roles/CWBT001")
+            .then()
+            .statusCode(404)
+            .extract()
+            .as(ErrorResponse.class);
+
+        assertThat(response).isEqualTo(ErrorResponse.builder()
+            .status(404)
+            .developerMessage("Could not find user with username: 'usernoexist'")
+            .build());
+        ;
     }
 }
