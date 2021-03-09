@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import org.hibernate.engine.loading.internal.CollectionLoadContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,6 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.data.api.NsiManager;
@@ -30,6 +32,7 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
@@ -104,6 +107,16 @@ public class ReferralServiceTest {
     }
 
     @Test
+    public void creatingNewNsiWhenMultipleMatchingExistReturnsConflict() {
+        when(nsiService.getNsiByCodes(any(), any(), any())).thenReturn(Optional.of(NsiWrapper.builder().nsis(Collections.nCopies(2, MATCHING_NSI)).build()));
+
+        assertThrows(ConflictingRequestException.class, () -> referralService.createNsiReferral("X123456", NSI_REQUEST));
+
+        verify(nsiService).getNsiByCodes(OFFENDER_ID, CONVICTION_ID, singletonList(NSI_CODE));
+        verifyNoInteractions(deliusApiClient);
+    }
+
+    @Test
     public void creatingNewNsiCallsDeliusApiWhenNonExisting() {
         var deliusApiResponse = NsiDto.builder().id(66853L).build();
 
@@ -139,8 +152,8 @@ public class ReferralServiceTest {
 
     @ParameterizedTest
     @MethodSource("nsis")
-    public void noNsisAreReturnedWhenNotExactMatch(final ReferralSentRequest nsiRequest, final boolean exists) {
-        when(nsiService.getNsiByCodes(any(), any(), any())).thenReturn(Optional.of(NsiWrapper.builder().nsis(singletonList(MATCHING_NSI)).build()));
+    public void noNsisAreReturnedWhenNotExactMatch(final ReferralSentRequest nsiRequest, final Nsi existingNsi, final boolean exists) {
+        when(nsiService.getNsiByCodes(any(), any(), any())).thenReturn(Optional.of(NsiWrapper.builder().nsis(singletonList(existingNsi)).build()));
 
         var response = referralService.getExistingMatchingNsi(OFFENDER_CRN, nsiRequest);
 
@@ -149,14 +162,17 @@ public class ReferralServiceTest {
 
     private static Stream<Arguments> nsis() {
         return Stream.of(
-            Arguments.of(NSI_REQUEST, true),
-            Arguments.of(NSI_REQUEST.withNsiSubType("NOMATCH"), false),
-            Arguments.of(NSI_REQUEST.withDate(LocalDate.of(2017, 1, 1)), false),
-            Arguments.of(NSI_REQUEST.withNsiStatus("NOMATCH"), false),
-            Arguments.of(NSI_REQUEST.withRequirementId(1L), false),
-            Arguments.of(NSI_REQUEST.withProviderCode("NOMATCH"), false),
-            Arguments.of(NSI_REQUEST.withStaffCode("NOMATCH"), false),
-            Arguments.of(NSI_REQUEST.withTeamCode("NOMATCH"), false)
+            Arguments.of(NSI_REQUEST, MATCHING_NSI, true),
+            Arguments.of(NSI_REQUEST.withNsiSubType("NOMATCH"), MATCHING_NSI, false),
+            Arguments.of(NSI_REQUEST.withDate(LocalDate.of(2017, 1, 1)), MATCHING_NSI, false),
+            Arguments.of(NSI_REQUEST.withNsiStatus("NOMATCH"), MATCHING_NSI, false),
+            Arguments.of(NSI_REQUEST.withRequirementId(1L), MATCHING_NSI, false),
+            Arguments.of(NSI_REQUEST.withProviderCode("NOMATCH"), MATCHING_NSI, false),
+            Arguments.of(NSI_REQUEST.withStaffCode("NOMATCH"), MATCHING_NSI, false),
+            Arguments.of(NSI_REQUEST.withTeamCode("NOMATCH"), MATCHING_NSI, false),
+            Arguments.of(NSI_REQUEST.withTeamCode(null), MATCHING_NSI.withNsiManagers(Collections.singletonList(MATCHING_NSI.getNsiManagers().get(0).withTeam(Team.builder().code("N06UAT").build()))), true),
+            Arguments.of(NSI_REQUEST.withStaffCode(null), MATCHING_NSI.withNsiManagers(Collections.singletonList(MATCHING_NSI.getNsiManagers().get(0).withStaff(StaffDetails.builder().staffCode("N06UATU").build()))), true),
+            Arguments.of(NSI_REQUEST.withRequirementId(null), MATCHING_NSI.withRequirement(null), true)
         );
     }
 }
