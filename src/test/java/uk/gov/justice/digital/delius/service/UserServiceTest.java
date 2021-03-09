@@ -13,7 +13,6 @@ import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.UserDetails;
 import uk.gov.justice.digital.delius.data.api.UserRole;
 import uk.gov.justice.digital.delius.jpa.national.entity.Exclusion;
-import uk.gov.justice.digital.delius.jpa.national.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.national.entity.Restriction;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
@@ -25,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -437,97 +435,5 @@ public class UserServiceTest {
 
         verify(ldapRepository, never()).addRole(any(), any());
         verifyNoInteractions(telemetryClient);
-    }
-
-    @Test
-    public void userDetailsListIsCorrectForMultipleUsernames() {
-        when(ldapRepository.getDeliusUser("john.bean")).thenReturn(
-                Optional.of(NDeliusUser
-                        .builder()
-                        .givenname("John")
-                        .sn("Bean")
-                        .mail("john.bean@justice.gov.uk")
-                        .roles(ImmutableList.of(
-                                NDeliusRole
-                                        .builder()
-                                        .cn("ROLE1")
-                                        .build()))
-                        .build()));
-        when(ldapRepository.getDeliusUser("rocky.balboa")).thenReturn(
-                Optional.of(NDeliusUser
-                        .builder()
-                        .givenname("Rocky")
-                        .sn("Balboa")
-                        .mail("rocky.balboa@justice.gov.uk")
-                        .roles(ImmutableList.of(
-                                NDeliusRole
-                                        .builder()
-                                        .cn("ROLE1")
-                                        .build()))
-                        .build()));
-
-        final var userDetails = userService.getUserDetailsList(Set.of("john.bean", "rocky.balboa")).getUserDetailsList();
-
-        assertThat(userDetails.stream().anyMatch( userDetail -> userDetail.getUsername().equals("john.bean"))).isTrue();
-        assertThat(userDetails.stream().anyMatch( userDetail -> userDetail.getUsername().equals("rocky.balboa"))).isTrue();
-
-        assertThat(userDetails.stream()
-                .filter(u -> u.getUsername().equals("john.bean"))
-                .findFirst().orElseThrow()).isEqualTo(
-                    UserDetails.builder()
-                        .email("john.bean@justice.gov.uk")
-                        .firstName("John")
-                        .surname("Bean")
-                        .enabled(true)
-                        .username("john.bean")
-                        .build());
-
-        assertThat(userDetails.stream()
-                .filter(u -> u.getUsername().equals("rocky.balboa"))
-                .findFirst().orElseThrow()).isEqualTo(
-                    UserDetails.builder()
-                        .email("rocky.balboa@justice.gov.uk")
-                        .firstName("Rocky")
-                        .surname("Balboa")
-                        .enabled(true)
-                        .username("rocky.balboa")
-                        .build());
-    }
-    @Test
-    public void userAreasPopulatedFromUserAndLDAP() {
-        when(ldapRepository.getDeliusUser("john.bean")).thenReturn(
-                Optional.of(NDeliusUser
-                        .builder()
-                        .givenname("John")
-                        .sn("Bean")
-                        .mail("john.bean@justice.gov.uk")
-                        .userHomeArea("N02")
-                        .roles(ImmutableList.of(
-                                NDeliusRole
-                                        .builder()
-                                        .cn("ROLE1")
-                                        .build()))
-                        .build()));
-        when(userRepositoryWrapper.getUser("john.bean")).thenReturn(
-                User
-                        .builder()
-                        .probationAreas(List.of(
-                                ProbationArea
-                                        .builder()
-                                        .code("N01")
-                                        .build(),
-                                ProbationArea
-                                        .builder()
-                                        .code("N02")
-                                        .build()
-
-                        ))
-                        .build()
-        );
-
-        final var userAreas = userService.getUserAreas("john.bean");
-
-        assertThat(userAreas.orElseThrow().getHomeProbationArea()).isEqualTo("N02");
-        assertThat(userAreas.orElseThrow().getProbationAreas()).containsExactlyInAnyOrder("N01", "N02");
     }
 }

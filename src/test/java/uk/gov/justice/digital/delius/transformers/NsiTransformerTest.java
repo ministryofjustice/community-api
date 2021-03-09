@@ -61,6 +61,7 @@ class NsiTransformerTest {
         assertThat(nsi.getStatusDateTime()).isEqualTo(statusDate);
         assertThat(nsi.getNsiType()).isEqualTo(KeyValue.builder().code("TYPE").description("Type Desc").build());
         assertThat(nsi.getNsiSubType()).isEqualTo(KeyValue.builder().code("STC").description("Sub Type Desc").build());
+        assertThat(nsi.getNsiOutcome()).isEqualTo(KeyValue.builder().code("OC").description("Outcome Type Desc").build());
         assertThat(nsi.getRequirement().getActive()).isEqualTo(true);
         assertThat(nsi.getLength()).isEqualTo(12L);
         assertThat(nsi.getLengthUnit()).isEqualTo("Months");
@@ -93,6 +94,7 @@ class NsiTransformerTest {
                 .nsiStatus(NsiStatus.builder().code("STX").description("").build())
                 .nsiSubType(StandardReference.builder().codeDescription("Sub Type Desc").codeValue("STC").build())
                 .nsiType(NsiType.builder().code("TYPE").description("Type Desc").build())
+                .nsiOutcome(StandardReference.builder().codeDescription("Outcome Type Desc").codeValue("OC").build())
                 .actualStartDate(actualStartDate)
                 .expectedStartDate(expectedStartDate)
                 .nsiStatusDateTime(statusDate)

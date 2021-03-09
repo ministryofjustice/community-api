@@ -26,7 +26,6 @@ public final class NDeliusUser {
     private String mail;
     private String givenname;
     private String endDate;
-    private String userHomeArea;
     @Transient
     private List<NDeliusRole> roles;
 

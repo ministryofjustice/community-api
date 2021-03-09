@@ -23,6 +23,7 @@ import uk.gov.justice.digital.delius.service.NsiService;
 import uk.gov.justice.digital.delius.service.OffenderManagerService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.SentenceService;
+import uk.gov.justice.digital.delius.service.TierService;
 import uk.gov.justice.digital.delius.service.UserAccessService;
 import uk.gov.justice.digital.delius.service.UserService;
 
@@ -34,7 +35,6 @@ import static io.restassured.module.mockmvc.config.RestAssuredMockMvcConfig.newC
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -70,6 +70,8 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     private UserAccessService userAccessService;
     @Mock
     private AssessmentService assessmentService;
+    @Mock
+    private TierService tierService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -77,7 +79,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerAPITest {
     public void setup() {
         RestAssuredMockMvc.config = newConfig().encoderConfig(encoderConfig().defaultContentCharset("UTF-8"));
         RestAssuredMockMvc.standaloneSetup(
-                new OffendersResource(offenderService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier, custodyService, userAccessService, assessmentService),
+                new OffendersResource(offenderService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier, custodyService, userAccessService, assessmentService, tierService),
                 new SecureControllerAdvice()
         );
     }

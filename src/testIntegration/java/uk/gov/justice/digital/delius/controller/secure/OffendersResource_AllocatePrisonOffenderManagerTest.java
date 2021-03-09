@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -446,9 +445,7 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
                 .then()
                 .statusCode(409);
     }
-
-    //TODO - Enable this test when EMAIL_ADDRESS and TELEPHONE_NUMBER columns are added to production
-    @Disabled("Until columns EMAIL_ADDRESS and TELEPHONE_NUMBER are added to production")
+    @Test
     @DisplayName("Will allocate PrisonOffenderManagers with ContactDetails by NOMSNumber and StaffName")
     public void canAllocatePrisonOffenderManagersWithContactDetailsByNOMSNumberAndStaffName() {
 
