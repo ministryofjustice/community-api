@@ -5,7 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import java.time.LocalDateTime;
 
 @Data
@@ -30,7 +34,7 @@ public class Recall {
 
     @OneToOne
     @JoinColumn(name = "RECALL_REASON_ID")
-    private StandardReference reason;
+    private RecallReason reason;
 
     public boolean isSoftDeleted() {
         return this.softDeleted != 0L;

@@ -59,6 +59,7 @@ import uk.gov.justice.digital.delius.service.NsiService;
 import uk.gov.justice.digital.delius.service.OffenderManagerService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.SentenceService;
+import uk.gov.justice.digital.delius.service.TierService;
 import uk.gov.justice.digital.delius.service.UserAccessService;
 import uk.gov.justice.digital.delius.service.UserService;
 
@@ -92,6 +93,7 @@ public class OffendersResource {
     private final CustodyService custodyService;
     private final UserAccessService userAccessService;
     private final AssessmentService assessmentService;
+    private final TierService tierService;
 
     @ApiOperation(
             value = "Return the responsible officer (RO) for an offender",
@@ -383,12 +385,13 @@ public class OffendersResource {
         })
     @PostMapping(path = "/offenders/crn/{crn}/tier/{tier}")
     @PreAuthorize("hasRole('ROLE_MANAGEMENT_TIER_UPDATE')")
-    public OffenderDetail updateTier(
+    public ResponseEntity updateTier(
         @ApiParam(value = "CRN for the offender", example = "A123456", required = true)
         @NotNull @PathVariable(value = "crn") final String crn,
         @ApiParam(value = "New tier", example = "A1", required = true, allowableValues="A0, A1, A2, A3, B0, B1, B2, B3, C0, C1, C2, C3, D0, D1, D2, D3")
         @NotNull @PathVariable(value = "tier") final String tier) {
-        return offenderService.updateTier(crn,tier);
+        tierService.updateTier(crn,tier);
+        return new ResponseEntity<>(OK);
     }
 
     @ApiOperation(value = "Return the NSIs for a conviction ID and a CRN, filtering by NSI codes", tags = "Sentence requirements and breach")
