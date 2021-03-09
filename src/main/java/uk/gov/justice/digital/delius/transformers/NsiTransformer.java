@@ -2,6 +2,9 @@ package uk.gov.justice.digital.delius.transformers;
 
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.NsiManager;
+import uk.gov.justice.digital.delius.data.api.ProbationArea;
+import uk.gov.justice.digital.delius.data.api.Requirement;
+import uk.gov.justice.digital.delius.data.api.deliusapi.NsiDto;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Nsi;
 import uk.gov.justice.digital.delius.jpa.standard.entity.NsiStatus;
 import uk.gov.justice.digital.delius.jpa.standard.entity.NsiType;
@@ -33,6 +36,7 @@ public class NsiTransformer {
                 .lengthUnit(NSI_LENGTH_UNIT)
                 .nsiManagers(nsiManagersOf(n.getNsiManagers()))
                 .notes(n.getNotes())
+                .intendedProvider(ProbationAreaTransformer.probationAreaOf(n.getIntendedProvider()))
                 .build()).orElse(null);
     }
 

@@ -1,3 +1,4 @@
+
 package uk.gov.justice.digital.delius.controller.secure;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -5,7 +6,11 @@ import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
+import uk.gov.justice.digital.delius.data.api.ReferralSentRequest;
+import uk.gov.justice.digital.delius.service.DeliusApiClient;
 import uk.gov.justice.digital.delius.service.ReferralService;
+
+import java.time.LocalDate;
 
 import static io.restassured.config.EncoderConfig.encoderConfig;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
@@ -29,7 +34,7 @@ public class ReferralControllerTest {
     }
 
     @Test
-    public void createReferral_returnsBadRequest() throws JsonProcessingException {
+    public void createReferral_returnsBadRequestWhenNoBodySupplied() throws JsonProcessingException {
         given()
             .contentType(APPLICATION_JSON_VALUE)
             .body("")
@@ -41,10 +46,20 @@ public class ReferralControllerTest {
     }
 
     @Test
-    public void updateReferral_returnsOK() throws JsonProcessingException {
+    public void updateReferral_callsServiceAndReturnsOKWhenValidationSucceeds() throws JsonProcessingException {
         given()
             .contentType(APPLICATION_JSON_VALUE)
-            .body("{}")
+            .body(ReferralSentRequest.builder()
+                .providerCode("N01")
+                .staffCode("NO1S12")
+                .teamCode("TEAM1")
+                .date(LocalDate.now())
+                .nsiType("NSI1")
+                .nsiSubType("NSISUB")
+                .nsiStatus("REFER")
+                .convictionId(12354L)
+                .requirementId(345678L).build()
+            )
             .when()
             .post(String.format("/secure/offenders/crn/%s/referral/sent", SOME_OFFENDER_CRN))
             .then()

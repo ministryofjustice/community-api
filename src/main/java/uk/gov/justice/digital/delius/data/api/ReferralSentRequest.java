@@ -6,30 +6,48 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.With;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 
 @Data
+@With
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReferralSentRequest {
+    @NotEmpty
     @ApiModelProperty(required = true)
     private String providerCode;
 
-    @ApiModelProperty(required = true)
-    private String referralType;
-
-    @ApiModelProperty(required = true)
     private String staffCode;
 
-    @ApiModelProperty(required = true)
     private String teamCode;
 
-    @ApiModelProperty(required = false)
-    private String notes;
-
+    @NotNull
     @ApiModelProperty(required = true)
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate date;
+
+    @NotEmpty
+    @ApiModelProperty(required = true)
+    private String nsiType;
+
+    private String nsiSubType;
+
+    @Positive
+    @NotNull
+    @ApiModelProperty(required = true)
+    private Long convictionId;
+
+    @Positive
+    private Long requirementId;
+
+    @NotEmpty
+    private String nsiStatus;
+
+    private String notes;
 }

@@ -28,14 +28,16 @@ public class ProbationAreaTransformer {
     }
 
     public static ProbationArea probationAreaOf(uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea probationArea, boolean includeTeams) {
-        return ProbationArea.builder()
+        return Optional.ofNullable(probationArea)
+            .map( p -> ProbationArea.builder()
                 .code(probationArea.getCode())
                 .description(probationArea.getDescription())
                 .organisation(organisationOf(probationArea.getOrganisation()))
                 .institution(InstitutionTransformer.institutionOf(probationArea.getInstitution()))
                 .probationAreaId(probationArea.getProbationAreaId())
                 .teams(includeTeams ? teamsOf(probationArea) : null)
-                .build();
+                .build())
+            .orElse(null);
     }
 
     private static List<AllTeam> teamsOf(uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea probationArea) {

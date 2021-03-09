@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.With;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Data
 @Builder
+@With
 @NoArgsConstructor
 @AllArgsConstructor
 public class Nsi {
@@ -28,4 +30,5 @@ public class Nsi {
     private String lengthUnit;
     private List<NsiManager> nsiManagers;
     private String notes;
+    private ProbationArea intendedProvider;
 }
