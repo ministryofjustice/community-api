@@ -35,50 +35,72 @@ public class TierService {
     private final TeamRepository teamRepository;
     private final SpgNotificationService spgNotificationService;
 
-
     @Transactional
     public void updateTier(String crn, String tier) {
         final var tierWithUPrefix = tierWithUPrefix(tier);
         final var telemetryProperties = Map.of("crn", crn, "tier", tierWithUPrefix);
         final var offender = getOffender(crn, telemetryProperties);
-
         final var offenderId = offender.getOffenderId();
-        final var changeReason = referenceDataService.getAtsTierChangeReason().orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTierChangeReasonNotFound", "Tier change reason ATS not found"));
+        final var changeReason = getChangeReason(telemetryProperties);
+        final var updatedTier = getUpdatedTier(tier, tierWithUPrefix, telemetryProperties);
 
-        writeTierUpdate(tierWithUPrefix, telemetryProperties, offenderId, changeReason);
+        writeTierUpdate(updatedTier, offenderId, changeReason);
+        writeContact(offender, changeReason, updatedTier, telemetryProperties);
+        spgNotificationService.notifyUpdateOfOffender(offender);
 
-        OffenderManager offenderManager = offender.getActiveCommunityOffenderManager().orElseThrow(() ->  logAndThrow(telemetryProperties, "TierUpdateFailureActiveCommunityOffenderManagerNotFound", String.format("Could not find active community manager for crn %s", crn)));
+        telemetryClient.trackEvent("TierUpdateSuccess", telemetryProperties, null);
+    }
+
+    private void writeContact(Offender offender, StandardReference changeReason, StandardReference updatedTier, Map<String, String> telemetryProperties) {
+        final var offenderManager = getOffenderManager(offender, telemetryProperties);
         Staff staff;
         Team team;
         try {
-            String areaCode = offenderManager.getProbationArea().getCode();
-            String staffCode = String.format("%sUTSO", areaCode);
-            staff = staffRepository.findByOfficerCode(staffCode).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureStaffNotFound", String.format("Could not find staff with officer code %s", staffCode)));
-            String teamCode = String.format("%sUTS", areaCode);
-            team = teamRepository.findByCode(teamCode).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTeamNotFound", String.format("Could not find team with code %s", teamCode)));
+            final var areaCode = offenderManager.getProbationArea().getCode();
+            final var staffCode = String.format("%sUTSO", areaCode);
+            staff = getStaff(staffCode, telemetryProperties);
+            final var teamCode = String.format("%sUTS", areaCode);
+            team = getTeam(teamCode, telemetryProperties);
         } catch (NotFoundException e) {
             staff = offenderManager.getStaff();
             team = offenderManager.getTeam();
         }
 
-        contactService.addContactForTierUpdate(offenderId, LocalDateTime.now(), tierWithUPrefix, changeReason.getCodeDescription(), staff, team);
-        spgNotificationService.notifyUpdateOfOffender(offender);
-        telemetryClient.trackEvent("TierUpdateSuccess", telemetryProperties, null);
+        contactService.addContactForTierUpdate(offender.getOffenderId(), LocalDateTime.now(), updatedTier.getCodeDescription(), changeReason.getCodeDescription(), staff, team);
+    }
+
+    private Team getTeam(String teamCode, Map<String, String> telemetryProperties) {
+        return teamRepository.findByCode(teamCode).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTeamNotFound", String.format("Could not find team with code %s", teamCode)));
+    }
+
+    private Staff getStaff(String staffCode, Map<String, String> telemetryProperties) {
+        return staffRepository.findByOfficerCode(staffCode).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureStaffNotFound", String.format("Could not find staff with officer code %s", staffCode)));
+    }
+
+    private OffenderManager getOffenderManager(Offender offender, Map<String, String> telemetryProperties) {
+        return offender.getActiveCommunityOffenderManager().orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureActiveCommunityOffenderManagerNotFound", String.format("Could not find active community manager for crn %s", offender.getCrn())));
+    }
+
+    private StandardReference getUpdatedTier(String tier, String tierWithUPrefix, Map<String, String> telemetryProperties) {
+        return referenceDataService.getTier(tierWithUPrefix).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTierNotFound", String.format("Tier %s not found", tier)));
+    }
+
+    private StandardReference getChangeReason(Map<String, String> telemetryProperties) {
+        return referenceDataService.getAtsTierChangeReason().orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTierChangeReasonNotFound", "Tier change reason ATS not found"));
     }
 
     private Offender getOffender(String crn, Map<String, String> telemetryProperties) {
         return offenderRepository.findByCrn(crn).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureOffenderNotFound", String.format("Offender with CRN %s not found", crn)));
     }
 
-    private void writeTierUpdate(String tier, Map<String, String> telemetryProperties, Long offenderId, StandardReference changeReason) {
-        final var updatedTier = referenceDataService.getTier(tier).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTierNotFound", String.format("Tier %s not found", tier)));
+    private void writeTierUpdate(StandardReference tier, Long offenderId, StandardReference changeReason) {
 
         ManagementTier newTier = ManagementTier
             .builder()
             .id(ManagementTierId
                 .builder()
                 .offenderId(offenderId)
-                .tier(updatedTier)
+                .tier(tier)
                 .dateChanged(LocalDateTime.now())
                 .build())
             .tierChangeReason(changeReason)
