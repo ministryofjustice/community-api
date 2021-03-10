@@ -45,7 +45,7 @@ public class TierService {
         final var offenderId = offender.getOffenderId();
         final var changeReason = referenceDataService.getAtsTierChangeReason().orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTierChangeReasonNotFound", "Tier change reason ATS not found"));
 
-        writeTierUpdate(tierWithUPrefix, telemetryProperties, offenderId, changeReason);
+        String tierDescription = writeTierUpdate(tierWithUPrefix, telemetryProperties, offenderId, changeReason);
 
         OffenderManager offenderManager = offender.getActiveCommunityOffenderManager().orElseThrow(() ->  logAndThrow(telemetryProperties, "TierUpdateFailureActiveCommunityOffenderManagerNotFound", String.format("Could not find active community manager for crn %s", crn)));
         Staff staff;
@@ -61,7 +61,7 @@ public class TierService {
             team = offenderManager.getTeam();
         }
 
-        contactService.addContactForTierUpdate(offenderId, LocalDateTime.now(), tierWithUPrefix, changeReason.getCodeDescription(), staff, team);
+        contactService.addContactForTierUpdate(offenderId, LocalDateTime.now(), tierDescription, changeReason.getCodeDescription(), staff, team);
         spgNotificationService.notifyUpdateOfOffender(offender);
         telemetryClient.trackEvent("TierUpdateSuccess", telemetryProperties, null);
     }
@@ -70,7 +70,7 @@ public class TierService {
         return offenderRepository.findByCrn(crn).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureOffenderNotFound", String.format("Offender with CRN %s not found", crn)));
     }
 
-    private void writeTierUpdate(String tier, Map<String, String> telemetryProperties, Long offenderId, StandardReference changeReason) {
+    private String writeTierUpdate(String tier, Map<String, String> telemetryProperties, Long offenderId, StandardReference changeReason) {
         final var updatedTier = referenceDataService.getTier(tier).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTierNotFound", String.format("Tier %s not found", tier)));
 
         ManagementTier newTier = ManagementTier
@@ -85,6 +85,7 @@ public class TierService {
             .build();
 
         managementTierRepository.save(newTier);
+        return updatedTier.getCodeDescription();
     }
 
     private String tierWithUPrefix(String tier) {

@@ -54,7 +54,7 @@ public class OffendersResource_updateTier extends IntegrationTestBase {
 
         List<Contact> updatedContacts = contactService.contactsFor(2500343964L, contactFilter);
 
-        assertThat(updatedContacts.stream().anyMatch(c ->  c.getNotes().contains("Tier: UB1"))).isTrue();
+        assertThat(updatedContacts.stream().anyMatch(c ->  c.getNotes().contains("Tier: B-1"))).isTrue();
     }
 
     @Test
