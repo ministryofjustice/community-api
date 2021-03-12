@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import com.microsoft.applicationinsights.TelemetryClient;
 import io.vavr.control.Either;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,13 +26,11 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderPrimaryIdentifiersRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository.DuplicateOffenderException;
-import uk.gov.justice.digital.delius.jpa.standard.repository.StandardReferenceRepository;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 import uk.gov.justice.digital.delius.transformers.ReleaseTransformer;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static java.util.function.Predicate.not;
@@ -115,6 +112,40 @@ public class OffenderService {
         return offenderRepository.findMostLikelyByNomsNumber(nomsNumber).fold(Either::left,
                 offender -> Either.right(offender.map(Offender::getOffenderId)));
     }
+
+    public Either<DuplicateOffenderException, Optional<OffenderDetail>> getMostLikelyOffenderByNomsNumber(String nomsNumber) {
+        return offenderRepository.findMostLikelyByNomsNumber(nomsNumber).fold(Either::left,
+            offender -> Either.right(offender.map(OffenderTransformer::fullOffenderOf)));
+    }
+
+    public Either<DuplicateOffenderException, Optional<OffenderDetailSummary>> getMostLikelyOffenderSummaryByNomsNumber(String nomsNumber) {
+        return offenderRepository.findMostLikelyByNomsNumber(nomsNumber).fold(Either::left,
+            offender -> Either.right(offender.map(OffenderTransformer::offenderSummaryOf)));
+    }
+
+    public Either<DuplicateOffenderException, Optional<OffenderDetail>> getSingleOffenderByNomsNumber(String nomsNumber) {
+        return tryToGetSingleOffenderByNomsNumber(nomsNumber).fold(Either::left,
+            offender -> Either.right(offender.map(OffenderTransformer::fullOffenderOf)));
+    }
+
+    public Either<DuplicateOffenderException, Optional<OffenderDetailSummary>> getSingleOffenderSummaryByNomsNumber(String nomsNumber) {
+        return tryToGetSingleOffenderByNomsNumber(nomsNumber).fold(Either::left,
+            offender -> Either.right(offender.map(OffenderTransformer::offenderSummaryOf)));
+    }
+
+    public Either<DuplicateOffenderException, Optional<Offender>> tryToGetSingleOffenderByNomsNumber(String nomsNumber) {
+        final var list = offenderRepository.findAllByNomsNumber(nomsNumber);
+        switch (list.size()) {
+            case 0:
+                return Either.right(Optional.empty());
+            case 1:
+                return Either.right(Optional.of(list.get(0)));
+            default:
+                return Either.left(new DuplicateOffenderException(String.format("Expect a single offender with noms number %s but foud %d", nomsNumber, list
+                    .size())));
+        }
+    }
+
 
     public List<BigDecimal> allOffenderIds(int pageSize, int page) {
 
