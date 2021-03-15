@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
+import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.AccessLimitation;
@@ -147,19 +148,31 @@ public class OffendersResource {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @ApiOperation(value = "Return the details for an offender", tags = "-- Popular core APIs --")
+    @ApiOperation(value = "Return the details for an offender. If multiple offenders found the active one wll be returned", tags = "-- Popular core APIs --")
     @ApiResponses(
-            value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
-            })
+        value = {
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 409, message = "Multiple offenders found in the same state ", response = ErrorResponse.class)
+        })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}")
-    public ResponseEntity<OffenderDetailSummary> getOffenderDetails(
-            @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
-            @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber) {
-        final var offender = offenderService.getOffenderSummaryByNomsNumber(nomsNumber);
-        return offender.map(
-                offenderDetail -> new ResponseEntity<>(offenderDetail, OK)).orElse(new ResponseEntity<>(OffenderDetailSummary.builder().build(), NOT_FOUND));
+    public OffenderDetailSummary getOffenderDetails(
+        @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
+        @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber,
+        @ApiParam(name = "failOnDuplicate", value = "Should fail if multiple offenders found regardless of status", example = "true", defaultValue = "false")
+        final @RequestParam(value = "failOnDuplicate", defaultValue = "false") boolean failOnDuplicate
+    ) {
+        final Optional<OffenderDetailSummary> offender;
+        if (failOnDuplicate) {
+            offender = offenderService
+                .getSingleOffenderSummaryByNomsNumber(nomsNumber)
+                .getOrElseThrow(error -> new ConflictingRequestException(error.getMessage()));
+
+        } else {
+            offender = offenderService
+                .getMostLikelyOffenderSummaryByNomsNumber(nomsNumber)
+                .getOrElseThrow(error -> new ConflictingRequestException(error.getMessage()));
+        }
+        return offender.orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
     }
 
     @ApiOperation(value = "Returns the contact details for an offender", tags = "Contact and attendance")
@@ -315,11 +328,28 @@ public class OffendersResource {
 
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/all", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "The offender is not found")
+        @ApiResponse(code = 404, message = "The offender is not found"),
+        @ApiResponse(code = 409, message = "Multiple offenders found in the same state", response = ErrorResponse.class)
     })
-    @ApiOperation(value = "Returns the full offender detail for the given nomsNumber", tags = "-- Popular core APIs --")
-    public OffenderDetail getOffenderDetailByNomsNumber(final @PathVariable("nomsNumber") String nomsNumber) {
-        final var offender = offenderService.getOffenderByNomsNumber(nomsNumber);
+    @ApiOperation(value = "Returns the full offender detail for the given nomsNumber. If multiple offender found the active one will be returned", tags = "-- Popular core APIs --")
+    public OffenderDetail getOffenderDetailByNomsNumber(
+        @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
+        @NotNull @PathVariable(value = "nomsNumber")
+        final String nomsNumber,
+        @ApiParam(name = "failOnDuplicate", value = "Should fail if multiple offenders found", example = "true", defaultValue = "false")
+        final @RequestParam(value = "failOnDuplicate", defaultValue = "false") boolean failOnDuplicate
+    ) {
+        final Optional<OffenderDetail> offender;
+        if (failOnDuplicate) {
+            offender = offenderService
+                .getSingleOffenderByNomsNumber(nomsNumber)
+                .getOrElseThrow(error -> new ConflictingRequestException(error.getMessage()));
+
+        } else {
+            offender = offenderService
+                .getMostLikelyOffenderByNomsNumber(nomsNumber)
+                .getOrElseThrow(error -> new ConflictingRequestException(error.getMessage()));
+        }
         return offender.orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
     }
 
@@ -385,13 +415,12 @@ public class OffendersResource {
         })
     @PostMapping(path = "/offenders/crn/{crn}/tier/{tier}")
     @PreAuthorize("hasRole('ROLE_MANAGEMENT_TIER_UPDATE')")
-    public ResponseEntity updateTier(
+    public void updateTier(
         @ApiParam(value = "CRN for the offender", example = "A123456", required = true)
         @NotNull @PathVariable(value = "crn") final String crn,
         @ApiParam(value = "New tier", example = "A1", required = true, allowableValues="A0, A1, A2, A3, B0, B1, B2, B3, C0, C1, C2, C3, D0, D1, D2, D3")
         @NotNull @PathVariable(value = "tier") final String tier) {
         tierService.updateTier(crn,tier);
-        return new ResponseEntity<>(OK);
     }
 
     @ApiOperation(value = "Return the NSIs for a conviction ID and a CRN, filtering by NSI codes", tags = "Sentence requirements and breach")
