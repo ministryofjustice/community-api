@@ -7,14 +7,17 @@ import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.jpa.standard.entity.NsiStatus;
 import uk.gov.justice.digital.delius.jpa.standard.entity.NsiType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import uk.gov.justice.digital.delius.util.EntityHelper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,6 +52,11 @@ class NsiTransformerTest {
                                 .staff(EntityHelper.aStaff("N02AAA001"))
                                 .build()
                 ))
+                .intendedProvider(ProbationArea.builder()
+                    .teams(Collections.singletonList(Team.builder()
+                        .description("Any Team")
+                        .build()))
+                    .build())
                 .build();
 
         final Nsi nsi = NsiTransformer.nsiOf(nsiEntity);
@@ -83,6 +91,8 @@ class NsiTransformerTest {
         assertThat(manager2.getProbationArea().getCode()).isEqualTo("N02");
         assertThat(manager2.getTeam().getCode()).isEqualTo("N02AAA");
         assertThat(manager2.getStaff().getStaffCode()).isEqualTo("N02AAA001");
+
+        assertThat(nsi.getIntendedProvider().getTeams()).isNull();
     }
 
    private uk.gov.justice.digital.delius.jpa.standard.entity.Nsi buildNsiEntity(LocalDate expectedStartDate,

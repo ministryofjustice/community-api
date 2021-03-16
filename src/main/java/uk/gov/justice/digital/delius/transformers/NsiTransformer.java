@@ -2,9 +2,6 @@ package uk.gov.justice.digital.delius.transformers;
 
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.NsiManager;
-import uk.gov.justice.digital.delius.data.api.ProbationArea;
-import uk.gov.justice.digital.delius.data.api.Requirement;
-import uk.gov.justice.digital.delius.data.api.deliusapi.NsiDto;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Nsi;
 import uk.gov.justice.digital.delius.jpa.standard.entity.NsiStatus;
 import uk.gov.justice.digital.delius.jpa.standard.entity.NsiType;
@@ -16,8 +13,9 @@ import java.util.stream.Collectors;
 
 public class NsiTransformer {
 
-    public static final String NSI_LENGTH_UNIT = "Months";
-    public static final boolean INCLUDE_PROBATION_AREA_TEAMS = false;
+    private static final String NSI_LENGTH_UNIT = "Months";
+    private static final boolean INCLUDE_PROBATION_AREA_TEAMS = false;
+    private static final boolean INCLUDE_INTENDED_PROVIDER_TEAMS = false;
 
     public static uk.gov.justice.digital.delius.data.api.Nsi nsiOf(Nsi nsi) {
         return Optional.ofNullable(nsi).map(n ->
@@ -36,7 +34,7 @@ public class NsiTransformer {
                 .lengthUnit(NSI_LENGTH_UNIT)
                 .nsiManagers(nsiManagersOf(n.getNsiManagers()))
                 .notes(n.getNotes())
-                .intendedProvider(ProbationAreaTransformer.probationAreaOf(n.getIntendedProvider()))
+                .intendedProvider(ProbationAreaTransformer.probationAreaOf(n.getIntendedProvider(), INCLUDE_INTENDED_PROVIDER_TEAMS))
                 .build()).orElse(null);
     }
 
