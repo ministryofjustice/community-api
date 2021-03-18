@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
 import uk.gov.justice.digital.delius.data.api.ReferralSentRequest;
-import uk.gov.justice.digital.delius.service.DeliusApiClient;
 import uk.gov.justice.digital.delius.service.ReferralService;
 
 import java.time.LocalDate;
@@ -50,13 +49,8 @@ public class ReferralControllerTest {
         given()
             .contentType(APPLICATION_JSON_VALUE)
             .body(ReferralSentRequest.builder()
-                .providerCode("N01")
-                .staffCode("NO1S12")
-                .teamCode("TEAM1")
                 .date(LocalDate.now())
-                .nsiType("NSI1")
-                .nsiSubType("NSISUB")
-                .nsiStatus("REFER")
+                .serviceCategory("Dependency and Recovery (D&R)")
                 .convictionId(12354L)
                 .requirementId(345678L).build()
             )

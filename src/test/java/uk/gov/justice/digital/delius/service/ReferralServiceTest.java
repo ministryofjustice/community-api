@@ -1,13 +1,11 @@
 package uk.gov.justice.digital.delius.service;
 
-import org.hibernate.engine.loading.internal.CollectionLoadContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
@@ -27,6 +25,8 @@ import uk.gov.justice.digital.delius.data.api.deliusapi.NsiDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -41,38 +41,41 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ReferralServiceTest {
-    private static final String NSI_CODE = "IPT";
     private static final Long OFFENDER_ID = 123L;
     private static final String OFFENDER_CRN = "X123456";
     private static final Long CONVICTION_ID = 2500295343L;
     private static final Long REQUIREMENT_ID = 2500083652L;
+    private static final String SERVICE_CATEGORY = "Accommodation";
+    private static final String NSI_TYPE = "CR01";
+    private static final String PROVIDER_CODE = "CRS";
+    private static final String STAFF_CODE = "CRSUATU";
+    private static final String TEAM_CODE = "CRSUAT";
+    private static final String NSI_STATUS = "INPROG";
+    private static final Map <String, String> SERVICE_CATEGORY_TO_NSI_TYPE_MAPPING = new HashMap<>(){{
+        this.put(SERVICE_CATEGORY, NSI_TYPE);
+    }};
+
 
     private static final Nsi MATCHING_NSI = Nsi.builder()
         .nsiId(12345L)
-        .nsiType(KeyValue.builder().code(NSI_CODE).build())
-        .nsiSubType(KeyValue.builder().code("IPT1").build())
+        .nsiType(KeyValue.builder().code(NSI_TYPE).build())
         .referralDate(LocalDate.of(2021, 1, 20))
-        .nsiStatus(KeyValue.builder().code("REFER").build())
+        .nsiStatus(KeyValue.builder().code(NSI_STATUS).build())
         .requirement(Requirement.builder().requirementId(REQUIREMENT_ID).build())
-        .intendedProvider(ProbationArea.builder().code("YSS").build())
+        .intendedProvider(ProbationArea.builder().code(PROVIDER_CODE).build())
         .nsiManagers(singletonList(
             NsiManager.builder()
-                .staff(StaffDetails.builder().staffCode("N06AAFU").build())
-                .team(Team.builder().code("N05MKU").build())
-                .probationArea(ProbationArea.builder().code("YSS").build())
+                .staff(StaffDetails.builder().staffCode(STAFF_CODE).build())
+                .team(Team.builder().code(TEAM_CODE).build())
+                .probationArea(ProbationArea.builder().code(PROVIDER_CODE).build())
                 .build()))
         .build();
 
     private static final ReferralSentRequest NSI_REQUEST = ReferralSentRequest
         .builder()
-        .nsiType(NSI_CODE)
-        .nsiSubType("IPT1")
+        .serviceCategory(SERVICE_CATEGORY)
         .date(LocalDate.of(2021, 1, 20))
-        .nsiStatus("REFER")
         .requirementId(REQUIREMENT_ID)
-        .providerCode("YSS")
-        .staffCode("N06AAFU")
-        .teamCode("N05MKU")
         .convictionId(CONVICTION_ID)
         .notes("A test note")
         .build();
@@ -86,11 +89,13 @@ public class ReferralServiceTest {
     @Mock
     NsiService nsiService;
 
-    @InjectMocks
     ReferralService referralService;
 
     @BeforeEach
     public void setup() {
+        referralService = new ReferralService(deliusApiClient, nsiService, offenderService,
+            PROVIDER_CODE, STAFF_CODE, TEAM_CODE, NSI_STATUS, SERVICE_CATEGORY_TO_NSI_TYPE_MAPPING);
+
         when(offenderService.offenderIdOfCrn(OFFENDER_CRN)).thenReturn(Optional.of(OFFENDER_ID));
     }
 
@@ -100,7 +105,7 @@ public class ReferralServiceTest {
 
         var response = referralService.createNsiReferral("X123456", NSI_REQUEST);
 
-        verify(nsiService).getNsiByCodes(OFFENDER_ID, CONVICTION_ID, singletonList(NSI_CODE));
+        verify(nsiService).getNsiByCodes(OFFENDER_ID, CONVICTION_ID, singletonList(NSI_TYPE));
         verifyNoInteractions(deliusApiClient);
 
         assertThat(response.getNsiId()).isEqualTo(MATCHING_NSI.getNsiId());
@@ -112,7 +117,7 @@ public class ReferralServiceTest {
 
         assertThrows(ConflictingRequestException.class, () -> referralService.createNsiReferral("X123456", NSI_REQUEST));
 
-        verify(nsiService).getNsiByCodes(OFFENDER_ID, CONVICTION_ID, singletonList(NSI_CODE));
+        verify(nsiService).getNsiByCodes(OFFENDER_ID, CONVICTION_ID, singletonList(NSI_TYPE));
         verifyNoInteractions(deliusApiClient);
     }
 
@@ -125,11 +130,10 @@ public class ReferralServiceTest {
 
         var response = referralService.createNsiReferral("X123456", NSI_REQUEST);
 
-        verify(nsiService).getNsiByCodes(OFFENDER_ID, CONVICTION_ID, singletonList(NSI_CODE));
+        verify(nsiService).getNsiByCodes(OFFENDER_ID, CONVICTION_ID, singletonList(NSI_TYPE));
 
         verify(deliusApiClient).createNewNsi(eq(NewNsi.builder()
-            .type(NSI_CODE)
-            .subType("IPT1")
+            .type(NSI_TYPE)
             .offenderCrn(OFFENDER_CRN)
             .eventId(CONVICTION_ID)
             .requirementId(REQUIREMENT_ID)
@@ -139,12 +143,12 @@ public class ReferralServiceTest {
             .startDate(null)
             .endDate(null)
             .length(null)
-            .status("REFER")
+            .status(NSI_STATUS)
             .statusDate(LocalDateTime.of(2021, 1, 20, 0, 0))
             .outcome(null)
             .notes("A test note")
-            .intendedProvider("YSS")
-            .manager(NewNsiManager.builder().staff("N06AAFU").team("N05MKU").provider("YSS").build())
+            .intendedProvider(PROVIDER_CODE)
+            .manager(NewNsiManager.builder().staff(STAFF_CODE).team(TEAM_CODE).provider(PROVIDER_CODE).build())
             .build()));
 
         assertThat(response.getNsiId()).isEqualTo(deliusApiResponse.getId());
@@ -160,18 +164,21 @@ public class ReferralServiceTest {
         assertThat(response.isPresent()).isEqualTo(exists);
     }
 
+    @Test
+    public void throwsExceptionIfNsiTypeMappingNotFound() {
+        var nsiRequest = NSI_REQUEST
+            .toBuilder()
+            .serviceCategory("invalid one")
+            .build();
+
+        assertThrows(IllegalArgumentException.class, () -> referralService.createNsiReferral(OFFENDER_CRN, nsiRequest));
+    }
+
     private static Stream<Arguments> nsis() {
         return Stream.of(
             Arguments.of(NSI_REQUEST, MATCHING_NSI, true),
-            Arguments.of(NSI_REQUEST.withNsiSubType("NOMATCH"), MATCHING_NSI, false),
             Arguments.of(NSI_REQUEST.withDate(LocalDate.of(2017, 1, 1)), MATCHING_NSI, false),
-            Arguments.of(NSI_REQUEST.withNsiStatus("NOMATCH"), MATCHING_NSI, false),
             Arguments.of(NSI_REQUEST.withRequirementId(1L), MATCHING_NSI, false),
-            Arguments.of(NSI_REQUEST.withProviderCode("NOMATCH"), MATCHING_NSI, false),
-            Arguments.of(NSI_REQUEST.withStaffCode("NOMATCH"), MATCHING_NSI, false),
-            Arguments.of(NSI_REQUEST.withTeamCode("NOMATCH"), MATCHING_NSI, false),
-            Arguments.of(NSI_REQUEST.withTeamCode(null), MATCHING_NSI.withNsiManagers(Collections.singletonList(MATCHING_NSI.getNsiManagers().get(0).withTeam(Team.builder().code("N06UAT").build()))), true),
-            Arguments.of(NSI_REQUEST.withStaffCode(null), MATCHING_NSI.withNsiManagers(Collections.singletonList(MATCHING_NSI.getNsiManagers().get(0).withStaff(StaffDetails.builder().staffCode("N06UATU").build()))), true),
             Arguments.of(NSI_REQUEST.withRequirementId(null), MATCHING_NSI.withRequirement(null), true)
         );
     }
