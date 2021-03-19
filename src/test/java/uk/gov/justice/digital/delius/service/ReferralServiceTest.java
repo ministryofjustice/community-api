@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
 public class ReferralServiceTest {
     private static final Long OFFENDER_ID = 123L;
     private static final String OFFENDER_CRN = "X123456";
-    private static final Long CONVICTION_ID = 2500295343L;
+    private static final Long SENTENCE_ID = 2500295343L;
     private static final Long REQUIREMENT_ID = 2500083652L;
     private static final String SERVICE_CATEGORY = "Accommodation";
     private static final String NSI_TYPE = "CR01";
@@ -76,7 +76,7 @@ public class ReferralServiceTest {
         .serviceCategory(SERVICE_CATEGORY)
         .date(LocalDate.of(2021, 1, 20))
         .requirementId(REQUIREMENT_ID)
-        .convictionId(CONVICTION_ID)
+        .sentenceId(SENTENCE_ID)
         .notes("A test note")
         .build();
 
@@ -105,7 +105,7 @@ public class ReferralServiceTest {
 
         var response = referralService.createNsiReferral("X123456", NSI_REQUEST);
 
-        verify(nsiService).getNsiByCodes(OFFENDER_ID, CONVICTION_ID, singletonList(NSI_TYPE));
+        verify(nsiService).getNsiByCodes(OFFENDER_ID, SENTENCE_ID, singletonList(NSI_TYPE));
         verifyNoInteractions(deliusApiClient);
 
         assertThat(response.getNsiId()).isEqualTo(MATCHING_NSI.getNsiId());
@@ -117,7 +117,7 @@ public class ReferralServiceTest {
 
         assertThrows(ConflictingRequestException.class, () -> referralService.createNsiReferral("X123456", NSI_REQUEST));
 
-        verify(nsiService).getNsiByCodes(OFFENDER_ID, CONVICTION_ID, singletonList(NSI_TYPE));
+        verify(nsiService).getNsiByCodes(OFFENDER_ID, SENTENCE_ID, singletonList(NSI_TYPE));
         verifyNoInteractions(deliusApiClient);
     }
 
@@ -130,12 +130,12 @@ public class ReferralServiceTest {
 
         var response = referralService.createNsiReferral("X123456", NSI_REQUEST);
 
-        verify(nsiService).getNsiByCodes(OFFENDER_ID, CONVICTION_ID, singletonList(NSI_TYPE));
+        verify(nsiService).getNsiByCodes(OFFENDER_ID, SENTENCE_ID, singletonList(NSI_TYPE));
 
         verify(deliusApiClient).createNewNsi(eq(NewNsi.builder()
             .type(NSI_TYPE)
             .offenderCrn(OFFENDER_CRN)
-            .eventId(CONVICTION_ID)
+            .eventId(SENTENCE_ID)
             .requirementId(REQUIREMENT_ID)
             .referralDate(LocalDate.of(2021, 1, 20))
             .expectedStartDate(null)

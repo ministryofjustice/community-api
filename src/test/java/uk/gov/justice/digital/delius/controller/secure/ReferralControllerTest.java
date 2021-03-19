@@ -51,7 +51,7 @@ public class ReferralControllerTest {
             .body(ReferralSentRequest.builder()
                 .date(LocalDate.now())
                 .serviceCategory("Dependency and Recovery (D&R)")
-                .convictionId(12354L)
+                .sentenceId(12354L)
                 .requirementId(345678L).build()
             )
             .when()

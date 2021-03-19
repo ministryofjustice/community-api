@@ -32,7 +32,7 @@ public class ReferralSentRequest {
     @Positive
     @NotNull
     @ApiModelProperty(required = true)
-    private Long convictionId;
+    private Long sentenceId;
 
     @Positive
     private Long requirementId;

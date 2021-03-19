@@ -60,7 +60,7 @@ public class ReferralService {
             var newNsiRequest = NewNsi.builder()
                 .type(getNsiType(referralSent.getServiceCategory()))
                 .offenderCrn(crn)
-                .eventId(referralSent.getConvictionId())
+                .eventId(referralSent.getSentenceId())
                 .requirementId(referralSent.getRequirementId())
                 .referralDate(referralSent.getDate())
                 .status(nsiStatus)
@@ -81,7 +81,7 @@ public class ReferralService {
         // determine if there is an existing suitable NSI
         var offenderId = offenderService.offenderIdOfCrn(crn).orElseThrow(() -> new BadRequestException("Offender CRN not found"));
 
-        var existingNsis = nsiService.getNsiByCodes(offenderId, referralSent.getConvictionId(), Collections.singletonList(getNsiType(referralSent.getServiceCategory())))
+        var existingNsis = nsiService.getNsiByCodes(offenderId, referralSent.getSentenceId(), Collections.singletonList(getNsiType(referralSent.getServiceCategory())))
             .map(wrapper -> wrapper.getNsis().stream()
                 // eventID, offenderID, nsiID, and callerID are handled in the NSI service
                 .filter(nsi -> Optional.ofNullable(nsi.getReferralDate()).map(n -> n.equals(referralSent.getDate())).orElse(false))
