@@ -38,7 +38,7 @@ public class ReferralService {
                            @Value("${new-nsi.referral.provider-code}") final String providerCode,
                            @Value("${new-nsi.referral.staff-code}") final String staffCode,
                            @Value("${new-nsi.referral.team-code}") final String teamCode,
-                           @Value("${new-nsi.referral.nsi-status") final String nsiStatus,
+                           @Value("${new-nsi.referral.nsi-status}") final String nsiStatus,
                            @Value("#{${new-nsi.referral.referral-type-to-nsi-type}}") final Map<String, String> referralTypeToNsiTypeMapping
     ) {
         this.deliusApiClient = deliusApiClient;
@@ -95,7 +95,7 @@ public class ReferralService {
                     )
                 ).orElse(false))
                 .collect(toList())
-            ).orElseThrow();
+            ).orElse(Collections.emptyList());
 
         if (existingNsis.size() > 1) {
             throw new ConflictingRequestException("Multiple existing matching NSIs found");
