@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.digital.delius.config.DeliusMappingConfig;
 import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Nsi;
@@ -55,7 +56,6 @@ public class ReferralServiceTest {
         this.put(SERVICE_CATEGORY, NSI_TYPE);
     }};
 
-
     private static final Nsi MATCHING_NSI = Nsi.builder()
         .nsiId(12345L)
         .nsiType(KeyValue.builder().code(NSI_TYPE).build())
@@ -93,8 +93,14 @@ public class ReferralServiceTest {
 
     @BeforeEach
     public void setup() {
-        referralService = new ReferralService(deliusApiClient, nsiService, offenderService,
-            PROVIDER_CODE, STAFF_CODE, TEAM_CODE, NSI_STATUS, SERVICE_CATEGORY_TO_NSI_TYPE_MAPPING);
+        DeliusMappingConfig deliusMapping = new DeliusMappingConfig();
+        deliusMapping.getNsiMapping().setProviderCode(PROVIDER_CODE);
+        deliusMapping.getNsiMapping().setStaffCode(STAFF_CODE);
+        deliusMapping.getNsiMapping().setTeamCode(TEAM_CODE);
+        deliusMapping.getNsiMapping().setNsiStatus(NSI_STATUS);
+        deliusMapping.getNsiMapping().setServiceCategoryToNsiType(SERVICE_CATEGORY_TO_NSI_TYPE_MAPPING);
+
+        referralService = new ReferralService(deliusApiClient, nsiService, offenderService, deliusMapping);
 
         when(offenderService.offenderIdOfCrn(OFFENDER_CRN)).thenReturn(Optional.of(OFFENDER_ID));
     }

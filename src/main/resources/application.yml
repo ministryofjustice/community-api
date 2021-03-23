@@ -100,18 +100,17 @@ features:
         update-prison-location: false
   apply-limited-access-markers: false
 
-new-nsi:
-  referral:
+interventions-delius:
+  nsi-mapping:
     provider-code: CRS
     staff-code: CRSUATU
     team-code: CRSUAT
     nsi-status: INPROG
-    referral-type-to-nsi-type: '{
-      "Accommodation": "CRS01",
-      "Education, Training and Employment (ETE)": "CRS02",
-      "Finance, Benefits and Debt (FBD)": "CRS03",
-      "Dependency and Recovery (D&R)": "CRS04"
-      }'
+    service-category-to-nsi-type:
+      "[Accommodation]": CRS01
+      "[Education, Training and Employment (ETE)]": CRS02
+      "[Finance, Benefits and Debt (FBD)]": CRS03
+      "[Dependency and Recovery (D&R)]": CRS04
 
 smoke:
   test:

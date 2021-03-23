@@ -1,8 +1,9 @@
 package uk.gov.justice.digital.delius.service;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.justice.digital.delius.config.DeliusMappingConfig;
+import uk.gov.justice.digital.delius.config.DeliusMappingConfig.NsiMapping;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.data.api.Nsi;
@@ -12,7 +13,6 @@ import uk.gov.justice.digital.delius.data.api.deliusapi.NewNsi;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewNsiManager;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
@@ -20,35 +20,23 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class ReferralService {
 
-    private final String providerCode;
-    private final String staffCode;
-    private final String teamCode;
-    private final String nsiStatus;
-    private final Map<String, String> referralTypeToNsiTypeMapping;
-
     private final DeliusApiClient deliusApiClient;
 
     private final NsiService nsiService;
 
     private final OffenderService offenderService;
 
+    private NsiMapping nsiMapping;
+
     public ReferralService(final DeliusApiClient deliusApiClient,
                            final NsiService nsiService,
                            final OffenderService offenderService,
-                           @Value("${new-nsi.referral.provider-code}") final String providerCode,
-                           @Value("${new-nsi.referral.staff-code}") final String staffCode,
-                           @Value("${new-nsi.referral.team-code}") final String teamCode,
-                           @Value("${new-nsi.referral.nsi-status}") final String nsiStatus,
-                           @Value("#{${new-nsi.referral.referral-type-to-nsi-type}}") final Map<String, String> referralTypeToNsiTypeMapping
-    ) {
+                           final DeliusMappingConfig deliusMappingConfig
+                           ) {
         this.deliusApiClient = deliusApiClient;
         this.nsiService = nsiService;
         this.offenderService = offenderService;
-        this.providerCode = providerCode;
-        this.staffCode = staffCode;
-        this.teamCode = teamCode;
-        this.nsiStatus = nsiStatus;
-        this.referralTypeToNsiTypeMapping = referralTypeToNsiTypeMapping;
+        this.nsiMapping = deliusMappingConfig.getNsiMapping();
     }
 
     @Transactional
@@ -63,14 +51,14 @@ public class ReferralService {
                 .eventId(referralSent.getSentenceId())
                 .requirementId(referralSent.getRequirementId())
                 .referralDate(referralSent.getDate())
-                .status(nsiStatus)
+                .status(nsiMapping.getNsiStatus())
                 .statusDate(referralSent.getDate().atStartOfDay())
                 .notes(referralSent.getNotes())
-                .intendedProvider(providerCode)
+                .intendedProvider(nsiMapping.getProviderCode())
                 .manager(NewNsiManager.builder()
-                    .staff(staffCode)
-                    .team(teamCode)
-                    .provider(providerCode)
+                    .staff(nsiMapping.getStaffCode())
+                    .team(nsiMapping.getTeamCode())
+                    .provider(nsiMapping.getProviderCode())
                     .build()).build();
 
             return deliusApiClient.createNewNsi(newNsiRequest).getId();
@@ -85,13 +73,13 @@ public class ReferralService {
             .map(wrapper -> wrapper.getNsis().stream()
                 // eventID, offenderID, nsiID, and callerID are handled in the NSI service
                 .filter(nsi -> Optional.ofNullable(nsi.getReferralDate()).map(n -> n.equals(referralSent.getDate())).orElse(false))
-                .filter(nsi -> Optional.ofNullable(nsi.getNsiStatus()).map(n -> n.getCode().equals(nsiStatus)).orElse(false))
+                .filter(nsi -> Optional.ofNullable(nsi.getNsiStatus()).map(n -> n.getCode().equals(nsiMapping.getNsiStatus())).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getRequirement()).map(n -> nsi.getRequirement().getRequirementId().equals(referralSent.getRequirementId())).orElse(referralSent.getRequirementId() == null))
-                .filter(nsi -> Optional.ofNullable(nsi.getIntendedProvider()).map(n -> n.getCode().equals(providerCode)).orElse(false))
+                .filter(nsi -> Optional.ofNullable(nsi.getIntendedProvider()).map(n -> n.getCode().equals(nsiMapping.getProviderCode())).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getNsiManagers()).map(n -> n.stream().anyMatch(
-                    nsiManager -> nsiManager.getStaff().getStaffCode().equals(staffCode)
-                        && nsiManager.getTeam().getCode().equals(teamCode)
-                        && nsiManager.getProbationArea().getCode().equals(providerCode)
+                    nsiManager -> nsiManager.getStaff().getStaffCode().equals(nsiMapping.getStaffCode())
+                        && nsiManager.getTeam().getCode().equals(nsiMapping.getTeamCode())
+                        && nsiManager.getProbationArea().getCode().equals(nsiMapping.getProviderCode())
                     )
                 ).orElse(false))
                 .collect(toList())
@@ -104,7 +92,7 @@ public class ReferralService {
     }
 
     String getNsiType(final String referralType) {
-        return Optional.ofNullable(referralTypeToNsiTypeMapping.get(referralType)).orElseThrow(
+        return Optional.ofNullable(nsiMapping.getServiceCategoryToNsiType().get(referralType)).orElseThrow(
             () -> new IllegalArgumentException("Nsi Type mapping from referralType does not exist for: " + referralType)
         );
     }
