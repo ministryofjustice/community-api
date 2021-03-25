@@ -3,11 +3,13 @@ package uk.gov.justice.digital.delius.service;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.ConvictionRequirements;
 import uk.gov.justice.digital.delius.data.api.LicenceConditions;
 import uk.gov.justice.digital.delius.data.api.PssRequirements;
+import uk.gov.justice.digital.delius.data.api.Requirement;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
@@ -19,16 +21,22 @@ import uk.gov.justice.digital.delius.transformers.RequirementTransformer;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
 
 @Service
 @NoArgsConstructor
 @AllArgsConstructor
 public class RequirementService {
+
     @Autowired
     private OffenderRepository offenderRepository;
     @Autowired
     private EventRepository eventRepository;
+    @Value("${delius-nsi.requirement.rehabilitation-activity-type}")
+    private String rehabilitationActivityRequirementType;
 
     public ConvictionRequirements getRequirementsByConvictionId(String crn, Long convictionId) {
         var requirements = Optional.of(getEvent(crn, convictionId))
@@ -38,7 +46,7 @@ public class RequirementService {
                 .stream()
                 .flatMap(Collection::stream)
                 .map(RequirementTransformer::requirementOf)
-                .collect(Collectors.toList());
+                .collect(toList());
 
         return new ConvictionRequirements(requirements);
     }
@@ -52,7 +60,7 @@ public class RequirementService {
                 .stream()
                 .flatMap(Collection::stream)
                 .map(RequirementTransformer::pssRequirementOf)
-                .collect(Collectors.toList());
+                .collect(toList());
 
         return new PssRequirements(pssRequirements);
     }
@@ -63,12 +71,12 @@ public class RequirementService {
                 .stream()
                 .filter(event -> convictionId.equals(event.getEventId()))
                 .findAny()
-                .orElseThrow(() ->  new NotFoundException(String.format("Conviction with convictionId '%s' not found", convictionId)));
+                .orElseThrow(() ->  new NotFoundException(format("Conviction with convictionId '%s' not found", convictionId)));
     }
 
     private Offender getOffender(String crn) {
         return offenderRepository.findByCrn(crn)
-                .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN '%s' not found", crn)));
+                .orElseThrow(() -> new NotFoundException(format("Offender with CRN '%s' not found", crn)));
     }
 
     public LicenceConditions getLicenceConditionsByConvictionId(String crn, Long convictionId) {
@@ -78,8 +86,32 @@ public class RequirementService {
                 .stream()
                 .flatMap(Collection::stream)
                 .map(ContactTransformer::licenceConditionOf)
-                .collect(Collectors.toList());
+                .collect(toList());
 
         return new LicenceConditions(conditionsList);
+    }
+
+    // In the context of NSI's for interventions, the offender's sentence is the event against which
+    // the NSI is created. This sentence is supplied by interventions as part of the "referral sent
+    // request". This method takes the sentence and finds any associated requirements and returns one
+    // that has a main category of F - rehab activity requirement. It is invalid for multiple to exist.
+    // NB. The called method getRequirementsByConvictionId accepts an event id (conviction or sentence)
+    // and perhaps should have been named getRequirementsByEventId
+    public Requirement getReferralRequirement(String crn, Long eventId) {
+
+        var requirements = getRequirementsByConvictionId(crn, eventId)
+            .getRequirements().stream()
+            .filter(requirement ->
+                ofNullable(requirement.getRequirementTypeMainCategory())
+                    .map(cat -> rehabilitationActivityRequirementType.equals(cat.getCode()))
+                    .orElse(false))
+            .collect(toList());
+
+        if ( requirements.size() > 1 ) {
+            throw new IllegalStateException(format("CRN: %s EventId: %d has multiple referral requirements", crn, eventId));
+        }
+
+        return requirements.stream().findFirst().orElseThrow(() ->
+            new IllegalStateException(format("CRN: %s EventId: %d has no referral requirement", crn, eventId)));
     }
 }

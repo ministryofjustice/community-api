@@ -63,7 +63,6 @@ public class ReferralAPITest extends IntegrationTestBase {
                     .date(LocalDate.now())
                     .serviceCategory("Accommodation")
                     .sentenceId(2500295343L)
-                    .requirementId(2500083652L)
                     .notes("A test note")
                     .build()))
                 .post("offenders/crn/X320741/referral/sent")
