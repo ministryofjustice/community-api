@@ -19,13 +19,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReferralSentRequest {
-    @NotEmpty
-    @ApiModelProperty(required = true)
-    private String providerCode;
-
-    private String staffCode;
-
-    private String teamCode;
 
     @NotNull
     @ApiModelProperty(required = true)
@@ -34,20 +27,15 @@ public class ReferralSentRequest {
 
     @NotEmpty
     @ApiModelProperty(required = true)
-    private String nsiType;
-
-    private String nsiSubType;
+    private String serviceCategory;
 
     @Positive
     @NotNull
     @ApiModelProperty(required = true)
-    private Long convictionId;
+    private Long sentenceId;
 
     @Positive
     private Long requirementId;
-
-    @NotEmpty
-    private String nsiStatus;
 
     private String notes;
 }

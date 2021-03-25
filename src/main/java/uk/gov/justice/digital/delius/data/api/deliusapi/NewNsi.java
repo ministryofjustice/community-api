@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class NewNsi {
     private String type;
-    private String subType;
     private String offenderCrn;
     private Long eventId;
     private Long requirementId;
