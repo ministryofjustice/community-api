@@ -26,30 +26,35 @@ public class ReferralService {
 
     private final OffenderService offenderService;
 
-    private NsiMapping nsiMapping;
+    private final RequirementService requirementService;
 
+    private NsiMapping nsiMapping;
     public ReferralService(final DeliusApiClient deliusApiClient,
                            final NsiService nsiService,
                            final OffenderService offenderService,
+                           final RequirementService requirementService,
                            final DeliusMappingConfig deliusMappingConfig
                            ) {
         this.deliusApiClient = deliusApiClient;
         this.nsiService = nsiService;
         this.offenderService = offenderService;
+        this.requirementService = requirementService;
         this.nsiMapping = deliusMappingConfig.getNsiMapping();
     }
 
     @Transactional
     public ReferralSentResponse createNsiReferral(final String crn,
                                                   final ReferralSentRequest referralSent) {
-        var existingNsi = getExistingMatchingNsi(crn, referralSent);
+
+        Long requirementId = getRequirement(crn, referralSent.getSentenceId());
+        var existingNsi = getExistingMatchingNsi(crn, referralSent, requirementId);
 
         return ReferralSentResponse.builder().nsiId(existingNsi.map(Nsi::getNsiId).orElseGet(() -> {
             var newNsiRequest = NewNsi.builder()
                 .type(getNsiType(referralSent.getServiceCategory()))
                 .offenderCrn(crn)
                 .eventId(referralSent.getSentenceId())
-                .requirementId(referralSent.getRequirementId())
+                .requirementId(requirementId)
                 .referralDate(referralSent.getDate())
                 .status(nsiMapping.getNsiStatus())
                 .statusDate(referralSent.getDate().atStartOfDay())
@@ -65,7 +70,7 @@ public class ReferralService {
         })).build();
     }
 
-    public Optional<Nsi> getExistingMatchingNsi(String crn, ReferralSentRequest referralSent) {
+    public Optional<Nsi> getExistingMatchingNsi(String crn, ReferralSentRequest referralSent, Long requirementId) {
         // determine if there is an existing suitable NSI
         var offenderId = offenderService.offenderIdOfCrn(crn).orElseThrow(() -> new BadRequestException("Offender CRN not found"));
 
@@ -74,7 +79,7 @@ public class ReferralService {
                 // eventID, offenderID, nsiID, and callerID are handled in the NSI service
                 .filter(nsi -> Optional.ofNullable(nsi.getReferralDate()).map(n -> n.equals(referralSent.getDate())).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getNsiStatus()).map(n -> n.getCode().equals(nsiMapping.getNsiStatus())).orElse(false))
-                .filter(nsi -> Optional.ofNullable(nsi.getRequirement()).map(n -> nsi.getRequirement().getRequirementId().equals(referralSent.getRequirementId())).orElse(referralSent.getRequirementId() == null))
+                .filter(nsi -> Optional.ofNullable(nsi.getRequirement()).map(n -> nsi.getRequirement().getRequirementId().equals(requirementId)).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getIntendedProvider()).map(n -> n.getCode().equals(nsiMapping.getProviderCode())).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getNsiManagers()).map(n -> n.stream().anyMatch(
                     nsiManager -> nsiManager.getStaff().getStaffCode().equals(nsiMapping.getStaffCode())
@@ -89,6 +94,10 @@ public class ReferralService {
             throw new ConflictingRequestException("Multiple existing matching NSIs found");
         }
         return existingNsis.stream().findFirst();
+    }
+
+    Long getRequirement(String crn, Long sentenceId) {
+        return requirementService.getReferralRequirement(crn, sentenceId).getRequirementId();
     }
 
     String getNsiType(final String referralType) {

@@ -75,7 +75,6 @@ public class ReferralServiceTest {
         .builder()
         .serviceCategory(SERVICE_CATEGORY)
         .date(LocalDate.of(2021, 1, 20))
-        .requirementId(REQUIREMENT_ID)
         .sentenceId(SENTENCE_ID)
         .notes("A test note")
         .build();
@@ -89,6 +88,9 @@ public class ReferralServiceTest {
     @Mock
     NsiService nsiService;
 
+    @Mock
+    RequirementService requirementService;
+
     ReferralService referralService;
 
     @BeforeEach
@@ -100,13 +102,16 @@ public class ReferralServiceTest {
         deliusMapping.getNsiMapping().setNsiStatus(NSI_STATUS);
         deliusMapping.getNsiMapping().setServiceCategoryToNsiType(SERVICE_CATEGORY_TO_NSI_TYPE_MAPPING);
 
-        referralService = new ReferralService(deliusApiClient, nsiService, offenderService, deliusMapping);
+        referralService = new ReferralService(deliusApiClient, nsiService, offenderService, requirementService, deliusMapping);
 
         when(offenderService.offenderIdOfCrn(OFFENDER_CRN)).thenReturn(Optional.of(OFFENDER_ID));
     }
 
     @Test
     public void creatingNewNsiWhenMatchingOneExistsReturnsExistingNsi() {
+
+        Requirement requirement = Requirement.builder().requirementId(REQUIREMENT_ID).build();
+        when(requirementService.getReferralRequirement(OFFENDER_CRN, SENTENCE_ID)).thenReturn(requirement);
         when(nsiService.getNsiByCodes(any(), any(), any())).thenReturn(Optional.of(NsiWrapper.builder().nsis(singletonList(MATCHING_NSI)).build()));
 
         var response = referralService.createNsiReferral("X123456", NSI_REQUEST);
@@ -119,6 +124,9 @@ public class ReferralServiceTest {
 
     @Test
     public void creatingNewNsiWhenMultipleMatchingExistReturnsConflict() {
+
+        Requirement requirement = Requirement.builder().requirementId(REQUIREMENT_ID).build();
+        when(requirementService.getReferralRequirement(OFFENDER_CRN, SENTENCE_ID)).thenReturn(requirement);
         when(nsiService.getNsiByCodes(any(), any(), any())).thenReturn(Optional.of(NsiWrapper.builder().nsis(Collections.nCopies(2, MATCHING_NSI)).build()));
 
         assertThrows(ConflictingRequestException.class, () -> referralService.createNsiReferral("X123456", NSI_REQUEST));
@@ -129,6 +137,9 @@ public class ReferralServiceTest {
 
     @Test
     public void creatingNewNsiCallsDeliusApiWhenNonExisting() {
+
+        Requirement requirement = Requirement.builder().requirementId(REQUIREMENT_ID).build();
+        when(requirementService.getReferralRequirement(OFFENDER_CRN, SENTENCE_ID)).thenReturn(requirement);
         var deliusApiResponse = NsiDto.builder().id(66853L).build();
 
         when(nsiService.getNsiByCodes(any(), any(), any())).thenReturn(Optional.of(NsiWrapper.builder().nsis(Collections.emptyList()).build()));
@@ -163,15 +174,20 @@ public class ReferralServiceTest {
     @ParameterizedTest
     @MethodSource("nsis")
     public void noNsisAreReturnedWhenNotExactMatch(final ReferralSentRequest nsiRequest, final Nsi existingNsi, final boolean exists) {
+
         when(nsiService.getNsiByCodes(any(), any(), any())).thenReturn(Optional.of(NsiWrapper.builder().nsis(singletonList(existingNsi)).build()));
 
-        var response = referralService.getExistingMatchingNsi(OFFENDER_CRN, nsiRequest);
+        var response = referralService.getExistingMatchingNsi(OFFENDER_CRN, nsiRequest, REQUIREMENT_ID);
 
         assertThat(response.isPresent()).isEqualTo(exists);
     }
 
     @Test
     public void throwsExceptionIfNsiTypeMappingNotFound() {
+
+        Requirement requirement = Requirement.builder().requirementId(REQUIREMENT_ID).build();
+        when(requirementService.getReferralRequirement(OFFENDER_CRN, SENTENCE_ID)).thenReturn(requirement);
+
         var nsiRequest = NSI_REQUEST
             .toBuilder()
             .serviceCategory("invalid one")
@@ -184,8 +200,8 @@ public class ReferralServiceTest {
         return Stream.of(
             Arguments.of(NSI_REQUEST, MATCHING_NSI, true),
             Arguments.of(NSI_REQUEST.withDate(LocalDate.of(2017, 1, 1)), MATCHING_NSI, false),
-            Arguments.of(NSI_REQUEST.withRequirementId(1L), MATCHING_NSI, false),
-            Arguments.of(NSI_REQUEST.withRequirementId(null), MATCHING_NSI.withRequirement(null), true)
+            Arguments.of(NSI_REQUEST, MATCHING_NSI.withRequirement(Requirement.builder().requirementId(999L).build()), false),
+            Arguments.of(NSI_REQUEST, MATCHING_NSI.withRequirement(null), false)
         );
     }
 }

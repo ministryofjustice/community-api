@@ -20,6 +20,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.PssRequirement;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PssRequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PssRequirementTypeSubCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
+import uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
@@ -38,6 +39,7 @@ import static org.mockito.Mockito.when;
 public class RequirementServiceTest {
     private static final Long CONVICTION_ID = 987654321L;
     private static final String CRN = "CRN";
+    private static final String REHABILITATION_ACTIVITY_REQUIREMENT_TYPE = "F";
     public static final Long OFFENDER_ID = 123456789L;
 
     @Mock
@@ -61,7 +63,7 @@ public class RequirementServiceTest {
     class RequirementTests {
         @BeforeEach
         public void setUp() {
-            requirementService = new RequirementService(offenderRepository, eventRepository);
+            requirementService = new RequirementService(offenderRepository, eventRepository, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE);
 
             when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
             when(offender.getOffenderId()).thenReturn(OFFENDER_ID);
@@ -222,6 +224,52 @@ public class RequirementServiceTest {
             assertThat(requirements.getRequirements().get(0).getRequirementId()).isEqualTo(99L);
         }
 
+        @Test
+        public void whenGetReferralRequirementByConvictionId_thenReturnRequirement() {
+            when(disposal.getRequirements()).thenReturn(Collections.singletonList(Requirement
+                .builder()
+                .requirementId(99L)
+                .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build())
+                .build()));
+            var requirement = requirementService.getReferralRequirement(CRN, CONVICTION_ID);
+            assertThat(requirement.getRequirementId()).isEqualTo(99L);
+        }
+
+        @Test
+        public void whenGetReferralRequirementByConvictionId_AndRequirementNotMatchingCategory_thenThrowException() {
+            when(disposal.getRequirements()).thenReturn(Collections.singletonList(Requirement
+                .builder()
+                .requirementId(99L)
+                .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("X").build())
+                .build()));
+
+            assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> requirementService.getReferralRequirement(CRN, CONVICTION_ID))
+                .withMessage("CRN: CRN EventId: 987654321 has no referral requirement");
+        }
+
+        @Test
+        public void whenGetReferralRequirementByConvictionId_AndNoRequirementsExist_thenThrowException() {
+            when(disposal.getRequirements()).thenReturn(Arrays.asList(
+                Requirement.builder().requirementId(99L)
+                    .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build()).build(),
+                Requirement.builder().requirementId(100L)
+                    .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build()).build())
+            );
+
+            assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> requirementService.getReferralRequirement(CRN, CONVICTION_ID))
+                .withMessage("CRN: CRN EventId: 987654321 has multiple referral requirements");
+        }
+
+        @Test
+        public void whenGetReferralRequirementByConvictionId_AndMultipleRequirementsExist_thenThrowException() {
+            when(disposal.getRequirements()).thenReturn(Collections.emptyList());
+
+            assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> requirementService.getReferralRequirement(CRN, CONVICTION_ID))
+                .withMessage("CRN: CRN EventId: 987654321 has no referral requirement");
+        }
 
         @Test
         public void givenMultipleEventsReturnedForOffender_whenGetRequirementsByConvictionId_thenFilterByConvictionId() {
@@ -259,7 +307,7 @@ public class RequirementServiceTest {
 
         @BeforeEach
         public void setUp() {
-            requirementService = new RequirementService(offenderRepository, eventRepository);
+            requirementService = new RequirementService(offenderRepository, eventRepository, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE);
 
             when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
         }

@@ -34,8 +34,5 @@ public class ReferralSentRequest {
     @ApiModelProperty(required = true)
     private Long sentenceId;
 
-    @Positive
-    private Long requirementId;
-
     private String notes;
 }
