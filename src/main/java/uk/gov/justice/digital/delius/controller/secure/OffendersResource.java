@@ -141,10 +141,13 @@ public class OffendersResource {
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/convictions")
     public ResponseEntity<List<Conviction>> getConvictionsForOffender(
             @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
-            @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber) {
+            @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber,
+            @ApiParam(name = "activeOnly", value = "retrieve only active convictions", example = "true")
+            @RequestParam(name = "activeOnly", required = false, defaultValue = "false") final boolean activeOnly) {
+
 
         return offenderService.offenderIdOfNomsNumber(nomsNumber)
-                .map(offenderId -> new ResponseEntity<>(convictionService.convictionsFor(offenderId, false), HttpStatus.OK))
+                .map(offenderId -> new ResponseEntity<>(convictionService.convictionsFor(offenderId, activeOnly), HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
@@ -364,7 +367,7 @@ public class OffendersResource {
     public List<Conviction> getConvictionsForOffenderByCrn(
             @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
             @NotNull @PathVariable(value = "crn") final String crn,
-            @ApiParam(name = "activeOnly", value = "retrieve only active convictions", example = "true", required = false)
+            @ApiParam(name = "activeOnly", value = "retrieve only active convictions", example = "true")
             @RequestParam(name = "activeOnly", required = false, defaultValue = "false") final boolean activeOnly) {
 
         return offenderService.offenderIdOfCrn(crn)
