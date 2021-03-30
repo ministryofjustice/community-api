@@ -144,7 +144,7 @@ public class OffendersResource {
             @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber) {
 
         return offenderService.offenderIdOfNomsNumber(nomsNumber)
-                .map(offenderId -> new ResponseEntity<>(convictionService.convictionsFor(offenderId), HttpStatus.OK))
+                .map(offenderId -> new ResponseEntity<>(convictionService.convictionsFor(offenderId, false), HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
@@ -363,10 +363,12 @@ public class OffendersResource {
     @GetMapping(path = "/offenders/crn/{crn}/convictions")
     public List<Conviction> getConvictionsForOffenderByCrn(
             @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
-            @NotNull @PathVariable(value = "crn") final String crn) {
+            @NotNull @PathVariable(value = "crn") final String crn,
+            @ApiParam(name = "activeOnly", value = "retrieve only active convictions", example = "true", required = false)
+            @RequestParam(name = "activeOnly", required = false, defaultValue = "false") final boolean activeOnly) {
 
         return offenderService.offenderIdOfCrn(crn)
-                .map(convictionService::convictionsFor)
+                .map(offenderId -> convictionService.convictionsFor(offenderId, activeOnly))
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 
@@ -462,7 +464,7 @@ public class OffendersResource {
             @ApiParam(name = "nsiId", value = "ID for the nsi", example = "2500295123", required = true)
             @PathVariable(value = "nsiId") final Long nsiId) {
         return offenderService.getOffenderByCrn(crn)
-                .map((offender) -> convictionService.convictionsFor(offender.getOffenderId())
+                .map((offender) -> convictionService.convictionsFor(offender.getOffenderId(), false)
                         .stream()
                         .filter(conviction -> convictionId.equals(conviction.getConvictionId()))
                         .findAny()

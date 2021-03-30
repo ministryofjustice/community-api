@@ -81,6 +81,7 @@ public class ConvictionService {
             return convictionCount;
         }
     }
+
     public static class DuplicateConvictionsForSentenceDateException extends Exception {
         private final int convictionCount;
 
@@ -99,6 +100,7 @@ public class ConvictionService {
             super(message);
         }
     }
+
     @Autowired
     public ConvictionService(
         EventRepository eventRepository,
@@ -123,21 +125,26 @@ public class ConvictionService {
     }
 
     @Transactional(readOnly = true)
-    public List<Conviction> convictionsFor(Long offenderId) {
-        List<uk.gov.justice.digital.delius.jpa.standard.entity.Event> events = eventRepository.findByOffenderId(offenderId);
+    public List<Conviction> convictionsFor(Long offenderId, boolean activeOnly) {
+        List<uk.gov.justice.digital.delius.jpa.standard.entity.Event> events;
+        if (activeOnly) {
+            events = eventRepository.findByOffenderIdAndActiveTrue(offenderId);
+        } else {
+            events = eventRepository.findByOffenderId(offenderId);
+        }
         return events
-                .stream()
-                .filter(event -> !convertToBoolean(event.getSoftDeleted()))
-                .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Event::getReferralDate).reversed())
-                .map(ConvictionTransformer::convictionOf)
-                .collect(toList());
+            .stream()
+            .filter(event -> !convertToBoolean(event.getSoftDeleted()))
+            .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Event::getReferralDate).reversed())
+            .map(ConvictionTransformer::convictionOf)
+            .collect(toList());
     }
 
     @Transactional(readOnly = true)
     public Optional<Conviction> convictionFor(Long offenderId, Long eventId) {
         val event = eventRepository.findById(eventId);
         return event
-            .filter(e ->  offenderId.equals(e.getOffenderId()))
+            .filter(e -> offenderId.equals(e.getOffenderId()))
             .filter(e -> !convertToBoolean(e.getSoftDeleted()))
             .map(ConvictionTransformer::convictionOf);
     }
@@ -145,9 +152,9 @@ public class ConvictionService {
     @Transactional
     public Conviction addCourtCaseFor(Long offenderId, CourtCase courtCase) {
         val event = eventEntityBuilder.eventOf(
-                offenderId,
-                courtCase,
-                calculateNextEventNumber(offenderId));
+            offenderId,
+            courtCase,
+            calculateNextEventNumber(offenderId));
 
         val conviction = ConvictionTransformer.convictionOf(eventRepository.save(event));
         spgNotificationService.notifyNewCourtCaseCreated(event);
@@ -195,9 +202,9 @@ public class ConvictionService {
 
     public Result<Optional<Event>, DuplicateConvictionsForSentenceDateException> getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(Long offenderId, LocalDate sentenceStartDate) {
         val events = activeCustodyEvents(offenderId)
-                .stream()
-                .filter(event -> didSentenceStartAroundDate(event, sentenceStartDate))
-                .collect(toList());
+            .stream()
+            .filter(event -> didSentenceStartAroundDate(event, sentenceStartDate))
+            .collect(toList());
 
         switch (events.size()) {
             case 0:
@@ -317,9 +324,9 @@ public class ConvictionService {
             final var custodyManagedKeyDates = custodyManagedKeyDates();
             final var missingKeyDateTypesCodes = missingKeyDateTypesCodes(replaceCustodyKeyDates);
             final var currentKeyDates = event
-                    .getDisposal()
-                    .getCustody()
-                    .getKeyDates();
+                .getDisposal()
+                .getCustody()
+                .getKeyDates();
 
             final var keyDatesToDelete = keyDatesToDelete(custodyManagedKeyDates, missingKeyDateTypesCodes, currentKeyDates);
             final var keyDatesToBeAddedOrUpdated = keyDatesToBeAddedOrUpdated(replaceCustodyKeyDates, currentKeyDates);
@@ -328,18 +335,18 @@ public class ConvictionService {
             addBulkTelemetry(offenderId, event, currentKeyDates, keyDatesToDelete, keyDatesToBeAddedOrUpdated);
 
             keyDatesToDelete
-                    .forEach(keyDate -> deleteCustodyKeyDate(event, keyDate, false));
+                .forEach(keyDate -> deleteCustodyKeyDate(event, keyDate, false));
 
             keyDatesToBeAddedOrUpdated
-                    .forEach((key, value) -> addOrReplaceCustodyKeyDate(event, key, value));
+                .forEach((key, value) -> addOrReplaceCustodyKeyDate(event, key, value));
 
         } else {
             log.warn("Update custody key dates will be ignored, this feature is switched off ");
         }
 
         return ConvictionTransformer.custodyOf(event
-                .getDisposal()
-                .getCustody());
+            .getDisposal()
+            .getCustody());
     }
 
     public Optional<ProbationStatusDetail> probationStatusFor(String crn) {
@@ -449,66 +456,66 @@ public class ConvictionService {
 
         if (!keyDatesToDelete.isEmpty() || !keyDatesToBeAddedOrUpdated.isEmpty()) {
             contactService.addContactForBulkCustodyKeyDateUpdate(offenderRepository.findByOffenderId(offenderId)
-                    .orElseThrow(), event, datesAmendedOrUpdated, datesRemoved);
+                .orElseThrow(), event, datesAmendedOrUpdated, datesRemoved);
         }
     }
 
     private Map<String, LocalDate> datesAddedOrUpdated(Map<String, LocalDate> keyDatesToBeAddedOrUpdated) {
         return keyDatesToBeAddedOrUpdated.entrySet().stream()
-                .collect(Collectors.toMap(entry -> descriptionOf(entry.getKey()), Map.Entry::getValue));
+            .collect(Collectors.toMap(entry -> descriptionOf(entry.getKey()), Map.Entry::getValue));
     }
 
     private Map<String, LocalDate> datesRemoved(List<KeyDate> currentKeyDates, List<String> keyDatesToDelete) {
         return keyDatesToDelete.stream().map(keyDateCode -> currentKeyDates.stream()
-                .filter(keyDate -> keyDate.getKeyDateType().getCodeValue().equals(keyDateCode)).findAny()
-                .orElseThrow())
-                .collect(Collectors.toMap(keyDate -> descriptionOf(keyDate.getKeyDateType()
-                        .getCodeValue()), KeyDate::getKeyDate));
+            .filter(keyDate -> keyDate.getKeyDateType().getCodeValue().equals(keyDateCode)).findAny()
+            .orElseThrow())
+            .collect(Collectors.toMap(keyDate -> descriptionOf(keyDate.getKeyDateType()
+                .getCodeValue()), KeyDate::getKeyDate));
     }
 
     private Map<String, LocalDate> keyDatesToBeAddedOrUpdated(ReplaceCustodyKeyDates replaceCustodyKeyDates, List<KeyDate> currentKeyDates) {
         return keyDatesOf(replaceCustodyKeyDates).entrySet().stream()
-                .filter(entry -> hasChangedOrIsNew(currentKeyDates, entry))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            .filter(entry -> hasChangedOrIsNew(currentKeyDates, entry))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private List<String> keyDatesToBeAdded(Map<String, LocalDate> keyDatesToBeAddedOrUpdated, List<KeyDate> currentKeyDates) {
         return keyDatesToBeAddedOrUpdated.keySet().stream()
-                .filter(keyDateCode -> isNew(currentKeyDates, keyDateCode))
-                .collect(toList());
+            .filter(keyDateCode -> isNew(currentKeyDates, keyDateCode))
+            .collect(toList());
     }
 
     private List<String> keyDatesToDelete(List<String> custodyManagedKeyDates, List<String> missingKeyDateTypesCodes, List<KeyDate> currentKeyDates) {
         return currentKeyDates
-                .stream()
-                .map(KeyDate::getKeyDateType)
-                .map(StandardReference::getCodeValue)
-                .filter(custodyManagedKeyDates::contains)  // all key dates managed by this service
-                .filter(missingKeyDateTypesCodes::contains) // all ones missing from request
-                .collect(toList());
+            .stream()
+            .map(KeyDate::getKeyDateType)
+            .map(StandardReference::getCodeValue)
+            .filter(custodyManagedKeyDates::contains)  // all key dates managed by this service
+            .filter(missingKeyDateTypesCodes::contains) // all ones missing from request
+            .collect(toList());
     }
 
     private List<String> currentManagedKeyDates(List<String> custodyManagedKeyDates, List<KeyDate> currentKeyDates) {
         return currentKeyDates
-                .stream()
-                .map(KeyDate::getKeyDateType)
-                .map(StandardReference::getCodeValue)
-                .filter(custodyManagedKeyDates::contains)  // all key dates managed by this service
-                .collect(toList());
+            .stream()
+            .map(KeyDate::getKeyDateType)
+            .map(StandardReference::getCodeValue)
+            .filter(custodyManagedKeyDates::contains)  // all key dates managed by this service
+            .collect(toList());
     }
 
     private boolean hasChangedOrIsNew(List<KeyDate> currentKeyDates, Map.Entry<String, LocalDate> entry) {
         // if can't find item with matching code and date then must be new or changed
         return currentKeyDates.stream()
-                .filter(keyDate -> keyDate.getKeyDateType().getCodeValue().equals(entry.getKey()))
-                .filter(keyDate -> keyDate.getKeyDate().equals(entry.getValue())).findAny().isEmpty();
+            .filter(keyDate -> keyDate.getKeyDateType().getCodeValue().equals(entry.getKey()))
+            .filter(keyDate -> keyDate.getKeyDate().equals(entry.getValue())).findAny().isEmpty();
     }
 
     private boolean isNew(List<KeyDate> currentKeyDates, String keyDateCode) {
         // if can't find item with matching code then must be new
         return currentKeyDates.stream()
-                .filter(keyDate -> keyDate.getKeyDateType().getCodeValue().equals(keyDateCode))
-                .findAny().isEmpty();
+            .filter(keyDate -> keyDate.getKeyDateType().getCodeValue().equals(keyDateCode))
+            .findAny().isEmpty();
     }
 
     private String calculateNextEventNumber(Long offenderId) {
@@ -524,53 +531,55 @@ public class ConvictionService {
 
     private List<Event> activeCustodyEvents(Long offenderId) {
         return eventRepository.findActiveByOffenderIdWithCustody(offenderId)
-                .stream()
-                .filter(event -> event.getDisposal().getTerminationDate() == null)
-                .filter(event -> !event.getDisposal().getCustody().isPostSentenceSupervision())
-                .collect(toList());
+            .stream()
+            .filter(event -> event.getDisposal().getTerminationDate() == null)
+            .filter(event -> !event.getDisposal().getCustody().isPostSentenceSupervision())
+            .collect(toList());
     }
 
     private Optional<CustodyKeyDate> getCustodyKeyDate(Event event, String typeCode) {
         return event
-                .getDisposal()
-                .getCustody()
-                .getKeyDates()
-                .stream()
-                .filter(matchTypeCode(typeCode))
-                .findAny()
-                .map(CustodyKeyDateTransformer::custodyKeyDateOf);
+            .getDisposal()
+            .getCustody()
+            .getKeyDates()
+            .stream()
+            .filter(matchTypeCode(typeCode))
+            .findAny()
+            .map(CustodyKeyDateTransformer::custodyKeyDateOf);
     }
 
     private Predicate<KeyDate> matchTypeCode(String typeCode) {
         return keyDate -> keyDate.getKeyDateType().getCodeValue().equals(typeCode);
     }
 
-    private void addOrReplaceCustodyKeyDate(Event event, String typeCode, LocalDate date)  {
+    private void addOrReplaceCustodyKeyDate(Event event, String typeCode, LocalDate date) {
         try {
             addOrReplaceCustodyKeyDate(event, typeCode, CreateCustodyKeyDate.builder().date(date).build(), false);
         } catch (CustodyTypeCodeIsNotValidException e) {
             throw new RuntimeException(e);
         }
     }
+
     private CustodyKeyDate addOrReplaceCustodyKeyDate(Event event, String typeCode, CreateCustodyKeyDate custodyKeyDate, boolean shouldNotifyIAPS) throws CustodyTypeCodeIsNotValidException {
         val custodyKeyDateType = lookupSupplier.custodyKeyDateTypeSupplier().apply(typeCode)
-                .orElseThrow(() -> new CustodyTypeCodeIsNotValidException(String.format("%s is not a valid custody key date", typeCode)));
+            .orElseThrow(() -> new CustodyTypeCodeIsNotValidException(String.format("%s is not a valid custody key date", typeCode)));
 
         return addOrReplaceCustodyKeyDate(event, custodyKeyDateType, custodyKeyDate, shouldNotifyIAPS);
     }
+
     private CustodyKeyDate addOrReplaceCustodyKeyDate(Event event, StandardReference custodyKeyDateType, CreateCustodyKeyDate custodyKeyDate, boolean shouldNotifyIAPS) {
         final var typeCode = custodyKeyDateType.getCodeValue();
         final var telemetryProperties = Map.of("offenderId", event.getOffenderId().toString(),
-                "eventId", event.getEventId().toString(),
-                "eventNumber", event.getEventNumber(),
-                "type", typeCode,
-                "date", custodyKeyDate.getDate().toString());
+            "eventId", event.getEventId().toString(),
+            "eventNumber", event.getEventNumber(),
+            "type", typeCode,
+            "date", custodyKeyDate.getDate().toString());
 
 
         val maybeExistingKeyDate = event.getDisposal().getCustody().getKeyDates()
-                .stream()
-                .filter(matchTypeCode(typeCode))
-                .findAny();
+            .stream()
+            .filter(matchTypeCode(typeCode))
+            .findAny();
 
         maybeExistingKeyDate.ifPresent(existingKeyDate -> {
             existingKeyDate.setKeyDate(custodyKeyDate.getDate());
@@ -584,9 +593,9 @@ public class ConvictionService {
         if (maybeExistingKeyDate.isEmpty()) {
             val keyDate = keyDateEntityBuilder.keyDateOf(event.getDisposal().getCustody(), custodyKeyDateType, custodyKeyDate.getDate());
             event.getDisposal()
-                    .getCustody()
-                    .getKeyDates()
-                    .add(keyDate);
+                .getCustody()
+                .getKeyDates()
+                .add(keyDate);
 
             eventRepository.saveAndFlush(event);
             spgNotificationService.notifyNewCustodyKeyDate(typeCode, event);
@@ -603,32 +612,32 @@ public class ConvictionService {
 
     private List<CustodyKeyDate> getCustodyKeyDates(Event event) {
         return event.getDisposal().getCustody().getKeyDates()
-                .stream()
-                .map(CustodyKeyDateTransformer::custodyKeyDateOf)
-                .collect(toList());
+            .stream()
+            .map(CustodyKeyDateTransformer::custodyKeyDateOf)
+            .collect(toList());
     }
 
     private void deleteCustodyKeyDate(Event event, String typeCode, boolean shouldNotifyIAPS) {
         final var telemetryProperties = Map.of("offenderId", event.getOffenderId().toString(),
-                "eventId", event.getEventId().toString(),
-                "eventNumber", event.getEventNumber(),
-                "type", typeCode);
+            "eventId", event.getEventId().toString(),
+            "eventNumber", event.getEventNumber(),
+            "type", typeCode);
 
         val keyDates = event.getDisposal().getCustody().getKeyDates();
-        val maybeKeyDateToRemove =  keyDates
-               .stream()
-               .filter(matchTypeCode(typeCode))
-               .findAny();
+        val maybeKeyDateToRemove = keyDates
+            .stream()
+            .filter(matchTypeCode(typeCode))
+            .findAny();
 
-       maybeKeyDateToRemove.ifPresent(keyDateToRemove -> {
-           keyDates.remove(keyDateToRemove);
-           eventRepository.save(event);
-           spgNotificationService.notifyDeletedCustodyKeyDate(keyDateToRemove, event);
-           if (shouldNotifyIAPS && KeyDate.isSentenceExpiryKeyDate(typeCode)) {
-               iapsNotificationService.notifyEventUpdated(event);
-           }
-           telemetryClient.trackEvent("KeyDateDeleted", telemetryProperties, null);
-       });
+        maybeKeyDateToRemove.ifPresent(keyDateToRemove -> {
+            keyDates.remove(keyDateToRemove);
+            eventRepository.save(event);
+            spgNotificationService.notifyDeletedCustodyKeyDate(keyDateToRemove, event);
+            if (shouldNotifyIAPS && KeyDate.isSentenceExpiryKeyDate(typeCode)) {
+                iapsNotificationService.notifyEventUpdated(event);
+            }
+            telemetryClient.trackEvent("KeyDateDeleted", telemetryProperties, null);
+        });
     }
 
     private Optional<Long> firstEventId(List<Event> events) {

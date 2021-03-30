@@ -38,7 +38,7 @@ public class ConvictionControllerTest {
     @Test
     public void canGetConvictionsByCrn() {
         when(offenderService.offenderIdOfCrn("CRN1")).thenReturn(Optional.of(1L));
-        when(convictionService.convictionsFor(1L))
+        when(convictionService.convictionsFor(1L, false))
                 .thenReturn(ImmutableList.of(aConviction(2L), aConviction(1L)));
 
         Conviction[] convictions = given()
@@ -58,7 +58,7 @@ public class ConvictionControllerTest {
     @Test
     public void canGetConvictionsByNoms() {
         when(offenderService.offenderIdOfNomsNumber("NOMS1")).thenReturn(Optional.of(1L));
-        when(convictionService.convictionsFor(1L))
+        when(convictionService.convictionsFor(1L, false))
                 .thenReturn(ImmutableList.of(aConviction(2L), aConviction(1L)));
 
         Conviction[] convictions = given()
@@ -79,7 +79,7 @@ public class ConvictionControllerTest {
     public void canGetConvictionsByOffenderId() {
         when(offenderService.getOffenderByOffenderId(1L))
                 .thenReturn(Optional.of(OffenderDetail.builder().offenderId(1L).build()));
-        when(convictionService.convictionsFor(1L))
+        when(convictionService.convictionsFor(1L, false))
                 .thenReturn(ImmutableList.of(aConviction(2L), aConviction(1L)));
 
         Conviction[] convictions = given()
