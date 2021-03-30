@@ -61,7 +61,7 @@ public class ConvictionController {
 
     private ResponseEntity<List<Conviction>> convictionsResponseEntityOf(Optional<Long> maybeOffenderId) {
         return maybeOffenderId
-            .map(offenderId -> new ResponseEntity<>(convictionService.convictionsFor(offenderId), HttpStatus.OK))
+            .map(offenderId -> new ResponseEntity<>(convictionService.convictionsFor(offenderId, false), HttpStatus.OK))
             .orElseGet(this::notFound);
     }
 

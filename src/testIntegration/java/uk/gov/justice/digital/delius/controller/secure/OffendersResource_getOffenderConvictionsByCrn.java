@@ -86,4 +86,22 @@ public class OffendersResource_getOffenderConvictionsByCrn extends IntegrationTe
                 .then()
                 .statusCode(404);
     }
+
+    @Test
+    public void canGetActiveConvictionsOnly(){
+        final var convictions = given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get("/offenders/crn/X320741/convictions?activeOnly=true")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(Conviction[].class);
+
+        final var inactiveConviction = Stream.of(convictions).filter(c -> c.getActive() == false).findAny();
+        assertThat(inactiveConviction.isPresent()).isFalse();
+    }
 }

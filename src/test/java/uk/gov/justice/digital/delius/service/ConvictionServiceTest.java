@@ -99,7 +99,7 @@ public class ConvictionServiceTest {
                         aEvent().toBuilder().eventId(999L).referralDate(LocalDate.now()).build()
                 ));
 
-        assertThat(convictionService.convictionsFor(1L)
+        assertThat(convictionService.convictionsFor(1L, false)
                 .stream().map(uk.gov.justice.digital.delius.data.api.Conviction::getConvictionId)
                 .collect(Collectors.toList()))
                 .containsSequence(999L, 99L, 9L);
@@ -135,7 +135,7 @@ public class ConvictionServiceTest {
                         aEvent().toBuilder().eventId(3L).build()
                 ));
 
-        assertThat(convictionService.convictionsFor(1L)
+        assertThat(convictionService.convictionsFor(1L, false)
                 .stream().map(uk.gov.justice.digital.delius.data.api.Conviction::getConvictionId)
                 .collect(Collectors.toList()))
                 .contains(1L, 3L);
