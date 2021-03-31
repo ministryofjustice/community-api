@@ -112,6 +112,10 @@ interventions-delius:
       "[Finance, Benefits and Debt (FBD)]": CRS03
       "[Dependency and Recovery (D&R)]": CRS04
 
+delius-appointment:
+  origin-to-contact-type-mapping:
+    interventions: CRSAPT
+
 delius-nsi:
   requirement:
     rehabilitation-activity-type: F
