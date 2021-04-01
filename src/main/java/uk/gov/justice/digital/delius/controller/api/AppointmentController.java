@@ -8,18 +8,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.digital.delius.data.api.Appointment;
 import uk.gov.justice.digital.delius.data.api.Appointment.Attended;
-import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
-import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
@@ -42,17 +33,6 @@ public class AppointmentController {
     public AppointmentController(OffenderService offenderService, AppointmentService appointmentService) {
         this.offenderService = offenderService;
         this.appointmentService = appointmentService;
-    }
-
-    @PreAuthorize("hasRole('ROLE_COMMUNITY_INTERVENTIONS_UPDATE')")
-    @RequestMapping(value = "/offenders/crn/{crn}/sentence/{sentenceId}/appointments", method = RequestMethod.POST, consumes = "application/json")
-    @JwtValidation
-    public ResponseEntity<AppointmentCreateResponse> createAppointment(final @PathVariable("crn") String crn,
-                                                                       final @PathVariable("sentenceId") Long sentenceId,
-                                                                       final @RequestBody AppointmentCreateRequest appointmentCreateRequest) {
-
-        AppointmentCreateResponse response = appointmentService.createAppointment(crn, sentenceId, appointmentCreateRequest);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/offenders/offenderId/{offenderId}/appointments", method = RequestMethod.GET)

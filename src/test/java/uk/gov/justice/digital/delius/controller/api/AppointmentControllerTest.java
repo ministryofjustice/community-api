@@ -11,8 +11,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.Appointment;
-import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
-import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
@@ -20,8 +18,6 @@ import uk.gov.justice.digital.delius.service.AppointmentService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
@@ -30,7 +26,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @ExtendWith(MockitoExtension.class)
 public class AppointmentControllerTest {
@@ -49,34 +44,6 @@ public class AppointmentControllerTest {
         RestAssuredMockMvc.standaloneSetup(
                 new AppointmentController(offenderService, appointmentService)
         );
-    }
-
-    @Test
-    public void createsAppointment() {
-        AppointmentCreateRequest appointmentCreateRequest = AppointmentCreateRequest.builder()
-            .appointmentDate(LocalDate.now())
-            .appointmentStartTime(LocalTime.now().truncatedTo(ChronoUnit.SECONDS))
-            .appointmentEndTime(LocalTime.now().truncatedTo(ChronoUnit.SECONDS))
-            .officeLocationCode("CRSSHEF")
-            .notes("http://url")
-            .context("commissioned-rehabilitation-services")
-            .build();
-        when(appointmentService.createAppointment("1", 2L, appointmentCreateRequest))
-            .thenReturn(AppointmentCreateResponse.builder().appointmentId(3L).build());
-
-        Long appointmentIdResponse = given()
-            .contentType(APPLICATION_JSON_VALUE)
-            .body(appointmentCreateRequest)
-            .when()
-            .post("/api/offenders/crn/1/sentence/2/appointments")
-            .then()
-            .statusCode(201)
-            .extract()
-            .body()
-            .as(AppointmentCreateResponse.class)
-            .getAppointmentId();
-
-        assertThat(appointmentIdResponse).isEqualTo(3L);
     }
 
     @Test
