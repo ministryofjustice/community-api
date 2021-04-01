@@ -38,5 +38,9 @@ public class AppointmentCreateRequest {
 
     @NotNull
     @ApiModelProperty(required = true)
-    private Origin origin;
+    private String notes;
+
+    @NotNull
+    @ApiModelProperty(required = true)
+    private String context;
 }

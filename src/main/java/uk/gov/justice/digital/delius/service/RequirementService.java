@@ -35,8 +35,6 @@ public class RequirementService {
     private OffenderRepository offenderRepository;
     @Autowired
     private EventRepository eventRepository;
-    @Value("${delius-nsi.requirement.rehabilitation-activity-type}")
-    private String rehabilitationActivityRequirementType;
 
     public ConvictionRequirements getRequirementsByConvictionId(String crn, Long convictionId) {
         var requirements = Optional.of(getEvent(crn, convictionId))
@@ -97,13 +95,13 @@ public class RequirementService {
     // that has a main category of F - rehab activity requirement. It is invalid for multiple to exist.
     // NB. The called method getRequirementsByConvictionId accepts an event id (conviction or sentence)
     // and perhaps should have been named getRequirementsByEventId
-    public Requirement getReferralRequirement(String crn, Long eventId) {
+    public Requirement getRequirement(String crn, Long eventId, String requirementTypeCode) {
 
         var requirements = getRequirementsByConvictionId(crn, eventId)
             .getRequirements().stream()
             .filter(requirement ->
                 ofNullable(requirement.getRequirementTypeMainCategory())
-                    .map(cat -> rehabilitationActivityRequirementType.equals(cat.getCode()))
+                    .map(cat -> requirementTypeCode.equals(cat.getCode()))
                     .orElse(false))
             .collect(toList());
 

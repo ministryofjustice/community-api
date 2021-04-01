@@ -45,12 +45,14 @@ public class AppointmentController {
     }
 
     @PreAuthorize("hasRole('ROLE_COMMUNITY_INTERVENTIONS_UPDATE')")
-    @RequestMapping(value = "/offenders/crn/{crn}/sentence/{sentenceId}/appointment", method = RequestMethod.POST, consumes = "application/json")
+    @RequestMapping(value = "/offenders/crn/{crn}/sentence/{sentenceId}/appointments", method = RequestMethod.POST, consumes = "application/json")
     @JwtValidation
-    public AppointmentCreateResponse createAppointment(final @PathVariable("crn") String crn,
-                                                       final @PathVariable("sentenceId") Long sentenceId,
-                                                       final @RequestBody AppointmentCreateRequest appointmentCreateRequest) {
-        return null;
+    public ResponseEntity<AppointmentCreateResponse> createAppointment(final @PathVariable("crn") String crn,
+                                                                       final @PathVariable("sentenceId") Long sentenceId,
+                                                                       final @RequestBody AppointmentCreateRequest appointmentCreateRequest) {
+
+        AppointmentCreateResponse response = appointmentService.createAppointment(crn, sentenceId, appointmentCreateRequest);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/offenders/offenderId/{offenderId}/appointments", method = RequestMethod.GET)

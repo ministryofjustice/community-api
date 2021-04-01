@@ -100,25 +100,21 @@ features:
         update-prison-location: false
   apply-limited-access-markers: false
 
-interventions-delius:
-  nsi-mapping:
+delius-integration-context:
+  commissioned-rehabilitation-services:
     provider-code: CRS
     staff-code: CRSUATU
     team-code: CRSUAT
-    nsi-status: INPROG
-    service-category-to-nsi-type:
-      "[Accommodation]": CRS01
-      "[Education, Training and Employment (ETE)]": CRS02
-      "[Finance, Benefits and Debt (FBD)]": CRS03
-      "[Dependency and Recovery (D&R)]": CRS04
-
-delius-appointment:
-  origin-to-contact-type-mapping:
-    interventions: CRSAPT
-
-delius-nsi:
-  requirement:
-    rehabilitation-activity-type: F
+    requirement-rehabilitation-activity-type: F
+    nsi-mapping:
+      nsi-status: INPROG
+      service-category-to-nsi-type:
+        "[Accommodation]": CRS01
+        "[Education, Training and Employment (ETE)]": CRS02
+        "[Finance, Benefits and Debt (FBD)]": CRS03
+        "[Dependency and Recovery (D&R)]": CRS04
+    contact-mapping:
+      appointment-contact-type: CRSAPT
 
 smoke:
   test:
