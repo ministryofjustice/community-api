@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.data.api.Appointment;
+import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
+import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.transformers.AppointmentTransformer;
@@ -29,4 +31,7 @@ public class AppointmentService {
                         Sort.by(DESC, "contactDate")));
     }
 
+    public Appointment createAppointment(String crn, Long sentenceId, AppointmentCreateRequest appointmentCreateRequest) {
+        return null;
+    }
 }
