@@ -136,19 +136,32 @@ public class OffendersResource {
     @ApiResponses(
             value = {
                     @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+                    @ApiResponse(code = 409, message = "Multiple offenders found in the same state ", response = ErrorResponse.class)
             })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/convictions")
-    public ResponseEntity<List<Conviction>> getConvictionsForOffender(
+    public List<Conviction> getConvictionsForOffender(
             @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
             @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber,
             @ApiParam(name = "activeOnly", value = "retrieve only active convictions", example = "true")
-            @RequestParam(name = "activeOnly", required = false, defaultValue = "false") final boolean activeOnly) {
+            @RequestParam(name = "activeOnly", required = false, defaultValue = "false") final boolean activeOnly,
+            @ApiParam(name = "failOnDuplicate", value = "Should fail if multiple offenders found regardless of status", example = "true", defaultValue = "false")
+            final @RequestParam(value = "failOnDuplicate", defaultValue = "false") boolean failOnDuplicate) {
 
+        final Optional<Long> mayBeOffenderId;
+        if (failOnDuplicate) {
+            mayBeOffenderId = offenderService
+                .singleOffenderIdOfNomsNumber(nomsNumber)
+                .getOrElseThrow(error -> new ConflictingRequestException(error.getMessage()));
 
-        return offenderService.offenderIdOfNomsNumber(nomsNumber)
-                .map(offenderId -> new ResponseEntity<>(convictionService.convictionsFor(offenderId, activeOnly), HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        } else {
+            mayBeOffenderId = offenderService
+                .mostLikelyOffenderIdOfNomsNumber(nomsNumber)
+                .getOrElseThrow(error -> new ConflictingRequestException(error.getMessage()));
+        }
+
+        return mayBeOffenderId
+                .map(offenderId -> convictionService.convictionsFor(offenderId, activeOnly))
+                .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
     }
 
     @ApiOperation(value = "Return the details for an offender. If multiple offenders found the active one wll be returned", tags = "-- Popular core APIs --")

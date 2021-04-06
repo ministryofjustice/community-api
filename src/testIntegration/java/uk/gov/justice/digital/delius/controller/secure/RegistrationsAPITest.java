@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -68,5 +70,55 @@ public class RegistrationsAPITest extends IntegrationTestBase {
                 .body("registrations[2].register.description", is("Public Protection"))
                 .body("registrations[2].deregisteringNotes", nullValue())
                 .body("registrations[3].deregisteringNotes", is("Ok again now"));
+    }
+
+    @Nested
+    @DisplayName("When multiple records match the same noms number")
+    class DuplicateNOMSNumbers{
+        @Nested
+        @DisplayName("When only one of the records is current")
+        class OnlyOneActive{
+            @Test
+            @DisplayName("will return the active record")
+            void willReturnTheActiveRecord() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .get("/offenders/nomsNumber/G3232DD/registrations")
+                    .then()
+                    .statusCode(200);
+            }
+            @Test
+            @DisplayName("will return a conflict response when fail on duplicate is set to true")
+            void willReturnAConflictResponseWhenFailureOnDuplicate() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .get("/offenders/nomsNumber/G3232DD/registrations?failOnDuplicate=true")
+                    .then()
+                    .statusCode(409);
+            }
+
+        }
+        @Nested
+        @DisplayName("When both records have the same active state")
+        class BothActive{
+            @Test
+            @DisplayName("will return a conflict response")
+            void willReturnAConflictResponse() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .get("/offenders/nomsNumber/G3636DD/registrations")
+                    .then()
+                    .statusCode(409);
+            }
+        }
     }
 }

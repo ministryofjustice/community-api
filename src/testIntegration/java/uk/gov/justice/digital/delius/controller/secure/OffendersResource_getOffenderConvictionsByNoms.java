@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
@@ -61,7 +63,57 @@ public class OffendersResource_getOffenderConvictionsByNoms extends IntegrationT
             .body()
             .as(Conviction[].class);
 
-        final var inactiveConviction = Stream.of(convictions).filter(c -> c.getActive() == false).findAny();
+        final var inactiveConviction = Stream.of(convictions).filter(c -> !c.getActive()).findAny();
         assertThat(inactiveConviction.isPresent()).isFalse();
+    }
+
+    @Nested
+    @DisplayName("When multiple records match the same noms number")
+    class DuplicateNOMSNumbers{
+        @Nested
+        @DisplayName("When only one of the records is current")
+        class OnlyOneActive{
+            @Test
+            @DisplayName("will return the active record")
+            void willReturnTheActiveRecord() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .get("/offenders/nomsNumber/G3232DD/convictions")
+                    .then()
+                    .statusCode(200);
+            }
+            @Test
+            @DisplayName("will return a conflict response when fail on duplicate is set to true")
+            void willReturnAConflictResponseWhenFailureOnDuplicate() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .get("/offenders/nomsNumber/G3232DD/convictions?failOnDuplicate=true")
+                    .then()
+                    .statusCode(409);
+            }
+
+        }
+        @Nested
+        @DisplayName("When both records have the same active state")
+        class BothActive{
+            @Test
+            @DisplayName("will return a conflict response")
+            void willReturnAConflictResponse() {
+                given()
+                    .auth()
+                    .oauth2(tokenWithRoleCommunity())
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .when()
+                    .get("/offenders/nomsNumber/G3636DD/convictions")
+                    .then()
+                    .statusCode(409);
+            }
+        }
     }
 }
