@@ -24,8 +24,6 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,9 +40,6 @@ public class AppointmentServiceTest {
     private static final String RAR_TYPE_CODE = "F";
     private static final String CRSAPT_CONTACT_TYPE = "CRSAPT";
     private static final String CONTEXT = "commissioned-rehabilitation-services";
-    private static final Map<String, String> SERVICE_CATEGORY_TO_NSI_TYPE_MAPPING = new HashMap<>(){{
-        this.put(SERVICE_CATEGORY, NSI_TYPE);
-    }};
 
     @Mock
     private ContactRepository contactRepository;
@@ -60,7 +55,6 @@ public class AppointmentServiceTest {
     private AppointmentService service;
 
     @BeforeEach
-    @SuppressWarnings("unchecked")
     public void before(){
         DeliusIntegrationContextConfig integrationContextConfig = new DeliusIntegrationContextConfig();
         IntegrationContext integrationContext = new IntegrationContext();

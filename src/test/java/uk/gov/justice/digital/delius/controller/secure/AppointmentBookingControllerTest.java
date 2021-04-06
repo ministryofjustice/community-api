@@ -8,10 +8,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.justice.digital.delius.data.api.Appointment;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
-import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
 import uk.gov.justice.digital.delius.service.AppointmentService;
 import uk.gov.justice.digital.delius.service.OffenderService;
@@ -70,12 +68,5 @@ public class AppointmentBookingControllerTest {
             .getAppointmentId();
 
         assertThat(appointmentIdResponse).isEqualTo(3L);
-    }
-
-    private Appointment aAppointment(Long id, String typeDescription) {
-        return Appointment.builder()
-            .appointmentId(id)
-            .appointmentType(KeyValue.builder().code("X").description(typeDescription).build())
-            .build();
     }
 }

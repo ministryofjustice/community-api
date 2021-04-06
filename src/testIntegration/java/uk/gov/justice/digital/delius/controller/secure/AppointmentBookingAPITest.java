@@ -50,13 +50,13 @@ public class AppointmentBookingAPITest extends IntegrationTestBase {
     }
 
     @Test
-    public void shouldReturnOKAfterCreatingANewcontact() {
+    public void shouldReturnOKAfterCreatingANewContact() {
 
         deliusApiMockServer.stubPostContactToDeliusApi();
 
         final var token = createJwt("bob", Collections.singletonList("ROLE_COMMUNITY_INTERVENTIONS_UPDATE"));
 
-        final var response = given()
+        given()
                 .when()
                 .auth().oauth2(token)
                 .contentType(String.valueOf(ContentType.APPLICATION_JSON))
