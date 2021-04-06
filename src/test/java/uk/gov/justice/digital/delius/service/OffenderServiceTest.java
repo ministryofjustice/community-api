@@ -200,4 +200,37 @@ class OffenderServiceTest {
         }
 
     }
+    @Nested
+    @DisplayName("singleOffenderIdOfNomsNumber")
+    class SingleOffenderIdOfNomsNumber {
+        @Test
+        @DisplayName("will return offender id of the most likely offender")
+        void willReturnOffenderIdOfTheMostLikelyOffender() {
+            when(offenderRepository.findAllByNomsNumber(any()))
+                .thenReturn(List.of(anOffender().toBuilder().offenderId(99L).build()));
+
+            assertThat(service.singleOffenderIdOfNomsNumber("A1234ZZ").get()).isPresent();
+        }
+
+        @Test
+        @DisplayName("will return empty if no offender found")
+        void willReturnEmptyWhenNoFoundFound() {
+            when(offenderRepository.findAllByNomsNumber(any()))
+                .thenReturn(List.of());
+
+            assertThat(service.singleOffenderIdOfNomsNumber("A1234ZZ").get()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("will return error if duplicates found")
+        void willReturnAnErrorForDuplicates() {
+            when(offenderRepository.findAllByNomsNumber(any()))
+                .thenReturn(List.of(
+                    anOffender().toBuilder().offenderId(99L).build(),
+                    anOffender().toBuilder().offenderId(98L).build()
+                    ));
+
+            assertThat(service.singleOffenderIdOfNomsNumber("A1234ZZ").isLeft()).isTrue();
+        }
+    }
 }
