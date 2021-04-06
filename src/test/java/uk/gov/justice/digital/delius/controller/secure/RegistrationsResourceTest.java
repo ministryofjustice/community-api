@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
+import io.vavr.control.Either;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -198,15 +199,15 @@ class RegistrationsResourceTest {
     class GetOffenderRegistrationsByNomsNumber {
         @BeforeEach
         void setUp() {
-            when(offenderService.offenderIdOfNomsNumber(any()))
-                    .thenReturn(Optional.of(99L));
+            when(offenderService.mostLikelyOffenderIdOfNomsNumber(any())).thenReturn(Either.right(Optional.of(99L)));
+
             when(registrationService.registrationsFor(any())).thenReturn(List.of());
         }
 
         @Test
         @DisplayName("Will return 404 when offender not found")
         void WillReturn404WhenOffenderNotFound() {
-            when(offenderService.offenderIdOfNomsNumber(any())).thenReturn(Optional.empty());
+            when(offenderService.mostLikelyOffenderIdOfNomsNumber(any())).thenReturn(Either.right(Optional.empty()));
 
             given()
                     .contentType(APPLICATION_JSON_VALUE)
@@ -216,7 +217,7 @@ class RegistrationsResourceTest {
                     .statusCode(404)
                     .body("developerMessage", containsString("No offender found"));
 
-            verify(offenderService).offenderIdOfNomsNumber("G9542VP");
+            verify(offenderService).mostLikelyOffenderIdOfNomsNumber("G9542VP");
         }
 
 
