@@ -2,8 +2,9 @@ package uk.gov.justice.digital.delius.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.justice.digital.delius.config.DeliusMappingConfig;
-import uk.gov.justice.digital.delius.config.DeliusMappingConfig.NsiMapping;
+import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
+import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
+import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.NsiMapping;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.data.api.Nsi;
@@ -20,6 +21,10 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class ReferralService {
 
+    // TODO: This must be provided in request from the consumer so that
+    // alternative contexts can be used by different consumers
+    private static final String CRS_DELIUS_INTEGRATION_CONTEXT = "commissioned-rehabilitation-services";
+
     private final DeliusApiClient deliusApiClient;
 
     private final NsiService nsiService;
@@ -28,30 +33,34 @@ public class ReferralService {
 
     private final RequirementService requirementService;
 
-    private NsiMapping nsiMapping;
+    private final DeliusIntegrationContextConfig deliusIntegrationContextConfig;
+
     public ReferralService(final DeliusApiClient deliusApiClient,
                            final NsiService nsiService,
                            final OffenderService offenderService,
                            final RequirementService requirementService,
-                           final DeliusMappingConfig deliusMappingConfig
+                           final DeliusIntegrationContextConfig deliusIntegrationContextConfig
                            ) {
         this.deliusApiClient = deliusApiClient;
         this.nsiService = nsiService;
         this.offenderService = offenderService;
         this.requirementService = requirementService;
-        this.nsiMapping = deliusMappingConfig.getNsiMapping();
+        this.deliusIntegrationContextConfig = deliusIntegrationContextConfig;
     }
 
     @Transactional
     public ReferralSentResponse createNsiReferral(final String crn,
                                                   final ReferralSentRequest referralSent) {
+        // TODO context name should come from request
+        var context = getContext(CRS_DELIUS_INTEGRATION_CONTEXT);
+        var nsiMapping = context.getNsiMapping();
 
-        Long requirementId = getRequirement(crn, referralSent.getSentenceId());
+        Long requirementId = getRequirement(crn, referralSent.getSentenceId(), context);
         var existingNsi = getExistingMatchingNsi(crn, referralSent, requirementId);
 
         return ReferralSentResponse.builder().nsiId(existingNsi.map(Nsi::getNsiId).orElseGet(() -> {
             var newNsiRequest = NewNsi.builder()
-                .type(getNsiType(referralSent.getServiceCategory()))
+                .type(getNsiType(nsiMapping, referralSent.getServiceCategory()))
                 .offenderCrn(crn)
                 .eventId(referralSent.getSentenceId())
                 .requirementId(requirementId)
@@ -59,11 +68,11 @@ public class ReferralService {
                 .status(nsiMapping.getNsiStatus())
                 .statusDate(referralSent.getDate().atStartOfDay())
                 .notes(referralSent.getNotes())
-                .intendedProvider(nsiMapping.getProviderCode())
+                .intendedProvider(context.getProviderCode())
                 .manager(NewNsiManager.builder()
-                    .staff(nsiMapping.getStaffCode())
-                    .team(nsiMapping.getTeamCode())
-                    .provider(nsiMapping.getProviderCode())
+                    .staff(context.getStaffCode())
+                    .team(context.getTeamCode())
+                    .provider(context.getProviderCode())
                     .build()).build();
 
             return deliusApiClient.createNewNsi(newNsiRequest).getId();
@@ -74,17 +83,21 @@ public class ReferralService {
         // determine if there is an existing suitable NSI
         var offenderId = offenderService.offenderIdOfCrn(crn).orElseThrow(() -> new BadRequestException("Offender CRN not found"));
 
-        var existingNsis = nsiService.getNsiByCodes(offenderId, referralSent.getSentenceId(), Collections.singletonList(getNsiType(referralSent.getServiceCategory())))
+        // TODO context name should come from request
+        var context = getContext(CRS_DELIUS_INTEGRATION_CONTEXT);
+        var nsiMapping = context.getNsiMapping();
+
+        var existingNsis = nsiService.getNsiByCodes(offenderId, referralSent.getSentenceId(), Collections.singletonList(getNsiType(nsiMapping, referralSent.getServiceCategory())))
             .map(wrapper -> wrapper.getNsis().stream()
                 // eventID, offenderID, nsiID, and callerID are handled in the NSI service
                 .filter(nsi -> Optional.ofNullable(nsi.getReferralDate()).map(n -> n.equals(referralSent.getDate())).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getNsiStatus()).map(n -> n.getCode().equals(nsiMapping.getNsiStatus())).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getRequirement()).map(n -> nsi.getRequirement().getRequirementId().equals(requirementId)).orElse(false))
-                .filter(nsi -> Optional.ofNullable(nsi.getIntendedProvider()).map(n -> n.getCode().equals(nsiMapping.getProviderCode())).orElse(false))
+                .filter(nsi -> Optional.ofNullable(nsi.getIntendedProvider()).map(n -> n.getCode().equals(context.getProviderCode())).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getNsiManagers()).map(n -> n.stream().anyMatch(
-                    nsiManager -> nsiManager.getStaff().getStaffCode().equals(nsiMapping.getStaffCode())
-                        && nsiManager.getTeam().getCode().equals(nsiMapping.getTeamCode())
-                        && nsiManager.getProbationArea().getCode().equals(nsiMapping.getProviderCode())
+                    nsiManager -> nsiManager.getStaff().getStaffCode().equals(context.getStaffCode())
+                        && nsiManager.getTeam().getCode().equals(context.getTeamCode())
+                        && nsiManager.getProbationArea().getCode().equals(context.getProviderCode())
                     )
                 ).orElse(false))
                 .collect(toList())
@@ -96,13 +109,21 @@ public class ReferralService {
         return existingNsis.stream().findFirst();
     }
 
-    Long getRequirement(String crn, Long sentenceId) {
-        return requirementService.getReferralRequirement(crn, sentenceId).getRequirementId();
+    Long getRequirement(String crn, Long sentenceId, IntegrationContext context) {
+        return requirementService.getRequirement(crn, sentenceId, context.getRequirementRehabilitationActivityType()).getRequirementId();
     }
 
-    String getNsiType(final String referralType) {
+    String getNsiType(final NsiMapping nsiMapping, final String referralType) {
         return Optional.ofNullable(nsiMapping.getServiceCategoryToNsiType().get(referralType)).orElseThrow(
             () -> new IllegalArgumentException("Nsi Type mapping from referralType does not exist for: " + referralType)
         );
     }
+
+    IntegrationContext getContext(String contextName) {
+        var context = deliusIntegrationContextConfig.getIntegrationContexts().get(contextName);
+        return Optional.ofNullable(context).orElseThrow(
+            () -> new IllegalArgumentException("IntegrationContext does not exist for: " + contextName)
+        );
+    }
+
 }
