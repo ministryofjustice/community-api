@@ -22,12 +22,19 @@ public class RegistrationService {
     }
 
     public List<Registration> registrationsFor(Long offenderId) {
-        List<uk.gov.justice.digital.delius.jpa.standard.entity.Registration> registrations = registrationRepository.findByOffenderId(offenderId);
+        return transform(registrationRepository.findByOffenderId(offenderId));
+    }
+
+    public List<Registration> activeRegistrationsFor(Long offenderId) {
+        return transform(registrationRepository.findActiveByOffenderId(offenderId));
+    }
+
+    private List<Registration> transform(List<uk.gov.justice.digital.delius.jpa.standard.entity.Registration> registrations) {
         return registrations
-                .stream()
-                .filter(registration -> !convertToBoolean(registration.getSoftDeleted()))
-                .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Registration::getRegistrationDate).reversed())
-                .map(RegistrationTransformer::registrationOf)
-                .collect(toList());
+            .stream()
+            .filter(registration -> !convertToBoolean(registration.getSoftDeleted()))
+            .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Registration::getRegistrationDate).reversed())
+            .map(RegistrationTransformer::registrationOf)
+            .collect(toList());
     }
 }

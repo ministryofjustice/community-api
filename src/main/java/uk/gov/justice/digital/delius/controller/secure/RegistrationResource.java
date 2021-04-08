@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius.controller.secure;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
@@ -81,8 +82,19 @@ public class RegistrationResource {
                     @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(value = "offenders/crn/{crn}/registrations")
-    public Registrations getOffenderRegistrationsByCrn(final @PathVariable("crn") String crn) {
+    public Registrations getOffenderRegistrationsByCrn(final @PathVariable("crn") String crn,
+        @ApiParam(name = "activeOnly", value = "retrieve only active registrations", example = "true")
+        @RequestParam(name = "activeOnly", required = false, defaultValue = "false") final boolean activeOnly) {
+        if(activeOnly){
+            return activeRegistrationsOf(offenderService.offenderIdOfCrn(crn));
+        }
         return registrationsOf(offenderService.offenderIdOfCrn(crn));
+    }
+
+    private Registrations activeRegistrationsOf(Optional<Long> maybeOffenderId) {
+        return maybeOffenderId
+            .map(offenderId -> new Registrations(registrationService.activeRegistrationsFor(offenderId)))
+            .orElseThrow(() -> new NotFoundException("No offender found"));
     }
 
     private Registrations registrationsOf(Optional<Long> maybeOffenderId) {
