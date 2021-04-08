@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius.controller.secure;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
@@ -12,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.ConvictionRequirements;
@@ -69,8 +71,10 @@ public class RequirementsResource {
     @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/requirements")
     public ConvictionRequirements getRequirementsByConvictionId(
             @PathVariable(value = "crn") String crn,
-            @PathVariable(value = "convictionId") Long convictionId
+            @PathVariable(value = "convictionId") Long convictionId,
+            @ApiParam(name = "activeOnly", value = "retrieve only active convictions", example = "true")
+            @RequestParam(name = "activeOnly", required = false, defaultValue = "false") final boolean activeOnly
     ) {
-        return requirementsService.getRequirementsByConvictionId(crn, convictionId);
+        return requirementsService.getRequirementsByConvictionId(crn, convictionId, activeOnly);
     }
 }
