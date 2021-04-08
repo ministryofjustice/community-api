@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.LicenceConditions;
@@ -63,7 +62,7 @@ public class RequirementServiceTest {
     class RequirementTests {
         @BeforeEach
         public void setUp() {
-            requirementService = new RequirementService(offenderRepository, eventRepository, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE);
+            requirementService = new RequirementService(offenderRepository, eventRepository);
 
             when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
             when(offender.getOffenderId()).thenReturn(OFFENDER_ID);
@@ -231,7 +230,7 @@ public class RequirementServiceTest {
                 .requirementId(99L)
                 .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build())
                 .build()));
-            var requirement = requirementService.getReferralRequirement(CRN, CONVICTION_ID);
+            var requirement = requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE);
             assertThat(requirement.getRequirementId()).isEqualTo(99L);
         }
 
@@ -244,7 +243,7 @@ public class RequirementServiceTest {
                 .build()));
 
             assertThatExceptionOfType(IllegalStateException.class)
-                .isThrownBy(() -> requirementService.getReferralRequirement(CRN, CONVICTION_ID))
+                .isThrownBy(() -> requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE))
                 .withMessage("CRN: CRN EventId: 987654321 has no referral requirement");
         }
 
@@ -258,7 +257,7 @@ public class RequirementServiceTest {
             );
 
             assertThatExceptionOfType(IllegalStateException.class)
-                .isThrownBy(() -> requirementService.getReferralRequirement(CRN, CONVICTION_ID))
+                .isThrownBy(() -> requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE))
                 .withMessage("CRN: CRN EventId: 987654321 has multiple referral requirements");
         }
 
@@ -267,7 +266,7 @@ public class RequirementServiceTest {
             when(disposal.getRequirements()).thenReturn(Collections.emptyList());
 
             assertThatExceptionOfType(IllegalStateException.class)
-                .isThrownBy(() -> requirementService.getReferralRequirement(CRN, CONVICTION_ID))
+                .isThrownBy(() -> requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE))
                 .withMessage("CRN: CRN EventId: 987654321 has no referral requirement");
         }
 
@@ -307,7 +306,7 @@ public class RequirementServiceTest {
 
         @BeforeEach
         public void setUp() {
-            requirementService = new RequirementService(offenderRepository, eventRepository, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE);
+            requirementService = new RequirementService(offenderRepository, eventRepository);
 
             when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
         }
