@@ -38,13 +38,14 @@ public class RequirementService {
 
     public ConvictionRequirements getRequirementsByConvictionId(String crn, Long convictionId, boolean activeOnly) {
 
+        Predicate<Requirement> activeFilter = activeFilter(activeOnly);
         var requirements = Optional.of(getEvent(crn, convictionId))
             .map(Event::getDisposal)
             .map(Disposal::getRequirements)
             .stream()
             .flatMap(Collection::stream)
             .map(RequirementTransformer::requirementOf)
-            .filter(activeFilter(activeOnly))
+            .filter(activeFilter)
             .collect(toList());
 
         return new ConvictionRequirements(requirements);
@@ -53,7 +54,7 @@ public class RequirementService {
 
     private Predicate<Requirement> activeFilter(boolean activeOnly) {
         if(activeOnly) {
-            return r -> r.getActive();
+            return Requirement::getActive;
         }
         return r -> true;
     }

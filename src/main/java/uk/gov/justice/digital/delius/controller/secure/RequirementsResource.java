@@ -72,7 +72,7 @@ public class RequirementsResource {
     public ConvictionRequirements getRequirementsByConvictionId(
             @PathVariable(value = "crn") String crn,
             @PathVariable(value = "convictionId") Long convictionId,
-            @ApiParam(name = "activeOnly", value = "retrieve only active convictions", example = "true")
+            @ApiParam(name = "activeOnly", value = "retrieve only active requirements", example = "true")
             @RequestParam(name = "activeOnly", required = false, defaultValue = "false") final boolean activeOnly
     ) {
         return requirementsService.getRequirementsByConvictionId(crn, convictionId, activeOnly);
