@@ -7,10 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Data
 @With
@@ -23,9 +23,9 @@ public class ReferralSentRequest {
     @ApiModelProperty(required = true)
     private OffsetDateTime sentAt;
 
-    @NotEmpty
+    @NotNull
     @ApiModelProperty(required = true)
-    private String serviceCategory;
+    private UUID serviceCategoryId;
 
     @Positive
     @NotNull

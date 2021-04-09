@@ -23,6 +23,7 @@ import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -32,6 +33,7 @@ import static org.hamcrest.Matchers.equalTo;
 public class ReferralAPITest extends IntegrationTestBase {
 
     private static final String INTEGRATION_CONTEXT = "commissioned-rehabilitation-services";
+    private static final UUID SERVICE_CATEGORY_ID = UUID.fromString("428ee70f-3001-4399-95a6-ad25eaaede16");
 
     private static final DeliusApiMockServer deliusApiMockServer = new DeliusApiMockServer(7999);
 
@@ -64,7 +66,7 @@ public class ReferralAPITest extends IntegrationTestBase {
                 .body(writeValueAsString(ReferralSentRequest
                     .builder()
                     .sentAt(OffsetDateTime.now())
-                    .serviceCategory("Accommodation")
+                    .serviceCategoryId(SERVICE_CATEGORY_ID)
                     .sentenceId(2500295343L)
                     .notes("A test note")
                     .context(INTEGRATION_CONTEXT)
@@ -90,7 +92,7 @@ public class ReferralAPITest extends IntegrationTestBase {
             .body(writeValueAsString(ReferralSentRequest
                 .builder()
                 .sentAt(OffsetDateTime.of(2019,9,2,12,0,0,0, ZoneOffset.UTC))
-                .serviceCategory("Accommodation")
+                .serviceCategoryId(SERVICE_CATEGORY_ID)
                 .sentenceId(2500295345L)
                 .notes("A test note")
                 .context(INTEGRATION_CONTEXT)

@@ -33,8 +33,6 @@ import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalTim
 
 @ExtendWith(MockitoExtension.class)
 public class AppointmentServiceTest {
-    private static final String SERVICE_CATEGORY = "Accommodation";
-    private static final String NSI_TYPE = "CR01";
     private static final String PROVIDER_CODE = "CRS";
     private static final String STAFF_CODE = "CRSUATU";
     private static final String TEAM_CODE = "CRSUAT";
