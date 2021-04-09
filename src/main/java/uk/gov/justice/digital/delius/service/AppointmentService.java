@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
+import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDate;
+import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalTime;
 
 @Service
 public class AppointmentService {
@@ -67,9 +69,9 @@ public class AppointmentService {
             .team(context.getTeamCode())
             .staff(context.getStaffCode())
             .officeLocation(request.getOfficeLocationCode())
-            .date(request.getAppointmentDate())
-            .startTime(request.getAppointmentStartTime())
-            .endTime(request.getAppointmentEndTime())
+            .date(toLondonLocalDate(request.getAppointmentStart()))
+            .startTime(toLondonLocalTime(request.getAppointmentStart()))
+            .endTime(toLondonLocalTime(request.getAppointmentEnd()))
             .notes(request.getNotes())
             .eventId(sentenceId)
             .requirementId(requirement.getRequirementId())

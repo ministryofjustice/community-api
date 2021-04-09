@@ -18,8 +18,9 @@ import uk.gov.justice.digital.delius.controller.wiremock.DeliusApiMockServer;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
@@ -56,14 +57,15 @@ public class AppointmentBookingAPITest extends IntegrationTestBase {
 
         final var token = createJwt("bob", Collections.singletonList("ROLE_COMMUNITY_INTERVENTIONS_UPDATE"));
 
+        OffsetDateTime now = Instant.now().atZone(ZoneId.of("UTC")).toOffsetDateTime().truncatedTo(ChronoUnit.SECONDS);
+
         given()
                 .when()
                 .auth().oauth2(token)
                 .contentType(String.valueOf(ContentType.APPLICATION_JSON))
                 .body(writeValueAsString(AppointmentCreateRequest.builder()
-                    .appointmentDate(LocalDate.now())
-                    .appointmentStartTime(LocalTime.now().truncatedTo(ChronoUnit.SECONDS))
-                    .appointmentEndTime(LocalTime.now().truncatedTo(ChronoUnit.SECONDS))
+                    .appointmentStart(now.truncatedTo(ChronoUnit.SECONDS))
+                    .appointmentEnd(now.plusHours(1))
                     .officeLocationCode("CRSSHEF")
                     .notes("http://url")
                     .context("commissioned-rehabilitation-services")
