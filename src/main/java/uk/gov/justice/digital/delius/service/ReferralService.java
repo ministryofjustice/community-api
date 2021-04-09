@@ -21,10 +21,6 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class ReferralService {
 
-    // TODO: This must be provided in request from the consumer so that
-    // alternative contexts can be used by different consumers
-    private static final String CRS_DELIUS_INTEGRATION_CONTEXT = "commissioned-rehabilitation-services";
-
     private final DeliusApiClient deliusApiClient;
 
     private final NsiService nsiService;
@@ -51,8 +47,8 @@ public class ReferralService {
     @Transactional
     public ReferralSentResponse createNsiReferral(final String crn,
                                                   final ReferralSentRequest referralSent) {
-        // TODO context name should come from request
-        var context = getContext(CRS_DELIUS_INTEGRATION_CONTEXT);
+
+        var context = getContext(referralSent.getContext());
         var nsiMapping = context.getNsiMapping();
 
         Long requirementId = getRequirement(crn, referralSent.getSentenceId(), context);
@@ -83,8 +79,7 @@ public class ReferralService {
         // determine if there is an existing suitable NSI
         var offenderId = offenderService.offenderIdOfCrn(crn).orElseThrow(() -> new BadRequestException("Offender CRN not found"));
 
-        // TODO context name should come from request
-        var context = getContext(CRS_DELIUS_INTEGRATION_CONTEXT);
+        var context = getContext(referralSent.getContext());
         var nsiMapping = context.getNsiMapping();
 
         var existingNsis = nsiService.getNsiByCodes(offenderId, referralSent.getSentenceId(), Collections.singletonList(getNsiType(nsiMapping, referralSent.getServiceCategory())))

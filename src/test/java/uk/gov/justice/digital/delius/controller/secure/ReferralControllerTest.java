@@ -22,6 +22,7 @@ public class ReferralControllerTest {
 
     private ReferralService referralService = mock(ReferralService.class);
     private static final String SOME_OFFENDER_CRN = "X0OOM";
+    private static final String INTEGRATION_CONTEXT = "commissioned-rehabilitation-services";
 
     @BeforeEach
     public void setup() {
@@ -51,7 +52,10 @@ public class ReferralControllerTest {
             .body(ReferralSentRequest.builder()
                 .date(LocalDate.now())
                 .serviceCategory("Dependency and Recovery (D&R)")
-                .sentenceId(12354L).build()
+                .sentenceId(12354L)
+                .notes("comes notes")
+                .context(INTEGRATION_CONTEXT)
+                .build()
             )
             .when()
             .post(String.format("/secure/offenders/crn/%s/referral/sent", SOME_OFFENDER_CRN))
