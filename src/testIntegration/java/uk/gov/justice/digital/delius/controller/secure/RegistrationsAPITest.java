@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class RegistrationsAPITest extends IntegrationTestBase {
@@ -70,6 +71,17 @@ public class RegistrationsAPITest extends IntegrationTestBase {
                 .body("registrations[2].register.description", is("Public Protection"))
                 .body("registrations[2].deregisteringNotes", nullValue())
                 .body("registrations[3].deregisteringNotes", is("Ok again now"));
+    }
+
+    @Test
+    public void canGetActiveRegistrationByCRN() {
+        given()
+            .auth().oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get("/offenders/crn/{crn}/registrations?activeOnly=true", CRN)
+            .then()
+            .statusCode(200).body("registrations", hasSize(2));
     }
 
     @Nested
