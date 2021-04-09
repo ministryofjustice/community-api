@@ -15,6 +15,7 @@ import uk.gov.justice.digital.delius.data.api.deliusapi.NewNsiManager;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
 
@@ -56,7 +57,7 @@ public class ReferralService {
 
         return ReferralSentResponse.builder().nsiId(existingNsi.map(Nsi::getNsiId).orElseGet(() -> {
             var newNsiRequest = NewNsi.builder()
-                .type(getNsiType(nsiMapping, referralSent.getServiceCategory()))
+                .type(getNsiType(nsiMapping, referralSent.getServiceCategoryId()))
                 .offenderCrn(crn)
                 .eventId(referralSent.getSentenceId())
                 .requirementId(requirementId)
@@ -82,7 +83,7 @@ public class ReferralService {
         var context = getContext(referralSent.getContext());
         var nsiMapping = context.getNsiMapping();
 
-        var existingNsis = nsiService.getNsiByCodes(offenderId, referralSent.getSentenceId(), Collections.singletonList(getNsiType(nsiMapping, referralSent.getServiceCategory())))
+        var existingNsis = nsiService.getNsiByCodes(offenderId, referralSent.getSentenceId(), Collections.singletonList(getNsiType(nsiMapping, referralSent.getServiceCategoryId())))
             .map(wrapper -> wrapper.getNsis().stream()
                 // eventID, offenderID, nsiID, and callerID are handled in the NSI service
                 .filter(nsi -> Optional.ofNullable(nsi.getReferralDate()).map(n -> n.equals(referralSent.getDate())).orElse(false))
@@ -108,9 +109,9 @@ public class ReferralService {
         return requirementService.getRequirement(crn, sentenceId, context.getRequirementRehabilitationActivityType()).getRequirementId();
     }
 
-    String getNsiType(final NsiMapping nsiMapping, final String referralType) {
-        return Optional.ofNullable(nsiMapping.getServiceCategoryToNsiType().get(referralType)).orElseThrow(
-            () -> new IllegalArgumentException("Nsi Type mapping from referralType does not exist for: " + referralType)
+    String getNsiType(final NsiMapping nsiMapping, final UUID serviceCategoryId) {
+        return Optional.ofNullable(nsiMapping.getServiceCategoryToNsiType().get(serviceCategoryId)).orElseThrow(
+            () -> new IllegalArgumentException("Nsi Type mapping from referralType does not exist for: " + serviceCategoryId)
         );
     }
 

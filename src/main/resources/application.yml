@@ -110,10 +110,10 @@ delius-integration-context:
       nsi-mapping:
         nsi-status: INPROG
         service-category-to-nsi-type:
-          "[Accommodation]": CRS01
-          "[Education, Training and Employment (ETE)]": CRS02
-          "[Finance, Benefits and Debt (FBD)]": CRS03
-          "[Dependency and Recovery (D&R)]": CRS04
+          428ee70f-3001-4399-95a6-ad25eaaede16: CRS01
+          ca374ac3-84eb-4b91-bea7-9005398f426f: CRS02
+          96a63c39-4371-4f17-a6ec-265755f0cf7b: CRS03
+          76bcdb97-1dea-41c1-a4f8-899d88e5d679: CRS04
       contact-mapping:
         appointment-contact-type: CRSAPT
 
