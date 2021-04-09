@@ -3,7 +3,6 @@ package uk.gov.justice.digital.delius.service;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.ConvictionRequirements;
@@ -21,6 +20,7 @@ import uk.gov.justice.digital.delius.transformers.RequirementTransformer;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
@@ -36,17 +36,31 @@ public class RequirementService {
     @Autowired
     private EventRepository eventRepository;
 
-    public ConvictionRequirements getRequirementsByConvictionId(String crn, Long convictionId) {
-        var requirements = Optional.of(getEvent(crn, convictionId))
-                .map(Event::getDisposal)
-                .map(Disposal::getRequirements)
+    public ConvictionRequirements getRequirementsByConvictionId(String crn, Long convictionId, boolean activeOnly) {
 
-                .stream()
-                .flatMap(Collection::stream)
-                .map(RequirementTransformer::requirementOf)
-                .collect(toList());
+        Predicate<Requirement> activeFilter = activeFilter(activeOnly);
+        var requirements = Optional.of(getEvent(crn, convictionId))
+            .map(Event::getDisposal)
+            .map(Disposal::getRequirements)
+            .stream()
+            .flatMap(Collection::stream)
+            .map(RequirementTransformer::requirementOf)
+            .filter(activeFilter)
+            .collect(toList());
 
         return new ConvictionRequirements(requirements);
+    }
+
+
+    private Predicate<Requirement> activeFilter(boolean activeOnly) {
+        if(activeOnly) {
+            return Requirement::getActive;
+        }
+        return r -> true;
+    }
+
+    public ConvictionRequirements getRequirementsByConvictionId(String crn, Long convictionId) {
+        return getRequirementsByConvictionId(crn, convictionId, false);
     }
 
     public PssRequirements getPssRequirementsByConvictionId(String crn, Long convictionId) {
@@ -112,4 +126,6 @@ public class RequirementService {
         return requirements.stream().findFirst().orElseThrow(() ->
             new IllegalStateException(format("CRN: %s EventId: %d has no referral requirement", crn, eventId)));
     }
+
+
 }
