@@ -32,5 +32,9 @@ public class ReferralSentRequest {
     @ApiModelProperty(required = true)
     private Long sentenceId;
 
+    @NotNull
     private String notes;
+
+    @NotNull
+    private String context;
 }

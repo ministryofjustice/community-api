@@ -59,6 +59,7 @@ public class ReferralServiceTest {
     private static final Map <String, String> SERVICE_CATEGORY_TO_NSI_TYPE_MAPPING = new HashMap<>(){{
         this.put(SERVICE_CATEGORY, NSI_TYPE);
     }};
+    private static final String INTEGRATION_CONTEXT = "commissioned-rehabilitation-services";
 
     private static final Nsi MATCHING_NSI = Nsi.builder()
         .nsiId(12345L)
@@ -81,6 +82,7 @@ public class ReferralServiceTest {
         .sentAt(OffsetDateTime.of(2021, 1, 20, 12, 0, 0, 0, ZoneOffset.UTC))
         .sentenceId(SENTENCE_ID)
         .notes("A test note")
+        .context(INTEGRATION_CONTEXT)
         .build();
 
     @Mock
@@ -101,7 +103,7 @@ public class ReferralServiceTest {
     public void setup() {
         DeliusIntegrationContextConfig integrationContextConfig = new DeliusIntegrationContextConfig();
         IntegrationContext integrationContext = new IntegrationContext();
-        integrationContextConfig.getIntegrationContexts().put("commissioned-rehabilitation-services", integrationContext);
+        integrationContextConfig.getIntegrationContexts().put(INTEGRATION_CONTEXT, integrationContext);
         integrationContext.setProviderCode(PROVIDER_CODE);
         integrationContext.setStaffCode(STAFF_CODE);
         integrationContext.setTeamCode(TEAM_CODE);
