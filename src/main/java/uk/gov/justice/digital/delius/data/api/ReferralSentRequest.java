@@ -8,10 +8,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 @With
@@ -25,9 +25,9 @@ public class ReferralSentRequest {
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate date;
 
-    @NotEmpty
+    @NotNull
     @ApiModelProperty(required = true)
-    private String serviceCategory;
+    private UUID serviceCategoryId;
 
     @Positive
     @NotNull

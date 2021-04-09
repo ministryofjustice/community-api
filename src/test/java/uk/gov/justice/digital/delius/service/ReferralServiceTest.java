@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
@@ -47,15 +48,15 @@ public class ReferralServiceTest {
     private static final String OFFENDER_CRN = "X123456";
     private static final Long SENTENCE_ID = 2500295343L;
     private static final Long REQUIREMENT_ID = 2500083652L;
-    private static final String SERVICE_CATEGORY = "Accommodation";
+    private static final UUID SERVICE_CATEGORY_ID = UUID.fromString("428ee70f-3001-4399-95a6-ad25eaaede16");
     private static final String NSI_TYPE = "CR01";
     private static final String PROVIDER_CODE = "CRS";
     private static final String STAFF_CODE = "CRSUATU";
     private static final String TEAM_CODE = "CRSUAT";
     private static final String NSI_STATUS = "INPROG";
     private static final String RAR_TYPE_CODE = "F";
-    private static final Map <String, String> SERVICE_CATEGORY_TO_NSI_TYPE_MAPPING = new HashMap<>(){{
-        this.put(SERVICE_CATEGORY, NSI_TYPE);
+    private static final Map <UUID, String> SERVICE_CATEGORY_TO_NSI_TYPE_MAPPING = new HashMap<>(){{
+        this.put(SERVICE_CATEGORY_ID, NSI_TYPE);
     }};
     private static final String INTEGRATION_CONTEXT = "commissioned-rehabilitation-services";
 
@@ -76,7 +77,7 @@ public class ReferralServiceTest {
 
     private static final ReferralSentRequest NSI_REQUEST = ReferralSentRequest
         .builder()
-        .serviceCategory(SERVICE_CATEGORY)
+        .serviceCategoryId(SERVICE_CATEGORY_ID)
         .date(LocalDate.of(2021, 1, 20))
         .sentenceId(SENTENCE_ID)
         .notes("A test note")
@@ -197,7 +198,7 @@ public class ReferralServiceTest {
 
         var nsiRequest = NSI_REQUEST
             .toBuilder()
-            .serviceCategory("invalid one")
+            .serviceCategoryId(UUID.fromString("999ee70f-3001-4399-95a6-ad25eaaed999"))
             .build();
 
         assertThrows(IllegalArgumentException.class, () -> referralService.createNsiReferral(OFFENDER_CRN, nsiRequest));
