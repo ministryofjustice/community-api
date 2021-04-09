@@ -32,8 +32,9 @@ public class CaseAllocation {
     private Long rsrAssessorStaffId;
     @Column(name = "RSR_ASSESSOR_DATE")
     private LocalDateTime rsrAssessorDate;
-    @Column(name = "ALLOCATION_DECISION_ID")
-    private Long allocationDecisionId;
+    @JoinColumn(name = "ALLOCATION_DECISION_ID")
+    @ManyToOne
+    private StandardReference allocationDecision;
     @Column(name = "ALLOCATION_DECISION_DATE")
     private LocalDateTime allocationDecisionDate;
     @Column(name = "TARGET_PROVIDER_ID")
