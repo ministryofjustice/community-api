@@ -11,7 +11,7 @@ public class DateConverter {
     private static final String LOCAL_TIMEZONE = "Europe/London";
 
     public static LocalDate toLondonLocalDate(OffsetDateTime offsetDateTime) {
-        return offsetDateTime.atZoneSameInstant(ZoneId.of(LOCAL_TIMEZONE)).toLocalDateTime().toLocalDate();
+        return offsetDateTime.atZoneSameInstant(ZoneId.of(LOCAL_TIMEZONE)).toLocalDate();
     }
 
     public static LocalDateTime toLondonLocalDateTime(OffsetDateTime offsetDateTime) {
