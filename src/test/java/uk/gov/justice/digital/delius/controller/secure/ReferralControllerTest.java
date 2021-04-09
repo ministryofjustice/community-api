@@ -9,7 +9,7 @@ import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
 import uk.gov.justice.digital.delius.data.api.ReferralSentRequest;
 import uk.gov.justice.digital.delius.service.ReferralService;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 import static io.restassured.config.EncoderConfig.encoderConfig;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
@@ -49,7 +49,7 @@ public class ReferralControllerTest {
         given()
             .contentType(APPLICATION_JSON_VALUE)
             .body(ReferralSentRequest.builder()
-                .date(LocalDate.now())
+                .sentAt(OffsetDateTime.now())
                 .serviceCategory("Dependency and Recovery (D&R)")
                 .sentenceId(12354L).build()
             )

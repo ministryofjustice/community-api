@@ -19,6 +19,8 @@ import uk.gov.justice.digital.delius.data.api.ReferralSentRequest;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -60,7 +62,7 @@ public class ReferralAPITest extends IntegrationTestBase {
                 .contentType(String.valueOf(ContentType.APPLICATION_JSON))
                 .body(writeValueAsString(ReferralSentRequest
                     .builder()
-                    .date(LocalDate.now())
+                    .sentAt(OffsetDateTime.now())
                     .serviceCategory("Accommodation")
                     .sentenceId(2500295343L)
                     .notes("A test note")
@@ -85,7 +87,7 @@ public class ReferralAPITest extends IntegrationTestBase {
             .contentType(String.valueOf(ContentType.APPLICATION_JSON))
             .body(writeValueAsString(ReferralSentRequest
                 .builder()
-                .date(LocalDate.of(2019,9,2))
+                .sentAt(OffsetDateTime.of(2019,9,2,12,0,0,0, ZoneOffset.UTC))
                 .serviceCategory("Accommodation")
                 .sentenceId(2500295345L)
                 .notes("A test note")
