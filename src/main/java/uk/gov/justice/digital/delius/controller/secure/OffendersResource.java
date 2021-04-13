@@ -125,9 +125,9 @@ public class OffendersResource {
             })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/allOffenderManagers")
     public List<CommunityOrPrisonOffenderManager> getAllOffenderManagersForOffender(
-            @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
-            @NotNull
-            @PathVariable(value = "nomsNumber") final String nomsNumber,
+        @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
+        @NotNull
+        @PathVariable(value = "nomsNumber") final String nomsNumber,
         @ApiParam(name = "includeProbationAreaTeams", value = "include teams on the ProbationArea records", example = "true")
         @RequestParam(name = "includeProbationAreaTeams", required = false, defaultValue = "false") final boolean includeProbationAreaTeams) {
         return offenderManagerService.getAllOffenderManagersForNomsNumber(nomsNumber, includeProbationAreaTeams)
