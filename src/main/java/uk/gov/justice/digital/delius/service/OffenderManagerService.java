@@ -56,13 +56,13 @@ public class OffenderManagerService {
     private final TelemetryClient telemetryClient;
 
     @Transactional(readOnly = true)
-    public Optional<List<CommunityOrPrisonOffenderManager>> getAllOffenderManagersForNomsNumber(final String nomsNumber) {
-        return offenderRepository.findByNomsNumber(nomsNumber).map(this::getAllOffenderManagers);
+    public Optional<List<CommunityOrPrisonOffenderManager>> getAllOffenderManagersForNomsNumber(final String nomsNumber, final boolean includeProbationAreaTeams) {
+        return offenderRepository.findByNomsNumber(nomsNumber).map(offender -> getAllOffenderManagers(offender, includeProbationAreaTeams));
     }
 
     @Transactional(readOnly = true)
-    public Optional<List<CommunityOrPrisonOffenderManager>> getAllOffenderManagersForCrn(final String crn) {
-        return offenderRepository.findByCrn(crn).map(this::getAllOffenderManagers);
+    public Optional<List<CommunityOrPrisonOffenderManager>> getAllOffenderManagersForCrn(final String crn, final boolean includeProbationAreaTeams) {
+        return offenderRepository.findByCrn(crn).map(offender -> getAllOffenderManagers(offender, includeProbationAreaTeams));
     }
 
     @Transactional
@@ -169,7 +169,7 @@ public class OffenderManagerService {
         offender.getPrisonOffenderManagers().add(newPrisonOffenderManager);
         telemetryClient.trackEvent("POMAllocated", telemetryProperties, null);
 
-        return OffenderManagerTransformer.offenderManagerOf(newPrisonOffenderManager);
+        return OffenderManagerTransformer.offenderManagerOf(newPrisonOffenderManager, true);
     }
 
     private StandardReference getAllocationReason(final ProbationArea probationArea, final Optional<PrisonOffenderManager> existingPrisonOffenderManager) {
@@ -290,17 +290,21 @@ public class OffenderManagerService {
     }
 
     private List<CommunityOrPrisonOffenderManager> getAllOffenderManagers(final Offender offender) {
+        return getAllOffenderManagers(offender, true);
+    }
+
+    private List<CommunityOrPrisonOffenderManager> getAllOffenderManagers(final Offender offender, final boolean includeProbationAreaTeams) {
         return combine(
                     offender.getOffenderManagers()
                         .stream()
                         .filter(OffenderManager::isActive)
                         .map(this::addLdapFields)
-                        .map(OffenderManagerTransformer::offenderManagerOf)
+                        .map(offMgr -> OffenderManagerTransformer.offenderManagerOf(offMgr, includeProbationAreaTeams))
                         .collect(Collectors.toList()),
                 offender.getPrisonOffenderManagers()
                         .stream()
                         .filter(PrisonOffenderManager::isActive)
-                        .map(OffenderManagerTransformer::offenderManagerOf)
+                        .map(offMgr -> OffenderManagerTransformer.offenderManagerOf(offMgr, includeProbationAreaTeams))
                         .collect(Collectors.toList())
         );
     }
