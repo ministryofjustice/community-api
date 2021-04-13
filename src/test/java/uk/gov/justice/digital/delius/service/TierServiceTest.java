@@ -3,7 +3,6 @@ package uk.gov.justice.digital.delius.service;
 import com.microsoft.applicationinsights.TelemetryClient;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -93,21 +92,6 @@ public class TierServiceTest {
         }
 
         @Test
-        @DisplayName("falls back to offender manager if staff or team cannot be found. Remove once teams and staff have been added")
-        void fallsbackToOffenderManager() {
-            String crn = "X123456";
-            String tier = "A1";
-            final var telemetryProperties = Map.of(
-                "tier", "U" + tier, "crn", crn);
-            Optional<Offender> offender = Optional.of(anOffender());
-            when(offenderRepository.findByCrn(crn)).thenReturn(offender);
-            when(referenceDataService.getTier(String.format("U%s", tier))).thenReturn(Optional.of(new StandardReference()));
-            when(referenceDataService.getAtsTierChangeReason()).thenReturn(Optional.of(new StandardReference()));
-            service.updateTier(crn, tier);
-            verify(telemetryClient).trackEvent("TierUpdateSuccess", telemetryProperties, null);
-        }
-
-        @Test
         @DisplayName("fires failure telemetry event when tier not found")
         void firesFailureTelemetryEventWhenTierNotFound() {
             String crn = "X123456";
@@ -181,7 +165,6 @@ public class TierServiceTest {
 
         @Nested
         @DisplayName("writeContact")
-        @Disabled("until the workaround to use offender manager is removed")
         class WriteContact {
             @Test
             @DisplayName("fires failure telemetry event when staff not found")
