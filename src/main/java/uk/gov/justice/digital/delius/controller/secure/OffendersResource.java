@@ -132,6 +132,24 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with NOMS number %s not found", nomsNumber)));
     }
 
+    @ApiOperation(
+        value = "Returns the current community and prison offender managers for an offender",
+        notes = "Accepts an offender CRN in the format A999999",
+        tags = {"Offender managers", "-- Popular core APIs --"})
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+    @GetMapping(path = "/offenders/crn/{crn}/allOffenderManagers")
+    public List<CommunityOrPrisonOffenderManager> getAllOffenderManagersForOffenderbyCrn(
+        @ApiParam(name = "crn", value = "CRN for the offender", example = "X320741", required = true)
+        @NotNull
+        @PathVariable(value = "crn") final String crn) {
+        return offenderManagerService.getAllOffenderManagersForCrn(crn)
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN %s not found", crn)));
+    }
+
     @ApiOperation(value = "Return the convictions (AKA Delius Event) for an offender", tags = {"Convictions","-- Popular core APIs --"})
     @ApiResponses(
             value = {

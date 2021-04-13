@@ -8,8 +8,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import java.util.Objects;
 import java.util.Optional;
 
-import static java.util.Optional.empty;
-
 public class OffenderManagerTransformer {
     private static final String UNALLOCATED_STAFF_CODE_SUFFIX = "U";
 
@@ -22,8 +20,8 @@ public class OffenderManagerTransformer {
                 .staff(Optional
                         .ofNullable(offenderManager.getStaff())
                         .map(staff -> StaffTransformer.contactableHumanOf(staff,
-                            empty(),
-                            empty()))
+                            Optional.ofNullable(offenderManager.getEmailAddress()),
+                            Optional.ofNullable(offenderManager.getTelephoneNumber())))
                         .orElse(null))
                 .team(Optional
                         .ofNullable(offenderManager.getTeam())

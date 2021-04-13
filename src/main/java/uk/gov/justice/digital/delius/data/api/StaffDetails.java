@@ -18,6 +18,8 @@ public class StaffDetails {
     private String username;
     @ApiModelProperty(value = "the optional email address of this staff member, will be absent if the staff member is not a user of Delius", example = "sheila.hancock@test.justice.gov.uk")
     private String email;
+    @ApiModelProperty(value = "the optional telephone number of this staff member, will be absent if the staff member is not a user of Delius", example = "020 1111 2222")
+    private String telephoneNumber;
     @ApiModelProperty(value = "staff code AKA officer code", example = "SH0001")
     private String staffCode;
     @ApiModelProperty(value = "staff identifier", example = "123456")
