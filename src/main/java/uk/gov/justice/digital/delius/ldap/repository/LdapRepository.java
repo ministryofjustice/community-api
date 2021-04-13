@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.ldap.repository;
 
-import com.google.common.base.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +24,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.google.common.base.Preconditions.checkState;
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
 @Repository
@@ -61,6 +59,10 @@ public class LdapRepository {
         //   2. find the roles associated with the matched user and add them to the user entity.
         final var nDeliusUser = authenticationTemplate.find(byUsername(username), NDeliusUser.class).stream().findAny();
         return nDeliusUser.map(user -> mapRolesForUser(user));
+    }
+
+    public Optional<NDeliusUser> getDeliusUserNoRoles(final String username) {
+        return authenticationTemplate.find(byUsername(username), NDeliusUser.class).stream().findAny();
     }
 
     public List<NDeliusUser> getDeliusUserByEmail(final String email) {

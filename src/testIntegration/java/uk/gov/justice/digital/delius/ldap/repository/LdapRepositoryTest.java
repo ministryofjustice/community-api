@@ -48,6 +48,17 @@ public class LdapRepositoryTest {
     }
 
     @Test
+    public void shouldReturnAttributesForUser() {
+        var deliusUser = ldapRepository.getDeliusUserNoRoles("JimSnowLdap").get();
+
+        assertThat(deliusUser.getTelephoneNumber()).isEqualTo("01512112121");
+        assertThat(deliusUser.getMail()).isEqualTo("jim.snow@justice.gov.uk");
+        assertThat(deliusUser.getSn()).isEqualTo("Snow");
+        assertThat(deliusUser.getGivenname()).isEqualTo("Jim");
+        assertThat(deliusUser.getRoles()).isNull();
+    }
+
+    @Test
     @DirtiesContext(methodMode = AFTER_METHOD)
     public void shouldBeAbleToAddARole() {
         assertThat(ldapRepository.getDeliusUser("bernard.beaks").get().getRoles())
@@ -86,4 +97,5 @@ public class LdapRepositoryTest {
         assertThatThrownBy(() -> ldapRepository.addRole("does not exist", "CWBT001"))
             .isInstanceOf(NameNotFoundException.class);
     }
+
 }

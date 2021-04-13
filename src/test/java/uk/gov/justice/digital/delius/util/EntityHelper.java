@@ -595,6 +595,7 @@ public class EntityHelper {
     public static Staff aStaff(final String officerCode) {
         return Staff
                 .builder()
+                .user(aUser())
                 .officerCode(officerCode)
                 .forename("John")
                 .surname("Smith")
@@ -705,6 +706,8 @@ public class EntityHelper {
                         .codeDescription("Automatic allocation")
                         .build())
                 .probationArea(aProbationArea())
+                .emailAddress("no-one@nowhere.com")
+                .telephoneNumber("020 1111 2222")
                 .build();
     }
 

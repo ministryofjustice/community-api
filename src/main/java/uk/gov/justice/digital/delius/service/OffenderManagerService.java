@@ -21,6 +21,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
+import uk.gov.justice.digital.delius.jpa.standard.entity.User;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.PrisonOffenderManagerRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
@@ -57,6 +58,11 @@ public class OffenderManagerService {
     @Transactional(readOnly = true)
     public Optional<List<CommunityOrPrisonOffenderManager>> getAllOffenderManagersForNomsNumber(final String nomsNumber) {
         return offenderRepository.findByNomsNumber(nomsNumber).map(this::getAllOffenderManagers);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<List<CommunityOrPrisonOffenderManager>> getAllOffenderManagersForCrn(final String crn) {
+        return offenderRepository.findByCrn(crn).map(this::getAllOffenderManagers);
     }
 
     @Transactional
@@ -285,9 +291,10 @@ public class OffenderManagerService {
 
     private List<CommunityOrPrisonOffenderManager> getAllOffenderManagers(final Offender offender) {
         return combine(
-                offender.getOffenderManagers()
+                    offender.getOffenderManagers()
                         .stream()
                         .filter(OffenderManager::isActive)
+                        .map(this::addLdapFields)
                         .map(OffenderManagerTransformer::offenderManagerOf)
                         .collect(Collectors.toList()),
                 offender.getPrisonOffenderManagers()
@@ -296,6 +303,18 @@ public class OffenderManagerService {
                         .map(OffenderManagerTransformer::offenderManagerOf)
                         .collect(Collectors.toList())
         );
+    }
+
+    OffenderManager addLdapFields(OffenderManager offenderManager) {
+        Optional.ofNullable(offenderManager.getStaff())
+            .map(Staff::getUser)
+            .map(User::getDistinguishedName)
+            .flatMap(staffService::getStaffDetailsByUsername)
+            .ifPresent(staffDetails -> {
+                offenderManager.setTelephoneNumber(staffDetails.getTelephoneNumber());
+                offenderManager.setEmailAddress(staffDetails.getEmail());
+            });
+        return offenderManager;
     }
 
 }

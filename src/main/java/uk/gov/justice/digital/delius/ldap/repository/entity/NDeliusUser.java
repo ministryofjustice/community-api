@@ -24,8 +24,10 @@ public final class NDeliusUser {
     private String cn;
     private String sn;
     private String mail;
+    private String telephoneNumber;
     private String givenname;
     private String endDate;
+
     @Transient
     private List<NDeliusRole> roles;
 

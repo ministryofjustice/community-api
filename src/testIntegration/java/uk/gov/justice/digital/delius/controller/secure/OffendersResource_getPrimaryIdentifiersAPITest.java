@@ -16,7 +16,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationTestBase {
 
-    public static final int TOTAL_NUMBER_NON_DELETED_OF_OFFENDERS = 29;
+    public static final int TOTAL_NUMBER_NON_DELETED_OF_OFFENDERS = 30;
     public static final int NUMBER_OF_DELETED_RECORDS = 2;
 
     @Test
