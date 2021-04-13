@@ -130,6 +130,7 @@ cn: JimSnowLdap
 sn: Snow
 givenname: Jim
 mail: jim.snow@justice.gov.uk
+telephoneNumber: 01512112121
 uid: JimSnowLdap
 userPassword: secret
 

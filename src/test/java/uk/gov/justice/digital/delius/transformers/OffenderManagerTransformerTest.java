@@ -24,8 +24,9 @@ public class OffenderManagerTransformerTest {
                                 .build(),
                         aTeam()
                 )
+
         ).getStaff())
-                .isEqualTo(ContactableHuman.builder().forenames("John George").surname("Smith").build());
+                .isEqualTo(ContactableHuman.builder().forenames("John George").surname("Smith").email("no-one@nowhere.com").phoneNumber("020 1111 2222").build());
     }
 
     @Test
