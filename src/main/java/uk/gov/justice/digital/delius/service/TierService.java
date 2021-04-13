@@ -53,19 +53,11 @@ public class TierService {
 
     private void writeContact(Offender offender, StandardReference changeReason, StandardReference updatedTier, Map<String, String> telemetryProperties) {
         final var offenderManager = getOffenderManager(offender, telemetryProperties);
-        Staff staff;
-        Team team;
-        try {
-            final var areaCode = offenderManager.getProbationArea().getCode();
-            final var staffCode = String.format("%sUTSO", areaCode);
-            staff = getStaff(staffCode, telemetryProperties);
-            final var teamCode = String.format("%sUTS", areaCode);
-            team = getTeam(teamCode, telemetryProperties);
-        } catch (NotFoundException e) {
-            staff = offenderManager.getStaff();
-            team = offenderManager.getTeam();
-        }
-
+        final var areaCode = offenderManager.getProbationArea().getCode();
+        final var staffCode = String.format("%sUTSO", areaCode);
+        final Staff staff = getStaff(staffCode, telemetryProperties);
+        final var teamCode = String.format("%sUTS", areaCode);
+        final Team team = getTeam(teamCode, telemetryProperties);
         contactService.addContactForTierUpdate(offender.getOffenderId(), LocalDateTime.now(), updatedTier.getCodeDescription(), changeReason.getCodeDescription(), staff, team);
     }
 
