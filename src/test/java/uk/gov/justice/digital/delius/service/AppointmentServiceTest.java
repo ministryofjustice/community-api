@@ -21,14 +21,15 @@ import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDate;
+import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalTime;
 
 @ExtendWith(MockitoExtension.class)
 public class AppointmentServiceTest {
@@ -83,7 +84,7 @@ public class AppointmentServiceTest {
         Requirement requirement = Requirement.builder().requirementId(99L).build();
         when(requirementService.getRequirement("X007", 1L, RAR_TYPE_CODE)).thenReturn(requirement);
 
-        var startTime = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
+        var startTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         var endTime = startTime.plusHours(1);
 
         NewContact deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime);
@@ -98,7 +99,7 @@ public class AppointmentServiceTest {
         assertThat(response.getAppointmentId()).isEqualTo(3L);
     }
 
-    private NewContact aDeliusNewContactRequest(LocalTime startTime, LocalTime endTime) {
+    private NewContact aDeliusNewContactRequest(OffsetDateTime startTime, OffsetDateTime endTime) {
         NewContact deliusNewContactRequest = NewContact.builder()
             .offenderCrn("X007")
             .type(CRSAPT_CONTACT_TYPE)
@@ -107,9 +108,9 @@ public class AppointmentServiceTest {
             .team(TEAM_CODE)
             .staff(STAFF_CODE)
             .officeLocation("CRSSHEF")
-            .date(LocalDate.now())
-            .startTime(startTime)
-            .endTime(endTime)
+            .date(toLondonLocalDate(startTime))
+            .startTime(toLondonLocalTime(startTime))
+            .endTime(toLondonLocalTime(endTime))
             .alert(null)
             .sensitive(null)
             .notes("/url")
@@ -120,11 +121,10 @@ public class AppointmentServiceTest {
         return deliusNewContactRequest;
     }
 
-    private AppointmentCreateRequest aAppointmentCreateRequest(LocalTime startTime, LocalTime endTime) {
+    private AppointmentCreateRequest aAppointmentCreateRequest(OffsetDateTime startTime, OffsetDateTime endTime) {
         AppointmentCreateRequest request = AppointmentCreateRequest.builder()
-            .appointmentDate(LocalDate.now())
-            .appointmentStartTime(startTime)
-            .appointmentEndTime(endTime)
+            .appointmentStart(startTime)
+            .appointmentEnd(endTime)
             .officeLocationCode("CRSSHEF")
             .notes("/url")
             .context(CONTEXT)

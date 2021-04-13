@@ -14,8 +14,9 @@ import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
 import uk.gov.justice.digital.delius.service.AppointmentService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
@@ -44,10 +45,11 @@ public class AppointmentBookingControllerTest {
 
     @Test
     public void createsAppointment() {
+        OffsetDateTime now = Instant.now().atZone(ZoneId.of("UTC")).toOffsetDateTime().truncatedTo(ChronoUnit.SECONDS);
+
         AppointmentCreateRequest appointmentCreateRequest = AppointmentCreateRequest.builder()
-            .appointmentDate(LocalDate.now())
-            .appointmentStartTime(LocalTime.now().truncatedTo(ChronoUnit.SECONDS))
-            .appointmentEndTime(LocalTime.now().truncatedTo(ChronoUnit.SECONDS))
+            .appointmentStart(now)
+            .appointmentEnd(now.plusHours(1))
             .officeLocationCode("CRSSHEF")
             .notes("http://url")
             .context("commissioned-rehabilitation-services")

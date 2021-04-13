@@ -18,6 +18,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
+import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDate;
+import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDateTime;
 
 @Service
 public class ReferralService {
@@ -61,9 +63,9 @@ public class ReferralService {
                 .offenderCrn(crn)
                 .eventId(referralSent.getSentenceId())
                 .requirementId(requirementId)
-                .referralDate(referralSent.getDate())
+                .referralDate(toLondonLocalDate(referralSent.getSentAt()))
                 .status(nsiMapping.getNsiStatus())
-                .statusDate(referralSent.getDate().atStartOfDay())
+                .statusDate(toLondonLocalDateTime(referralSent.getSentAt()))
                 .notes(referralSent.getNotes())
                 .intendedProvider(context.getProviderCode())
                 .manager(NewNsiManager.builder()
@@ -86,7 +88,7 @@ public class ReferralService {
         var existingNsis = nsiService.getNsiByCodes(offenderId, referralSent.getSentenceId(), Collections.singletonList(getNsiType(nsiMapping, referralSent.getServiceCategoryId())))
             .map(wrapper -> wrapper.getNsis().stream()
                 // eventID, offenderID, nsiID, and callerID are handled in the NSI service
-                .filter(nsi -> Optional.ofNullable(nsi.getReferralDate()).map(n -> n.equals(referralSent.getDate())).orElse(false))
+                .filter(nsi -> Optional.ofNullable(nsi.getReferralDate()).map(n -> n.equals(toLondonLocalDate(referralSent.getSentAt()))).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getNsiStatus()).map(n -> n.getCode().equals(nsiMapping.getNsiStatus())).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getRequirement()).map(n -> nsi.getRequirement().getRequirementId().equals(requirementId)).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getIntendedProvider()).map(n -> n.getCode().equals(context.getProviderCode())).orElse(false))
