@@ -26,6 +26,8 @@ import uk.gov.justice.digital.delius.data.api.deliusapi.NsiDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -78,7 +80,7 @@ public class ReferralServiceTest {
     private static final ReferralSentRequest NSI_REQUEST = ReferralSentRequest
         .builder()
         .serviceCategoryId(SERVICE_CATEGORY_ID)
-        .date(LocalDate.of(2021, 1, 20))
+        .sentAt(OffsetDateTime.of(2021, 1, 20, 12, 0, 0, 0, ZoneOffset.UTC))
         .sentenceId(SENTENCE_ID)
         .notes("A test note")
         .context(INTEGRATION_CONTEXT)
@@ -169,7 +171,7 @@ public class ReferralServiceTest {
             .endDate(null)
             .length(null)
             .status(NSI_STATUS)
-            .statusDate(LocalDateTime.of(2021, 1, 20, 0, 0))
+            .statusDate(LocalDateTime.of(2021, 1, 20, 12, 0))
             .outcome(null)
             .notes("A test note")
             .intendedProvider(PROVIDER_CODE)
@@ -207,7 +209,7 @@ public class ReferralServiceTest {
     private static Stream<Arguments> nsis() {
         return Stream.of(
             Arguments.of(NSI_REQUEST, MATCHING_NSI, true),
-            Arguments.of(NSI_REQUEST.withDate(LocalDate.of(2017, 1, 1)), MATCHING_NSI, false),
+            Arguments.of(NSI_REQUEST.withSentAt(OffsetDateTime.of(2017, 1, 1, 12, 0, 0, 0, ZoneOffset.UTC)), MATCHING_NSI, false),
             Arguments.of(NSI_REQUEST, MATCHING_NSI.withRequirement(Requirement.builder().requirementId(999L).build()), false),
             Arguments.of(NSI_REQUEST, MATCHING_NSI.withRequirement(null), false)
         );

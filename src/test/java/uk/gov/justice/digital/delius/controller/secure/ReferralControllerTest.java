@@ -9,7 +9,7 @@ import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
 import uk.gov.justice.digital.delius.data.api.ReferralSentRequest;
 import uk.gov.justice.digital.delius.service.ReferralService;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import static io.restassured.config.EncoderConfig.encoderConfig;
@@ -51,7 +51,7 @@ public class ReferralControllerTest {
         given()
             .contentType(APPLICATION_JSON_VALUE)
             .body(ReferralSentRequest.builder()
-                .date(LocalDate.now())
+                .sentAt(OffsetDateTime.now())
                 .serviceCategoryId(UUID.fromString("76bcdb97-1dea-41c1-a4f8-899d88e5d679"))
                 .sentenceId(12354L)
                 .notes("comes notes")
