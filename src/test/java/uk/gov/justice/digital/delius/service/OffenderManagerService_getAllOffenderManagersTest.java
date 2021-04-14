@@ -71,14 +71,14 @@ class OffenderManagerService_getAllOffenderManagersTest {
         void willReturnEmptyWhenOffenderNotFound() {
             when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.empty());
 
-            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP")).isNotPresent();
+            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP", true)).isNotPresent();
         }
 
         @Test
         void willReturnAListWhenOffenderFound() {
             when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.of(anOffender()));
 
-            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP")).isPresent();
+            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP", true)).isPresent();
         }
 
         @Test
@@ -88,7 +88,7 @@ class OffenderManagerService_getAllOffenderManagersTest {
                     List.of(),
                     List.of())));
 
-            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP")).get().asList()
+            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP", true)).get().asList()
                 .hasSize(0);
         }
 
@@ -99,7 +99,7 @@ class OffenderManagerService_getAllOffenderManagersTest {
                     List.of(anActiveOffenderManager()),
                     List.of())));
 
-            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP")).get().asList()
+            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP", true)).get().asList()
                 .hasSize(1);
         }
 
@@ -114,7 +114,7 @@ class OffenderManagerService_getAllOffenderManagersTest {
                     ),
                     List.of())));
 
-            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP")).get().asList()
+            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP", true)).get().asList()
                 .hasSize(1).allMatch(offenderManager -> ((CommunityOrPrisonOffenderManager) offenderManager).getStaffCode().equals("AA"));
         }
 
@@ -126,7 +126,7 @@ class OffenderManagerService_getAllOffenderManagersTest {
                     List.of(anActivePrisonOffenderManager())
                 )));
 
-            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP")).get().asList()
+            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP", true)).get().asList()
                 .hasSize(1);
         }
 
@@ -141,8 +141,23 @@ class OffenderManagerService_getAllOffenderManagersTest {
                         anEndDatedActivePrisonOffenderManager("CC")
                     ))));
 
-            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP")).get().asList()
+            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP", true)).get().asList()
                 .hasSize(1).allMatch(offenderManager -> ((CommunityOrPrisonOffenderManager) offenderManager).getStaffCode().equals("AA"));
+        }
+
+        @Test
+        void willExcludeTeamsFromProbationAreasFromPrisonOffenderManagers() {
+            when(offenderRepository.findByNomsNumber("G9542VP"))
+                .thenReturn(Optional.of(anOffender(
+                    List.of(),
+                    List.of(
+                        anActivePrisonOffenderManager("AA"),
+                        anInactivePrisonOffenderManager("BB"),
+                        anEndDatedActivePrisonOffenderManager("CC")
+                    ))));
+
+            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP", false)).get().asList()
+                .hasSize(1).allMatch(offMgr -> ((CommunityOrPrisonOffenderManager) offMgr).getProbationArea().getTeams() == null);
         }
     }
 
@@ -156,14 +171,14 @@ class OffenderManagerService_getAllOffenderManagersTest {
         void willReturnEmptyWhenOffenderNotFound() {
             when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.empty());
 
-            assertThat(offenderManagerService.getAllOffenderManagersForCrn(CRN)).isNotPresent();
+            assertThat(offenderManagerService.getAllOffenderManagersForCrn(CRN, true)).isNotPresent();
         }
 
         @Test
         void willReturnAListWhenOffenderFound() {
             when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(anOffender()));
 
-            assertThat(offenderManagerService.getAllOffenderManagersForCrn(CRN)).isPresent();
+            assertThat(offenderManagerService.getAllOffenderManagersForCrn(CRN, true)).isPresent();
         }
 
         @Test
@@ -173,7 +188,7 @@ class OffenderManagerService_getAllOffenderManagersTest {
                     List.of(),
                     List.of())));
 
-            assertThat(offenderManagerService.getAllOffenderManagersForCrn(CRN)).get().asList()
+            assertThat(offenderManagerService.getAllOffenderManagersForCrn(CRN, true)).get().asList()
                 .hasSize(0);
         }
 
@@ -190,10 +205,31 @@ class OffenderManagerService_getAllOffenderManagersTest {
                     List.of())));
             when(staffService.getStaffDetailsByUsername("XX")).thenReturn(Optional.of(staffDetails));
 
-            var offenderMgrs  = offenderManagerService.getAllOffenderManagersForCrn(CRN).get();
+            var offenderMgrs  = offenderManagerService.getAllOffenderManagersForCrn(CRN, true).get();
             assertThat(offenderMgrs).hasSize(1);
             assertThat(offenderMgrs.get(0).getStaff().getEmail()).isEqualTo("no-one@nowhere.com");
             assertThat(offenderMgrs.get(0).getStaff().getPhoneNumber()).isEqualTo("020 1111 2222");
+            assertThat(offenderMgrs.get(0).getProbationArea().getTeams()).hasSize(1);
+
+            verify(staffService).getStaffDetailsByUsername("XX");
+        }
+
+        @Test
+        void willReturnActiveCommunityOffenderManagers_withNoProbationAreaTeams() {
+            var staffDetails = StaffDetails.builder()
+                .email("no-one@nowhere.com")
+                .telephoneNumber("020 1111 2222")
+                .build();
+
+            when(offenderRepository.findByCrn(CRN))
+                .thenReturn(Optional.of(anOffender(
+                    List.of(anActiveOffenderManager()),
+                    List.of())));
+            when(staffService.getStaffDetailsByUsername("XX")).thenReturn(Optional.of(staffDetails));
+
+            var offenderMgrs  = offenderManagerService.getAllOffenderManagersForCrn(CRN, false).get();
+            assertThat(offenderMgrs).hasSize(1);
+            assertThat(offenderMgrs.get(0).getProbationArea().getTeams()).isNull();
 
             verify(staffService).getStaffDetailsByUsername("XX");
         }
