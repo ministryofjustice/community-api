@@ -125,10 +125,12 @@ public class OffendersResource {
             })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/allOffenderManagers")
     public List<CommunityOrPrisonOffenderManager> getAllOffenderManagersForOffender(
-            @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
-            @NotNull
-            @PathVariable(value = "nomsNumber") final String nomsNumber) {
-        return offenderManagerService.getAllOffenderManagersForNomsNumber(nomsNumber)
+        @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
+        @NotNull
+        @PathVariable(value = "nomsNumber") final String nomsNumber,
+        @ApiParam(name = "includeProbationAreaTeams", value = "include teams on the ProbationArea records", example = "true")
+        @RequestParam(name = "includeProbationAreaTeams", required = false, defaultValue = "false") final boolean includeProbationAreaTeams) {
+        return offenderManagerService.getAllOffenderManagersForNomsNumber(nomsNumber, includeProbationAreaTeams)
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with NOMS number %s not found", nomsNumber)));
     }
 
@@ -145,8 +147,10 @@ public class OffendersResource {
     public List<CommunityOrPrisonOffenderManager> getAllOffenderManagersForOffenderbyCrn(
         @ApiParam(name = "crn", value = "CRN for the offender", example = "X320741", required = true)
         @NotNull
-        @PathVariable(value = "crn") final String crn) {
-        return offenderManagerService.getAllOffenderManagersForCrn(crn)
+        @PathVariable(value = "crn") final String crn,
+        @ApiParam(name = "includeProbationAreaTeams", value = "include teams on the ProbationArea records", example = "true")
+        @RequestParam(name = "includeProbationAreaTeams", required = false, defaultValue = "false") final boolean includeProbationAreaTeams) {
+        return offenderManagerService.getAllOffenderManagersForCrn(crn, includeProbationAreaTeams)
             .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN %s not found", crn)));
     }
 
