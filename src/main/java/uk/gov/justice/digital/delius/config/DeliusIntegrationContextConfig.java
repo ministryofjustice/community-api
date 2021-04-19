@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Configuration
 @ConfigurationProperties(prefix = "delius-integration-context")
@@ -30,7 +31,7 @@ public class DeliusIntegrationContextConfig {
     @Data
     public static class NsiMapping {
         private String nsiStatus;
-        private Map<String, String> serviceCategoryToNsiType;
+        private Map<UUID, String> serviceCategoryToNsiType;
     }
 
     @Data
