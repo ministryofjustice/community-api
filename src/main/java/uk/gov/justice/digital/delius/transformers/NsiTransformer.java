@@ -23,6 +23,7 @@ public class NsiTransformer {
                 .nsiId(n.getNsiId())
                 .requirement(RequirementTransformer.requirementOf(n.getRqmnt()))
                 .nsiType(nsiTypeOf(n.getNsiType()))
+                .nsiSubType(nsiSubtypeOf(n.getNsiSubType()))
                 .nsiOutcome(nsiOutcomeOf(n.getNsiOutcome()))
                 .nsiStatus(nsiStatusOf(n.getNsiStatus()))
                 .actualStartDate(n.getActualStartDate())
