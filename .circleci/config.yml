@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.0
+  hmpps: ministryofjustice/hmpps@3.1
   aws-cli: circleci/aws-cli@1.4.0
   aws-ecs: circleci/aws-ecs@2.0.0
   mem: circleci/rememborb@0.0.1
@@ -19,7 +19,7 @@ jobs:
             - gradle-{{ checksum "build.gradle" }}
             - gradle-
       - run:
-          command: ./gradlew check --exclude-task testIntegration
+          command: ./gradlew -Dorg.gradle.jvmargs="--illegal-access=permit" -Dkotlin.daemon.jvm.options="--illegal-access=permit" check --exclude-task testIntegration
       - save_cache:
           paths:
             - ~/.gradle
@@ -43,7 +43,7 @@ jobs:
           command: |
             circleci tests glob "src/testIntegration/**/*.java" | circleci tests split | xargs -n 1 echo
       - run:
-          command: ./gradlew testIntegration -PtestFilter="`circleci tests glob "src/testIntegration/**/*.java" | circleci tests split`"
+          command: ./gradlew -Dorg.gradle.jvmargs="--illegal-access=permit" -Dkotlin.daemon.jvm.options="--illegal-access=permit" testIntegration -PtestFilter="`circleci tests glob "src/testIntegration/**/*.java" | circleci tests split`"
       - save_cache:
           paths:
             - ~/.gradle
