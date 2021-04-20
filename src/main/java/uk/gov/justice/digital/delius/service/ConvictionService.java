@@ -18,6 +18,7 @@ import uk.gov.justice.digital.delius.data.api.ProbationStatusDetail;
 import uk.gov.justice.digital.delius.data.api.ReplaceCustodyKeyDates;
 import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
 import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.KeyDate;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
@@ -29,6 +30,7 @@ import uk.gov.justice.digital.delius.transformers.CustodyKeyDateTransformer;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -40,6 +42,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.service.CustodyKeyDatesMapper.custodyManagedKeyDates;
 import static uk.gov.justice.digital.delius.service.CustodyKeyDatesMapper.descriptionOf;
@@ -135,6 +138,25 @@ public class ConvictionService {
         return events
             .stream()
             .filter(event -> !convertToBoolean(event.getSoftDeleted()))
+            .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Event::getReferralDate).reversed())
+            .map(ConvictionTransformer::convictionOf)
+            .collect(toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<Conviction> convictionsWithActiveRequirementFor(Long offenderId, String requirementTypeMainCategoryCode) {
+        List<uk.gov.justice.digital.delius.jpa.standard.entity.Event> events = eventRepository.findByOffenderIdAndActiveTrue(offenderId);
+
+        return events
+            .stream()
+            .filter(event -> !convertToBoolean(event.getSoftDeleted()))
+            .filter(event -> ofNullable(event.getDisposal())
+                    .map(Disposal::getRequirements)
+                    .stream()
+                    .flatMap(Collection::stream)
+                    .filter(requirement -> convertToBoolean(requirement.getActiveFlag()))
+                    .map(requirement -> requirement.getRequirementTypeMainCategory().getCode())
+                    .anyMatch(code -> requirementTypeMainCategoryCode.equals(code)))
             .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Event::getReferralDate).reversed())
             .map(ConvictionTransformer::convictionOf)
             .collect(toList());

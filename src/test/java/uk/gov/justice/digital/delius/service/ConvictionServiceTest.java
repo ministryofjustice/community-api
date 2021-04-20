@@ -26,6 +26,8 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.DisposalType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
+import uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
@@ -35,11 +37,14 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.service.ConvictionService.DuplicateActiveCustodialConvictionsException;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.time.LocalDate.now;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -94,9 +99,9 @@ public class ConvictionServiceTest {
     public void convictionsOrderedByCreationDate() {
         when(eventRepository.findByOffenderId(1L))
                 .thenReturn(ImmutableList.of(
-                        aEvent().toBuilder().eventId(99L).referralDate(LocalDate.now().minusDays(1)).build(),
-                        aEvent().toBuilder().eventId(9L).referralDate(LocalDate.now().minusDays(2)).build(),
-                        aEvent().toBuilder().eventId(999L).referralDate(LocalDate.now()).build()
+                        aEvent().toBuilder().eventId(99L).referralDate(now().minusDays(1)).build(),
+                        aEvent().toBuilder().eventId(9L).referralDate(now().minusDays(2)).build(),
+                        aEvent().toBuilder().eventId(999L).referralDate(now()).build()
                 ));
 
         assertThat(convictionService.convictionsFor(1L, false)
@@ -110,7 +115,7 @@ public class ConvictionServiceTest {
     public void convictionForEventIdButIsSoftDeleted() {
         when(eventRepository.findById(99L))
             .thenReturn(Optional.of(
-                aEvent().toBuilder().eventId(99L).softDeleted(1L).referralDate(LocalDate.now().minusDays(1)).build()
+                aEvent().toBuilder().eventId(99L).softDeleted(1L).referralDate(now().minusDays(1)).build()
             ));
 
         assertThat(convictionService.convictionFor(1L, 99L)).isEmpty();
@@ -184,6 +189,96 @@ public class ConvictionServiceTest {
         assertThat(conviction.getIndex()).isEqualTo("3");
 
         verify(spgNotificationService).notifyNewCourtCaseCreated(any(Event.class));
+    }
+
+    @Nested
+    class GetConvictionsWithRar {
+
+        @Test
+        public void convictionsReturnedIgnoresSoftDeletedEvents() {
+            when(eventRepository.findByOffenderIdAndActiveTrue(1L))
+                .thenReturn(asList(
+                    aEvent().toBuilder().eventId(99L).offenderId(1L).softDeleted(1L).build()
+                ));
+
+            assertThat(convictionService.convictionsWithActiveRequirementFor(1L, "F"))
+                .isEmpty();
+        }
+
+        @Test
+        public void convictionsReturnedFiltersEventsWithNoDisposals() {
+            when(eventRepository.findByOffenderIdAndActiveTrue(1L))
+                .thenReturn(asList(
+                    aEvent().toBuilder().eventId(99L).offenderId(1L).softDeleted(0L).build()
+                ));
+
+            assertThat(convictionService.convictionsWithActiveRequirementFor(1L, "F"))
+                .isEmpty();
+        }
+
+        @Test
+        public void convictionsReturnedFiltersEventsWithNoRequirements() {
+            when(eventRepository.findByOffenderIdAndActiveTrue(1L))
+                .thenReturn(asList(
+                    aEvent().toBuilder().eventId(99L).offenderId(1L).softDeleted(0L)
+                        .disposal(Disposal.builder().disposalId(98L).requirements(emptyList()).build())
+                        .build()
+                ));
+
+            assertThat(convictionService.convictionsWithActiveRequirementFor(1L, "F"))
+                .isEmpty();
+        }
+
+        @Test
+        public void convictionsReturnedFiltersEventsWithNoActiveRequirements() {
+            when(eventRepository.findByOffenderIdAndActiveTrue(1L))
+                .thenReturn(asList(
+                    aEvent().toBuilder().eventId(99L).offenderId(1L).softDeleted(0L)
+                        .disposal(Disposal.builder().disposalId(98L).requirements(
+                            singletonList(Requirement.builder().activeFlag(0L).build())).build())
+                        .build()
+                ));
+
+            assertThat(convictionService.convictionsWithActiveRequirementFor(1L, "F"))
+                .isEmpty();
+        }
+
+        @Test
+        public void convictionsReturnedFiltersEventsWithNoRarRequirements() {
+            when(eventRepository.findByOffenderIdAndActiveTrue(1L))
+                .thenReturn(asList(
+                    aEvent().toBuilder().eventId(99L).offenderId(1L).softDeleted(0L)
+                        .disposal(Disposal.builder().disposalId(98L).requirements(
+                            singletonList(Requirement.builder().activeFlag(1L).requirementTypeMainCategory(
+                                RequirementTypeMainCategory.builder().code("X").build()).build())).build())
+                        .build()
+                ));
+
+            assertThat(convictionService.convictionsWithActiveRequirementFor(1L, "F"))
+                .isEmpty();
+        }
+
+        @Test
+        public void convictionsReturnedOrderedByReferralDateReversed() {
+            when(eventRepository.findByOffenderIdAndActiveTrue(1L))
+                .thenReturn(asList(
+                    aEvent().toBuilder().eventId(99L).offenderId(1L).referralDate(now()).softDeleted(0L)
+                        .disposal(Disposal.builder().disposalId(98L).disposalType(aNcDisposalType()).requirements(
+                            singletonList(Requirement.builder().activeFlag(1L).requirementTypeMainCategory(
+                                RequirementTypeMainCategory.builder().code("F").build()).build())).build())
+                        .build(),
+                    aEvent().toBuilder().eventId(101L).offenderId(1L).referralDate(now().plusDays(1)).softDeleted(0L)
+                        .disposal(Disposal.builder().disposalId(100L).disposalType(aNcDisposalType()).requirements(
+                            singletonList(Requirement.builder().activeFlag(1L).requirementTypeMainCategory(
+                                RequirementTypeMainCategory.builder().code("F").build()).build())).build())
+                        .build()
+                ));
+
+            List<Conviction> response = convictionService.convictionsWithActiveRequirementFor(1L, "F");
+            assertThat(response.size()).isEqualTo(2);
+            assertThat(response.get(0).getReferralDate()).isEqualTo(now().plusDays(1));
+            assertThat(response.get(1).getReferralDate()).isEqualTo(now().plusDays(0));
+        }
     }
 
     @Nested
@@ -515,7 +610,7 @@ public class ConvictionServiceTest {
         @Test
         @DisplayName("will throw exception when no events found")
         public void getActiveCustodialEvent_noEvents_throwsException() throws ConvictionService.SingleActiveCustodyConvictionNotFoundException {
-            when(eventRepository.findActiveByOffenderIdWithCustody(ANY_OFFENDER_ID)).thenReturn(Collections.emptyList());
+            when(eventRepository.findActiveByOffenderIdWithCustody(ANY_OFFENDER_ID)).thenReturn(emptyList());
 
             assertThatThrownBy(() ->
                     convictionService.getActiveCustodialEvent(ANY_OFFENDER_ID)
@@ -571,7 +666,7 @@ public class ConvictionServiceTest {
 
     private Event aEvent() {
         return Event.builder()
-                .referralDate(LocalDate.now())
+                .referralDate(now())
                 .additionalOffences(ImmutableList.of())
                 .activeFlag(1L)
                 .build();
@@ -583,7 +678,7 @@ public class ConvictionServiceTest {
     private Event aCustodialEvent(String prisonerNumber, boolean active, String custodialStatus) {
         Disposal disposal = Disposal.builder()
                 .terminationDate(null)
-                .disposalType(DisposalType.builder().sentenceType("NC").build())
+                .disposalType(aNcDisposalType())
                 .custody(Custody.builder().prisonerNumber(prisonerNumber).custodialStatus(StandardReference.builder().codeValue(custodialStatus).build()).build())
                 .build();
         return Event.builder()
@@ -592,6 +687,11 @@ public class ConvictionServiceTest {
                 .disposal(disposal)
                 .build();
     }
+
+    private DisposalType aNcDisposalType() {
+        return DisposalType.builder().sentenceType("NC").build();
+    }
+
     private Event anActiveCustodialEvent() {
         return anActiveCustodialEvent("D");
     }
@@ -606,7 +706,7 @@ public class ConvictionServiceTest {
     private Event anActiveCustodialEvent(String custodialStatus) {
         Disposal disposal = Disposal.builder()
                 .terminationDate(null)
-                .disposalType(DisposalType.builder().sentenceType("NC").build())
+                .disposalType(aNcDisposalType())
                 .custody(Custody.builder().custodialStatus(StandardReference.builder().codeValue(custodialStatus).build()).build())
                 .build();
         return Event.builder()
@@ -621,7 +721,7 @@ public class ConvictionServiceTest {
     private Event anActiveCustodialEvent(LocalDate sentenceStartDate, String custodialStatus) {
         Disposal disposal = Disposal.builder()
                 .terminationDate(null)
-                .disposalType(DisposalType.builder().sentenceType("NC").build())
+                .disposalType(aNcDisposalType())
                 .startDate(sentenceStartDate)
                 .custody(Custody.builder().custodialStatus(StandardReference.builder().codeValue(custodialStatus).build()).build())
                 .build();
