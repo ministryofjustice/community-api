@@ -111,9 +111,10 @@ public class SwaggerConfig {
                         "This service is secured by <b>OAuth2</b> with tokens supplied by HMPPS Auth. Most read-only endpoints require the <b>ROLE_COMMUNITY</b> to access, but check each endpoint where this differs." +
                         "<p>This service can be accessed in a number environments. For each environment a different set of OAuth2 credentials from HMPPS Auth are required</p>" +
                         "<ul>" +
-                        "<li>Test/Development: <b>https://community-api-secure.test.delius.probation.hmpps.dsd.io</b></li>" +
-                        "<li>Pre-production: <b>https://community-api-secure.pre-prod.delius.probation.hmpps.dsd.io</b></li>" +
-                        "<li>Production: <b>https://community-api-secure.probation.service.justice.gov.uk</b></li>" +
+                        "<li>Development: <b>https://community-api.dev.probation.service.justice.gov.uk</b></li>" +
+                        "<li>Test: <b>https://community-api.test.probation.service.justice.gov.uk</b></li>" +
+                        "<li>Pre-production: <b>https://community-api.pre-prod.delius.probation.hmpps.dsd.io</b></li>" +
+                        "<li>Production: <b>https://community-api.probation.service.justice.gov.uk</b></li>" +
                         "</ul>" +
                         "<div>",
                 buildProperties.getVersion(),
