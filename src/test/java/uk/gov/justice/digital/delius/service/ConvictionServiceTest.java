@@ -50,11 +50,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory.REHABILITATION_ACTIVITY_REQUIREMENT_CODE;
 
 @ExtendWith(MockitoExtension.class)
 public class ConvictionServiceTest {
 
     private static final Long ANY_OFFENDER_ID = 123L;
+    private static final String EXCLUSION_REQUIREMENT_CODE = "X";
+    private static final String NC_SENTENCE_TYPE = "NC";
 
     private ConvictionService convictionService;
 
@@ -201,7 +204,7 @@ public class ConvictionServiceTest {
                     aEvent().toBuilder().eventId(99L).offenderId(1L).softDeleted(1L).build()
                 ));
 
-            assertThat(convictionService.convictionsWithActiveRequirementFor(1L, "F"))
+            assertThat(convictionService.convictionsWithActiveRequirementFor(1L, REHABILITATION_ACTIVITY_REQUIREMENT_CODE))
                 .isEmpty();
         }
 
@@ -212,7 +215,7 @@ public class ConvictionServiceTest {
                     aEvent().toBuilder().eventId(99L).offenderId(1L).softDeleted(0L).build()
                 ));
 
-            assertThat(convictionService.convictionsWithActiveRequirementFor(1L, "F"))
+            assertThat(convictionService.convictionsWithActiveRequirementFor(1L, REHABILITATION_ACTIVITY_REQUIREMENT_CODE))
                 .isEmpty();
         }
 
@@ -225,7 +228,7 @@ public class ConvictionServiceTest {
                         .build()
                 ));
 
-            assertThat(convictionService.convictionsWithActiveRequirementFor(1L, "F"))
+            assertThat(convictionService.convictionsWithActiveRequirementFor(1L, REHABILITATION_ACTIVITY_REQUIREMENT_CODE))
                 .isEmpty();
         }
 
@@ -239,7 +242,7 @@ public class ConvictionServiceTest {
                         .build()
                 ));
 
-            assertThat(convictionService.convictionsWithActiveRequirementFor(1L, "F"))
+            assertThat(convictionService.convictionsWithActiveRequirementFor(1L, REHABILITATION_ACTIVITY_REQUIREMENT_CODE))
                 .isEmpty();
         }
 
@@ -250,11 +253,11 @@ public class ConvictionServiceTest {
                     aEvent().toBuilder().eventId(99L).offenderId(1L).softDeleted(0L)
                         .disposal(Disposal.builder().disposalId(98L).requirements(
                             singletonList(Requirement.builder().activeFlag(1L).requirementTypeMainCategory(
-                                RequirementTypeMainCategory.builder().code("X").build()).build())).build())
+                                RequirementTypeMainCategory.builder().code(EXCLUSION_REQUIREMENT_CODE).build()).build())).build())
                         .build()
                 ));
 
-            assertThat(convictionService.convictionsWithActiveRequirementFor(1L, "F"))
+            assertThat(convictionService.convictionsWithActiveRequirementFor(1L, REHABILITATION_ACTIVITY_REQUIREMENT_CODE))
                 .isEmpty();
         }
 
@@ -265,16 +268,16 @@ public class ConvictionServiceTest {
                     aEvent().toBuilder().eventId(99L).offenderId(1L).referralDate(now()).softDeleted(0L)
                         .disposal(Disposal.builder().disposalId(98L).disposalType(aNcDisposalType()).requirements(
                             singletonList(Requirement.builder().activeFlag(1L).requirementTypeMainCategory(
-                                RequirementTypeMainCategory.builder().code("F").build()).build())).build())
+                                RequirementTypeMainCategory.builder().code(REHABILITATION_ACTIVITY_REQUIREMENT_CODE).build()).build())).build())
                         .build(),
                     aEvent().toBuilder().eventId(101L).offenderId(1L).referralDate(now().plusDays(1)).softDeleted(0L)
                         .disposal(Disposal.builder().disposalId(100L).disposalType(aNcDisposalType()).requirements(
                             singletonList(Requirement.builder().activeFlag(1L).requirementTypeMainCategory(
-                                RequirementTypeMainCategory.builder().code("F").build()).build())).build())
+                                RequirementTypeMainCategory.builder().code(REHABILITATION_ACTIVITY_REQUIREMENT_CODE).build()).build())).build())
                         .build()
                 ));
 
-            List<Conviction> response = convictionService.convictionsWithActiveRequirementFor(1L, "F");
+            List<Conviction> response = convictionService.convictionsWithActiveRequirementFor(1L, REHABILITATION_ACTIVITY_REQUIREMENT_CODE);
             assertThat(response.size()).isEqualTo(2);
             assertThat(response.get(0).getReferralDate()).isEqualTo(now().plusDays(1));
             assertThat(response.get(1).getReferralDate()).isEqualTo(now().plusDays(0));
@@ -689,7 +692,7 @@ public class ConvictionServiceTest {
     }
 
     private DisposalType aNcDisposalType() {
-        return DisposalType.builder().sentenceType("NC").build();
+        return DisposalType.builder().sentenceType(NC_SENTENCE_TYPE).build();
     }
 
     private Event anActiveCustodialEvent() {
