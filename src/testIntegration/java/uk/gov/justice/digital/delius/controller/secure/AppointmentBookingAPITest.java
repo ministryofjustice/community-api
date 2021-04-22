@@ -16,6 +16,7 @@ import uk.gov.justice.digital.delius.JwtParameters;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusApiExtension;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusApiMockServer;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
+import uk.gov.justice.digital.delius.data.api.AppointmentCreateWkcRequest;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -59,17 +60,46 @@ public class AppointmentBookingAPITest extends IntegrationTestBase {
                 .auth().oauth2(token)
                 .contentType(String.valueOf(ContentType.APPLICATION_JSON))
                 .body(writeValueAsString(AppointmentCreateRequest.builder()
+                    .requirementId(12345678L)
+                    .contactType("CRSAPT")
                     .appointmentStart(OffsetDateTime.now())
                     .appointmentEnd(OffsetDateTime.now())
                     .officeLocationCode("CRSSHEF")
                     .notes("http://url")
-                    .context("commissioned-rehabilitation-services")
+                    .providerCode("CRS")
+                    .staffCode("CRSUATU")
+                    .teamCode("CRSUAT")
                     .build()))
                 .post("offenders/crn/X320741/sentence/2500295343/appointments")
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.CREATED.value())
                 .body("appointmentId", equalTo(2500029015L));
+    }
+
+    @Test
+    public void shouldReturnOKAfterCreatingANewContactUsingWellKnownClientEndpoint() {
+
+        deliusApiMockServer.stubPostContactToDeliusApi();
+
+        final var token = createJwt("bob", Collections.singletonList("ROLE_COMMUNITY_INTERVENTIONS_UPDATE"));
+
+        given()
+            .when()
+            .auth().oauth2(token)
+            .contentType(String.valueOf(ContentType.APPLICATION_JSON))
+            .body(writeValueAsString(AppointmentCreateWkcRequest.builder()
+                .appointmentStart(OffsetDateTime.now())
+                .appointmentEnd(OffsetDateTime.now())
+                .officeLocationCode("CRSSHEF")
+                .notes("http://url")
+                .context("commissioned-rehabilitation-services")
+                .build()))
+            .post("offenders/crn/X320741/sentence/2500295343/well-known/appointments")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.CREATED.value())
+            .body("appointmentId", equalTo(2500029015L));
     }
 
     private String createJwt(final String user, final List<String> roles) {

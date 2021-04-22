@@ -14,6 +14,7 @@ import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
+import uk.gov.justice.digital.delius.data.api.AppointmentCreateWkcRequest;
 import uk.gov.justice.digital.delius.data.api.Requirement;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
@@ -26,8 +27,7 @@ import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDate;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalTime;
 
@@ -81,6 +81,25 @@ public class AppointmentServiceTest {
     @Test
     public void createsAppointment() {
         // Given
+        var startTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        var endTime = startTime.plusHours(1);
+
+        NewContact deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime);
+        ContactDto createdContact = ContactDto.builder().id(3L).build();
+        when(deliusApiClient.createNewContract(deliusNewContactRequest)).thenReturn(createdContact);
+
+        // When
+        AppointmentCreateRequest appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime);
+        AppointmentCreateResponse response = service.createAppointment("X007", 1L, appointmentCreateRequest);
+
+        // Then
+        assertThat(response.getAppointmentId()).isEqualTo(3L);
+        verifyNoInteractions(requirementService);
+    }
+
+    @Test
+    public void createsAppointmentUsingWellKnownClientRequest() {
+        // Given
         Requirement requirement = Requirement.builder().requirementId(99L).build();
         when(requirementService.getRequirement("X007", 1L, RAR_TYPE_CODE)).thenReturn(requirement);
 
@@ -92,7 +111,7 @@ public class AppointmentServiceTest {
         when(deliusApiClient.createNewContract(deliusNewContactRequest)).thenReturn(createdContact);
 
         // When
-        AppointmentCreateRequest appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime);
+        AppointmentCreateWkcRequest appointmentCreateRequest = aAppointmentCreateWkcRequest(startTime, endTime);
         AppointmentCreateResponse response = service.createAppointment("X007", 1L, appointmentCreateRequest);
 
         // Then
@@ -123,6 +142,21 @@ public class AppointmentServiceTest {
 
     private AppointmentCreateRequest aAppointmentCreateRequest(OffsetDateTime startTime, OffsetDateTime endTime) {
         AppointmentCreateRequest request = AppointmentCreateRequest.builder()
+            .requirementId(99L)
+            .contactType("CRSAPT")
+            .appointmentStart(startTime)
+            .appointmentEnd(endTime)
+            .officeLocationCode("CRSSHEF")
+            .notes("/url")
+            .providerCode("CRS")
+            .staffCode("CRSUATU")
+            .teamCode("CRSUAT")
+            .build();
+        return request;
+    }
+
+    private AppointmentCreateWkcRequest aAppointmentCreateWkcRequest(OffsetDateTime startTime, OffsetDateTime endTime) {
+        AppointmentCreateWkcRequest request = AppointmentCreateWkcRequest.builder()
             .appointmentStart(startTime)
             .appointmentEnd(endTime)
             .officeLocationCode("CRSSHEF")
