@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
-import uk.gov.justice.digital.delius.data.api.AppointmentCreateWkcRequest;
+import uk.gov.justice.digital.delius.data.api.WellKnownAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
 import uk.gov.justice.digital.delius.service.AppointmentService;
 import uk.gov.justice.digital.delius.service.OffenderService;
@@ -81,7 +81,7 @@ public class AppointmentBookingControllerTest {
     public void createsAppointmentUsingWellKnownClientEndpoint() {
         OffsetDateTime now = Instant.now().atZone(ZoneId.of("UTC")).toOffsetDateTime().truncatedTo(ChronoUnit.SECONDS);
 
-        AppointmentCreateWkcRequest appointmentCreateRequest = AppointmentCreateWkcRequest.builder()
+        WellKnownAppointmentCreateRequest appointmentCreateRequest = WellKnownAppointmentCreateRequest.builder()
             .appointmentStart(now)
             .appointmentEnd(now.plusHours(1))
             .officeLocationCode("CRSSHEF")

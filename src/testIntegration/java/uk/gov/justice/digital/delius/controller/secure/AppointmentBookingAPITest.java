@@ -16,7 +16,7 @@ import uk.gov.justice.digital.delius.JwtParameters;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusApiExtension;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusApiMockServer;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
-import uk.gov.justice.digital.delius.data.api.AppointmentCreateWkcRequest;
+import uk.gov.justice.digital.delius.data.api.WellKnownAppointmentCreateRequest;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -88,7 +88,7 @@ public class AppointmentBookingAPITest extends IntegrationTestBase {
             .when()
             .auth().oauth2(token)
             .contentType(String.valueOf(ContentType.APPLICATION_JSON))
-            .body(writeValueAsString(AppointmentCreateWkcRequest.builder()
+            .body(writeValueAsString(WellKnownAppointmentCreateRequest.builder()
                 .appointmentStart(OffsetDateTime.now())
                 .appointmentEnd(OffsetDateTime.now())
                 .officeLocationCode("CRSSHEF")

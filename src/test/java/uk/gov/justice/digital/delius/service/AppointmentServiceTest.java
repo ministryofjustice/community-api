@@ -14,7 +14,7 @@ import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
-import uk.gov.justice.digital.delius.data.api.AppointmentCreateWkcRequest;
+import uk.gov.justice.digital.delius.data.api.WellKnownAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.Requirement;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
@@ -111,7 +111,7 @@ public class AppointmentServiceTest {
         when(deliusApiClient.createNewContract(deliusNewContactRequest)).thenReturn(createdContact);
 
         // When
-        AppointmentCreateWkcRequest appointmentCreateRequest = aAppointmentCreateWkcRequest(startTime, endTime);
+        WellKnownAppointmentCreateRequest appointmentCreateRequest = aAppointmentCreateWkcRequest(startTime, endTime);
         AppointmentCreateResponse response = service.createAppointment("X007", 1L, appointmentCreateRequest);
 
         // Then
@@ -155,8 +155,8 @@ public class AppointmentServiceTest {
         return request;
     }
 
-    private AppointmentCreateWkcRequest aAppointmentCreateWkcRequest(OffsetDateTime startTime, OffsetDateTime endTime) {
-        AppointmentCreateWkcRequest request = AppointmentCreateWkcRequest.builder()
+    private WellKnownAppointmentCreateRequest aAppointmentCreateWkcRequest(OffsetDateTime startTime, OffsetDateTime endTime) {
+        WellKnownAppointmentCreateRequest request = WellKnownAppointmentCreateRequest.builder()
             .appointmentStart(startTime)
             .appointmentEnd(endTime)
             .officeLocationCode("CRSSHEF")

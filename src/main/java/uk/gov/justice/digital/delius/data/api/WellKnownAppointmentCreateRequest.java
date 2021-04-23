@@ -13,7 +13,7 @@ import java.time.OffsetDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AppointmentCreateWkcRequest {
+public class WellKnownAppointmentCreateRequest {
 
     @NotNull
     @ApiModelProperty(required = true)

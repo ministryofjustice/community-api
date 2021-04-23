@@ -2,11 +2,11 @@ package uk.gov.justice.digital.delius.transformers;
 
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
-import uk.gov.justice.digital.delius.data.api.AppointmentCreateWkcRequest;
+import uk.gov.justice.digital.delius.data.api.WellKnownAppointmentCreateRequest;
 
 public class AppointmentCreateRequestTransformer {
 
-    public static AppointmentCreateRequest appointmentOf(AppointmentCreateWkcRequest wkcRequest,
+    public static AppointmentCreateRequest appointmentOf(WellKnownAppointmentCreateRequest wkcRequest,
                                                          Long requirementId,
                                                          IntegrationContext context) {
         return AppointmentCreateRequest.builder()

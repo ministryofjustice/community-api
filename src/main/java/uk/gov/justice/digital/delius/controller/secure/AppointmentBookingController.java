@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
-import uk.gov.justice.digital.delius.data.api.AppointmentCreateWkcRequest;
+import uk.gov.justice.digital.delius.data.api.WellKnownAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.service.AppointmentService;
 
 @RestController
@@ -65,9 +65,9 @@ public class AppointmentBookingController {
     @ApiOperation(value = "Creates an Contact appointment for a well known client")
     public ResponseEntity<AppointmentCreateResponse> createAppointmentWkc(final @PathVariable("crn") String crn,
                                                                           final @PathVariable("sentenceId") Long sentenceId,
-                                                                          final @RequestBody AppointmentCreateWkcRequest appointmentCreateWkcRequest) {
+                                                                          final @RequestBody WellKnownAppointmentCreateRequest wellKnownAppointmentCreateRequest) {
 
-        AppointmentCreateResponse response = appointmentService.createAppointment(crn, sentenceId, appointmentCreateWkcRequest);
+        AppointmentCreateResponse response = appointmentService.createAppointment(crn, sentenceId, wellKnownAppointmentCreateRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

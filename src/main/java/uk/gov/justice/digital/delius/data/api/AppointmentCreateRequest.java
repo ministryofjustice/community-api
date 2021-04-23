@@ -15,8 +15,6 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 public class AppointmentCreateRequest {
 
-    @NotNull
-    @ApiModelProperty(required = true)
     private Long requirementId;
 
     @NotNull
