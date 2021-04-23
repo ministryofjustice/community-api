@@ -18,7 +18,7 @@ public class RiskResourcingDetails {
     @ApiModelProperty(value = "decision")
     private ResourcingDecision decision;
 
-    @ApiModelProperty(value = "enhancedResourcing", example = "true", notes = "This is equivalent to indicating if the person is retained by NPS when there was a NPS/CRC split")
+    @ApiModelProperty(value = "This is equivalent to indicating if the person is retained by NPS when there was a NPS/CRC split", example = "true")
     private Boolean enhancedResourcing;
     @ApiModelProperty(value = "id of the conviction that lead to the decision", example = "1219491", notes = "Decision are related to the conviction")
     private Long relatedConvictionId;
