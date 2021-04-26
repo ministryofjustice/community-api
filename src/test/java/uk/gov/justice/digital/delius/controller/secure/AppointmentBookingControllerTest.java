@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
+import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
 import uk.gov.justice.digital.delius.service.AppointmentService;
 import uk.gov.justice.digital.delius.service.OffenderService;
@@ -48,11 +49,15 @@ public class AppointmentBookingControllerTest {
         OffsetDateTime now = Instant.now().atZone(ZoneId.of("UTC")).toOffsetDateTime().truncatedTo(ChronoUnit.SECONDS);
 
         AppointmentCreateRequest appointmentCreateRequest = AppointmentCreateRequest.builder()
+            .requirementId(123456L)
+            .contactType("CRSAPT")
             .appointmentStart(now)
             .appointmentEnd(now.plusHours(1))
             .officeLocationCode("CRSSHEF")
             .notes("http://url")
-            .context("commissioned-rehabilitation-services")
+            .providerCode("CRS")
+            .staffCode("CRSUAT")
+            .teamCode("CRSUATU")
             .build();
         when(appointmentService.createAppointment("1", 2L, appointmentCreateRequest))
             .thenReturn(AppointmentCreateResponse.builder().appointmentId(3L).build());
@@ -62,6 +67,34 @@ public class AppointmentBookingControllerTest {
             .body(appointmentCreateRequest)
             .when()
             .post("/secure/offenders/crn/1/sentence/2/appointments")
+            .then()
+            .statusCode(201)
+            .extract()
+            .body()
+            .as(AppointmentCreateResponse.class)
+            .getAppointmentId();
+
+        assertThat(appointmentIdResponse).isEqualTo(3L);
+    }
+
+    @Test
+    public void createsAppointmentUsingContextlessClientEndpoint() {
+        OffsetDateTime now = Instant.now().atZone(ZoneId.of("UTC")).toOffsetDateTime().truncatedTo(ChronoUnit.SECONDS);
+
+        ContextlessAppointmentCreateRequest appointmentCreateRequest = ContextlessAppointmentCreateRequest.builder()
+            .appointmentStart(now)
+            .appointmentEnd(now.plusHours(1))
+            .officeLocationCode("CRSSHEF")
+            .notes("http://url")
+            .build();
+        when(appointmentService.createAppointment("1", 2L, "commissioned-rehabilitation-services", appointmentCreateRequest))
+            .thenReturn(AppointmentCreateResponse.builder().appointmentId(3L).build());
+
+        Long appointmentIdResponse = given()
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(appointmentCreateRequest)
+            .when()
+            .post("/secure/offenders/crn/1/sentence/2/appointments/context/commissioned-rehabilitation-services")
             .then()
             .statusCode(201)
             .extract()

@@ -14,6 +14,7 @@ import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
+import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.Requirement;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
@@ -27,6 +28,7 @@ import java.time.temporal.ChronoUnit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDate;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalTime;
@@ -55,7 +57,7 @@ public class AppointmentServiceTest {
 
     @BeforeEach
     public void before(){
-        DeliusIntegrationContextConfig integrationContextConfig = new DeliusIntegrationContextConfig();
+        final var integrationContextConfig = new DeliusIntegrationContextConfig();
         IntegrationContext integrationContext = new IntegrationContext();
         integrationContextConfig.getIntegrationContexts().put(CONTEXT, integrationContext);
         integrationContext.setProviderCode(PROVIDER_CODE);
@@ -81,26 +83,45 @@ public class AppointmentServiceTest {
     @Test
     public void createsAppointment() {
         // Given
-        Requirement requirement = Requirement.builder().requirementId(99L).build();
-        when(requirementService.getRequirement("X007", 1L, RAR_TYPE_CODE)).thenReturn(requirement);
+        final var startTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        final var endTime = startTime.plusHours(1);
 
-        var startTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-        var endTime = startTime.plusHours(1);
-
-        NewContact deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime);
-        ContactDto createdContact = ContactDto.builder().id(3L).build();
+        final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime);
+        final var createdContact = ContactDto.builder().id(3L).build();
         when(deliusApiClient.createNewContract(deliusNewContactRequest)).thenReturn(createdContact);
 
         // When
-        AppointmentCreateRequest appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime);
-        AppointmentCreateResponse response = service.createAppointment("X007", 1L, appointmentCreateRequest);
+        final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime);
+        final var response = service.createAppointment("X007", 1L, appointmentCreateRequest);
+
+        // Then
+        assertThat(response.getAppointmentId()).isEqualTo(3L);
+        verifyNoInteractions(requirementService);
+    }
+
+    @Test
+    public void createsAppointmentUsingContextlessClientRequest() {
+        // Given
+        final var requirement = Requirement.builder().requirementId(99L).build();
+        when(requirementService.getRequirement("X007", 1L, RAR_TYPE_CODE)).thenReturn(requirement);
+
+        final var startTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        final var endTime = startTime.plusHours(1);
+
+        final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime);
+        final var createdContact = ContactDto.builder().id(3L).build();
+        when(deliusApiClient.createNewContract(deliusNewContactRequest)).thenReturn(createdContact);
+
+        // When
+        final var appointmentCreateRequest = aContextlessAppointmentCreateRequest(startTime, endTime);
+        final var response = service.createAppointment("X007", 1L, "commissioned-rehabilitation-services", appointmentCreateRequest);
 
         // Then
         assertThat(response.getAppointmentId()).isEqualTo(3L);
     }
 
     private NewContact aDeliusNewContactRequest(OffsetDateTime startTime, OffsetDateTime endTime) {
-        NewContact deliusNewContactRequest = NewContact.builder()
+        return NewContact.builder()
             .offenderCrn("X007")
             .type(CRSAPT_CONTACT_TYPE)
             .outcome(null)
@@ -118,17 +139,28 @@ public class AppointmentServiceTest {
             .eventId(1L)
             .requirementId(99L)
             .build();
-        return deliusNewContactRequest;
     }
 
     private AppointmentCreateRequest aAppointmentCreateRequest(OffsetDateTime startTime, OffsetDateTime endTime) {
-        AppointmentCreateRequest request = AppointmentCreateRequest.builder()
+        return AppointmentCreateRequest.builder()
+            .requirementId(99L)
+            .contactType("CRSAPT")
             .appointmentStart(startTime)
             .appointmentEnd(endTime)
             .officeLocationCode("CRSSHEF")
             .notes("/url")
-            .context(CONTEXT)
+            .providerCode("CRS")
+            .staffCode("CRSUATU")
+            .teamCode("CRSUAT")
             .build();
-        return request;
+    }
+
+    private ContextlessAppointmentCreateRequest aContextlessAppointmentCreateRequest(OffsetDateTime startTime, OffsetDateTime endTime) {
+        return ContextlessAppointmentCreateRequest.builder()
+            .appointmentStart(startTime)
+            .appointmentEnd(endTime)
+            .officeLocationCode("CRSSHEF")
+            .notes("/url")
+            .build();
     }
 }

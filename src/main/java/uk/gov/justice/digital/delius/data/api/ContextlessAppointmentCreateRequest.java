@@ -13,14 +13,7 @@ import java.time.OffsetDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AppointmentCreateRequest {
-
-    @ApiModelProperty
-    private Long requirementId;
-
-    @NotNull
-    @ApiModelProperty(required = true)
-    private String contactType;
+public class ContextlessAppointmentCreateRequest {
 
     @NotNull
     @ApiModelProperty(required = true)
@@ -37,16 +30,4 @@ public class AppointmentCreateRequest {
     @NotNull
     @ApiModelProperty(required = true)
     private String notes;
-
-    @NotNull
-    @ApiModelProperty(required = true)
-    private String providerCode;
-
-    @NotNull
-    @ApiModelProperty(required = true)
-    private String teamCode;
-
-    @NotNull
-    @ApiModelProperty(required = true)
-    private String staffCode;
 }
