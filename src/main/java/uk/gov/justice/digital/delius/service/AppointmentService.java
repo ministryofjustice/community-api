@@ -8,7 +8,7 @@ import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.Integ
 import uk.gov.justice.digital.delius.data.api.Appointment;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
-import uk.gov.justice.digital.delius.data.api.WellKnownAppointmentCreateRequest;
+import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.Requirement;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
@@ -58,11 +58,11 @@ public class AppointmentService {
         return new AppointmentCreateResponse(contactDto.getId());
     }
 
-    public AppointmentCreateResponse createAppointment(String crn, Long sentenceId, WellKnownAppointmentCreateRequest wkcRequest) {
+    public AppointmentCreateResponse createAppointment(String crn, Long sentenceId, String contextName, ContextlessAppointmentCreateRequest contextualRequest) {
 
-        IntegrationContext context = getContext(wkcRequest.getContext());
+        IntegrationContext context = getContext(contextName);
         Requirement requirement = requirementService.getRequirement(crn, sentenceId, context.getRequirementRehabilitationActivityType());
-        AppointmentCreateRequest request = appointmentOf(wkcRequest, requirement.getRequirementId(), context);
+        AppointmentCreateRequest request = appointmentOf(contextualRequest, requirement.getRequirementId(), context);
 
         return createAppointment(crn, sentenceId, request);
     }

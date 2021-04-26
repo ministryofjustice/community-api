@@ -3,7 +3,7 @@ package uk.gov.justice.digital.delius.transformers;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
-import uk.gov.justice.digital.delius.data.api.WellKnownAppointmentCreateRequest;
+import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 
 import java.time.OffsetDateTime;
 
@@ -13,12 +13,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AppointmentCreateRequestTransformerTest {
 
     @Test
-    public void appointmentCreateRequestFromWellKnownClientRequest() {
+    public void appointmentCreateRequestFromContextlessClientRequest() {
         OffsetDateTime start = now();
         OffsetDateTime end = start.plusHours(1);
 
         assertThat(AppointmentCreateRequestTransformer.appointmentOf(
-            WellKnownAppointmentCreateRequest.builder()
+            ContextlessAppointmentCreateRequest.builder()
                 .appointmentStart(start)
                 .appointmentEnd(end)
                 .officeLocationCode("CRSHEFF")

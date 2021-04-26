@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
-import uk.gov.justice.digital.delius.data.api.WellKnownAppointmentCreateRequest;
+import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.service.AppointmentService;
 
 @RestController
@@ -50,7 +50,7 @@ public class AppointmentBookingController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/offenders/crn/{crn}/sentence/{sentenceId}/well-known/appointments",
+    @RequestMapping(value = "/offenders/crn/{crn}/sentence/{sentenceId}/appointments/context/{contextName}",
                 method = RequestMethod.POST,
                 consumes = "application/json")
     @ApiResponses(
@@ -62,12 +62,13 @@ public class AppointmentBookingController {
                 @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
         })
 
-    @ApiOperation(value = "Creates an Contact appointment for a well known client")
-    public ResponseEntity<AppointmentCreateResponse> createAppointmentWkc(final @PathVariable("crn") String crn,
-                                                                          final @PathVariable("sentenceId") Long sentenceId,
-                                                                          final @RequestBody WellKnownAppointmentCreateRequest wellKnownAppointmentCreateRequest) {
+    @ApiOperation(value = "Creates an Contact appointment for a specified context")
+    public ResponseEntity<AppointmentCreateResponse> createAppointmentWithContextName(final @PathVariable("crn") String crn,
+                                                                                      final @PathVariable("sentenceId") Long sentenceId,
+                                                                                      final @PathVariable("contextName") String contextName,
+                                                                                      final @RequestBody ContextlessAppointmentCreateRequest contextlessAppointmentCreateRequest) {
 
-        AppointmentCreateResponse response = appointmentService.createAppointment(crn, sentenceId, wellKnownAppointmentCreateRequest);
+        AppointmentCreateResponse response = appointmentService.createAppointment(crn, sentenceId, contextName, contextlessAppointmentCreateRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

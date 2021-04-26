@@ -14,7 +14,7 @@ import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
-import uk.gov.justice.digital.delius.data.api.WellKnownAppointmentCreateRequest;
+import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.Requirement;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
@@ -100,7 +100,7 @@ public class AppointmentServiceTest {
     }
 
     @Test
-    public void createsAppointmentUsingWellKnownClientRequest() {
+    public void createsAppointmentUsingContextlessClientRequest() {
         // Given
         Requirement requirement = Requirement.builder().requirementId(99L).build();
         when(requirementService.getRequirement("X007", 1L, RAR_TYPE_CODE)).thenReturn(requirement);
@@ -113,8 +113,8 @@ public class AppointmentServiceTest {
         when(deliusApiClient.createNewContract(deliusNewContactRequest)).thenReturn(createdContact);
 
         // When
-        WellKnownAppointmentCreateRequest appointmentCreateRequest = aAppointmentCreateWkcRequest(startTime, endTime);
-        AppointmentCreateResponse response = service.createAppointment("X007", 1L, appointmentCreateRequest);
+        ContextlessAppointmentCreateRequest appointmentCreateRequest = aContextlessAppointmentCreateRequest(startTime, endTime);
+        AppointmentCreateResponse response = service.createAppointment("X007", 1L, "commissioned-rehabilitation-services", appointmentCreateRequest);
 
         // Then
         assertThat(response.getAppointmentId()).isEqualTo(3L);
@@ -157,13 +157,12 @@ public class AppointmentServiceTest {
         return request;
     }
 
-    private WellKnownAppointmentCreateRequest aAppointmentCreateWkcRequest(OffsetDateTime startTime, OffsetDateTime endTime) {
-        WellKnownAppointmentCreateRequest request = WellKnownAppointmentCreateRequest.builder()
+    private ContextlessAppointmentCreateRequest aContextlessAppointmentCreateRequest(OffsetDateTime startTime, OffsetDateTime endTime) {
+        ContextlessAppointmentCreateRequest request = ContextlessAppointmentCreateRequest.builder()
             .appointmentStart(startTime)
             .appointmentEnd(endTime)
             .officeLocationCode("CRSSHEF")
             .notes("/url")
-            .context(CONTEXT)
             .build();
         return request;
     }

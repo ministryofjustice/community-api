@@ -16,7 +16,7 @@ import uk.gov.justice.digital.delius.JwtParameters;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusApiExtension;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusApiMockServer;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
-import uk.gov.justice.digital.delius.data.api.WellKnownAppointmentCreateRequest;
+import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -78,7 +78,7 @@ public class AppointmentBookingAPITest extends IntegrationTestBase {
     }
 
     @Test
-    public void shouldReturnOKAfterCreatingANewContactUsingWellKnownClientEndpoint() {
+    public void shouldReturnOKAfterCreatingANewContactUsingContextlessClientEndpoint() {
 
         deliusApiMockServer.stubPostContactToDeliusApi();
 
@@ -88,14 +88,13 @@ public class AppointmentBookingAPITest extends IntegrationTestBase {
             .when()
             .auth().oauth2(token)
             .contentType(String.valueOf(ContentType.APPLICATION_JSON))
-            .body(writeValueAsString(WellKnownAppointmentCreateRequest.builder()
+            .body(writeValueAsString(ContextlessAppointmentCreateRequest.builder()
                 .appointmentStart(OffsetDateTime.now())
                 .appointmentEnd(OffsetDateTime.now())
                 .officeLocationCode("CRSSHEF")
                 .notes("http://url")
-                .context("commissioned-rehabilitation-services")
                 .build()))
-            .post("offenders/crn/X320741/sentence/2500295343/well-known/appointments")
+            .post("offenders/crn/X320741/sentence/2500295343/appointments/context/commissioned-rehabilitation-services")
             .then()
             .assertThat()
             .statusCode(HttpStatus.CREATED.value())

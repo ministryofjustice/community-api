@@ -13,7 +13,7 @@ import java.time.OffsetDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WellKnownAppointmentCreateRequest {
+public class ContextlessAppointmentCreateRequest {
 
     @NotNull
     @ApiModelProperty(required = true)
@@ -30,8 +30,4 @@ public class WellKnownAppointmentCreateRequest {
     @NotNull
     @ApiModelProperty(required = true)
     private String notes;
-
-    @NotNull
-    @ApiModelProperty(required = true)
-    private String context;
 }

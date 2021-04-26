@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
-import uk.gov.justice.digital.delius.data.api.WellKnownAppointmentCreateRequest;
+import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
 import uk.gov.justice.digital.delius.service.AppointmentService;
 import uk.gov.justice.digital.delius.service.OffenderService;
@@ -78,24 +78,23 @@ public class AppointmentBookingControllerTest {
     }
 
     @Test
-    public void createsAppointmentUsingWellKnownClientEndpoint() {
+    public void createsAppointmentUsingContextlessClientEndpoint() {
         OffsetDateTime now = Instant.now().atZone(ZoneId.of("UTC")).toOffsetDateTime().truncatedTo(ChronoUnit.SECONDS);
 
-        WellKnownAppointmentCreateRequest appointmentCreateRequest = WellKnownAppointmentCreateRequest.builder()
+        ContextlessAppointmentCreateRequest appointmentCreateRequest = ContextlessAppointmentCreateRequest.builder()
             .appointmentStart(now)
             .appointmentEnd(now.plusHours(1))
             .officeLocationCode("CRSSHEF")
             .notes("http://url")
-            .context("commissioned-rehabilitation-services")
             .build();
-        when(appointmentService.createAppointment("1", 2L, appointmentCreateRequest))
+        when(appointmentService.createAppointment("1", 2L, "commissioned-rehabilitation-services", appointmentCreateRequest))
             .thenReturn(AppointmentCreateResponse.builder().appointmentId(3L).build());
 
         Long appointmentIdResponse = given()
             .contentType(APPLICATION_JSON_VALUE)
             .body(appointmentCreateRequest)
             .when()
-            .post("/secure/offenders/crn/1/sentence/2/well-known/appointments")
+            .post("/secure/offenders/crn/1/sentence/2/appointments/context/commissioned-rehabilitation-services")
             .then()
             .statusCode(201)
             .extract()
