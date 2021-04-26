@@ -188,3 +188,29 @@ cn: managers
 ou: manager
 uniqueMember: uid=jahn,ou=Users,dc=moj,dc=com
 
+
+dn: cn=kevinprice,ou=Users,dc=moj,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: NDUser
+cn: kevinprice
+sn: Price
+givenname: Kevin
+mail: kevin.price@justice.gov.uk
+uid: kevinprice
+userPassword: secret
+
+dn: cn=Test2User,ou=Users,dc=moj,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: NDUser
+cn: Test2User
+sn: Tennant
+givenname: Terry
+mail: terry.tennant@justice.gov.uk
+uid: Test2User
+userPassword: secret
