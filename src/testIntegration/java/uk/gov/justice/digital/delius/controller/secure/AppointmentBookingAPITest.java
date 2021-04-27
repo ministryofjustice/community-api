@@ -59,22 +59,48 @@ public class AppointmentBookingAPITest extends IntegrationTestBase {
                 .when()
                 .auth().oauth2(token)
                 .contentType(String.valueOf(ContentType.APPLICATION_JSON))
-                .body(writeValueAsString(AppointmentCreateRequest.builder()
-                    .requirementId(12345678L)
-                    .contactType("CRSAPT")
-                    .appointmentStart(OffsetDateTime.now())
-                    .appointmentEnd(OffsetDateTime.now())
-                    .officeLocationCode("CRSSHEF")
-                    .notes("http://url")
-                    .providerCode("CRS")
-                    .staffCode("CRSUATU")
-                    .teamCode("CRSUAT")
-                    .build()))
+                .body(writeValueAsString(anAppointmentCreateRequest("CRSAPT")))
                 .post("offenders/crn/X320741/sentence/2500295343/appointments")
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.CREATED.value())
                 .body("appointmentId", equalTo(2500029015L));
+    }
+
+    @Test
+    public void whenAttemptingToCreateAppointmentFromNonAppointmentContactType() {
+
+        deliusApiMockServer.stubPostContactToDeliusApi();
+
+        final var token = createJwt("bob", Collections.singletonList("ROLE_COMMUNITY_INTERVENTIONS_UPDATE"));
+
+        given()
+            .when()
+            .auth().oauth2(token)
+            .contentType(String.valueOf(ContentType.APPLICATION_JSON))
+            .body(writeValueAsString(anAppointmentCreateRequest("C062")))
+            .post("offenders/crn/X320741/sentence/2500295343/appointments")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    public void whenAttemptingToCreateAppointmentFromMissingContactType() {
+
+        deliusApiMockServer.stubPostContactToDeliusApi();
+
+        final var token = createJwt("bob", Collections.singletonList("ROLE_COMMUNITY_INTERVENTIONS_UPDATE"));
+
+        given()
+            .when()
+            .auth().oauth2(token)
+            .contentType(String.valueOf(ContentType.APPLICATION_JSON))
+            .body(writeValueAsString(anAppointmentCreateRequest("MISSING_CONTACT_TYPE")))
+            .post("offenders/crn/X320741/sentence/2500295343/appointments")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -108,5 +134,19 @@ public class AppointmentBookingAPITest extends IntegrationTestBase {
                 .scope(Arrays.asList("read", "write"))
                 .expiryTime(Duration.ofDays(1))
                 .build());
+    }
+
+    private AppointmentCreateRequest anAppointmentCreateRequest(String type) {
+        return AppointmentCreateRequest.builder()
+            .requirementId(12345678L)
+            .contactType(type)
+            .appointmentStart(OffsetDateTime.now())
+            .appointmentEnd(OffsetDateTime.now())
+            .officeLocationCode("CRSSHEF")
+            .notes("http://url")
+            .providerCode("CRS")
+            .staffCode("CRSUATU")
+            .teamCode("CRSUAT")
+            .build();
     }
 }

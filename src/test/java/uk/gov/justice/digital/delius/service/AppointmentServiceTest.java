@@ -12,20 +12,26 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
+import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
-import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.Requirement;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType.ContactTypeBuilder;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
+import java.util.function.UnaryOperator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -48,6 +54,8 @@ public class AppointmentServiceTest {
     private RequirementService requirementService;
     @Mock
     private DeliusApiClient deliusApiClient;
+    @Mock
+    private ContactTypeRepository contactTypeRepository;
 
     @Captor
     private ArgumentCaptor<Specification<Contact>> specificationArgumentCaptor;
@@ -66,7 +74,7 @@ public class AppointmentServiceTest {
         integrationContext.setRequirementRehabilitationActivityType(RAR_TYPE_CODE);
         integrationContext.getContactMapping().setAppointmentContactType(CRSAPT_CONTACT_TYPE);
 
-        service = new AppointmentService(contactRepository, requirementService, deliusApiClient, integrationContextConfig);
+        service = new AppointmentService(contactTypeRepository, contactRepository, requirementService, deliusApiClient, integrationContextConfig);
     }
 
     @Test
@@ -86,6 +94,8 @@ public class AppointmentServiceTest {
         final var startTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         final var endTime = startTime.plusHours(1);
 
+        havingContactType(true, builder -> builder.attendanceContact("Y"));
+
         final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime);
         final var createdContact = ContactDto.builder().id(3L).build();
         when(deliusApiClient.createNewContract(deliusNewContactRequest)).thenReturn(createdContact);
@@ -100,6 +110,36 @@ public class AppointmentServiceTest {
     }
 
     @Test
+    public void failsToCreateAppointmentWithMissingContactType() {
+        // Given
+        final var startTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        final var endTime = startTime.plusHours(1);
+
+        havingContactType(false, builder -> builder);
+
+        // When
+        final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime);
+        assertThrows(BadRequestException.class,
+            () -> service.createAppointment("X007", 1L, appointmentCreateRequest),
+            "contact type 'X007' does not exist");
+    }
+
+    @Test
+    public void failsToCreateAppointmentWithNonAppointmentContactType() {
+        // Given
+        final var startTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        final var endTime = startTime.plusHours(1);
+
+        havingContactType(true, builder -> builder.attendanceContact("N"));
+
+        // When
+        final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime);
+        assertThrows(BadRequestException.class,
+            () -> service.createAppointment("X007", 1L, appointmentCreateRequest),
+            "contact type 'X007' is not an appointment type");
+    }
+
+    @Test
     public void createsAppointmentUsingContextlessClientRequest() {
         // Given
         final var requirement = Requirement.builder().requirementId(99L).build();
@@ -107,6 +147,8 @@ public class AppointmentServiceTest {
 
         final var startTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         final var endTime = startTime.plusHours(1);
+
+        havingContactType(true, builder -> builder.attendanceContact("Y"));
 
         final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime);
         final var createdContact = ContactDto.builder().id(3L).build();
@@ -118,6 +160,12 @@ public class AppointmentServiceTest {
 
         // Then
         assertThat(response.getAppointmentId()).isEqualTo(3L);
+    }
+
+    private void havingContactType(boolean having, UnaryOperator<ContactTypeBuilder> builderOperator) {
+        final var contactType = builderOperator.apply(ContactType.builder()).build();
+        final Optional<ContactType> result = having ? Optional.of(contactType) : Optional.empty();
+        when(contactTypeRepository.findByCode(CRSAPT_CONTACT_TYPE)).thenReturn(result);
     }
 
     private NewContact aDeliusNewContactRequest(OffsetDateTime startTime, OffsetDateTime endTime) {
@@ -144,7 +192,7 @@ public class AppointmentServiceTest {
     private AppointmentCreateRequest aAppointmentCreateRequest(OffsetDateTime startTime, OffsetDateTime endTime) {
         return AppointmentCreateRequest.builder()
             .requirementId(99L)
-            .contactType("CRSAPT")
+            .contactType(CRSAPT_CONTACT_TYPE)
             .appointmentStart(startTime)
             .appointmentEnd(endTime)
             .officeLocationCode("CRSSHEF")
