@@ -56,13 +56,7 @@ public class AppointmentService {
     }
 
     public AppointmentCreateResponse createAppointment(String crn, Long sentenceId, AppointmentCreateRequest request) {
-        // Confirm that the contact type is an appointment type
-        final var type = this.contactTypeRepository.findByCode(request.getContactType())
-            .orElseThrow(() -> new BadRequestException(String.format("contact type '%s' does not exist", request.getContactType())));
-
-        if (!type.getAttendanceContact().equals("Y")) {
-            throw new BadRequestException(String.format("contact type '%s' is not an appointment type", type.getCode()));
-        }
+        this.assertAppointmentType(request.getContactType());
 
         NewContact newContact = makeNewContact(crn, sentenceId, request);
         ContactDto contactDto = deliusApiClient.createNewContract(newContact);
@@ -77,6 +71,15 @@ public class AppointmentService {
         AppointmentCreateRequest request = appointmentOf(contextualRequest, requirement.getRequirementId(), context);
 
         return createAppointment(crn, sentenceId, request);
+    }
+
+    private void assertAppointmentType(String contactTypeCode) {
+        final var type = this.contactTypeRepository.findByCode(contactTypeCode)
+            .orElseThrow(() -> new BadRequestException(String.format("contact type '%s' does not exist", contactTypeCode)));
+
+        if (!type.getAttendanceContact().equals("Y")) {
+            throw new BadRequestException(String.format("contact type '%s' is not an appointment type", contactTypeCode));
+        }
     }
 
     private NewContact makeNewContact(String crn, Long sentenceId, AppointmentCreateRequest request) {
