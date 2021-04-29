@@ -86,12 +86,11 @@ public class AppointmentBookingController {
         })
 
     @ApiOperation(value = "Updates an Contact appointment")
-    public ResponseEntity<AppointmentUpdateResponse> patchAppointmentWithContext(final @PathVariable("crn") String crn,
-                                                                                 final @PathVariable("appointmentId") Long appointmentId,
-                                                                                 final @PathVariable("contextName") String context,
-                                                                                 final @RequestBody JsonPatch jsonPatch) {
+    public AppointmentUpdateResponse patchAppointmentWithContext(final @PathVariable("crn") String crn,
+                                                                 final @PathVariable("appointmentId") Long appointmentId,
+                                                                 final @PathVariable("contextName") String context,
+                                                                 final @RequestBody JsonPatch jsonPatch) {
 
-        AppointmentUpdateResponse response = appointmentService.patchAppointment(crn, appointmentId, context, jsonPatch);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return appointmentService.patchAppointment(crn, appointmentId, context, jsonPatch);
     }
 }
