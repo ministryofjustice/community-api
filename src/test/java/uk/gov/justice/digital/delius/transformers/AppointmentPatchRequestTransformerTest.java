@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
+import uk.gov.justice.digital.delius.utils.JsonPatchSupport;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +45,7 @@ class AppointmentPatchRequestTransformerTest {
                 }});
             }}
         );
-        appointmentPatchRequestTransformer = new AppointmentPatchRequestTransformer(objectMapper);
+        appointmentPatchRequestTransformer = new AppointmentPatchRequestTransformer(new JsonPatchSupport(objectMapper));
     }
 
     @Test

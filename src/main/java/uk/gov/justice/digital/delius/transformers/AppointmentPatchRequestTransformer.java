@@ -1,13 +1,13 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchOperation;
 import com.github.fge.jsonpatch.ReplaceOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
+import uk.gov.justice.digital.delius.utils.JsonPatchSupport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,20 +25,19 @@ import static java.util.stream.Collectors.toList;
 public class AppointmentPatchRequestTransformer {
 
     private static final String JSON_PATCH_PATH_FIELD = "path";
-    private static final String JSON_PATCH_VALUE_FIELD = "value";
 
     private static final String SOURCE_ATTENDED_FIELD_PATH = "/attended";
     private static final String SOURCE_NOTIFY_PP_FIELD_PATH = "/notifyPPOfAttendanceBehaviour";
     private static final String TARGET_OUTCOME_FIELD_NAME = "outcome";
 
-    private final ObjectMapper objectMapper;
+    private final JsonPatchSupport jsonPatchSupport;
 
     public JsonPatch mapAttendanceFieldsToOutcomeOf(final JsonPatch jsonPatch, final IntegrationContext context) {
 
-        var nodes = objectMapper.convertValue(jsonPatch, JsonNode.class);
+        var nodes = jsonPatchSupport.convertValue(jsonPatch, JsonNode.class);
 
-        var attendedNode = getAsText(SOURCE_ATTENDED_FIELD_PATH, nodes);
-        var notifyBehaviourNode = getAsBoolean(SOURCE_NOTIFY_PP_FIELD_PATH, nodes);
+        var attendedNode = jsonPatchSupport.getAsText(SOURCE_ATTENDED_FIELD_PATH, nodes);
+        var notifyBehaviourNode = jsonPatchSupport.getAsBoolean(SOURCE_NOTIFY_PP_FIELD_PATH, nodes);
 
         var otherReplaceOperations = StreamSupport
             .stream(nodes.spliterator(), false)
@@ -47,7 +46,7 @@ public class AppointmentPatchRequestTransformer {
                 return !SOURCE_ATTENDED_FIELD_PATH.equals(fieldPath) &&
                     !SOURCE_NOTIFY_PP_FIELD_PATH.equals(fieldPath);
             })
-            .map(node -> objectMapper.convertValue(node, JsonPatchOperation.class))
+            .map(node -> jsonPatchSupport.convertValue(node, JsonPatchOperation.class))
             .collect(toList());
 
         var replaceOperationsWithOutcome = addReplaceOperationForOutcomeIfAttended(
@@ -82,19 +81,4 @@ public class AppointmentPatchRequestTransformer {
         return replaceOperations;
     }
 
-    private Optional<Boolean> getAsBoolean(String path, JsonNode nodes) {
-        return getFieldValue(path, nodes).map(JsonNode::asBoolean);
-    }
-
-    private Optional<String> getAsText(String path, JsonNode nodes) {
-        return getFieldValue(path, nodes).map(JsonNode::asText);
-    }
-
-    private Optional<JsonNode> getFieldValue(String path, JsonNode nodes) {
-        return StreamSupport
-            .stream(nodes.spliterator(), false)
-            .filter(node -> node.path(JSON_PATCH_PATH_FIELD).asText().equals(path))
-            .map(node -> node.path(JSON_PATCH_VALUE_FIELD))
-            .findFirst();
-    }
 }

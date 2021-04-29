@@ -20,6 +20,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeReposito
 import uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer;
 import uk.gov.justice.digital.delius.transformers.AppointmentTransformer;
 import uk.gov.justice.digital.delius.utils.DateConverter;
+import uk.gov.justice.digital.delius.utils.JsonPatchSupport;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +40,7 @@ public class AppointmentService {
     private final DeliusApiClient deliusApiClient;
     private final DeliusIntegrationContextConfig deliusIntegrationContextConfig;
     private final AppointmentPatchRequestTransformer appointmentPatchRequestTransformer;
+    private final JsonPatchSupport jsonPatchSupport;
 
     public List<Appointment> appointmentsFor(Long offenderId, AppointmentFilter filter) {
         return AppointmentTransformer.appointmentsOf(
@@ -67,6 +69,7 @@ public class AppointmentService {
 
     public AppointmentUpdateResponse patchAppointment(String crn, Long appointmentId, JsonPatch jsonPatch) {
 
+        this.assertAppointmentTypeIfExists(jsonPatch);
         final var contactDto = deliusApiClient.patchContact(appointmentId, jsonPatch);
         return new AppointmentUpdateResponse(contactDto.getId());
     }
@@ -85,6 +88,11 @@ public class AppointmentService {
         if (!type.getAttendanceContact().equals("Y")) {
             throw new BadRequestException(String.format("contact type '%s' is not an appointment type", contactTypeCode));
         }
+    }
+
+    private void assertAppointmentTypeIfExists(JsonPatch jsonPatch) {
+        jsonPatchSupport.getAsText("/contactType", jsonPatch).ifPresent(
+            contactTypeCode -> assertAppointmentType(contactTypeCode));
     }
 
     private NewContact makeNewContact(String crn, Long sentenceId, AppointmentCreateRequest request) {

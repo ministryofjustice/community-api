@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.delius.service;
 
+import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.ReplaceOperation;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +28,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType.ContactType
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 import uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer;
+import uk.gov.justice.digital.delius.utils.JsonPatchSupport;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -34,7 +37,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
+import static com.fasterxml.jackson.databind.node.TextNode.valueOf;
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -63,6 +69,8 @@ public class AppointmentServiceTest {
     private ContactTypeRepository contactTypeRepository;
     @Mock
     private AppointmentPatchRequestTransformer appointmentPatchRequestTransformer;
+    @Mock
+    private JsonPatchSupport jsonPatchSupport;
 
     @Captor
     private ArgumentCaptor<Specification<Contact>> specificationArgumentCaptor;
@@ -83,8 +91,8 @@ public class AppointmentServiceTest {
         integrationContext.setRequirementRehabilitationActivityType(RAR_TYPE_CODE);
         integrationContext.getContactMapping().setAppointmentContactType(CRSAPT_CONTACT_TYPE);
 
-        service = new AppointmentService(
-            contactTypeRepository, contactRepository, requirementService, deliusApiClient, integrationContextConfig, appointmentPatchRequestTransformer);
+        service = new AppointmentService(contactTypeRepository, contactRepository, requirementService, deliusApiClient,
+            integrationContextConfig, appointmentPatchRequestTransformer, jsonPatchSupport);
     }
 
     @Test
@@ -181,7 +189,63 @@ public class AppointmentServiceTest {
     }
 
     @Test
-    public void patchesAppointment() {
+    public void failsToPatchAppointmentWithANonAppointmentContactType() {
+        // Given
+        final var crn = "X123456";
+        final var appointmentId = 123456L;
+        final var jsonPatch = new JsonPatch(asList(
+            new ReplaceOperation(JsonPointer.of("contactType"), valueOf(CRSAPT_CONTACT_TYPE))));
+        when(jsonPatchSupport.getAsText("/contactType", jsonPatch)).thenReturn(of(CRSAPT_CONTACT_TYPE));
+
+        havingContactType(true, builder -> builder.attendanceContact("N"));
+
+        // When
+        final var exception = assertThrows(BadRequestException.class,
+            () -> service.patchAppointment(crn, appointmentId, jsonPatch));
+        assertThat(exception.getMessage()).isEqualTo("contact type 'CRSAPT' is not an appointment type");
+    }
+
+    @Test
+    public void failsToPatchAppointmentWithANonExistentContactType() {
+        // Given
+        final var crn = "X123456";
+        final var appointmentId = 123456L;
+        final var jsonPatch = new JsonPatch(asList(
+            new ReplaceOperation(JsonPointer.of("contactType"), valueOf(CRSAPT_CONTACT_TYPE))));
+        when(jsonPatchSupport.getAsText("/contactType", jsonPatch)).thenReturn(of(CRSAPT_CONTACT_TYPE));
+
+        havingContactType(false, builder -> builder.attendanceContact("N"));
+
+        // When
+        final var exception = assertThrows(BadRequestException.class,
+            () -> service.patchAppointment(crn, appointmentId, jsonPatch));
+        assertThat(exception.getMessage()).isEqualTo("contact type 'CRSAPT' does not exist");
+    }
+
+    @Test
+    public void patchesAppointmentWithAnAppointmentContactType() {
+        // Given
+        final var crn = "X123456";
+        final var appointmentId = 123456L;
+        final var jsonPatch = new JsonPatch(asList(
+            new ReplaceOperation(JsonPointer.of("contactType"), valueOf(CRSAPT_CONTACT_TYPE))));
+        when(jsonPatchSupport.getAsText("/contactType", jsonPatch)).thenReturn(of(CRSAPT_CONTACT_TYPE));
+
+        final var updatedContact = ContactDto.builder().id(3L).build();
+        when(deliusApiClient.patchContact(appointmentId, jsonPatch)).thenReturn(updatedContact);
+
+        havingContactType(true, builder -> builder.attendanceContact("Y"));
+
+        // When
+        final var response = service.patchAppointment(crn, appointmentId, jsonPatch);
+
+        // Then
+        assertThat(response.getAppointmentId()).isEqualTo(updatedContact.getId());
+        verify(deliusApiClient).patchContact(appointmentId, jsonPatch);
+    }
+
+    @Test
+    public void patchesAppointmentWithoutContactTypeInPatch() {
         // Given
         final var crn = "X123456";
         final var appointmentId = 123456L;
@@ -221,7 +285,7 @@ public class AppointmentServiceTest {
 
     private void havingContactType(boolean having, UnaryOperator<ContactTypeBuilder> builderOperator) {
         final var contactType = builderOperator.apply(ContactType.builder()).build();
-        final Optional<ContactType> result = having ? Optional.of(contactType) : Optional.empty();
+        final Optional<ContactType> result = having ? of(contactType) : Optional.empty();
         when(contactTypeRepository.findByCode(CRSAPT_CONTACT_TYPE)).thenReturn(result);
     }
 
