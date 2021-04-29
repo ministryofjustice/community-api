@@ -135,6 +135,29 @@ public class AppointmentBookingAPITest extends IntegrationTestBase {
             .body("appointmentEnd", equalTo("2021-03-01T14:03:04Z"));
     }
 
+    @Test
+    public void shouldReturnOKAfterPatchingAContactUsingContextlessClientEndpoint() {
+
+        deliusApiMockServer.stubPatchContactToDeliusApi();
+
+        final var token = createJwt("bob", Collections.singletonList("ROLE_COMMUNITY_INTERVENTIONS_UPDATE"));
+
+        given()
+            .when()
+            .auth().oauth2(token)
+            .contentType(String.valueOf(ContentType.APPLICATION_JSON))
+            .body("[" +
+                "{\"op\":\"replace\",\"path\":\"/notes\",\"value\":\"some notes\"}," +
+                "{\"op\":\"replace\",\"path\":\"/attended\",\"value\":\"LATE\"}," +
+                "{\"op\":\"replace\",\"path\":\"/notifyPPOfAttendanceBehaviour\",\"value\":true}" +
+                "]")
+            .patch("offenders/crn/X320741/appointments/2500029015/context/commissioned-rehabilitation-services")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("appointmentId", equalTo(2500029015L));
+    }
+
     private String createJwt(final String user, final List<String> roles) {
         return jwtAuthenticationHelper.createJwt(JwtParameters.builder()
                 .username(user)

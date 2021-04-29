@@ -31,6 +31,7 @@ dependencies {
     implementation 'io.swagger:swagger-core:1.6.2'
     implementation 'com.oracle.database.jdbc:ojdbc10:19.10.0.0'
     implementation 'io.vavr:vavr:0.10.3'
+    implementation 'com.github.java-json-tools:json-patch:1.13'
 
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'

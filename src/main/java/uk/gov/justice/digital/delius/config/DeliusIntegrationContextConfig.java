@@ -37,6 +37,7 @@ public class DeliusIntegrationContextConfig {
     @Data
     public static class ContactMapping {
         private String appointmentContactType;
+        private Map<String, Map<Boolean, String>> attendanceAndBehaviourNotifiedMappingToOutcomeType;
     }
 
     private Map<String, IntegrationContext> integrationContexts = new HashMap<>();

@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.delius.service;
 
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.github.fge.jsonpatch.JsonPatch;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
@@ -10,13 +10,14 @@ import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.data.api.Appointment;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
+import uk.gov.justice.digital.delius.data.api.AppointmentUpdateResponse;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
-import uk.gov.justice.digital.delius.data.api.Requirement;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
+import uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer;
 import uk.gov.justice.digital.delius.transformers.AppointmentTransformer;
 import uk.gov.justice.digital.delius.utils.DateConverter;
 
@@ -29,6 +30,7 @@ import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDat
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalTime;
 
 @Service
+@AllArgsConstructor
 public class AppointmentService {
 
     private final ContactTypeRepository contactTypeRepository;
@@ -36,19 +38,7 @@ public class AppointmentService {
     private final RequirementService requirementService;
     private final DeliusApiClient deliusApiClient;
     private final DeliusIntegrationContextConfig deliusIntegrationContextConfig;
-
-    @Autowired
-    public AppointmentService(ContactTypeRepository contactTypeRepository,
-                              ContactRepository contactRepository,
-                              RequirementService requirementService,
-                              DeliusApiClient deliusApiClient,
-                              DeliusIntegrationContextConfig deliusIntegrationContextConfig) {
-        this.contactTypeRepository = contactTypeRepository;
-        this.contactRepository = contactRepository;
-        this.requirementService = requirementService;
-        this.deliusApiClient = deliusApiClient;
-        this.deliusIntegrationContextConfig = deliusIntegrationContextConfig;
-    }
+    private final AppointmentPatchRequestTransformer appointmentPatchRequestTransformer;
 
     public List<Appointment> appointmentsFor(Long offenderId, AppointmentFilter filter) {
         return AppointmentTransformer.appointmentsOf(
@@ -60,19 +50,32 @@ public class AppointmentService {
     public AppointmentCreateResponse createAppointment(String crn, Long sentenceId, AppointmentCreateRequest request) {
         this.assertAppointmentType(request.getContactType());
 
-        NewContact newContact = makeNewContact(crn, sentenceId, request);
-        ContactDto contactDto = deliusApiClient.createNewContract(newContact);
+        final var newContact = makeNewContact(crn, sentenceId, request);
+        final var contactDto = deliusApiClient.createNewContact(newContact);
 
         return makeResponse(contactDto);
     }
 
     public AppointmentCreateResponse createAppointment(String crn, Long sentenceId, String contextName, ContextlessAppointmentCreateRequest contextualRequest) {
 
-        IntegrationContext context = getContext(contextName);
-        Requirement requirement = requirementService.getRequirement(crn, sentenceId, context.getRequirementRehabilitationActivityType());
-        AppointmentCreateRequest request = appointmentOf(contextualRequest, requirement.getRequirementId(), context);
+        final var context = getContext(contextName);
+        final var requirement = requirementService.getRequirement(crn, sentenceId, context.getRequirementRehabilitationActivityType());
+        final var request = appointmentOf(contextualRequest, requirement.getRequirementId(), context);
 
         return createAppointment(crn, sentenceId, request);
+    }
+
+    public AppointmentUpdateResponse patchAppointment(String crn, Long appointmentId, JsonPatch jsonPatch) {
+
+        final var contactDto = deliusApiClient.patchContact(appointmentId, jsonPatch);
+        return new AppointmentUpdateResponse(contactDto.getId());
+    }
+
+    public AppointmentUpdateResponse patchAppointment(String crn, Long appointmentId, String contextName, JsonPatch jsonPatch) {
+
+        final var context = getContext(contextName);
+        final var mappedJsonPatch = appointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf(jsonPatch, context);
+        return patchAppointment(crn, appointmentId, mappedJsonPatch);
     }
 
     private void assertAppointmentType(String contactTypeCode) {
@@ -113,5 +116,4 @@ public class AppointmentService {
             () -> new IllegalArgumentException("IntegrationContext does not exist for: " + name)
         );
     }
-
 }

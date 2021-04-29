@@ -116,6 +116,16 @@ delius-integration-context:
           76bcdb97-1dea-41c1-a4f8-899d88e5d679: CRS04
       contact-mapping:
         appointment-contact-type: CRSAPT
+        attendance-and-behaviour-notified-mapping-to-outcome-type:
+          yes:
+            true: AFTC
+            false: ATTC
+          late:
+            true: AFTC
+            false: ATTC
+          no:
+            true: AFTA
+            false: AFTA
 
 smoke:
   test:

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import com.github.fge.jsonpatch.JsonPatch;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType.ContactTypeBuilder;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
+import uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -32,6 +34,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -58,6 +61,8 @@ public class AppointmentServiceTest {
     private DeliusApiClient deliusApiClient;
     @Mock
     private ContactTypeRepository contactTypeRepository;
+    @Mock
+    private AppointmentPatchRequestTransformer appointmentPatchRequestTransformer;
 
     @Captor
     private ArgumentCaptor<Specification<Contact>> specificationArgumentCaptor;
@@ -65,10 +70,12 @@ public class AppointmentServiceTest {
     private ArgumentCaptor<Sort> sortArgumentCaptor;
     private AppointmentService service;
 
+    private IntegrationContext integrationContext;
+
     @BeforeEach
     public void before(){
         final var integrationContextConfig = new DeliusIntegrationContextConfig();
-        IntegrationContext integrationContext = new IntegrationContext();
+        integrationContext = new IntegrationContext();
         integrationContextConfig.getIntegrationContexts().put(CONTEXT, integrationContext);
         integrationContext.setProviderCode(PROVIDER_CODE);
         integrationContext.setStaffCode(STAFF_CODE);
@@ -76,7 +83,8 @@ public class AppointmentServiceTest {
         integrationContext.setRequirementRehabilitationActivityType(RAR_TYPE_CODE);
         integrationContext.getContactMapping().setAppointmentContactType(CRSAPT_CONTACT_TYPE);
 
-        service = new AppointmentService(contactTypeRepository, contactRepository, requirementService, deliusApiClient, integrationContextConfig);
+        service = new AppointmentService(
+            contactTypeRepository, contactRepository, requirementService, deliusApiClient, integrationContextConfig, appointmentPatchRequestTransformer);
     }
 
     @Test
@@ -104,7 +112,7 @@ public class AppointmentServiceTest {
             .startTime(LocalTime.of(10, 0))
             .endTime(LocalTime.of(11, 0))
             .build();
-        when(deliusApiClient.createNewContract(deliusNewContactRequest)).thenReturn(createdContact);
+        when(deliusApiClient.createNewContact(deliusNewContactRequest)).thenReturn(createdContact);
 
         // When
         final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime);
@@ -162,14 +170,53 @@ public class AppointmentServiceTest {
             .startTime(LocalTime.of(10, 0))
             .endTime(LocalTime.of(11, 0))
             .build();
-        when(deliusApiClient.createNewContract(deliusNewContactRequest)).thenReturn(createdContact);
+        when(deliusApiClient.createNewContact(deliusNewContactRequest)).thenReturn(createdContact);
 
         // When
         final var appointmentCreateRequest = aContextlessAppointmentCreateRequest(startTime, endTime);
-        final var response = service.createAppointment("X007", 1L, "commissioned-rehabilitation-services", appointmentCreateRequest);
+        final var response = service.createAppointment("X007", 1L, CONTEXT, appointmentCreateRequest);
 
         // Then
         assertThat(response.getAppointmentId()).isEqualTo(3L);
+    }
+
+    @Test
+    public void patchesAppointment() {
+        // Given
+        final var crn = "X123456";
+        final var appointmentId = 123456L;
+        final var jsonPatch = new JsonPatch(emptyList());
+
+        final var updatedContact = ContactDto.builder().id(3L).build();
+        when(deliusApiClient.patchContact(appointmentId, jsonPatch)).thenReturn(updatedContact);
+
+        // When
+        final var response = service.patchAppointment(crn, appointmentId, jsonPatch);
+
+        // Then
+        assertThat(response.getAppointmentId()).isEqualTo(updatedContact.getId());
+        verify(deliusApiClient).patchContact(appointmentId, jsonPatch);
+    }
+
+    @Test
+    public void patchesAppointmentUsingContextlessJsonPatch() {
+        // Given
+        final var crn = "X123456";
+        final var appointmentId = 123456L;
+
+        final var jsonPatch = new JsonPatch(emptyList());
+        final var transformedJsonPatch = new JsonPatch(emptyList());
+        when(appointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf(jsonPatch, integrationContext)).thenReturn(transformedJsonPatch);
+
+        final var updatedContact = ContactDto.builder().id(3L).build();
+        when(deliusApiClient.patchContact(appointmentId, transformedJsonPatch)).thenReturn(updatedContact);
+
+        // When
+        final var response = service.patchAppointment(crn, appointmentId, CONTEXT, jsonPatch);
+
+        // Then
+        assertThat(response.getAppointmentId()).isEqualTo(updatedContact.getId());
+        verify(deliusApiClient).patchContact(appointmentId, transformedJsonPatch);
     }
 
     private void havingContactType(boolean having, UnaryOperator<ContactTypeBuilder> builderOperator) {
