@@ -16,8 +16,16 @@ public class AppointmentCreateResponse {
 
     @NotNull
     private Long appointmentId;
+
+    @NotNull
     private OffsetDateTime appointmentStart;
+
+    @NotNull
     private OffsetDateTime appointmentEnd;
+
+    @NotNull
     private String type;
+
+    @NotNull
     private String typeDescription;
 }
