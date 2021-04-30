@@ -34,4 +34,16 @@ class DateConverterTest {
         assertThat(DateConverter.toLondonLocalTime(AFTER_BST)).isEqualTo(LocalTime.of(0, 30, 1));
         assertThat(DateConverter.toLondonLocalDateTime(AFTER_BST)).isEqualTo(LocalDateTime.of(2021, 4, 1, 0, 30, 1));
     }
+
+    @Test
+    public void toOffsetDateTimeResultsInUtcOffsetBeforeBST() {
+        var londonDateTime = LocalDateTime.of(2021, 1, 31, 23, 30, 1);
+        assertThat(DateConverter.toOffsetDateTime(londonDateTime)).isEqualTo(OffsetDateTime.of(2021, 1,31, 23, 30, 1, 0, ZoneOffset.UTC));
+    }
+
+    @Test
+    public void toOffsetDateTimeResultsInPlusOneOffsetAfterBST() {
+        var londonDateTime = LocalDateTime.of(2021, 3, 31, 23, 30, 1);
+        assertThat(DateConverter.toOffsetDateTime(londonDateTime)).isEqualTo(OffsetDateTime.of(2021, 3,31, 23, 30, 1, 0, ZoneOffset.ofHours(1)));
+    }
 }

@@ -64,7 +64,11 @@ public class AppointmentBookingAPITest extends IntegrationTestBase {
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.CREATED.value())
-                .body("appointmentId", equalTo(2500029015L));
+                .body("appointmentId", equalTo(2500029015L))
+                .body("type", equalTo("CRSAPT"))
+                .body("typeDescription", equalTo("Appointment with CRS Provider (NS)"))
+                .body("appointmentStart", equalTo("2021-03-01T13:01:02Z"))
+                .body("appointmentEnd", equalTo("2021-03-01T14:03:04Z"));
     }
 
     @Test
@@ -124,7 +128,11 @@ public class AppointmentBookingAPITest extends IntegrationTestBase {
             .then()
             .assertThat()
             .statusCode(HttpStatus.CREATED.value())
-            .body("appointmentId", equalTo(2500029015L));
+            .body("appointmentId", equalTo(2500029015L))
+            .body("type", equalTo("CRSAPT"))
+            .body("typeDescription", equalTo("Appointment with CRS Provider (NS)"))
+            .body("appointmentStart", equalTo("2021-03-01T13:01:02Z"))
+            .body("appointmentEnd", equalTo("2021-03-01T14:03:04Z"));
     }
 
     private String createJwt(final String user, final List<String> roles) {

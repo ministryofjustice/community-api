@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 import uk.gov.justice.digital.delius.transformers.AppointmentTransformer;
+import uk.gov.justice.digital.delius.utils.DateConverter;
 
 import java.util.List;
 import java.util.Optional;
@@ -61,7 +63,7 @@ public class AppointmentService {
         NewContact newContact = makeNewContact(crn, sentenceId, request);
         ContactDto contactDto = deliusApiClient.createNewContract(newContact);
 
-        return new AppointmentCreateResponse(contactDto.getId());
+        return makeResponse(contactDto);
     }
 
     public AppointmentCreateResponse createAppointment(String crn, Long sentenceId, String contextName, ContextlessAppointmentCreateRequest contextualRequest) {
@@ -97,6 +99,12 @@ public class AppointmentService {
             .eventId(sentenceId)
             .requirementId(request.getRequirementId())
             .build();
+    }
+
+    private AppointmentCreateResponse makeResponse(ContactDto contactDto) {
+        var appointmentStart = DateConverter.toOffsetDateTime(contactDto.getDate().atTime(contactDto.getStartTime()));
+        var appointmentEnd = DateConverter.toOffsetDateTime(contactDto.getDate().atTime(contactDto.getEndTime()));
+        return new AppointmentCreateResponse(contactDto.getId(), appointmentStart, appointmentEnd, contactDto.getType(), contactDto.getTypeDescription());
     }
 
     IntegrationContext getContext(String name) {
