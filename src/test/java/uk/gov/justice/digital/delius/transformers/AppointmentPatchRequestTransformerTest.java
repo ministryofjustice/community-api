@@ -33,6 +33,7 @@ class AppointmentPatchRequestTransformerTest {
     public void before() {
 
         integrationContext = new IntegrationContext();
+        integrationContext.getContactMapping().setEnforcementReferToOffenderManager("ROM");
         integrationContext.getContactMapping().setAttendanceAndBehaviourNotifiedMappingToOutcomeType(
             new HashMap<>() {{
                 this.put("no", new HashMap<>() {{
@@ -52,6 +53,20 @@ class AppointmentPatchRequestTransformerTest {
     public void transformsJsonPatchCollapsingAttendedAndNotifyFieldsToOutcome() throws JsonProcessingException {
 
         final var attendedValue = "LATE";
+        final var notifyPPOfAttendanceBehaviourValue = false;
+        final var jsonPatch = buildPatch(of(attendedValue), of(notifyPPOfAttendanceBehaviourValue));
+
+        final var transformedPatch = appointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf(jsonPatch, integrationContext);
+
+        assertThat(objectMapper.writeValueAsString(transformedPatch))
+            .isEqualTo("[{\"op\":\"replace\",\"path\":\"/notes\",\"value\":\"some notes\"}," +
+                "{\"op\":\"replace\",\"path\":\"/outcome\",\"value\":\"ATTC\"}]");
+    }
+
+    @Test
+    public void transformsJsonPatchCollapsingAttendedAndNotifyFieldsToOutcomeWithEnforcement() throws JsonProcessingException {
+
+        final var attendedValue = "LATE";
         final var notifyPPOfAttendanceBehaviourValue = true;
         final var jsonPatch = buildPatch(of(attendedValue), of(notifyPPOfAttendanceBehaviourValue));
 
@@ -59,7 +74,8 @@ class AppointmentPatchRequestTransformerTest {
 
         assertThat(objectMapper.writeValueAsString(transformedPatch))
             .isEqualTo("[{\"op\":\"replace\",\"path\":\"/notes\",\"value\":\"some notes\"}," +
-                "{\"op\":\"replace\",\"path\":\"/outcome\",\"value\":\"AFTC\"}]");
+                "{\"op\":\"replace\",\"path\":\"/outcome\",\"value\":\"AFTC\"}," +
+                "{\"op\":\"replace\",\"path\":\"/enforcement\",\"value\":\"ROM\"}]");
     }
 
     @Test

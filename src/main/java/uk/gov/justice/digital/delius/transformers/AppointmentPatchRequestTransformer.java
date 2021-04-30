@@ -29,6 +29,7 @@ public class AppointmentPatchRequestTransformer {
     private static final String SOURCE_ATTENDED_FIELD_PATH = "/attended";
     private static final String SOURCE_NOTIFY_PP_FIELD_PATH = "/notifyPPOfAttendanceBehaviour";
     private static final String TARGET_OUTCOME_FIELD_NAME = "outcome";
+    private static final String TARGET_ENFORCEMENT_FIELD_NAME = "enforcement";
 
     private final JsonPatchSupport jsonPatchSupport;
 
@@ -76,6 +77,11 @@ public class AppointmentPatchRequestTransformer {
                     format("Mapping does not exist for attended: %s and notify PP of behaviour: %s", attendedType, notifyBehaviour)));
 
             replaceOperations.add(new ReplaceOperation(of(TARGET_OUTCOME_FIELD_NAME), valueOf(outcomeType)));
+
+            if ( notifyBehaviour ) {
+                replaceOperations.add(new ReplaceOperation(of(TARGET_ENFORCEMENT_FIELD_NAME),
+                    valueOf(context.getContactMapping().getEnforcementReferToOffenderManager())));
+            }
         }
 
         return replaceOperations;
