@@ -57,6 +57,7 @@ public class DeliusApiMockServer extends WireMockServer {
                 "    \"id\": 2500029015,\n" +
                 "    \"offenderCrn\": \"X320741\",\n" +
                 "    \"type\": \"CRSAPT\",\n" +
+                "    \"typeDescription\": \"Appointment with CRS Provider (NS)\",\n" +
                 "    \"provider\": \"CRS\",\n" +
                 "    \"team\": \"CRSUAT\",\n" +
                 "    \"staff\": \"CRSUATU\",\n" +

@@ -25,6 +25,8 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType.ContactType
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -97,7 +99,11 @@ public class AppointmentServiceTest {
         havingContactType(true, builder -> builder.attendanceContact("Y"));
 
         final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime);
-        final var createdContact = ContactDto.builder().id(3L).build();
+        final var createdContact = ContactDto.builder().id(3L).typeDescription("Office Visit")
+            .date(LocalDate.of(2021, 1, 31))
+            .startTime(LocalTime.of(10, 0))
+            .endTime(LocalTime.of(11, 0))
+            .build();
         when(deliusApiClient.createNewContract(deliusNewContactRequest)).thenReturn(createdContact);
 
         // When
@@ -151,7 +157,11 @@ public class AppointmentServiceTest {
         havingContactType(true, builder -> builder.attendanceContact("Y"));
 
         final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime);
-        final var createdContact = ContactDto.builder().id(3L).build();
+        final var createdContact = ContactDto.builder().id(3L)
+            .date(LocalDate.of(2021, 1, 31))
+            .startTime(LocalTime.of(10, 0))
+            .endTime(LocalTime.of(11, 0))
+            .build();
         when(deliusApiClient.createNewContract(deliusNewContactRequest)).thenReturn(createdContact);
 
         // When

@@ -21,4 +21,8 @@ public class DateConverter {
     public static LocalTime toLondonLocalTime(OffsetDateTime offsetDateTime) {
         return offsetDateTime.atZoneSameInstant(ZoneId.of(LOCAL_TIMEZONE)).toLocalTime();
     }
+
+    public static OffsetDateTime toOffsetDateTime(LocalDateTime londonLocalDateTime) {
+        return londonLocalDateTime.atZone(ZoneId.of(LOCAL_TIMEZONE)).toOffsetDateTime();
+    }
 }
