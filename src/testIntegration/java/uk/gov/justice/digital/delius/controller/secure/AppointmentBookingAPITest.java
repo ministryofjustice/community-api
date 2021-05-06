@@ -17,6 +17,7 @@ import uk.gov.justice.digital.delius.controller.wiremock.DeliusApiExtension;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusApiMockServer;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
+import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -136,7 +137,7 @@ public class AppointmentBookingAPITest extends IntegrationTestBase {
     }
 
     @Test
-    public void shouldReturnOKAfterPatchingAContactUsingContextlessClientEndpoint() {
+    public void shouldReturnOKAfterPatchingUpdatingAppointmentUsingContextlessClientEndpoint() {
 
         deliusApiMockServer.stubPatchContactToDeliusApi();
 
@@ -146,12 +147,12 @@ public class AppointmentBookingAPITest extends IntegrationTestBase {
             .when()
             .auth().oauth2(token)
             .contentType(String.valueOf(ContentType.APPLICATION_JSON))
-            .body("[" +
-                "{\"op\":\"replace\",\"path\":\"/notes\",\"value\":\"some notes\"}," +
-                "{\"op\":\"replace\",\"path\":\"/attended\",\"value\":\"LATE\"}," +
-                "{\"op\":\"replace\",\"path\":\"/notifyPPOfAttendanceBehaviour\",\"value\":true}" +
-                "]")
-            .patch("offenders/crn/X320741/appointments/2500029015/context/commissioned-rehabilitation-services")
+            .body(ContextlessAppointmentOutcomeRequest.builder()
+                .notes("some notes")
+                .attended("LATE")
+                .notifyPPOfAttendanceBehaviour(true)
+                .build())
+            .post("offenders/crn/X320741/appointments/2500029015/outcome/context/commissioned-rehabilitation-services")
             .then()
             .assertThat()
             .statusCode(HttpStatus.OK.value())

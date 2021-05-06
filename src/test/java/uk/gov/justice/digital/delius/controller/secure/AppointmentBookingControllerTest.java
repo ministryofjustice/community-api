@@ -17,6 +17,7 @@ import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentUpdateResponse;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
+import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
 import uk.gov.justice.digital.delius.service.AppointmentService;
 import uk.gov.justice.digital.delius.service.OffenderService;
@@ -117,19 +118,23 @@ public class AppointmentBookingControllerTest {
     }
 
     @Test
-    public void patchesAppointmentUsingContextlessClientEndpoint() {
+    public void updatesAppointmentOutcomeUsingContextlessClientEndpoint() {
 
-        JsonPatch jsonPatch = new JsonPatch(asList(new ReplaceOperation(of("attended"), valueOf("LATE"))));
+        ContextlessAppointmentOutcomeRequest request = ContextlessAppointmentOutcomeRequest.builder()
+            .notes("notes")
+            .attended("LATE")
+            .notifyPPOfAttendanceBehaviour(true)
+            .build();
 
-        when(appointmentService.patchAppointment(eq("1"), eq(2L), eq("commissioned-rehabilitation-services"),
-            ArgumentMatchers.argThat(patch -> getFieldValue("/attended", jsonPatch).equals("LATE"))))
+        when(appointmentService.updateAppointmentOutcome(eq("1"), eq(2L), eq("commissioned-rehabilitation-services"),
+            eq(request)))
             .thenReturn(AppointmentUpdateResponse.builder().appointmentId(2L).build());
 
         Long appointmentIdResponse = given()
             .contentType(APPLICATION_JSON_VALUE)
-            .body(jsonPatch)
+            .body(request)
             .when()
-            .patch("/secure/offenders/crn/1/appointments/2/context/commissioned-rehabilitation-services")
+            .post("/secure/offenders/crn/1/appointments/2/outcome/context/commissioned-rehabilitation-services")
             .then()
             .statusCode(200)
             .extract()
@@ -138,15 +143,5 @@ public class AppointmentBookingControllerTest {
             .getAppointmentId();
 
         assertThat(appointmentIdResponse).isEqualTo(2L);
-    }
-
-    private String getFieldValue(String path, JsonPatch jsonPatch) {
-        final var objectMapper = new ObjectMapper();
-        return StreamSupport.stream(objectMapper.convertValue(jsonPatch, JsonNode.class).spliterator(), false)
-            .filter(node -> node.path("path").asText().equals(path))
-            .map(node -> node.path("value"))
-            .findFirst()
-            .map(JsonNode::asText)
-            .orElseThrow(() -> new IllegalStateException("Expected value"));
     }
 }

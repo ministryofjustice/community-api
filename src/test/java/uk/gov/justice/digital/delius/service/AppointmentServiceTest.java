@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.delius.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.ReplaceOperation;
@@ -8,9 +10,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
@@ -18,6 +22,7 @@ import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.Integ
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
+import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
 import uk.gov.justice.digital.delius.data.api.Requirement;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
@@ -34,6 +39,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
@@ -43,10 +49,11 @@ import static java.util.Collections.emptyList;
 import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDate;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalTime;
 
@@ -59,6 +66,8 @@ public class AppointmentServiceTest {
     private static final String CRSAPT_CONTACT_TYPE = "CRSAPT";
     private static final String CONTEXT = "commissioned-rehabilitation-services";
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     @Mock
     private ContactRepository contactRepository;
     @Mock
@@ -67,8 +76,6 @@ public class AppointmentServiceTest {
     private DeliusApiClient deliusApiClient;
     @Mock
     private ContactTypeRepository contactTypeRepository;
-    @Mock
-    private AppointmentPatchRequestTransformer appointmentPatchRequestTransformer;
     @Mock
     private JsonPatchSupport jsonPatchSupport;
 
@@ -90,9 +97,16 @@ public class AppointmentServiceTest {
         integrationContext.setTeamCode(TEAM_CODE);
         integrationContext.setRequirementRehabilitationActivityType(RAR_TYPE_CODE);
         integrationContext.getContactMapping().setAppointmentContactType(CRSAPT_CONTACT_TYPE);
+        integrationContext.getContactMapping().setAttendanceAndBehaviourNotifiedMappingToOutcomeType(
+            new HashMap<>() {{
+                this.put("late", new HashMap<>() {{
+                    this.put(false, "ATTC");
+                }});
+            }}
+        );
 
         service = new AppointmentService(contactTypeRepository, contactRepository, requirementService, deliusApiClient,
-            integrationContextConfig, appointmentPatchRequestTransformer, jsonPatchSupport);
+            integrationContextConfig, jsonPatchSupport);
     }
 
     @Test
@@ -263,30 +277,43 @@ public class AppointmentServiceTest {
     }
 
     @Test
-    public void patchesAppointmentUsingContextlessJsonPatch() {
+    public void updateAppointmentOutcome() {
         // Given
         final var crn = "X123456";
         final var appointmentId = 123456L;
 
-        final var jsonPatch = new JsonPatch(emptyList());
-        final var transformedJsonPatch = new JsonPatch(emptyList());
-        when(appointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf(jsonPatch, integrationContext)).thenReturn(transformedJsonPatch);
+        final var request = ContextlessAppointmentOutcomeRequest.builder()
+            .notes("some notes")
+            .attended("LATE")
+            .notifyPPOfAttendanceBehaviour(false)
+            .build();
+        final var expectedJsonPatch = "[{\"op\":\"replace\",\"path\":\"/notes\",\"value\":\"some notes\"}," +
+            "{\"op\":\"replace\",\"path\":\"/outcome\",\"value\":\"ATTC\"}]";
 
         final var updatedContact = ContactDto.builder().id(3L).build();
-        when(deliusApiClient.patchContact(appointmentId, transformedJsonPatch)).thenReturn(updatedContact);
+        when(deliusApiClient.patchContact(eq(appointmentId), argThat(patch -> asString(patch).equals(expectedJsonPatch))))
+            .thenReturn(updatedContact);
 
         // When
-        final var response = service.patchAppointment(crn, appointmentId, CONTEXT, jsonPatch);
+        final var response = service.updateAppointmentOutcome(crn, appointmentId, CONTEXT, request);
 
         // Then
         assertThat(response.getAppointmentId()).isEqualTo(updatedContact.getId());
-        verify(deliusApiClient).patchContact(appointmentId, transformedJsonPatch);
+        verify(deliusApiClient).patchContact(eq(appointmentId), argThat(patch -> asString(patch).equals(expectedJsonPatch)));
     }
 
     private void havingContactType(boolean having, UnaryOperator<ContactTypeBuilder> builderOperator) {
         final var contactType = builderOperator.apply(ContactType.builder()).build();
         final Optional<ContactType> result = having ? of(contactType) : Optional.empty();
         when(contactTypeRepository.findByCode(CRSAPT_CONTACT_TYPE)).thenReturn(result);
+    }
+
+    private String asString(JsonPatch patch) {
+        try {
+            return objectMapper.writeValueAsString(patch);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private NewContact aDeliusNewContactRequest(OffsetDateTime startTime, OffsetDateTime endTime) {

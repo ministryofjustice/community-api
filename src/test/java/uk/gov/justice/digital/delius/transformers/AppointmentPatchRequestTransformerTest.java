@@ -2,30 +2,20 @@ package uk.gov.justice.digital.delius.transformers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
-import com.github.fge.jsonpatch.JsonPatch;
-import com.github.fge.jsonpatch.ReplaceOperation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
-import uk.gov.justice.digital.delius.utils.JsonPatchSupport;
+import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Optional;
 
-import static com.fasterxml.jackson.databind.node.BooleanNode.valueOf;
-import static com.fasterxml.jackson.databind.node.TextNode.valueOf;
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf;
 
 class AppointmentPatchRequestTransformerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-
-    private AppointmentPatchRequestTransformer appointmentPatchRequestTransformer;
 
     private IntegrationContext integrationContext;
 
@@ -46,7 +36,6 @@ class AppointmentPatchRequestTransformerTest {
                 }});
             }}
         );
-        appointmentPatchRequestTransformer = new AppointmentPatchRequestTransformer(new JsonPatchSupport(objectMapper));
     }
 
     @Test
@@ -54,11 +43,11 @@ class AppointmentPatchRequestTransformerTest {
 
         final var attendedValue = "LATE";
         final var notifyPPOfAttendanceBehaviourValue = false;
-        final var jsonPatch = buildPatch(of(attendedValue), of(notifyPPOfAttendanceBehaviourValue));
+        final var request = buildRequest(attendedValue, notifyPPOfAttendanceBehaviourValue);
 
-        final var transformedPatch = appointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf(jsonPatch, integrationContext);
+        final var patch = mapAttendanceFieldsToOutcomeOf(request, integrationContext);
 
-        assertThat(objectMapper.writeValueAsString(transformedPatch))
+        assertThat(objectMapper.writeValueAsString(patch))
             .isEqualTo("[{\"op\":\"replace\",\"path\":\"/notes\",\"value\":\"some notes\"}," +
                 "{\"op\":\"replace\",\"path\":\"/outcome\",\"value\":\"ATTC\"}]");
     }
@@ -68,60 +57,32 @@ class AppointmentPatchRequestTransformerTest {
 
         final var attendedValue = "LATE";
         final var notifyPPOfAttendanceBehaviourValue = true;
-        final var jsonPatch = buildPatch(of(attendedValue), of(notifyPPOfAttendanceBehaviourValue));
+        final var request = buildRequest(attendedValue, notifyPPOfAttendanceBehaviourValue);
 
-        final var transformedPatch = appointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf(jsonPatch, integrationContext);
+        final var patch = mapAttendanceFieldsToOutcomeOf(request, integrationContext);
 
-        assertThat(objectMapper.writeValueAsString(transformedPatch))
+        assertThat(objectMapper.writeValueAsString(patch))
             .isEqualTo("[{\"op\":\"replace\",\"path\":\"/notes\",\"value\":\"some notes\"}," +
                 "{\"op\":\"replace\",\"path\":\"/outcome\",\"value\":\"AFTC\"}," +
                 "{\"op\":\"replace\",\"path\":\"/enforcement\",\"value\":\"ROM\"}]");
     }
 
     @Test
-    public void doesNotTransformsJsonPatchWhenAttendedValueNotPresent() throws JsonProcessingException {
-
-        final var notifyPPOfAttendanceBehaviourValue = true;
-        final var jsonPatch = buildPatch(empty(), of(notifyPPOfAttendanceBehaviourValue));
-
-        final var transformedPatch = appointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf(jsonPatch, integrationContext);
-
-        assertThat(objectMapper.writeValueAsString(transformedPatch))
-            .isEqualTo("[{\"op\":\"replace\",\"path\":\"/notes\",\"value\":\"some notes\"}]");
-    }
-
-    @Test
-    public void defaultsNotifyBehaviourToFalseWhenAttendedSetToNo() throws JsonProcessingException {
-
-        final var attendedValue = "LATE";
-        final var jsonPatch = buildPatch(of(attendedValue), empty());
-
-        final var transformedPatch = appointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf(jsonPatch, integrationContext);
-
-        assertThat(objectMapper.writeValueAsString(transformedPatch))
-            .isEqualTo("[{\"op\":\"replace\",\"path\":\"/notes\",\"value\":\"some notes\"}," +
-                "{\"op\":\"replace\",\"path\":\"/outcome\",\"value\":\"ATTC\"}]");
-    }
-
-    @Test
     public void throwsExceptionWhenNoMapping() {
         final var attendedValue = "UnknownValue";
-        final var jsonPatch = buildPatch(of(attendedValue), empty());
+        final var request = buildRequest(attendedValue, true);
 
         IllegalStateException illegalStateException = Assertions.assertThrows(IllegalStateException.class,
-            () -> { appointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf(jsonPatch, integrationContext); });
+            () -> { mapAttendanceFieldsToOutcomeOf(request, integrationContext); });
         assertThat(illegalStateException.getMessage())
-            .isEqualTo("Mapping does not exist for attended: UnknownValue and notify PP of behaviour: false");
+            .isEqualTo("Mapping does not exist for attended: UnknownValue and notify PP of behaviour: true");
     }
 
-    private JsonPatch buildPatch(Optional<String> attendedValue, Optional<Boolean> notifyPPOfAttendanceBehaviourValue) {
-
-        return new JsonPatch(new ArrayList<>() {{
-            this.add(new ReplaceOperation(JsonPointer.of("notes"), valueOf("some notes")));
-            attendedValue.ifPresent(value ->
-                this.add(new ReplaceOperation(JsonPointer.of("attended"), valueOf(value))));
-            notifyPPOfAttendanceBehaviourValue.ifPresent(value ->
-                this.add(new ReplaceOperation(JsonPointer.of("notifyPPOfAttendanceBehaviour"), valueOf(value))));
-        }});
+    private ContextlessAppointmentOutcomeRequest buildRequest(String attended, Boolean notifyPPOfAttendanceBehaviour) {
+        return ContextlessAppointmentOutcomeRequest.builder()
+            .notes("some notes")
+            .attended(attended)
+            .notifyPPOfAttendanceBehaviour(notifyPPOfAttendanceBehaviour)
+            .build();
     }
 }

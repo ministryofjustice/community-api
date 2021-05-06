@@ -12,6 +12,7 @@ import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentUpdateResponse;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
+import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
@@ -27,6 +28,7 @@ import java.util.Optional;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static uk.gov.justice.digital.delius.transformers.AppointmentCreateRequestTransformer.appointmentOf;
+import static uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDate;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalTime;
 
@@ -39,7 +41,6 @@ public class AppointmentService {
     private final RequirementService requirementService;
     private final DeliusApiClient deliusApiClient;
     private final DeliusIntegrationContextConfig deliusIntegrationContextConfig;
-    private final AppointmentPatchRequestTransformer appointmentPatchRequestTransformer;
     private final JsonPatchSupport jsonPatchSupport;
 
     public List<Appointment> appointmentsFor(Long offenderId, AppointmentFilter filter) {
@@ -74,10 +75,10 @@ public class AppointmentService {
         return new AppointmentUpdateResponse(contactDto.getId());
     }
 
-    public AppointmentUpdateResponse patchAppointment(String crn, Long appointmentId, String contextName, JsonPatch jsonPatch) {
+    public AppointmentUpdateResponse updateAppointmentOutcome(String crn, Long appointmentId, String contextName, ContextlessAppointmentOutcomeRequest request) {
 
         final var context = getContext(contextName);
-        final var mappedJsonPatch = appointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf(jsonPatch, context);
+        final var mappedJsonPatch = mapAttendanceFieldsToOutcomeOf(request, context);
         return patchAppointment(crn, appointmentId, mappedJsonPatch);
     }
 
