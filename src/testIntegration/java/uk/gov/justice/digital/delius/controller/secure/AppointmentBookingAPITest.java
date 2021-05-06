@@ -17,6 +17,7 @@ import uk.gov.justice.digital.delius.controller.wiremock.DeliusApiExtension;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusApiMockServer;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
+import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -133,6 +134,29 @@ public class AppointmentBookingAPITest extends IntegrationTestBase {
             .body("typeDescription", equalTo("Appointment with CRS Provider (NS)"))
             .body("appointmentStart", equalTo("2021-03-01T13:01:02Z"))
             .body("appointmentEnd", equalTo("2021-03-01T14:03:04Z"));
+    }
+
+    @Test
+    public void shouldReturnOKAfterPatchingUpdatingAppointmentUsingContextlessClientEndpoint() {
+
+        deliusApiMockServer.stubPatchContactToDeliusApi();
+
+        final var token = createJwt("bob", Collections.singletonList("ROLE_COMMUNITY_INTERVENTIONS_UPDATE"));
+
+        given()
+            .when()
+            .auth().oauth2(token)
+            .contentType(String.valueOf(ContentType.APPLICATION_JSON))
+            .body(ContextlessAppointmentOutcomeRequest.builder()
+                .notes("some notes")
+                .attended("LATE")
+                .notifyPPOfAttendanceBehaviour(true)
+                .build())
+            .post("offenders/crn/X320741/appointments/2500029015/outcome/context/commissioned-rehabilitation-services")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("appointmentId", equalTo(2500029015L));
     }
 
     private String createJwt(final String user, final List<String> roles) {

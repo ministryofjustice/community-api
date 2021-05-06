@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
+import com.github.fge.jsonpatch.JsonPatch;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
+import uk.gov.justice.digital.delius.data.api.AppointmentUpdateResponse;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
+import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
 import uk.gov.justice.digital.delius.service.AppointmentService;
 
 @RestController
@@ -70,5 +73,25 @@ public class AppointmentBookingController {
 
         AppointmentCreateResponse response = appointmentService.createAppointment(crn, sentenceId, contextName, contextlessAppointmentCreateRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @RequestMapping(value = "/offenders/crn/{crn}/appointments/{appointmentId}/outcome/context/{contextName}",
+        method = RequestMethod.POST,
+        consumes = "application/json")
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 200, message = "Updated", response = String.class),
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_INTERVENTIONS_UPDATE"),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+
+    @ApiOperation(value = "Updates an Contact appointment outcome")
+    public AppointmentUpdateResponse updateAppointmentOutcomeWithContext(final @PathVariable("crn") String crn,
+                                                                         final @PathVariable("appointmentId") Long appointmentId,
+                                                                         final @PathVariable("contextName") String context,
+                                                                         final @RequestBody ContextlessAppointmentOutcomeRequest appointmentOutcomeRequest) {
+
+        return appointmentService.updateAppointmentOutcome(crn, appointmentId, context, appointmentOutcomeRequest);
     }
 }
