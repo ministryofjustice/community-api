@@ -10,6 +10,7 @@ import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.data.api.ReferralSentRequest;
 import uk.gov.justice.digital.delius.data.api.ReferralSentResponse;
+import uk.gov.justice.digital.delius.data.api.Requirement;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewNsi;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewNsiManager;
 
@@ -54,15 +55,15 @@ public class ReferralService {
         var context = getContext(referralSent.getContext());
         var nsiMapping = context.getNsiMapping();
 
-        Long requirementId = getRequirement(crn, referralSent.getSentenceId(), context);
-        var existingNsi = getExistingMatchingNsi(crn, referralSent, requirementId);
+        Optional<Long> requirementId = getRequirement(crn, referralSent.getSentenceId(), context);
+        var existingNsi = getExistingMatchingNsi(crn, referralSent);
 
         return ReferralSentResponse.builder().nsiId(existingNsi.map(Nsi::getNsiId).orElseGet(() -> {
             var newNsiRequest = NewNsi.builder()
                 .type(getNsiType(nsiMapping, referralSent.getServiceCategoryId()))
                 .offenderCrn(crn)
                 .eventId(referralSent.getSentenceId())
-                .requirementId(requirementId)
+                .requirementId(requirementId.orElse(null))
                 .referralDate(toLondonLocalDate(referralSent.getSentAt()))
                 .status(nsiMapping.getNsiStatus())
                 .statusDate(toLondonLocalDateTime(referralSent.getSentAt()))
@@ -78,7 +79,7 @@ public class ReferralService {
         })).build();
     }
 
-    public Optional<Nsi> getExistingMatchingNsi(String crn, ReferralSentRequest referralSent, Long requirementId) {
+    public Optional<Nsi> getExistingMatchingNsi(String crn, ReferralSentRequest referralSent) {
         // determine if there is an existing suitable NSI
         var offenderId = offenderService.offenderIdOfCrn(crn).orElseThrow(() -> new BadRequestException("Offender CRN not found"));
 
@@ -87,10 +88,9 @@ public class ReferralService {
 
         var existingNsis = nsiService.getNsiByCodes(offenderId, referralSent.getSentenceId(), Collections.singletonList(getNsiType(nsiMapping, referralSent.getServiceCategoryId())))
             .map(wrapper -> wrapper.getNsis().stream()
-                // eventID, offenderID, nsiID, and callerID are handled in the NSI service
+                // eventID, offenderID, nsi type are handled in the NSI service
                 .filter(nsi -> Optional.ofNullable(nsi.getReferralDate()).map(n -> n.equals(toLondonLocalDate(referralSent.getSentAt()))).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getNsiStatus()).map(n -> n.getCode().equals(nsiMapping.getNsiStatus())).orElse(false))
-                .filter(nsi -> Optional.ofNullable(nsi.getRequirement()).map(n -> nsi.getRequirement().getRequirementId().equals(requirementId)).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getIntendedProvider()).map(n -> n.getCode().equals(context.getProviderCode())).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getNsiManagers()).map(n -> n.stream().anyMatch(
                     nsiManager -> nsiManager.getStaff().getStaffCode().equals(context.getStaffCode())
@@ -107,8 +107,9 @@ public class ReferralService {
         return existingNsis.stream().findFirst();
     }
 
-    Long getRequirement(String crn, Long sentenceId, IntegrationContext context) {
-        return requirementService.getRequirement(crn, sentenceId, context.getRequirementRehabilitationActivityType()).getRequirementId();
+    Optional<Long> getRequirement(String crn, Long sentenceId, IntegrationContext context) {
+        return requirementService.getRequirement(crn, sentenceId, context.getRequirementRehabilitationActivityType())
+            .map(Requirement::getRequirementId);
     }
 
     String getNsiType(final NsiMapping nsiMapping, final UUID serviceCategoryId) {

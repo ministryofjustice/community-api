@@ -46,6 +46,7 @@ import java.util.function.UnaryOperator;
 import static com.fasterxml.jackson.databind.node.TextNode.valueOf;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -53,7 +54,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDate;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalTime;
 
@@ -65,6 +65,7 @@ public class AppointmentServiceTest {
     private static final String RAR_TYPE_CODE = "F";
     private static final String CRSAPT_CONTACT_TYPE = "CRSAPT";
     private static final String CONTEXT = "commissioned-rehabilitation-services";
+    private static final Long REQUIREMENT_ID = 99L;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -128,7 +129,7 @@ public class AppointmentServiceTest {
 
         havingContactType(true, builder -> builder.attendanceContact("Y"));
 
-        final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime);
+        final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, REQUIREMENT_ID);
         final var createdContact = ContactDto.builder().id(3L).typeDescription("Office Visit")
             .date(LocalDate.of(2021, 1, 31))
             .startTime(LocalTime.of(10, 0))
@@ -137,7 +138,7 @@ public class AppointmentServiceTest {
         when(deliusApiClient.createNewContact(deliusNewContactRequest)).thenReturn(createdContact);
 
         // When
-        final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime);
+        final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, REQUIREMENT_ID);
         final var response = service.createAppointment("X007", 1L, appointmentCreateRequest);
 
         // Then
@@ -154,7 +155,7 @@ public class AppointmentServiceTest {
         havingContactType(false, builder -> builder);
 
         // When
-        final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime);
+        final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, REQUIREMENT_ID);
         assertThrows(BadRequestException.class,
             () -> service.createAppointment("X007", 1L, appointmentCreateRequest),
             "contact type 'X007' does not exist");
@@ -169,7 +170,7 @@ public class AppointmentServiceTest {
         havingContactType(true, builder -> builder.attendanceContact("N"));
 
         // When
-        final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime);
+        final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, REQUIREMENT_ID);
         assertThrows(BadRequestException.class,
             () -> service.createAppointment("X007", 1L, appointmentCreateRequest),
             "contact type 'X007' is not an appointment type");
@@ -179,14 +180,40 @@ public class AppointmentServiceTest {
     public void createsAppointmentUsingContextlessClientRequest() {
         // Given
         final var requirement = Requirement.builder().requirementId(99L).build();
-        when(requirementService.getRequirement("X007", 1L, RAR_TYPE_CODE)).thenReturn(requirement);
+        when(requirementService.getRequirement("X007", 1L, RAR_TYPE_CODE)).thenReturn(of(requirement));
 
         final var startTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         final var endTime = startTime.plusHours(1);
 
         havingContactType(true, builder -> builder.attendanceContact("Y"));
 
-        final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime);
+        final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, REQUIREMENT_ID);
+        final var createdContact = ContactDto.builder().id(3L)
+            .date(LocalDate.of(2021, 1, 31))
+            .startTime(LocalTime.of(10, 0))
+            .endTime(LocalTime.of(11, 0))
+            .build();
+        when(deliusApiClient.createNewContact(deliusNewContactRequest)).thenReturn(createdContact);
+
+        // When
+        final var appointmentCreateRequest = aContextlessAppointmentCreateRequest(startTime, endTime);
+        final var response = service.createAppointment("X007", 1L, CONTEXT, appointmentCreateRequest);
+
+        // Then
+        assertThat(response.getAppointmentId()).isEqualTo(3L);
+    }
+
+    @Test
+    public void createsAppointmentUsingContextlessClientRequest_withNoRequirement() {
+        // Given
+        when(requirementService.getRequirement("X007", 1L, RAR_TYPE_CODE)).thenReturn(empty());
+
+        final var startTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        final var endTime = startTime.plusHours(1);
+
+        havingContactType(true, builder -> builder.attendanceContact("Y"));
+
+        final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, null);
         final var createdContact = ContactDto.builder().id(3L)
             .date(LocalDate.of(2021, 1, 31))
             .startTime(LocalTime.of(10, 0))
@@ -316,7 +343,7 @@ public class AppointmentServiceTest {
         }
     }
 
-    private NewContact aDeliusNewContactRequest(OffsetDateTime startTime, OffsetDateTime endTime) {
+    private NewContact aDeliusNewContactRequest(OffsetDateTime startTime, OffsetDateTime endTime, Long requirementId) {
         return NewContact.builder()
             .offenderCrn("X007")
             .type(CRSAPT_CONTACT_TYPE)
@@ -333,13 +360,13 @@ public class AppointmentServiceTest {
             .notes("/url")
             .description(null)
             .eventId(1L)
-            .requirementId(99L)
+            .requirementId(requirementId)
             .build();
     }
 
-    private AppointmentCreateRequest aAppointmentCreateRequest(OffsetDateTime startTime, OffsetDateTime endTime) {
+    private AppointmentCreateRequest aAppointmentCreateRequest(OffsetDateTime startTime, OffsetDateTime endTime, Long requirementId) {
         return AppointmentCreateRequest.builder()
-            .requirementId(99L)
+            .requirementId(requirementId)
             .contactType(CRSAPT_CONTACT_TYPE)
             .appointmentStart(startTime)
             .appointmentEnd(endTime)

@@ -18,7 +18,6 @@ import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
-import uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer;
 import uk.gov.justice.digital.delius.transformers.AppointmentTransformer;
 import uk.gov.justice.digital.delius.utils.DateConverter;
 import uk.gov.justice.digital.delius.utils.JsonPatchSupport;
@@ -63,7 +62,7 @@ public class AppointmentService {
 
         final var context = getContext(contextName);
         final var requirement = requirementService.getRequirement(crn, sentenceId, context.getRequirementRehabilitationActivityType());
-        final var request = appointmentOf(contextualRequest, requirement.getRequirementId(), context);
+        final var request = appointmentOf(contextualRequest, requirement, context);
 
         return createAppointment(crn, sentenceId, request);
     }
