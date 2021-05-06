@@ -21,6 +21,8 @@ import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
+import uk.gov.justice.digital.delius.data.api.AppointmentType;
+import uk.gov.justice.digital.delius.data.api.AppointmentType.RequiredOptional;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
 import uk.gov.justice.digital.delius.data.api.Requirement;
@@ -40,6 +42,7 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
@@ -54,6 +57,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aContactType;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDate;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalTime;
 
@@ -300,6 +304,23 @@ public class AppointmentServiceTest {
         // Then
         assertThat(response.getAppointmentId()).isEqualTo(updatedContact.getId());
         verify(deliusApiClient).patchContact(eq(appointmentId), argThat(patch -> asString(patch).equals(expectedJsonPatch)));
+    }
+
+    @Test
+    public void gettingAllAppointmentTypes() {
+        final var types = List.of(
+            ContactType.builder().code("T1").description("D1").locationFlag("Y").build(),
+            ContactType.builder().code("T2").description("D2").locationFlag("B").build(),
+            ContactType.builder().code("T3").description("D3").locationFlag("N").build()
+        );
+        when(contactTypeRepository.findAllSelectableAppointmentTypes()).thenReturn(types);
+
+        final var observed = service.getAllAppointmentTypes();
+
+        assertThat(observed).extracting(AppointmentType::getContactType).containsOnly("T1", "T2", "T3");
+        assertThat(observed).extracting(AppointmentType::getDescription).containsOnly("D1", "D2", "D3");
+        assertThat(observed).extracting(AppointmentType::getRequiresLocation)
+            .containsOnly(RequiredOptional.REQUIRED, RequiredOptional.OPTIONAL, RequiredOptional.NOT_REQUIRED);
     }
 
     private void havingContactType(boolean having, UnaryOperator<ContactTypeBuilder> builderOperator) {

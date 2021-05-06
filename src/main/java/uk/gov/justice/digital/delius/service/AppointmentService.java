@@ -10,6 +10,8 @@ import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.data.api.Appointment;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
+import uk.gov.justice.digital.delius.data.api.AppointmentType;
+import uk.gov.justice.digital.delius.data.api.AppointmentType.RequiredOptional;
 import uk.gov.justice.digital.delius.data.api.AppointmentUpdateResponse;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
@@ -18,13 +20,13 @@ import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
-import uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer;
 import uk.gov.justice.digital.delius.transformers.AppointmentTransformer;
 import uk.gov.justice.digital.delius.utils.DateConverter;
 import uk.gov.justice.digital.delius.utils.JsonPatchSupport;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static uk.gov.justice.digital.delius.transformers.AppointmentCreateRequestTransformer.appointmentOf;
@@ -82,6 +84,17 @@ public class AppointmentService {
         return patchAppointment(crn, appointmentId, mappedJsonPatch);
     }
 
+    public List<AppointmentType> getAllAppointmentTypes() {
+        return contactTypeRepository.findAllSelectableAppointmentTypes()
+            .stream()
+            .map(type -> AppointmentType.builder()
+                .contactType(type.getCode())
+                .description(type.getDescription())
+                .requiresLocation(locationFlagToRequiredOptional(type.getLocationFlag()))
+                .build())
+            .collect(Collectors.toList());
+    }
+
     private void assertAppointmentType(String contactTypeCode) {
         final var type = this.contactTypeRepository.findByCode(contactTypeCode)
             .orElseThrow(() -> new BadRequestException(String.format("contact type '%s' does not exist", contactTypeCode)));
@@ -124,5 +137,18 @@ public class AppointmentService {
         return Optional.ofNullable(context).orElseThrow(
             () -> new IllegalArgumentException("IntegrationContext does not exist for: " + name)
         );
+    }
+
+    private static RequiredOptional locationFlagToRequiredOptional(String value) {
+        switch(value) {
+            case "Y":
+                return RequiredOptional.REQUIRED;
+            case "B":
+                return RequiredOptional.OPTIONAL;
+            case "N":
+                return RequiredOptional.NOT_REQUIRED;
+            default:
+                throw new RuntimeException(String.format("Invalid location flag '%s'", value));
+        }
     }
 }
