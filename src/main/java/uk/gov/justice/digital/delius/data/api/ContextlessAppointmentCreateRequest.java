@@ -23,6 +23,9 @@ public class ContextlessAppointmentCreateRequest {
     @ApiModelProperty(required = true)
     private OffsetDateTime appointmentEnd;
 
+    @ApiModelProperty
+    private Boolean nonRar;
+
     @NotNull
     @ApiModelProperty(required = true)
     private String officeLocationCode;

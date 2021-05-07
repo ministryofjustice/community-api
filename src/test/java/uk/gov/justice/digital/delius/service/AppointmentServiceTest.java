@@ -97,7 +97,7 @@ public class AppointmentServiceTest {
         integrationContext.setStaffCode(STAFF_CODE);
         integrationContext.setTeamCode(TEAM_CODE);
         integrationContext.setRequirementRehabilitationActivityType(RAR_TYPE_CODE);
-        integrationContext.getContactMapping().setAppointmentContactType(CRSAPT_CONTACT_TYPE);
+        integrationContext.getContactMapping().setAppointmentRarContactType(CRSAPT_CONTACT_TYPE);
         integrationContext.getContactMapping().setAttendanceAndBehaviourNotifiedMappingToOutcomeType(
             new HashMap<>() {{
                 this.put("late", new HashMap<>() {{

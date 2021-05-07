@@ -115,7 +115,8 @@ delius-integration-context:
           96a63c39-4371-4f17-a6ec-265755f0cf7b: CRS03
           76bcdb97-1dea-41c1-a4f8-899d88e5d679: CRS04
       contact-mapping:
-        appointment-contact-type: CRSAPT
+        appointment-rar-contact-type: CRSAPT
+        appointment-non-rar-contact-type: CRSSAA
         enforcement-refer-to-offender-manager: ROM
         attendance-and-behaviour-notified-mapping-to-outcome-type:
           yes:
