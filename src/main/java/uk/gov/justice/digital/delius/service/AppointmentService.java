@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius.service;
 
 import com.github.fge.jsonpatch.JsonPatch;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
@@ -11,6 +12,7 @@ import uk.gov.justice.digital.delius.data.api.Appointment;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentType;
+import uk.gov.justice.digital.delius.data.api.AppointmentType.OrderType;
 import uk.gov.justice.digital.delius.data.api.AppointmentType.RequiredOptional;
 import uk.gov.justice.digital.delius.data.api.AppointmentUpdateResponse;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
@@ -18,15 +20,18 @@ import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeReque
 import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 import uk.gov.justice.digital.delius.transformers.AppointmentTransformer;
 import uk.gov.justice.digital.delius.utils.DateConverter;
 import uk.gov.justice.digital.delius.utils.JsonPatchSupport;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static uk.gov.justice.digital.delius.transformers.AppointmentCreateRequestTransformer.appointmentOf;
@@ -91,6 +96,10 @@ public class AppointmentService {
                 .contactType(type.getCode())
                 .description(type.getDescription())
                 .requiresLocation(locationFlagToRequiredOptional(type.getLocationFlag()))
+                .orderTypes(Stream.of(
+                    Pair.of(OrderType.CJA_2003, type.getCjaOrderLevel()),
+                    Pair.of(OrderType.LEGACY, type.getLegacyOrderLevel())
+                ).filter(x -> x.getValue().equals("Y")).map(Pair::getKey).collect(Collectors.toList()))
                 .build())
             .collect(Collectors.toList());
     }

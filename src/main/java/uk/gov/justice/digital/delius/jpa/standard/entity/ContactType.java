@@ -56,6 +56,12 @@ public class ContactType {
     @Column(name = "CONTACT_LOCATION_FLAG", length = 1, nullable = false)
     private String locationFlag;
 
+    @Column(name = "CJA_ORDERS", nullable = false, length = 1)
+    private String cjaOrderLevel;
+
+    @Column(name = "LEGACY_ORDERS", nullable = false, length = 1)
+    private String  legacyOrderLevel;
+
     @ManyToMany()
     @JoinTable(
         name = "R_CONTACT_TYPECONTACT_CATEGORY",

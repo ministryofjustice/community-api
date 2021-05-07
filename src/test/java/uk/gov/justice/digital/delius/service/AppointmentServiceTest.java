@@ -22,6 +22,7 @@ import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.Integ
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentType;
+import uk.gov.justice.digital.delius.data.api.AppointmentType.OrderType;
 import uk.gov.justice.digital.delius.data.api.AppointmentType.RequiredOptional;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
@@ -309,9 +310,9 @@ public class AppointmentServiceTest {
     @Test
     public void gettingAllAppointmentTypes() {
         final var types = List.of(
-            ContactType.builder().code("T1").description("D1").locationFlag("Y").build(),
-            ContactType.builder().code("T2").description("D2").locationFlag("B").build(),
-            ContactType.builder().code("T3").description("D3").locationFlag("N").build()
+            anAppointmentContactType(1, "Y", true, true),
+            anAppointmentContactType(2, "B", true, false),
+            anAppointmentContactType(3, "N", false, false)
         );
         when(contactTypeRepository.findAllSelectableAppointmentTypes()).thenReturn(types);
 
@@ -321,6 +322,14 @@ public class AppointmentServiceTest {
         assertThat(observed).extracting(AppointmentType::getDescription).containsOnly("D1", "D2", "D3");
         assertThat(observed).extracting(AppointmentType::getRequiresLocation)
             .containsOnly(RequiredOptional.REQUIRED, RequiredOptional.OPTIONAL, RequiredOptional.NOT_REQUIRED);
+
+        //noinspection unchecked
+        assertThat(observed).extracting(AppointmentType::getOrderTypes)
+            .containsOnly(
+                List.of(OrderType.CJA_2003, OrderType.LEGACY),
+                List.of(OrderType.CJA_2003),
+                List.of()
+            );
     }
 
     private void havingContactType(boolean having, UnaryOperator<ContactTypeBuilder> builderOperator) {
@@ -378,6 +387,16 @@ public class AppointmentServiceTest {
             .appointmentEnd(endTime)
             .officeLocationCode("CRSSHEF")
             .notes("/url")
+            .build();
+    }
+
+    private static ContactType anAppointmentContactType(int id, String locationFlag, boolean cja, boolean legacy) {
+        return ContactType.builder()
+            .code(String.format("T%d", id))
+            .description(String.format("D%d", id))
+            .locationFlag(locationFlag)
+            .cjaOrderLevel(cja ? "Y" : "N")
+            .legacyOrderLevel(legacy ? "Y" : "N")
             .build();
     }
 }

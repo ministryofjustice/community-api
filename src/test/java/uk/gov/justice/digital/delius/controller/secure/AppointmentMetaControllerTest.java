@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.AppointmentType;
+import uk.gov.justice.digital.delius.data.api.AppointmentType.OrderType;
 import uk.gov.justice.digital.delius.data.api.AppointmentType.RequiredOptional;
 import uk.gov.justice.digital.delius.service.AppointmentService;
 
@@ -37,6 +38,7 @@ public class AppointmentMetaControllerTest {
             .contactType(type)
             .description(String.format("description %s", type))
             .requiresLocation(RequiredOptional.REQUIRED)
+            .orderTypes(List.of(OrderType.CJA_2003))
             .build();
     }
 }
