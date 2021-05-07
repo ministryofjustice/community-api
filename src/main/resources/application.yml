@@ -118,13 +118,13 @@ delius-integration-context:
         appointment-contact-type: CRSAPT
         enforcement-refer-to-offender-manager: ROM
         attendance-and-behaviour-notified-mapping-to-outcome-type:
-          yes:
+          "yes":
             true: AFTC
             false: ATTC
-          late:
+          "late":
             true: AFTC
             false: ATTC
-          no:
+          "no":
             true: AFTA
             false: AFTA
 
