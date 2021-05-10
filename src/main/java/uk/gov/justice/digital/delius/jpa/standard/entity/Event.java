@@ -74,7 +74,7 @@ public class Event {
     @OneToOne(mappedBy = "event", cascade = {CascadeType.ALL})
     private Disposal disposal;
 
-    @OneToOne(mappedBy = "event", cascade = {CascadeType.ALL})
+    @OneToOne(mappedBy = "event", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     private OGRSAssessment OGRSAssessment;
 
     @OneToMany(mappedBy = "event", cascade = {CascadeType.ALL})

@@ -19,8 +19,8 @@ import uk.gov.justice.digital.delius.transformers.ContactTransformer;
 import uk.gov.justice.digital.delius.transformers.RequirementTransformer;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
@@ -38,25 +38,15 @@ public class RequirementService {
 
     public ConvictionRequirements getRequirementsByConvictionId(String crn, Long convictionId, boolean activeOnly) {
 
-        Predicate<Requirement> activeFilter = activeFilter(activeOnly);
-        var requirements = Optional.of(getEvent(crn, convictionId))
+        var requirements = Optional.of(getEvent(crn, convictionId, activeOnly))
             .map(Event::getDisposal)
             .map(Disposal::getRequirements)
             .stream()
             .flatMap(Collection::stream)
             .map(RequirementTransformer::requirementOf)
-            .filter(activeFilter)
             .collect(toList());
 
         return new ConvictionRequirements(requirements);
-    }
-
-
-    private Predicate<Requirement> activeFilter(boolean activeOnly) {
-        if(activeOnly) {
-            return Requirement::getActive;
-        }
-        return r -> true;
     }
 
     public ConvictionRequirements getRequirementsByConvictionId(String crn, Long convictionId) {
@@ -78,8 +68,20 @@ public class RequirementService {
     }
 
     private Event getEvent(String crn, Long convictionId) {
+        return getEvent(crn, convictionId, false);
+    }
+
+    private Event getEvent(String crn, Long convictionId, boolean activeOnly) {
         var offender = getOffender(crn);
-        return eventRepository.findByOffenderId(offender.getOffenderId())
+
+        List<Event> events;
+        if (activeOnly) {
+            events = eventRepository.findByOffenderIdAndActiveTrue(offender.getOffenderId());
+        } else {
+            events = eventRepository.findByOffenderId(offender.getOffenderId());
+        }
+
+        return events
                 .stream()
                 .filter(event -> convictionId.equals(event.getEventId()))
                 .findAny()
