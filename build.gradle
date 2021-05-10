@@ -70,4 +70,5 @@ testIntegration {
     }
     minHeapSize = "128m"
     maxHeapSize = "1536m"
+    jvmArgs = ["--add-opens", "java.naming/com.sun.jndi.ldap=ALL-UNNAMED"]
 }

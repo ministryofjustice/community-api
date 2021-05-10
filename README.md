@@ -25,6 +25,12 @@ docker-compose pull && docker-compose up
 
 This will grab the latest versions of auth and community api and start both - auth on 9090 and community api on 8080.
 
+If running the application in intellij then you will need
+```
+--add-opens java.naming/com.sun.jndi.ldap=ALL-UNNAMED
+```
+in the jvm configuration, otherwise the LDAP configuration will not work.
+
 ## Testing locally
 
 We use [Postman](https://www.postman.com/) to test the API calls.  The [swagger docs](http://localhost:8080/v2/api-docs?group=Community%20API)
