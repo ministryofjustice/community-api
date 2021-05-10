@@ -68,7 +68,7 @@ public class AppointmentService {
 
         final var context = getContext(contextName);
         final var requirement = requirementService.getRequirement(crn, sentenceId, context.getRequirementRehabilitationActivityType());
-        final var request = appointmentOf(contextualRequest, requirement.getRequirementId(), context);
+        final var request = appointmentOf(contextualRequest, requirement, context);
 
         return createAppointment(crn, sentenceId, request);
     }
