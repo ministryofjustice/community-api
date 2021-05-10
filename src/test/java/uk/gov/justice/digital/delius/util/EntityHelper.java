@@ -814,7 +814,6 @@ public class EntityHelper {
                 .build();
     }
 
-
     public static OrderManager anOrderManager() {
         return OrderManager
                 .builder()
