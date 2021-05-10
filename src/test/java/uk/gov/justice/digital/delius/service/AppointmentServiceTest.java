@@ -10,17 +10,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
+import uk.gov.justice.digital.delius.data.api.AppointmentType;
+import uk.gov.justice.digital.delius.data.api.AppointmentType.OrderType;
+import uk.gov.justice.digital.delius.data.api.AppointmentType.RequiredOptional;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
 import uk.gov.justice.digital.delius.data.api.Requirement;
@@ -32,7 +33,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType.ContactTypeBuilder;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
-import uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer;
 import uk.gov.justice.digital.delius.utils.JsonPatchSupport;
 
 import java.time.LocalDate;
@@ -40,6 +40,7 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
@@ -53,7 +54,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDate;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalTime;
 
@@ -302,6 +302,31 @@ public class AppointmentServiceTest {
         verify(deliusApiClient).patchContact(eq(appointmentId), argThat(patch -> asString(patch).equals(expectedJsonPatch)));
     }
 
+    @Test
+    public void gettingAllAppointmentTypes() {
+        final var types = List.of(
+            anAppointmentContactType(1, "Y", true, true),
+            anAppointmentContactType(2, "B", true, false),
+            anAppointmentContactType(3, "N", false, false)
+        );
+        when(contactTypeRepository.findAllSelectableAppointmentTypes()).thenReturn(types);
+
+        final var observed = service.getAllAppointmentTypes();
+
+        assertThat(observed).extracting(AppointmentType::getContactType).containsOnly("T1", "T2", "T3");
+        assertThat(observed).extracting(AppointmentType::getDescription).containsOnly("D1", "D2", "D3");
+        assertThat(observed).extracting(AppointmentType::getRequiresLocation)
+            .containsOnly(RequiredOptional.REQUIRED, RequiredOptional.OPTIONAL, RequiredOptional.NOT_REQUIRED);
+
+        //noinspection unchecked
+        assertThat(observed).extracting(AppointmentType::getOrderTypes)
+            .containsOnly(
+                List.of(OrderType.CJA, OrderType.LEGACY),
+                List.of(OrderType.CJA),
+                List.of()
+            );
+    }
+
     private void havingContactType(boolean having, UnaryOperator<ContactTypeBuilder> builderOperator) {
         final var contactType = builderOperator.apply(ContactType.builder()).build();
         final Optional<ContactType> result = having ? of(contactType) : Optional.empty();
@@ -357,6 +382,16 @@ public class AppointmentServiceTest {
             .appointmentEnd(endTime)
             .officeLocationCode("CRSSHEF")
             .notes("/url")
+            .build();
+    }
+
+    private static ContactType anAppointmentContactType(int id, String locationFlag, boolean cja, boolean legacy) {
+        return ContactType.builder()
+            .code(String.format("T%d", id))
+            .description(String.format("D%d", id))
+            .locationFlag(locationFlag)
+            .cjaOrderLevel(cja ? "Y" : "N")
+            .legacyOrderLevel(legacy ? "Y" : "N")
             .build();
     }
 }
