@@ -97,6 +97,12 @@ public class OffenderManager implements Serializable {
     @Where(clause = "SOFT_DELETED != 1")
     private Offender managedOffender;
 
+    @Transient
+    private String emailAddress;
+
+    @Transient
+    private String telephoneNumber;
+
     public boolean isActive() {
         return endDate == null && Optional.ofNullable(activeFlag).orElse(0L) == 1L && !isDeleted();
     }

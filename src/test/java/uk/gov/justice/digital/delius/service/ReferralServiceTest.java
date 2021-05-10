@@ -26,10 +26,13 @@ import uk.gov.justice.digital.delius.data.api.deliusapi.NsiDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
@@ -47,16 +50,17 @@ public class ReferralServiceTest {
     private static final String OFFENDER_CRN = "X123456";
     private static final Long SENTENCE_ID = 2500295343L;
     private static final Long REQUIREMENT_ID = 2500083652L;
-    private static final String SERVICE_CATEGORY = "Accommodation";
+    private static final UUID SERVICE_CATEGORY_ID = UUID.fromString("428ee70f-3001-4399-95a6-ad25eaaede16");
     private static final String NSI_TYPE = "CR01";
     private static final String PROVIDER_CODE = "CRS";
     private static final String STAFF_CODE = "CRSUATU";
     private static final String TEAM_CODE = "CRSUAT";
     private static final String NSI_STATUS = "INPROG";
     private static final String RAR_TYPE_CODE = "F";
-    private static final Map <String, String> SERVICE_CATEGORY_TO_NSI_TYPE_MAPPING = new HashMap<>(){{
-        this.put(SERVICE_CATEGORY, NSI_TYPE);
+    private static final Map <UUID, String> SERVICE_CATEGORY_TO_NSI_TYPE_MAPPING = new HashMap<>(){{
+        this.put(SERVICE_CATEGORY_ID, NSI_TYPE);
     }};
+    private static final String INTEGRATION_CONTEXT = "commissioned-rehabilitation-services";
 
     private static final Nsi MATCHING_NSI = Nsi.builder()
         .nsiId(12345L)
@@ -75,10 +79,11 @@ public class ReferralServiceTest {
 
     private static final ReferralSentRequest NSI_REQUEST = ReferralSentRequest
         .builder()
-        .serviceCategory(SERVICE_CATEGORY)
-        .date(LocalDate.of(2021, 1, 20))
+        .serviceCategoryId(SERVICE_CATEGORY_ID)
+        .sentAt(OffsetDateTime.of(2021, 1, 20, 12, 0, 0, 0, ZoneOffset.UTC))
         .sentenceId(SENTENCE_ID)
         .notes("A test note")
+        .context(INTEGRATION_CONTEXT)
         .build();
 
     @Mock
@@ -99,7 +104,7 @@ public class ReferralServiceTest {
     public void setup() {
         DeliusIntegrationContextConfig integrationContextConfig = new DeliusIntegrationContextConfig();
         IntegrationContext integrationContext = new IntegrationContext();
-        integrationContextConfig.getIntegrationContexts().put("commissioned-rehabilitation-services", integrationContext);
+        integrationContextConfig.getIntegrationContexts().put(INTEGRATION_CONTEXT, integrationContext);
         integrationContext.setProviderCode(PROVIDER_CODE);
         integrationContext.setStaffCode(STAFF_CODE);
         integrationContext.setTeamCode(TEAM_CODE);
@@ -166,7 +171,7 @@ public class ReferralServiceTest {
             .endDate(null)
             .length(null)
             .status(NSI_STATUS)
-            .statusDate(LocalDateTime.of(2021, 1, 20, 0, 0))
+            .statusDate(LocalDateTime.of(2021, 1, 20, 12, 0))
             .outcome(null)
             .notes("A test note")
             .intendedProvider(PROVIDER_CODE)
@@ -195,7 +200,7 @@ public class ReferralServiceTest {
 
         var nsiRequest = NSI_REQUEST
             .toBuilder()
-            .serviceCategory("invalid one")
+            .serviceCategoryId(UUID.fromString("999ee70f-3001-4399-95a6-ad25eaaed999"))
             .build();
 
         assertThrows(IllegalArgumentException.class, () -> referralService.createNsiReferral(OFFENDER_CRN, nsiRequest));
@@ -204,7 +209,7 @@ public class ReferralServiceTest {
     private static Stream<Arguments> nsis() {
         return Stream.of(
             Arguments.of(NSI_REQUEST, MATCHING_NSI, true),
-            Arguments.of(NSI_REQUEST.withDate(LocalDate.of(2017, 1, 1)), MATCHING_NSI, false),
+            Arguments.of(NSI_REQUEST.withSentAt(OffsetDateTime.of(2017, 1, 1, 12, 0, 0, 0, ZoneOffset.UTC)), MATCHING_NSI, false),
             Arguments.of(NSI_REQUEST, MATCHING_NSI.withRequirement(Requirement.builder().requirementId(999L).build()), false),
             Arguments.of(NSI_REQUEST, MATCHING_NSI.withRequirement(null), false)
         );

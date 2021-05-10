@@ -17,6 +17,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffHelperRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
+import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusUser;
 
 import java.util.List;
 import java.util.Optional;
@@ -158,9 +159,12 @@ public class StaffServiceTest {
                                                         .build())
                                         .build()));
 
-        when(ldapRepository.getEmail("sandrasmith")).thenReturn("user@service.com");
+        var nDeliusUser = NDeliusUser.builder().mail("user@service.com").build();
+        when(ldapRepository.getDeliusUserNoRoles("sandrasmith")).thenReturn(Optional.of(nDeliusUser));
 
-        assertThat(staffService.getStaffDetailsByUsername("sandrasmith")).get().extracting(StaffDetails::getEmail).isEqualTo("user@service.com");
+        var staffDetails = staffService.getStaffDetailsByUsername("sandrasmith").get();
+        assertThat(staffDetails.getEmail()).isEqualTo("user@service.com");
+        assertThat(staffDetails.getTelephoneNumber()).isNull();
     }
 
     @Test
@@ -177,7 +181,7 @@ public class StaffServiceTest {
                                                         .build())
                                         .build()));
 
-        when(ldapRepository.getEmail("sandrasmith")).thenReturn(null);
+        when(ldapRepository.getDeliusUserNoRoles("sandrasmith")).thenReturn(Optional.empty());
 
         assertThat(staffService.getStaffDetailsByUsername("sandrasmith")).get().extracting(StaffDetails::getEmail).isNull();
     }
@@ -206,9 +210,10 @@ public class StaffServiceTest {
                                 .build()
                 ));
 
-        when(ldapRepository.getEmail("joefrazier")).thenReturn("joefrazier@service.com");
-        when(ldapRepository.getEmail("georgeforeman")).thenReturn("georgeforeman@service.com");
-
+        var frazierNDelius = NDeliusUser.builder().telephoneNumber("111 222").mail("joefrazier@service.com").build();
+        var foremanNDelius = NDeliusUser.builder().telephoneNumber("333 444").mail("georgeforeman@service.com").build();
+        when(ldapRepository.getDeliusUserNoRoles("joefrazier")).thenReturn(Optional.of(frazierNDelius));
+        when(ldapRepository.getDeliusUserNoRoles("georgeforeman")).thenReturn(Optional.of(foremanNDelius));
 
         List<StaffDetails> staffDetailsList = staffService.getStaffDetailsByUsernames(usernames);
 

@@ -74,6 +74,7 @@ import java.util.Optional;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
+import static uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory.REHABILITATION_ACTIVITY_REQUIREMENT_CODE;
 
 @Api(tags = "Core offender", authorizations = {@Authorization("ROLE_COMMUNITY")})
 @RestController
@@ -125,11 +126,33 @@ public class OffendersResource {
             })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/allOffenderManagers")
     public List<CommunityOrPrisonOffenderManager> getAllOffenderManagersForOffender(
-            @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
-            @NotNull
-            @PathVariable(value = "nomsNumber") final String nomsNumber) {
-        return offenderManagerService.getAllOffenderManagersForNomsNumber(nomsNumber)
+        @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
+        @NotNull
+        @PathVariable(value = "nomsNumber") final String nomsNumber,
+        @ApiParam(name = "includeProbationAreaTeams", value = "include teams on the ProbationArea records", example = "true")
+        @RequestParam(name = "includeProbationAreaTeams", required = false, defaultValue = "false") final boolean includeProbationAreaTeams) {
+        return offenderManagerService.getAllOffenderManagersForNomsNumber(nomsNumber, includeProbationAreaTeams)
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with NOMS number %s not found", nomsNumber)));
+    }
+
+    @ApiOperation(
+        value = "Returns the current community and prison offender managers for an offender",
+        notes = "Accepts an offender CRN in the format A999999",
+        tags = {"Offender managers", "-- Popular core APIs --"})
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+    @GetMapping(path = "/offenders/crn/{crn}/allOffenderManagers")
+    public List<CommunityOrPrisonOffenderManager> getAllOffenderManagersForOffenderbyCrn(
+        @ApiParam(name = "crn", value = "CRN for the offender", example = "X320741", required = true)
+        @NotNull
+        @PathVariable(value = "crn") final String crn,
+        @ApiParam(name = "includeProbationAreaTeams", value = "include teams on the ProbationArea records", example = "true")
+        @RequestParam(name = "includeProbationAreaTeams", required = false, defaultValue = "false") final boolean includeProbationAreaTeams) {
+        return offenderManagerService.getAllOffenderManagersForCrn(crn, includeProbationAreaTeams)
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN %s not found", crn)));
     }
 
     @ApiOperation(value = "Return the convictions (AKA Delius Event) for an offender", tags = {"Convictions","-- Popular core APIs --"})
@@ -385,6 +408,23 @@ public class OffendersResource {
 
         return offenderService.offenderIdOfCrn(crn)
                 .map(offenderId -> convictionService.convictionsFor(offenderId, activeOnly))
+                .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
+    }
+
+    @ApiOperation(value = "Return the convictions (AKA Delius Event) for an offender that contain RAR", tags = {"-- Popular core APIs --", "Convictions"})
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "The offender is not found", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+    @GetMapping(value = "/offenders/crn/{crn}/convictions-with-rar")
+    public List<Conviction> getOffenderConvictionsWithRarByCrn(
+        @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
+        @NotNull @PathVariable(value = "crn") final String crn) {
+
+        return offenderService.offenderIdOfCrn(crn)
+                .map(offenderId -> convictionService.convictionsWithActiveRequirementFor(offenderId, REHABILITATION_ACTIVITY_REQUIREMENT_CODE))
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 
