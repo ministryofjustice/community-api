@@ -1,7 +1,7 @@
 plugins {
-    id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.1.7"
+    id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.2.0"
     id 'groovy'
-    id 'org.unbroken-dome.test-sets' version '3.0.1'
+    id 'org.unbroken-dome.test-sets' version '4.0.0'
 }
 
 group = 'uk.gov.justice.digital.delius'
@@ -23,7 +23,7 @@ dependencies {
 
     implementation 'com.unboundid:unboundid-ldapsdk:5.1.4'
     implementation("io.springfox:springfox-boot-starter:3.0.0")
-    implementation 'org.flywaydb:flyway-core:7.8.1'
+    implementation 'org.flywaydb:flyway-core:7.8.2'
     implementation 'com.zaxxer:HikariCP:4.0.3'
     implementation 'commons-io:commons-io:2.8.0'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
@@ -37,8 +37,8 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     compileOnly 'org.projectlombok:lombok:1.18.20'
 
-    testRuntime 'com.h2database:h2:1.4.200'
-    runtime 'com.h2database:h2:1.4.200'
+    runtimeOnly 'com.h2database:h2:1.4.200'
+    testRuntimeOnly 'com.h2database:h2:1.4.200'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
     testCompileOnly 'org.projectlombok:lombok:1.18.20'
 
@@ -70,4 +70,5 @@ testIntegration {
     }
     minHeapSize = "128m"
     maxHeapSize = "1536m"
+    jvmArgs = ["--add-opens", "java.naming/com.sun.jndi.ldap=ALL-UNNAMED"]
 }

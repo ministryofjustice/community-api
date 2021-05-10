@@ -9,7 +9,9 @@ orbs:
 
 jobs:
   validate-unit:
-    executor: hmpps/java
+    executor:
+      name: hmpps/java
+      tag: "16.0"
     environment:
       _JAVA_OPTIONS: -Xmx1024m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false
     steps:
@@ -29,7 +31,9 @@ jobs:
       - store_artifacts:
           path: build/reports/tests
   validate-integration:
-    executor: hmpps/java
+    executor:
+      name: hmpps/java
+      tag: "16.0"
     parallelism: 4
     environment:
       _JAVA_OPTIONS: -Xmx1024m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false
