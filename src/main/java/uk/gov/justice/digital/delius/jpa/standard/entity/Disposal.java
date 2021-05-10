@@ -8,6 +8,7 @@ import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -80,7 +81,7 @@ public class Disposal {
     @OneToMany(targetEntity = Requirement.class, mappedBy = "disposal")
     private List<Requirement> requirements;
 
-    @OneToOne(mappedBy = "disposal")
+    @OneToOne(mappedBy = "disposal", fetch = FetchType.LAZY)
     private UpwDetails unpaidWorkDetails;
 
     @Column(name = "NOTIONAL_END_DATE")
