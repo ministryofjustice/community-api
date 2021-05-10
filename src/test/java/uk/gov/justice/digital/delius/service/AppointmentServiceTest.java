@@ -10,11 +10,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
@@ -35,7 +33,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType.ContactTypeBuilder;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
-import uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer;
 import uk.gov.justice.digital.delius.utils.JsonPatchSupport;
 
 import java.time.LocalDate;
@@ -57,8 +54,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf;
-import static uk.gov.justice.digital.delius.util.EntityHelper.aContactType;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDate;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalTime;
 
@@ -326,8 +321,8 @@ public class AppointmentServiceTest {
         //noinspection unchecked
         assertThat(observed).extracting(AppointmentType::getOrderTypes)
             .containsOnly(
-                List.of(OrderType.CJA_2003, OrderType.LEGACY),
-                List.of(OrderType.CJA_2003),
+                List.of(OrderType.CJA, OrderType.LEGACY),
+                List.of(OrderType.CJA),
                 List.of()
             );
     }

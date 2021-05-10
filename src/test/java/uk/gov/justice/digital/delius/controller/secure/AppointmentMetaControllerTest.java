@@ -38,7 +38,7 @@ public class AppointmentMetaControllerTest {
             .contactType(type)
             .description(String.format("description %s", type))
             .requiresLocation(RequiredOptional.REQUIRED)
-            .orderTypes(List.of(OrderType.CJA_2003))
+            .orderTypes(List.of(OrderType.CJA))
             .build();
     }
 }

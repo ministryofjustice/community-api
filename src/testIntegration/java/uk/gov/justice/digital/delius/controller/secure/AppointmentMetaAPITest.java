@@ -50,13 +50,13 @@ public class AppointmentMetaAPITest extends IntegrationTestBase {
             .root("find { it.contactType == '%s' }")
             .body("description", alcohol, equalTo("Citizenship Alcohol Session (NS)"))
             .body("requiresLocation", alcohol, equalTo("REQUIRED"))
-            .body("orderTypes", alcohol, equalTo(List.of("CJA_2003")))
+            .body("orderTypes", alcohol, equalTo(List.of("CJA")))
             .body("description", homeVisit, equalTo("Home Visit to Case (NS)"))
             .body("requiresLocation", homeVisit, equalTo("NOT_REQUIRED"))
-            .body("orderTypes", homeVisit, equalTo(List.of("CJA_2003", "LEGACY")))
+            .body("orderTypes", homeVisit, equalTo(List.of("CJA", "LEGACY")))
             .body("description", other, equalTo("Other Appointment (Non NS)"))
             .body("requiresLocation", other, equalTo("OPTIONAL"))
-            .body("orderTypes", other, equalTo(List.of("CJA_2003", "LEGACY")))
+            .body("orderTypes", other, equalTo(List.of("CJA", "LEGACY")))
             .body("orderTypes", polygraph, equalTo(List.of()));
     }
 }

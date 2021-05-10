@@ -31,17 +31,17 @@ public class AppointmentType {
     @JsonInclude
     @ApiModelProperty(
         name = "Order types appropriate for this appointment type",
-        example = "[\"LEGACY\", \"CJA_2003\"]",
+        example = "[\"LEGACY\", \"CJA\"]",
         position = 4
     )
     private List<OrderType> orderTypes;
 
     public enum OrderType {
         /**
-         * A CJA 2003 order.
+         * A CJA 2003 or later order.
          * https://www.legislation.gov.uk/ukpga/2003/44/contents
          */
-        CJA_2003,
+        CJA,
 
         /**
          * An order that predates CJA 2003.

@@ -20,14 +20,12 @@ import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeReque
 import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
-import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 import uk.gov.justice.digital.delius.transformers.AppointmentTransformer;
 import uk.gov.justice.digital.delius.utils.DateConverter;
 import uk.gov.justice.digital.delius.utils.JsonPatchSupport;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -97,7 +95,7 @@ public class AppointmentService {
                 .description(type.getDescription())
                 .requiresLocation(locationFlagToRequiredOptional(type.getLocationFlag()))
                 .orderTypes(Stream.of(
-                    Pair.of(OrderType.CJA_2003, type.getCjaOrderLevel()),
+                    Pair.of(OrderType.CJA, type.getCjaOrderLevel()),
                     Pair.of(OrderType.LEGACY, type.getLegacyOrderLevel())
                 ).filter(x -> x.getValue().equals("Y")).map(Pair::getKey).collect(Collectors.toList()))
                 .build())
