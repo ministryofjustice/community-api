@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import com.github.fge.jsonpatch.JsonPatch;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,6 +12,8 @@ import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewNsi;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NsiDto;
+
+import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 
 @Service
 @Slf4j
@@ -33,7 +36,7 @@ public class DeliusApiClient {
             .block();
     }
 
-    public ContactDto createNewContract(NewContact newContact) {
+    public ContactDto createNewContact(NewContact newContact) {
         return webClient.post()
             .uri("/v1/contact")
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -43,4 +46,14 @@ public class DeliusApiClient {
             .bodyToMono(ContactDto.class)
             .block();
     }
-}
+
+    public ContactDto patchContact(Long contactId, JsonPatch jsonPatch) {
+        return webClient.patch()
+            .uri(fromPath("/v1/contact/{id}").buildAndExpand(contactId).toUriString())
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+            .bodyValue(jsonPatch)
+            .retrieve()
+            .bodyToMono(ContactDto.class)
+            .block();
+    }}

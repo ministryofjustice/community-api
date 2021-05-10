@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.0
+  hmpps: ministryofjustice/hmpps@3.1
   aws-cli: circleci/aws-cli@1.4.0
   aws-ecs: circleci/aws-ecs@2.0.0
   mem: circleci/rememborb@0.0.1
@@ -19,7 +19,7 @@ jobs:
             - gradle-{{ checksum "build.gradle" }}
             - gradle-
       - run:
-          command: ./gradlew check --exclude-task testIntegration
+          command: ./gradlew -Dorg.gradle.jvmargs="--illegal-access=permit" -Dkotlin.daemon.jvm.options="--illegal-access=permit" check --exclude-task testIntegration
       - save_cache:
           paths:
             - ~/.gradle
@@ -43,7 +43,7 @@ jobs:
           command: |
             circleci tests glob "src/testIntegration/**/*.java" | circleci tests split | xargs -n 1 echo
       - run:
-          command: ./gradlew testIntegration -PtestFilter="`circleci tests glob "src/testIntegration/**/*.java" | circleci tests split`"
+          command: ./gradlew -Dorg.gradle.jvmargs="--illegal-access=permit" -Dkotlin.daemon.jvm.options="--illegal-access=permit" testIntegration -PtestFilter="`circleci tests glob "src/testIntegration/**/*.java" | circleci tests split`"
       - save_cache:
           paths:
             - ~/.gradle
@@ -54,15 +54,6 @@ jobs:
           path: build/reports/tests
   deploy:
     parameters:
-      container-name:
-        type: string
-        default: community-api
-      service-name:
-        type: string
-        default: $AWS_ECS_ENV_NAME-community-api-service
-      family:
-        type: string
-        default: $AWS_ECS_ENV_NAME-community-api-task-definition
       env-vars:
         type: string
     docker:
@@ -86,9 +77,9 @@ jobs:
             aws configure set aws_session_token "$(echo $temp_role | jq .Credentials.SessionToken | xargs)" --profile default
       - aws-ecs/update-service:
           cluster-name: $AWS_ECS_CLUSTER_NAME
-          family: << parameters.family >>
-          service-name: << parameters.service-name >>
-          container-image-name-updates: container=<< parameters.container-name >>,tag=$APP_VERSION
+          family: $AWS_ECS_ENV_NAME-community-api-task-definition
+          service-name: $AWS_ECS_ENV_NAME-community-api-service
+          container-image-name-updates: container=community-api,tag=$APP_VERSION
           container-env-var-updates: << parameters.env-vars >>
           verify-revision-is-deployed: true
 
@@ -121,23 +112,20 @@ workflows:
       - deploy:
           name: deploy_to_test
           context: hmpps-delius-deploy-to-ecs-test
-          container-name: offenderapi
-          service-name: del-delius-offapi-pri-ecs
-          family: del-delius-offapi-pri-ecs
           env-vars: >-
-            container=offenderapi,name=SPRING_PROFILES_ACTIVE,                                      value=oracle,
-            container=offenderapi,name=SPRING_DATASOURCE_USERNAME,                                  value=delius_pool,
-            container=offenderapi,name=DELIUSAPI_BASEURL,                                           value=http://delius-api.ecs.cluster:8080/,
-            container=offenderapi,name=SMOKE_TEST_AWARE,                                            value=true,
-            container=offenderapi,name=SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI,       value=https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_CUSTODY,                                value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_BOOKING_NUMBER,                         value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_KEYDATES,                               value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_NOMS_NUMBER,                            value=true,
-            container=offenderapi,name=FEATURES_APPLY_LIMITED_ACCESS_MARKERS,                       value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_BULK_KEY_DATES,  value=false,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_KEY_DATES,       value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=true
+            container=community-api,name=SPRING_PROFILES_ACTIVE,                                      value=oracle,
+            container=community-api,name=SPRING_DATASOURCE_USERNAME,                                  value=delius_pool,
+            container=community-api,name=DELIUSAPI_BASEURL,                                           value=http://delius-api.ecs.cluster:8080/,
+            container=community-api,name=SMOKE_TEST_AWARE,                                            value=true,
+            container=community-api,name=SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI,       value=https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json,
+            container=community-api,name=FEATURES_NOMS_UPDATE_CUSTODY,                                value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_BOOKING_NUMBER,                         value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_KEYDATES,                               value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_NOMS_NUMBER,                            value=true,
+            container=community-api,name=FEATURES_APPLY_LIMITED_ACCESS_MARKERS,                       value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_BULK_KEY_DATES,  value=false,
+            container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_KEY_DATES,       value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=true
           requires:
             - deploy_to_dev
           filters:
@@ -150,67 +138,58 @@ workflows:
       - deploy:
           name: deploy_to_stage
           context: hmpps-delius-deploy-to-ecs-stage
-          container-name: offenderapi
-          service-name: del-delius-offapi-pri-ecs
-          family: del-delius-offapi-pri-ecs
           env-vars: >-
-            container=offenderapi,name=SPRING_PROFILES_ACTIVE,                                      value=oracle,
-            container=offenderapi,name=SPRING_DATASOURCE_USERNAME,                                  value=delius_pool,
-            container=offenderapi,name=DELIUSAPI_BASEURL,                                           value=http://delius-api.ecs.cluster:8080/,
-            container=offenderapi,name=SMOKE_TEST_AWARE,                                            value=true,
-            container=offenderapi,name=SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI,       value=https://sign-in-preprod.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_CUSTODY,                                value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_BOOKING_NUMBER,                         value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_KEYDATES,                               value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_NOMS_NUMBER,                            value=true,
-            container=offenderapi,name=FEATURES_APPLY_LIMITED_ACCESS_MARKERS,                       value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_BULK_KEY_DATES,  value=false,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_KEY_DATES,       value=false,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=false
+            container=community-api,name=SPRING_PROFILES_ACTIVE,                                      value=oracle,
+            container=community-api,name=SPRING_DATASOURCE_USERNAME,                                  value=delius_pool,
+            container=community-api,name=DELIUSAPI_BASEURL,                                           value=http://delius-api.ecs.cluster:8080/,
+            container=community-api,name=SMOKE_TEST_AWARE,                                            value=true,
+            container=community-api,name=SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI,       value=https://sign-in-preprod.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json,
+            container=community-api,name=FEATURES_NOMS_UPDATE_CUSTODY,                                value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_BOOKING_NUMBER,                         value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_KEYDATES,                               value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_NOMS_NUMBER,                            value=true,
+            container=community-api,name=FEATURES_APPLY_LIMITED_ACCESS_MARKERS,                       value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_BULK_KEY_DATES,  value=false,
+            container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_KEY_DATES,       value=false,
+            container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=false
           requires:
             - request-pre-prod-approval
       - deploy:
           name: deploy_to_perf
           context: hmpps-delius-deploy-to-ecs-perf
-          container-name: offenderapi
-          service-name: del-delius-offapi-pri-ecs
-          family: del-delius-offapi-pri-ecs
           env-vars: >-
-            container=offenderapi,name=SPRING_PROFILES_ACTIVE,                                      value=oracle,
-            container=offenderapi,name=SPRING_DATASOURCE_USERNAME,                                  value=delius_pool,
-            container=offenderapi,name=DELIUSAPI_BASEURL,                                           value=http://delius-api.ecs.cluster:8080/,
-            container=offenderapi,name=SMOKE_TEST_AWARE,                                            value=true,
-            container=offenderapi,name=SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI,       value=https://sign-in-preprod.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_CUSTODY,                                value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_BOOKING_NUMBER,                         value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_KEYDATES,                               value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_NOMS_NUMBER,                            value=true,
-            container=offenderapi,name=FEATURES_APPLY_LIMITED_ACCESS_MARKERS,                       value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_BULK_KEY_DATES,  value=false,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_KEY_DATES,       value=false,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=false
+            container=community-api,name=SPRING_PROFILES_ACTIVE,                                      value=oracle,
+            container=community-api,name=SPRING_DATASOURCE_USERNAME,                                  value=delius_pool,
+            container=community-api,name=DELIUSAPI_BASEURL,                                           value=http://delius-api.ecs.cluster:8080/,
+            container=community-api,name=SMOKE_TEST_AWARE,                                            value=true,
+            container=community-api,name=SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI,       value=https://sign-in-preprod.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json,
+            container=community-api,name=FEATURES_NOMS_UPDATE_CUSTODY,                                value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_BOOKING_NUMBER,                         value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_KEYDATES,                               value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_NOMS_NUMBER,                            value=true,
+            container=community-api,name=FEATURES_APPLY_LIMITED_ACCESS_MARKERS,                       value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_BULK_KEY_DATES,  value=false,
+            container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_KEY_DATES,       value=false,
+            container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=false
           requires:
             - request-pre-prod-approval
       - deploy:
           name: deploy_to_pre_prod
           context: hmpps-delius-deploy-to-ecs-pre-prod
-          container-name: offenderapi
-          service-name: del-delius-offapi-pri-ecs
-          family: del-delius-offapi-pri-ecs
           env-vars: >-
-            container=offenderapi,name=SPRING_PROFILES_ACTIVE,                                      value=oracle,
-            container=offenderapi,name=SPRING_DATASOURCE_USERNAME,                                  value=delius_pool,
-            container=offenderapi,name=DELIUSAPI_BASEURL,                                           value=http://delius-api.ecs.cluster:8080/,
-            container=offenderapi,name=SMOKE_TEST_AWARE,                                            value=false,
-            container=offenderapi,name=SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI,       value=https://sign-in-preprod.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_CUSTODY,                                value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_BOOKING_NUMBER,                         value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_KEYDATES,                               value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_NOMS_NUMBER,                            value=true,
-            container=offenderapi,name=FEATURES_APPLY_LIMITED_ACCESS_MARKERS,                       value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_BULK_KEY_DATES,  value=false,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_KEY_DATES,       value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=true
+            container=community-api,name=SPRING_PROFILES_ACTIVE,                                      value=oracle,
+            container=community-api,name=SPRING_DATASOURCE_USERNAME,                                  value=delius_pool,
+            container=community-api,name=DELIUSAPI_BASEURL,                                           value=http://delius-api.ecs.cluster:8080/,
+            container=community-api,name=SMOKE_TEST_AWARE,                                            value=false,
+            container=community-api,name=SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI,       value=https://sign-in-preprod.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json,
+            container=community-api,name=FEATURES_NOMS_UPDATE_CUSTODY,                                value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_BOOKING_NUMBER,                         value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_KEYDATES,                               value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_NOMS_NUMBER,                            value=true,
+            container=community-api,name=FEATURES_APPLY_LIMITED_ACCESS_MARKERS,                       value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_BULK_KEY_DATES,  value=false,
+            container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_KEY_DATES,       value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=true
           requires:
             - request-pre-prod-approval
       - request-prod-approval:
@@ -221,23 +200,20 @@ workflows:
       - deploy:
           name: deploy_to_production
           context: hmpps-delius-deploy-to-ecs-prod
-          container-name: offenderapi
-          service-name: del-delius-offapi-pri-ecs
-          family: del-delius-offapi-pri-ecs
           env-vars: >-
-            container=offenderapi,name=SPRING_PROFILES_ACTIVE,                                      value=oracle,
-            container=offenderapi,name=SPRING_DATASOURCE_USERNAME,                                  value=delius_pool,
-            container=offenderapi,name=DELIUSAPI_BASEURL,                                           value=http://delius-api.ecs.cluster:8080/,
-            container=offenderapi,name=SMOKE_TEST_AWARE,                                            value=false,
-            container=offenderapi,name=SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI,       value=https://sign-in.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_CUSTODY,                                value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_BOOKING_NUMBER,                         value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_KEYDATES,                               value=true,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_NOMS_NUMBER,                            value=true,
-            container=offenderapi,name=FEATURES_APPLY_LIMITED_ACCESS_MARKERS,                       value=false,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_BULK_KEY_DATES,  value=false,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_KEY_DATES,       value=false,
-            container=offenderapi,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=false
+            container=community-api,name=SPRING_PROFILES_ACTIVE,                                      value=oracle,
+            container=community-api,name=SPRING_DATASOURCE_USERNAME,                                  value=delius_pool,
+            container=community-api,name=DELIUSAPI_BASEURL,                                           value=http://delius-api.ecs.cluster:8080/,
+            container=community-api,name=SMOKE_TEST_AWARE,                                            value=false,
+            container=community-api,name=SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI,       value=https://sign-in.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json,
+            container=community-api,name=FEATURES_NOMS_UPDATE_CUSTODY,                                value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_BOOKING_NUMBER,                         value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_KEYDATES,                               value=true,
+            container=community-api,name=FEATURES_NOMS_UPDATE_NOMS_NUMBER,                            value=true,
+            container=community-api,name=FEATURES_APPLY_LIMITED_ACCESS_MARKERS,                       value=false,
+            container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_BULK_KEY_DATES,  value=false,
+            container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_KEY_DATES,       value=false,
+            container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=false
           requires:
             - request-prod-approval
 

@@ -57,6 +57,30 @@ public class DeliusApiMockServer extends WireMockServer {
                 "    \"id\": 2500029015,\n" +
                 "    \"offenderCrn\": \"X320741\",\n" +
                 "    \"type\": \"CRSAPT\",\n" +
+                "    \"typeDescription\": \"Appointment with CRS Provider (NS)\",\n" +
+                "    \"provider\": \"CRS\",\n" +
+                "    \"team\": \"CRSUAT\",\n" +
+                "    \"staff\": \"CRSUATU\",\n" +
+                "    \"officeLocation\": \"CRSSHEF\",\n" +
+                "    \"date\": \"2021-03-01\",\n" +
+                "    \"startTime\": \"13:01:02\",\n" +
+                "    \"endTime\": \"14:03:04\",\n" +
+                "    \"notes\": \"http://url\",\n" +
+                "    \"eventId\": 2500295343,\n" +
+                "    \"requirementId\": 2500428188\n" +
+                "    }\n" +
+                "}")
+        ));
+    }
+
+    public void stubPatchContactToDeliusApi() {
+        stubFor(patch(urlPathMatching("/v1/contact/2500029015")).willReturn(aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withStatus(200)
+            .withBody("{\n" +
+                "    \"id\": 2500029015,\n" +
+                "    \"offenderCrn\": \"X320741\",\n" +
+                "    \"type\": \"CRSAPT\",\n" +
                 "    \"provider\": \"CRS\",\n" +
                 "    \"team\": \"CRSUAT\",\n" +
                 "    \"staff\": \"CRSUATU\",\n" +

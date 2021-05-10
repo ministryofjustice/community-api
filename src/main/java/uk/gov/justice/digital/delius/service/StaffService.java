@@ -12,6 +12,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffHelperRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
+import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusUser;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 import uk.gov.justice.digital.delius.transformers.StaffTransformer;
 
@@ -65,7 +66,7 @@ public class StaffService {
     public Optional<StaffDetails> getStaffDetailsByUsername(final String username) {
         return staffRepository.findByUsername(username)
                 .map(StaffTransformer::staffDetailsOf)
-                .map(addEmailFromLdap());
+                .map(addFieldsFromLdap());
     }
 
     @Transactional(readOnly = true)
@@ -75,7 +76,7 @@ public class StaffService {
         return staffRepository.findByUsernames(capitalisedUsernames)
                 .stream()
                 .map(StaffTransformer::staffDetailsOf)
-                .map(addEmailFromLdap())
+                .map(addFieldsFromLdap())
                 .collect(Collectors.toList());
     }
 
@@ -116,6 +117,17 @@ public class StaffService {
                         .toBuilder()
                         .email(ldapRepository.getEmail(staffDetails.getUsername()))
                         .build();
+    }
+
+    private Function<StaffDetails, StaffDetails> addFieldsFromLdap() {
+        return staffDetails -> {
+            var nDeliusUser = ldapRepository.getDeliusUserNoRoles(staffDetails.getUsername());
+            return staffDetails
+                .toBuilder()
+                .email(nDeliusUser.map(NDeliusUser::getMail).orElse(null))
+                .telephoneNumber(nDeliusUser.map(NDeliusUser::getTelephoneNumber).orElse(null))
+                .build();
+        };
     }
 
     private Staff createStaffInArea(final String surname, final String forename, final ProbationArea probationArea) {

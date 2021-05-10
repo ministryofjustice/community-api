@@ -52,28 +52,24 @@ public class TierService {
     }
 
     private void writeContact(Offender offender, StandardReference changeReason, StandardReference updatedTier, Map<String, String> telemetryProperties) {
-        final var offenderManager = getOffenderManager(offender, telemetryProperties);
-        Staff staff;
-        Team team;
-        try {
-            final var areaCode = offenderManager.getProbationArea().getCode();
-            final var staffCode = String.format("%sUTSO", areaCode);
-            staff = getStaff(staffCode, telemetryProperties);
-            final var teamCode = String.format("%sUTS", areaCode);
-            team = getTeam(teamCode, telemetryProperties);
-        } catch (NotFoundException e) {
-            staff = offenderManager.getStaff();
-            team = offenderManager.getTeam();
-        }
-
+        final var areaCode = getAreaCode(offender, telemetryProperties);
+        final var staff = getStaff(areaCode, telemetryProperties);
+        final var team = getTeam(areaCode, telemetryProperties);
         contactService.addContactForTierUpdate(offender.getOffenderId(), LocalDateTime.now(), updatedTier.getCodeDescription(), changeReason.getCodeDescription(), staff, team);
     }
 
-    private Team getTeam(String teamCode, Map<String, String> telemetryProperties) {
+    private String getAreaCode(Offender offender, Map<String, String> telemetryProperties) {
+        final var offenderManager = getOffenderManager(offender, telemetryProperties);
+        return offenderManager.getProbationArea().getCode();
+    }
+
+    private Team getTeam(String areaCode, Map<String, String> telemetryProperties) {
+        final var teamCode = String.format("%sUTS", areaCode);
         return teamRepository.findByCode(teamCode).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureTeamNotFound", String.format("Could not find team with code %s", teamCode)));
     }
 
-    private Staff getStaff(String staffCode, Map<String, String> telemetryProperties) {
+    private Staff getStaff(String areaCode, Map<String, String> telemetryProperties) {
+        final var staffCode = String.format("%sUTSO", areaCode);
         return staffRepository.findByOfficerCode(staffCode).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureStaffNotFound", String.format("Could not find staff with officer code %s", staffCode)));
     }
 

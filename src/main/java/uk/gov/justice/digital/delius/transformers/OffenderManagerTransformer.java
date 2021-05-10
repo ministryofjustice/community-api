@@ -8,12 +8,18 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import java.util.Objects;
 import java.util.Optional;
 
-import static java.util.Optional.empty;
-
 public class OffenderManagerTransformer {
     private static final String UNALLOCATED_STAFF_CODE_SUFFIX = "U";
 
     public static CommunityOrPrisonOffenderManager offenderManagerOf(final OffenderManager offenderManager) {
+        return offenderManagerOf(offenderManager, true);
+    }
+
+    public static CommunityOrPrisonOffenderManager offenderManagerOf(final PrisonOffenderManager offenderManager) {
+        return offenderManagerOf(offenderManager, true);
+    }
+
+    public static CommunityOrPrisonOffenderManager offenderManagerOf(final OffenderManager offenderManager, final boolean includeProbationAreaTeams) {
         return CommunityOrPrisonOffenderManager
                 .builder()
                 .staffCode(staffCodeOf(offenderManager))
@@ -22,8 +28,8 @@ public class OffenderManagerTransformer {
                 .staff(Optional
                         .ofNullable(offenderManager.getStaff())
                         .map(staff -> StaffTransformer.contactableHumanOf(staff,
-                            empty(),
-                            empty()))
+                            Optional.ofNullable(offenderManager.getEmailAddress()),
+                            Optional.ofNullable(offenderManager.getTelephoneNumber())))
                         .orElse(null))
                 .team(Optional
                         .ofNullable(offenderManager.getTeam())
@@ -32,14 +38,14 @@ public class OffenderManagerTransformer {
                 .isPrisonOffenderManager(false)
                 .probationArea(Optional
                         .ofNullable(offenderManager.getProbationArea())
-                        .map(ProbationAreaTransformer::probationAreaOf)
+                        .map(probationArea -> ProbationAreaTransformer.probationAreaOf(probationArea, includeProbationAreaTeams))
                         .orElse(null))
                 .isResponsibleOfficer(Objects.nonNull(offenderManager.getActiveResponsibleOfficer()))
                 .fromDate(offenderManager.getAllocationDate())
                 .build();
     }
 
-    public static CommunityOrPrisonOffenderManager offenderManagerOf(final PrisonOffenderManager offenderManager) {
+    public static CommunityOrPrisonOffenderManager offenderManagerOf(final PrisonOffenderManager offenderManager, final boolean includeProbationAreaTeams) {
         return CommunityOrPrisonOffenderManager
                 .builder()
                 .staffCode(staffCodeOf(offenderManager))
@@ -58,7 +64,7 @@ public class OffenderManagerTransformer {
                 .isPrisonOffenderManager(true)
                 .probationArea(Optional
                         .ofNullable(offenderManager.getProbationArea())
-                        .map(ProbationAreaTransformer::probationAreaOf)
+                        .map(probationArea -> ProbationAreaTransformer.probationAreaOf(probationArea, includeProbationAreaTeams))
                         .orElse(null))
                 .isResponsibleOfficer(Objects.nonNull(offenderManager.getActiveResponsibleOfficer()))
                 .fromDate(offenderManager.getAllocationDate())

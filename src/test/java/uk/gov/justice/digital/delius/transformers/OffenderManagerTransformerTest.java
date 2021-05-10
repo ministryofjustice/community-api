@@ -10,10 +10,10 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.digital.delius.util.EntityHelper.*;
 
-public class OffenderManagerTransformerTest {
+class OffenderManagerTransformerTest {
 
     @Test
-    public void staffNameDetailsTakenFromStaffInOffenderManager() {
+    void staffNameDetailsTakenFromStaffInOffenderManager() {
         assertThat(OffenderManagerTransformer.offenderManagerOf(
                 anOffenderManager(
                         aStaff()
@@ -24,12 +24,13 @@ public class OffenderManagerTransformerTest {
                                 .build(),
                         aTeam()
                 )
+
         ).getStaff())
-                .isEqualTo(ContactableHuman.builder().forenames("John George").surname("Smith").build());
+                .isEqualTo(ContactableHuman.builder().forenames("John George").surname("Smith").email("no-one@nowhere.com").phoneNumber("020 1111 2222").build());
     }
 
     @Test
-    public void staffCodeTakenFromStaffInOffenderManager() {
+    void staffCodeTakenFromStaffInOffenderManager() {
         assertThat(OffenderManagerTransformer.offenderManagerOf(
                 anOffenderManager(
                         aStaff()
@@ -43,7 +44,7 @@ public class OffenderManagerTransformerTest {
     }
 
     @Test
-    public void teamsTakenFromTeamInOffenderManager() {
+    void teamsTakenFromTeamInOffenderManager() {
         assertThat(OffenderManagerTransformer.offenderManagerOf(
                 anOffenderManager(
                         aStaff()
@@ -55,7 +56,7 @@ public class OffenderManagerTransformerTest {
     }
 
     @Test
-    public void staffNameDetailsTakenFromStaffInPrisonOffenderManager() {
+    void staffNameDetailsTakenFromStaffInPrisonOffenderManager() {
         assertThat(OffenderManagerTransformer.offenderManagerOf(
                 aPrisonOffenderManager(
                         aStaff()
@@ -71,7 +72,7 @@ public class OffenderManagerTransformerTest {
     }
 
     @Test
-    public void staffCodeTakenFromStaffInPrisonOffenderManager() {
+    void staffCodeTakenFromStaffInPrisonOffenderManager() {
         assertThat(OffenderManagerTransformer.offenderManagerOf(
                 aPrisonOffenderManager(
                         aStaff()
@@ -85,7 +86,7 @@ public class OffenderManagerTransformerTest {
     }
 
     @Test
-    public void teamsTakenFromTeamInPrisonOffenderManager() {
+    void teamsTakenFromTeamInPrisonOffenderManager() {
         assertThat(OffenderManagerTransformer.offenderManagerOf(
                 aPrisonOffenderManager(
                         aStaff()
@@ -97,7 +98,7 @@ public class OffenderManagerTransformerTest {
     }
 
     @Test
-    public void unallocatedSetWhenStaffCodeEndsInLetterU() {
+    void unallocatedSetWhenStaffCodeEndsInLetterU() {
         assertThat(OffenderManagerTransformer.offenderManagerOf(
                 anOffenderManager(
                         aStaff()
@@ -119,7 +120,7 @@ public class OffenderManagerTransformerTest {
     }
 
     @Test
-    public void unallocatedSetWhenStaffCodeEndsInLetterUForPrisonOffenderManager() {
+    void unallocatedSetWhenStaffCodeEndsInLetterUForPrisonOffenderManager() {
         assertThat(OffenderManagerTransformer.offenderManagerOf(
                 aPrisonOffenderManager(
                         aStaff()
@@ -141,7 +142,7 @@ public class OffenderManagerTransformerTest {
     }
 
     @Test
-    public void willSetPrisonOffenderManagerIndicator() {
+    void willSetPrisonOffenderManagerIndicator() {
         assertThat(OffenderManagerTransformer
                 .offenderManagerOf(anActivePrisonOffenderManager())
                 .getIsPrisonOffenderManager()).isTrue();
@@ -151,7 +152,7 @@ public class OffenderManagerTransformerTest {
     }
 
     @Test
-    public void probationAreaCopiedFromOffenderManager() {
+    void probationAreaCopiedFromOffenderManager() {
         assertThat(OffenderManagerTransformer.offenderManagerOf(
                 anActiveOffenderManager()
                         .toBuilder()
@@ -167,8 +168,8 @@ public class OffenderManagerTransformerTest {
     }
 
     @Test
-    public void probationAreaCopiedFromPrisonOffenderManager() {
-        assertThat(OffenderManagerTransformer.offenderManagerOf(
+    void probationAreaCopiedFromPrisonOffenderManager() {
+        var probationArea = OffenderManagerTransformer.offenderManagerOf(
                 anActivePrisonOffenderManager()
                         .toBuilder()
                         .probationArea(
@@ -177,13 +178,34 @@ public class OffenderManagerTransformerTest {
                                         .code("WWI")
                                         .build())
                         .build()
-        ).getProbationArea()
-                .getCode())
-                .isEqualTo("WWI");
+        ).getProbationArea();
+
+        assertThat(probationArea.getProbationAreaId()).isEqualTo(1L);
+        assertThat(probationArea.getCode()).isEqualTo("WWI");
+        assertThat(probationArea.getTeams()).hasSize(1);
     }
 
     @Test
-    public void institutionCopiedFromPrisonOffenderManagerProbationArea() {
+    void probationAreaCopiedFromPrisonOffenderManagerTeamsExcluded() {
+        var probationArea = OffenderManagerTransformer.offenderManagerOf(
+            anActivePrisonOffenderManager()
+                .toBuilder()
+                .probationArea(
+                    aPrisonProbationArea()
+                        .toBuilder()
+                        .code("WWI")
+                        .build())
+                .build(),
+            false
+        ).getProbationArea();
+
+        assertThat(probationArea.getProbationAreaId()).isEqualTo(1L);
+        assertThat(probationArea.getCode()).isEqualTo("WWI");
+        assertThat(probationArea.getTeams()).isNull();
+    }
+
+    @Test
+    void institutionCopiedFromPrisonOffenderManagerProbationArea() {
         assertThat(OffenderManagerTransformer.offenderManagerOf(
                 anActivePrisonOffenderManager()
                         .toBuilder()
@@ -202,7 +224,7 @@ public class OffenderManagerTransformerTest {
     }
 
     @Test
-    public void OffenderManagerMarkedAsResponsibleOfficerWhenLinkedAndNotEndDated() {
+    void OffenderManagerMarkedAsResponsibleOfficerWhenLinkedAndNotEndDated() {
         assertThat(OffenderManagerTransformer.offenderManagerOf(
                 anActiveOffenderManager()
                         .toBuilder()
@@ -234,7 +256,7 @@ public class OffenderManagerTransformerTest {
 
     }
     @Test
-    public void prisonerOffenderManagerMarkedAsResponsibleOfficerWhenLinkedAndNotEndDated() {
+    void prisonerOffenderManagerMarkedAsResponsibleOfficerWhenLinkedAndNotEndDated() {
         assertThat(OffenderManagerTransformer.offenderManagerOf(
                 anActivePrisonOffenderManager()
                         .toBuilder()

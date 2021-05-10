@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,8 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.OffsetDateTime;
 
 @Data
 @Builder
@@ -17,20 +15,20 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class AppointmentCreateRequest {
 
-    @NotNull
-    @ApiModelProperty(required = true)
-    @JsonFormat(pattern="yyyy-MM-dd")
-    private LocalDate appointmentDate;
+    @ApiModelProperty
+    private Long requirementId;
 
     @NotNull
     @ApiModelProperty(required = true)
-    @JsonFormat(pattern="HH:mm:ss")
-    private LocalTime appointmentStartTime;
+    private String contactType;
 
     @NotNull
     @ApiModelProperty(required = true)
-    @JsonFormat(pattern="HH:mm:ss")
-    private LocalTime appointmentEndTime;
+    private OffsetDateTime appointmentStart;
+
+    @NotNull
+    @ApiModelProperty(required = true)
+    private OffsetDateTime appointmentEnd;
 
     @NotNull
     @ApiModelProperty(required = true)
@@ -42,5 +40,13 @@ public class AppointmentCreateRequest {
 
     @NotNull
     @ApiModelProperty(required = true)
-    private String context;
+    private String providerCode;
+
+    @NotNull
+    @ApiModelProperty(required = true)
+    private String teamCode;
+
+    @NotNull
+    @ApiModelProperty(required = true)
+    private String staffCode;
 }

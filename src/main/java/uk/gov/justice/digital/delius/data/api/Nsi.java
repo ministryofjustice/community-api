@@ -18,6 +18,7 @@ import java.util.List;
 public class Nsi {
     private Long nsiId;
     private KeyValue nsiType;
+    private KeyValue nsiSubType;
     private KeyValue nsiOutcome;
     private Requirement requirement;
     private KeyValue nsiStatus;

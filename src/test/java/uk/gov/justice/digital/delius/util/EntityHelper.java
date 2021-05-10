@@ -46,6 +46,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalContact;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalContactDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderTeam;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RAssessmentType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RCourtReportType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RInstitution;
@@ -71,6 +72,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.codehaus.groovy.runtime.InvokerHelper.asList;
 
 @SuppressWarnings("SameParameterValue")
 public class EntityHelper {
@@ -595,6 +598,7 @@ public class EntityHelper {
     public static Staff aStaff(final String officerCode) {
         return Staff
                 .builder()
+                .user(aUser())
                 .officerCode(officerCode)
                 .forename("John")
                 .surname("Smith")
@@ -667,6 +671,7 @@ public class EntityHelper {
                 .activeFlag(1L)
                 .endDate(null)
                 .responsibleOfficers(mutableListOf(aResponsibleOfficer()))
+                .probationArea(aPrisonProbationArea())
                 .build();
     }
 
@@ -705,6 +710,8 @@ public class EntityHelper {
                         .codeDescription("Automatic allocation")
                         .build())
                 .probationArea(aProbationArea())
+                .emailAddress("no-one@nowhere.com")
+                .telephoneNumber("020 1111 2222")
                 .build();
     }
 
@@ -762,7 +769,7 @@ public class EntityHelper {
                 .privateSector(0L)
                 .organisation(Organisation.builder().build())
                 .providerTeams(new ArrayList<>())
-                .teams(new ArrayList<>())
+                .teams(new ArrayList<>(asList(aTeam())))
                 .build();
     }
 
@@ -773,6 +780,7 @@ public class EntityHelper {
                 .probationAreaId(1L)
                 .description("HMP Wandsworth")
                 .institution(aPrisonInstitution())
+                .teams(new ArrayList<>(asList(aTeam())))
                 .build();
     }
 

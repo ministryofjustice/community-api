@@ -1,25 +1,39 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.ReplaceOperation;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
+import uk.gov.justice.digital.delius.data.api.AppointmentUpdateResponse;
+import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
+import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
 import uk.gov.justice.digital.delius.service.AppointmentService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.stream.StreamSupport;
 
+import static com.fasterxml.jackson.databind.node.TextNode.valueOf;
+import static com.github.fge.jackson.jsonpointer.JsonPointer.of;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -44,13 +58,18 @@ public class AppointmentBookingControllerTest {
 
     @Test
     public void createsAppointment() {
+        OffsetDateTime now = Instant.now().atZone(ZoneId.of("UTC")).toOffsetDateTime().truncatedTo(ChronoUnit.SECONDS);
+
         AppointmentCreateRequest appointmentCreateRequest = AppointmentCreateRequest.builder()
-            .appointmentDate(LocalDate.now())
-            .appointmentStartTime(LocalTime.now().truncatedTo(ChronoUnit.SECONDS))
-            .appointmentEndTime(LocalTime.now().truncatedTo(ChronoUnit.SECONDS))
+            .requirementId(123456L)
+            .contactType("CRSAPT")
+            .appointmentStart(now)
+            .appointmentEnd(now.plusHours(1))
             .officeLocationCode("CRSSHEF")
             .notes("http://url")
-            .context("commissioned-rehabilitation-services")
+            .providerCode("CRS")
+            .staffCode("CRSUAT")
+            .teamCode("CRSUATU")
             .build();
         when(appointmentService.createAppointment("1", 2L, appointmentCreateRequest))
             .thenReturn(AppointmentCreateResponse.builder().appointmentId(3L).build());
@@ -68,5 +87,61 @@ public class AppointmentBookingControllerTest {
             .getAppointmentId();
 
         assertThat(appointmentIdResponse).isEqualTo(3L);
+    }
+
+    @Test
+    public void createsAppointmentUsingContextlessClientEndpoint() {
+        OffsetDateTime now = Instant.now().atZone(ZoneId.of("UTC")).toOffsetDateTime().truncatedTo(ChronoUnit.SECONDS);
+
+        ContextlessAppointmentCreateRequest appointmentCreateRequest = ContextlessAppointmentCreateRequest.builder()
+            .appointmentStart(now)
+            .appointmentEnd(now.plusHours(1))
+            .officeLocationCode("CRSSHEF")
+            .notes("http://url")
+            .build();
+        when(appointmentService.createAppointment("1", 2L, "commissioned-rehabilitation-services", appointmentCreateRequest))
+            .thenReturn(AppointmentCreateResponse.builder().appointmentId(3L).build());
+
+        Long appointmentIdResponse = given()
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(appointmentCreateRequest)
+            .when()
+            .post("/secure/offenders/crn/1/sentence/2/appointments/context/commissioned-rehabilitation-services")
+            .then()
+            .statusCode(201)
+            .extract()
+            .body()
+            .as(AppointmentCreateResponse.class)
+            .getAppointmentId();
+
+        assertThat(appointmentIdResponse).isEqualTo(3L);
+    }
+
+    @Test
+    public void updatesAppointmentOutcomeUsingContextlessClientEndpoint() {
+
+        ContextlessAppointmentOutcomeRequest request = ContextlessAppointmentOutcomeRequest.builder()
+            .notes("notes")
+            .attended("LATE")
+            .notifyPPOfAttendanceBehaviour(true)
+            .build();
+
+        when(appointmentService.updateAppointmentOutcome(eq("1"), eq(2L), eq("commissioned-rehabilitation-services"),
+            eq(request)))
+            .thenReturn(AppointmentUpdateResponse.builder().appointmentId(2L).build());
+
+        Long appointmentIdResponse = given()
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(request)
+            .when()
+            .post("/secure/offenders/crn/1/appointments/2/outcome/context/commissioned-rehabilitation-services")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(AppointmentUpdateResponse.class)
+            .getAppointmentId();
+
+        assertThat(appointmentIdResponse).isEqualTo(2L);
     }
 }

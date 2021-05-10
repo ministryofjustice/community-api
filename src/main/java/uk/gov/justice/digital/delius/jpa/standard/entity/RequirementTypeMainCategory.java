@@ -14,6 +14,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "R_RQMNT_TYPE_MAIN_CATEGORY")
 public class RequirementTypeMainCategory {
+
+    public static final String REHABILITATION_ACTIVITY_REQUIREMENT_CODE = "F";
+
     @Id
     @Column(name = "RQMNT_TYPE_MAIN_CATEGORY_ID")
     private Long requirementTypeMainCategoryId;

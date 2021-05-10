@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
+import java.time.OffsetDateTime;
 
 @Data
 @Builder
@@ -15,4 +16,16 @@ public class AppointmentCreateResponse {
 
     @NotNull
     private Long appointmentId;
+
+    @NotNull
+    private OffsetDateTime appointmentStart;
+
+    @NotNull
+    private OffsetDateTime appointmentEnd;
+
+    @NotNull
+    private String type;
+
+    @NotNull
+    private String typeDescription;
 }

@@ -9,7 +9,8 @@ import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
 import uk.gov.justice.digital.delius.data.api.ReferralSentRequest;
 import uk.gov.justice.digital.delius.service.ReferralService;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 import static io.restassured.config.EncoderConfig.encoderConfig;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
@@ -22,6 +23,7 @@ public class ReferralControllerTest {
 
     private ReferralService referralService = mock(ReferralService.class);
     private static final String SOME_OFFENDER_CRN = "X0OOM";
+    private static final String INTEGRATION_CONTEXT = "commissioned-rehabilitation-services";
 
     @BeforeEach
     public void setup() {
@@ -49,9 +51,12 @@ public class ReferralControllerTest {
         given()
             .contentType(APPLICATION_JSON_VALUE)
             .body(ReferralSentRequest.builder()
-                .date(LocalDate.now())
-                .serviceCategory("Dependency and Recovery (D&R)")
-                .sentenceId(12354L).build()
+                .sentAt(OffsetDateTime.now())
+                .serviceCategoryId(UUID.fromString("76bcdb97-1dea-41c1-a4f8-899d88e5d679"))
+                .sentenceId(12354L)
+                .notes("comes notes")
+                .context(INTEGRATION_CONTEXT)
+                .build()
             )
             .when()
             .post(String.format("/secure/offenders/crn/%s/referral/sent", SOME_OFFENDER_CRN))
