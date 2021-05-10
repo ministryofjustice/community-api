@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.transformers;
 
+import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.ContactMapping;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
@@ -12,9 +13,13 @@ public class AppointmentCreateRequestTransformer {
     public static AppointmentCreateRequest appointmentOf(ContextlessAppointmentCreateRequest request,
                                                          Optional<Requirement> requirement,
                                                          IntegrationContext context) {
+        final var contactMapping = context.getContactMapping();
+
         return AppointmentCreateRequest.builder()
                 .requirementId(requirement.map(Requirement::getRequirementId).orElse(null))
-                .contactType(context.getContactMapping().getAppointmentContactType())
+                .contactType(request.getCountsTowardsRarDays() ?
+                    contactMapping.getAppointmentRarContactType() :
+                    contactMapping.getAppointmentNonRarContactType())
                 .appointmentStart(request.getAppointmentStart())
                 .appointmentEnd(request.getAppointmentEnd())
                 .officeLocationCode(request.getOfficeLocationCode())

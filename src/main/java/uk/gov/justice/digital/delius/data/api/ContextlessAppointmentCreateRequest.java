@@ -17,17 +17,24 @@ public class ContextlessAppointmentCreateRequest {
 
     @NotNull
     @ApiModelProperty(required = true)
+    private String contractType;
+
+    @NotNull
+    @ApiModelProperty(required = true)
     private OffsetDateTime appointmentStart;
 
     @NotNull
     @ApiModelProperty(required = true)
     private OffsetDateTime appointmentEnd;
 
-    @NotNull
-    @ApiModelProperty(required = true)
+    @ApiModelProperty
     private String officeLocationCode;
 
     @NotNull
     @ApiModelProperty(required = true)
     private String notes;
+
+    @NotNull
+    @ApiModelProperty(required = true)
+    private Boolean countsTowardsRarDays;
 }

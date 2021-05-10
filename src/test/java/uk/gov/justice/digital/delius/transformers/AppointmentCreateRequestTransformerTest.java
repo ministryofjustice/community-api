@@ -23,8 +23,8 @@ class AppointmentCreateRequestTransformerTest {
             ContextlessAppointmentCreateRequest.builder()
                 .appointmentStart(start)
                 .appointmentEnd(end)
-                .officeLocationCode("CRSHEFF")
                 .notes("some notes")
+                .countsTowardsRarDays(true)
                 .build(),
             Optional.of(Requirement.builder().requirementId(123456L).build()),
             anIntegrationContext())).isEqualTo(
@@ -33,7 +33,6 @@ class AppointmentCreateRequestTransformerTest {
                         .contactType("CRSAPT")
                         .appointmentStart(start)
                         .appointmentEnd(end)
-                        .officeLocationCode("CRSHEFF")
                         .notes("some notes")
                         .providerCode("CRS")
                         .staffCode("CRSUATU")
@@ -53,12 +52,13 @@ class AppointmentCreateRequestTransformerTest {
                 .appointmentEnd(end)
                 .officeLocationCode("CRSHEFF")
                 .notes("some notes")
+                .countsTowardsRarDays(false)
                 .build(),
             Optional.empty(),
             anIntegrationContext())).isEqualTo(
             AppointmentCreateRequest.builder()
                 .requirementId(null)
-                .contactType("CRSAPT")
+                .contactType("CRS01")
                 .appointmentStart(start)
                 .appointmentEnd(end)
                 .officeLocationCode("CRSHEFF")
@@ -75,7 +75,8 @@ class AppointmentCreateRequestTransformerTest {
         integrationContext.setProviderCode("CRS");
         integrationContext.setStaffCode("CRSUATU");
         integrationContext.setTeamCode("CRSUAT");
-        integrationContext.getContactMapping().setAppointmentContactType("CRSAPT");
+        integrationContext.getContactMapping().setAppointmentRarContactType("CRSAPT");
+        integrationContext.getContactMapping().setAppointmentNonRarContactType("CRS01");
         return integrationContext;
     }
 }

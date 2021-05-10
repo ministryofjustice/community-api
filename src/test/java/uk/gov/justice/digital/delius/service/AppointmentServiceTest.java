@@ -51,7 +51,9 @@ import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -64,8 +66,8 @@ public class AppointmentServiceTest {
     private static final String STAFF_CODE = "CRSUATU";
     private static final String TEAM_CODE = "CRSUAT";
     private static final String RAR_TYPE_CODE = "F";
-    private static final String CRSAPT_CONTACT_TYPE = "CRSAPT";
-    private static final String CONTEXT = "commissioned-rehabilitation-services";
+    private static final String RAR_CONTACT_TYPE = "CRSAPT";
+     private static final String CONTEXT = "commissioned-rehabilitation-services";
     private static final Long REQUIREMENT_ID = 99L;
 
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -98,7 +100,7 @@ public class AppointmentServiceTest {
         integrationContext.setStaffCode(STAFF_CODE);
         integrationContext.setTeamCode(TEAM_CODE);
         integrationContext.setRequirementRehabilitationActivityType(RAR_TYPE_CODE);
-        integrationContext.getContactMapping().setAppointmentContactType(CRSAPT_CONTACT_TYPE);
+        integrationContext.getContactMapping().setAppointmentRarContactType(RAR_CONTACT_TYPE);
         integrationContext.getContactMapping().setAttendanceAndBehaviourNotifiedMappingToOutcomeType(
             new HashMap<>() {{
                 this.put("late", new HashMap<>() {{
@@ -128,7 +130,7 @@ public class AppointmentServiceTest {
         final var startTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         final var endTime = startTime.plusHours(1);
 
-        havingContactType(true, builder -> builder.attendanceContact("Y"));
+        havingContactType(true, builder -> builder.attendanceContact("Y"), RAR_CONTACT_TYPE);
 
         final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, REQUIREMENT_ID);
         final var createdContact = ContactDto.builder().id(3L).typeDescription("Office Visit")
@@ -153,7 +155,7 @@ public class AppointmentServiceTest {
         final var startTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         final var endTime = startTime.plusHours(1);
 
-        havingContactType(false, builder -> builder);
+        havingContactType(false, builder -> builder, RAR_CONTACT_TYPE);
 
         // When
         final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, REQUIREMENT_ID);
@@ -168,7 +170,7 @@ public class AppointmentServiceTest {
         final var startTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         final var endTime = startTime.plusHours(1);
 
-        havingContactType(true, builder -> builder.attendanceContact("N"));
+        havingContactType(true, builder -> builder.attendanceContact("N"), RAR_CONTACT_TYPE);
 
         // When
         final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, REQUIREMENT_ID);
@@ -186,7 +188,7 @@ public class AppointmentServiceTest {
         final var startTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         final var endTime = startTime.plusHours(1);
 
-        havingContactType(true, builder -> builder.attendanceContact("Y"));
+        havingContactType(true, builder -> builder.attendanceContact("Y"), RAR_CONTACT_TYPE);
 
         final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, REQUIREMENT_ID);
         final var createdContact = ContactDto.builder().id(3L)
@@ -197,7 +199,7 @@ public class AppointmentServiceTest {
         when(deliusApiClient.createNewContact(deliusNewContactRequest)).thenReturn(createdContact);
 
         // When
-        final var appointmentCreateRequest = aContextlessAppointmentCreateRequest(startTime, endTime);
+        final var appointmentCreateRequest = aContextlessAppointmentCreateRequest(startTime, endTime, RAR_CONTACT_TYPE);
         final var response = service.createAppointment("X007", 1L, CONTEXT, appointmentCreateRequest);
 
         // Then
@@ -212,7 +214,7 @@ public class AppointmentServiceTest {
         final var startTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         final var endTime = startTime.plusHours(1);
 
-        havingContactType(true, builder -> builder.attendanceContact("Y"));
+        havingContactType(true, builder -> builder.attendanceContact("Y"), RAR_CONTACT_TYPE);
 
         final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, null);
         final var createdContact = ContactDto.builder().id(3L)
@@ -223,7 +225,7 @@ public class AppointmentServiceTest {
         when(deliusApiClient.createNewContact(deliusNewContactRequest)).thenReturn(createdContact);
 
         // When
-        final var appointmentCreateRequest = aContextlessAppointmentCreateRequest(startTime, endTime);
+        final var appointmentCreateRequest = aContextlessAppointmentCreateRequest(startTime, endTime, RAR_CONTACT_TYPE);
         final var response = service.createAppointment("X007", 1L, CONTEXT, appointmentCreateRequest);
 
         // Then
@@ -236,10 +238,10 @@ public class AppointmentServiceTest {
         final var crn = "X123456";
         final var appointmentId = 123456L;
         final var jsonPatch = new JsonPatch(asList(
-            new ReplaceOperation(JsonPointer.of("contactType"), valueOf(CRSAPT_CONTACT_TYPE))));
-        when(jsonPatchSupport.getAsText("/contactType", jsonPatch)).thenReturn(of(CRSAPT_CONTACT_TYPE));
+            new ReplaceOperation(JsonPointer.of("contactType"), valueOf(RAR_CONTACT_TYPE))));
+        when(jsonPatchSupport.getAsText("/contactType", jsonPatch)).thenReturn(of(RAR_CONTACT_TYPE));
 
-        havingContactType(true, builder -> builder.attendanceContact("N"));
+        havingContactType(true, builder -> builder.attendanceContact("N"), RAR_CONTACT_TYPE);
 
         // When
         final var exception = assertThrows(BadRequestException.class,
@@ -253,10 +255,10 @@ public class AppointmentServiceTest {
         final var crn = "X123456";
         final var appointmentId = 123456L;
         final var jsonPatch = new JsonPatch(asList(
-            new ReplaceOperation(JsonPointer.of("contactType"), valueOf(CRSAPT_CONTACT_TYPE))));
-        when(jsonPatchSupport.getAsText("/contactType", jsonPatch)).thenReturn(of(CRSAPT_CONTACT_TYPE));
+            new ReplaceOperation(JsonPointer.of("contactType"), valueOf(RAR_CONTACT_TYPE))));
+        when(jsonPatchSupport.getAsText("/contactType", jsonPatch)).thenReturn(of(RAR_CONTACT_TYPE));
 
-        havingContactType(false, builder -> builder.attendanceContact("N"));
+        havingContactType(false, builder -> builder.attendanceContact("N"), RAR_CONTACT_TYPE);
 
         // When
         final var exception = assertThrows(BadRequestException.class,
@@ -270,13 +272,13 @@ public class AppointmentServiceTest {
         final var crn = "X123456";
         final var appointmentId = 123456L;
         final var jsonPatch = new JsonPatch(asList(
-            new ReplaceOperation(JsonPointer.of("contactType"), valueOf(CRSAPT_CONTACT_TYPE))));
-        when(jsonPatchSupport.getAsText("/contactType", jsonPatch)).thenReturn(of(CRSAPT_CONTACT_TYPE));
+            new ReplaceOperation(JsonPointer.of("contactType"), valueOf(RAR_CONTACT_TYPE))));
+        when(jsonPatchSupport.getAsText("/contactType", jsonPatch)).thenReturn(of(RAR_CONTACT_TYPE));
 
         final var updatedContact = ContactDto.builder().id(3L).build();
         when(deliusApiClient.patchContact(appointmentId, jsonPatch)).thenReturn(updatedContact);
 
-        havingContactType(true, builder -> builder.attendanceContact("Y"));
+        havingContactType(true, builder -> builder.attendanceContact("Y"), RAR_CONTACT_TYPE);
 
         // When
         final var response = service.patchAppointment(crn, appointmentId, jsonPatch);
@@ -355,10 +357,10 @@ public class AppointmentServiceTest {
             );
     }
 
-    private void havingContactType(boolean having, UnaryOperator<ContactTypeBuilder> builderOperator) {
+    private void havingContactType(boolean having, UnaryOperator<ContactTypeBuilder> builderOperator, String contactTypeAsString) {
         final var contactType = builderOperator.apply(ContactType.builder()).build();
         final Optional<ContactType> result = having ? of(contactType) : Optional.empty();
-        when(contactTypeRepository.findByCode(CRSAPT_CONTACT_TYPE)).thenReturn(result);
+        when(contactTypeRepository.findByCode(contactTypeAsString)).thenReturn(result);
     }
 
     private String asString(JsonPatch patch) {
@@ -372,7 +374,7 @@ public class AppointmentServiceTest {
     private NewContact aDeliusNewContactRequest(OffsetDateTime startTime, OffsetDateTime endTime, Long requirementId) {
         return NewContact.builder()
             .offenderCrn("X007")
-            .type(CRSAPT_CONTACT_TYPE)
+            .type(RAR_CONTACT_TYPE)
             .outcome(null)
             .provider(PROVIDER_CODE)
             .team(TEAM_CODE)
@@ -393,7 +395,7 @@ public class AppointmentServiceTest {
     private AppointmentCreateRequest aAppointmentCreateRequest(OffsetDateTime startTime, OffsetDateTime endTime, Long requirementId) {
         return AppointmentCreateRequest.builder()
             .requirementId(requirementId)
-            .contactType(CRSAPT_CONTACT_TYPE)
+            .contactType(RAR_CONTACT_TYPE)
             .appointmentStart(startTime)
             .appointmentEnd(endTime)
             .officeLocationCode("CRSSHEF")
@@ -404,12 +406,14 @@ public class AppointmentServiceTest {
             .build();
     }
 
-    private ContextlessAppointmentCreateRequest aContextlessAppointmentCreateRequest(OffsetDateTime startTime, OffsetDateTime endTime) {
+    private ContextlessAppointmentCreateRequest aContextlessAppointmentCreateRequest(OffsetDateTime startTime, OffsetDateTime endTime, String contactType) {
         return ContextlessAppointmentCreateRequest.builder()
+            .contractType(contactType)
             .appointmentStart(startTime)
             .appointmentEnd(endTime)
             .officeLocationCode("CRSSHEF")
             .notes("/url")
+            .countsTowardsRarDays(true)
             .build();
     }
 
