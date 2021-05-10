@@ -17,15 +17,15 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReferralSentRequest {
+public class ContextlessReferralStartRequest {
 
     @NotNull
     @ApiModelProperty(required = true)
-    private OffsetDateTime sentAt;
+    private OffsetDateTime startedAt;
 
     @NotNull
     @ApiModelProperty(required = true)
-    private UUID serviceCategoryId;
+    private String contractType;
 
     @Positive
     @NotNull
@@ -34,7 +34,4 @@ public class ReferralSentRequest {
 
     @NotNull
     private String notes;
-
-    @NotNull
-    private String context;
 }

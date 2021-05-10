@@ -15,7 +15,7 @@ import uk.gov.justice.digital.delius.JwtAuthenticationHelper;
 import uk.gov.justice.digital.delius.JwtParameters;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusApiExtension;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusApiMockServer;
-import uk.gov.justice.digital.delius.data.api.ReferralSentRequest;
+import uk.gov.justice.digital.delius.data.api.ContextlessReferralStartRequest;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -23,7 +23,6 @@ import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -31,9 +30,6 @@ import static org.hamcrest.Matchers.equalTo;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
 public class ReferralAPITest extends IntegrationTestBase {
-
-    private static final String INTEGRATION_CONTEXT = "commissioned-rehabilitation-services";
-    private static final UUID SERVICE_CATEGORY_ID = UUID.fromString("428ee70f-3001-4399-95a6-ad25eaaede16");
 
     private static final DeliusApiMockServer deliusApiMockServer = new DeliusApiMockServer(7999);
 
@@ -63,15 +59,14 @@ public class ReferralAPITest extends IntegrationTestBase {
                 .when()
                 .auth().oauth2(token)
                 .contentType(String.valueOf(ContentType.APPLICATION_JSON))
-                .body(writeValueAsString(ReferralSentRequest
+                .body(writeValueAsString(ContextlessReferralStartRequest
                     .builder()
-                    .sentAt(OffsetDateTime.now())
-                    .serviceCategoryId(SERVICE_CATEGORY_ID)
+                    .startedAt(OffsetDateTime.now())
+                    .contractType("ACC")
                     .sentenceId(2500295343L)
                     .notes("A test note")
-                    .context(INTEGRATION_CONTEXT)
                     .build()))
-                .post("offenders/crn/X320741/referral/sent")
+                .post("offenders/crn/X320741/referral/start/context/commissioned-rehabilitation-services")
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.OK.value())
@@ -89,15 +84,14 @@ public class ReferralAPITest extends IntegrationTestBase {
             .when()
             .auth().oauth2(token)
             .contentType(String.valueOf(ContentType.APPLICATION_JSON))
-            .body(writeValueAsString(ReferralSentRequest
+            .body(writeValueAsString(ContextlessReferralStartRequest
                 .builder()
-                .sentAt(OffsetDateTime.of(2019,9,2, 12, 0, 1, 2, ZoneOffset.UTC))
-                .serviceCategoryId(SERVICE_CATEGORY_ID)
+                .startedAt(OffsetDateTime.of(2019,9,2, 12, 0, 1, 2, ZoneOffset.UTC))
+                .contractType("ACC")
                 .sentenceId(2500295345L)
                 .notes("A test note")
-                .context(INTEGRATION_CONTEXT)
                 .build()))
-            .post("offenders/crn/X320741/referral/sent")
+            .post("offenders/crn/X320741/referral/start/context/commissioned-rehabilitation-services")
             .then()
             .assertThat()
             .statusCode(HttpStatus.OK.value())
