@@ -63,6 +63,13 @@ public class IntegrationTestBase {
                 .expiryTime(Duration.ofDays(1));
     }
 
+    protected JwtParametersBuilder createJwtBuilderWithScope(final List<String> scopes, final String... roles) {
+        return JwtParameters.builder()
+                .roles(List.of(roles))
+                .scope(scopes)
+                .expiryTime(Duration.ofDays(1));
+    }
+
     protected String tokenWithRoleCommunity() {
         return createJwt("ROLE_COMMUNITY");
     }
@@ -107,6 +114,12 @@ public class IntegrationTestBase {
                         .username(username)
                         .clientId("system-client-id")
                         .build());
+    }
+    protected String createJwtWithScopes(final List<String> scopes, final String... roles ) {
+        return jwtAuthenticationHelper.createJwt(
+            createJwtBuilderWithScope(scopes, roles)
+                .clientId("system-client-id")
+                .build());
     }
 
 }
