@@ -28,7 +28,7 @@ Insert into CONTACT (CONTACT_ID,
                      TRUST_PROVIDER_TEAM_ID,
                      ENFORCEMENT)
 values (2502719240,
-        to_date('04-SEP-20','DD-MON-RR'),
+        to_date('04-09-20','DD-MM-RR'),
         2500343964,
         'The notes field',
         'N', -- VISOR_CONTACT
@@ -41,9 +41,9 @@ values (2502719240,
         3, -- ROW_VERSION
         null, -- ALERT_ACTIVE
         'Y', -- ATTENDED
-        to_date('13-SEP-19','DD-MON-RR'),
+        to_date('13-09-19','DD-MM-RR'),
         null,
-        to_date('13-SEP-19','DD-MON-RR'), -- LAST_UPDATED_DATETIME
+        to_date('13-09-19','DD-MM-RR'), -- LAST_UPDATED_DATETIME
         2500295343, -- EVENT_ID
         1217, -- CONTACT_TYPE_ID
         null, -- PROVIDER_TEAM_ID
@@ -84,7 +84,7 @@ Insert into CONTACT (CONTACT_ID,
                      TRUST_PROVIDER_TEAM_ID,
                      ENFORCEMENT)
 values (2502719241,
-        to_date('04-SEP-20','DD-MON-RR'),
+        to_date('04-09-20','DD-MM-RR'),
         2600343964,
         'The notes field',
         'N', -- VISOR_CONTACT
@@ -95,9 +95,9 @@ values (2502719241,
         0, -- PARTITION_AREA_ID
         1, -- ROW_VERSION
         null, -- ATTENDED
-        to_date('13-SEP-19','DD-MON-RR'),
+        to_date('13-09-19','DD-MM-RR'),
         null,
-        to_date('13-SEP-19','DD-MON-RR'), -- LAST_UPDATED_DATETIME
+        to_date('13-09-19','DD-MM-RR'), -- LAST_UPDATED_DATETIME
         2600295124, -- EVENT_ID
         1217, -- CONTACT_TYPE_ID
         null, -- CONTACT_OUTCOME_TYPE_ID
