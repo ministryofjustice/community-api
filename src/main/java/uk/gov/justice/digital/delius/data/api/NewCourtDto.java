@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 

@@ -33,6 +33,11 @@ dependencies {
     implementation 'io.vavr:vavr:0.10.3'
     implementation 'com.github.java-json-tools:json-patch:1.13'
 
+    // needed for record serialisation
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.3'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.3'
+
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     compileOnly 'org.projectlombok:lombok:1.18.20'
