@@ -5,10 +5,8 @@ import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.Integ
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.Nsi;
-import uk.gov.justice.digital.delius.data.api.Requirement;
 
 import java.time.OffsetDateTime;
-import java.util.Optional;
 
 import static java.time.OffsetDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
