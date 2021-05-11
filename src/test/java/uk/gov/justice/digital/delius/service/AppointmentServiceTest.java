@@ -199,39 +199,6 @@ public class AppointmentServiceTest {
             final var startTime = referralStart.plusMinutes(2);
             final var endTime = startTime.plusHours(1);
 
-            final var requirement = Requirement.builder().requirementId(99L).build();
-            when(requirementService.getRequirement("X007", 1L, RAR_TYPE_CODE)).thenReturn(of(requirement));
-
-            final var nsi = Nsi.builder().nsiId(NSI_ID).build();
-            when(referralService.getExistingMatchingNsi("X007", CONTEXT, 1L, CONTRACT_TYPE, referralStart)).thenReturn(of(nsi));
-
-            havingContactType(true, builder -> builder.attendanceContact("Y"), RAR_CONTACT_TYPE);
-
-            final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, REQUIREMENT_ID, NSI_ID);
-            final var createdContact = ContactDto.builder().id(3L)
-                .date(LocalDate.of(2021, 1, 31))
-                .startTime(LocalTime.of(10, 0))
-                .endTime(LocalTime.of(11, 0))
-                .build();
-            when(deliusApiClient.createNewContact(deliusNewContactRequest)).thenReturn(createdContact);
-
-            // When
-            final var appointmentCreateRequest = aContextlessAppointmentCreateRequest(referralStart, startTime, endTime, CONTRACT_TYPE);
-            final var response = service.createAppointment("X007", 1L, CONTEXT, appointmentCreateRequest);
-
-            // Then
-            assertThat(response.getAppointmentId()).isEqualTo(3L);
-        }
-
-        @Test
-        public void createsAppointmentUsingContextlessClientRequest_withNoRequirement() {
-            // Given
-            when(requirementService.getRequirement("X007", 1L, RAR_TYPE_CODE)).thenReturn(empty());
-
-            final var referralStart = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-            final var startTime = referralStart.plusMinutes(2);
-            final var endTime = startTime.plusHours(1);
-
             final var nsi = Nsi.builder().nsiId(NSI_ID).build();
             when(referralService.getExistingMatchingNsi("X007", CONTEXT, 1L, CONTRACT_TYPE, referralStart)).thenReturn(of(nsi));
 
@@ -239,7 +206,6 @@ public class AppointmentServiceTest {
 
             final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, null, NSI_ID);
             final var createdContact = ContactDto.builder().id(3L)
-                .nsiId(NSI_ID)
                 .date(LocalDate.of(2021, 1, 31))
                 .startTime(LocalTime.of(10, 0))
                 .endTime(LocalTime.of(11, 0))
@@ -260,9 +226,6 @@ public class AppointmentServiceTest {
             final var referralStart = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
             final var startTime = referralStart.plusMinutes(2);
             final var endTime = startTime.plusHours(1);
-
-            final var requirement = Requirement.builder().requirementId(99L).build();
-            when(requirementService.getRequirement("X007", 1L, RAR_TYPE_CODE)).thenReturn(of(requirement));
 
             when(referralService.getExistingMatchingNsi("X007", CONTEXT, 1L, CONTRACT_TYPE, referralStart)).thenReturn(empty());
 

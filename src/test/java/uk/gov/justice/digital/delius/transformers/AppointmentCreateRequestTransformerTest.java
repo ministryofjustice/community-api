@@ -28,11 +28,10 @@ class AppointmentCreateRequestTransformerTest {
                 .countsTowardsRarDays(true)
                 .build(),
             Nsi.builder().nsiId(654321L).build(),
-            Optional.of(Requirement.builder().requirementId(123456L).build()),
             anIntegrationContext())).isEqualTo(
                     AppointmentCreateRequest.builder()
                         .nsiId(654321L)
-                        .requirementId(123456L)
+                        .requirementId(null)
                         .contactType("CRSAPT")
                         .appointmentStart(start)
                         .appointmentEnd(end)
@@ -41,37 +40,6 @@ class AppointmentCreateRequestTransformerTest {
                         .staffCode("CRSUATU")
                         .teamCode("CRSUAT")
                         .build()
-        );
-    }
-
-    @Test
-    public void appointmentCreateRequestFromContextlessClientRequest_withNoRequirement() {
-        OffsetDateTime start = now();
-        OffsetDateTime end = start.plusHours(1);
-
-        assertThat(AppointmentCreateRequestTransformer.appointmentOf(
-            ContextlessAppointmentCreateRequest.builder()
-                .appointmentStart(start)
-                .appointmentEnd(end)
-                .officeLocationCode("CRSHEFF")
-                .notes("some notes")
-                .countsTowardsRarDays(false)
-                .build(),
-            Nsi.builder().nsiId(654321L).build(),
-            Optional.empty(),
-            anIntegrationContext())).isEqualTo(
-            AppointmentCreateRequest.builder()
-                .nsiId(654321L)
-                .requirementId(null)
-                .contactType("CRS01")
-                .appointmentStart(start)
-                .appointmentEnd(end)
-                .officeLocationCode("CRSHEFF")
-                .notes("some notes")
-                .providerCode("CRS")
-                .staffCode("CRSUATU")
-                .teamCode("CRSUAT")
-                .build()
         );
     }
 
