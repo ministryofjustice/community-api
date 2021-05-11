@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius.controller.secure;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
@@ -41,7 +42,8 @@ public class ReferralController {
 
     @ApiOperation(value = "Starts an NSI referral")
     public ReferralStartResponse startReferralContextLess(final @PathVariable("crn") String crn,
-                                                          final @PathVariable("context") String context,
+                                                          final @ApiParam(value = "Name identifying preprocessing applied to the request", example = "commissioned-rehabilitation-services")
+                                                                @PathVariable("context") String context,
                                                           final @RequestBody @Valid ContextlessReferralStartRequest referralStartRequest) {
         return referralService.startNsiReferral(crn, context, referralStartRequest);
     }

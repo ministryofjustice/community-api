@@ -68,7 +68,7 @@ public class AppointmentBookingController {
     @ApiOperation(value = "Creates an Contact appointment for a specified context")
     public ResponseEntity<AppointmentCreateResponse> createAppointmentWithContextName(final @PathVariable("crn") String crn,
                                                                                       final @PathVariable("sentenceId") Long sentenceId,
-                                                                                      final @ApiParam(value = "Name identifying preprocessing applied to a referral start request", example = "commissioned-rehabilitation-services")
+                                                                                      final @ApiParam(value = "Name identifying preprocessing applied to the request", example = "commissioned-rehabilitation-services")
                                                                                           @PathVariable("contextName") String contextName,
                                                                                       final @RequestBody ContextlessAppointmentCreateRequest contextlessAppointmentCreateRequest) {
 
@@ -90,7 +90,8 @@ public class AppointmentBookingController {
     @ApiOperation(value = "Updates an Contact appointment outcome")
     public AppointmentUpdateResponse updateAppointmentOutcomeWithContext(final @PathVariable("crn") String crn,
                                                                          final @PathVariable("appointmentId") Long appointmentId,
-                                                                         final @PathVariable("contextName") String context,
+                                                                         final @ApiParam(value = "Name identifying preprocessing applied to the request", example = "commissioned-rehabilitation-services")
+                                                                             @PathVariable("contextName") String context,
                                                                          final @RequestBody ContextlessAppointmentOutcomeRequest appointmentOutcomeRequest) {
 
         return appointmentService.updateAppointmentOutcome(crn, appointmentId, context, appointmentOutcomeRequest);
