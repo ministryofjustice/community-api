@@ -36,11 +36,12 @@ public class RequirementService {
     private EventRepository eventRepository;
 
     public ConvictionRequirements getActiveRequirementsByConvictionId(String crn, Long convictionId) {
-        Predicate<Requirement> activeFilter = activeFilter(true);
-        return getConvictionRequirements(activeFilter, getActiveEvent(crn, convictionId));
+        return getConvictionRequirements(getActiveEvent(crn, convictionId), true);
     }
 
-    private ConvictionRequirements getConvictionRequirements(Predicate<Requirement> activeFilter, Event conviction) {
+    private ConvictionRequirements getConvictionRequirements(Event conviction, boolean activeOnly) {
+        Predicate<Requirement> activeFilter = activeFilter(activeOnly);
+
         var requirements = Optional.of(conviction)
             .map(Event::getDisposal)
             .map(Disposal::getRequirements)
@@ -62,7 +63,8 @@ public class RequirementService {
     }
 
     public ConvictionRequirements getRequirementsByConvictionId(String crn, Long convictionId) {
-        return getConvictionRequirements(activeFilter(false), getEvent(crn, convictionId));    }
+        return getConvictionRequirements(getEvent(crn, convictionId), false);
+    }
 
     public PssRequirements getPssRequirementsByConvictionId(String crn, Long convictionId) {
         var pssRequirements = Optional.of(getEvent(crn, convictionId))
