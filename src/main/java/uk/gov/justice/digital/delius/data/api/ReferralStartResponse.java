@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReferralSentResponse {
+public class ReferralStartResponse {
     private Long nsiId;
 }
