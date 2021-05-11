@@ -50,20 +50,20 @@ public class CaseNoteAPITest {
 
         deliusMockServer.stubPutCaseNoteToDeliusCreated("54321", 12345L);
 
-        final var token = createJwt("bob", Collections.singletonList("ROLE_DELIUS_CASE_NOTES"));
+        final var token = createJwt(Collections.singletonList("ROLE_DELIUS_CASE_NOTES"));
 
         final var response = given()
-                .when()
-                .auth().oauth2(token)
-                .contentType(String.valueOf(ContentType.APPLICATION_JSON))
-                .body("{\"content\":\"Bob\"}")
-                .put("/nomisCaseNotes/54321/12345")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .body()
-                .asString();
+            .when()
+            .auth().oauth2(token)
+            .contentType(String.valueOf(ContentType.APPLICATION_JSON))
+            .body("{\"content\":\"Bob\"}")
+            .put("/nomisCaseNotes/54321/12345")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.CREATED.value())
+            .extract()
+            .body()
+            .asString();
 
         assertThat(response).isEqualTo(" XXXX (crn) had a Contact created.");
 
@@ -72,46 +72,100 @@ public class CaseNoteAPITest {
     @Test
     public void shouldReturnNoContentWhenSendUpdateCaseNoteToDelius() {
 
-        deliusMockServer.stubPutCaseNoteToDeliusNoContent("54321", 12345L);
+        deliusMockServer.stubPutCaseNoteToDeliusError("54321", 12345L, HttpStatus.NO_CONTENT);
 
-        final var token = createJwt("bob", Collections.singletonList("ROLE_DELIUS_CASE_NOTES"));
+        final var token = createJwt(Collections.singletonList("ROLE_DELIUS_CASE_NOTES"));
 
         given()
-                .when()
-                .auth().oauth2(token)
-                .contentType(String.valueOf(ContentType.APPLICATION_JSON))
-                .body("{\"content\":\"Bob\"}")
-                .put("/nomisCaseNotes/54321/12345")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.NO_CONTENT.value());
+            .when()
+            .auth().oauth2(token)
+            .contentType(String.valueOf(ContentType.APPLICATION_JSON))
+            .body("{\"content\":\"Bob\"}")
+            .put("/nomisCaseNotes/54321/12345")
+            .then()
+            .assertThat()
+            .statusCode(204);
     }
 
     @Test
     public void shouldReturnBadRequestWhenSendCaseNoteToDelius() {
 
-        deliusMockServer.stubPutCaseNoteToDeliusBadRequestError("54321", 12346L);
+        deliusMockServer.stubPutCaseNoteToDeliusError("54321", 12346L, HttpStatus.BAD_REQUEST);
 
-        final var token = createJwt("bob", Collections.singletonList("ROLE_DELIUS_CASE_NOTES"));
+        final var token = createJwt(Collections.singletonList("ROLE_DELIUS_CASE_NOTES"));
 
         given()
-                .when()
-                .auth().oauth2(token)
-                .contentType(String.valueOf(ContentType.APPLICATION_JSON))
-                .body("{\"content\":\"Bob\"}")
-                .put("/nomisCaseNotes/54321/12346")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+            .when()
+            .auth().oauth2(token)
+            .contentType(String.valueOf(ContentType.APPLICATION_JSON))
+            .body("{\"content\":\"Bob\"}")
+            .put("/nomisCaseNotes/54321/12346")
+            .then()
+            .assertThat()
+            .statusCode(400);
+    }
+
+    @Test
+    public void shouldReturnConflictWhenSendCaseNoteToDeliusServerErrorAndCaseNoteOMICOpdType() {
+
+        deliusMockServer.stubPutCaseNoteToDeliusError("54321", 12346L, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        final var token = createJwt(Collections.singletonList("ROLE_DELIUS_CASE_NOTES"));
+
+        given()
+            .when()
+            .auth().oauth2(token)
+            .contentType(String.valueOf(ContentType.APPLICATION_JSON))
+            .body("{\"content\": \"Bob\", \"noteType\": \"OMIC_OPD Observation\", \"other\": \"field\"}")
+            .put("/nomisCaseNotes/54321/12346")
+            .then()
+            .assertThat()
+            .statusCode(409);
+    }
+
+    @Test
+    public void shouldReturnConflictWhenSendCaseNoteToDeliusServerErrorAndCaseNoteOMICOpdTypeNoSpaces() {
+
+        deliusMockServer.stubPutCaseNoteToDeliusError("54321", 12346L, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        final var token = createJwt(Collections.singletonList("ROLE_DELIUS_CASE_NOTES"));
+
+        given()
+            .when()
+            .auth().oauth2(token)
+            .contentType(String.valueOf(ContentType.APPLICATION_JSON))
+            .body("{\"content\":\"Bob\",\"noteType\":\"OMIC_OPD Observation\",\"other\":\"field\"}")
+            .put("/nomisCaseNotes/54321/12346")
+            .then()
+            .assertThat()
+            .statusCode(409);
+    }
+
+    @Test
+    public void shouldReturnServerErrorWhenSendCaseNoteToDeliusServerError() {
+
+        deliusMockServer.stubPutCaseNoteToDeliusError("54321", 12346L, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        final var token = createJwt(Collections.singletonList("ROLE_DELIUS_CASE_NOTES"));
+
+        given()
+            .when()
+            .auth().oauth2(token)
+            .contentType(String.valueOf(ContentType.APPLICATION_JSON))
+            .body("{\"content\":\"Bob\"}")
+            .put("/nomisCaseNotes/54321/12346")
+            .then()
+            .assertThat()
+            .statusCode(500);
     }
 
 
-    private String createJwt(final String user, final List<String> roles) {
+    private String createJwt(final List<String> roles) {
         return jwtAuthenticationHelper.createJwt(JwtParameters.builder()
-                .username(user)
-                .roles(roles)
-                .scope(Arrays.asList("read", "write"))
-                .expiryTime(Duration.ofDays(1))
-                .build());
+            .username("bob")
+            .roles(roles)
+            .scope(Arrays.asList("read", "write"))
+            .expiryTime(Duration.ofDays(1))
+            .build());
     }
 }
