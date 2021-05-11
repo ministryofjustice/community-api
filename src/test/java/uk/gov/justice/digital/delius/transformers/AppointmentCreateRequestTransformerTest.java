@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
+import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.data.api.Requirement;
 
 import java.time.OffsetDateTime;
@@ -26,9 +27,11 @@ class AppointmentCreateRequestTransformerTest {
                 .notes("some notes")
                 .countsTowardsRarDays(true)
                 .build(),
+            Nsi.builder().nsiId(654321L).build(),
             Optional.of(Requirement.builder().requirementId(123456L).build()),
             anIntegrationContext())).isEqualTo(
                     AppointmentCreateRequest.builder()
+                        .nsiId(654321L)
                         .requirementId(123456L)
                         .contactType("CRSAPT")
                         .appointmentStart(start)
@@ -54,9 +57,11 @@ class AppointmentCreateRequestTransformerTest {
                 .notes("some notes")
                 .countsTowardsRarDays(false)
                 .build(),
+            Nsi.builder().nsiId(654321L).build(),
             Optional.empty(),
             anIntegrationContext())).isEqualTo(
             AppointmentCreateRequest.builder()
+                .nsiId(654321L)
                 .requirementId(null)
                 .contactType("CRS01")
                 .appointmentStart(start)

@@ -21,6 +21,10 @@ public class ContextlessAppointmentCreateRequest {
 
     @NotNull
     @ApiModelProperty(required = true)
+    private OffsetDateTime referralStart;
+
+    @NotNull
+    @ApiModelProperty(required = true)
     private OffsetDateTime appointmentStart;
 
     @NotNull
