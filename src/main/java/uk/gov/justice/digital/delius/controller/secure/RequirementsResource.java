@@ -75,6 +75,9 @@ public class RequirementsResource {
             @ApiParam(name = "activeOnly", value = "retrieve only active requirements", example = "true")
             @RequestParam(name = "activeOnly", required = false, defaultValue = "false") final boolean activeOnly
     ) {
-        return requirementsService.getRequirementsByConvictionId(crn, convictionId, activeOnly);
+        if(activeOnly){
+            return requirementsService.getActiveRequirementsByConvictionId(crn, convictionId);
+        }
+        return requirementsService.getRequirementsByConvictionId(crn, convictionId);
     }
 }

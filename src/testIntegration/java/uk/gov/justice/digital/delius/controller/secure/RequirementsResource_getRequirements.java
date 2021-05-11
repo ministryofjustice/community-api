@@ -3,6 +3,7 @@ package uk.gov.justice.digital.delius.controller.secure;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static java.lang.String.format;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -21,7 +22,7 @@ public class RequirementsResource_getRequirements extends IntegrationTestBase {
                 .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
                 .when()
-                .get(String.format(REQUIREMENTS_PATH, KNOWN_OFFENDER_CRN, KNOWN_CONVICTION_ID))
+                .get(format(REQUIREMENTS_PATH, KNOWN_OFFENDER_CRN, KNOWN_CONVICTION_ID))
                 .then()
                 .statusCode(200)
                 .body("requirements[0].restrictive", equalTo( false));
@@ -35,7 +36,7 @@ public class RequirementsResource_getRequirements extends IntegrationTestBase {
             .oauth2(tokenWithRoleCommunity())
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get(String.format(REQUIREMENTS_PATH, KNOWN_OFFENDER_CRN, KNOWN_CONVICTION_ID))
+            .get(format(REQUIREMENTS_PATH, KNOWN_OFFENDER_CRN, KNOWN_CONVICTION_ID))
             .then()
             .statusCode(200)
             .body("requirements", hasSize(2));
@@ -49,10 +50,10 @@ public class RequirementsResource_getRequirements extends IntegrationTestBase {
             .oauth2(tokenWithRoleCommunity())
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get(String.format(REQUIREMENTS_PATH, KNOWN_OFFENDER_CRN, KNOWN_CONVICTION_ID) + "?activeOnly=true")
+            .get(format(REQUIREMENTS_PATH, "X320811", "2600295124") + "?activeOnly=true")
             .then()
             .statusCode(200)
-            .body("requirements", hasSize(1));
+            .body("requirements", hasSize(2));
 
     }
 
