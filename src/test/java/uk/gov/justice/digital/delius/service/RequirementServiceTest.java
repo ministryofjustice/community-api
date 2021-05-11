@@ -231,7 +231,7 @@ public class RequirementServiceTest {
                 .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build())
                 .build()));
             var requirement = requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE);
-            assertThat(requirement.get().getRequirementId()).isEqualTo(99L);
+            assertThat(requirement.orElse(null).getRequirementId()).isEqualTo(99L);
         }
 
         @Test

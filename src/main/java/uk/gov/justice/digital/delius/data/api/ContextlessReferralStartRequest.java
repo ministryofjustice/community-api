@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.data.api;
 
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,7 +25,7 @@ public class ContextlessReferralStartRequest {
     private OffsetDateTime startedAt;
 
     @NotNull
-    @ApiModelProperty(required = true)
+    @ApiModelProperty(required = true, value = "Denotes a group of services delivered through a referral to a service user, e.g. Personal Well Being", example = "PWB")
     private String contractType;
 
     @Positive

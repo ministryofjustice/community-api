@@ -7,10 +7,9 @@ import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateReques
 import uk.gov.justice.digital.delius.data.api.Requirement;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 import static java.time.OffsetDateTime.now;
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AppointmentCreateRequestTransformerTest {
@@ -27,7 +26,7 @@ class AppointmentCreateRequestTransformerTest {
                 .officeLocationCode("CRSHEFF")
                 .notes("some notes")
                 .build(),
-            of(Requirement.builder().requirementId(123456L).build()),
+            Optional.of(Requirement.builder().requirementId(123456L).build()),
             anIntegrationContext())).isEqualTo(
                     AppointmentCreateRequest.builder()
                         .requirementId(123456L)
@@ -55,7 +54,7 @@ class AppointmentCreateRequestTransformerTest {
                 .officeLocationCode("CRSHEFF")
                 .notes("some notes")
                 .build(),
-            empty(),
+            Optional.empty(),
             anIntegrationContext())).isEqualTo(
             AppointmentCreateRequest.builder()
                 .requirementId(null)
