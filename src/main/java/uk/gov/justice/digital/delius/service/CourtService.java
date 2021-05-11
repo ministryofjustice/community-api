@@ -14,7 +14,7 @@ public class CourtService {
 
     public Court createNewCourt(NewCourtDto court) {
         // TODO check feature switch and create court
-        return Court.builder().code(court.getCode()).courtName(court.getCourtName()).build();
+        return Court.builder().code(court.code()).courtName(court.courtName()).build();
     }
 
     public Court getCourt(String code) {

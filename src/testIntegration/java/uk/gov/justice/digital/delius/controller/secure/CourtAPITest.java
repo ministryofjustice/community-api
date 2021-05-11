@@ -162,7 +162,7 @@ public class CourtAPITest extends IntegrationTestBase {
             given()
                 .auth().oauth2(token)
                 .contentType("application/json")
-                .body(writeValueAsString(validInsertRequest().toBuilder().courtName(null).build()))
+                .body(writeValueAsString(insertRequest(null, NEW_COURT_CODE, "MAG", "N53")))
                 .when()
                 .post("court")
                 .then()
@@ -177,7 +177,7 @@ public class CourtAPITest extends IntegrationTestBase {
             given()
                 .auth().oauth2(token)
                 .contentType("application/json")
-                .body(writeValueAsString(validInsertRequest().toBuilder().courtTypeCode(null).build()))
+                .body(writeValueAsString(insertRequest("New Magistrates Court", NEW_COURT_CODE, null, "N53")))
                 .when()
                 .post("court")
                 .then()
@@ -192,7 +192,7 @@ public class CourtAPITest extends IntegrationTestBase {
             given()
                 .auth().oauth2(token)
                 .contentType("application/json")
-                .body(writeValueAsString(validInsertRequest().toBuilder().code(null).build()))
+                .body(writeValueAsString(insertRequest("New Magistrates Court", null, "MAG", "N53")))
                 .when()
                 .post("court")
                 .then()
@@ -207,7 +207,7 @@ public class CourtAPITest extends IntegrationTestBase {
             given()
                 .auth().oauth2(token)
                 .contentType("application/json")
-                .body(writeValueAsString(validInsertRequest().toBuilder().probationAreaCode(null).build()))
+                .body(writeValueAsString(insertRequest("New Magistrates Court", NEW_COURT_CODE, "MAG", null)))
                 .when()
                 .post("court")
                 .then()
@@ -234,13 +234,10 @@ public class CourtAPITest extends IntegrationTestBase {
         }
 
         private NewCourtDto validInsertRequest() {
-            return NewCourtDto
-                .builder()
-                .courtName("Sheffield New Court")
-                .code(NEW_COURT_CODE)
-                .courtTypeCode("CRN")
-                .probationAreaCode("N53")
-                .build();
+            return insertRequest("New Magistrates Court", NEW_COURT_CODE, "MAG", "N53");
+        }
+        private NewCourtDto insertRequest(String courtName, String code, String courtTypeCode, String probationArea) {
+            return new NewCourtDto(code, courtTypeCode, true, courtName, null, null, "Crown Square", "High Street", "Town Centre", "Sheffield", "South Yorkshire", "S1 2BJ", "England", probationArea);
         }
     }
 
