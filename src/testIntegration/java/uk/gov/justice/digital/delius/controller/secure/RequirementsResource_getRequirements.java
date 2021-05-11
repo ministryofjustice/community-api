@@ -56,5 +56,5 @@ public class RequirementsResource_getRequirements extends IntegrationTestBase {
             .body("requirements", hasSize(2));
 
     }
-    
+
 }
