@@ -17,6 +17,7 @@ import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.InvalidRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.UnauthorisedException;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository.DuplicateOffenderException;
 import uk.gov.justice.digital.delius.service.OffenderDeltaLockedException;
 
 @RestControllerAdvice(basePackages = { "uk.gov.justice.digital.delius.controller.secure" } )
@@ -133,6 +134,18 @@ public class SecureControllerAdvice {
 
     @ExceptionHandler(OffenderDeltaLockedException.class)
     public ResponseEntity<ErrorResponse> handleException(final OffenderDeltaLockedException e) {
+        log.debug("Conflict (409) returned", e);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ErrorResponse
+                        .builder()
+                        .status(HttpStatus.CONFLICT.value())
+                        .developerMessage(e.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(DuplicateOffenderException.class)
+    public ResponseEntity<ErrorResponse> handleException(final DuplicateOffenderException e) {
         log.debug("Conflict (409) returned", e);
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)

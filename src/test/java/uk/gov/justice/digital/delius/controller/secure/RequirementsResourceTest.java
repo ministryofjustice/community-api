@@ -29,11 +29,11 @@ class RequirementsResourceTest {
 
         final ConvictionRequirements convictionRequirements = ConvictionRequirements.builder().build();
         boolean allRequirements = false;
-        when(service.getRequirementsByConvictionId("CRN", 1234L, allRequirements)).thenReturn(convictionRequirements);
+        when(service.getRequirementsByConvictionId("CRN", 1234L)).thenReturn(convictionRequirements);
 
         assertThat(requirementsResource.getRequirementsByConvictionId("CRN", 1234L, allRequirements)).isSameAs(convictionRequirements);
 
-        verify(service).getRequirementsByConvictionId("CRN", 1234L, allRequirements);
+        verify(service).getRequirementsByConvictionId("CRN", 1234L);
         verifyNoMoreInteractions(service);
     }
 }
