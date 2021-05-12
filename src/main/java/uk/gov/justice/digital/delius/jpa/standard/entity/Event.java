@@ -71,7 +71,7 @@ public class Event {
     @OneToMany(mappedBy = "event", cascade = {CascadeType.ALL})
     private List<AdditionalOffence> additionalOffences;
 
-    @OneToOne(mappedBy = "event", cascade = {CascadeType.ALL})
+    @OneToOne(mappedBy = "event", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     private Disposal disposal;
 
     @OneToOne(mappedBy = "event", cascade = {CascadeType.ALL})

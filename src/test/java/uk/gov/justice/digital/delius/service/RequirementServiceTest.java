@@ -64,8 +64,7 @@ public class RequirementServiceTest {
         public void setUp() {
             requirementService = new RequirementService(offenderRepository, eventRepository);
 
-            when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
-            when(offender.getOffenderId()).thenReturn(OFFENDER_ID);
+            when(offenderRepository.getOffenderIdFrom(CRN)).thenReturn(Optional.of(OFFENDER_ID));
             when(eventRepository.findByOffenderId(OFFENDER_ID)).thenReturn(Collections.singletonList(event));
             when(event.getDisposal()).thenReturn(disposal);
             when(event.getEventId()).thenReturn(CONVICTION_ID);
@@ -303,13 +302,11 @@ public class RequirementServiceTest {
         @BeforeEach
         public void setUp() {
             requirementService = new RequirementService(offenderRepository, eventRepository);
-
-            when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
+            when(offenderRepository.getOffenderIdFrom(CRN)).thenReturn(Optional.empty());
         }
 
         @Test
         public void givenOffenderDoesNotExist_whenGetLicenceConditionsByConvictionId_thenThrowException() {
-            when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.empty());
 
             assertThatExceptionOfType(NotFoundException.class)
                 .isThrownBy(() -> requirementService.getLicenceConditionsByConvictionId(CRN, CONVICTION_ID))
@@ -318,7 +315,6 @@ public class RequirementServiceTest {
 
         @Test
         public void givenOffenderDoesNotExist_whenGetRequirementsByConvictionId_thenThrowException() {
-            when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.empty());
 
             assertThatExceptionOfType(NotFoundException.class)
                 .isThrownBy(() -> requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID))
@@ -327,7 +323,6 @@ public class RequirementServiceTest {
 
         @Test
         public void givenOffenderDoesNotExist_whenGetPssRequirementsByConvictionId_thenThrowException() {
-            when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.empty());
 
             assertThatExceptionOfType(NotFoundException.class)
                 .isThrownBy(() -> requirementService.getPssRequirementsByConvictionId(CRN, CONVICTION_ID))

@@ -12,7 +12,6 @@ import uk.gov.justice.digital.delius.data.api.Requirement;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.transformers.ContactTransformer;
@@ -36,10 +35,14 @@ public class RequirementService {
     @Autowired
     private EventRepository eventRepository;
 
-    public ConvictionRequirements getRequirementsByConvictionId(String crn, Long convictionId, boolean activeOnly) {
+    public ConvictionRequirements getActiveRequirementsByConvictionId(String crn, Long convictionId) {
+        return getConvictionRequirements(getActiveEvent(crn, convictionId), true);
+    }
 
+    private ConvictionRequirements getConvictionRequirements(Event conviction, boolean activeOnly) {
         Predicate<Requirement> activeFilter = activeFilter(activeOnly);
-        var requirements = Optional.of(getEvent(crn, convictionId))
+
+        var requirements = Optional.of(conviction)
             .map(Event::getDisposal)
             .map(Disposal::getRequirements)
             .stream()
@@ -60,7 +63,7 @@ public class RequirementService {
     }
 
     public ConvictionRequirements getRequirementsByConvictionId(String crn, Long convictionId) {
-        return getRequirementsByConvictionId(crn, convictionId, false);
+        return getConvictionRequirements(getEvent(crn, convictionId), false);
     }
 
     public PssRequirements getPssRequirementsByConvictionId(String crn, Long convictionId) {
@@ -78,16 +81,22 @@ public class RequirementService {
     }
 
     private Event getEvent(String crn, Long convictionId) {
-        var offender = getOffender(crn);
-        return eventRepository.findByOffenderId(offender.getOffenderId())
+        var offenderId = getOffenderId(crn);
+        return eventRepository.findByOffenderId(offenderId)
                 .stream()
                 .filter(event -> convictionId.equals(event.getEventId()))
                 .findAny()
                 .orElseThrow(() ->  new NotFoundException(format("Conviction with convictionId '%s' not found", convictionId)));
     }
 
-    private Offender getOffender(String crn) {
-        return offenderRepository.findByCrn(crn)
+    private Event getActiveEvent(String crn, Long convictionId) {
+        var offenderId = getOffenderId(crn);
+        return eventRepository.findByOffenderIdAndEventIdAndActiveTrue(offenderId, convictionId)
+            .orElseThrow(() ->  new NotFoundException(format("Active conviction with convictionId '%s' not found", convictionId)));
+    }
+
+    private Long getOffenderId(String crn) {
+        return offenderRepository.getOffenderIdFrom(crn)
                 .orElseThrow(() -> new NotFoundException(format("Offender with CRN '%s' not found", crn)));
     }
 
