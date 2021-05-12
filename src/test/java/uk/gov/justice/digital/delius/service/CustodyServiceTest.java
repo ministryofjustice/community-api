@@ -23,6 +23,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CustodyHistoryRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository.DuplicateOffenderException;
 import uk.gov.justice.digital.delius.util.EntityHelper;
 
 import java.time.LocalDate;
@@ -763,10 +764,33 @@ public class CustodyServiceTest {
                  .build();
 
         @Nested
+        class WhenMultipleBookingsFound {
+            @BeforeEach
+            public void setup() {
+                when(offenderRepository.findMostLikelyByNomsNumber("G9542VP")).thenReturn(Either.left(new DuplicateOffenderException("dup")));
+            }
+
+            @Test
+            public void willCreateTelemetryEventWhenMultipleBookingsFound() {
+                assertThatThrownBy(() ->
+                    custodyService.updateCustodyBookingNumber("G9542VP", updateCustodyBookingNumber));
+
+                verify(telemetryClient).trackEvent(eq("P2PImprisonmentStatusOffenderMultipleBookings"), argThat(standardTelemetryAttributes), isNull());
+            }
+
+            @Test
+            public void willThrowExceptionWhenMultipleBookingsFound() {
+                assertThatThrownBy(() ->
+                    custodyService.updateCustodyBookingNumber("G9542VP", updateCustodyBookingNumber))
+                    .isInstanceOf(DuplicateOffenderException.class);
+            }
+        }
+
+        @Nested
         class WhenOffenderNotFound {
             @BeforeEach
             public void setup() {
-                when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.empty());
+                when(offenderRepository.findMostLikelyByNomsNumber("G9542VP")).thenReturn(Either.right(Optional.empty()));
             }
 
             @Test
@@ -789,6 +813,7 @@ public class CustodyServiceTest {
         class WhenDuplicateConvictionsFound {
             @BeforeEach
             public void setup() {
+                when(offenderRepository.findMostLikelyByNomsNumber(anyString())).thenReturn(Either.right(Optional.of(Offender.builder().offenderId(99L).build())));
                 when(convictionService.getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(anyLong(), any()))
                         .thenReturn(Result.ofError(new ConvictionService.DuplicateConvictionsForSentenceDateException(2)));
             }
@@ -810,10 +835,12 @@ public class CustodyServiceTest {
 
 
         }
+
         @Nested
         class WhenConvictionNotFound {
             @BeforeEach
             public void setup() {
+                when(offenderRepository.findMostLikelyByNomsNumber(anyString())).thenReturn(Either.right(Optional.of(Offender.builder().offenderId(99L).build())));
                 when(convictionService.getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(anyLong(), any()))
                         .thenReturn(Result.of(Optional.empty()));
             }
@@ -848,12 +875,12 @@ public class CustodyServiceTest {
             void setup() {
                 when(convictionService.getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(anyLong(), any()))
                         .thenReturn(Result.of(Optional.of(event)));
-                when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.of(offender));
+                when(offenderRepository.findMostLikelyByNomsNumber("G9542VP")).thenReturn(Either.right(Optional.of(offender)));
             }
 
             @Test
             void bookingNumberWillBeUpdated() {
-                var custody = custodyService.updateCustodyBookingNumber("G9542VP", updateCustodyBookingNumber);
+                final var custody = custodyService.updateCustodyBookingNumber("G9542VP", updateCustodyBookingNumber);
 
                 assertThat(custody.getBookingNumber()).isEqualTo("44463B");
             }
@@ -891,7 +918,7 @@ public class CustodyServiceTest {
 
                 @Test
                 void nothingWillBeUpdated() {
-                    var custody = custodyService.updateCustodyBookingNumber("G9542VP", updateCustodyBookingNumber);
+                    final var custody = custodyService.updateCustodyBookingNumber("G9542VP", updateCustodyBookingNumber);
 
                     verify(offenderPrisonerService, never()).refreshOffenderPrisonersFor(any());
                     verify(spgNotificationService, never()).notifyUpdateOfCustody(any(), any());
@@ -912,7 +939,7 @@ public class CustodyServiceTest {
 
                 @Test
                 void nothingWillBeUpdated() {
-                    var custody = custodyService.updateCustodyBookingNumber("G9542VP", updateCustodyBookingNumber);
+                    final var custody = custodyService.updateCustodyBookingNumber("G9542VP", updateCustodyBookingNumber);
 
                     verify(offenderPrisonerService, never()).refreshOffenderPrisonersFor(any());
                     verify(spgNotificationService, never()).notifyUpdateOfCustody(any(), any());

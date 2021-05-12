@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
+import io.vavr.control.Either;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -17,6 +18,8 @@ import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
 import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.CustodyRelatedKeyDates;
 import uk.gov.justice.digital.delius.data.api.ReplaceCustodyKeyDates;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
@@ -29,6 +32,7 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.config.RestAssuredMockMvcConfig.newConfig;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -63,7 +67,7 @@ class CustodyKeyDatesControllerTest {
     class ReplaceAllCustodyKeyDateByNomsNumberAndBookingNumber {
         @BeforeEach
         void setUp() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
-            when(offenderService.offenderIdOfNomsNumber(any())).thenReturn(Optional.of(99L));
+            when(offenderService.mostLikelyOffenderIdOfNomsNumber(any())).thenReturn(Either.right(Optional.of(99L)));
             when(convictionService.getAllActiveCustodialEventsWithBookingNumber(any(), any())).thenReturn(List.of(aCustodyEvent(88L, LocalDate
                 .now())));
             when(convictionService.addOrReplaceOrDeleteCustodyKeyDates(any(), any(), any())).thenReturn(Custody
@@ -74,7 +78,7 @@ class CustodyKeyDatesControllerTest {
 
         @Test
         void WillReturn404WhenOffenderNotFound() {
-            when(offenderService.offenderIdOfNomsNumber(any())).thenReturn(Optional.empty());
+            when(offenderService.mostLikelyOffenderIdOfNomsNumber(any())).thenReturn(Either.right(Optional.empty()));
 
             given()
                 .contentType(APPLICATION_JSON_VALUE)
@@ -85,12 +89,28 @@ class CustodyKeyDatesControllerTest {
                 .statusCode(404)
                 .body("developerMessage", containsString("Offender with NOMS number G9542VP not found"));
 
-            verify(offenderService).offenderIdOfNomsNumber("G9542VP");
+            verify(offenderService).mostLikelyOffenderIdOfNomsNumber("G9542VP");
+        }
+
+        @Test
+        void WillReturn409WhenDuplicateNomsNumberFound() {
+            when(offenderService.mostLikelyOffenderIdOfNomsNumber(any())).thenReturn(Either.left(new OffenderRepository.DuplicateOffenderException("Two found!")));
+
+            given()
+                .contentType(APPLICATION_JSON_VALUE)
+                .body(json(ReplaceCustodyKeyDates.builder().build()))
+                .when()
+                .post("/secure/offenders/nomsNumber/{nomsNumber}/bookingNumber/{bookingNumber}/custody/keyDates", "G9542VP", "44463B")
+                .then()
+                .statusCode(409)
+                .body("developerMessage", containsString("Two found"));
+
+            verify(offenderService).mostLikelyOffenderIdOfNomsNumber("G9542VP");
         }
 
         @Test
         void WillReturn404WhenConvictionForBookingNotFound() {
-            when(offenderService.offenderIdOfNomsNumber(any())).thenReturn(Optional.of(99L));
+            when(offenderService.mostLikelyOffenderIdOfNomsNumber(any())).thenReturn(Either.right(Optional.of(99L)));
             when(convictionService.getAllActiveCustodialEventsWithBookingNumber(any(), any())).thenReturn(List.of());
 
             given()
@@ -123,10 +143,10 @@ class CustodyKeyDatesControllerTest {
                 .statusCode(200);
         }
 
-        private String json(ReplaceCustodyKeyDates custodyKeyDates) {
+        private String json(final ReplaceCustodyKeyDates custodyKeyDates) {
             try {
                 return objectMapper.writeValueAsString(custodyKeyDates);
-            } catch (JsonProcessingException e) {
+            } catch (final JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         }

@@ -60,16 +60,17 @@ public class CustodyService {
     private final FeatureSwitches featureSwitches;
 
     public CustodyService(
-            TelemetryClient telemetryClient,
-            OffenderRepository offenderRepository,
-            ConvictionService convictionService,
-            InstitutionRepository institutionRepository,
-            CustodyHistoryRepository custodyHistoryRepository,
-            ReferenceDataService referenceDataService,
-            SpgNotificationService spgNotificationService,
-            OffenderManagerService offenderManagerService,
-            ContactService contactService, OffenderPrisonerService offenderPrisonerService,
-            FeatureSwitches featureSwitches) {
+            final TelemetryClient telemetryClient,
+            final OffenderRepository offenderRepository,
+            final ConvictionService convictionService,
+            final InstitutionRepository institutionRepository,
+            final CustodyHistoryRepository custodyHistoryRepository,
+            final ReferenceDataService referenceDataService,
+            final SpgNotificationService spgNotificationService,
+            final OffenderManagerService offenderManagerService,
+            final ContactService contactService,
+            final OffenderPrisonerService offenderPrisonerService,
+            final FeatureSwitches featureSwitches) {
         this.updateCustodyFeatureSwitch = featureSwitches.getNoms().getUpdate().isCustody();
         this.updateBookingNumberFeatureSwitch = featureSwitches.getNoms().getUpdate().getBooking().isNumber();
         this.telemetryClient = telemetryClient;
@@ -98,12 +99,8 @@ public class CustodyService {
                 updateCustody.getNomsPrisonInstitutionCode());
         return result.map(success -> {
             switch (success.outcome) {
-                case Updated:
-                    telemetryClient.trackEvent("P2PTransferPrisonUpdated", add(telemetryProperties, "updatedCount", String.valueOf(success.custodyRecordsUpdated.size())), null);
-                    break;
-                case NoUpdateRequired:
-                    telemetryClient.trackEvent("P2PTransferPrisonUpdateIgnored", telemetryProperties, null);
-                    break;
+                case Updated -> telemetryClient.trackEvent("P2PTransferPrisonUpdated", add(telemetryProperties, "updatedCount", String.valueOf(success.custodyRecordsUpdated.size())), null);
+                case NoUpdateRequired -> telemetryClient.trackEvent("P2PTransferPrisonUpdateIgnored", telemetryProperties, null);
             }
             return success.custodyRecordsUpdated
                 .stream()
@@ -111,24 +108,12 @@ public class CustodyService {
                 .orElseThrow();
         }).getOrElseThrow((error -> {
             switch (error.reason) {
-                case TransferPrisonNotFound:
-                    telemetryClient.trackEvent("P2PTransferPrisonNotFound", telemetryProperties, null);
-                    break;
-                case CustodialSentenceNotFoundInCorrectState:
-                    telemetryClient.trackEvent("P2PTransferPrisonUpdateIgnored", telemetryProperties, null);
-                    break;
-                case ConvictionNotFound:
-                    telemetryClient.trackEvent("P2PTransferBookingNumberNotFound", telemetryProperties, null);
-                    break;
-                case MultipleCustodialSentences:
-                    telemetryClient.trackEvent("P2PTransferBookingNumberHasDuplicates", telemetryProperties, null);
-                    break;
-                case OffenderNotFound:
-                    telemetryClient.trackEvent("P2PTransferOffenderNotFound", telemetryProperties, null);
-                    break;
-                case MultipleOffendersFound:
-                    telemetryClient.trackEvent("P2PTransferMultipleOffendersFound", telemetryProperties, null);
-                    break;
+                case TransferPrisonNotFound -> telemetryClient.trackEvent("P2PTransferPrisonNotFound", telemetryProperties, null);
+                case CustodialSentenceNotFoundInCorrectState -> telemetryClient.trackEvent("P2PTransferPrisonUpdateIgnored", telemetryProperties, null);
+                case ConvictionNotFound -> telemetryClient.trackEvent("P2PTransferBookingNumberNotFound", telemetryProperties, null);
+                case MultipleCustodialSentences -> telemetryClient.trackEvent("P2PTransferBookingNumberHasDuplicates", telemetryProperties, null);
+                case OffenderNotFound -> telemetryClient.trackEvent("P2PTransferOffenderNotFound", telemetryProperties, null);
+                case MultipleOffendersFound -> telemetryClient.trackEvent("P2PTransferMultipleOffendersFound", telemetryProperties, null);
             }
             return new NotFoundException(error.getMessage());
         }));
@@ -143,22 +128,13 @@ public class CustodyService {
         final var result = updateCustodyPrisonLocation(nomsNumber,
                 this::getAllActiveCustodialEvents,
                 nomsPrisonInstitutionCode);
-        final Optional<String> telemetryName = result.fold(error -> {
-            switch (error.reason) {
-                case TransferPrisonNotFound:
-                    return Optional.of("POMLocationPrisonNotFound");
-                case CustodialSentenceNotFoundInCorrectState:
-                    return Optional.of("POMLocationCustodialStatusNotCorrect");
-                case ConvictionNotFound:
-                    return Optional.of("POMLocationNoEvents");
-                case MultipleCustodialSentences:
-                    return Optional.of("POMLocationMultipleEvents");
-                case OffenderNotFound:
-                    return Optional.of("POMLocationOffenderNotFound");
-                case MultipleOffendersFound:
-                    return Optional.of("POMLocationMultipleOffenders");
-            }
-            return Optional.empty();
+        final Optional<String> telemetryName = result.fold(error -> switch (error.reason) {
+            case TransferPrisonNotFound -> Optional.of("POMLocationPrisonNotFound");
+            case CustodialSentenceNotFoundInCorrectState -> Optional.of("POMLocationCustodialStatusNotCorrect");
+            case ConvictionNotFound -> Optional.of("POMLocationNoEvents");
+            case MultipleCustodialSentences -> Optional.of("POMLocationMultipleEvents");
+            case OffenderNotFound -> Optional.of("POMLocationOffenderNotFound");
+            case MultipleOffendersFound -> Optional.of("POMLocationMultipleOffenders");
         }, success -> {
             switch (success.outcome) {
                 case Updated:
@@ -188,15 +164,20 @@ public class CustodyService {
 
 
     @Transactional
-    public Custody updateCustodyBookingNumber(String nomsNumber, UpdateCustodyBookingNumber updateCustodyBookingNumber) {
+    public Custody updateCustodyBookingNumber(final String nomsNumber, final UpdateCustodyBookingNumber updateCustodyBookingNumber) {
         final var telemetryProperties = Map.of("offenderNo", nomsNumber,
                 "bookingNumber", updateCustodyBookingNumber.getBookingNumber(),
                 "sentenceStartDate", updateCustodyBookingNumber.getSentenceStartDate().format(DateTimeFormatter.ISO_DATE));
 
-        final var offender = offenderRepository.findByNomsNumber(nomsNumber).orElseThrow(() -> {
-            telemetryClient.trackEvent("P2PImprisonmentStatusOffenderNotFound", telemetryProperties, null);
-            return new NotFoundException(String.format("offender with nomsNumber %s not found", nomsNumber));
-        });
+        final var offender = offenderRepository.findMostLikelyByNomsNumber(nomsNumber)
+            .getOrElseThrow((e) -> {
+                telemetryClient.trackEvent("P2PImprisonmentStatusOffenderMultipleBookings", telemetryProperties, null);
+                throw e;
+            })
+            .orElseThrow(() -> {
+                telemetryClient.trackEvent("P2PImprisonmentStatusOffenderNotFound", telemetryProperties, null);
+                return new NotFoundException(String.format("offender with nomsNumber %s not found", nomsNumber));
+            });
         final var event = convictionService.getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(offender.getOffenderId(), updateCustodyBookingNumber.getSentenceStartDate())
                 .onError(error -> {
                     telemetryClient.trackEvent("P2PImprisonmentStatusCustodyEventsHasDuplicates", telemetryProperties, null);
@@ -222,20 +203,20 @@ public class CustodyService {
 
 
     @Transactional(readOnly = true)
-    public Custody getCustodyByBookNumber(String nomsNumber, String bookingNumber) {
+    public Custody getCustodyByBookNumber(final String nomsNumber, final String bookingNumber) {
         final var offender = offenderRepository.findByNomsNumber(nomsNumber)
                 .orElseThrow(() -> new NotFoundException(String.format("offender with nomsNumber %s not found", nomsNumber)));
         try {
             final var event = convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(offender.getOffenderId(), bookingNumber)
                     .orElseThrow(() -> new NotFoundException(String.format("conviction with bookNumber %s not found", bookingNumber)));
             return ConvictionTransformer.custodyOf(event.getDisposal().getCustody());
-        } catch (DuplicateActiveCustodialConvictionsException e) {
+        } catch (final DuplicateActiveCustodialConvictionsException e) {
             throw new NotFoundException(String.format("no single conviction with bookingNumber %s found, instead %d duplicates found", bookingNumber, e.getConvictionCount()));
         }
     }
 
     @Transactional(readOnly = true)
-    public Custody getCustodyByConvictionId(String crn, Long convictionId) {
+    public Custody getCustodyByConvictionId(final String crn, final Long convictionId) {
         final var offender = offenderRepository.findByCrn(crn)
                 .orElseThrow(() -> new NotFoundException(String.format("offender with crn %s not found", crn)));
         return Optional.ofNullable(convictionService.convictionFor(offender.getOffenderId(), convictionId)
@@ -243,7 +224,7 @@ public class CustodyService {
                 .orElseThrow(() -> new BadRequestException(String.format("The conviction with convictionId %d is not a custodial sentence", convictionId)));
     }
 
-    private Event updateBookingNumberFor(Offender offender, Event event, String bookingNumber) {
+    private Event updateBookingNumberFor(final Offender offender, final Event event, final String bookingNumber) {
         if (updateBookingNumberFeatureSwitch) {
             event.getDisposal().getCustody().setPrisonerNumber(bookingNumber);
             offenderPrisonerService.refreshOffenderPrisonersFor(offender);
@@ -256,17 +237,17 @@ public class CustodyService {
     }
 
 
-    private boolean currentlyAtDifferentInstitution(Event event, RInstitution institution) {
+    private boolean currentlyAtDifferentInstitution(final Event event, final RInstitution institution) {
         return Optional.ofNullable(event.getDisposal().getCustody().getInstitution())
                 .map(currentInstitution -> !currentInstitution.equals(institution))
                 .orElse(true);
     }
 
-    private boolean isInCustodyOrAboutToStartACustodySentence(uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody) {
+    private boolean isInCustodyOrAboutToStartACustodySentence(final uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody) {
         return custody.isAboutToEnterCustody() || custody.isInCustody();
     }
 
-    private void updateInstitutionOnEvent(Offender offender, Event event, RInstitution institution) {
+    private void updateInstitutionOnEvent(final Offender offender, final Event event, final RInstitution institution) {
         if (updateCustodyFeatureSwitch) {
             final var custody = event.getDisposal().getCustody();
             custody.setInstitution(institution);
@@ -286,13 +267,13 @@ public class CustodyService {
         }
     }
 
-    private void updatePrisonOffenderManager(Offender offender, RInstitution institution) {
+    private void updatePrisonOffenderManager(final Offender offender, final RInstitution institution) {
         if (!offenderManagerService.isPrisonOffenderManagerAtInstitution(offender, institution)) {
             offenderManagerService.autoAllocatePrisonOffenderManagerAtInstitution(offender, institution);
         }
     }
 
-    private void savePrisonLocationChangeCustodyHistoryEvent(Offender offender, uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody, RInstitution institution) {
+    private void savePrisonLocationChangeCustodyHistoryEvent(final Offender offender, final uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody, final RInstitution institution) {
         final var history = CustodyHistory
                 .builder()
                 .custody(custody)
@@ -304,7 +285,7 @@ public class CustodyService {
         custodyHistoryRepository.save(history);
     }
 
-    private void saveCustodyStatusChangeCustodyHistoryEvent(Offender offender, uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody) {
+    private void saveCustodyStatusChangeCustodyHistoryEvent(final Offender offender, final uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody) {
         final var history = CustodyHistory
                 .builder()
                 .custody(custody)
@@ -316,7 +297,7 @@ public class CustodyService {
         custodyHistoryRepository.save(history);
     }
 
-    private Either<PrisonLocationUpdateError, Offender> findByNomsNumber(String nomsNumber) {
+    private Either<PrisonLocationUpdateError, Offender> findByNomsNumber(final String nomsNumber) {
         final Supplier<Either<PrisonLocationUpdateError, Offender>> notFoundError = () -> Either
                 .left(PrisonLocationUpdateError.offenderNotFound(nomsNumber));
 
@@ -332,7 +313,7 @@ public class CustodyService {
                 .fold(multipleOffenderError, offenderOrNotFoundError);
     }
 
-    private Either<PrisonLocationUpdateError, List<Event>> getAllActiveCustodialEvents(Offender offender) {
+    private Either<PrisonLocationUpdateError, List<Event>> getAllActiveCustodialEvents(final Offender offender) {
         final var events = convictionService.getAllActiveCustodialEvents(offender.getOffenderId());
         if (events.isEmpty()) {
             return Either.left(new PrisonLocationUpdateError(ConvictionNotFound, String
@@ -347,7 +328,7 @@ public class CustodyService {
         }
     }
 
-    private Either<PrisonLocationUpdateError, List<Event>> atLeastOneInCustodyOrAboutToStartACustodySentence(List<Event> events) {
+    private Either<PrisonLocationUpdateError, List<Event>> atLeastOneInCustodyOrAboutToStartACustodySentence(final List<Event> events) {
         final var eventsInCustody = events
             .stream()
             .filter(event -> isInCustodyOrAboutToStartACustodySentence(event.getDisposal().getCustody()))
@@ -358,20 +339,20 @@ public class CustodyService {
             : Either.right(eventsInCustody);
     }
 
-    private String allCustodialStatuses(List<Event> events) {
+    private String allCustodialStatuses(final List<Event> events) {
         return events
             .stream()
             .map(event -> event.getDisposal().getCustody().getCustodialStatus().getCodeDescription())
             .collect(Collectors.joining());
     }
 
-    private Either<PrisonLocationUpdateError, RInstitution> findByNomisCdeCode(String nomisCdeCode) {
+    private Either<PrisonLocationUpdateError, RInstitution> findByNomisCdeCode(final String nomisCdeCode) {
         return institutionRepository.findByNomisCdeCode(nomisCdeCode)
                 .map((Function<RInstitution, Either<PrisonLocationUpdateError, RInstitution>>) Either::right)
                 .orElseGet(() -> Either.left(new PrisonLocationUpdateError(PrisonLocationUpdateError.Reason.TransferPrisonNotFound, String.format("prison institution with nomis code  %s not found", nomisCdeCode))));
     }
 
-    private Either<PrisonLocationUpdateError, PrisonLocationUpdateSuccess> updateInstitutionsWhenDifferent(Offender offender, List<Event> events, RInstitution institution) {
+    private Either<PrisonLocationUpdateError, PrisonLocationUpdateSuccess> updateInstitutionsWhenDifferent(final Offender offender, final List<Event> events, final RInstitution institution) {
         final var allAtDifferentInstitution = events
             .stream()
             .filter(event -> currentlyAtDifferentInstitution(event, institution))
@@ -386,7 +367,7 @@ public class CustodyService {
         return Either.right(PrisonLocationUpdateSuccess.updated(allOf(allAtDifferentInstitution)));
     }
 
-    private List<Custody> allOf(List<Event> events) {
+    private List<Custody> allOf(final List<Event> events) {
         return events.stream().map(event -> event.getDisposal().getCustody()).map(ConvictionTransformer::custodyOf).collect(toList());
     }
 
@@ -403,20 +384,20 @@ public class CustodyService {
         final private Reason reason;
         final private String message;
 
-        public static PrisonLocationUpdateError offenderNotFound(String nomsNumber) {
+        public static PrisonLocationUpdateError offenderNotFound(final String nomsNumber) {
             return new PrisonLocationUpdateError(OffenderNotFound, String.format("offender with nomsNumber %s not found", nomsNumber));
         }
 
-        public static PrisonLocationUpdateError multipleOffenders(DuplicateOffenderException duplicateError) {
+        public static PrisonLocationUpdateError multipleOffenders(final DuplicateOffenderException duplicateError) {
             return new PrisonLocationUpdateError(MultipleOffendersFound, duplicateError.getMessage());
         }
     }
     @Data
     static class PrisonLocationUpdateSuccess {
-        static PrisonLocationUpdateSuccess updated(List<Custody> custodyRecordsUpdated) {
+        static PrisonLocationUpdateSuccess updated(final List<Custody> custodyRecordsUpdated) {
             return new PrisonLocationUpdateSuccess(Outcome.Updated, custodyRecordsUpdated);
         }
-        static PrisonLocationUpdateSuccess noUpdateRequired(List<Custody> custodyRecordsUpdated) {
+        static PrisonLocationUpdateSuccess noUpdateRequired(final List<Custody> custodyRecordsUpdated) {
             return new PrisonLocationUpdateSuccess(Outcome.NoUpdateRequired, custodyRecordsUpdated);
         }
 
@@ -428,12 +409,12 @@ public class CustodyService {
         final private List<Custody> custodyRecordsUpdated;
     }
 
-    static <K, V> Map<K, V> add(Map<K, V> map, @SuppressWarnings("SameParameterValue") K key, V value) {
+    static <K, V> Map<K, V> add(final Map<K, V> map, @SuppressWarnings("SameParameterValue") final K key, final V value) {
         final var all = new HashMap<>(map);
         all.put(key, value);
         return Map.copyOf(all);
     }
-    static <K, V> Map<K, V> add(Map<K, V> map1, Map<K, V> map2) {
+    static <K, V> Map<K, V> add(final Map<K, V> map1, final Map<K, V> map2) {
         final var all = new HashMap<>(map1);
         all.putAll(map2);
         return Map.copyOf(all);

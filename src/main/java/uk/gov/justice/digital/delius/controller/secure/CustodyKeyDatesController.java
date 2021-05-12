@@ -5,12 +5,13 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,17 +40,11 @@ import java.util.function.Function;
 @Api(tags = {"Sentence dates", "Custody"}, authorizations = {@Authorization("ROLE_COMMUNITY")})
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @PreAuthorize("hasRole('ROLE_COMMUNITY')")
+@AllArgsConstructor
 public class CustodyKeyDatesController {
     private final OffenderService offenderService;
     private final ConvictionService convictionService;
     private final FeatureSwitches featureSwitches;
-
-    @Autowired
-    public CustodyKeyDatesController(OffenderService offenderService, ConvictionService convictionService, FeatureSwitches featureSwitches) {
-        this.offenderService = offenderService;
-        this.convictionService = convictionService;
-        this.featureSwitches = featureSwitches;
-    }
 
     @RequestMapping(value = "offenders/crn/{crn}/custody/keyDates/{typeCode}", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
@@ -93,7 +88,9 @@ public class CustodyKeyDatesController {
                                                                         final @RequestBody ReplaceCustodyKeyDates replaceCustodyKeyDates) {
         log.info("Call to replaceAllCustodyKeyDateByNomsNumberAndBookingNumber for {} booking {} with dates {}", nomsNumber, bookingNumber, replaceCustodyKeyDates);
 
-        var offenderId = offenderService.offenderIdOfNomsNumber(nomsNumber).orElseThrow(() -> new NotFoundException(String.format("Offender with NOMS number %s not found", nomsNumber)));
+        final var offenderId = offenderService.mostLikelyOffenderIdOfNomsNumber(nomsNumber)
+            .getOrElseThrow((e) -> e)
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with NOMS number %s not found", nomsNumber)));
         final var activeCustodialEvents = convictionService.getAllActiveCustodialEventsWithBookingNumber(offenderId, bookingNumber);
         if (activeCustodialEvents.isEmpty()) {
             throw new NotFoundException(String.format("Conviction with bookingNumber %s not found for offender with NOMS number %s", bookingNumber, nomsNumber));
@@ -141,7 +138,7 @@ public class CustodyKeyDatesController {
         log.info("Call to putCustodyKeyDateByPrisonBookingNumber for {} code {}", prisonBookingNumber, typeCode);
         try {
             return addOrReplaceCustodyKeyDateByConvictionId(convictionService.getConvictionIdByPrisonBookingNumber(prisonBookingNumber), typeCode, custodyKeyDate);
-        } catch (DuplicateActiveCustodialConvictionsException e) {
+        } catch (final DuplicateActiveCustodialConvictionsException e) {
             log.warn("Multiple active custodial convictions found for {}", prisonBookingNumber);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Can not add a key date where offender has multiple convictions for booking number. %s has %d", prisonBookingNumber, e.getConvictionCount()));
         }
@@ -195,7 +192,7 @@ public class CustodyKeyDatesController {
         log.info("Call to getCustodyKeyDateByPrisonBookingNumber for {} code {}", prisonBookingNumber, typeCode);
         try {
             return getCustodyKeyDateByConvictionId(convictionService.getConvictionIdByPrisonBookingNumber(prisonBookingNumber), typeCode);
-        } catch (DuplicateActiveCustodialConvictionsException e) {
+        } catch (final DuplicateActiveCustodialConvictionsException e) {
             log.warn("Multiple active custodial convictions found for {}", prisonBookingNumber);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Can only get a key date where offender has multiple convictions for booking number. %s has %d", prisonBookingNumber, e.getConvictionCount()));
         }
@@ -246,7 +243,7 @@ public class CustodyKeyDatesController {
         log.info("Call to getAllCustodyKeyDateByPrisonBookingNumber for {}", prisonBookingNumber);
         try {
             return getCustodyKeyDatesByConvictionId(convictionService.getConvictionIdByPrisonBookingNumber(prisonBookingNumber));
-        } catch (DuplicateActiveCustodialConvictionsException e) {
+        } catch (final DuplicateActiveCustodialConvictionsException e) {
             log.warn("Multiple active custodial convictions found for {}", prisonBookingNumber);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Can only get a key dates where offender has multiple convictions for booking number. %s has %d", prisonBookingNumber, e.getConvictionCount()));
         }
@@ -310,18 +307,18 @@ public class CustodyKeyDatesController {
         log.info("Call to deleteCustodyKeyDateByPrisonBookingNumber for {} code {}", prisonBookingNumber, typeCode);
         try {
             deleteCustodyKeyDateByConvictionId(convictionService.getConvictionIdByPrisonBookingNumber(prisonBookingNumber), typeCode);
-        } catch (DuplicateActiveCustodialConvictionsException e) {
+        } catch (final DuplicateActiveCustodialConvictionsException e) {
             log.warn("Multiple active custodial convictions found for {}", prisonBookingNumber);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Can only delete a key date where offender has multiple convictions for booking number. %s has %d", prisonBookingNumber, e.getConvictionCount()));
         }
     }
 
-    private CustodyKeyDate addOrReplaceCustodyKeyDate(Optional<Long> maybeOffenderId, String typeCode, CreateCustodyKeyDate custodyKeyDate) {
+    private CustodyKeyDate addOrReplaceCustodyKeyDate(final Optional<Long> maybeOffenderId, final String typeCode, final CreateCustodyKeyDate custodyKeyDate) {
         return maybeOffenderId
                 .map(offenderId -> {
                     try {
                         return convictionService.addOrReplaceCustodyKeyDateByOffenderId(offenderId, typeCode, custodyKeyDate);
-                    } catch (CustodyTypeCodeIsNotValidException e) {
+                    } catch (final CustodyTypeCodeIsNotValidException e) {
                         log.warn("Key type code is not valid for {}", typeCode);
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
                     }
@@ -329,12 +326,12 @@ public class CustodyKeyDatesController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Offender not found"));
     }
 
-    private CustodyKeyDate addOrReplaceCustodyKeyDateByConvictionId(Optional<Long> maybeConvictionId, String typeCode, CreateCustodyKeyDate custodyKeyDate) {
+    private CustodyKeyDate addOrReplaceCustodyKeyDateByConvictionId(final Optional<Long> maybeConvictionId, final String typeCode, final CreateCustodyKeyDate custodyKeyDate) {
         return maybeConvictionId
                 .map(convictionId -> {
                     try {
                         return convictionService.addOrReplaceCustodyKeyDateByConvictionId(convictionId, typeCode, custodyKeyDate);
-                    } catch (CustodyTypeCodeIsNotValidException e) {
+                    } catch (final CustodyTypeCodeIsNotValidException e) {
                         log.warn("Key type code is not valid for {}", typeCode);
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
                     }
@@ -342,49 +339,49 @@ public class CustodyKeyDatesController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conviction not found"));
     }
 
-    private CustodyKeyDate getCustodyKeyDate(Optional<Long> maybeOffenderId, String typeCode) {
+    private CustodyKeyDate getCustodyKeyDate(final Optional<Long> maybeOffenderId, final String typeCode) {
         return maybeOffenderId
                 .map(getCustodyKeyDateByOffenderId(typeCode))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Offender not found"));
     }
 
-    private Function<Long, CustodyKeyDate> getCustodyKeyDateByOffenderId(String typeCode) {
+    private Function<Long, CustodyKeyDate> getCustodyKeyDateByOffenderId(final String typeCode) {
         return offenderId -> convictionService.getCustodyKeyDateByOffenderId(offenderId, typeCode)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Key date not found"));
     }
 
-    private CustodyKeyDate getCustodyKeyDateByConvictionId(Optional<Long> maybeConvictionId, String typeCode) {
+    private CustodyKeyDate getCustodyKeyDateByConvictionId(final Optional<Long> maybeConvictionId, final String typeCode) {
         return maybeConvictionId
                 .map(getCustodyKeyDateByConvictionId(typeCode))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conviction not found"));
     }
 
-    private Function<Long, CustodyKeyDate> getCustodyKeyDateByConvictionId(String typeCode) {
+    private Function<Long, CustodyKeyDate> getCustodyKeyDateByConvictionId(final String typeCode) {
         return convictionId ->
                 convictionService.getCustodyKeyDateByConvictionId(convictionId, typeCode)
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Key date not found"));
     }
 
-    private List<CustodyKeyDate> getCustodyKeyDates(Optional<Long> maybeOffenderId) {
+    private List<CustodyKeyDate> getCustodyKeyDates(final Optional<Long> maybeOffenderId) {
         return maybeOffenderId
                 .map(convictionService::getCustodyKeyDatesByOffenderId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Offender not found"));
     }
 
-    private List<CustodyKeyDate> getCustodyKeyDatesByConvictionId(Optional<Long> maybeConvictionId) {
+    private List<CustodyKeyDate> getCustodyKeyDatesByConvictionId(final Optional<Long> maybeConvictionId) {
         return maybeConvictionId
                 .map(convictionService::getCustodyKeyDatesByConvictionId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conviction not found"));
     }
 
-    private void deleteCustodyKeyDate(Optional<Long> maybeOffenderId, String typeCode) {
+    private void deleteCustodyKeyDate(final Optional<Long> maybeOffenderId, final String typeCode) {
         if (maybeOffenderId.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Offender not found");
         }
         maybeOffenderId.ifPresent(offenderId -> convictionService.deleteCustodyKeyDateByOffenderId(offenderId, typeCode));
     }
 
-    private void deleteCustodyKeyDateByConvictionId(Optional<Long> maybeConvictionId, String typeCode) {
+    private void deleteCustodyKeyDateByConvictionId(final Optional<Long> maybeConvictionId, final String typeCode) {
         if (maybeConvictionId.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Offender not found");
         }

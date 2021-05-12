@@ -17,6 +17,7 @@ import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.InvalidRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.UnauthorisedException;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository.DuplicateOffenderException;
 import uk.gov.justice.digital.delius.service.OffenderDeltaLockedException;
 
 @RestControllerAdvice(basePackages = { "uk.gov.justice.digital.delius.controller.secure" } )
@@ -62,7 +63,7 @@ public class SecureControllerAdvice {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleException(final AccessDeniedException e) {
-        log.debug("Forbidden (403) returned", e);
+        log.debug("Forbidden (403) returned with message: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(ErrorResponse
@@ -85,7 +86,7 @@ public class SecureControllerAdvice {
 
     @ExceptionHandler(UnauthorisedException.class)
     public ResponseEntity<ErrorResponse> handleException(final UnauthorisedException e) {
-        log.debug("Unauthorised (401) returned", e);
+        log.debug("Unauthorised (401) returned with message: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(ErrorResponse
@@ -97,7 +98,7 @@ public class SecureControllerAdvice {
 
     @ExceptionHandler(InvalidRequestException.class)
     public ResponseEntity<ErrorResponse> handleException(final InvalidRequestException e) {
-        log.debug("Bad Request (400) returned", e);
+        log.debug("Bad Request (400) returned with message: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse
@@ -109,7 +110,7 @@ public class SecureControllerAdvice {
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorResponse> handleException(final BadRequestException e) {
-        log.debug("Bad request (400) returned", e);
+        log.debug("Bad request (400) returned with message: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse
@@ -121,7 +122,7 @@ public class SecureControllerAdvice {
 
     @ExceptionHandler(ConflictingRequestException.class)
     public ResponseEntity<ErrorResponse> handleException(final ConflictingRequestException e) {
-        log.debug("Conflict (409) returned", e);
+        log.debug("Conflict (409) returned with message: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(ErrorResponse
@@ -143,9 +144,21 @@ public class SecureControllerAdvice {
                         .build());
     }
 
+    @ExceptionHandler(DuplicateOffenderException.class)
+    public ResponseEntity<ErrorResponse> handleException(final DuplicateOffenderException e) {
+        log.debug("Conflict (409) returned with message: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ErrorResponse
+                        .builder()
+                        .status(HttpStatus.CONFLICT.value())
+                        .developerMessage(e.getMessage())
+                        .build());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleException(final MethodArgumentNotValidException e) {
-        log.debug("Bad request (400) returned", e);
+        log.debug("Bad request (400) returned with message: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse
@@ -157,7 +170,7 @@ public class SecureControllerAdvice {
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ErrorResponse> handleException(final ResponseStatusException e) {
-        log.debug("Bad request (400) returned", e);
+        log.debug("Bad request (400) returned with message: {}", e.getMessage());
         return ResponseEntity
                 .status(e.getStatus())
                 .body(ErrorResponse
