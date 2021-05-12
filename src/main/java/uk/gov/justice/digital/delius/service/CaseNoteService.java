@@ -34,12 +34,12 @@ public class CaseNoteService {
             .bodyValue(caseNote)
             .retrieve()
             .toEntity(String.class)
-            .onErrorResume(WebClientResponseException.class, e -> emptyWhenIgnoringOmicOpdError(caseNote, e))
+            .onErrorResume(WebClientResponseException.class, e -> conflictWhenIgnoringOmicOpdError(caseNote, e))
             .block();
     }
 
     @NotNull
-    private Mono<ResponseEntity<String>> emptyWhenIgnoringOmicOpdError(final String caseNote, final WebClientResponseException e) {
+    private Mono<ResponseEntity<String>> conflictWhenIgnoringOmicOpdError(final String caseNote, final WebClientResponseException e) {
         if (e.getRawStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
             final var matcher = CASE_NOTE_TYPE_PATTERN.matcher(caseNote);
             if (matcher.find()) {

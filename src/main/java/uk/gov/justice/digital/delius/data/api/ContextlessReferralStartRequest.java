@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.data.api;
 
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,15 +18,15 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReferralSentRequest {
+public class ContextlessReferralStartRequest {
 
     @NotNull
     @ApiModelProperty(required = true)
-    private OffsetDateTime sentAt;
+    private OffsetDateTime startedAt;
 
     @NotNull
-    @ApiModelProperty(required = true)
-    private UUID serviceCategoryId;
+    @ApiModelProperty(required = true, value = "Denotes a group of services delivered through a referral to a service user, e.g. Personal Well Being", example = "PWB")
+    private String contractType;
 
     @Positive
     @NotNull
@@ -34,7 +35,4 @@ public class ReferralSentRequest {
 
     @NotNull
     private String notes;
-
-    @NotNull
-    private String context;
 }

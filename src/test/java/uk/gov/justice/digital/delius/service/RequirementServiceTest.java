@@ -230,7 +230,7 @@ public class RequirementServiceTest {
                 .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build())
                 .build()));
             var requirement = requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE);
-            assertThat(requirement.getRequirementId()).isEqualTo(99L);
+            assertThat(requirement.orElse(null).getRequirementId()).isEqualTo(99L);
         }
 
         @Test
@@ -241,13 +241,11 @@ public class RequirementServiceTest {
                 .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("X").build())
                 .build()));
 
-            assertThatExceptionOfType(IllegalStateException.class)
-                .isThrownBy(() -> requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE))
-                .withMessage("CRN: CRN EventId: 987654321 has no referral requirement");
+            assertThat(requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE)).isEmpty();
         }
 
         @Test
-        public void whenGetReferralRequirementByConvictionId_AndNoRequirementsExist_thenThrowException() {
+        public void whenGetReferralRequirementByConvictionId_AndMultipleRequirementsExist_thenThrowException() {
             when(disposal.getRequirements()).thenReturn(Arrays.asList(
                 Requirement.builder().requirementId(99L)
                     .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build()).build(),
@@ -261,12 +259,10 @@ public class RequirementServiceTest {
         }
 
         @Test
-        public void whenGetReferralRequirementByConvictionId_AndMultipleRequirementsExist_thenThrowException() {
+        public void whenGetReferralRequirementByConvictionId_AndNoRequirementsExist_thenReturnEmptyOptional() {
             when(disposal.getRequirements()).thenReturn(Collections.emptyList());
 
-            assertThatExceptionOfType(IllegalStateException.class)
-                .isThrownBy(() -> requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE))
-                .withMessage("CRN: CRN EventId: 987654321 has no referral requirement");
+            assertThat(requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE)).isEmpty();
         }
 
         @Test

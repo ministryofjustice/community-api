@@ -118,7 +118,7 @@ public class RequirementService {
     // that has a main category of F - rehab activity requirement. It is invalid for multiple to exist.
     // NB. The called method getRequirementsByConvictionId accepts an event id (conviction or sentence)
     // and perhaps should have been named getRequirementsByEventId
-    public Requirement getRequirement(String crn, Long eventId, String requirementTypeCode) {
+    public Optional<Requirement> getRequirement(String crn, Long eventId, String requirementTypeCode) {
 
         var requirements = getRequirementsByConvictionId(crn, eventId)
             .getRequirements().stream()
@@ -132,8 +132,7 @@ public class RequirementService {
             throw new IllegalStateException(format("CRN: %s EventId: %d has multiple referral requirements", crn, eventId));
         }
 
-        return requirements.stream().findFirst().orElseThrow(() ->
-            new IllegalStateException(format("CRN: %s EventId: %d has no referral requirement", crn, eventId)));
+        return requirements.stream().findFirst();
     }
 
 

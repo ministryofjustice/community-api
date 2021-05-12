@@ -31,7 +31,7 @@ public class DeliusIntegrationContextConfig {
     @Data
     public static class NsiMapping {
         private String nsiStatus;
-        private Map<UUID, String> serviceCategoryToNsiType;
+        private Map<String, String> contractTypeToNsiType;
     }
 
     @Data

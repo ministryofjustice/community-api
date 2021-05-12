@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import com.github.fge.jsonpatch.JsonPatch;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
@@ -68,7 +68,8 @@ public class AppointmentBookingController {
     @ApiOperation(value = "Creates an Contact appointment for a specified context")
     public ResponseEntity<AppointmentCreateResponse> createAppointmentWithContextName(final @PathVariable("crn") String crn,
                                                                                       final @PathVariable("sentenceId") Long sentenceId,
-                                                                                      final @PathVariable("contextName") String contextName,
+                                                                                      final @ApiParam(value = "Name identifying preprocessing applied to the request", example = "commissioned-rehabilitation-services")
+                                                                                          @PathVariable("contextName") String contextName,
                                                                                       final @RequestBody ContextlessAppointmentCreateRequest contextlessAppointmentCreateRequest) {
 
         AppointmentCreateResponse response = appointmentService.createAppointment(crn, sentenceId, contextName, contextlessAppointmentCreateRequest);
@@ -89,7 +90,8 @@ public class AppointmentBookingController {
     @ApiOperation(value = "Updates an Contact appointment outcome")
     public AppointmentUpdateResponse updateAppointmentOutcomeWithContext(final @PathVariable("crn") String crn,
                                                                          final @PathVariable("appointmentId") Long appointmentId,
-                                                                         final @PathVariable("contextName") String context,
+                                                                         final @ApiParam(value = "Name identifying preprocessing applied to the request", example = "commissioned-rehabilitation-services")
+                                                                             @PathVariable("contextName") String context,
                                                                          final @RequestBody ContextlessAppointmentOutcomeRequest appointmentOutcomeRequest) {
 
         return appointmentService.updateAppointmentOutcome(crn, appointmentId, context, appointmentOutcomeRequest);
