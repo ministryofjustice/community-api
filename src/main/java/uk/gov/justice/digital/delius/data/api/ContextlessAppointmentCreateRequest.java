@@ -15,6 +15,7 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 public class ContextlessAppointmentCreateRequest {
 
+    // Fields used to identify associated Referral/Nsi
     @NotNull
     @ApiModelProperty(required = true)
     private String contractType;
@@ -23,6 +24,7 @@ public class ContextlessAppointmentCreateRequest {
     @ApiModelProperty(required = true)
     private OffsetDateTime referralStart;
 
+    // Fields used for creating the appointment
     @NotNull
     @ApiModelProperty(required = true)
     private OffsetDateTime appointmentStart;
