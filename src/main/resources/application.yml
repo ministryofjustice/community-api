@@ -112,7 +112,8 @@ delius-integration-context:
         contract-type-to-nsi-type:
           ACC: CRS01
       contact-mapping:
-        appointment-contact-type: CRSAPT
+        appointment-rar-contact-type: CRSAPT
+        appointment-non-rar-contact-type: CRS01
         enforcement-refer-to-offender-manager: ROM
         attendance-and-behaviour-notified-mapping-to-outcome-type:
           # Key values must be quoted otherwise they will get converted to true/false

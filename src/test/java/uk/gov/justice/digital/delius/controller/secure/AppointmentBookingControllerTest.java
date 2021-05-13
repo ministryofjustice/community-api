@@ -85,10 +85,12 @@ public class AppointmentBookingControllerTest {
         OffsetDateTime now = Instant.now().atZone(ZoneId.of("UTC")).toOffsetDateTime().truncatedTo(ChronoUnit.SECONDS);
 
         ContextlessAppointmentCreateRequest appointmentCreateRequest = ContextlessAppointmentCreateRequest.builder()
+            .contractType("ACC")
             .appointmentStart(now)
             .appointmentEnd(now.plusHours(1))
             .officeLocationCode("CRSSHEF")
             .notes("http://url")
+            .countsTowardsRarDays(false)
             .build();
         when(appointmentService.createAppointment("1", 2L, "commissioned-rehabilitation-services", appointmentCreateRequest))
             .thenReturn(AppointmentCreateResponse.builder().appointmentId(3L).build());

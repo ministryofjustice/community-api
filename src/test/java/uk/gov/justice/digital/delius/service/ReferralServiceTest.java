@@ -222,7 +222,8 @@ public class ReferralServiceTest {
 
         when(nsiService.getNsiByCodes(any(), any(), any())).thenReturn(of(NsiWrapper.builder().nsis(singletonList(existingNsi)).build()));
 
-        var response = referralService.getExistingMatchingNsi(OFFENDER_CRN, INTEGRATION_CONTEXT, nsiRequest);
+        var response = referralService.getExistingMatchingNsi(OFFENDER_CRN, INTEGRATION_CONTEXT,
+            nsiRequest.getSentenceId(), nsiRequest.getContractType(), nsiRequest.getStartedAt());
 
         assertThat(response.isPresent()).isEqualTo(exists);
     }

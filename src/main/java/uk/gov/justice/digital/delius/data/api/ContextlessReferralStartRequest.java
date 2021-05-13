@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +10,6 @@ import lombok.With;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Data
 @With
