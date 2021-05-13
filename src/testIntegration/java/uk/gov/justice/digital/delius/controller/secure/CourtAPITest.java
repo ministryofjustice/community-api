@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -8,25 +8,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.justice.digital.delius.FlywayRestoreExtension;
 import uk.gov.justice.digital.delius.data.api.NewCourtDto;
 import uk.gov.justice.digital.delius.data.api.UpdateCourtDto;
 
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.equalTo;
 
-@ExtendWith({SpringExtension.class, FlywayRestoreExtension.class})
+@ExtendWith({SpringExtension.class})
 public class CourtAPITest extends IntegrationTestBase {
     private static final String NEW_COURT_CODE = "XXXXMC";
-    private static final String EXISTING_COURT_CODE = "YORKCC";
+    private static final String EXISTING_COURT_CODE = "SHEFCC";
 
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    @BeforeEach
-    public void setup() {
-        super.setup();
+    @AfterEach
+    public void removeAnyCreatedCourts() {
         jdbcTemplate.execute(String.format("DELETE FROM COURT WHERE CODE = '%s'", NEW_COURT_CODE));
     }
 
@@ -232,6 +231,7 @@ public class CourtAPITest extends IntegrationTestBase {
         private String validInsertRequest() {
             return insertRequest("New Magistrates Court", NEW_COURT_CODE, "MAG", "N53");
         }
+
         private String insertRequest(String courtName, String code, String courtTypeCode, String probationArea) {
             return writeValueAsString(new NewCourtDto(code, courtTypeCode, true, courtName, null, null, "Crown Square", "High Street", "Town Centre", "Sheffield", "South Yorkshire", "S1 2BJ", "England", probationArea));
         }
@@ -268,7 +268,7 @@ public class CourtAPITest extends IntegrationTestBase {
         }
 
         @Test
-        @DisplayName("Will accept valid request")
+        @DisplayName("Will accept valid request and return court details")
         void willAcceptAValidRequest() {
             final var token = createJwtWithScopes(List.of("read"), "ROLE_MAINTAIN_REF_DATA");
 
@@ -278,7 +278,10 @@ public class CourtAPITest extends IntegrationTestBase {
                 .when()
                 .get(String.format("court/code/%s", EXISTING_COURT_CODE))
                 .then()
-                .statusCode(200);
+                .statusCode(200)
+                .body("code", equalTo(EXISTING_COURT_CODE))
+                .body("selectable", equalTo(true))
+                .body("courtName", equalTo("Sheffield Crown Court"));
         }
     }
 }
