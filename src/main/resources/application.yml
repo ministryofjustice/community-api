@@ -117,6 +117,10 @@ delius-integration-context:
         appointment-rar-contact-type: CRSAPT
         appointment-non-rar-contact-type: CRS01
         enforcement-refer-to-offender-manager: ROM
+        end-type-to-outcome-type:
+          CANCELLED: CRS01
+          PREMATURELY_ENDED: CRS02
+          COMPLETED: CRS03
         attendance-and-behaviour-notified-mapping-to-outcome-type:
           # Key values must be quoted otherwise they will get converted to true/false
           "yes":
