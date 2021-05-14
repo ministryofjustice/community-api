@@ -4,10 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
@@ -17,6 +23,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "COURT")
+@EntityListeners(AuditingEntityListener.class)
 public class Court {
     @Id
     @Column(name = "COURT_ID")
@@ -61,8 +68,12 @@ public class Court {
     @Column(name = "ROW_VERSION")
     private Long rowVersion;
 
-    @Column(name = "COURT_TYPE_ID")
+    @Column(name = "COURT_TYPE_ID", insertable = false, updatable = false)
     private Long courtTypeId;
+
+    @ManyToOne
+    @JoinColumn(name = "COURT_TYPE_ID")
+    private StandardReference courtType;
 
     @Column(name = "CREATED_DATETIME")
     private LocalDateTime createdDatetime;
@@ -71,9 +82,11 @@ public class Court {
     private Long createdByUserId;
 
     @Column(name = "LAST_UPDATED_DATETIME")
+    @LastModifiedDate
     private LocalDateTime lastUpdatedDatetime;
 
     @Column(name = "LAST_UPDATED_USER_ID")
+    @LastModifiedBy
     private Long lastUpdatedUserId;
 
     @Column(name = "TRAINING_SESSION_ID")
@@ -81,6 +94,10 @@ public class Court {
 
     @Column(name = "PROBATION_AREA_ID")
     private Long probationAreaId;
+
+    @JoinColumn(name = "PROBATION_AREA_ID", updatable = false, insertable = false)
+    @ManyToOne
+    private ProbationArea probationArea;
 
     @Column(name = "SECURE_EMAIL_ADDRESS")
     private String secureEmailAddress;

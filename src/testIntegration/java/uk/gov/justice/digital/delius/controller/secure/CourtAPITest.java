@@ -10,23 +10,40 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.digital.delius.data.api.NewCourtDto;
 import uk.gov.justice.digital.delius.data.api.UpdateCourtDto;
+import uk.gov.justice.digital.delius.jpa.national.repository.UserRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.CourtRepository;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.within;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
+
+record CourtId(String code, long id) {
+}
 
 @ExtendWith({SpringExtension.class})
 public class CourtAPITest extends IntegrationTestBase {
     private static final String NEW_COURT_CODE = "XXXXMC";
-    private static final String EXISTING_COURT_CODE = "SHEFCC";
+    private static final CourtId EXISTING_COURT_CODE = new CourtId("SHEFCC", 1500004904);
+
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private CourtRepository courtRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @AfterEach
     public void removeAnyCreatedCourts() {
         jdbcTemplate.execute(String.format("DELETE FROM COURT WHERE CODE = '%s'", NEW_COURT_CODE));
+        jdbcTemplate.update("UPDATE COURT SET BUILDING_NAME = ? WHERE COURT_ID = ?", "Sheffield Combined Crt Centre", EXISTING_COURT_CODE.id());
     }
 
     @Nested
@@ -41,7 +58,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .contentType("application/json")
                 .body(updateRequest())
                 .when()
-                .put(String.format("court/code/%s", EXISTING_COURT_CODE))
+                .put(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
                 .then()
                 .statusCode(403);
         }
@@ -56,7 +73,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .contentType("application/json")
                 .body(updateRequest())
                 .when()
-                .put(String.format("court/code/%s", EXISTING_COURT_CODE))
+                .put(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
                 .then()
                 .statusCode(403);
         }
@@ -71,7 +88,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .contentType("application/json")
                 .body(writeValueAsString(validUpdateRequest().toBuilder().courtName(null).build()))
                 .when()
-                .put(String.format("court/code/%s", EXISTING_COURT_CODE))
+                .put(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
                 .then()
                 .statusCode(400);
         }
@@ -86,7 +103,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .contentType("application/json")
                 .body(writeValueAsString(validUpdateRequest().toBuilder().courtTypeCode(null).build()))
                 .when()
-                .put(String.format("court/code/%s", EXISTING_COURT_CODE))
+                .put(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
                 .then()
                 .statusCode(400);
         }
@@ -94,16 +111,54 @@ public class CourtAPITest extends IntegrationTestBase {
         @Test
         @DisplayName("Will accept valid request")
         void willAcceptAValidRequest() {
-            final var token = createJwtWithScopes(List.of("write"), "ROLE_MAINTAIN_REF_DATA");
+            final var token = createJwtWithScopes(List.of("write", "read"), "ROLE_MAINTAIN_REF_DATA");
 
             given()
                 .auth().oauth2(token)
                 .contentType("application/json")
-                .body(validUpdateRequest())
+                .body(updateRequest())
                 .when()
-                .put(String.format("court/code/%s", EXISTING_COURT_CODE))
+                .put(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
                 .then()
                 .statusCode(200);
+        }
+
+        @Test
+        @DisplayName("Will update court along with the last updated details")
+        void willUpdateCourtAndRecordWhenItWasUpdated() {
+            final var expectedUpdateUserId = userRepository
+                .findByDistinguishedNameIgnoreCase("APIUser")
+                .orElseThrow()
+                .getUserId();
+            final var courtEntity = courtRepository.findById(EXISTING_COURT_CODE.id()).orElseThrow();
+            final var token = createJwtWithScopes(List.of("write", "read"), "ROLE_MAINTAIN_REF_DATA");
+
+            given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .body(updateRequest(courtEntity, "New Crown Building"))
+                .when()
+                .put(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
+                .then()
+                .statusCode(200);
+
+            given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .when()
+                .get(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
+                .then()
+                .statusCode(200)
+                .body("buildingName", equalTo("New Crown Building"));
+
+            final var courtEntityAfterUpdate = courtRepository.findById(EXISTING_COURT_CODE.id()).orElseThrow();
+
+            assertThat(courtEntityAfterUpdate.getLastUpdatedDatetime()).isCloseTo(LocalDateTime.now(), within(1, ChronoUnit.SECONDS));
+            assertThat(courtEntityAfterUpdate.getLastUpdatedUserId()).isEqualTo(expectedUpdateUserId);
+        }
+
+        private String updateRequest(uk.gov.justice.digital.delius.jpa.standard.entity.Court court, @SuppressWarnings("SameParameterValue") String buildingName) {
+            return writeValueAsString(validUpdateRequest(court).toBuilder().buildingName(buildingName).build());
         }
 
         private String updateRequest() {
@@ -111,10 +166,25 @@ public class CourtAPITest extends IntegrationTestBase {
         }
 
         private UpdateCourtDto validUpdateRequest() {
+            final var courtEntity = courtRepository.findById(EXISTING_COURT_CODE.id()).orElseThrow();
+            return validUpdateRequest(courtEntity);
+        }
+
+        private UpdateCourtDto validUpdateRequest(uk.gov.justice.digital.delius.jpa.standard.entity.Court court) {
             return UpdateCourtDto
                 .builder()
-                .courtName("Sheffield New Court")
-                .courtTypeCode("CRN")
+                .active(court.getSelectable().equals("Y"))
+                .buildingName(court.getBuildingName())
+                .courtName(court.getCourtName())
+                .courtTypeCode(court.getCourtType().getCodeValue())
+                .country(court.getCountry())
+                .county(court.getCounty())
+                .fax(court.getFax())
+                .locality(court.getLocality())
+                .postcode(court.getPostcode())
+                .street(court.getStreet())
+                .telephoneNumber(court.getTelephoneNumber())
+                .town(court.getTown())
                 .build();
         }
 
@@ -248,7 +318,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .auth().oauth2(token)
                 .contentType("application/json")
                 .when()
-                .get(String.format("court/code/%s", EXISTING_COURT_CODE))
+                .get(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
                 .then()
                 .statusCode(403);
         }
@@ -262,7 +332,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .auth().oauth2(token)
                 .contentType("application/json")
                 .when()
-                .get(String.format("court/code/%s", EXISTING_COURT_CODE))
+                .get(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
                 .then()
                 .statusCode(403);
         }
@@ -276,10 +346,10 @@ public class CourtAPITest extends IntegrationTestBase {
                 .auth().oauth2(token)
                 .contentType("application/json")
                 .when()
-                .get(String.format("court/code/%s", EXISTING_COURT_CODE))
+                .get(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
                 .then()
                 .statusCode(200)
-                .body("code", equalTo(EXISTING_COURT_CODE))
+                .body("code", equalTo(EXISTING_COURT_CODE.code()))
                 .body("selectable", equalTo(true))
                 .body("courtName", equalTo("Sheffield Crown Court"));
         }
