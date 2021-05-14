@@ -27,6 +27,7 @@ public class NewContact {
     private Boolean sensitive;
     private String notes;
     private String description;
+    private Long nsiId;
     private Long eventId;
     private Long requirementId;
 }

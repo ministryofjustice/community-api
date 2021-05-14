@@ -15,6 +15,16 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 public class ContextlessAppointmentCreateRequest {
 
+    // Fields used to identify associated Referral/Nsi
+    @NotNull
+    @ApiModelProperty(required = true)
+    private String contractType;
+
+    @NotNull
+    @ApiModelProperty(required = true)
+    private OffsetDateTime referralStart;
+
+    // Fields used for creating the appointment
     @NotNull
     @ApiModelProperty(required = true)
     private OffsetDateTime appointmentStart;
@@ -23,11 +33,14 @@ public class ContextlessAppointmentCreateRequest {
     @ApiModelProperty(required = true)
     private OffsetDateTime appointmentEnd;
 
-    @NotNull
-    @ApiModelProperty(required = true)
+    @ApiModelProperty
     private String officeLocationCode;
 
     @NotNull
     @ApiModelProperty(required = true)
     private String notes;
+
+    @NotNull
+    @ApiModelProperty(required = true)
+    private Boolean countsTowardsRarDays;
 }

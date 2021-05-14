@@ -95,7 +95,7 @@ public class ReferralAPITest extends IntegrationTestBase {
             .then()
             .assertThat()
             .statusCode(HttpStatus.OK.value())
-            .body("nsiId", equalTo(2500029015L));
+            .body("nsiId", equalTo(2500018596L));
     }
 
     private String createJwt(final String user, final List<String> roles) {

@@ -14,6 +14,7 @@ import uk.gov.justice.digital.delius.data.api.Requirement;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewNsi;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewNsiManager;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -56,7 +57,8 @@ public class ReferralService {
         var nsiMapping = context.getNsiMapping();
 
         Optional<Long> requirementId = getRequirement(crn, referralStart.getSentenceId(), context);
-        var existingNsi = getExistingMatchingNsi(crn, contextName, referralStart);
+        var existingNsi = getExistingMatchingNsi(crn, contextName, referralStart.getSentenceId(),
+            referralStart.getContractType(), referralStart.getStartedAt());
 
         return ReferralStartResponse.builder().nsiId(existingNsi.map(Nsi::getNsiId).orElseGet(() -> {
             var newNsiRequest = NewNsi.builder()
@@ -79,17 +81,21 @@ public class ReferralService {
         })).build();
     }
 
-    public Optional<Nsi> getExistingMatchingNsi(String crn, String contextName, ContextlessReferralStartRequest referralStart) {
+    public Optional<Nsi> getExistingMatchingNsi(final String crn,
+                                                final String contextName,
+                                                final Long sentenceId,
+                                                final String contractType,
+                                                final OffsetDateTime startedAt) {
         // determine if there is an existing suitable NSI
         var offenderId = offenderService.offenderIdOfCrn(crn).orElseThrow(() -> new BadRequestException("Offender CRN not found"));
 
         var context = getContext(contextName);
         var nsiMapping = context.getNsiMapping();
 
-        var existingNsis = nsiService.getNsiByCodes(offenderId, referralStart.getSentenceId(), Collections.singletonList(getNsiType(nsiMapping, referralStart.getContractType())))
+        var existingNsis = nsiService.getNsiByCodes(offenderId, sentenceId, Collections.singletonList(getNsiType(nsiMapping, contractType)))
             .map(wrapper -> wrapper.getNsis().stream()
                 // eventID, offenderID, nsi type are handled in the NSI service
-                .filter(nsi -> Optional.ofNullable(nsi.getReferralDate()).map(n -> n.equals(toLondonLocalDate(referralStart.getStartedAt()))).orElse(false))
+                .filter(nsi -> Optional.ofNullable(nsi.getReferralDate()).map(n -> n.equals(toLondonLocalDate(startedAt))).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getNsiStatus()).map(n -> n.getCode().equals(nsiMapping.getNsiStatus())).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getIntendedProvider()).map(n -> n.getCode().equals(context.getProviderCode())).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getNsiManagers()).map(n -> n.stream().anyMatch(
