@@ -31,7 +31,7 @@ public class CourtService {
             courtEntity.setBuildingName(court.getBuildingName());
             courtEntity.setCourtName(court.getCourtName());
             courtEntity.setCountry(court.getCountry());
-            courtEntity.setCourtType(lookupSupplier.courtTypeSupplier().apply(court.getCourtTypeCode()).orElseThrow());
+            courtEntity.setCourtType(lookupSupplier.courtTypeSupplier(court.getCourtTypeCode()).orElseThrow());
             courtEntity.setCounty(court.getCounty());
             courtEntity.setFax(court.getFax());
             courtEntity.setLocality(court.getLocality());

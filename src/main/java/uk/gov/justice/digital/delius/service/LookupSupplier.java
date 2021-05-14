@@ -127,7 +127,7 @@ public class LookupSupplier {
         return String.format("%sU", team.getCode());
     }
 
-    public Function<String, Optional<StandardReference>> courtTypeSupplier() {
-        return code -> standardReferenceRepository.findByCodeAndCodeSetName(code, COURT_TYPE_REF_DATASET);
+    public Optional<StandardReference> courtTypeSupplier(String code) {
+        return standardReferenceRepository.findByCodeAndCodeSetName(code, COURT_TYPE_REF_DATASET);
     }
 }

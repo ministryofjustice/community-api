@@ -20,18 +20,18 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aCourt;
 
 @ExtendWith(MockitoExtension.class)
 class CourtServiceTest {
+    private final FeatureSwitches featureSwitches = new FeatureSwitches();
     @Mock
     private CourtRepository courtRepository;
     @Mock
     private LookupSupplier lookupSupplier;
-
     private CourtService courtService;
-    private final FeatureSwitches featureSwitches = new FeatureSwitches();
 
     @BeforeEach
     void setUp() {
@@ -92,10 +92,10 @@ class CourtServiceTest {
         @BeforeEach
         void setUp() {
             featureSwitches.getRegisters().setCourtCodeAllowedPattern(".*");
-            when(lookupSupplier.courtTypeSupplier())
-                .thenReturn((code) -> Optional.of(StandardReference
+            when(lookupSupplier.courtTypeSupplier(any()))
+                .thenReturn(Optional.of(StandardReference
                     .builder()
-                    .codeValue(code)
+                    .codeValue("CRN")
                     .codeDescription("Crown Court")
                     .standardReferenceListId(99L)
                     .build()));
