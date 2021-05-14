@@ -44,25 +44,31 @@ class NsiPatchRequestTransformerTest {
             objectMapper.writeValueAsString(
                 transformer.mapEndTypeToOutcomeOf(buildRequest("CANCELLED"), integrationContext)
             )
-        ).isEqualTo("[{\"op\":\"replace\",\"path\":\"/outcome\",\"value\":\"CRS01\"}," +
-            "{\"op\":\"replace\",\"path\":\"/endDate\",\"value\":\"2021-06-01T01:00:00.000000001\"}," +
-            "{\"op\":\"replace\",\"path\":\"/notes\",\"value\":\"some notes\"}]");
+        ).isEqualTo("""
+            [{"op":"replace","path":"/outcome","value":"CRS01"},\
+            {"op":"replace","path":"/endDate","value":"2021-06-01T01:00:00.000000001"},\
+            {"op":"replace","path":"/notes","value":"some notes"}]\
+            """);
 
         assertThat(
             objectMapper.writeValueAsString(
                 transformer.mapEndTypeToOutcomeOf(buildRequest("PREMATURELY_ENDED"), integrationContext)
             )
-        ).isEqualTo("[{\"op\":\"replace\",\"path\":\"/outcome\",\"value\":\"CRS02\"}," +
-            "{\"op\":\"replace\",\"path\":\"/endDate\",\"value\":\"2021-06-01T01:00:00.000000001\"}," +
-            "{\"op\":\"replace\",\"path\":\"/notes\",\"value\":\"some notes\"}]");
+        ).isEqualTo("""
+            [{"op":"replace","path":"/outcome","value":"CRS02"},\
+            {"op":"replace","path":"/endDate","value":"2021-06-01T01:00:00.000000001"},\
+            {"op":"replace","path":"/notes","value":"some notes"}]\
+            """);
 
         assertThat(
             objectMapper.writeValueAsString(
                 transformer.mapEndTypeToOutcomeOf(buildRequest("COMPLETED"), integrationContext)
             )
-        ).isEqualTo("[{\"op\":\"replace\",\"path\":\"/outcome\",\"value\":\"CRS03\"}," +
-            "{\"op\":\"replace\",\"path\":\"/endDate\",\"value\":\"2021-06-01T01:00:00.000000001\"}," +
-            "{\"op\":\"replace\",\"path\":\"/notes\",\"value\":\"some notes\"}]");
+        ).isEqualTo("""
+            [{"op":"replace","path":"/outcome","value":"CRS03"},\
+            {"op":"replace","path":"/endDate","value":"2021-06-01T01:00:00.000000001"},\
+            {"op":"replace","path":"/notes","value":"some notes"}]\
+            """);
     }
 
     @Test
