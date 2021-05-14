@@ -36,11 +36,18 @@ public class FeatureSwitches {
     public static class OffenderNumber {
         private boolean number;
     }
+    @Data
+    public static class Registers {
+        private String courtCodeAllowedPattern;
+    }
+
     private NomsFeatures noms = new NomsFeatures();
     private boolean applyLimitedAccessMarkers;
+    private Registers registers = new Registers();
+
 
     @PostConstruct
     private void postConstruct() {
-        log.info("Feature switches set as " + toString());
+        log.info("Feature switches set as " + this);
     }
 }

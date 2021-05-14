@@ -99,6 +99,8 @@ features:
         update-key-dates: false
         update-prison-location: false
   apply-limited-access-markers: false
+  registers:
+    court-code-allowed-pattern: ""
 
 delius-integration-context:
   integration-contexts:

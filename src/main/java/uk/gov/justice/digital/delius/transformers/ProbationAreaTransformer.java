@@ -116,4 +116,11 @@ public class ProbationAreaTransformer {
                         .build())
                 .orElse(null);
     }
+
+    public static KeyValue keyValueOf(uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea probationArea) {
+        return Optional
+            .ofNullable(probationArea)
+            .map(pa -> KeyValue.builder().code(pa.getCode()).description(pa.getDescription()).build())
+            .orElse(null);
+    }
 }

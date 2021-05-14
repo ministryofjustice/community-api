@@ -17,6 +17,7 @@ public class LookupSupplier {
     public static final String COURT_APPEARANCE_OUTCOME_REF_DATASET = "COURT APPEARANCE OUTCOME";
     public static final String ORDER_ALLOCATION_REASON_REF_DATASET = "ORDER ALLOCATION REASON";
     public static final String CUSTODY_KEY_DATE_TYPE_REF_DATASET = "THROUGHCARE DATE TYPE";
+    public static final String COURT_TYPE_REF_DATASET = "COURT TYPE";
     private final OffenceRepository offenceRepository;
     private final UserRepository userRepository;
     private final StandardReferenceRepository standardReferenceRepository;
@@ -124,5 +125,9 @@ public class LookupSupplier {
         val team = teamSupplier().apply(orderManager);
 
         return String.format("%sU", team.getCode());
+    }
+
+    public Function<String, Optional<StandardReference>> courtTypeSupplier() {
+        return code -> standardReferenceRepository.findByCodeAndCodeSetName(code, COURT_TYPE_REF_DATASET);
     }
 }
