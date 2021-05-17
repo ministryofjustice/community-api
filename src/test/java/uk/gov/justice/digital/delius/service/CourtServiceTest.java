@@ -13,6 +13,7 @@ import uk.gov.justice.digital.delius.config.FeatureSwitches;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.NewCourtDto;
 import uk.gov.justice.digital.delius.data.api.UpdateCourtDto;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Court;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CourtRepository;
@@ -235,12 +236,22 @@ class CourtServiceTest {
         }
 
         @Test
+        @DisplayName("will return error if court not found")
+        @MockitoSettings(strictness = Strictness.LENIENT)
+        void willReturnErrorIfCourtNotFound() {
+          assertThat(courtService.updateCourt("ANCDEF", UpdateCourtDto
+              .builder()
+              .courtTypeCode("CRN")
+              .build()).isLeft()).isTrue();  // left is the error value
+        }
+
+        @Test
         @DisplayName("will lookup the court type")
         void willLookupTheCourtType() {
             final var updatedCourt = courtService.updateCourt("SHEFCC", UpdateCourtDto
                 .builder()
                 .courtTypeCode("CRN")
-                .build());
+                .build()).get();
 
             assertThat(updatedCourt.getCourtType().getCode()).isEqualTo("CRN");
             assertThat(updatedCourt.getCourtType().getDescription()).isEqualTo("Crown Court");
@@ -252,7 +263,7 @@ class CourtServiceTest {
             final var newValue = "updated";
 
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().courtName(newValue).build())
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().courtName(newValue).build()).get()
                 .getCourtName()).isEqualTo(newValue);
         }
 
@@ -262,7 +273,7 @@ class CourtServiceTest {
             final var newValue = "updated";
 
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().country(newValue).build())
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().country(newValue).build()).get()
                 .getCountry()).isEqualTo(newValue);
         }
 
@@ -272,7 +283,7 @@ class CourtServiceTest {
             final var newValue = "updated";
 
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().county(newValue).build())
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().county(newValue).build()).get()
                 .getCounty()).isEqualTo(newValue);
         }
 
@@ -282,7 +293,7 @@ class CourtServiceTest {
             final var newValue = "updated";
 
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().locality(newValue).build())
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().locality(newValue).build()).get()
                 .getLocality()).isEqualTo(newValue);
         }
 
@@ -292,7 +303,7 @@ class CourtServiceTest {
             final var newValue = "updated";
 
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().street(newValue).build())
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().street(newValue).build()).get()
                 .getStreet()).isEqualTo(newValue);
         }
 
@@ -302,7 +313,7 @@ class CourtServiceTest {
             final var newValue = "updated";
 
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().postcode(newValue).build())
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().postcode(newValue).build()).get()
                 .getPostcode()).isEqualTo(newValue);
         }
 
@@ -312,7 +323,7 @@ class CourtServiceTest {
             final var newValue = "updated";
 
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().town(newValue).build())
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().town(newValue).build()).get()
                 .getTown()).isEqualTo(newValue);
         }
 
@@ -322,7 +333,7 @@ class CourtServiceTest {
             final var newValue = "updated";
 
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().fax(newValue).build())
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().fax(newValue).build()).get()
                 .getFax()).isEqualTo(newValue);
         }
 
@@ -332,7 +343,7 @@ class CourtServiceTest {
             final var newValue = "updated";
 
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().telephoneNumber(newValue).build())
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().telephoneNumber(newValue).build()).get()
                 .getTelephoneNumber()).isEqualTo(newValue);
         }
 
@@ -342,7 +353,7 @@ class CourtServiceTest {
             final var newValue = "updated";
 
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().buildingName(newValue).build())
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().buildingName(newValue).build()).get()
                 .getBuildingName()).isEqualTo(newValue);
         }
 
@@ -350,10 +361,10 @@ class CourtServiceTest {
         @DisplayName("will update selectable state")
         void willUpdateSelectableState() {
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().active(false).build())
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().active(false).build()).get()
                 .getSelectable()).isFalse();
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().active(true).build())
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().active(true).build()).get()
                 .getSelectable()).isTrue();
         }
 
@@ -371,7 +382,7 @@ class CourtServiceTest {
             @MockitoSettings(strictness = Strictness.LENIENT)
             void willSilentlyRejectUpdatesWhenCodeDoesNotMatchRegularExpression() {
                 assertThat(courtService
-                    .updateCourt("SHEFCC", UpdateCourtDto.builder().buildingName("New building").build())
+                    .updateCourt("SHEFCC", UpdateCourtDto.builder().buildingName("New building").build()).get()
                     .getBuildingName()).isNotEqualTo("New building");
 
             }
@@ -381,10 +392,42 @@ class CourtServiceTest {
             @MockitoSettings(strictness = Strictness.LENIENT)
             void willAcceptUpdatesWhenCodeDoesMatchRegularExpression() {
                 assertThat(courtService
-                    .updateCourt("SHXXXX", UpdateCourtDto.builder().buildingName("New building").build())
+                    .updateCourt("SHXXXX", UpdateCourtDto.builder().buildingName("New building").build()).get()
                     .getBuildingName()).isEqualTo("New building");
 
             }
+        }
+    }
+
+    @Nested
+    class GetAll {
+        @BeforeEach
+        void setUp() {
+            final var activeCrownCourt = aCourt("SHEFCC").toBuilder().courtId(1L).selectable("Y").build();
+            final var inactiveCrownCourt = aCourt("SHEFCC").toBuilder().courtId(2L).selectable("N").build();
+            final Court magistratesCourt = aCourt("SHEFMC").toBuilder().courtId(3L).selectable("N").build();
+
+            when(courtRepository.findByCode("SHEFCC")).thenReturn(List.of(
+                activeCrownCourt,
+                inactiveCrownCourt));
+
+            when(courtRepository.findByCode("SHEFMC")).thenReturn(List.of(
+                magistratesCourt));
+
+            when(courtRepository.findAll()).thenReturn(List.of(
+                activeCrownCourt,
+                inactiveCrownCourt,
+                magistratesCourt));
+        }
+
+        @Test
+        @DisplayName("will filter out duplicates")
+        void willFilterOutDuplicates() {
+            final var allUniqueCourts = courtService.getCourts();
+
+            assertThat(allUniqueCourts)
+                .extracting(uk.gov.justice.digital.delius.data.api.Court::getCourtId)
+                .containsExactly(1L, 3L);
         }
     }
 }
