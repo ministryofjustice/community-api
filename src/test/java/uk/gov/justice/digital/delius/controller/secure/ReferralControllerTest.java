@@ -5,6 +5,7 @@ import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
+import uk.gov.justice.digital.delius.data.api.ContextlessReferralEndRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessReferralStartRequest;
 import uk.gov.justice.digital.delius.service.ReferralService;
 
@@ -44,13 +45,32 @@ public class ReferralControllerTest {
     }
 
     @Test
-    public void updateReferral_callsServiceAndReturnsOKWhenValidationSucceeds() {
+    public void startReferral_callsServiceAndReturnsOKWhenValidationSucceeds() {
         given()
             .contentType(APPLICATION_JSON_VALUE)
             .body(ContextlessReferralStartRequest.builder()
                 .startedAt(OffsetDateTime.now())
                 .contractType("ACC")
                 .sentenceId(12354L)
+                .notes("comes notes")
+                .build()
+            )
+            .when()
+            .post(String.format("/secure/offenders/crn/%s/referral/start/context/commissioned-rehabilitation-services", SOME_OFFENDER_CRN))
+            .then()
+            .statusCode(200);
+    }
+
+    @Test
+    public void endReferral_callsServiceAndReturnsOKWhenValidationSucceeds() {
+        given()
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(ContextlessReferralEndRequest.builder()
+                .startedAt(OffsetDateTime.now())
+                .endedAt(OffsetDateTime.now())
+                .contractType("ACC")
+                .sentenceId(12354L)
+                .endType("COMPLETED")
                 .notes("comes notes")
                 .build()
             )

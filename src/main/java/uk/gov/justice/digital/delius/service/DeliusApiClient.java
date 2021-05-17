@@ -36,6 +36,17 @@ public class DeliusApiClient {
             .block();
     }
 
+    public NsiDto patchNsi(Long nsiId, JsonPatch jsonPatch) {
+        return webClient.patch()
+            .uri(fromPath("/v1/nsi/{id}").buildAndExpand(nsiId).toUriString())
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+            .bodyValue(jsonPatch)
+            .retrieve()
+            .bodyToMono(NsiDto.class)
+            .block();
+    }
+
     public ContactDto createNewContact(NewContact newContact) {
         return webClient.post()
             .uri("/v1/contact")
@@ -56,4 +67,13 @@ public class DeliusApiClient {
             .retrieve()
             .bodyToMono(ContactDto.class)
             .block();
-    }}
+    }
+
+    public Void deleteContact(Long contactId) {
+        return webClient.delete()
+            .uri(fromPath("/v1/contact/{id}").buildAndExpand(contactId).toUriString())
+            .retrieve()
+            .bodyToMono(Void.class)
+            .block();
+    }
+}

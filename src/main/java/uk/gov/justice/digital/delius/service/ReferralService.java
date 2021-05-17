@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
@@ -7,22 +8,30 @@ import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.Integ
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.NsiMapping;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
+import uk.gov.justice.digital.delius.data.api.ContextlessReferralEndRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessReferralStartRequest;
 import uk.gov.justice.digital.delius.data.api.Nsi;
+import uk.gov.justice.digital.delius.data.api.ReferralEndResponse;
 import uk.gov.justice.digital.delius.data.api.ReferralStartResponse;
 import uk.gov.justice.digital.delius.data.api.Requirement;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewNsi;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewNsiManager;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
+import uk.gov.justice.digital.delius.transformers.NsiPatchRequestTransformer;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 
+import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDate;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDateTime;
 
 @Service
+@AllArgsConstructor
 public class ReferralService {
 
     private final DeliusApiClient deliusApiClient;
@@ -33,20 +42,11 @@ public class ReferralService {
 
     private final RequirementService requirementService;
 
-    private final DeliusIntegrationContextConfig deliusIntegrationContextConfig;
+    private final NsiPatchRequestTransformer nsiPatchRequestTransformer;
 
-    public ReferralService(final DeliusApiClient deliusApiClient,
-                           final NsiService nsiService,
-                           final OffenderService offenderService,
-                           final RequirementService requirementService,
-                           final DeliusIntegrationContextConfig deliusIntegrationContextConfig
-                           ) {
-        this.deliusApiClient = deliusApiClient;
-        this.nsiService = nsiService;
-        this.offenderService = offenderService;
-        this.requirementService = requirementService;
-        this.deliusIntegrationContextConfig = deliusIntegrationContextConfig;
-    }
+    private final ContactRepository contactRepository;
+
+    private final DeliusIntegrationContextConfig deliusIntegrationContextConfig;
 
     @Transactional
     public ReferralStartResponse startNsiReferral(final String crn,
@@ -67,6 +67,7 @@ public class ReferralService {
                 .eventId(referralStart.getSentenceId())
                 .requirementId(requirementId.orElse(null))
                 .referralDate(toLondonLocalDate(referralStart.getStartedAt()))
+                .startDate(toLondonLocalDate(referralStart.getStartedAt()))
                 .status(nsiMapping.getNsiStatus())
                 .statusDate(toLondonLocalDateTime(referralStart.getStartedAt()))
                 .notes(referralStart.getNotes())
@@ -79,6 +80,22 @@ public class ReferralService {
 
             return deliusApiClient.createNewNsi(newNsiRequest).getId();
         })).build();
+    }
+
+    @Transactional
+    public ReferralEndResponse endNsiReferral(final String crn, final String contextName, final ContextlessReferralEndRequest request) {
+
+        final var nsi = getExistingMatchingNsi(crn, contextName, request.getSentenceId(), request.getContractType(), request.getStartedAt())
+            .orElseThrow(() -> new BadRequestException(format("Cannot find NSI for CRN: %s Sentence: %d and ContractType %s", crn, request.getSentenceId(), request.getContractType())));
+
+        final var offenderId = offenderService.offenderIdOfCrn(crn)
+            .orElseThrow(() -> new BadRequestException(format("Cannot find Offender Id for CRN: %s", crn)));
+        deleteFutureAppointments(offenderId, contextName, nsi);
+
+        final var jsonPatch = nsiPatchRequestTransformer.mapEndTypeToOutcomeOf(request, getContext(contextName));
+        deliusApiClient.patchNsi(nsi.getNsiId(), jsonPatch);
+
+        return new ReferralEndResponse(nsi.getNsiId());
     }
 
     public Optional<Nsi> getExistingMatchingNsi(final String crn,
@@ -113,6 +130,19 @@ public class ReferralService {
         return existingNsis.stream().findFirst();
     }
 
+    void deleteFutureAppointments(Long offenderId, String contextName, Nsi nsi) {
+
+        final var context = getContext(contextName);
+        final var applicableContactTypes = context.getContactMapping().getAllAppointmentContactTypes();
+        final var today = LocalDate.now();
+
+        contactRepository.findByOffenderAndNsiId(offenderId, nsi.getNsiId()).stream()
+            .filter(contact -> Objects.isNull(contact.getContactOutcomeType())) // Have no existing outcome
+            .filter(contact -> applicableContactTypes.contains(contact.getContactType().getCode())) // Of the correct contact type
+            .filter(contact -> !contact.getContactDate().isBefore(today)) // Is not historic
+            .forEach(contact -> deliusApiClient.deleteContact(contact.getContactId()));
+    }
+
     Optional<Long> getRequirement(String crn, Long sentenceId, IntegrationContext context) {
         return requirementService.getRequirement(crn, sentenceId, context.getRequirementRehabilitationActivityType())
             .map(Requirement::getRequirementId);
@@ -130,5 +160,4 @@ public class ReferralService {
             () -> new IllegalArgumentException("IntegrationContext does not exist for: " + contextName)
         );
     }
-
 }

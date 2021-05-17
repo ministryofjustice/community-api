@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
@@ -57,6 +58,7 @@ public class AppointmentService {
                         Sort.by(DESC, "contactDate")));
     }
 
+    @Transactional
     public AppointmentCreateResponse createAppointment(String crn, Long sentenceId, AppointmentCreateRequest request) {
         this.assertAppointmentType(request.getContactType());
 
@@ -66,6 +68,7 @@ public class AppointmentService {
         return makeResponse(contactDto);
     }
 
+    @Transactional
     public AppointmentCreateResponse createAppointment(String crn, Long sentenceId, String contextName, ContextlessAppointmentCreateRequest contextlessRequest) {
 
         final var context = getContext(contextName);
@@ -76,6 +79,7 @@ public class AppointmentService {
         return createAppointment(crn, sentenceId, request);
     }
 
+    @Transactional
     public AppointmentUpdateResponse patchAppointment(String crn, Long appointmentId, JsonPatch jsonPatch) {
 
         this.assertAppointmentTypeIfExists(jsonPatch);
@@ -83,6 +87,7 @@ public class AppointmentService {
         return new AppointmentUpdateResponse(contactDto.getId());
     }
 
+    @Transactional
     public AppointmentUpdateResponse updateAppointmentOutcome(String crn, Long appointmentId, String contextName, ContextlessAppointmentOutcomeRequest request) {
 
         final var context = getContext(contextName);

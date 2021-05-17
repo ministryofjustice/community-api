@@ -32,4 +32,11 @@ public interface ContactRepository extends JpaRepository<Contact, Long>, JpaSpec
                                             @Param("eventId") Long eventId,
                                             @Param("contactDate") LocalDate contactDate);
 
+
+    @Query("SELECT contact FROM Contact contact "
+        + "WHERE contact.offenderId = :offenderId "
+        + "AND contact.nsi.nsiId = :nsiId "
+    )
+    List<Contact> findByOffenderAndNsiId(@Param("offenderId") Long offenderId,
+                                         @Param("nsiId") Long nsiId);
 }
