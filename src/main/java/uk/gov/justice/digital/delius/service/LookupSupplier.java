@@ -127,7 +127,10 @@ public class LookupSupplier {
         return String.format("%sU", team.getCode());
     }
 
-    public Optional<StandardReference> courtTypeSupplier(String code) {
+    public Optional<StandardReference> courtTypeByCode(String code) {
         return standardReferenceRepository.findByCodeAndCodeSetName(code, COURT_TYPE_REF_DATASET);
+    }
+    public Optional<ProbationArea> probationAreaByCode(String code) {
+        return probationAreaRepository.findByCode(code);
     }
 }

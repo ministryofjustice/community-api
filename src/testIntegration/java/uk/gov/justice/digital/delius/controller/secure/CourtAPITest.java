@@ -284,9 +284,14 @@ public class CourtAPITest extends IntegrationTestBase {
         }
 
         @Test
-        @DisplayName("Will accept valid request")
+        @DisplayName("Will accept valid request and insert new court record the user that created the court")
         void willAcceptAValidRequest() {
-            final var token = createJwtWithScopes(List.of("write"), "ROLE_MAINTAIN_REF_DATA");
+            final var expectedUpdateUserId = userRepository
+                .findByDistinguishedNameIgnoreCase("APIUser")
+                .orElseThrow()
+                .getUserId();
+
+            final var token = createJwtWithScopes(List.of("write", "read"), "ROLE_MAINTAIN_REF_DATA");
 
             given()
                 .auth().oauth2(token)
@@ -295,15 +300,33 @@ public class CourtAPITest extends IntegrationTestBase {
                 .when()
                 .post("court")
                 .then()
-                .statusCode(200);
+                .statusCode(200)
+                .body("code", equalTo(NEW_COURT_CODE));
+
+            given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .when()
+                .get(String.format("court/code/%s", NEW_COURT_CODE))
+                .then()
+                .statusCode(200)
+                .body("code", equalTo(NEW_COURT_CODE));
+
+            final var courtEntityAfterUpdate = courtRepository.findByCode(NEW_COURT_CODE).stream().findFirst().orElseThrow();
+
+            assertThat(courtEntityAfterUpdate.getLastUpdatedDatetime()).isCloseTo(LocalDateTime.now(), within(1, ChronoUnit.SECONDS));
+            assertThat(courtEntityAfterUpdate.getLastUpdatedUserId()).isEqualTo(expectedUpdateUserId);
+            assertThat(courtEntityAfterUpdate.getCreatedDatetime()).isCloseTo(LocalDateTime.now(), within(1, ChronoUnit.SECONDS));
+            assertThat(courtEntityAfterUpdate.getCreatedByUserId()).isEqualTo(expectedUpdateUserId);
+
         }
 
         private String validInsertRequest() {
-            return insertRequest("New Magistrates Court", NEW_COURT_CODE, "MAG", "N53");
+            return insertRequest("New Magistrates Court", NEW_COURT_CODE, "MAG", "N02");
         }
 
         private String insertRequest(String courtName, String code, String courtTypeCode, String probationArea) {
-            return writeValueAsString(new NewCourtDto(code, courtTypeCode, true, courtName, null, null, "Crown Square", "High Street", "Town Centre", "Sheffield", "South Yorkshire", "S1 2BJ", "England", probationArea));
+            return writeValueAsString(new NewCourtDto(code, courtTypeCode, true, courtName, "0114 555 1234", "0114 555 4321", "Crown Square", "High Street", "Town Centre", "Sheffield", "South Yorkshire", "S1 2BJ", "England", probationArea));
         }
     }
 

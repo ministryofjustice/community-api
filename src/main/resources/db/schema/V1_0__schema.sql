@@ -388,7 +388,7 @@ create sequence COURT_APPEARANCE_ID_SEQ
     ;
 
 create sequence COURT_ID_SEQ
-    minvalue 2500000000
+    minvalue 2600000000
     maxvalue 900000000000000000
     cache 500
     ;
