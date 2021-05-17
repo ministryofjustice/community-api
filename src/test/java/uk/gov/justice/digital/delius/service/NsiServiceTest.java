@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
+import static java.time.LocalDate.now;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -120,6 +121,54 @@ public class NsiServiceTest {
         assertThat(nsiWrapper).isEmpty();
         verify(convictionService).convictionFor(OFFENDER_ID, EVENT_ID);
         verifyNoMoreInteractions(nsiRepository, convictionService);
+    }
+
+    @DisplayName("findByOffenderIdForActiveEvents")
+    @Test
+    void whenFindByOffenderIdForActiveEvents() {
+
+        var today = now();
+        final var nsiEntity = EntityHelper.aNsi().toBuilder()
+                .nsiType(uk.gov.justice.digital.delius.jpa.standard.entity.NsiType.builder()
+                        .code("BRE")
+                        .build())
+                .build();
+        final var nsiEntity2 = EntityHelper.aNsi().toBuilder()
+                .nsiType(uk.gov.justice.digital.delius.jpa.standard.entity.NsiType.builder()
+                        .code("BRE")
+                        .build())
+                .referralDate(today)
+                .build();
+
+        when(nsiRepository.findByOffenderIdForActiveEvents(OFFENDER_ID)).thenReturn(asList(nsiEntity, nsiEntity2));
+
+        final var nsiWrapper = nsiService.getNsiByCodesForOffenderActiveConvictions(OFFENDER_ID, Set.of("BRE"));
+
+        assertThat(nsiWrapper.getNsis()).hasSize(2);
+
+        verify(nsiRepository).findByOffenderIdForActiveEvents(OFFENDER_ID);
+        verifyNoMoreInteractions(nsiRepository);
+    }
+
+    @DisplayName("findByOffenderIdForActiveEvents - Any soft deleted NSIs will be filtered out")
+    @Test
+    void whenFindByOffenderIdForActiveEventsIgnoreSoftDeletedNsis() {
+
+        final var deletedNsiEntity = EntityHelper.aNsi().toBuilder()
+                .nsiType(uk.gov.justice.digital.delius.jpa.standard.entity.NsiType.builder()
+                        .code("BRE")
+                        .build())
+              .softDeleted(1L)
+                .build();
+
+        when(nsiRepository.findByOffenderIdForActiveEvents(OFFENDER_ID)).thenReturn(singletonList(deletedNsiEntity));
+
+        final var nsiWrapper = nsiService.getNsiByCodesForOffenderActiveConvictions(OFFENDER_ID, Set.of("BRE"));
+
+        assertThat(nsiWrapper.getNsis()).hasSize(0);
+
+        verify(nsiRepository).findByOffenderIdForActiveEvents(OFFENDER_ID);
+        verifyNoMoreInteractions(nsiRepository);
     }
 
     @DisplayName("When repo returns NSI return mapped NSI")

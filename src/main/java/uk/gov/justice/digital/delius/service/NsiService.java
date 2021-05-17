@@ -45,4 +45,16 @@ public class NsiService {
         return nsiRepository.findById(nsiId)
                 .map(NsiTransformer::nsiOf);
     }
+
+    @Transactional(readOnly = true)
+    public NsiWrapper getNsiByCodesForOffenderActiveConvictions(final Long offenderId, final Collection<String> nsiCodes) {
+
+        return new NsiWrapper(
+                nsiRepository.findByOffenderIdForActiveEvents(offenderId)
+                        .stream()
+                        .filter(nsi -> !nsi.isSoftDeleted())
+                        .filter(nsi -> nsiCodes.contains(nsi.getNsiType().getCode()))
+                        .map(NsiTransformer::nsiOf)
+                        .collect(Collectors.toList()));
+    }
 }

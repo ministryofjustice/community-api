@@ -46,7 +46,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalContact;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalContactDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
-import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderTeam;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RAssessmentType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RCourtReportType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RInstitution;
@@ -452,6 +451,7 @@ public class EntityHelper {
                         .build())
                 .referralDate(LocalDate.now())
                 .nsiManagers(List.of(aNsiManager()))
+                .softDeleted(0L)
                 .build();
     }
 

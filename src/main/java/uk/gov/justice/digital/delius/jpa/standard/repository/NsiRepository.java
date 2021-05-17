@@ -12,4 +12,7 @@ public interface NsiRepository extends JpaRepository<Nsi, Long> {
     // There is no EVENT_ID on NSI
     @Query("select n from Nsi n where n.event.eventId = :eventId AND n.offenderId = :offenderId")
     List<Nsi> findByEventIdAndOffenderId(@Param("eventId") Long eventId, @Param("offenderId") Long offenderId);
+
+    @Query("select n from Nsi n where n.event.activeFlag = 1 AND n.offenderId = :offenderId")
+    List<Nsi> findByOffenderIdForActiveEvents(Long offenderId);
 }

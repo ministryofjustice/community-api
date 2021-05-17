@@ -74,6 +74,7 @@ class NsiTransformerTest {
         assertThat(nsi.getLength()).isEqualTo(12L);
         assertThat(nsi.getLengthUnit()).isEqualTo("Months");
         assertThat(nsi.getNotes()).isEqualTo("Some notes");
+        assertThat(nsi.getActive()).isEqualTo(true);
 
         assertThat(nsi.getNsiManagers()).isNotNull();
         assertThat(nsi.getNsiManagers()).hasSize(2);
@@ -112,6 +113,8 @@ class NsiTransformerTest {
                 .nsiManagers(Arrays.asList(EntityHelper.aNsiManager(), EntityHelper.aNsiManager()))
                 .length(12L)
                 .notes("Some notes")
+                .activeFlag(1L)
+                .softDeleted(0L)
                 .nsiManagers(List.of(EntityHelper.aNsiManager(), EntityHelper.aNsiManager()))
                 .rqmnt(Requirement.builder().activeFlag(1L).build()).build();
     }

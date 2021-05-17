@@ -31,4 +31,5 @@ public class Nsi {
     private List<NsiManager> nsiManagers;
     private String notes;
     private ProbationArea intendedProvider;
+    private Boolean active;
 }
