@@ -3,11 +3,9 @@ package uk.gov.justice.digital.delius.controller.wiremock;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.delete;
-import static com.github.tomakehurst.wiremock.client.WireMock.patch;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
+import java.time.LocalTime;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 public class DeliusApiMockServer extends WireMockServer {
 
