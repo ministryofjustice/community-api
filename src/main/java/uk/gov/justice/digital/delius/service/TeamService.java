@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.StaffHuman;
+import uk.gov.justice.digital.delius.data.api.OfficeLocation;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
@@ -27,6 +29,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -44,14 +48,30 @@ public class TeamService {
     private final TelemetryClient telemetryClient;
     private final StaffService staffService;
 
-
-
-
     @Transactional
     public Team findOrCreatePrisonOffenderManagerTeamInArea(ProbationArea probationArea) {
         final String teamCode = String.format("%s%s", probationArea.getCode(), POM_TEAM_SUFFIX);
         return teamRepository.findByCode(teamCode)
                 .orElseGet(() -> createPOMTeamInArea(teamCode, probationArea));
+    }
+
+    public List<OfficeLocation> getAllOfficeLocations(String teamCode) {
+        final var team = teamRepository.findActiveWithActiveOfficeLocationByCode(teamCode)
+            .orElseThrow(() -> new NotFoundException(format("team '%s' does not exist", teamCode)));
+
+        return team.getOfficeLocations()
+            .stream()
+            .map(x -> OfficeLocation.builder()
+                .code(x.getCode())
+                .description(x.getDescription())
+                .buildingName(x.getBuildingName())
+                .buildingNumber(x.getBuildingNumber())
+                .streetName(x.getStreetName())
+                .townCity(x.getTownCity())
+                .county(x.getCounty())
+                .postcode(x.getPostcode())
+                .build())
+            .collect(Collectors.toList());
     }
 
     private Team createPrisonOffenderManagerTeamInArea(ProbationArea probationArea) {
