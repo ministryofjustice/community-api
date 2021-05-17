@@ -73,4 +73,15 @@ public class Nsi {
     @ManyToOne
     private ProbationArea intendedProvider;
 
+    @Column(name = "SOFT_DELETED")
+    private Long softDeleted = 0L;
+
+    @Column(name = "ACTIVE_FLAG")
+    private Long activeFlag = 0L;
+
+    public boolean isSoftDeleted() {
+        return this.softDeleted != 0L;
+    }
+    public boolean isActive() { return this.activeFlag != 0L; }
+
 }

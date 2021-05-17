@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
+
 public class NsiTransformer {
 
     private static final String NSI_LENGTH_UNIT = "Months";
@@ -35,6 +37,8 @@ public class NsiTransformer {
                 .nsiManagers(nsiManagersOf(n.getNsiManagers()))
                 .notes(n.getNotes())
                 .intendedProvider(ProbationAreaTransformer.probationAreaOf(n.getIntendedProvider(), INCLUDE_INTENDED_PROVIDER_TEAMS))
+                .active(zeroOneToBoolean(nsi.getActiveFlag()))
+
                 .build()).orElse(null);
     }
 

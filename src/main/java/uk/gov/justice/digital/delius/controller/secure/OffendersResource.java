@@ -503,6 +503,25 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Conviction with ID %s for Offender with crn %s not found", convictionId, crn)));
     }
 
+    @ApiOperation(value = "Return all the NSIs for the CRN, active convictions only, filtering by NSI codes", tags = "Sentence requirements and breach")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+                    @ApiResponse(code = 404, message = "The offender CRN is not found", response = ErrorResponse.class),
+                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            })
+    @GetMapping(path = "/offenders/crn/{crn}/convictions/active/nsis")
+    public NsiWrapper getNsisForOffenderByCrnAndActiveConvictions(
+            @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
+            @NotNull @PathVariable(value = "crn") final String crn,
+            @ApiParam(name = "nsiCodes", value = "list of NSI codes to constrain by", example = "BRE,BRES", required = true)
+            @NotEmpty @RequestParam(value = "nsiCodes") final List<String> nsiCodes) {
+
+        return offenderService.offenderIdOfCrn(crn)
+                .map((offenderId) -> nsiService.getNsiByCodesForOffenderActiveConvictions(offenderId, nsiCodes))
+                .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
+    }
+
 
     @ApiOperation(value = "Return an NSI by crn, convictionId and nsiId", tags = "Convictions")
     @ApiResponses(

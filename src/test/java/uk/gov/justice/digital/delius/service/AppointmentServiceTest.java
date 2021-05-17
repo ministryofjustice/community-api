@@ -26,7 +26,6 @@ import uk.gov.justice.digital.delius.data.api.AppointmentType.RequiredOptional;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
 import uk.gov.justice.digital.delius.data.api.Nsi;
-import uk.gov.justice.digital.delius.data.api.Requirement;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
