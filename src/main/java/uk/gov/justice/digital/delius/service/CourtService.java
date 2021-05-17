@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import io.vavr.control.Either;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class CourtService {
             courtEntity.setBuildingName(court.getBuildingName());
             courtEntity.setCourtName(court.getCourtName());
             courtEntity.setCountry(court.getCountry());
-            courtEntity.setCourtType(lookupSupplier.courtTypeSupplier(court.getCourtTypeCode()).orElseThrow());
+            courtEntity.setCourtType(lookupSupplier.courtTypeByCode(court.getCourtTypeCode()).orElseThrow());
             courtEntity.setCounty(court.getCounty());
             courtEntity.setFax(court.getFax());
             courtEntity.setLocality(court.getLocality());
@@ -41,7 +42,7 @@ public class CourtService {
             courtEntity.setTown(court.getTown());
             courtEntity.setSelectable(court.isActive() ? "Y" : "N");
         } else {
-            log.warn(String.format("This Court Update feature for %s is currently switched off", code));
+            log.warn("This Court Update feature for {} is currently switched off", code);
         }
         return CourtTransformer.courtOf(courtEntity);
     }
@@ -51,9 +52,38 @@ public class CourtService {
     }
 
     @Transactional
-    public Court createNewCourt(NewCourtDto court) {
-        // TODO check feature switch and create court
-        return Court.builder().code(court.code()).courtName(court.courtName()).build();
+    public Either<CourtAlreadyExists, Court> createNewCourt(NewCourtDto court) {
+        var maybeExistingCourt = getMostLikelyCourt(court.code());
+
+        if (maybeExistingCourt.isPresent()) {
+            return Either.left(new CourtAlreadyExists(court.code()));
+        } else {
+            final var courtEntity = uk.gov.justice.digital.delius.jpa.standard.entity.Court
+                .builder()
+                .code(court.code())
+                .buildingName(court.buildingName())
+                .courtName(court.courtName())
+                .country(court.country())
+                .courtType(lookupSupplier.courtTypeByCode(court.courtTypeCode()).orElseThrow())
+                .county(court.county())
+                .fax(court.fax())
+                .locality(court.locality())
+                .postcode(court.postcode())
+                .probationArea(lookupSupplier.probationAreaByCode(court.probationAreaCode()).orElseThrow())
+                .street(court.street())
+                .telephoneNumber(court.telephoneNumber())
+                .town(court.town())
+                .selectable(court.active() ? "Y" : "N")
+                .build();
+
+            if (isAllowedToUpdate(court.code())) {
+                courtRepository.save(courtEntity);
+            } else {
+                log.warn("This Court Creation feature for {} is currently switched off", court.code());
+            }
+            return Either.right(CourtTransformer.courtOf(courtEntity));
+        }
+
     }
 
     @Transactional(readOnly = true)
@@ -73,5 +103,8 @@ public class CourtService {
             }
             return mostLikely;
         });
+    }
+
+    public static record CourtAlreadyExists(String courtCode) {
     }
 }

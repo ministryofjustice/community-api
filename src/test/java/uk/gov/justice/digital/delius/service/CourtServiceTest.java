@@ -11,7 +11,9 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import uk.gov.justice.digital.delius.config.FeatureSwitches;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
+import uk.gov.justice.digital.delius.data.api.NewCourtDto;
 import uk.gov.justice.digital.delius.data.api.UpdateCourtDto;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CourtRepository;
 
@@ -21,6 +23,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aCourt;
 
@@ -88,11 +92,137 @@ class CourtServiceTest {
     }
 
     @Nested
+    @MockitoSettings(strictness = Strictness.LENIENT)
+    class InsertCourt {
+        @BeforeEach
+        void setUp() {
+            featureSwitches.getRegisters().setCourtCodeAllowedPattern(".*");
+            when(lookupSupplier.courtTypeByCode(any()))
+                .thenReturn(Optional.of(StandardReference
+                    .builder()
+                    .codeValue("CRN")
+                    .codeDescription("Crown Court")
+                    .standardReferenceListId(99L)
+                    .build()));
+
+            when(lookupSupplier.probationAreaByCode(any()))
+                .thenReturn(Optional.of(ProbationArea
+                    .builder()
+                    .code("N53")
+                    .description("NPS North West")
+                    .probationAreaId(99L)
+                    .build()));
+
+            when(courtRepository.findByCode("SHEFCC")).thenReturn(List.of(
+                aCourt("SHEFCC").toBuilder().selectable("Y").build()));
+            when(courtRepository.findByCode("XXXXAA")).thenReturn(List.of());
+        }
+
+        @Test
+        @DisplayName("will return data error if court already exists")
+        void willReturnDataErrorIfCourtAlreadyExists() {
+            assertThat(courtService.createNewCourt(newCourt("SHEFCC")).getLeft().courtCode()).isEqualTo("SHEFCC");
+        }
+
+        @Test
+        @DisplayName("will look up court type")
+        void willLookUpCourtType() {
+            final var newlyCreatedCourt = courtService
+                .createNewCourt(newCourt("XXXXAA", "CRN", "N53", true))
+                .getOrElseThrow(() -> new AssertionError("Should have created a court"));
+
+            assertThat(newlyCreatedCourt.getCourtType().getCode()).isEqualTo("CRN");
+            assertThat(newlyCreatedCourt.getCourtType().getDescription()).isEqualTo("Crown Court");
+        }
+
+        @Test
+        @DisplayName("will look up probation area")
+        void willLookUpProbationArea() {
+            final var newlyCreatedCourt = courtService
+                .createNewCourt(newCourt("XXXXAA", "CRN", "N53", true))
+                .getOrElseThrow(() -> new AssertionError("Should have created a court"));
+
+            assertThat(newlyCreatedCourt.getProbationArea().getCode()).isEqualTo("N53");
+            assertThat(newlyCreatedCourt.getProbationArea().getDescription()).isEqualTo("NPS North West");
+        }
+
+        @Test
+        @DisplayName("will translate active flag to selectable flag")
+        void willTranslateActiveFlagToSelectable() {
+            assertThat(courtService
+                .createNewCourt(newCourt("XXXXAA", "CRN", "N53", true)).get().getSelectable()).isTrue();
+
+            assertThat(courtService
+                .createNewCourt(newCourt("XXXXAA", "CRN", "N53", false)).get().getSelectable()).isFalse();
+        }
+
+        @Test
+        @DisplayName("Will save all data")
+        void willSaveAllData() {
+            final var newlyCreatedCourt = courtService
+                .createNewCourt(new NewCourtDto("XXXXAA",
+                    "CRN",
+                    true,
+                    "Sheffield new court",
+                    "0114 555 1234",
+                    "0114 555 6666",
+                    "Crown Square",
+                    "High Street",
+                    "Town Centre",
+                    "Sheffield",
+                    "South Yorkshire",
+                    "S1 2BJ",
+                    "England",
+                    "N53"))
+                .getOrElseThrow(() -> new AssertionError("Should have created a court"));
+
+
+            assertThat(newlyCreatedCourt.getCode()).isEqualTo("XXXXAA");
+            assertThat(newlyCreatedCourt.getCourtName()).isEqualTo("Sheffield new court");
+            assertThat(newlyCreatedCourt.getTelephoneNumber()).isEqualTo("0114 555 1234");
+            assertThat(newlyCreatedCourt.getFax()).isEqualTo("0114 555 6666");
+            assertThat(newlyCreatedCourt.getBuildingName()).isEqualTo("Crown Square");
+            assertThat(newlyCreatedCourt.getStreet()).isEqualTo("High Street");
+            assertThat(newlyCreatedCourt.getLocality()).isEqualTo("Town Centre");
+            assertThat(newlyCreatedCourt.getTown()).isEqualTo("Sheffield");
+            assertThat(newlyCreatedCourt.getCounty()).isEqualTo("South Yorkshire");
+            assertThat(newlyCreatedCourt.getPostcode()).isEqualTo("S1 2BJ");
+            assertThat(newlyCreatedCourt.getCountry()).isEqualTo("England");
+        }
+
+        @Test
+        @DisplayName("will persist new court when court code matches allowed pattern")
+        void willPersistNewCourtWhenCourtCodeMatchesAllowedPattern() {
+            featureSwitches.getRegisters().setCourtCodeAllowedPattern("XXXX[A-Z]{2}");
+            assertThat(courtService.createNewCourt(newCourt("XXXXAA")).isRight()).isTrue();
+            verify(courtRepository).save(any());
+        }
+
+        @Test
+        @DisplayName("will not persist new court when court code does not match allowed pattern")
+        void willNotPersistNewCourtWhenCourtCodeDoesNotMatchAllowedPattern() {
+            featureSwitches.getRegisters().setCourtCodeAllowedPattern("XXXX[A-Z]{2}");
+            assertThat(courtService.createNewCourt(newCourt("AAAAXX")).isRight()).isTrue();
+            verify(courtRepository, never()).save(any());
+        }
+
+        private NewCourtDto newCourt(String code) {
+            return newCourt(code, "CRN", "N53", true);
+        }
+
+        @SuppressWarnings("SameParameterValue")
+        private NewCourtDto newCourt(String code, String courtTypeCode, String probationArea, boolean active) {
+            return new NewCourtDto(code, courtTypeCode, active, "Sheffield new court", null, null, "Crown Square", "High Street", "Town Centre", "Sheffield", "South Yorkshire", "S1 2BJ", "England", probationArea);
+        }
+
+    }
+
+    @Nested
     class UpdateCourt {
         @BeforeEach
         void setUp() {
             featureSwitches.getRegisters().setCourtCodeAllowedPattern(".*");
-            when(lookupSupplier.courtTypeSupplier(any()))
+            when(lookupSupplier.courtTypeByCode(any()))
                 .thenReturn(Optional.of(StandardReference
                     .builder()
                     .codeValue("CRN")

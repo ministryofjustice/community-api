@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.Court;
 import uk.gov.justice.digital.delius.data.api.NewCourtDto;
@@ -61,7 +62,9 @@ public class CourtResource {
         })
     @PostMapping(value = "/court")
     public Court insertCourt(@RequestBody @Valid NewCourtDto court) {
-        return courtService.createNewCourt(court);
+        return courtService.createNewCourt(court).getOrElseThrow((e) -> {
+            throw new BadRequestException(String.format("Court %s already exists", e.courtCode()));
+        });
     }
 
 
