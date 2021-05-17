@@ -16,20 +16,30 @@ import java.time.OffsetDateTime;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class ContextlessReferralStartRequest {
+public class ContextlessReferralEndRequest {
+
+    // Fields used to identify associated Referral/Nsi
+    @NotNull
+    @ApiModelProperty(required = true, value = "Denotes a group of services delivered through a referral to a service user, e.g. Personal Well Being", example = "PWB")
+    private String contractType;
 
     @NotNull
     @ApiModelProperty(required = true)
     private OffsetDateTime startedAt;
 
+    // Fields used for ending the referral
     @NotNull
-    @ApiModelProperty(required = true, value = "Denotes a group of services delivered through a referral to a service user, e.g. Personal Well Being", example = "PWB")
-    private String contractType;
+    @ApiModelProperty(required = true)
+    private OffsetDateTime endedAt;
 
     @Positive
     @NotNull
     @ApiModelProperty(required = true)
     private Long sentenceId;
+
+    @NotNull
+    @ApiModelProperty(required = true)
+    private String endType;
 
     @NotNull
     private String notes;

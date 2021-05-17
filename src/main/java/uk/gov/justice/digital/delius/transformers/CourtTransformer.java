@@ -23,9 +23,11 @@ public class CourtTransformer {
             .postcode(court.getPostcode())
             .country(court.getCountry())
             .courtTypeId(court.getCourtTypeId())
+            .courtType(KeyValueTransformer.keyValueOf(court.getCourtType()))
             .createdDatetime(court.getCreatedDatetime())
             .lastUpdatedDatetime(court.getLastUpdatedDatetime())
             .probationAreaId(court.getProbationAreaId())
+            .probationArea(ProbationAreaTransformer.keyValueOf(court.getProbationArea()))
             .secureEmailAddress(court.getSecureEmailAddress())
             .build();
     }

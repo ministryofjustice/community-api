@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
@@ -31,6 +32,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static uk.gov.justice.digital.delius.transformers.AppointmentCreateRequestTransformer.appointmentOf;
 import static uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf;
@@ -44,6 +46,7 @@ public class AppointmentService {
     private final ContactTypeRepository contactTypeRepository;
     private final ContactRepository contactRepository;
     private final RequirementService requirementService;
+    private final ReferralService referralService;
     private final DeliusApiClient deliusApiClient;
     private final DeliusIntegrationContextConfig deliusIntegrationContextConfig;
     private final JsonPatchSupport jsonPatchSupport;
@@ -55,6 +58,7 @@ public class AppointmentService {
                         Sort.by(DESC, "contactDate")));
     }
 
+    @Transactional
     public AppointmentCreateResponse createAppointment(String crn, Long sentenceId, AppointmentCreateRequest request) {
         this.assertAppointmentType(request.getContactType());
 
@@ -64,15 +68,18 @@ public class AppointmentService {
         return makeResponse(contactDto);
     }
 
-    public AppointmentCreateResponse createAppointment(String crn, Long sentenceId, String contextName, ContextlessAppointmentCreateRequest contextualRequest) {
+    @Transactional
+    public AppointmentCreateResponse createAppointment(String crn, Long sentenceId, String contextName, ContextlessAppointmentCreateRequest contextlessRequest) {
 
         final var context = getContext(contextName);
-        final var requirement = requirementService.getRequirement(crn, sentenceId, context.getRequirementRehabilitationActivityType());
-        final var request = appointmentOf(contextualRequest, requirement, context);
+        final var request = referralService.getExistingMatchingNsi(crn, contextName, sentenceId, contextlessRequest.getContractType(), contextlessRequest.getReferralStart())
+            .map(existingNsi -> appointmentOf(contextlessRequest, existingNsi, context))
+            .orElseThrow(() -> new BadRequestException(format("Cannot find NSI for CRN: %s Sentence: %d and ContractType %s", crn, sentenceId, contextlessRequest.getContractType())));
 
         return createAppointment(crn, sentenceId, request);
     }
 
+    @Transactional
     public AppointmentUpdateResponse patchAppointment(String crn, Long appointmentId, JsonPatch jsonPatch) {
 
         this.assertAppointmentTypeIfExists(jsonPatch);
@@ -80,6 +87,7 @@ public class AppointmentService {
         return new AppointmentUpdateResponse(contactDto.getId());
     }
 
+    @Transactional
     public AppointmentUpdateResponse updateAppointmentOutcome(String crn, Long appointmentId, String contextName, ContextlessAppointmentOutcomeRequest request) {
 
         final var context = getContext(contextName);
@@ -104,10 +112,10 @@ public class AppointmentService {
 
     private void assertAppointmentType(String contactTypeCode) {
         final var type = this.contactTypeRepository.findByCode(contactTypeCode)
-            .orElseThrow(() -> new BadRequestException(String.format("contact type '%s' does not exist", contactTypeCode)));
+            .orElseThrow(() -> new BadRequestException(format("contact type '%s' does not exist", contactTypeCode)));
 
         if (!type.getAttendanceContact().equals("Y")) {
-            throw new BadRequestException(String.format("contact type '%s' is not an appointment type", contactTypeCode));
+            throw new BadRequestException(format("contact type '%s' is not an appointment type", contactTypeCode));
         }
     }
 
@@ -128,6 +136,7 @@ public class AppointmentService {
             .startTime(toLondonLocalTime(request.getAppointmentStart()))
             .endTime(toLondonLocalTime(request.getAppointmentEnd()))
             .notes(request.getNotes())
+            .nsiId(request.getNsiId())
             .eventId(sentenceId)
             .requirementId(request.getRequirementId())
             .build();

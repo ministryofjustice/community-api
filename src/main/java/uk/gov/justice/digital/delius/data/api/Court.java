@@ -30,4 +30,6 @@ public class Court {
     private LocalDateTime lastUpdatedDatetime;
     private Long probationAreaId;
     private String secureEmailAddress;
+    private KeyValue probationArea;
+    private KeyValue courtType;
 }

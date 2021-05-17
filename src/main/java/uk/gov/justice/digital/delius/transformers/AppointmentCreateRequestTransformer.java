@@ -3,18 +3,20 @@ package uk.gov.justice.digital.delius.transformers;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
-import uk.gov.justice.digital.delius.data.api.Requirement;
-
-import java.util.Optional;
+import uk.gov.justice.digital.delius.data.api.Nsi;
 
 public class AppointmentCreateRequestTransformer {
 
     public static AppointmentCreateRequest appointmentOf(ContextlessAppointmentCreateRequest request,
-                                                         Optional<Requirement> requirement,
+                                                         Nsi nsi,
                                                          IntegrationContext context) {
+        final var contactMapping = context.getContactMapping();
+
         return AppointmentCreateRequest.builder()
-                .requirementId(requirement.map(Requirement::getRequirementId).orElse(null))
-                .contactType(context.getContactMapping().getAppointmentContactType())
+                .nsiId(nsi.getNsiId())
+                .contactType(request.getCountsTowardsRarDays() ?
+                    contactMapping.getAppointmentRarContactType() :
+                    contactMapping.getAppointmentNonRarContactType())
                 .appointmentStart(request.getAppointmentStart())
                 .appointmentEnd(request.getAppointmentEnd())
                 .officeLocationCode(request.getOfficeLocationCode())

@@ -7,8 +7,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Configuration
 @ConfigurationProperties(prefix = "delius-integration-context")
@@ -36,9 +36,15 @@ public class DeliusIntegrationContextConfig {
 
     @Data
     public static class ContactMapping {
-        private String appointmentContactType;
+        private String appointmentRarContactType;
+        private String appointmentNonRarContactType;
         private String enforcementReferToOffenderManager;
+        private Map<String, String> endTypeToOutcomeType;
         private Map<String, Map<Boolean, String>> attendanceAndBehaviourNotifiedMappingToOutcomeType;
+
+        public List<String> getAllAppointmentContactTypes() {
+            return List.of(appointmentRarContactType, appointmentNonRarContactType);
+        }
     }
 
     private Map<String, IntegrationContext> integrationContexts = new HashMap<>();

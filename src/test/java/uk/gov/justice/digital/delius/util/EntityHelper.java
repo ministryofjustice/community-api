@@ -264,6 +264,9 @@ public class EntityHelper {
         return document;
     }
 
+    public static Court aCourt(final String code) {
+        return Court.builder().code(code).courtId(99L).courtName("Sheffield Crown Court").build();
+    }
     private static CourtReport aCourtReport() {
         return CourtReport
                 .builder()

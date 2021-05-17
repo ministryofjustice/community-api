@@ -308,7 +308,7 @@ public class OffendersResource {
             @ApiResponse(code = 400, message = "The noms number must be passed in the URL"),
             @ApiResponse(code = 403, message = "Forbidden, requires ROLE_COMMUNITY_CUSTODY_UPDATE"),
             @ApiResponse(code = 404, message = "The offender is not found"),
-            @ApiResponse(code = 409, message = "The offender does not have a POM to deallocate")
+            @ApiResponse(code = 409, message = "The offender does not have a POM to deallocate or the offender has multiple active noms numbers")
     })
     @ApiOperation(value = "Deallocates the prison offender manager for an offender in custody. The POM is set back to its unallocated state", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE", tags = "Offender managers")
     @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")

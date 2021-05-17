@@ -123,7 +123,7 @@ public class ReferenceDataAPITest extends IntegrationTestBase {
                     .jsonPath().getList("content", KeyValue.class);
 
             assertThat(probationAreas)
-                    .hasSize(248)
+                    .hasSize(249)
                     .extracting("code")
                     .contains(ACTIVE_PROBATION_AREA)
                     .contains(INACTIVE_PROBATION_AREA);
@@ -144,7 +144,7 @@ public class ReferenceDataAPITest extends IntegrationTestBase {
                     .jsonPath().getList("content", KeyValue.class);
 
             assertThat(probationAreas)
-                    .hasSize(176)
+                    .hasSize(177)
                     .extracting("code")
                     .contains(ACTIVE_PROBATION_AREA, ACTIVE_PRISON)
                     .doesNotContain(INACTIVE_PROBATION_AREA);
@@ -166,7 +166,7 @@ public class ReferenceDataAPITest extends IntegrationTestBase {
                     .jsonPath().getList("content", KeyValue.class);
 
             assertThat(probationAreas)
-                    .hasSize(45)
+                    .hasSize(46)
                     .extracting("code")
                     .contains(ACTIVE_PROBATION_AREA)
                     .doesNotContain(INACTIVE_PROBATION_AREA, ACTIVE_PRISON);
@@ -199,7 +199,7 @@ public class ReferenceDataAPITest extends IntegrationTestBase {
 
             assertThat(allProbationAreas)
                     .isEqualTo(allProbationAreasIncludingEstablishments)
-                    .hasSize(248)
+                    .hasSize(249)
                     .extracting("code")
                     .contains(ACTIVE_PROBATION_AREA, ACTIVE_PRISON, INACTIVE_PROBATION_AREA);
         }
@@ -294,7 +294,7 @@ public class ReferenceDataAPITest extends IntegrationTestBase {
                         .get("/probationAreas/localDeliveryUnits")
                         .then()
                         .assertThat()
-                        .body("size()", is(45))
+                        .body("size()", is(46))
                         .body(String.format("find { it.code == \"%s\" }.localDeliveryUnits.size()",ACTIVE_PROBATION_AREA), is(74))
                         .body(String.format("find { it.code == \"%s\" }.localDeliveryUnits[0].code",ACTIVE_PROBATION_AREA), notNullValue())
                         .body(String.format("find { it.code == \"%s\" }",INACTIVE_PROBATION_AREA), nullValue());
@@ -309,7 +309,7 @@ public class ReferenceDataAPITest extends IntegrationTestBase {
                         .get("/probationAreas/localDeliveryUnits")
                         .then()
                         .assertThat()
-                        .body("size()", is(112))
+                        .body("size()", is(113))
                         .body(String.format("find { it.code == \"%s\" }",INACTIVE_PROBATION_AREA), notNullValue());
             }
         }

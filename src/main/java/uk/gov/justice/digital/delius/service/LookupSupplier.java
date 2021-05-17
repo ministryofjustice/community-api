@@ -5,8 +5,20 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.national.repository.UserRepository;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
-import uk.gov.justice.digital.delius.jpa.standard.repository.*;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Court;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offence;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
+import uk.gov.justice.digital.delius.jpa.standard.entity.TransferReason;
+import uk.gov.justice.digital.delius.jpa.standard.repository.CourtRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenceRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.StandardReferenceRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.TeamRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.TransferReasonRepository;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -17,6 +29,7 @@ public class LookupSupplier {
     public static final String COURT_APPEARANCE_OUTCOME_REF_DATASET = "COURT APPEARANCE OUTCOME";
     public static final String ORDER_ALLOCATION_REASON_REF_DATASET = "ORDER ALLOCATION REASON";
     public static final String CUSTODY_KEY_DATE_TYPE_REF_DATASET = "THROUGHCARE DATE TYPE";
+    public static final String COURT_TYPE_REF_DATASET = "COURT TYPE";
     private final OffenceRepository offenceRepository;
     private final UserRepository userRepository;
     private final StandardReferenceRepository standardReferenceRepository;
@@ -124,5 +137,9 @@ public class LookupSupplier {
         val team = teamSupplier().apply(orderManager);
 
         return String.format("%sU", team.getCode());
+    }
+
+    public Optional<StandardReference> courtTypeSupplier(String code) {
+        return standardReferenceRepository.findByCodeAndCodeSetName(code, COURT_TYPE_REF_DATASET);
     }
 }

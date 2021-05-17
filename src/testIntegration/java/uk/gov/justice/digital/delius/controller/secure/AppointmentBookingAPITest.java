@@ -21,6 +21,7 @@ import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeReque
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -120,12 +121,14 @@ public class AppointmentBookingAPITest extends IntegrationTestBase {
             .auth().oauth2(token)
             .contentType(String.valueOf(ContentType.APPLICATION_JSON))
             .body(writeValueAsString(ContextlessAppointmentCreateRequest.builder()
+                .contractType("ACC")
+                .referralStart(OffsetDateTime.of(2019, 9, 2, 0, 0, 0, 0, ZoneOffset.UTC))
                 .appointmentStart(OffsetDateTime.now())
                 .appointmentEnd(OffsetDateTime.now())
-                .officeLocationCode("CRSSHEF")
                 .notes("http://url")
+                .countsTowardsRarDays(true)
                 .build()))
-            .post("offenders/crn/X320741/sentence/2500295343/appointments/context/commissioned-rehabilitation-services")
+            .post("offenders/crn/X320741/sentence/2500295345/appointments/context/commissioned-rehabilitation-services")
             .then()
             .assertThat()
             .statusCode(HttpStatus.CREATED.value())
