@@ -31,7 +31,7 @@ import java.util.List;
 @Api(tags = "Courts")
 @RestController
 @Slf4j
-@RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "secure/courts", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 @PreAuthorize("hasRole('ROLE_MAINTAIN_REF_DATA') and hasAuthority('SCOPE_write')")
 public class CourtResource {
@@ -46,7 +46,7 @@ public class CourtResource {
             @ApiResponse(code = 404, message = "Court not found", response = ErrorResponse.class),
             @ApiResponse(code = 409, message = "Attempt to retrieve the latest update that is already in progress", response = ErrorResponse.class)
         })
-    @PutMapping(value = "/court/code/{code}")
+    @PutMapping(value = "/code/{code}")
     public Court updateCourt(@ApiParam(value = "unique code for this court", example = "SALEMC")
                              @NotBlank(message = "Court code is required")
                              @PathVariable String code, @RequestBody @Valid UpdateCourtDto court) {
@@ -64,7 +64,7 @@ public class CourtResource {
             @ApiResponse(code = 404, message = "Court not found", response = ErrorResponse.class),
             @ApiResponse(code = 409, message = "Attempt to retrieve the latest update that is already in progress", response = ErrorResponse.class)
         })
-    @PostMapping(value = "/court")
+    @PostMapping
     public Court insertCourt(@RequestBody @Valid NewCourtDto court) {
         return courtService.createNewCourt(court).getOrElseThrow((e) -> {
             throw new BadRequestException(String.format("Court %s already exists", e.courtCode()));
@@ -81,7 +81,7 @@ public class CourtResource {
             @ApiResponse(code = 404, message = "Court not found", response = ErrorResponse.class),
             @ApiResponse(code = 409, message = "Attempt to retrieve the latest update that is already in progress", response = ErrorResponse.class)
         })
-    @GetMapping(value = "/court/code/{code}")
+    @GetMapping(value = "/code/{code}")
     @PreAuthorize("hasRole('ROLE_MAINTAIN_REF_DATA') and hasAuthority('SCOPE_read')")
     public Court getCourt(@PathVariable String code) {
         return courtService.getCourt(code);
@@ -94,7 +94,7 @@ public class CourtResource {
             @ApiResponse(code = 403, message = "Requires role ROLE_MAINTAIN_REF_DATA and read scope"),
             @ApiResponse(code = 409, message = "Attempt to retrieve the latest update that is already in progress", response = ErrorResponse.class)
         })
-    @GetMapping(value = "/court")
+    @GetMapping
     @PreAuthorize("hasRole('ROLE_MAINTAIN_REF_DATA') and hasAuthority('SCOPE_read')")
     public List<Court> getCourts() {
         return courtService.getCourts();
