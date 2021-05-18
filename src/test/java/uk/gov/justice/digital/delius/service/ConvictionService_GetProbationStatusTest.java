@@ -78,15 +78,12 @@ public class ConvictionService_GetProbationStatusTest {
         when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
         // If current disposal == 1L then probation status is CURRENT
         when(offender.getCurrentDisposal()).thenReturn(1L);
-        when(offender.getEvents()).thenReturn(List.of(event));
+        when(offender.getActiveEvents()).thenReturn(List.of(event));
         when(offender.getSoftDeleted()).thenReturn(0L);
-        // Event in breach flag used to determine if offender is in breach
-        when(event.isSoftDeleted()).thenReturn(false);
-        when(event.isActiveFlag()).thenReturn(true);
         when(event.getDisposal()).thenReturn(Disposal.builder().build());
         when(event.isInBreach()).thenReturn(true);
 
-        final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
+        final var probationStatusDetail = convictionService.probationStatusFor(CRN).orElseThrow();
 
         assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.CURRENT);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isNull();
@@ -99,17 +96,13 @@ public class ConvictionService_GetProbationStatusTest {
         when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
         // If current disposal == 1L then probation status is CURRENT
         when(offender.getCurrentDisposal()).thenReturn(1L);
-        when(offender.getEvents()).thenReturn(List.of(event, event2, event3));
+        when(offender.getActiveEvents()).thenReturn(List.of(event, event2, event3));
         when(offender.getSoftDeleted()).thenReturn(0L);
         // If any active event is in breach then offender is in breach
-        when(event.isSoftDeleted()).thenReturn(false);
-        when(event.isActiveFlag()).thenReturn(true);
         when(event.isInBreach()).thenReturn(false);
-        when(event2.isSoftDeleted()).thenReturn(false);
-        when(event2.isActiveFlag()).thenReturn(true);
         when(event2.isInBreach()).thenReturn(true);
 
-        final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
+        final var probationStatusDetail = convictionService.probationStatusFor(CRN).orElseThrow();
 
         assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.CURRENT);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isNull();
@@ -123,19 +116,11 @@ public class ConvictionService_GetProbationStatusTest {
         // If current disposal == 1L then probation status is CURRENT
         when(offender.getSoftDeleted()).thenReturn(0L);
         when(offender.getCurrentDisposal()).thenReturn(1L);
-        when(offender.getEvents()).thenReturn(List.of(event, event2, event3));
+        when(offender.getActiveEvents()).thenReturn(List.of(event));
         // If no active event is in breach then offender is not in breach
-        when(event.isSoftDeleted()).thenReturn(false);
-        when(event.isActiveFlag()).thenReturn(true);
         when(event.isInBreach()).thenReturn(false);
 
-        // Don't check deleted
-        when(event2.isSoftDeleted()).thenReturn(true);
-        // Don't check inactive
-        when(event3.isSoftDeleted()).thenReturn(false);
-        when(event3.isActiveFlag()).thenReturn(false);
-
-        final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
+        final var probationStatusDetail = convictionService.probationStatusFor(CRN).orElseThrow();
 
         assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.CURRENT);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isNull();
@@ -149,10 +134,11 @@ public class ConvictionService_GetProbationStatusTest {
         // PREVIOUSLY_KNOWN if currentDisposal is false and they have at least 1 event with a disposal
         when(offender.getCurrentDisposal()).thenReturn(0L);
         when(offender.getEvents()).thenReturn(List.of(event));
+        when(offender.getActiveEvents()).thenReturn(List.of(event));
         when(event.getDisposal()).thenReturn(disposal);
         when(disposal.getTerminationDate()).thenReturn(LocalDate.of(2020, 1, 4));
 
-        final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
+        final var probationStatusDetail = convictionService.probationStatusFor(CRN).orElseThrow();
 
         assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.PREVIOUSLY_KNOWN);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isEqualTo(LocalDate.of(2020, 1, 4));
@@ -165,13 +151,14 @@ public class ConvictionService_GetProbationStatusTest {
         when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
         // PREVIOUSLY_KNOWN if currentDisposal is false and they have at least 1 event with a disposal
         when(offender.getCurrentDisposal()).thenReturn(0L);
+        when(offender.getActiveEvents()).thenReturn(List.of(event, event2));
         when(offender.getEvents()).thenReturn(List.of(event, event2));
         when(event.getDisposal()).thenReturn(disposal);
         when(disposal.getTerminationDate()).thenReturn(LocalDate.of(2020, 1, 4));
         // preSentenceActivity is true if they have an active event with no disposal
         when(event2.getDisposal()).thenReturn(null);
 
-        final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
+        final var probationStatusDetail = convictionService.probationStatusFor(CRN).orElseThrow();
 
         assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.PREVIOUSLY_KNOWN);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isEqualTo(LocalDate.of(2020, 1, 4));
@@ -183,11 +170,11 @@ public class ConvictionService_GetProbationStatusTest {
     public void canGetProbationStatusForOffenderWithNoSentenceAndPreSentenceActivity() {
         when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
         when(offender.getCurrentDisposal()).thenReturn(0L);
-        when(offender.getEvents()).thenReturn(List.of(event));
+        when(offender.getActiveEvents()).thenReturn(List.of(event));
         // preSentenceActivity is true if they have an active event with no disposal
         when(event.getDisposal()).thenReturn(null);
 
-        final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
+        final var probationStatusDetail = convictionService.probationStatusFor(CRN).orElseThrow();
 
         assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.NOT_SENTENCED);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isNull();
@@ -199,9 +186,9 @@ public class ConvictionService_GetProbationStatusTest {
     public void canGetProbationStatusForOffenderWithNoEvents() {
         when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
         when(offender.getCurrentDisposal()).thenReturn(0L);
-        when(offender.getEvents()).thenReturn(Collections.emptyList());
+        when(offender.getActiveEvents()).thenReturn(Collections.emptyList());
 
-        final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
+        final var probationStatusDetail = convictionService.probationStatusFor(CRN).orElseThrow();
 
         assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.NOT_SENTENCED);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isNull();
