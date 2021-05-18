@@ -10,6 +10,7 @@ import uk.gov.justice.digital.delius.data.api.ContextlessNotificationCreateReque
 import uk.gov.justice.digital.delius.data.api.NotificationCreateRequest;
 import uk.gov.justice.digital.delius.data.api.NotificationResponse;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 
 import java.util.Optional;
 
@@ -22,12 +23,15 @@ import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalTim
 @AllArgsConstructor
 public class NotificationService {
 
+    private final ContactTypeRepository contactTypeRepository;
     private final ReferralService referralService;
     private final DeliusApiClient deliusApiClient;
     private final DeliusIntegrationContextConfig deliusIntegrationContextConfig;
 
     @Transactional
     public NotificationResponse notifyContact(final String crn, final Long sentenceId, final NotificationCreateRequest request) {
+
+        assertAppointmentType(request.getContactType());
 
         final var newContact = makeNewContact(crn, sentenceId, request);
         final var contactDto = deliusApiClient.createNewContact(newContact);
@@ -44,6 +48,15 @@ public class NotificationService {
             .orElseThrow(() -> new BadRequestException(format("Cannot find NSI for CRN: %s Sentence: %d and ContractType %s", crn, sentenceId, contextlessRequest.getContractType())));
 
         return notifyContact(crn, sentenceId, request);
+    }
+
+    private void assertAppointmentType(String contactTypeCode) {
+        final var type = this.contactTypeRepository.findByCode(contactTypeCode)
+            .orElseThrow(() -> new BadRequestException(format("contact type '%s' does not exist", contactTypeCode)));
+
+        if (type.getAttendanceContact().equals("Y")) {
+            throw new BadRequestException(format("contact type '%s' must not be an appointment type", contactTypeCode));
+        }
     }
 
     private NewContact makeNewContact(String crn, Long sentenceId, NotificationCreateRequest request) {

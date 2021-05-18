@@ -1,11 +1,9 @@
 package uk.gov.justice.digital.delius.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
@@ -15,6 +13,8 @@ import uk.gov.justice.digital.delius.data.api.ContextlessNotificationCreateReque
 import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
@@ -38,6 +38,8 @@ class NotificationServiceTest {
     private static final String CONTEXT = "commissioned-rehabilitation-services";
 
     @Mock
+    private ContactTypeRepository contactTypeRepository;
+    @Mock
     private ReferralService referralService;
     @Mock
     private DeliusApiClient deliusApiClient;
@@ -57,7 +59,7 @@ class NotificationServiceTest {
         integrationContext.setRequirementRehabilitationActivityType(RAR_TYPE_CODE);
         integrationContext.getContactMapping().setNotificationContactType(NOTIFICATION_CONTACT_TYPE);
 
-        service = new NotificationService(referralService, deliusApiClient, integrationContextConfig);
+        service = new NotificationService(contactTypeRepository, referralService, deliusApiClient, integrationContextConfig);
     }
 
     @Nested
@@ -71,6 +73,8 @@ class NotificationServiceTest {
 
             when(referralService.getExistingMatchingNsi("X007", CONTEXT, 100L, CONTRACT_TYPE, referralStart))
                 .thenReturn(Optional.of(Nsi.builder().nsiId(99L).build()));
+            when(contactTypeRepository.findByCode(NOTIFICATION_CONTACT_TYPE))
+                .thenReturn(Optional.of(ContactType.builder().code(NOTIFICATION_CONTACT_TYPE).attendanceContact("N").build()));
 
             final var deliusNewContactRequest = aDeliusNewContactRequest(contactDateTime, 99L, 100L);
             final var createdContact = ContactDto.builder().id(3L).build();
@@ -98,6 +102,46 @@ class NotificationServiceTest {
             final var exception = assertThrows(BadRequestException.class,
                 () -> service.notifyContact("X007", 100L, CONTEXT, appointmentCreateRequest));
             assertThat(exception.getMessage()).isEqualTo("Cannot find NSI for CRN: X007 Sentence: 100 and ContractType ACC");
+        }
+    }
+
+    @Nested
+    class ValidateContactType {
+
+        @Test
+        public void mustNotBeAppointmentType() {
+            // Given
+            final var referralStart = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+            final var contactDateTime = referralStart.plusHours(1);
+
+            when(referralService.getExistingMatchingNsi("X007", CONTEXT, 100L, CONTRACT_TYPE, referralStart))
+                .thenReturn(Optional.of(Nsi.builder().nsiId(99L).build()));
+            when(contactTypeRepository.findByCode(NOTIFICATION_CONTACT_TYPE))
+                .thenReturn(Optional.of(ContactType.builder().code(NOTIFICATION_CONTACT_TYPE).attendanceContact("Y").build()));
+
+            // When
+            final var appointmentCreateRequest = aContextlessNotificationCreateRequest(referralStart, contactDateTime, CONTRACT_TYPE);
+            final var exception = assertThrows(BadRequestException.class,
+                () -> service.notifyContact("X007", 100L, CONTEXT, appointmentCreateRequest));
+            assertThat(exception.getMessage()).isEqualTo("contact type 'CRS01' must not be an appointment type");
+        }
+
+        @Test
+        public void catchesUnknownContactType() {
+            // Given
+            final var referralStart = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+            final var contactDateTime = referralStart.plusHours(1);
+
+            when(referralService.getExistingMatchingNsi("X007", CONTEXT, 100L, CONTRACT_TYPE, referralStart))
+                .thenReturn(Optional.of(Nsi.builder().nsiId(99L).build()));
+            when(contactTypeRepository.findByCode(NOTIFICATION_CONTACT_TYPE))
+                .thenReturn(Optional.empty());
+
+            // When
+            final var appointmentCreateRequest = aContextlessNotificationCreateRequest(referralStart, contactDateTime, CONTRACT_TYPE);
+            final var exception = assertThrows(BadRequestException.class,
+                () -> service.notifyContact("X007", 100L, CONTEXT, appointmentCreateRequest));
+            assertThat(exception.getMessage()).isEqualTo("contact type 'CRS01' does not exist");
         }
     }
 
