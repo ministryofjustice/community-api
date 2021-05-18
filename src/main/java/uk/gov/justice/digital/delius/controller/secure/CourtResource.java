@@ -23,6 +23,7 @@ import uk.gov.justice.digital.delius.data.api.Court;
 import uk.gov.justice.digital.delius.data.api.NewCourtDto;
 import uk.gov.justice.digital.delius.data.api.UpdateCourtDto;
 import uk.gov.justice.digital.delius.service.CourtService;
+import uk.gov.justice.digital.delius.service.CourtService.NotFound;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -51,7 +52,11 @@ public class CourtResource {
                              @NotBlank(message = "Court code is required")
                              @PathVariable String code, @RequestBody @Valid UpdateCourtDto court) {
         return courtService.updateCourt(code, court).getOrElseThrow((e) -> {
-            throw new NotFoundException(String.format("Court %s not found", e.courtCode()));
+            if (e instanceof NotFound) {
+                throw new NotFoundException(e.message());
+            } else {
+                throw new BadRequestException(e.message());
+            }
         });
     }
 
@@ -67,7 +72,7 @@ public class CourtResource {
     @PostMapping
     public Court insertCourt(@RequestBody @Valid NewCourtDto court) {
         return courtService.createNewCourt(court).getOrElseThrow((e) -> {
-            throw new BadRequestException(String.format("Court %s already exists", e.courtCode()));
+            throw new BadRequestException(e.message());
         });
     }
 

@@ -17,6 +17,11 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Court;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CourtRepository;
+import uk.gov.justice.digital.delius.service.CourtService.BadData;
+import uk.gov.justice.digital.delius.service.CourtService.CourtAlreadyExists;
+import uk.gov.justice.digital.delius.service.CourtService.CourtDoesNotExist;
+import uk.gov.justice.digital.delius.service.CourtService.CourtTypeDoesNotExist;
+import uk.gov.justice.digital.delius.service.CourtService.ProbationDoesNotExist;
 
 import java.util.List;
 import java.util.Optional;
@@ -98,7 +103,7 @@ class CourtServiceTest {
         @BeforeEach
         void setUp() {
             featureSwitches.getRegisters().setCourtCodeAllowedPattern(".*");
-            when(lookupSupplier.courtTypeByCode(any()))
+            when(lookupSupplier.courtTypeByCode("CRN"))
                 .thenReturn(Optional.of(StandardReference
                     .builder()
                     .codeValue("CRN")
@@ -106,7 +111,7 @@ class CourtServiceTest {
                     .standardReferenceListId(99L)
                     .build()));
 
-            when(lookupSupplier.probationAreaByCode(any()))
+            when(lookupSupplier.probationAreaByCode("N53"))
                 .thenReturn(Optional.of(ProbationArea
                     .builder()
                     .code("N53")
@@ -122,7 +127,25 @@ class CourtServiceTest {
         @Test
         @DisplayName("will return data error if court already exists")
         void willReturnDataErrorIfCourtAlreadyExists() {
-            assertThat(courtService.createNewCourt(newCourt("SHEFCC")).getLeft().courtCode()).isEqualTo("SHEFCC");
+            final BadData badData = courtService.createNewCourt(newCourt("SHEFCC")).getLeft();
+            assertThat(badData.message()).contains("SHEFCC");
+            assertThat(badData).isInstanceOf(CourtAlreadyExists.class);
+        }
+
+        @Test
+        @DisplayName("will return data error if court type not valid")
+        void willReturnDataErrorIfCourtTypeNoValid() {
+            final BadData badData = courtService.createNewCourt(newCourt("XXXXAA", "BANANAS", "N53", true)).getLeft();
+            assertThat(badData.message()).contains("BANANAS");
+            assertThat(badData).isInstanceOf(CourtTypeDoesNotExist.class);
+        }
+
+        @Test
+        @DisplayName("will return data error if probation area not valid")
+        void willReturnDataErrorIfProbationAreaNoValid() {
+            final BadData badData = courtService.createNewCourt(newCourt("XXXXAA", "CRN", "BANANAS", true)).getLeft();
+            assertThat(badData.message()).contains("BANANAS");
+            assertThat(badData).isInstanceOf(ProbationDoesNotExist.class);
         }
 
         @Test
@@ -223,7 +246,7 @@ class CourtServiceTest {
         @BeforeEach
         void setUp() {
             featureSwitches.getRegisters().setCourtCodeAllowedPattern(".*");
-            when(lookupSupplier.courtTypeByCode(any()))
+            when(lookupSupplier.courtTypeByCode("CRN"))
                 .thenReturn(Optional.of(StandardReference
                     .builder()
                     .codeValue("CRN")
@@ -239,10 +262,24 @@ class CourtServiceTest {
         @DisplayName("will return error if court not found")
         @MockitoSettings(strictness = Strictness.LENIENT)
         void willReturnErrorIfCourtNotFound() {
-          assertThat(courtService.updateCourt("ANCDEF", UpdateCourtDto
-              .builder()
-              .courtTypeCode("CRN")
-              .build()).isLeft()).isTrue();  // left is the error value
+            final BadData badData = courtService.updateCourt("ANCDEF", UpdateCourtDto
+                .builder()
+                .courtTypeCode("CRN")
+                .build()).getLeft();
+            assertThat(badData.message()).contains("ANCDEF");
+            assertThat(badData).isInstanceOf(CourtDoesNotExist.class);
+        }
+
+        @Test
+        @DisplayName("will return data error if court type not valid")
+        @MockitoSettings(strictness = Strictness.LENIENT)
+        void willReturnDataErrorIfCourtTypeNoValid() {
+            final BadData badData = courtService.updateCourt("SHEFCC", UpdateCourtDto
+                .builder()
+                .courtTypeCode("BANANAS")
+                .build()).getLeft();
+            assertThat(badData.message()).contains("BANANAS");
+            assertThat(badData).isInstanceOf(CourtTypeDoesNotExist.class);
         }
 
         @Test
@@ -263,7 +300,7 @@ class CourtServiceTest {
             final var newValue = "updated";
 
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().courtName(newValue).build()).get()
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().courtTypeCode("CRN").courtName(newValue).build()).get()
                 .getCourtName()).isEqualTo(newValue);
         }
 
@@ -273,7 +310,7 @@ class CourtServiceTest {
             final var newValue = "updated";
 
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().country(newValue).build()).get()
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().courtTypeCode("CRN").country(newValue).build()).get()
                 .getCountry()).isEqualTo(newValue);
         }
 
@@ -283,7 +320,7 @@ class CourtServiceTest {
             final var newValue = "updated";
 
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().county(newValue).build()).get()
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().courtTypeCode("CRN").county(newValue).build()).get()
                 .getCounty()).isEqualTo(newValue);
         }
 
@@ -293,7 +330,7 @@ class CourtServiceTest {
             final var newValue = "updated";
 
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().locality(newValue).build()).get()
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().courtTypeCode("CRN").locality(newValue).build()).get()
                 .getLocality()).isEqualTo(newValue);
         }
 
@@ -303,7 +340,7 @@ class CourtServiceTest {
             final var newValue = "updated";
 
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().street(newValue).build()).get()
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().courtTypeCode("CRN").street(newValue).build()).get()
                 .getStreet()).isEqualTo(newValue);
         }
 
@@ -313,7 +350,7 @@ class CourtServiceTest {
             final var newValue = "updated";
 
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().postcode(newValue).build()).get()
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().courtTypeCode("CRN").postcode(newValue).build()).get()
                 .getPostcode()).isEqualTo(newValue);
         }
 
@@ -323,7 +360,7 @@ class CourtServiceTest {
             final var newValue = "updated";
 
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().town(newValue).build()).get()
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().courtTypeCode("CRN").town(newValue).build()).get()
                 .getTown()).isEqualTo(newValue);
         }
 
@@ -333,7 +370,7 @@ class CourtServiceTest {
             final var newValue = "updated";
 
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().fax(newValue).build()).get()
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().courtTypeCode("CRN").fax(newValue).build()).get()
                 .getFax()).isEqualTo(newValue);
         }
 
@@ -343,7 +380,8 @@ class CourtServiceTest {
             final var newValue = "updated";
 
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().telephoneNumber(newValue).build()).get()
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().courtTypeCode("CRN").telephoneNumber(newValue).build())
+                .get()
                 .getTelephoneNumber()).isEqualTo(newValue);
         }
 
@@ -353,7 +391,8 @@ class CourtServiceTest {
             final var newValue = "updated";
 
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().buildingName(newValue).build()).get()
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().courtTypeCode("CRN").buildingName(newValue).build())
+                .get()
                 .getBuildingName()).isEqualTo(newValue);
         }
 
@@ -361,10 +400,10 @@ class CourtServiceTest {
         @DisplayName("will update selectable state")
         void willUpdateSelectableState() {
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().active(false).build()).get()
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().courtTypeCode("CRN").active(false).build()).get()
                 .getSelectable()).isFalse();
             assertThat(courtService
-                .updateCourt("SHEFCC", UpdateCourtDto.builder().active(true).build()).get()
+                .updateCourt("SHEFCC", UpdateCourtDto.builder().courtTypeCode("CRN").active(true).build()).get()
                 .getSelectable()).isTrue();
         }
 
@@ -382,7 +421,11 @@ class CourtServiceTest {
             @MockitoSettings(strictness = Strictness.LENIENT)
             void willSilentlyRejectUpdatesWhenCodeDoesNotMatchRegularExpression() {
                 assertThat(courtService
-                    .updateCourt("SHEFCC", UpdateCourtDto.builder().buildingName("New building").build()).get()
+                    .updateCourt("SHEFCC", UpdateCourtDto
+                        .builder()
+                        .courtTypeCode("CRN")
+                        .buildingName("New building")
+                        .build()).get()
                     .getBuildingName()).isNotEqualTo("New building");
 
             }
@@ -392,7 +435,11 @@ class CourtServiceTest {
             @MockitoSettings(strictness = Strictness.LENIENT)
             void willAcceptUpdatesWhenCodeDoesMatchRegularExpression() {
                 assertThat(courtService
-                    .updateCourt("SHXXXX", UpdateCourtDto.builder().buildingName("New building").build()).get()
+                    .updateCourt("SHXXXX", UpdateCourtDto
+                        .builder()
+                        .courtTypeCode("CRN")
+                        .buildingName("New building")
+                        .build()).get()
                     .getBuildingName()).isEqualTo("New building");
 
             }

@@ -111,6 +111,21 @@ public class CourtAPITest extends IntegrationTestBase {
         }
 
         @Test
+        @DisplayName("Will reject request without valid court type")
+        void willRejectRequestWithoutValidCourtType() {
+            final var token = createJwtWithScopes(List.of("write"), "ROLE_MAINTAIN_REF_DATA");
+
+            given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .body(writeValueAsString(validUpdateRequest().toBuilder().courtTypeCode("BANANAS").build()))
+                .when()
+                .put(String.format("courts/code/%s", EXISTING_COURT_CODE.code()))
+                .then()
+                .statusCode(400);
+        }
+
+        @Test
         @DisplayName("Will accept valid request")
         void willAcceptAValidRequest() {
             final var token = createJwtWithScopes(List.of("write", "read"), "ROLE_MAINTAIN_REF_DATA");
@@ -257,6 +272,21 @@ public class CourtAPITest extends IntegrationTestBase {
         }
 
         @Test
+        @DisplayName("Will reject request without a valid court type")
+        void willRejectRequestWithoutValidCourtType() {
+            final var token = createJwtWithScopes(List.of("write"), "ROLE_MAINTAIN_REF_DATA");
+
+            given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .body(insertRequest("New Magistrates Court", NEW_COURT_CODE, "BANANAS", "N53"))
+                .when()
+                .post("courts")
+                .then()
+                .statusCode(400);
+        }
+
+        @Test
         @DisplayName("Will reject request without court code")
         void willRejectRequestWithoutCourtCode() {
             final var token = createJwtWithScopes(List.of("write"), "ROLE_MAINTAIN_REF_DATA");
@@ -280,6 +310,21 @@ public class CourtAPITest extends IntegrationTestBase {
                 .auth().oauth2(token)
                 .contentType("application/json")
                 .body(insertRequest("New Magistrates Court", NEW_COURT_CODE, "MAG", null))
+                .when()
+                .post("courts")
+                .then()
+                .statusCode(400);
+        }
+
+        @Test
+        @DisplayName("Will reject request without a valid probation area code")
+        void willRejectRequestWithoutValidProbationAreaCode() {
+            final var token = createJwtWithScopes(List.of("write"), "ROLE_MAINTAIN_REF_DATA");
+
+            given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .body(insertRequest("New Magistrates Court", NEW_COURT_CODE, "MAG", "BANANAS"))
                 .when()
                 .post("courts")
                 .then()
