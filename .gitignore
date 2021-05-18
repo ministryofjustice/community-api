@@ -62,7 +62,10 @@ dist
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 
-# AWS DOcker build
+# AWS Docker build
 ecr.repo
 /dps-gradle-spring-boot-suppressions.xml
 /.editorconfig
+
+# Local H2 database
+*.db

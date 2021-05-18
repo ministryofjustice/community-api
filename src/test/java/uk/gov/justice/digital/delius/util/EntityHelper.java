@@ -37,6 +37,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.NsiType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OfficeLocation;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Officer;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OrderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Organisation;
@@ -607,6 +608,20 @@ public class EntityHelper {
                 .surname("Smith")
                 .teams(ImmutableList.of())
                 .probationArea(aProbationArea())
+                .build();
+    }
+
+    public static OfficeLocation anOfficeLocation() {
+        return OfficeLocation
+                .builder()
+                .code("ASP_ASH")
+                .description("Ashley House Approved Premises")
+                .buildingName("Ashley House")
+                .buildingNumber("14")
+                .streetName("Somerset Street")
+                .townCity("Bristol")
+                .county("Somerset")
+                .postcode("BS2 8NB")
                 .build();
     }
 
