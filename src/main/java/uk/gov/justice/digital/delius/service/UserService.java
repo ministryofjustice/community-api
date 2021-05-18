@@ -12,11 +12,9 @@ import uk.gov.justice.digital.delius.data.api.AccessLimitation;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.UserDetails;
 import uk.gov.justice.digital.delius.data.api.UserRole;
-import uk.gov.justice.digital.delius.jpa.national.entity.ProbationArea;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
 import uk.gov.justice.digital.delius.service.wrapper.UserRepositoryWrapper;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -66,15 +64,11 @@ public class UserService {
         return accessLimitationBuilder.build();
     }
 
-    private List<String> probationAreaCodesOf(final List<ProbationArea> probationAreas) {
-        return Optional.ofNullable(probationAreas).map(
-                pas -> pas.stream().map(ProbationArea::getCode).collect(toList())).orElse(Collections.emptyList());
-    }
-
     public Optional<UserDetails> getUserDetails(final String username) {
-        final var oracleUser = userRepositoryWrapper.getUser(username);
-        return ldapRepository.getDeliusUser(username).map(user ->
-                UserDetails
+        final var ldapUser = ldapRepository.getDeliusUser(username);
+        return ldapUser.map(user -> {
+            final var oracleUser = userRepositoryWrapper.getUser(username);
+            return UserDetails
                         .builder()
                         .roles(user.getRoles().stream().map(role -> UserRole.builder().name(role.getCn()).build()).collect(toList()))
                         .firstName(user.getGivenname())
@@ -83,7 +77,8 @@ public class UserService {
                         .enabled(user.isEnabled())
                         .userId(oracleUser.getUserId())
                         .username(username)
-                        .build());
+                        .build();
+        });
     }
 
     public List<UserDetails> getUserDetailsByEmail(final String email) {
