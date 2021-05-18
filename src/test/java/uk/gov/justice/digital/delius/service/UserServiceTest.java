@@ -334,13 +334,22 @@ public class UserServiceTest {
     @Test
     public void userDetailsMayBeAbsentFromLdapRepository() {
         when(ldapRepository.getDeliusUser("john.bean")).thenReturn(Optional.empty());
-
         final var userDetails = userService.getUserDetails("john.bean");
 
         assertThat(userDetails.isPresent()).isFalse();
     }
 
-    @Test public void userDetailsByEmailMappedFromLdapRepository() {
+    @Test
+    public void userDetailsAbsentFromLdapRepositoryDoesNotCallOracle() {
+        when(ldapRepository.getDeliusUser("john.bean")).thenReturn(Optional.empty());
+        final var userDetails = userService.getUserDetails("john.bean");
+
+        assertThat(userDetails.isPresent()).isFalse();
+        verify(userRepositoryWrapper, never()).getUser(anyString());
+    }
+
+    @Test
+    public void userDetailsByEmailMappedFromLdapRepository() {
         when(ldapRepository.getDeliusUserByEmail(anyString())).thenReturn(
             List.of(
                 NDeliusUser.builder()
@@ -368,7 +377,8 @@ public class UserServiceTest {
                 .build());
     }
 
-    @Test public void userDetailsByEmailHandlesMissingDataInDeliusDb() {
+    @Test
+    public void userDetailsByEmailHandlesMissingDataInDeliusDb() {
         // when the ldap search finds two users, but only one of them is present
         // in the oracle db, only one should be returned in the final result.
         when(ldapRepository.getDeliusUserByEmail(anyString())).thenReturn(
