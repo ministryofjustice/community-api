@@ -29,12 +29,12 @@ public class CourtService {
     public Either<BadData, Court> updateCourt(String code, UpdateCourtDto court) {
         final var maybeExistingCourt = getMostLikelyCourt(code);
         if (maybeExistingCourt.isEmpty()) {
-            return Either.left(new CourtDoesNotExist(code));
+            return error(new CourtDoesNotExist(code));
         }
 
         final var maybeCourtType = lookupSupplier.courtTypeByCode(court.getCourtTypeCode());
         if (maybeCourtType.isEmpty()) {
-            return Either.left(new CourtTypeDoesNotExist(court.getCourtTypeCode()));
+            return error(new CourtTypeDoesNotExist(court.getCourtTypeCode()));
         }
 
         final var courtEntity = maybeExistingCourt.get();
@@ -55,7 +55,7 @@ public class CourtService {
         } else {
             log.warn("This Court Update feature for {} is currently switched off", code);
         }
-        return Either.right(CourtTransformer.courtOf(courtEntity));
+        return ok(CourtTransformer.courtOf(courtEntity));
     }
 
     private boolean isAllowedToUpdate(String code) {
@@ -66,17 +66,17 @@ public class CourtService {
     public Either<BadData, Court> createNewCourt(NewCourtDto court) {
         final var maybeExistingCourt = getMostLikelyCourt(court.code());
         if (maybeExistingCourt.isPresent()) {
-            return Either.left(new CourtAlreadyExists(court.code()));
+            return error(new CourtAlreadyExists(court.code()));
         }
 
         final var maybeCourtType = lookupSupplier.courtTypeByCode(court.courtTypeCode());
         if (maybeCourtType.isEmpty()) {
-            return Either.left(new CourtTypeDoesNotExist(court.courtTypeCode()));
+            return error(new CourtTypeDoesNotExist(court.courtTypeCode()));
         }
 
         final var maybeProbationArea = lookupSupplier.probationAreaByCode(court.probationAreaCode());
         if (maybeProbationArea.isEmpty()) {
-            return Either.left(new ProbationDoesNotExist(court.probationAreaCode()));
+            return error(new ProbationDoesNotExist(court.probationAreaCode()));
         }
 
         final var courtEntity = uk.gov.justice.digital.delius.jpa.standard.entity.Court
@@ -102,7 +102,7 @@ public class CourtService {
         } else {
             log.warn("This Court Creation feature for {} is currently switched off", court.code());
         }
-        return Either.right(CourtTransformer.courtOf(courtEntity));
+        return ok(CourtTransformer.courtOf(courtEntity));
     }
 
     @Transactional(readOnly = true)
@@ -163,5 +163,12 @@ public class CourtService {
         public String message() {
             return String.format("Probation area %s does not exist", probationAreaCode);
         }
+    }
+
+    static <L, R> Either<L, R> error(L error) {
+        return Either.left(error);
+    }
+    static <L, R> Either<L, R> ok(R value) {
+        return Either.right(value);
     }
 }
