@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.Court;
 import uk.gov.justice.digital.delius.data.api.NewCourtDto;
@@ -25,6 +26,7 @@ import uk.gov.justice.digital.delius.service.CourtService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Api(tags = "Courts")
 @RestController
@@ -48,7 +50,9 @@ public class CourtResource {
     public Court updateCourt(@ApiParam(value = "unique code for this court", example = "SALEMC")
                              @NotBlank(message = "Court code is required")
                              @PathVariable String code, @RequestBody @Valid UpdateCourtDto court) {
-        return courtService.updateCourt(code, court);
+        return courtService.updateCourt(code, court).getOrElseThrow((e) -> {
+            throw new NotFoundException(String.format("Court %s not found", e.courtCode()));
+        });
     }
 
     @ApiOperation(
@@ -81,5 +85,18 @@ public class CourtResource {
     @PreAuthorize("hasRole('ROLE_MAINTAIN_REF_DATA') and hasAuthority('SCOPE_read')")
     public Court getCourt(@PathVariable String code) {
         return courtService.getCourt(code);
+    }
+    @ApiOperation(
+        value = "Experimental API to get all court entities", notes = "requires ROLE_MAINTAIN_REF_DATA and read scope")
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Requires role ROLE_MAINTAIN_REF_DATA and read scope"),
+            @ApiResponse(code = 409, message = "Attempt to retrieve the latest update that is already in progress", response = ErrorResponse.class)
+        })
+    @GetMapping(value = "/court")
+    @PreAuthorize("hasRole('ROLE_MAINTAIN_REF_DATA') and hasAuthority('SCOPE_read')")
+    public List<Court> getCourts() {
+        return courtService.getCourts();
     }
 }

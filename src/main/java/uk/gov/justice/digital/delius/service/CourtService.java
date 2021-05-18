@@ -14,6 +14,7 @@ import uk.gov.justice.digital.delius.data.api.UpdateCourtDto;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CourtRepository;
 import uk.gov.justice.digital.delius.transformers.CourtTransformer;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,26 +26,26 @@ public class CourtService {
     private final FeatureSwitches featureSwitches;
 
     @Transactional
-    public Court updateCourt(String code, UpdateCourtDto court) {
-        final var courtEntity = getMostLikelyCourt(code).orElseThrow(() -> new NotFoundException(String
-            .format("Court %s not found", code)));
-        if (isAllowedToUpdate(code)) {
-            courtEntity.setBuildingName(court.getBuildingName());
-            courtEntity.setCourtName(court.getCourtName());
-            courtEntity.setCountry(court.getCountry());
-            courtEntity.setCourtType(lookupSupplier.courtTypeByCode(court.getCourtTypeCode()).orElseThrow());
-            courtEntity.setCounty(court.getCounty());
-            courtEntity.setFax(court.getFax());
-            courtEntity.setLocality(court.getLocality());
-            courtEntity.setPostcode(court.getPostcode());
-            courtEntity.setStreet(court.getStreet());
-            courtEntity.setTelephoneNumber(court.getTelephoneNumber());
-            courtEntity.setTown(court.getTown());
-            courtEntity.setSelectable(court.isActive() ? "Y" : "N");
-        } else {
-            log.warn("This Court Update feature for {} is currently switched off", code);
-        }
-        return CourtTransformer.courtOf(courtEntity);
+    public Either<CourtDoesNotExist, Court> updateCourt(String code, UpdateCourtDto court) {
+        return getMostLikelyCourt(code).map(courtEntity -> {
+            if (isAllowedToUpdate(code)) {
+                courtEntity.setBuildingName(court.getBuildingName());
+                courtEntity.setCourtName(court.getCourtName());
+                courtEntity.setCountry(court.getCountry());
+                courtEntity.setCourtType(lookupSupplier.courtTypeByCode(court.getCourtTypeCode()).orElseThrow());
+                courtEntity.setCounty(court.getCounty());
+                courtEntity.setFax(court.getFax());
+                courtEntity.setLocality(court.getLocality());
+                courtEntity.setPostcode(court.getPostcode());
+                courtEntity.setStreet(court.getStreet());
+                courtEntity.setTelephoneNumber(court.getTelephoneNumber());
+                courtEntity.setTown(court.getTown());
+                courtEntity.setSelectable(court.isActive() ? "Y" : "N");
+            } else {
+                log.warn("This Court Update feature for {} is currently switched off", code);
+            }
+            return Either.<CourtDoesNotExist, Court>right(CourtTransformer.courtOf(courtEntity));
+        }).orElse(Either.left(new CourtDoesNotExist(code)));
     }
 
     private boolean isAllowedToUpdate(String code) {
@@ -105,6 +106,19 @@ public class CourtService {
         });
     }
 
+    public List<Court> getCourts() {
+        return courtRepository
+            .findAll()
+            .stream()
+            // filter out duplicates (see note above)
+            .filter(court -> court.getCourtId().equals(getMostLikelyCourt(court.getCode()).orElseThrow().getCourtId()))
+            .map(CourtTransformer::courtOf)
+            .toList();
+    }
+
     public static record CourtAlreadyExists(String courtCode) {
+    }
+
+    public static record CourtDoesNotExist(String courtCode) {
     }
 }

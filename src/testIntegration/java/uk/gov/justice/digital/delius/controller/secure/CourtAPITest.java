@@ -21,6 +21,7 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.within;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 
 record CourtId(String code, long id) {
 }
@@ -43,7 +44,8 @@ public class CourtAPITest extends IntegrationTestBase {
     @AfterEach
     public void removeAnyCreatedCourts() {
         jdbcTemplate.execute(String.format("DELETE FROM COURT WHERE CODE = '%s'", NEW_COURT_CODE));
-        jdbcTemplate.update("UPDATE COURT SET BUILDING_NAME = ? WHERE COURT_ID = ?", "Sheffield Combined Crt Centre", EXISTING_COURT_CODE.id());
+        jdbcTemplate.update("UPDATE COURT SET BUILDING_NAME = ? WHERE COURT_ID = ?", "Sheffield Combined Crt Centre", EXISTING_COURT_CODE
+            .id());
     }
 
     @Nested
@@ -153,7 +155,8 @@ public class CourtAPITest extends IntegrationTestBase {
 
             final var courtEntityAfterUpdate = courtRepository.findById(EXISTING_COURT_CODE.id()).orElseThrow();
 
-            assertThat(courtEntityAfterUpdate.getLastUpdatedDatetime()).isCloseTo(LocalDateTime.now(), within(1, ChronoUnit.SECONDS));
+            assertThat(courtEntityAfterUpdate.getLastUpdatedDatetime())
+                .isCloseTo(LocalDateTime.now(), within(1, ChronoUnit.SECONDS));
             assertThat(courtEntityAfterUpdate.getLastUpdatedUserId()).isEqualTo(expectedUpdateUserId);
         }
 
@@ -312,11 +315,17 @@ public class CourtAPITest extends IntegrationTestBase {
                 .statusCode(200)
                 .body("code", equalTo(NEW_COURT_CODE));
 
-            final var courtEntityAfterUpdate = courtRepository.findByCode(NEW_COURT_CODE).stream().findFirst().orElseThrow();
+            final var courtEntityAfterUpdate = courtRepository
+                .findByCode(NEW_COURT_CODE)
+                .stream()
+                .findFirst()
+                .orElseThrow();
 
-            assertThat(courtEntityAfterUpdate.getLastUpdatedDatetime()).isCloseTo(LocalDateTime.now(), within(1, ChronoUnit.SECONDS));
+            assertThat(courtEntityAfterUpdate.getLastUpdatedDatetime())
+                .isCloseTo(LocalDateTime.now(), within(1, ChronoUnit.SECONDS));
             assertThat(courtEntityAfterUpdate.getLastUpdatedUserId()).isEqualTo(expectedUpdateUserId);
-            assertThat(courtEntityAfterUpdate.getCreatedDatetime()).isCloseTo(LocalDateTime.now(), within(1, ChronoUnit.SECONDS));
+            assertThat(courtEntityAfterUpdate.getCreatedDatetime())
+                .isCloseTo(LocalDateTime.now(), within(1, ChronoUnit.SECONDS));
             assertThat(courtEntityAfterUpdate.getCreatedByUserId()).isEqualTo(expectedUpdateUserId);
 
         }
@@ -372,6 +381,56 @@ public class CourtAPITest extends IntegrationTestBase {
                 .get(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
                 .then()
                 .statusCode(200)
+                .body("code", equalTo(EXISTING_COURT_CODE.code()))
+                .body("selectable", equalTo(true))
+                .body("courtName", equalTo("Sheffield Crown Court"));
+        }
+    }
+
+    @Nested
+    class GetAll {
+        @Test
+        @DisplayName("Will reject request without correct role")
+        void willRejectRequestWithoutCorrectRole() {
+            final var token = createJwt("ROLE_COMMUNITY");
+
+            given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .when()
+                .get("court")
+                .then()
+                .statusCode(403);
+        }
+
+        @Test
+        @DisplayName("Will reject request without the correct scope")
+        void willRejectRequestWithoutTheCorrectScope() {
+            final var token = createJwtWithScopes(List.of("write"), "ROLE_MAINTAIN_REF_DATA");
+
+            given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .when()
+                .get("court")
+                .then()
+                .statusCode(403);
+        }
+
+        @Test
+        @DisplayName("Will accept valid request and return court details")
+        void willAcceptAValidRequest() {
+            final var token = createJwtWithScopes(List.of("read"), "ROLE_MAINTAIN_REF_DATA");
+
+            given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .when()
+                .get("court")
+                .then()
+                .statusCode(200)
+                .body("size()", greaterThan(1))
+                .root(String.format("find { it.code == '%s' }", EXISTING_COURT_CODE.code()))
                 .body("code", equalTo(EXISTING_COURT_CODE.code()))
                 .body("selectable", equalTo(true))
                 .body("courtName", equalTo("Sheffield Crown Court"));
