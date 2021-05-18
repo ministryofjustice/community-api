@@ -1,5 +1,5 @@
 plugins {
-    id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.2.0"
+    id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.2.1"
     id 'groovy'
     id 'org.unbroken-dome.test-sets' version '4.0.0'
 }
@@ -23,7 +23,7 @@ dependencies {
 
     implementation 'com.unboundid:unboundid-ldapsdk:5.1.4'
     implementation("io.springfox:springfox-boot-starter:3.0.0")
-    implementation 'org.flywaydb:flyway-core:7.8.2'
+    implementation 'org.flywaydb:flyway-core:7.9.0'
     implementation 'com.zaxxer:HikariCP:4.0.3'
     implementation 'commons-io:commons-io:2.8.0'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
