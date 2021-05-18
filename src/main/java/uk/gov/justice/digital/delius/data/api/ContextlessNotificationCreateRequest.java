@@ -24,7 +24,7 @@ public class ContextlessNotificationCreateRequest {
     @ApiModelProperty(required = true)
     private OffsetDateTime referralStart;
 
-    // Fields used for creating the appointment
+    // Fields used for creating the contact
     @NotNull
     @ApiModelProperty(required = true)
     private OffsetDateTime contactDateTime;
