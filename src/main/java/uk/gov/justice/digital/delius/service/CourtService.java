@@ -26,26 +26,36 @@ public class CourtService {
     private final FeatureSwitches featureSwitches;
 
     @Transactional
-    public Either<CourtDoesNotExist, Court> updateCourt(String code, UpdateCourtDto court) {
-        return getMostLikelyCourt(code).map(courtEntity -> {
-            if (isAllowedToUpdate(code)) {
-                courtEntity.setBuildingName(court.getBuildingName());
-                courtEntity.setCourtName(court.getCourtName());
-                courtEntity.setCountry(court.getCountry());
-                courtEntity.setCourtType(lookupSupplier.courtTypeByCode(court.getCourtTypeCode()).orElseThrow());
-                courtEntity.setCounty(court.getCounty());
-                courtEntity.setFax(court.getFax());
-                courtEntity.setLocality(court.getLocality());
-                courtEntity.setPostcode(court.getPostcode());
-                courtEntity.setStreet(court.getStreet());
-                courtEntity.setTelephoneNumber(court.getTelephoneNumber());
-                courtEntity.setTown(court.getTown());
-                courtEntity.setSelectable(court.isActive() ? "Y" : "N");
-            } else {
-                log.warn("This Court Update feature for {} is currently switched off", code);
-            }
-            return Either.<CourtDoesNotExist, Court>right(CourtTransformer.courtOf(courtEntity));
-        }).orElse(Either.left(new CourtDoesNotExist(code)));
+    public Either<BadData, Court> updateCourt(String code, UpdateCourtDto court) {
+        final var maybeExistingCourt = getMostLikelyCourt(code);
+        if (maybeExistingCourt.isEmpty()) {
+            return error(new CourtDoesNotExist(code));
+        }
+
+        final var maybeCourtType = lookupSupplier.courtTypeByCode(court.getCourtTypeCode());
+        if (maybeCourtType.isEmpty()) {
+            return error(new CourtTypeDoesNotExist(court.getCourtTypeCode()));
+        }
+
+        final var courtEntity = maybeExistingCourt.get();
+
+        if (isAllowedToUpdate(code)) {
+            courtEntity.setBuildingName(court.getBuildingName());
+            courtEntity.setCourtName(court.getCourtName());
+            courtEntity.setCountry(court.getCountry());
+            courtEntity.setCourtType(maybeCourtType.get());
+            courtEntity.setCounty(court.getCounty());
+            courtEntity.setFax(court.getFax());
+            courtEntity.setLocality(court.getLocality());
+            courtEntity.setPostcode(court.getPostcode());
+            courtEntity.setStreet(court.getStreet());
+            courtEntity.setTelephoneNumber(court.getTelephoneNumber());
+            courtEntity.setTown(court.getTown());
+            courtEntity.setSelectable(court.isActive() ? "Y" : "N");
+        } else {
+            log.warn("This Court Update feature for {} is currently switched off", code);
+        }
+        return ok(CourtTransformer.courtOf(courtEntity));
     }
 
     private boolean isAllowedToUpdate(String code) {
@@ -53,38 +63,46 @@ public class CourtService {
     }
 
     @Transactional
-    public Either<CourtAlreadyExists, Court> createNewCourt(NewCourtDto court) {
-        var maybeExistingCourt = getMostLikelyCourt(court.code());
-
+    public Either<BadData, Court> createNewCourt(NewCourtDto court) {
+        final var maybeExistingCourt = getMostLikelyCourt(court.code());
         if (maybeExistingCourt.isPresent()) {
-            return Either.left(new CourtAlreadyExists(court.code()));
-        } else {
-            final var courtEntity = uk.gov.justice.digital.delius.jpa.standard.entity.Court
-                .builder()
-                .code(court.code())
-                .buildingName(court.buildingName())
-                .courtName(court.courtName())
-                .country(court.country())
-                .courtType(lookupSupplier.courtTypeByCode(court.courtTypeCode()).orElseThrow())
-                .county(court.county())
-                .fax(court.fax())
-                .locality(court.locality())
-                .postcode(court.postcode())
-                .probationArea(lookupSupplier.probationAreaByCode(court.probationAreaCode()).orElseThrow())
-                .street(court.street())
-                .telephoneNumber(court.telephoneNumber())
-                .town(court.town())
-                .selectable(court.active() ? "Y" : "N")
-                .build();
-
-            if (isAllowedToUpdate(court.code())) {
-                courtRepository.save(courtEntity);
-            } else {
-                log.warn("This Court Creation feature for {} is currently switched off", court.code());
-            }
-            return Either.right(CourtTransformer.courtOf(courtEntity));
+            return error(new CourtAlreadyExists(court.code()));
         }
 
+        final var maybeCourtType = lookupSupplier.courtTypeByCode(court.courtTypeCode());
+        if (maybeCourtType.isEmpty()) {
+            return error(new CourtTypeDoesNotExist(court.courtTypeCode()));
+        }
+
+        final var maybeProbationArea = lookupSupplier.probationAreaByCode(court.probationAreaCode());
+        if (maybeProbationArea.isEmpty()) {
+            return error(new ProbationDoesNotExist(court.probationAreaCode()));
+        }
+
+        final var courtEntity = uk.gov.justice.digital.delius.jpa.standard.entity.Court
+            .builder()
+            .code(court.code())
+            .buildingName(court.buildingName())
+            .courtName(court.courtName())
+            .country(court.country())
+            .courtType(maybeCourtType.get())
+            .county(court.county())
+            .fax(court.fax())
+            .locality(court.locality())
+            .postcode(court.postcode())
+            .probationArea(maybeProbationArea.get())
+            .street(court.street())
+            .telephoneNumber(court.telephoneNumber())
+            .town(court.town())
+            .selectable(court.active() ? "Y" : "N")
+            .build();
+
+        if (isAllowedToUpdate(court.code())) {
+            courtRepository.save(courtEntity);
+        } else {
+            log.warn("This Court Creation feature for {} is currently switched off", court.code());
+        }
+        return ok(CourtTransformer.courtOf(courtEntity));
     }
 
     @Transactional(readOnly = true)
@@ -116,9 +134,41 @@ public class CourtService {
             .toList();
     }
 
-    public static record CourtAlreadyExists(String courtCode) {
+    public interface BadData {
+        String message();
     }
 
-    public static record CourtDoesNotExist(String courtCode) {
+    public interface NotFound extends BadData {
+    }
+
+    public static record CourtAlreadyExists(String courtCode) implements BadData {
+        public String message() {
+            return String.format("Court %s already exists", courtCode);
+        }
+    }
+
+    public static record CourtDoesNotExist(String courtCode) implements NotFound {
+        public String message() {
+            return String.format("Court %s does not exist", courtCode);
+        }
+    }
+
+    public static record CourtTypeDoesNotExist(String courtTypeCourt) implements BadData {
+        public String message() {
+            return String.format("Court type %s does not exist", courtTypeCourt);
+        }
+    }
+
+    public static record ProbationDoesNotExist(String probationAreaCode) implements BadData {
+        public String message() {
+            return String.format("Probation area %s does not exist", probationAreaCode);
+        }
+    }
+
+    static <L, R> Either<L, R> error(L error) {
+        return Either.left(error);
+    }
+    static <L, R> Either<L, R> ok(R value) {
+        return Either.right(value);
     }
 }

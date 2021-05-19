@@ -60,7 +60,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .contentType("application/json")
                 .body(updateRequest())
                 .when()
-                .put(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
+                .put(String.format("courts/code/%s", EXISTING_COURT_CODE.code()))
                 .then()
                 .statusCode(403);
         }
@@ -75,7 +75,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .contentType("application/json")
                 .body(updateRequest())
                 .when()
-                .put(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
+                .put(String.format("courts/code/%s", EXISTING_COURT_CODE.code()))
                 .then()
                 .statusCode(403);
         }
@@ -90,7 +90,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .contentType("application/json")
                 .body(writeValueAsString(validUpdateRequest().toBuilder().courtName(null).build()))
                 .when()
-                .put(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
+                .put(String.format("courts/code/%s", EXISTING_COURT_CODE.code()))
                 .then()
                 .statusCode(400);
         }
@@ -105,7 +105,22 @@ public class CourtAPITest extends IntegrationTestBase {
                 .contentType("application/json")
                 .body(writeValueAsString(validUpdateRequest().toBuilder().courtTypeCode(null).build()))
                 .when()
-                .put(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
+                .put(String.format("courts/code/%s", EXISTING_COURT_CODE.code()))
+                .then()
+                .statusCode(400);
+        }
+
+        @Test
+        @DisplayName("Will reject request without valid court type")
+        void willRejectRequestWithoutValidCourtType() {
+            final var token = createJwtWithScopes(List.of("write"), "ROLE_MAINTAIN_REF_DATA");
+
+            given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .body(writeValueAsString(validUpdateRequest().toBuilder().courtTypeCode("BANANAS").build()))
+                .when()
+                .put(String.format("courts/code/%s", EXISTING_COURT_CODE.code()))
                 .then()
                 .statusCode(400);
         }
@@ -120,7 +135,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .contentType("application/json")
                 .body(updateRequest())
                 .when()
-                .put(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
+                .put(String.format("courts/code/%s", EXISTING_COURT_CODE.code()))
                 .then()
                 .statusCode(200);
         }
@@ -140,7 +155,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .contentType("application/json")
                 .body(updateRequest(courtEntity, "New Crown Building"))
                 .when()
-                .put(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
+                .put(String.format("courts/code/%s", EXISTING_COURT_CODE.code()))
                 .then()
                 .statusCode(200);
 
@@ -148,7 +163,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .auth().oauth2(token)
                 .contentType("application/json")
                 .when()
-                .get(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
+                .get(String.format("courts/code/%s", EXISTING_COURT_CODE.code()))
                 .then()
                 .statusCode(200)
                 .body("buildingName", equalTo("New Crown Building"));
@@ -206,7 +221,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .contentType("application/json")
                 .body(validInsertRequest())
                 .when()
-                .post("court")
+                .post("courts")
                 .then()
                 .statusCode(403);
         }
@@ -221,7 +236,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .contentType("application/json")
                 .body(validInsertRequest())
                 .when()
-                .post("court")
+                .post("courts")
                 .then()
                 .statusCode(403);
         }
@@ -236,7 +251,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .contentType("application/json")
                 .body(insertRequest(null, NEW_COURT_CODE, "MAG", "N53"))
                 .when()
-                .post("court")
+                .post("courts")
                 .then()
                 .statusCode(400);
         }
@@ -251,7 +266,22 @@ public class CourtAPITest extends IntegrationTestBase {
                 .contentType("application/json")
                 .body(insertRequest("New Magistrates Court", NEW_COURT_CODE, null, "N53"))
                 .when()
-                .post("court")
+                .post("courts")
+                .then()
+                .statusCode(400);
+        }
+
+        @Test
+        @DisplayName("Will reject request without a valid court type")
+        void willRejectRequestWithoutValidCourtType() {
+            final var token = createJwtWithScopes(List.of("write"), "ROLE_MAINTAIN_REF_DATA");
+
+            given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .body(insertRequest("New Magistrates Court", NEW_COURT_CODE, "BANANAS", "N53"))
+                .when()
+                .post("courts")
                 .then()
                 .statusCode(400);
         }
@@ -266,7 +296,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .contentType("application/json")
                 .body(insertRequest("New Magistrates Court", null, "MAG", "N53"))
                 .when()
-                .post("court")
+                .post("courts")
                 .then()
                 .statusCode(400);
         }
@@ -281,7 +311,22 @@ public class CourtAPITest extends IntegrationTestBase {
                 .contentType("application/json")
                 .body(insertRequest("New Magistrates Court", NEW_COURT_CODE, "MAG", null))
                 .when()
-                .post("court")
+                .post("courts")
+                .then()
+                .statusCode(400);
+        }
+
+        @Test
+        @DisplayName("Will reject request without a valid probation area code")
+        void willRejectRequestWithoutValidProbationAreaCode() {
+            final var token = createJwtWithScopes(List.of("write"), "ROLE_MAINTAIN_REF_DATA");
+
+            given()
+                .auth().oauth2(token)
+                .contentType("application/json")
+                .body(insertRequest("New Magistrates Court", NEW_COURT_CODE, "MAG", "BANANAS"))
+                .when()
+                .post("courts")
                 .then()
                 .statusCode(400);
         }
@@ -301,7 +346,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .contentType("application/json")
                 .body(validInsertRequest())
                 .when()
-                .post("court")
+                .post("courts")
                 .then()
                 .statusCode(200)
                 .body("code", equalTo(NEW_COURT_CODE));
@@ -310,7 +355,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .auth().oauth2(token)
                 .contentType("application/json")
                 .when()
-                .get(String.format("court/code/%s", NEW_COURT_CODE))
+                .get(String.format("courts/code/%s", NEW_COURT_CODE))
                 .then()
                 .statusCode(200)
                 .body("code", equalTo(NEW_COURT_CODE));
@@ -350,7 +395,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .auth().oauth2(token)
                 .contentType("application/json")
                 .when()
-                .get(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
+                .get(String.format("courts/code/%s", EXISTING_COURT_CODE.code()))
                 .then()
                 .statusCode(403);
         }
@@ -364,7 +409,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .auth().oauth2(token)
                 .contentType("application/json")
                 .when()
-                .get(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
+                .get(String.format("courts/code/%s", EXISTING_COURT_CODE.code()))
                 .then()
                 .statusCode(403);
         }
@@ -378,7 +423,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .auth().oauth2(token)
                 .contentType("application/json")
                 .when()
-                .get(String.format("court/code/%s", EXISTING_COURT_CODE.code()))
+                .get(String.format("courts/code/%s", EXISTING_COURT_CODE.code()))
                 .then()
                 .statusCode(200)
                 .body("code", equalTo(EXISTING_COURT_CODE.code()))
@@ -398,7 +443,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .auth().oauth2(token)
                 .contentType("application/json")
                 .when()
-                .get("court")
+                .get("courts")
                 .then()
                 .statusCode(403);
         }
@@ -412,7 +457,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .auth().oauth2(token)
                 .contentType("application/json")
                 .when()
-                .get("court")
+                .get("courts")
                 .then()
                 .statusCode(403);
         }
@@ -426,7 +471,7 @@ public class CourtAPITest extends IntegrationTestBase {
                 .auth().oauth2(token)
                 .contentType("application/json")
                 .when()
-                .get("court")
+                .get("courts")
                 .then()
                 .statusCode(200)
                 .body("size()", greaterThan(1))
