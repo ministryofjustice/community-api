@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @EqualsAndHashCode(of = "teamId")
 @ToString(exclude = {"district", "probationArea"})
@@ -63,6 +64,9 @@ public class Team {
     @Builder.Default
     private LocalDate startDate = LocalDate.now();
 
+    @Column(name = "END_DATE")
+    private LocalDate endDate;
+
     @Column(name = "TRAINING_SESSION_ID")
     private Long trainingSessionId;
 
@@ -85,4 +89,12 @@ public class Team {
     @Column(name = "LAST_UPDATED_DATETIME")
     @LastModifiedDate
     private LocalDateTime lastUpdatedDatetime;
+
+    @ManyToMany
+    @JoinTable(
+        name = "TEAM_OFFICE_LOCATION",
+        joinColumns = {@JoinColumn(name = "TEAM_ID", referencedColumnName = "TEAM_ID")},
+        inverseJoinColumns = {@JoinColumn(name = "OFFICE_LOCATION_ID", referencedColumnName = "OFFICE_LOCATION_ID")}
+    )
+    private List<OfficeLocation> officeLocations;
 }

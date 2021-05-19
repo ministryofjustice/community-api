@@ -10,6 +10,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
+import uk.gov.justice.digital.delius.data.api.OfficeLocation;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
@@ -30,16 +32,13 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.digital.delius.util.EntityHelper.aDistrict;
-import static uk.gov.justice.digital.delius.util.EntityHelper.aLocalDeliveryUnit;
-import static uk.gov.justice.digital.delius.util.EntityHelper.aProbationArea;
-import static uk.gov.justice.digital.delius.util.EntityHelper.aStaff;
-import static uk.gov.justice.digital.delius.util.EntityHelper.aTeam;
+import static uk.gov.justice.digital.delius.util.EntityHelper.*;
 
 @ExtendWith(MockitoExtension.class)
 public class TeamServiceTest {
@@ -320,5 +319,31 @@ public class TeamServiceTest {
 
             verify(telemetryClient).trackEvent(eq("POMTeamUnallocatedStaffCreated"), eq(Map.of("probationArea", "Z01", "code", "N01POMU")), isNull());
         }
+    }
+
+    @Test
+    public void gettingTeamOfficeLocations() {
+        final var CODE = "some-code";
+        final var officeLocation = anOfficeLocation();
+        final var team = aTeam(CODE);
+        team.setOfficeLocations(List.of(officeLocation));
+        when(teamRepository.findActiveWithActiveOfficeLocationByCode(CODE))
+            .thenReturn(Optional.of(team));
+
+        final var observed = teamService.getAllOfficeLocations(CODE);
+
+        assertThat(observed)
+            .hasSize(1)
+            .element(0)
+            .usingRecursiveComparison()
+            .isEqualTo(officeLocation);
+    }
+
+    @Test
+    public void attemptingToGetTeamOfficeLocationsButMissingTeam() {
+        final var CODE = "some-code";
+        when(teamRepository.findActiveWithActiveOfficeLocationByCode(CODE))
+            .thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> teamService.getAllOfficeLocations(CODE));
     }
 }

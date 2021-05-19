@@ -1,0 +1,3 @@
+spring:
+  datasource:
+    url: 'jdbc:h2:file:./dev;MODE=Oracle;AUTO_SERVER=TRUE;AUTO_SERVER_PORT=9092'
