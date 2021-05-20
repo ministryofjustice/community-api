@@ -21,6 +21,7 @@ import uk.gov.justice.digital.delius.transformers.NsiPatchRequestTransformer;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
@@ -112,7 +113,7 @@ public class ReferralService {
             .map(wrapper -> wrapper.getNsis().stream()
                 // eventID, offenderID, nsi type are handled in the NSI service
                 .filter(nsi -> Optional.ofNullable(nsi.getReferralDate()).map(n -> n.equals(toLondonLocalDate(startedAt))).orElse(false))
-                .filter(nsi -> Optional.ofNullable(nsi.getStatusDateTime()).map(n -> n.equals(toLondonLocalDateTime(startedAt))).orElse(false))
+                .filter(nsi -> Optional.ofNullable(nsi.getStatusDateTime()).map(n -> n.equals(toLondonLocalDateTime(startedAt.truncatedTo(ChronoUnit.SECONDS)))).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getNsiStatus()).map(n -> n.getCode().equals(nsiMapping.getNsiStatus())).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getIntendedProvider()).map(n -> n.getCode().equals(context.getProviderCode())).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getNsiManagers()).map(n -> n.stream().anyMatch(

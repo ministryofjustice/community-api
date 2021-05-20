@@ -113,6 +113,9 @@ delius-integration-context:
         nsi-status: INPROG
         contract-type-to-nsi-type:
           ACC: CRS01
+          ETE: CRS02
+          PWB: CRS05
+          WOS: CRS06
       contact-mapping:
         appointment-rar-contact-type: CRSAPT
         appointment-non-rar-contact-type: CRS01

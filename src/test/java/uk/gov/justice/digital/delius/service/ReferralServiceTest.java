@@ -385,7 +385,7 @@ public class ReferralServiceTest {
     private static Stream<Arguments> nsis() {
         return Stream.of(
             Arguments.of(REFERRAL_START_REQUEST, MATCHING_NSI, true),
-            Arguments.of(REFERRAL_START_REQUEST.withStartedAt(OffsetDateTime.of(2017, 1, 1, 12, 0, 0, 0, ZoneOffset.UTC)), MATCHING_NSI, false),
+            Arguments.of(REFERRAL_START_REQUEST.withStartedAt(OffsetDateTime.of(2017, 1, 1, 12, 0, 0, 1, ZoneOffset.UTC)), MATCHING_NSI, false),
             // To ensure status date time is checked
             Arguments.of(REFERRAL_START_REQUEST.withStartedAt(OffsetDateTime.of(2017, 1, 20, 12, 0, 0, 1, ZoneOffset.UTC)), MATCHING_NSI, false)
         );
