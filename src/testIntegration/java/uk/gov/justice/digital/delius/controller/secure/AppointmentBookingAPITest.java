@@ -122,7 +122,7 @@ public class AppointmentBookingAPITest extends IntegrationTestBase {
             .contentType(String.valueOf(ContentType.APPLICATION_JSON))
             .body(writeValueAsString(ContextlessAppointmentCreateRequest.builder()
                 .contractType("ACC")
-                .referralStart(OffsetDateTime.of(2019, 9, 2, 0, 0, 0, 0, ZoneOffset.UTC))
+                .referralStart(OffsetDateTime.of(2019, 9, 2, 11, 0, 1, 0, ZoneOffset.UTC))
                 .appointmentStart(OffsetDateTime.now())
                 .appointmentEnd(OffsetDateTime.now())
                 .notes("http://url")

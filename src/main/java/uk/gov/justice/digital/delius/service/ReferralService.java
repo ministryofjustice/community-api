@@ -60,26 +60,25 @@ public class ReferralService {
         var existingNsi = getExistingMatchingNsi(crn, contextName, referralStart.getSentenceId(),
             referralStart.getContractType(), referralStart.getStartedAt());
 
-        return ReferralStartResponse.builder().nsiId(existingNsi.map(Nsi::getNsiId).orElseGet(() -> {
-            var newNsiRequest = NewNsi.builder()
-                .type(getNsiType(nsiMapping, referralStart.getContractType()))
-                .offenderCrn(crn)
-                .eventId(referralStart.getSentenceId())
-                .requirementId(requirementId.orElse(null))
-                .referralDate(toLondonLocalDate(referralStart.getStartedAt()))
-                .startDate(toLondonLocalDate(referralStart.getStartedAt()))
-                .status(nsiMapping.getNsiStatus())
-                .statusDate(toLondonLocalDateTime(referralStart.getStartedAt()))
-                .notes(referralStart.getNotes())
-                .intendedProvider(context.getProviderCode())
-                .manager(NewNsiManager.builder()
-                    .staff(context.getStaffCode())
-                    .team(context.getTeamCode())
-                    .provider(context.getProviderCode())
-                    .build()).build();
+        var newNsiRequest = NewNsi.builder()
+            .type(getNsiType(nsiMapping, referralStart.getContractType()))
+            .offenderCrn(crn)
+            .eventId(referralStart.getSentenceId())
+            .requirementId(requirementId.orElse(null))
+            .referralDate(toLondonLocalDate(referralStart.getStartedAt()))
+            .startDate(toLondonLocalDate(referralStart.getStartedAt()))
+            .status(nsiMapping.getNsiStatus())
+            .statusDate(toLondonLocalDateTime(referralStart.getStartedAt()))
+            .notes(referralStart.getNotes())
+            .intendedProvider(context.getProviderCode())
+            .manager(NewNsiManager.builder()
+                .staff(context.getStaffCode())
+                .team(context.getTeamCode())
+                .provider(context.getProviderCode())
+                .build()).build();
 
-            return deliusApiClient.createNewNsi(newNsiRequest).getId();
-        })).build();
+        Long newNsiId = deliusApiClient.createNewNsi(newNsiRequest).getId();
+        return ReferralStartResponse.builder().nsiId(newNsiId).build();
     }
 
     @Transactional
@@ -113,6 +112,7 @@ public class ReferralService {
             .map(wrapper -> wrapper.getNsis().stream()
                 // eventID, offenderID, nsi type are handled in the NSI service
                 .filter(nsi -> Optional.ofNullable(nsi.getReferralDate()).map(n -> n.equals(toLondonLocalDate(startedAt))).orElse(false))
+                .filter(nsi -> Optional.ofNullable(nsi.getStatusDateTime()).map(n -> n.equals(toLondonLocalDateTime(startedAt))).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getNsiStatus()).map(n -> n.getCode().equals(nsiMapping.getNsiStatus())).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getIntendedProvider()).map(n -> n.getCode().equals(context.getProviderCode())).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getNsiManagers()).map(n -> n.stream().anyMatch(

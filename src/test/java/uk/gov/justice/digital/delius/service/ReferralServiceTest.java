@@ -75,6 +75,7 @@ public class ReferralServiceTest {
         .nsiId(12345L)
         .nsiType(KeyValue.builder().code(NSI_TYPE).build())
         .referralDate(LocalDate.of(2021, 1, 20))
+        .statusDateTime(LocalDateTime.of(2021, 1, 20, 12, 0, 0, 0))
         .nsiStatus(KeyValue.builder().code(NSI_STATUS).build())
         .requirement(Requirement.builder().requirementId(REQUIREMENT_ID).build())
         .intendedProvider(ProbationArea.builder().code(PROVIDER_CODE).build())
@@ -149,21 +150,6 @@ public class ReferralServiceTest {
     class StartReferrals {
 
         @Test
-        public void creatingNewNsiWhenMatchingOneExistsReturnsExistingNsi() {
-
-            Requirement requirement = Requirement.builder().requirementId(REQUIREMENT_ID).build();
-            when(requirementService.getRequirement(OFFENDER_CRN, SENTENCE_ID, RAR_TYPE_CODE)).thenReturn(of(requirement));
-            when(nsiService.getNsiByCodes(any(), any(), any())).thenReturn(of(NsiWrapper.builder().nsis(singletonList(MATCHING_NSI)).build()));
-
-            var response = referralService.startNsiReferral("X123456", INTEGRATION_CONTEXT, REFERRAL_START_REQUEST);
-
-            verify(nsiService).getNsiByCodes(OFFENDER_ID, SENTENCE_ID, singletonList(NSI_TYPE));
-            verifyNoInteractions(deliusApiClient);
-
-            assertThat(response.getNsiId()).isEqualTo(MATCHING_NSI.getNsiId());
-        }
-
-        @Test
         public void creatingNewNsiWhenMultipleMatchingExistReturnsConflict() {
 
             Requirement requirement = Requirement.builder().requirementId(REQUIREMENT_ID).build();
@@ -177,7 +163,7 @@ public class ReferralServiceTest {
         }
 
         @Test
-        public void creatingNewNsiCallsDeliusApiWhenNonExisting() {
+        public void creatingNewNsiCallsDeliusApi() {
 
             Requirement requirement = Requirement.builder().requirementId(REQUIREMENT_ID).build();
             when(requirementService.getRequirement(OFFENDER_CRN, SENTENCE_ID, RAR_TYPE_CODE)).thenReturn(of(requirement));
@@ -399,7 +385,9 @@ public class ReferralServiceTest {
     private static Stream<Arguments> nsis() {
         return Stream.of(
             Arguments.of(REFERRAL_START_REQUEST, MATCHING_NSI, true),
-            Arguments.of(REFERRAL_START_REQUEST.withStartedAt(OffsetDateTime.of(2017, 1, 1, 12, 0, 0, 0, ZoneOffset.UTC)), MATCHING_NSI, false)
+            Arguments.of(REFERRAL_START_REQUEST.withStartedAt(OffsetDateTime.of(2017, 1, 1, 12, 0, 0, 0, ZoneOffset.UTC)), MATCHING_NSI, false),
+            // To ensure status date time is checked
+            Arguments.of(REFERRAL_START_REQUEST.withStartedAt(OffsetDateTime.of(2017, 1, 20, 12, 0, 0, 1, ZoneOffset.UTC)), MATCHING_NSI, false)
         );
     }
 }
