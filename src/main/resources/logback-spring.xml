@@ -45,6 +45,10 @@
             <appender-ref ref="consoleAppender"/>
         </logger>
 
+        <logger name="org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor" additivity="false" level="WARN">
+          <appender-ref ref="consoleAppender"/>
+        </logger>
+
         <root level="INFO">
             <appender-ref ref="consoleAppender"/>
         </root>
@@ -84,6 +88,10 @@
 
         <logger name="org.flywaydb" additivity="false" level="INFO" >
             <appender-ref ref="logAppender"/>
+        </logger>
+
+        <logger name="org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor" additivity="false" level="WARN">
+          <appender-ref ref="logAppender"/>
         </logger>
 
         <root level="INFO">

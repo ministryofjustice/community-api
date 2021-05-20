@@ -1,9 +1,22 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -218,6 +231,10 @@ public class Offender {
 
     @OneToMany(mappedBy = "offenderId")
     private List<Event> events;
+
+    @OneToMany(mappedBy = "offenderId")
+    @Where(clause = "ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
+    private List<Event> activeEvents;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CURRENT_TIER")

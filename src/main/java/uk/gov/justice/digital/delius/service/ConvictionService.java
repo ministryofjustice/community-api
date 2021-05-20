@@ -31,11 +31,11 @@ import uk.gov.justice.digital.delius.transformers.CustodyKeyDateTransformer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -392,11 +392,10 @@ public class ConvictionService {
     }
 
     private LocalDate previouslyKnownTerminationDateOf(Offender offender) {
-        if (!probationStatusOf(offender).equals(ProbationStatus.PREVIOUSLY_KNOWN)) {
+        if (probationStatusOf(offender) != ProbationStatus.PREVIOUSLY_KNOWN) {
             return null;
         }
-        return Optional.ofNullable(offender.getEvents())
-            .orElse(Collections.emptyList())
+        return offender.getEvents()
             .stream()
             .filter(conviction -> conviction.getDisposal() != null && conviction.getDisposal().getTerminationDate() != null)
             .map(conviction -> conviction.getDisposal().getTerminationDate())
@@ -405,23 +404,19 @@ public class ConvictionService {
     }
 
     private Boolean inBreachOf(Offender offender) {
-        if (!probationStatusOf(offender).equals(ProbationStatus.CURRENT)) {
+        if (probationStatusOf(offender) != ProbationStatus.CURRENT) {
             return null;
         }
-        return Optional.of(offender)
-            .map(o ->
-                activeEvents(o.getEvents())
-                    .stream()
-                    .anyMatch(Event::isInBreach)
-            ).orElse(null);
+        return offender.getActiveEvents()
+            .stream()
+            .anyMatch(Event::isInBreach);
     }
 
     private Boolean preSentenceActivityOf(Offender offender) {
-        return Optional.of(offender)
-            .map((o) -> o.getEvents()
-                .stream()
-                .anyMatch(event -> event.getDisposal() == null)
-            ).orElse(false);
+        return offender.getActiveEvents()
+            .stream()
+            .map(Event::getDisposal)
+            .anyMatch(Objects::isNull);
     }
 
     private void addBulkTelemetry(Long offenderId, Event event, List<KeyDate> currentKeyDates, List<String> keyDatesToDelete, Map<String, LocalDate> keyDatesToBeAddedOrUpdated) {

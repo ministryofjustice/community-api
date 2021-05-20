@@ -12,6 +12,40 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class OffendersResource_getProbationStatus extends IntegrationTestBase {
 
     @Test
+    public void return404IfOffenderDoesNotExist() {
+        final var response = given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get("/offenders/crn/UNKNOWN/probationStatus")
+            .then()
+            .statusCode(404)
+            .extract()
+            .body()
+            .as(ErrorResponse.class);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(404);
+        assertThat(response.getDeveloperMessage()).isEqualTo("Offender not found");
+    }
+
+    @Test
+    public void canGetOffenderProbationStatusByCrnForOffenderWithDuplicateInactiveEvents() {
+        final var response = given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get("/offenders/crn/X320811/probationStatus")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(ProbationStatusDetail.class);
+    }
+
+    @Test
     public void canGetOffenderProbationStatusByCrn() {
         final var offenderDetail = given()
             .auth()
@@ -30,24 +64,5 @@ public class OffendersResource_getProbationStatus extends IntegrationTestBase {
         assertThat(offenderDetail.getPreviouslyKnownTerminationDate()).isNull();
         assertThat(offenderDetail.getInBreach()).isEqualTo(false);
         assertThat(offenderDetail.getPreSentenceActivity()).isEqualTo(false);
-    }
-
-    @Test
-    public void return404IfOffenderDoesNotExist() {
-        final var response = given()
-            .auth()
-            .oauth2(tokenWithRoleCommunity())
-            .contentType(APPLICATION_JSON_VALUE)
-            .when()
-            .get("/offenders/crn/UNKNOWN/probationStatus")
-            .then()
-            .statusCode(404)
-            .extract()
-            .body()
-            .as(ErrorResponse.class);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatus()).isEqualTo(404);
-        assertThat(response.getDeveloperMessage()).isEqualTo("Offender not found");
     }
 }
