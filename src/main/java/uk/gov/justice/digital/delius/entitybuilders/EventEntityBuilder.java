@@ -41,14 +41,14 @@ public class EventEntityBuilder {
         val event = Event
                 .builder()
                 .offenderId(offenderId)
-                .activeFlag(1L)
+                .activeFlag(true)
                 .referralDate(courtCase.getReferralDate())
                 .disposal(null) // TODO sentencing is done in a later phase
                 .partitionAreaId(0L)
                 .rowVersion(1L)
-                .softDeleted(0L)
+                .softDeleted(false)
                 .convictionDate(courtCase.getConvictionDate())
-                .inBreach(0L)
+                .inBreach(false)
                 .eventNumber(eventNumber)
                 .createdByUserId(lookupSupplier.userSupplier().get().getUserId())
                 .createdDatetime(LocalDateTime.now())

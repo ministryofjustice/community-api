@@ -81,10 +81,10 @@ public class ConvictionService_GetProbationStatusTest {
         when(offender.getEvents()).thenReturn(List.of(event));
         when(offender.getSoftDeleted()).thenReturn(0L);
         // Event in breach flag used to determine if offender is in breach
-        when(event.getSoftDeleted()).thenReturn(0L);
-        when(event.getActiveFlag()).thenReturn(1L);
+        when(event.isSoftDeleted()).thenReturn(false);
+        when(event.isActiveFlag()).thenReturn(true);
         when(event.getDisposal()).thenReturn(Disposal.builder().build());
-        when(event.getInBreach()).thenReturn(1L);
+        when(event.isInBreach()).thenReturn(true);
 
         final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
 
@@ -102,12 +102,12 @@ public class ConvictionService_GetProbationStatusTest {
         when(offender.getEvents()).thenReturn(List.of(event, event2, event3));
         when(offender.getSoftDeleted()).thenReturn(0L);
         // If any active event is in breach then offender is in breach
-        when(event.getSoftDeleted()).thenReturn(0L);
-        when(event.getActiveFlag()).thenReturn(1L);
-        when(event.getInBreach()).thenReturn(0L);
-        when(event2.getSoftDeleted()).thenReturn(0L);
-        when(event2.getActiveFlag()).thenReturn(1L);
-        when(event2.getInBreach()).thenReturn(1L);
+        when(event.isSoftDeleted()).thenReturn(false);
+        when(event.isActiveFlag()).thenReturn(true);
+        when(event.isInBreach()).thenReturn(false);
+        when(event2.isSoftDeleted()).thenReturn(false);
+        when(event2.isActiveFlag()).thenReturn(true);
+        when(event2.isInBreach()).thenReturn(true);
 
         final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
 
@@ -125,15 +125,15 @@ public class ConvictionService_GetProbationStatusTest {
         when(offender.getCurrentDisposal()).thenReturn(1L);
         when(offender.getEvents()).thenReturn(List.of(event, event2, event3));
         // If no active event is in breach then offender is not in breach
-        when(event.getSoftDeleted()).thenReturn(0L);
-        when(event.getActiveFlag()).thenReturn(1L);
-        when(event.getInBreach()).thenReturn(0L);
+        when(event.isSoftDeleted()).thenReturn(false);
+        when(event.isActiveFlag()).thenReturn(true);
+        when(event.isInBreach()).thenReturn(false);
 
         // Don't check deleted
-        when(event2.getSoftDeleted()).thenReturn(1L);
+        when(event2.isSoftDeleted()).thenReturn(true);
         // Don't check inactive
-        when(event3.getSoftDeleted()).thenReturn(0L);
-        when(event3.getActiveFlag()).thenReturn(0L);
+        when(event3.isSoftDeleted()).thenReturn(false);
+        when(event3.isActiveFlag()).thenReturn(false);
 
         final var probationStatusDetail = convictionService.probationStatusFor(CRN).get();
 

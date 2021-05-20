@@ -29,7 +29,7 @@ public class NsiServiceTest {
 
     private static final Long OFFENDER_ID = 123L;
     private static final Long EVENT_ID = 124L;
-    private static final Event EVENT = Event.builder().softDeleted(0L).build();
+    private static final Event EVENT = Event.builder().softDeleted(false).build();
     public static final long NSI_ID = 12345L;
 
     @Mock
@@ -81,7 +81,7 @@ public class NsiServiceTest {
     @Test
     void whenFetchNsisAllFilterBySoftDeleted() {
 
-        final Event deletedEvent = Event.builder().softDeleted(1L).build();
+        final Event deletedEvent = Event.builder().softDeleted(true).build();
         final var nsiEntity = buildNsi(deletedEvent, "BRE");
         when(convictionService.convictionFor(OFFENDER_ID, EVENT_ID)).thenReturn(Optional.of(Conviction.builder().build()));
         when(nsiRepository.findByEventIdAndOffenderId(EVENT_ID, OFFENDER_ID)).thenReturn(singletonList(nsiEntity));

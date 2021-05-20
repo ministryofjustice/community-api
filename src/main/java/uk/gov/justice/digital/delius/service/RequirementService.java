@@ -91,7 +91,7 @@ public class RequirementService {
 
     private Event getActiveEvent(String crn, Long convictionId) {
         var offenderId = getOffenderId(crn);
-        return eventRepository.findByOffenderIdAndEventIdAndActiveTrue(offenderId, convictionId)
+        return eventRepository.findByOffenderIdAndEventIdAndActiveFlagTrue(offenderId, convictionId)
             .orElseThrow(() ->  new NotFoundException(format("Active conviction with convictionId '%s' not found", convictionId)));
     }
 

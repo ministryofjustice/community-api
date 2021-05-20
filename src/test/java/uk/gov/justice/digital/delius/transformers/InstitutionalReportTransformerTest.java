@@ -130,20 +130,20 @@ public class InstitutionalReportTransformerTest {
 
     private Event anEvent() {
         return Event.builder()
-            .activeFlag(1L)
+            .activeFlag(true)
             .convictionDate(LocalDate.of(2018, 11, 2))
             .additionalOffences(ImmutableList.of())
             .eventId(1L)
-            .softDeleted(0L)
+            .softDeleted(false)
             .build();
     }
 
     private Event aSoftDeletedEvent() {
         return Event.builder()
-            .activeFlag(1L)
+            .activeFlag(true)
             .convictionDate(LocalDate.of(2018, 11, 2))
             .eventId(1L)
-            .softDeleted(1L)
+            .softDeleted(true)
             .build();
     }
 }

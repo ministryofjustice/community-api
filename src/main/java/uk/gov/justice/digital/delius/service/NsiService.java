@@ -13,8 +13,6 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
-
 @Service
 @Slf4j
 public class NsiService {
@@ -34,7 +32,7 @@ public class NsiService {
         return convictionService.convictionFor(offenderId, eventId)
             .map(conv -> nsiRepository.findByEventIdAndOffenderId(eventId, offenderId))
             .map(nsis -> nsis.stream()
-                .filter(e -> !convertToBoolean(e.getEvent().getSoftDeleted()))
+                .filter(e -> !e.getEvent().isSoftDeleted())
                 .filter(e -> nsiCodes.contains(e.getNsiType().getCode()))
                 .map(NsiTransformer::nsiOf)
                 .collect(Collectors.toList()))

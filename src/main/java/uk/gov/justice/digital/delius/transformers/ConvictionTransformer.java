@@ -29,7 +29,6 @@ import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
-import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
 
 public class ConvictionTransformer {
 
@@ -80,7 +79,7 @@ public class ConvictionTransformer {
 
     public static Conviction convictionOf(Event event) {
         return Conviction.builder()
-                .active(zeroOneToBoolean(event.getActiveFlag()))
+                .active(event.isActiveFlag())
                 .convictionDate(event.getConvictionDate())
                 .referralDate(event.getReferralDate())
                 .convictionId(event.getEventId())
@@ -91,7 +90,7 @@ public class ConvictionTransformer {
                         .ofNullable(event.getDisposal())
                         .flatMap(disposal -> Optional.ofNullable(disposal.getCustody()).map(ConvictionTransformer::custodyOf))
                         .orElse(null))
-                .inBreach(zeroOneToBoolean(event.getInBreach()))
+                .inBreach(event.isInBreach())
                 .latestCourtAppearanceOutcome(Optional.ofNullable(event.getCourtAppearances()).map(ConvictionTransformer::outcomeOf).orElse(null))
                 .build();
     }
