@@ -12,6 +12,7 @@ import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewNsi;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NsiDto;
+import uk.gov.justice.digital.delius.data.api.deliusapi.ReplaceContact;
 
 import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 
@@ -53,6 +54,17 @@ public class DeliusApiClient {
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
             .bodyValue(newContact)
+            .retrieve()
+            .bodyToMono(ContactDto.class)
+            .block();
+    }
+
+    public ContactDto replaceContact(Long contactId, ReplaceContact replaceContact) {
+        return webClient.post()
+            .uri(fromPath("/v1/contact/{id}/replace").buildAndExpand(contactId).toUriString())
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+            .bodyValue(replaceContact)
             .retrieve()
             .bodyToMono(ContactDto.class)
             .block();

@@ -12,15 +12,20 @@ import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.data.api.Appointment;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
+import uk.gov.justice.digital.delius.data.api.AppointmentRescheduleRequest;
+import uk.gov.justice.digital.delius.data.api.AppointmentRescheduleResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentType;
 import uk.gov.justice.digital.delius.data.api.AppointmentType.OrderType;
 import uk.gov.justice.digital.delius.data.api.AppointmentType.RequiredOptional;
 import uk.gov.justice.digital.delius.data.api.AppointmentUpdateResponse;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
+import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentRescheduleRequest;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
+import uk.gov.justice.digital.delius.data.api.deliusapi.ReplaceContact;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 import uk.gov.justice.digital.delius.transformers.AppointmentTransformer;
@@ -33,6 +38,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static uk.gov.justice.digital.delius.transformers.AppointmentCreateRequestTransformer.appointmentOf;
 import static uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf;
@@ -45,7 +51,6 @@ public class AppointmentService {
 
     private final ContactTypeRepository contactTypeRepository;
     private final ContactRepository contactRepository;
-    private final RequirementService requirementService;
     private final ReferralService referralService;
     private final DeliusApiClient deliusApiClient;
     private final DeliusIntegrationContextConfig deliusIntegrationContextConfig;
@@ -77,6 +82,32 @@ public class AppointmentService {
             .orElseThrow(() -> new BadRequestException(format("Cannot find NSI for CRN: %s Sentence: %d and ContractType %s", crn, sentenceId, contextlessRequest.getContractType())));
 
         return createAppointment(crn, sentenceId, request);
+    }
+
+    @Transactional
+    public AppointmentRescheduleResponse rescheduleAppointment(String crn, Long appointmentId, AppointmentRescheduleRequest request) {
+
+        final var existingContact = contactRepository.findById(appointmentId)
+            .orElseThrow(() -> new BadRequestException(format("Cannot find Appointment for CRN: %s and Appointment Id %d", crn, appointmentId)));
+        final var replacementContact = makeReplacementContact(crn, existingContact, request);
+        final var contactDto = deliusApiClient.replaceContact(appointmentId, replacementContact);
+
+        return AppointmentRescheduleResponse.builder().appointmentId(contactDto.getId()).build();
+    }
+
+    @Transactional
+    public AppointmentRescheduleResponse rescheduleAppointment(String crn, Long appointmentId, String contextName, ContextlessAppointmentRescheduleRequest contextlessRequest) {
+
+        final var outcomeTypeMapping = getContext(contextName).getContactMapping().getInitiatedByServiceProviderToOutcomeType();
+        final var rescheduleRequest = ofNullable(outcomeTypeMapping.get(contextlessRequest.getInitiatedByServiceProvider()))
+            .map(outcomeType -> AppointmentRescheduleRequest.builder()
+                .updatedAppointmentStart(contextlessRequest.getUpdatedAppointmentStart())
+                .updatedAppointmentEnd(contextlessRequest.getUpdatedAppointmentEnd())
+                .outcome(outcomeType)
+                .build())
+            .orElseThrow(() -> new BadRequestException(format("Cannot find rescheduled outcome type for initiated-by-Service-Provider: %s", contextlessRequest.getInitiatedByServiceProvider())));
+
+        return rescheduleAppointment(crn, appointmentId, rescheduleRequest);
     }
 
     @Transactional
@@ -142,6 +173,18 @@ public class AppointmentService {
             .build();
     }
 
+    private ReplaceContact makeReplacementContact(String crn, Contact existingContact, AppointmentRescheduleRequest request) {
+        return ReplaceContact.builder()
+            .offenderCrn(crn)
+            .outcome(request.getOutcome())
+            .date(toLondonLocalDate(request.getUpdatedAppointmentStart()))
+            .startTime(toLondonLocalTime(request.getUpdatedAppointmentStart()))
+            .endTime(toLondonLocalTime(request.getUpdatedAppointmentEnd()))
+            .nsiId(existingContact.getNsi().getNsiId())
+            .eventId(existingContact.getEvent().getEventId())
+            .build();
+    }
+
     private AppointmentCreateResponse makeResponse(ContactDto contactDto) {
         var appointmentStart = DateConverter.toOffsetDateTime(contactDto.getDate().atTime(contactDto.getStartTime()));
         var appointmentEnd = DateConverter.toOffsetDateTime(contactDto.getDate().atTime(contactDto.getEndTime()));
@@ -150,7 +193,7 @@ public class AppointmentService {
 
     IntegrationContext getContext(String name) {
         var context = deliusIntegrationContextConfig.getIntegrationContexts().get(name);
-        return Optional.ofNullable(context).orElseThrow(
+        return ofNullable(context).orElseThrow(
             () -> new IllegalArgumentException("IntegrationContext does not exist for: " + name)
         );
     }

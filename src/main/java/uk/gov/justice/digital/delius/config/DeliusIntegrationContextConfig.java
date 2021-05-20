@@ -40,6 +40,7 @@ public class DeliusIntegrationContextConfig {
         private String appointmentRarContactType;
         private String appointmentNonRarContactType;
         private String enforcementReferToOffenderManager;
+        private Map<Boolean, String> initiatedByServiceProviderToOutcomeType;
         private Map<String, String> endTypeToOutcomeType;
         private Map<String, Map<Boolean, String>> attendanceAndBehaviourNotifiedMappingToOutcomeType;
 
