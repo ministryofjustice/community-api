@@ -110,7 +110,8 @@ workflows:
             container=community-api,name=DELIUSAPI_BASEURL,                                     value=http://delius-api.ecs.cluster:8080/,
             container=community-api,name=DEBUG,                                                 value=true,
             container=community-api,name=SMOKE_TEST_AWARE,                                      value=true,
-            container=community-api,name=SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI, value=https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json
+            container=community-api,name=SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI, value=https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json,
+            container=community-api,name=APPLICATIONINSIGHTS_CONFIGURATION_FILE,                value=applicationinsights.dev.json
           requires:
             - build_docker
       - deploy:
@@ -130,7 +131,8 @@ workflows:
             container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_BULK_KEY_DATES,  value=false,
             container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_KEY_DATES,       value=true,
             container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=true,
-            container=community-api,name=FEATURES_REGISTERS_COURT_CODE_ALLOWED_PATTERN,               value=XXXX[A-Z]{2}
+            container=community-api,name=FEATURES_REGISTERS_COURT_CODE_ALLOWED_PATTERN,               value=XXXX[A-Z]{2},
+            container=community-api,name=APPLICATIONINSIGHTS_CONFIGURATION_FILE,                      value=applicationinsights.dev.json
           requires:
             - deploy_to_dev
           filters:
@@ -157,7 +159,8 @@ workflows:
             container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_BULK_KEY_DATES,  value=false,
             container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_KEY_DATES,       value=false,
             container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=false,
-            container=community-api,name=FEATURES_REGISTERS_COURT_CODE_ALLOWED_PATTERN,               value=
+            container=community-api,name=FEATURES_REGISTERS_COURT_CODE_ALLOWED_PATTERN,               value=,
+            container=community-api,name=APPLICATIONINSIGHTS_CONFIGURATION_FILE,                      value=applicationinsights.dev.json
           requires:
             - request-pre-prod-approval
       - deploy:
@@ -177,7 +180,8 @@ workflows:
             container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_BULK_KEY_DATES,  value=false,
             container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_KEY_DATES,       value=false,
             container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=false,
-            container=community-api,name=FEATURES_REGISTERS_COURT_CODE_ALLOWED_PATTERN,               value=
+            container=community-api,name=FEATURES_REGISTERS_COURT_CODE_ALLOWED_PATTERN,               value=,
+            container=community-api,name=APPLICATIONINSIGHTS_CONFIGURATION_FILE,                      value=applicationinsights.dev.json
           requires:
             - request-pre-prod-approval
       - deploy:
@@ -197,7 +201,8 @@ workflows:
             container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_BULK_KEY_DATES,  value=false,
             container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_KEY_DATES,       value=true,
             container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=true,
-            container=community-api,name=FEATURES_REGISTERS_COURT_CODE_ALLOWED_PATTERN,               value=
+            container=community-api,name=FEATURES_REGISTERS_COURT_CODE_ALLOWED_PATTERN,               value=,
+            container=community-api,name=APPLICATIONINSIGHTS_CONFIGURATION_FILE,                      value=applicationinsights.json
           requires:
             - request-pre-prod-approval
       - request-prod-approval:
@@ -222,7 +227,8 @@ workflows:
             container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_BULK_KEY_DATES,  value=false,
             container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_KEY_DATES,       value=false,
             container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=false,
-            container=community-api,name=FEATURES_REGISTERS_COURT_CODE_ALLOWED_PATTERN,               value=
+            container=community-api,name=FEATURES_REGISTERS_COURT_CODE_ALLOWED_PATTERN,               value=,
+            container=community-api,name=APPLICATIONINSIGHTS_CONFIGURATION_FILE,                      value=applicationinsights.json
           requires:
             - request-prod-approval
 
