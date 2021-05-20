@@ -108,15 +108,15 @@ public class EventEntityBuilderTest {
 
     @Test
     public void activeMappedForZeroOneActiveFlag() {
-        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().activeFlag(1L).build()).getActive())).isTrue();
-        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().activeFlag(0L).build()).getActive())).isFalse();
+        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().activeFlag(true).build()).getActive())).isTrue();
+        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().activeFlag(false).build()).getActive())).isFalse();
 
     }
 
     @Test
     public void inBreachMappedForZeroOneInBreach() {
-        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().inBreach(1L).build()).getInBreach())).isTrue();
-        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().inBreach(0L).build()).getInBreach())).isFalse();
+        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().inBreach(true).build()).getInBreach())).isTrue();
+        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().inBreach(false).build()).getInBreach())).isFalse();
 
     }
 
@@ -301,11 +301,11 @@ public class EventEntityBuilderTest {
     public void setsSensibleDefaults() {
         final Event event = eventEntityBuilder.eventOf(99L, aCourtCase(), "1");
 
-        assertThat(event.getSoftDeleted()).isEqualTo(0L);
+        assertThat(event.isSoftDeleted()).isEqualTo(false);
         assertThat(event.getPartitionAreaId()).isEqualTo(0L);
         assertThat(event.getRowVersion()).isEqualTo(1L);
-        assertThat(event.getActiveFlag()).isEqualTo(1L);
-        assertThat(event.getInBreach()).isEqualTo(0L);
+        assertThat(event.isActiveFlag()).isEqualTo(true);
+        assertThat(event.isInBreach()).isEqualTo(false);
         assertThat(event.getPendingTransfer()).isEqualTo(0L);
         assertThat(event.getPostSentenceSupervisionRequirementFlag()).isEqualTo(0L);
     }

@@ -346,7 +346,7 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
     public void shouldAllowKeyDateToBeDeletedByConvictionIdWhenEvenWhenCustodialEventIsNoLongerActive() {
         val inactiveCustodyEvent = aCustodyEvent(2L, new ArrayList<>())
                 .toBuilder()
-                .activeFlag(0L)
+                .activeFlag(false)
                 .build();
         inactiveCustodyEvent.getDisposal().getCustody().getKeyDates().add(aKeyDate("POM1", "POM Handover expected start date", LocalDate.now()));
 
@@ -363,13 +363,13 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
     public void keyDateRemovedFromActiveCustodyRecord() throws SingleActiveCustodyConvictionNotFoundException {
         val activeCustodyEvent = aCustodyEvent(1L, new ArrayList<>())
                 .toBuilder()
-                .activeFlag(1L)
+                .activeFlag(true)
                 .build();
         activeCustodyEvent.getDisposal().getCustody().getKeyDates().add(aKeyDate("POM1", "POM Handover expected start date", LocalDate.now()));
 
         val event = aCustodyEvent(2L, new ArrayList<>())
                 .toBuilder()
-                .activeFlag(0L)
+                .activeFlag(false)
                 .build();
         val terminatedDisposal = event.getDisposal().toBuilder().terminationDate(LocalDate.now()).build();
         val activeEventButTerminatedCustodyEvent = event.toBuilder().disposal(terminatedDisposal).build();

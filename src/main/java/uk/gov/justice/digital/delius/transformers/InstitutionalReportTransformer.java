@@ -27,7 +27,7 @@ public class InstitutionalReportTransformer {
             .map(Custody::getDisposal)
             .filter(disposal -> !convertToBoolean(disposal.getSoftDeleted()))
             .map(Disposal::getEvent)
-            .filter(event -> !convertToBoolean(event.getSoftDeleted()))
+            .filter(event -> !event.isSoftDeleted())
             .map(ConvictionTransformer::convictionOf)
             .orElse(null);
     }

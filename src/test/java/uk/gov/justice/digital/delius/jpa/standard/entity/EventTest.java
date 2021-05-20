@@ -15,7 +15,7 @@ public class EventTest {
             assertThat(Event
                     .builder()
                     .cpsAlfrescoDocumentId("1334")
-                    .cpsSoftDeleted(0L)
+                    .cpsSoftDeleted(false)
                     .build().hasCpsPack()).isTrue();
         }
 
@@ -33,7 +33,7 @@ public class EventTest {
             assertThat(Event
                     .builder()
                     .cpsAlfrescoDocumentId("1334")
-                    .cpsSoftDeleted(1L)
+                    .cpsSoftDeleted(true)
                     .build().hasCpsPack()).isFalse();
         }
 
@@ -42,7 +42,7 @@ public class EventTest {
             assertThat(Event
                     .builder()
                     .cpsAlfrescoDocumentId("")
-                    .cpsSoftDeleted(0L)
+                    .cpsSoftDeleted(false)
                     .build().hasCpsPack()).isFalse();
         }
 
@@ -51,7 +51,7 @@ public class EventTest {
             assertThat(Event
                     .builder()
                     .cpsAlfrescoDocumentId(null)
-                    .cpsSoftDeleted(0L)
+                    .cpsSoftDeleted(false)
                     .build().hasCpsPack()).isFalse();
         }
     }
@@ -62,7 +62,7 @@ public class EventTest {
         public void isActiveWhenFlagIsOne() {
             assertThat(Event
                     .builder()
-                    .activeFlag(1L)
+                    .activeFlag(true)
                     .build().isActive()).isTrue();
         }
 
@@ -70,7 +70,7 @@ public class EventTest {
         public void isNotActiveWhenFlagIsZero() {
             assertThat(Event
                     .builder()
-                    .activeFlag(0L)
+                    .activeFlag(false)
                     .build().isActive()).isFalse();
         }
 
@@ -78,8 +78,8 @@ public class EventTest {
         public void isNotActiveWhenDeletedEvenWhenActiveFlagOne() {
             assertThat(Event
                     .builder()
-                    .activeFlag(1L)
-                    .softDeleted(1L)
+                    .activeFlag(true)
+                    .softDeleted(true)
                     .build().isActive()).isFalse();
         }
 

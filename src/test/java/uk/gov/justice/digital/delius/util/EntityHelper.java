@@ -171,9 +171,9 @@ public class EntityHelper {
                 .cpsDocumentName("cps.pdf")
                 .cpsDate(LocalDate.now())
                 .cpsCreatedDatetime(LocalDateTime.now())
-                .cpsSoftDeleted(0L)
-                .softDeleted(0L)
-                .activeFlag(1L)
+                .cpsSoftDeleted(false)
+                .softDeleted(false)
+                .activeFlag(true)
                 .orderManagers(List.of(anOrderManager()))
                 .additionalOffences(List.of())
                 .build();

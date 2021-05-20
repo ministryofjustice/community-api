@@ -55,15 +55,15 @@ public class ConvictionTransformerTest {
 
     @Test
     public void activeMappedForZeroOneActiveFlag() {
-        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().activeFlag(1L).build()).getActive())).isTrue();
-        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().activeFlag(0L).build()).getActive())).isFalse();
+        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().activeFlag(true).build()).getActive())).isTrue();
+        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().activeFlag(false).build()).getActive())).isFalse();
 
     }
 
     @Test
     public void inBreachMappedForZeroOneInBreach() {
-        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().inBreach(1L).build()).getInBreach())).isTrue();
-        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().inBreach(0L).build()).getInBreach())).isFalse();
+        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().inBreach(true).build()).getInBreach())).isTrue();
+        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().inBreach(false).build()).getInBreach())).isFalse();
 
     }
 

@@ -12,11 +12,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.config.FeatureSwitches;
 import uk.gov.justice.digital.delius.data.api.CustodyKeyDate;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
+import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
+import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.service.ConvictionService.SingleActiveCustodyConvictionNotFoundException;
-import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
-import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -151,11 +151,11 @@ public class ConvictionService_GetCustodyKeyDateTest {
         public void shouldNotAllowKeyDateToBeRetrievedWhenMoreThanOneActiveCustodialEvent() {
             val activeCustodyEvent1 = aCustodyEvent(1L, new ArrayList<>())
                 .toBuilder()
-                .activeFlag(1L)
+                .activeFlag(true)
                 .build();
             val activeCustodyEvent2 = aCustodyEvent(2L, new ArrayList<>())
                 .toBuilder()
-                .activeFlag(1L)
+                .activeFlag(true)
                 .build();
 
             when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEvent1, activeCustodyEvent2));
@@ -169,11 +169,11 @@ public class ConvictionService_GetCustodyKeyDateTest {
         public void shouldNotAllowKeyDatesToBeRetrievedWhenMoreThanOneActiveCustodialEvent() {
             val activeCustodyEvent1 = aCustodyEvent(1L, new ArrayList<>())
                 .toBuilder()
-                .activeFlag(1L)
+                .activeFlag(true)
                 .build();
             val activeCustodyEvent2 = aCustodyEvent(2L, new ArrayList<>())
                 .toBuilder()
-                .activeFlag(1L)
+                .activeFlag(true)
                 .build();
 
             when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEvent1, activeCustodyEvent2));
@@ -188,13 +188,13 @@ public class ConvictionService_GetCustodyKeyDateTest {
             val today = LocalDate.now();
             val activeCustodyEvent = aCustodyEvent(1L, new ArrayList<>())
                 .toBuilder()
-                .activeFlag(1L)
+                .activeFlag(true)
                 .build();
             activeCustodyEvent.getDisposal().getCustody().getKeyDates().add(aKeyDate("POM1", "POM Handover expected start date", today));
 
             val event = aCustodyEvent(2L, new ArrayList<>())
                 .toBuilder()
-                .activeFlag(0L)
+                .activeFlag(false)
                 .build();
             val terminatedDisposal = event.getDisposal().toBuilder().terminationDate(LocalDate.now()).build();
             val activeEventButTerminatedCustodyEvent = event.toBuilder().disposal(terminatedDisposal).build();
@@ -219,13 +219,13 @@ public class ConvictionService_GetCustodyKeyDateTest {
             val today = LocalDate.now();
             val activeCustodyEvent = aCustodyEvent(1L, new ArrayList<>())
                 .toBuilder()
-                .activeFlag(1L)
+                .activeFlag(true)
                 .build();
             activeCustodyEvent.getDisposal().getCustody().getKeyDates().add(aKeyDate("POM1", "POM Handover expected start date", today));
 
             val event = aCustodyEvent(2L, new ArrayList<>())
                 .toBuilder()
-                .activeFlag(1L)
+                .activeFlag(true)
                 .build();
             val terminatedDisposal = event.getDisposal().toBuilder().terminationDate(LocalDate.now()).build();
             val activeEventButTerminatedCustodyEvent = event.toBuilder().disposal(terminatedDisposal).build();

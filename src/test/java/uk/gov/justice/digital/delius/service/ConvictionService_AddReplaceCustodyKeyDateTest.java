@@ -496,11 +496,11 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
             public void keyDateAddedToActiveCustodyRecord() throws SingleActiveCustodyConvictionNotFoundException, CustodyTypeCodeIsNotValidException {
                 val activeCustodyEvent = aCustodyEvent(1L, new ArrayList<>())
                     .toBuilder()
-                    .activeFlag(1L)
+                    .activeFlag(true)
                     .build();
                 val event = aCustodyEvent(2L, new ArrayList<>())
                     .toBuilder()
-                    .activeFlag(1L)
+                    .activeFlag(true)
                     .build();
                 val terminatedDisposal = event.getDisposal().toBuilder().terminationDate(LocalDate.now()).build();
                 val activeEventButTerminatedCustodyEvent = event.toBuilder().disposal(terminatedDisposal).build();
@@ -529,11 +529,11 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
                 void setUp() {
                     activeCustodyEvent1 = aCustodyEvent(1L, new ArrayList<>())
                         .toBuilder()
-                        .activeFlag(1L)
+                        .activeFlag(true)
                         .build();
                     activeCustodyEvent2 = aCustodyEvent(2L, new ArrayList<>())
                         .toBuilder()
-                        .activeFlag(1L)
+                        .activeFlag(true)
                         .build();
 
                     when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEvent1, activeCustodyEvent2));
@@ -645,7 +645,7 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
                                     .minusDays(1))));
                             activeCustodyEventWithoutPMO1 = aCustodyEvent(2L, new ArrayList<>())
                                 .toBuilder()
-                                .activeFlag(1L)
+                                .activeFlag(true)
                                 .build();
 
                             when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEventWithPOM1, activeCustodyEventWithoutPMO1));
@@ -874,7 +874,7 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
             public void shouldAllowKeyDateToBeAddedByConvictionIdWhenEvenWhenCustodialEventIsNoLongerActive() throws CustodyTypeCodeIsNotValidException {
                 val inactiveCustodyEvent = aCustodyEvent(2L, new ArrayList<>())
                     .toBuilder()
-                    .activeFlag(0L)
+                    .activeFlag(false)
                     .build();
 
                 when(eventRepository.getOne(999L)).thenReturn(inactiveCustodyEvent);

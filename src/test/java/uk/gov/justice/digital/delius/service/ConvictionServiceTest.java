@@ -118,7 +118,7 @@ public class ConvictionServiceTest {
     public void convictionForEventIdButIsSoftDeleted() {
         when(eventRepository.findById(99L))
             .thenReturn(Optional.of(
-                aEvent().toBuilder().eventId(99L).softDeleted(1L).referralDate(now().minusDays(1)).build()
+                aEvent().toBuilder().eventId(99L).softDeleted(true).referralDate(now().minusDays(1)).build()
             ));
 
         assertThat(convictionService.convictionFor(1L, 99L)).isEmpty();
@@ -139,7 +139,7 @@ public class ConvictionServiceTest {
         when(eventRepository.findByOffenderId(1L))
                 .thenReturn(ImmutableList.of(
                         aEvent().toBuilder().eventId(1L).build(),
-                        aEvent().toBuilder().eventId(2L).softDeleted(1L).build(),
+                        aEvent().toBuilder().eventId(2L).softDeleted(true).build(),
                         aEvent().toBuilder().eventId(3L).build()
                 ));
 
@@ -199,9 +199,9 @@ public class ConvictionServiceTest {
 
         @Test
         public void convictionsReturnedIgnoresSoftDeletedEvents() {
-            when(eventRepository.findByOffenderIdAndActiveTrue(1L))
+            when(eventRepository.findByOffenderIdAndActiveFlagTrue(1L))
                 .thenReturn(asList(
-                    aEvent().toBuilder().eventId(99L).offenderId(1L).softDeleted(1L).build()
+                    aEvent().toBuilder().eventId(99L).offenderId(1L).softDeleted(true).build()
                 ));
 
             assertThat(convictionService.convictionsWithActiveRequirementFor(1L, REHABILITATION_ACTIVITY_REQUIREMENT_CODE))
@@ -210,9 +210,9 @@ public class ConvictionServiceTest {
 
         @Test
         public void convictionsReturnedFiltersEventsWithNoDisposals() {
-            when(eventRepository.findByOffenderIdAndActiveTrue(1L))
+            when(eventRepository.findByOffenderIdAndActiveFlagTrue(1L))
                 .thenReturn(asList(
-                    aEvent().toBuilder().eventId(99L).offenderId(1L).softDeleted(0L).build()
+                    aEvent().toBuilder().eventId(99L).offenderId(1L).softDeleted(false).build()
                 ));
 
             assertThat(convictionService.convictionsWithActiveRequirementFor(1L, REHABILITATION_ACTIVITY_REQUIREMENT_CODE))
@@ -221,9 +221,9 @@ public class ConvictionServiceTest {
 
         @Test
         public void convictionsReturnedFiltersEventsWithNoRequirements() {
-            when(eventRepository.findByOffenderIdAndActiveTrue(1L))
+            when(eventRepository.findByOffenderIdAndActiveFlagTrue(1L))
                 .thenReturn(asList(
-                    aEvent().toBuilder().eventId(99L).offenderId(1L).softDeleted(0L)
+                    aEvent().toBuilder().eventId(99L).offenderId(1L).softDeleted(false)
                         .disposal(Disposal.builder().disposalId(98L).requirements(emptyList()).build())
                         .build()
                 ));
@@ -234,9 +234,9 @@ public class ConvictionServiceTest {
 
         @Test
         public void convictionsReturnedFiltersEventsWithNoActiveRequirements() {
-            when(eventRepository.findByOffenderIdAndActiveTrue(1L))
+            when(eventRepository.findByOffenderIdAndActiveFlagTrue(1L))
                 .thenReturn(asList(
-                    aEvent().toBuilder().eventId(99L).offenderId(1L).softDeleted(0L)
+                    aEvent().toBuilder().eventId(99L).offenderId(1L).softDeleted(false)
                         .disposal(Disposal.builder().disposalId(98L).requirements(
                             singletonList(Requirement.builder().activeFlag(0L).build())).build())
                         .build()
@@ -248,9 +248,9 @@ public class ConvictionServiceTest {
 
         @Test
         public void convictionsReturnedFiltersEventsWithNoRarRequirements() {
-            when(eventRepository.findByOffenderIdAndActiveTrue(1L))
+            when(eventRepository.findByOffenderIdAndActiveFlagTrue(1L))
                 .thenReturn(asList(
-                    aEvent().toBuilder().eventId(99L).offenderId(1L).softDeleted(0L)
+                    aEvent().toBuilder().eventId(99L).offenderId(1L).softDeleted(false)
                         .disposal(Disposal.builder().disposalId(98L).requirements(
                             singletonList(Requirement.builder().activeFlag(1L).requirementTypeMainCategory(
                                 RequirementTypeMainCategory.builder().code(EXCLUSION_REQUIREMENT_CODE).build()).build())).build())
@@ -263,14 +263,14 @@ public class ConvictionServiceTest {
 
         @Test
         public void convictionsReturnedOrderedByReferralDateReversed() {
-            when(eventRepository.findByOffenderIdAndActiveTrue(1L))
+            when(eventRepository.findByOffenderIdAndActiveFlagTrue(1L))
                 .thenReturn(asList(
-                    aEvent().toBuilder().eventId(99L).offenderId(1L).referralDate(now()).softDeleted(0L)
+                    aEvent().toBuilder().eventId(99L).offenderId(1L).referralDate(now()).softDeleted(false)
                         .disposal(Disposal.builder().disposalId(98L).disposalType(aNcDisposalType()).requirements(
                             singletonList(Requirement.builder().activeFlag(1L).requirementTypeMainCategory(
                                 RequirementTypeMainCategory.builder().code(REHABILITATION_ACTIVITY_REQUIREMENT_CODE).build()).build())).build())
                         .build(),
-                    aEvent().toBuilder().eventId(101L).offenderId(1L).referralDate(now().plusDays(1)).softDeleted(0L)
+                    aEvent().toBuilder().eventId(101L).offenderId(1L).referralDate(now().plusDays(1)).softDeleted(false)
                         .disposal(Disposal.builder().disposalId(100L).disposalType(aNcDisposalType()).requirements(
                             singletonList(Requirement.builder().activeFlag(1L).requirementTypeMainCategory(
                                 RequirementTypeMainCategory.builder().code(REHABILITATION_ACTIVITY_REQUIREMENT_CODE).build()).build())).build())
@@ -324,12 +324,12 @@ public class ConvictionServiceTest {
                     aEvent()
                             .toBuilder()
                             .eventId(998L)
-                            .activeFlag(0L)
+                            .activeFlag(false)
                             .build(),
                     aEvent()
                             .toBuilder()
                             .eventId(999L)
-                            .activeFlag(1L)
+                            .activeFlag(true)
                             .build()
             ));
 
@@ -467,7 +467,7 @@ public class ConvictionServiceTest {
                     aCustodialEvent("A12345", true)
                             .toBuilder()
                             .eventId(999L)
-                            .activeFlag(1L)
+                            .activeFlag(true)
                             .build()
             ));
 
@@ -671,7 +671,7 @@ public class ConvictionServiceTest {
         return Event.builder()
                 .referralDate(now())
                 .additionalOffences(ImmutableList.of())
-                .activeFlag(1L)
+                .activeFlag(true)
                 .build();
     }
 
@@ -685,8 +685,8 @@ public class ConvictionServiceTest {
                 .custody(Custody.builder().prisonerNumber(prisonerNumber).custodialStatus(StandardReference.builder().codeValue(custodialStatus).build()).build())
                 .build();
         return Event.builder()
-                .softDeleted(0L)
-                .activeFlag(active ? 1L : 0L)
+                .softDeleted(false)
+                .activeFlag(active)
                 .disposal(disposal)
                 .build();
     }
@@ -713,8 +713,8 @@ public class ConvictionServiceTest {
                 .custody(Custody.builder().custodialStatus(StandardReference.builder().codeValue(custodialStatus).build()).build())
                 .build();
         return Event.builder()
-                .softDeleted(0L)
-                .activeFlag(1L)
+                .softDeleted(false)
+                .activeFlag(true)
                 .disposal(disposal)
                 .build();
     }
@@ -729,8 +729,8 @@ public class ConvictionServiceTest {
                 .custody(Custody.builder().custodialStatus(StandardReference.builder().codeValue(custodialStatus).build()).build())
                 .build();
         return Event.builder()
-                .softDeleted(0L)
-                .activeFlag(1L)
+                .softDeleted(false)
+                .activeFlag(true)
                 .disposal(disposal)
                 .build();
     }

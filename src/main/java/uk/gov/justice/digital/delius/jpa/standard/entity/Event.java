@@ -5,13 +5,24 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Data
 @NoArgsConstructor
@@ -32,7 +43,7 @@ public class Event {
     private Long offenderId;
 
     @Column(name = "IN_BREACH")
-    private Long inBreach;
+    private boolean inBreach;
 
     @Column(name = "NOTES")
     private String notes;
@@ -41,7 +52,7 @@ public class Event {
     private String eventNumber;
 
     @Column(name = "ACTIVE_FLAG")
-    private Long activeFlag;
+    private boolean activeFlag;
 
     @Column(name = "CONVICTION_DATE")
     private LocalDate convictionDate;
@@ -51,7 +62,7 @@ public class Event {
 
     @Column(name = "SOFT_DELETED")
     @Builder.Default
-    private Long softDeleted = 0L;
+    private boolean softDeleted = false;
 
     @Column(name = "PARTITION_AREA_ID")
     private Long partitionAreaId;
@@ -112,18 +123,18 @@ public class Event {
     private LocalDate cpsDate;
 
     @Column(name = "CPS_SOFT_DELETED")
-    private Long cpsSoftDeleted;
+    private Boolean cpsSoftDeleted;
 
     @JoinColumn(name = "COURT_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     private Court court;
 
     public boolean hasCpsPack() {
-        return !StringUtils.isEmpty(cpsAlfrescoDocumentId)
-                && Optional.ofNullable(cpsSoftDeleted).orElse(0L).equals(0L);
+        return StringUtils.isNotEmpty(cpsAlfrescoDocumentId)
+                && cpsSoftDeleted != Boolean.TRUE;
     }
 
     public boolean isActive() {
-        return getActiveFlag() == 1L && getSoftDeleted() != 1L;
+        return isActiveFlag() && !isSoftDeleted();
     }
 }

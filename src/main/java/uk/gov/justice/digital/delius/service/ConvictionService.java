@@ -131,13 +131,13 @@ public class ConvictionService {
     public List<Conviction> convictionsFor(Long offenderId, boolean activeOnly) {
         List<uk.gov.justice.digital.delius.jpa.standard.entity.Event> events;
         if (activeOnly) {
-            events = eventRepository.findByOffenderIdAndActiveTrue(offenderId);
+            events = eventRepository.findByOffenderIdAndActiveFlagTrue(offenderId);
         } else {
             events = eventRepository.findByOffenderId(offenderId);
         }
         return events
             .stream()
-            .filter(event -> !convertToBoolean(event.getSoftDeleted()))
+            .filter(event -> !event.isSoftDeleted())
             .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Event::getReferralDate).reversed())
             .map(ConvictionTransformer::convictionOf)
             .collect(toList());
@@ -145,11 +145,11 @@ public class ConvictionService {
 
     @Transactional(readOnly = true)
     public List<Conviction> convictionsWithActiveRequirementFor(Long offenderId, String requirementTypeMainCategoryCode) {
-        List<uk.gov.justice.digital.delius.jpa.standard.entity.Event> events = eventRepository.findByOffenderIdAndActiveTrue(offenderId);
+        List<uk.gov.justice.digital.delius.jpa.standard.entity.Event> events = eventRepository.findByOffenderIdAndActiveFlagTrue(offenderId);
 
         return events
             .stream()
-            .filter(event -> !convertToBoolean(event.getSoftDeleted()))
+            .filter(event -> !event.isSoftDeleted())
             .filter(event -> ofNullable(event.getDisposal())
                     .map(Disposal::getRequirements)
                     .stream()
@@ -167,7 +167,7 @@ public class ConvictionService {
         val event = eventRepository.findById(eventId);
         return event
             .filter(e -> offenderId.equals(e.getOffenderId()))
-            .filter(e -> !convertToBoolean(e.getSoftDeleted()))
+            .filter(e -> !e.isSoftDeleted())
             .map(ConvictionTransformer::convictionOf);
     }
 
@@ -412,7 +412,7 @@ public class ConvictionService {
             .map(o ->
                 activeEvents(o.getEvents())
                     .stream()
-                    .anyMatch(event -> event.getInBreach() == 1L)
+                    .anyMatch(Event::isInBreach)
             ).orElse(null);
     }
 
@@ -546,8 +546,8 @@ public class ConvictionService {
 
     private List<Event> activeEvents(List<Event> events) {
         return events.stream()
-            .filter(event -> event.getSoftDeleted() == 0L)
-            .filter(event -> event.getActiveFlag() == 1L)
+            .filter(event -> !event.isSoftDeleted())
+            .filter(Event::isActiveFlag)
             .collect(toList());
     }
 
