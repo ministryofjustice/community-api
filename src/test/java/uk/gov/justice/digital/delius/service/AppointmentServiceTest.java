@@ -96,12 +96,10 @@ public class AppointmentServiceTest {
     private ArgumentCaptor<Sort> sortArgumentCaptor;
     private AppointmentService service;
 
-    private IntegrationContext integrationContext;
-
     @BeforeEach
     public void before(){
         final var integrationContextConfig = new DeliusIntegrationContextConfig();
-        integrationContext = new IntegrationContext();
+        IntegrationContext integrationContext = new IntegrationContext();
         integrationContextConfig.getIntegrationContexts().put(CONTEXT, integrationContext);
         integrationContext.setProviderCode(PROVIDER_CODE);
         integrationContext.setStaffCode(STAFF_CODE);
@@ -152,7 +150,7 @@ public class AppointmentServiceTest {
 
             havingContactType(true, builder -> builder.attendanceContact("Y"), RAR_CONTACT_TYPE);
 
-            final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, null);
+            final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, null, true);
             final var createdContact = ContactDto.builder().id(3L).typeDescription("Office Visit")
                 .date(LocalDate.of(2021, 1, 31))
                 .startTime(LocalTime.of(10, 0))
@@ -161,7 +159,7 @@ public class AppointmentServiceTest {
             when(deliusApiClient.createNewContact(deliusNewContactRequest)).thenReturn(createdContact);
 
             // When
-            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, null);
+            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, null, true);
             final var response = service.createAppointment("X007", 1L, appointmentCreateRequest);
 
             // Then
@@ -177,7 +175,7 @@ public class AppointmentServiceTest {
             havingContactType(false, builder -> builder, RAR_CONTACT_TYPE);
 
             // When
-            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, NSI_ID);
+            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, NSI_ID, false);
             assertThrows(BadRequestException.class,
                 () -> service.createAppointment("X007", 1L, appointmentCreateRequest),
                 "contact type 'X007' does not exist");
@@ -192,7 +190,7 @@ public class AppointmentServiceTest {
             havingContactType(true, builder -> builder.attendanceContact("N"), RAR_CONTACT_TYPE);
 
             // When
-            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, NSI_ID);
+            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, NSI_ID, false);
             assertThrows(BadRequestException.class,
                 () -> service.createAppointment("X007", 1L, appointmentCreateRequest),
                 "contact type 'X007' is not an appointment type");
@@ -210,7 +208,7 @@ public class AppointmentServiceTest {
 
             havingContactType(true, builder -> builder.attendanceContact("Y"), RAR_CONTACT_TYPE);
 
-            final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, NSI_ID);
+            final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, NSI_ID, null);
             final var createdContact = ContactDto.builder().id(3L)
                 .date(LocalDate.of(2021, 1, 31))
                 .startTime(LocalTime.of(10, 0))
@@ -442,7 +440,7 @@ public class AppointmentServiceTest {
         }
     }
 
-    private NewContact aDeliusNewContactRequest(OffsetDateTime startTime, OffsetDateTime endTime, Long nsiId) {
+    private NewContact aDeliusNewContactRequest(OffsetDateTime startTime, OffsetDateTime endTime, Long nsiId, Boolean sensitive) {
         return NewContact.builder()
             .offenderCrn("X007")
             .type(RAR_CONTACT_TYPE)
@@ -455,7 +453,7 @@ public class AppointmentServiceTest {
             .startTime(toLondonLocalTime(startTime))
             .endTime(toLondonLocalTime(endTime))
             .alert(null)
-            .sensitive(null)
+            .sensitive(sensitive)
             .notes("/url")
             .description(null)
             .eventId(1L)
@@ -477,7 +475,7 @@ public class AppointmentServiceTest {
             .build();
     }
 
-    private AppointmentCreateRequest aAppointmentCreateRequest(OffsetDateTime startTime, OffsetDateTime endTime, Long nsiId) {
+    private AppointmentCreateRequest aAppointmentCreateRequest(OffsetDateTime startTime, OffsetDateTime endTime, Long nsiId, boolean sensitive) {
         return AppointmentCreateRequest.builder()
             .nsiId(nsiId)
             .contactType(RAR_CONTACT_TYPE)
@@ -488,6 +486,7 @@ public class AppointmentServiceTest {
             .providerCode("CRS")
             .staffCode("CRSUATU")
             .teamCode("CRSUAT")
+            .sensitive(sensitive)
             .build();
     }
 

@@ -52,4 +52,7 @@ public class AppointmentCreateRequest {
     @NotNull
     @ApiModelProperty(required = true)
     private String staffCode;
+
+    @ApiModelProperty
+    private Boolean sensitive;
 }

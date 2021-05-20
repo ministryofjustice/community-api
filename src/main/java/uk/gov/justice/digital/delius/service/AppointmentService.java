@@ -33,7 +33,6 @@ import uk.gov.justice.digital.delius.utils.DateConverter;
 import uk.gov.justice.digital.delius.utils.JsonPatchSupport;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -170,6 +169,7 @@ public class AppointmentService {
             .nsiId(request.getNsiId())
             .eventId(sentenceId)
             .requirementId(request.getRequirementId())
+            .sensitive(request.getSensitive())
             .build();
     }
 
@@ -188,7 +188,8 @@ public class AppointmentService {
     private AppointmentCreateResponse makeResponse(ContactDto contactDto) {
         var appointmentStart = DateConverter.toOffsetDateTime(contactDto.getDate().atTime(contactDto.getStartTime()));
         var appointmentEnd = DateConverter.toOffsetDateTime(contactDto.getDate().atTime(contactDto.getEndTime()));
-        return new AppointmentCreateResponse(contactDto.getId(), appointmentStart, appointmentEnd, contactDto.getType(), contactDto.getTypeDescription());
+        return new AppointmentCreateResponse(contactDto.getId(), appointmentStart, appointmentEnd, contactDto.getType(),
+            contactDto.getTypeDescription(), contactDto.getSensitive());
     }
 
     IntegrationContext getContext(String name) {
