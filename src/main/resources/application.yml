@@ -122,6 +122,9 @@ delius-integration-context:
           CANCELLED: CRS01
           PREMATURELY_ENDED: CRS02
           COMPLETED: CRS03
+        initiated-by-service-provider-to-outcome-type:
+          true: RSSR
+          false: RSOF
         attendance-and-behaviour-notified-mapping-to-outcome-type:
           # Key values must be quoted otherwise they will get converted to true/false
           "yes":
