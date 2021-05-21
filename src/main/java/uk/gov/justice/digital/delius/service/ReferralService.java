@@ -114,6 +114,7 @@ public class ReferralService {
                 // eventID, offenderID, nsi type are handled in the NSI service
                 .filter(nsi -> Optional.ofNullable(nsi.getReferralDate()).map(n -> n.equals(toLondonLocalDate(startedAt))).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getNsiStatus()).map(n -> n.getCode().equals(nsiMapping.getNsiStatus())).orElse(false))
+                .filter(nsi -> Objects.isNull(nsi.getNsiOutcome()))
                 .filter(nsi -> Optional.ofNullable(nsi.getIntendedProvider()).map(n -> n.getCode().equals(context.getProviderCode())).orElse(false))
                 .filter(nsi -> Optional.ofNullable(nsi.getNsiManagers()).map(n -> n.stream().anyMatch(
                     nsiManager -> nsiManager.getStaff().getStaffCode().equals(context.getStaffCode())

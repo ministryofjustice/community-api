@@ -36,6 +36,7 @@ public class DeliusIntegrationContextConfig {
 
     @Data
     public static class ContactMapping {
+        private String notificationContactType;
         private String appointmentRarContactType;
         private String appointmentNonRarContactType;
         private String enforcementReferToOffenderManager;
