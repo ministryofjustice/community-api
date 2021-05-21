@@ -25,13 +25,16 @@ import uk.gov.justice.digital.delius.data.api.AppointmentType.OrderType;
 import uk.gov.justice.digital.delius.data.api.AppointmentType.RequiredOptional;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
+import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentRescheduleRequest;
 import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
+import uk.gov.justice.digital.delius.data.api.deliusapi.ReplaceContact;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType.ContactTypeBuilder;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 import uk.gov.justice.digital.delius.utils.JsonPatchSupport;
@@ -56,7 +59,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDate;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalTime;
@@ -69,16 +71,16 @@ public class AppointmentServiceTest {
     private static final String TEAM_CODE = "CRSUAT";
     private static final String RAR_TYPE_CODE = "F";
     private static final String RAR_CONTACT_TYPE = "CRSAPT";
+    private static final String SP_INITIATED_RESCHEDULE = "RSSR";
+    private static final String OF_INITIATED_RESCHEDULE = "RSOF";
     private static final String CONTEXT = "commissioned-rehabilitation-services";
-    private static final Long REQUIREMENT_ID = 99L;
+    private static final Long EVENT_ID = 99L;
     private static final Long NSI_ID = 98L;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
     private ContactRepository contactRepository;
-    @Mock
-    private RequirementService requirementService;
     @Mock
     private ReferralService referralService;
     @Mock
@@ -113,8 +115,14 @@ public class AppointmentServiceTest {
                 }});
             }}
         );
+        integrationContext.getContactMapping().setInitiatedByServiceProviderToOutcomeType(
+            new HashMap<>() {{
+                this.put(true, SP_INITIATED_RESCHEDULE);
+                this.put(false, OF_INITIATED_RESCHEDULE);
+            }}
+        );
 
-        service = new AppointmentService(contactTypeRepository, contactRepository, requirementService, referralService, deliusApiClient,
+        service = new AppointmentService(contactTypeRepository, contactRepository, referralService, deliusApiClient,
             integrationContextConfig, jsonPatchSupport);
     }
 
@@ -144,7 +152,7 @@ public class AppointmentServiceTest {
 
             havingContactType(true, builder -> builder.attendanceContact("Y"), RAR_CONTACT_TYPE);
 
-            final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, REQUIREMENT_ID, null);
+            final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, null);
             final var createdContact = ContactDto.builder().id(3L).typeDescription("Office Visit")
                 .date(LocalDate.of(2021, 1, 31))
                 .startTime(LocalTime.of(10, 0))
@@ -153,12 +161,11 @@ public class AppointmentServiceTest {
             when(deliusApiClient.createNewContact(deliusNewContactRequest)).thenReturn(createdContact);
 
             // When
-            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, REQUIREMENT_ID, null);
+            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, null);
             final var response = service.createAppointment("X007", 1L, appointmentCreateRequest);
 
             // Then
             assertThat(response.getAppointmentId()).isEqualTo(3L);
-            verifyNoInteractions(requirementService);
         }
 
         @Test
@@ -170,7 +177,7 @@ public class AppointmentServiceTest {
             havingContactType(false, builder -> builder, RAR_CONTACT_TYPE);
 
             // When
-            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, REQUIREMENT_ID, NSI_ID);
+            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, NSI_ID);
             assertThrows(BadRequestException.class,
                 () -> service.createAppointment("X007", 1L, appointmentCreateRequest),
                 "contact type 'X007' does not exist");
@@ -185,7 +192,7 @@ public class AppointmentServiceTest {
             havingContactType(true, builder -> builder.attendanceContact("N"), RAR_CONTACT_TYPE);
 
             // When
-            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, REQUIREMENT_ID, NSI_ID);
+            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, NSI_ID);
             assertThrows(BadRequestException.class,
                 () -> service.createAppointment("X007", 1L, appointmentCreateRequest),
                 "contact type 'X007' is not an appointment type");
@@ -203,7 +210,7 @@ public class AppointmentServiceTest {
 
             havingContactType(true, builder -> builder.attendanceContact("Y"), RAR_CONTACT_TYPE);
 
-            final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, null, NSI_ID);
+            final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, NSI_ID);
             final var createdContact = ContactDto.builder().id(3L)
                 .date(LocalDate.of(2021, 1, 31))
                 .startTime(LocalTime.of(10, 0))
@@ -344,6 +351,58 @@ public class AppointmentServiceTest {
         }
     }
 
+    @Nested
+    class replaceAppointments {
+
+        @Test
+        public void replacesAppointment() {
+            // Given
+            final var appointmentId = 1L;
+            final var updatedStartTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+            final var updatedEndTime = updatedStartTime.plusHours(1);
+
+            when(contactRepository.findById(appointmentId)).thenReturn(Optional.of(Contact.builder()
+                .nsi(uk.gov.justice.digital.delius.jpa.standard.entity.Nsi.builder().nsiId(NSI_ID).build())
+                .event(Event.builder().eventId(EVENT_ID).build())
+                .build()));
+
+            final var deliusNewContactRequest = aDeliusReplaceContactRequest(updatedStartTime, updatedEndTime, EVENT_ID, NSI_ID, SP_INITIATED_RESCHEDULE);
+            final var replacedContact = ContactDto.builder()
+                .id(2L)
+                .nsiId(NSI_ID)
+                .eventId(EVENT_ID)
+                .typeDescription("Office Visit")
+                .date(updatedStartTime.toLocalDate())
+                .startTime(updatedStartTime.toLocalTime())
+                .endTime(updatedEndTime.toLocalTime())
+                .build();
+            when(deliusApiClient.replaceContact(appointmentId, deliusNewContactRequest)).thenReturn(replacedContact);
+
+            // When
+            final var appointmentRescheduleRequest = aContextlessAppointmentRescheduleRequest(updatedStartTime, updatedEndTime, true);
+            final var response = service.rescheduleAppointment("X007", appointmentId, CONTEXT, appointmentRescheduleRequest);
+
+            // Then
+            assertThat(response.getAppointmentId()).isEqualTo(2L);
+        }
+
+        @Test
+        public void throwsExceptionAppointmentNotFound() {
+            // Given
+            final var appointmentId = 1L;
+            final var updatedStartTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+            final var updatedEndTime = updatedStartTime.plusHours(1);
+
+            when(contactRepository.findById(appointmentId)).thenReturn(Optional.empty());
+
+            // When
+            final var appointmentRescheduleRequest = aContextlessAppointmentRescheduleRequest(updatedStartTime, updatedEndTime, false);
+            final var exception = assertThrows(BadRequestException.class,
+                () -> service.rescheduleAppointment("X007", appointmentId, CONTEXT, appointmentRescheduleRequest));
+            assertThat(exception.getMessage()).isEqualTo("Cannot find Appointment for CRN: X007 and Appointment Id 1");
+        }
+    }
+
     @Test
     public void gettingAllAppointmentTypes() {
         final var types = List.of(
@@ -383,7 +442,7 @@ public class AppointmentServiceTest {
         }
     }
 
-    private NewContact aDeliusNewContactRequest(OffsetDateTime startTime, OffsetDateTime endTime, Long requirementId, Long nsiId) {
+    private NewContact aDeliusNewContactRequest(OffsetDateTime startTime, OffsetDateTime endTime, Long nsiId) {
         return NewContact.builder()
             .offenderCrn("X007")
             .type(RAR_CONTACT_TYPE)
@@ -401,14 +460,26 @@ public class AppointmentServiceTest {
             .description(null)
             .eventId(1L)
             .nsiId(nsiId)
-            .requirementId(requirementId)
+            .requirementId(null)
             .build();
     }
 
-    private AppointmentCreateRequest aAppointmentCreateRequest(OffsetDateTime startTime, OffsetDateTime endTime, Long requirementId, Long nsiId) {
+    private ReplaceContact aDeliusReplaceContactRequest(OffsetDateTime updatedStartTime, OffsetDateTime updatedEndTime, Long eventId, Long nsiId, String outcome) {
+        return ReplaceContact.builder()
+            .offenderCrn("X007")
+            .outcome(outcome)
+            .date(toLondonLocalDate(updatedStartTime))
+            .startTime(toLondonLocalTime(updatedStartTime))
+            .endTime(toLondonLocalTime(updatedEndTime))
+            .eventId(eventId)
+            .nsiId(nsiId)
+            .requirementId(null)
+            .build();
+    }
+
+    private AppointmentCreateRequest aAppointmentCreateRequest(OffsetDateTime startTime, OffsetDateTime endTime, Long nsiId) {
         return AppointmentCreateRequest.builder()
             .nsiId(nsiId)
-            .requirementId(requirementId)
             .contactType(RAR_CONTACT_TYPE)
             .appointmentStart(startTime)
             .appointmentEnd(endTime)
@@ -417,6 +488,14 @@ public class AppointmentServiceTest {
             .providerCode("CRS")
             .staffCode("CRSUATU")
             .teamCode("CRSUAT")
+            .build();
+    }
+
+    private ContextlessAppointmentRescheduleRequest aContextlessAppointmentRescheduleRequest(OffsetDateTime updatedStartTime, OffsetDateTime updatedEndTime, Boolean initiatedBySp) {
+        return ContextlessAppointmentRescheduleRequest.builder()
+            .updatedAppointmentStart(updatedStartTime)
+            .updatedAppointmentEnd(updatedEndTime)
+            .initiatedByServiceProvider(initiatedBySp)
             .build();
     }
 

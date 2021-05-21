@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
+import uk.gov.justice.digital.delius.data.api.AppointmentRescheduleResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentUpdateResponse;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
+import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentRescheduleRequest;
 import uk.gov.justice.digital.delius.service.AppointmentService;
 
 @RestController
@@ -74,6 +76,27 @@ public class AppointmentBookingController {
 
         AppointmentCreateResponse response = appointmentService.createAppointment(crn, sentenceId, contextName, contextlessAppointmentCreateRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @RequestMapping(value = "/offenders/crn/{crn}/appointments/{appointmentId}/reschedule/context/{contextName}",
+        method = RequestMethod.POST,
+        consumes = "application/json")
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 200, message = "Updated", response = String.class),
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_INTERVENTIONS_UPDATE"),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+
+    @ApiOperation(value = "Reschedules an appointment")
+    public AppointmentRescheduleResponse rescheduleAppointmentWithContextName(final @PathVariable("crn") String crn,
+                                                                              final @PathVariable("appointmentId") Long appointmentId,
+                                                                              final @ApiParam(value = "Name identifying preprocessing applied to the request", example = "commissioned-rehabilitation-services")
+                                                                                    @PathVariable("contextName") String context,
+                                                                              final @RequestBody ContextlessAppointmentRescheduleRequest appointmentRescheduleRequest) {
+
+        return appointmentService.rescheduleAppointment(crn, appointmentId, context, appointmentRescheduleRequest);
     }
 
     @RequestMapping(value = "/offenders/crn/{crn}/appointments/{appointmentId}/outcome/context/{contextName}",
