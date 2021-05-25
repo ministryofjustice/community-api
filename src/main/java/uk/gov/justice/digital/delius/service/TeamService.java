@@ -21,6 +21,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.LocalDeliveryUnitRe
 import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffTeamRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.TeamRepository;
+import uk.gov.justice.digital.delius.transformers.OfficeLocationTransformer;
 import uk.gov.justice.digital.delius.transformers.StaffTransformer;
 import uk.gov.justice.digital.delius.transformers.TeamTransformer;
 
@@ -61,16 +62,7 @@ public class TeamService {
 
         return team.getOfficeLocations()
             .stream()
-            .map(x -> OfficeLocation.builder()
-                .code(x.getCode())
-                .description(x.getDescription())
-                .buildingName(x.getBuildingName())
-                .buildingNumber(x.getBuildingNumber())
-                .streetName(x.getStreetName())
-                .townCity(x.getTownCity())
-                .county(x.getCounty())
-                .postcode(x.getPostcode())
-                .build())
+            .map(OfficeLocationTransformer::officeLocationOf)
             .collect(Collectors.toList());
     }
 
