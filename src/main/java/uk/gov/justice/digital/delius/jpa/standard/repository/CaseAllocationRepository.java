@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface CaseAllocationRepository extends JpaRepository<CaseAllocation, Long> {
-    Optional<CaseAllocation> findFirstByOffenderIdOrderByAllocationDecisionDateDesc(@Param("offenderId") Long offenderId);
+    Optional<CaseAllocation> findFirstByOffenderIdAndAllocationDecisionDateNotNullOrderByAllocationDecisionDateDesc(@Param("offenderId") Long offenderId);
 }
