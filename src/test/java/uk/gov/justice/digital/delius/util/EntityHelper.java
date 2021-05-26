@@ -14,6 +14,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.CircumstanceSubType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CircumstanceType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ContactOutcomeType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Court;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance;
@@ -26,9 +27,11 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.District;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Document;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.EventDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Explanation;
 import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReport;
 import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReportDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.KeyDate;
+import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceCondition;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Nsi;
 import uk.gov.justice.digital.delius.jpa.standard.entity.NsiDocument;
@@ -56,6 +59,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.RecallReason;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Referral;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ReferralDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Release;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
@@ -531,7 +535,7 @@ public class EntityHelper {
         return document;
     }
 
-    private static Contact aContact(final Long eventId) {
+    public static Contact aContact(final Long eventId) {
         return Contact
                 .builder()
                 .event(anEvent(eventId))
@@ -544,15 +548,18 @@ public class EntityHelper {
                 .build();
     }
 
-    private static Contact aContact() {
+    public static Contact aContact() {
         return Contact
                 .builder()
+                .contactId(1L)
                 .contactDate(LocalDate.now())
                 .contactStartTime(LocalTime.now())
-                .contactType(ContactType
-                        .builder()
-                        .description("Offered Female OM - Accepted")
-                        .build())
+                .contactOutcomeType(aContactOutcomeType())
+                .contactType(aContactType())
+                .explanation(anExplanation())
+                .probationArea(aProbationArea())
+                .team(aTeam())
+                .staff(aStaff())
                 .build();
 
     }
@@ -829,6 +836,8 @@ public class EntityHelper {
                 .code("EPOMEX")
                 .description("Prison Offender Manager - External Transfer")
                 .alertFlag("N")
+                .cjaOrderLevel("Y")
+                .legacyOrderLevel("Y")
                 .build();
     }
 
@@ -875,5 +884,22 @@ public class EntityHelper {
                 .team(aTeam())
                 .nsiManagerId(99L)
                 .build();
+    }
+
+    public static ContactOutcomeType aContactOutcomeType() {
+        return ContactOutcomeType.builder()
+            .contactOutcomeTypeId(100L)
+            .code("CO1")
+            .description("Some contact outcome type")
+            .build();
+    }
+
+    private static Explanation anExplanation() {
+        return Explanation
+            .builder()
+            .explanationId(101L)
+            .code("E1")
+            .description("Some explanation")
+            .build();
     }
 }

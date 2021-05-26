@@ -175,6 +175,6 @@ public class Contact {
     @LastModifiedDate
     private LocalDateTime lastUpdatedDateTime;
 
-
-
+    @Column(name = "SENSITIVE")
+    private String sensitive;
 }

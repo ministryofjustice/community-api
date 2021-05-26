@@ -2,7 +2,6 @@ package uk.gov.justice.digital.delius.service;
 
 import com.github.fge.jsonpatch.JsonPatch;
 import lombok.AllArgsConstructor;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,10 +11,10 @@ import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.data.api.Appointment;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
+import uk.gov.justice.digital.delius.data.api.AppointmentDetail;
 import uk.gov.justice.digital.delius.data.api.AppointmentRescheduleRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentRescheduleResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentType;
-import uk.gov.justice.digital.delius.data.api.AppointmentType.OrderType;
 import uk.gov.justice.digital.delius.data.api.AppointmentType.RequiredOptional;
 import uk.gov.justice.digital.delius.data.api.AppointmentUpdateResponse;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
@@ -34,7 +33,6 @@ import uk.gov.justice.digital.delius.utils.JsonPatchSupport;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
@@ -60,6 +58,13 @@ public class AppointmentService {
                 contactRepository.findAll(
                         filter.toBuilder().offenderId(offenderId).build(),
                         Sort.by(DESC, "contactDate")));
+    }
+
+    public List<AppointmentDetail> appointmentDetailsFor(Long offenderId, AppointmentFilter filter) {
+        final var contacts = contactRepository.findAll(
+            filter.toBuilder().offenderId(offenderId).build(),
+            Sort.by(DESC, "contactDate"));
+        return contacts.stream().map(AppointmentTransformer::appointmentDetailOf).collect(Collectors.toList());
     }
 
     @Transactional
@@ -128,15 +133,7 @@ public class AppointmentService {
     public List<AppointmentType> getAllAppointmentTypes() {
         return contactTypeRepository.findAllSelectableAppointmentTypes()
             .stream()
-            .map(type -> AppointmentType.builder()
-                .contactType(type.getCode())
-                .description(type.getDescription())
-                .requiresLocation(locationFlagToRequiredOptional(type.getLocationFlag()))
-                .orderTypes(Stream.of(
-                    Pair.of(OrderType.CJA, type.getCjaOrderLevel()),
-                    Pair.of(OrderType.LEGACY, type.getLegacyOrderLevel())
-                ).filter(x -> x.getValue().equals("Y")).map(Pair::getKey).collect(Collectors.toList()))
-                .build())
+            .map(AppointmentTransformer::appointmentTypeOf)
             .collect(Collectors.toList());
     }
 
@@ -197,18 +194,5 @@ public class AppointmentService {
         return ofNullable(context).orElseThrow(
             () -> new IllegalArgumentException("IntegrationContext does not exist for: " + name)
         );
-    }
-
-    private static RequiredOptional locationFlagToRequiredOptional(String value) {
-        switch(value) {
-            case "Y":
-                return RequiredOptional.REQUIRED;
-            case "B":
-                return RequiredOptional.OPTIONAL;
-            case "N":
-                return RequiredOptional.NOT_REQUIRED;
-            default:
-                throw new RuntimeException(String.format("Invalid location flag '%s'", value));
-        }
     }
 }

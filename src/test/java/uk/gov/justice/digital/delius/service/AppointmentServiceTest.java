@@ -19,6 +19,8 @@ import org.springframework.data.jpa.domain.Specification;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
+import uk.gov.justice.digital.delius.data.api.Appointment;
+import uk.gov.justice.digital.delius.data.api.Appointment.Attended;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentType;
 import uk.gov.justice.digital.delius.data.api.AppointmentType.OrderType;
@@ -37,6 +39,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType.ContactType
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
+import uk.gov.justice.digital.delius.util.EntityHelper;
 import uk.gov.justice.digital.delius.utils.JsonPatchSupport;
 
 import java.time.LocalDate;
@@ -60,6 +63,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDate;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalTime;
 
@@ -77,7 +81,7 @@ public class AppointmentServiceTest {
     private static final Long EVENT_ID = 99L;
     private static final Long NSI_ID = 98L;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
     private ContactRepository contactRepository;
@@ -125,17 +129,46 @@ public class AppointmentServiceTest {
     }
 
     @Nested
-    class FindAppointmenets {
+    class FindAppointments {
 
         @Test
-        public void appointmentsSortedByContactDateDescending() {
-            when(contactRepository.findAll(any(Specification.class), any(Sort.class))).thenReturn(ImmutableList.of());
-            service.appointmentsFor(1L, AppointmentFilter.builder().build());
+        public void gettingAppointments() {
+            final var contacts = List.of(
+                EntityHelper.aContact().toBuilder().contactId(1L).build(),
+                EntityHelper.aContact().toBuilder().contactId(2L).build());
+            final var filter = anAppointmentFilter();
+            when(contactRepository.findAll(specificationArgumentCaptor.capture(), sortArgumentCaptor.capture()))
+                .thenReturn(contacts);
 
-            verify(contactRepository).findAll(specificationArgumentCaptor.capture(), sortArgumentCaptor.capture());
+            final var observed = service.appointmentsFor(1L, filter);
 
-            assertThat(sortArgumentCaptor.getValue().getOrderFor("contactDate")).isNotNull();
-            assertThat(sortArgumentCaptor.getValue().getOrderFor("contactDate").getDirection()).isEqualTo(Sort.Direction.DESC);
+            assertThat(sortArgumentCaptor.getValue()).isEqualTo(Sort.by(DESC, "contactDate"));
+            assertThat(specificationArgumentCaptor.getValue()).isEqualTo(filter.toBuilder().offenderId(1L).build());
+            assertThat(observed).hasSize(2).extracting("appointmentId", Long.class).containsExactly(1L, 2L);
+        }
+
+        @Test
+        public void gettingAppointmentDetail() {
+            final var contacts = List.of(
+                EntityHelper.aContact().toBuilder().contactId(1L).build(),
+                EntityHelper.aContact().toBuilder().contactId(2L).build());
+            final var filter = anAppointmentFilter();
+            when(contactRepository.findAll(specificationArgumentCaptor.capture(), sortArgumentCaptor.capture()))
+                .thenReturn(contacts);
+
+            final var observed = service.appointmentDetailsFor(1L, filter);
+
+            assertThat(sortArgumentCaptor.getValue()).isEqualTo(Sort.by(DESC, "contactDate"));
+            assertThat(specificationArgumentCaptor.getValue()).isEqualTo(filter.toBuilder().offenderId(1L).build());
+            assertThat(observed).hasSize(2).extracting("appointmentId", Long.class).containsExactly(1L, 2L);
+        }
+
+        private AppointmentFilter anAppointmentFilter() {
+            return AppointmentFilter.builder()
+                .from(Optional.of(LocalDate.of(2021, 5, 26)))
+                .to(Optional.of(LocalDate.of(2021, 6, 2)))
+                .attended(Optional.of(Attended.ATTENDED))
+                .build();
         }
     }
 
