@@ -10,6 +10,7 @@ import lombok.With;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Data
 @With
@@ -26,6 +27,9 @@ public class ContextlessReferralEndRequest {
     @NotNull
     @ApiModelProperty(required = true)
     private OffsetDateTime startedAt;
+
+    @ApiModelProperty
+    private UUID referralId;
 
     // Fields used for ending the referral
     @NotNull

@@ -81,7 +81,7 @@ public class AppointmentService {
     public AppointmentCreateResponse createAppointment(String crn, Long sentenceId, String contextName, ContextlessAppointmentCreateRequest contextlessRequest) {
 
         final var context = getContext(contextName);
-        final var request = referralService.getExistingMatchingNsi(crn, contextName, sentenceId, contextlessRequest.getContractType(), contextlessRequest.getReferralStart())
+        final var request = referralService.getExistingMatchingNsi(crn, contextName, sentenceId, contextlessRequest.getContractType(), contextlessRequest.getReferralStart(), contextlessRequest.getReferralId())
             .map(existingNsi -> appointmentOf(contextlessRequest, existingNsi, context))
             .orElseThrow(() -> new BadRequestException(format("Cannot find NSI for CRN: %s Sentence: %d and ContractType %s", crn, sentenceId, contextlessRequest.getContractType())));
 

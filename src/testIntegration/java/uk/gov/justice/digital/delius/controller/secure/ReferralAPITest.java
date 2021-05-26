@@ -75,32 +75,6 @@ public class ReferralAPITest extends IntegrationTestBase {
     }
 
     @Test
-    public void shouldReturnOKWhenStartingAReferralWithAnExistingNsi() {
-
-        deliusApiMockServer.stubPostNsiToDeliusApi();
-        deliusApiMockServer.stubDeleteContactToDeliusApi();
-
-        final var token = createJwt("bob", Collections.singletonList("ROLE_COMMUNITY_INTERVENTIONS_UPDATE"));
-
-        final var response = given()
-            .when()
-            .auth().oauth2(token)
-            .contentType(String.valueOf(ContentType.APPLICATION_JSON))
-            .body(writeValueAsString(ContextlessReferralStartRequest
-                .builder()
-                .startedAt(OffsetDateTime.of(2019,9,2, 12, 0, 1, 2, ZoneOffset.UTC))
-                .contractType("ACC")
-                .sentenceId(2500295345L)
-                .notes("A test note")
-                .build()))
-            .post("offenders/crn/X320741/referral/start/context/commissioned-rehabilitation-services")
-            .then()
-            .assertThat()
-            .statusCode(HttpStatus.OK.value())
-            .body("nsiId", equalTo(2500018596L));
-    }
-
-    @Test
     public void shouldReturnOKWhenEndingAReferral() {
 
         deliusApiMockServer.stubPatchNsiToDeliusApi();
