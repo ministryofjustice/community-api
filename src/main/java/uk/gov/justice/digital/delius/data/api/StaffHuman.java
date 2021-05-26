@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.delius.data.api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +22,7 @@ public class StaffHuman {
     @ApiModelProperty(value = "Family name", example = "Hancock")
     private String surname;
 
+    @JsonProperty(access = Access.READ_ONLY)
     public boolean isUnallocated() {
         return Optional.ofNullable(code).map(c -> c.endsWith("U")).orElse(false);
     }

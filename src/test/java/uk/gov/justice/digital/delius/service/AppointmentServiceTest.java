@@ -19,6 +19,8 @@ import org.springframework.data.jpa.domain.Specification;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
+import uk.gov.justice.digital.delius.data.api.Appointment;
+import uk.gov.justice.digital.delius.data.api.Appointment.Attended;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentType;
 import uk.gov.justice.digital.delius.data.api.AppointmentType.OrderType;
@@ -37,6 +39,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType.ContactType
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
+import uk.gov.justice.digital.delius.util.EntityHelper;
 import uk.gov.justice.digital.delius.utils.JsonPatchSupport;
 
 import java.time.LocalDate;
@@ -60,6 +63,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDate;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalTime;
 
@@ -77,7 +81,7 @@ public class AppointmentServiceTest {
     private static final Long EVENT_ID = 99L;
     private static final Long NSI_ID = 98L;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
     private ContactRepository contactRepository;
@@ -96,12 +100,10 @@ public class AppointmentServiceTest {
     private ArgumentCaptor<Sort> sortArgumentCaptor;
     private AppointmentService service;
 
-    private IntegrationContext integrationContext;
-
     @BeforeEach
     public void before(){
         final var integrationContextConfig = new DeliusIntegrationContextConfig();
-        integrationContext = new IntegrationContext();
+        IntegrationContext integrationContext = new IntegrationContext();
         integrationContextConfig.getIntegrationContexts().put(CONTEXT, integrationContext);
         integrationContext.setProviderCode(PROVIDER_CODE);
         integrationContext.setStaffCode(STAFF_CODE);
@@ -127,17 +129,46 @@ public class AppointmentServiceTest {
     }
 
     @Nested
-    class FindAppointmenets {
+    class FindAppointments {
 
         @Test
-        public void appointmentsSortedByContactDateDescending() {
-            when(contactRepository.findAll(any(Specification.class), any(Sort.class))).thenReturn(ImmutableList.of());
-            service.appointmentsFor(1L, AppointmentFilter.builder().build());
+        public void gettingAppointments() {
+            final var contacts = List.of(
+                EntityHelper.aContact().toBuilder().contactId(1L).build(),
+                EntityHelper.aContact().toBuilder().contactId(2L).build());
+            final var filter = anAppointmentFilter();
+            when(contactRepository.findAll(specificationArgumentCaptor.capture(), sortArgumentCaptor.capture()))
+                .thenReturn(contacts);
 
-            verify(contactRepository).findAll(specificationArgumentCaptor.capture(), sortArgumentCaptor.capture());
+            final var observed = service.appointmentsFor(1L, filter);
 
-            assertThat(sortArgumentCaptor.getValue().getOrderFor("contactDate")).isNotNull();
-            assertThat(sortArgumentCaptor.getValue().getOrderFor("contactDate").getDirection()).isEqualTo(Sort.Direction.DESC);
+            assertThat(sortArgumentCaptor.getValue()).isEqualTo(Sort.by(DESC, "contactDate"));
+            assertThat(specificationArgumentCaptor.getValue()).isEqualTo(filter.toBuilder().offenderId(1L).build());
+            assertThat(observed).hasSize(2).extracting("appointmentId", Long.class).containsExactly(1L, 2L);
+        }
+
+        @Test
+        public void gettingAppointmentDetail() {
+            final var contacts = List.of(
+                EntityHelper.aContact().toBuilder().contactId(1L).build(),
+                EntityHelper.aContact().toBuilder().contactId(2L).build());
+            final var filter = anAppointmentFilter();
+            when(contactRepository.findAll(specificationArgumentCaptor.capture(), sortArgumentCaptor.capture()))
+                .thenReturn(contacts);
+
+            final var observed = service.appointmentDetailsFor(1L, filter);
+
+            assertThat(sortArgumentCaptor.getValue()).isEqualTo(Sort.by(DESC, "contactDate"));
+            assertThat(specificationArgumentCaptor.getValue()).isEqualTo(filter.toBuilder().offenderId(1L).build());
+            assertThat(observed).hasSize(2).extracting("appointmentId", Long.class).containsExactly(1L, 2L);
+        }
+
+        private AppointmentFilter anAppointmentFilter() {
+            return AppointmentFilter.builder()
+                .from(Optional.of(LocalDate.of(2021, 5, 26)))
+                .to(Optional.of(LocalDate.of(2021, 6, 2)))
+                .attended(Optional.of(Attended.ATTENDED))
+                .build();
         }
     }
 
@@ -152,7 +183,7 @@ public class AppointmentServiceTest {
 
             havingContactType(true, builder -> builder.attendanceContact("Y"), RAR_CONTACT_TYPE);
 
-            final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, null);
+            final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, null, true);
             final var createdContact = ContactDto.builder().id(3L).typeDescription("Office Visit")
                 .date(LocalDate.of(2021, 1, 31))
                 .startTime(LocalTime.of(10, 0))
@@ -161,7 +192,7 @@ public class AppointmentServiceTest {
             when(deliusApiClient.createNewContact(deliusNewContactRequest)).thenReturn(createdContact);
 
             // When
-            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, null);
+            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, null, true);
             final var response = service.createAppointment("X007", 1L, appointmentCreateRequest);
 
             // Then
@@ -177,7 +208,7 @@ public class AppointmentServiceTest {
             havingContactType(false, builder -> builder, RAR_CONTACT_TYPE);
 
             // When
-            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, NSI_ID);
+            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, NSI_ID, false);
             assertThrows(BadRequestException.class,
                 () -> service.createAppointment("X007", 1L, appointmentCreateRequest),
                 "contact type 'X007' does not exist");
@@ -192,7 +223,7 @@ public class AppointmentServiceTest {
             havingContactType(true, builder -> builder.attendanceContact("N"), RAR_CONTACT_TYPE);
 
             // When
-            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, NSI_ID);
+            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, NSI_ID, false);
             assertThrows(BadRequestException.class,
                 () -> service.createAppointment("X007", 1L, appointmentCreateRequest),
                 "contact type 'X007' is not an appointment type");
@@ -210,7 +241,7 @@ public class AppointmentServiceTest {
 
             havingContactType(true, builder -> builder.attendanceContact("Y"), RAR_CONTACT_TYPE);
 
-            final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, NSI_ID);
+            final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, NSI_ID, null);
             final var createdContact = ContactDto.builder().id(3L)
                 .date(LocalDate.of(2021, 1, 31))
                 .startTime(LocalTime.of(10, 0))
@@ -442,7 +473,7 @@ public class AppointmentServiceTest {
         }
     }
 
-    private NewContact aDeliusNewContactRequest(OffsetDateTime startTime, OffsetDateTime endTime, Long nsiId) {
+    private NewContact aDeliusNewContactRequest(OffsetDateTime startTime, OffsetDateTime endTime, Long nsiId, Boolean sensitive) {
         return NewContact.builder()
             .offenderCrn("X007")
             .type(RAR_CONTACT_TYPE)
@@ -455,7 +486,7 @@ public class AppointmentServiceTest {
             .startTime(toLondonLocalTime(startTime))
             .endTime(toLondonLocalTime(endTime))
             .alert(null)
-            .sensitive(null)
+            .sensitive(sensitive)
             .notes("/url")
             .description(null)
             .eventId(1L)
@@ -477,7 +508,7 @@ public class AppointmentServiceTest {
             .build();
     }
 
-    private AppointmentCreateRequest aAppointmentCreateRequest(OffsetDateTime startTime, OffsetDateTime endTime, Long nsiId) {
+    private AppointmentCreateRequest aAppointmentCreateRequest(OffsetDateTime startTime, OffsetDateTime endTime, Long nsiId, boolean sensitive) {
         return AppointmentCreateRequest.builder()
             .nsiId(nsiId)
             .contactType(RAR_CONTACT_TYPE)
@@ -488,6 +519,7 @@ public class AppointmentServiceTest {
             .providerCode("CRS")
             .staffCode("CRSUATU")
             .teamCode("CRSUAT")
+            .sensitive(sensitive)
             .build();
     }
 

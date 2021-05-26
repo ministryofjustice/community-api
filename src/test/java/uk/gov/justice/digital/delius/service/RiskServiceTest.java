@@ -39,7 +39,7 @@ class RiskServiceTest {
         @Test
         @DisplayName("will return resourcing details when found")
         void willReturnResourcingDetailsWhenFound() {
-            when(caseAllocationRepository.findFirstByOffenderIdOrderByAllocationDecisionDateDesc(99L))
+            when(caseAllocationRepository.findFirstByOffenderIdAndAllocationDecisionDateNotNullOrderByAllocationDecisionDateDesc(99L))
                 .thenReturn(Optional
                     .of(CaseAllocation
                         .builder()
@@ -60,7 +60,7 @@ class RiskServiceTest {
         @Test
         @DisplayName("will return empty when not found")
         void willReturnEmptyWhenNotFound() {
-            when(caseAllocationRepository.findFirstByOffenderIdOrderByAllocationDecisionDateDesc(99L))
+            when(caseAllocationRepository.findFirstByOffenderIdAndAllocationDecisionDateNotNullOrderByAllocationDecisionDateDesc(99L))
                 .thenReturn(Optional.empty());
             final var resourcingDetails = riskService.getResourcingDetails(99L);
 

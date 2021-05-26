@@ -28,4 +28,6 @@ public class AppointmentCreateResponse {
 
     @NotNull
     private String typeDescription;
+
+    private Boolean sensitive;
 }
