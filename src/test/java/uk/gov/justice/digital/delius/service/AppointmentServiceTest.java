@@ -46,6 +46,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.UnaryOperator;
 
 import static com.fasterxml.jackson.databind.node.TextNode.valueOf;
@@ -199,12 +200,14 @@ public class AppointmentServiceTest {
         @Test
         public void createsAppointmentUsingContextlessClientRequest() {
             // Given
+            final var referralId = UUID.randomUUID();
             final var referralStart = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
             final var startTime = referralStart.plusMinutes(2);
             final var endTime = startTime.plusHours(1);
 
             final var nsi = Nsi.builder().nsiId(NSI_ID).build();
-            when(referralService.getExistingMatchingNsi("X007", CONTEXT, 1L, CONTRACT_TYPE, referralStart)).thenReturn(of(nsi));
+            when(referralService.getExistingMatchingNsi("X007", CONTEXT, 1L, CONTRACT_TYPE, referralStart, referralId))
+                .thenReturn(of(nsi));
 
             havingContactType(true, builder -> builder.attendanceContact("Y"), RAR_CONTACT_TYPE);
 
@@ -217,7 +220,7 @@ public class AppointmentServiceTest {
             when(deliusApiClient.createNewContact(deliusNewContactRequest)).thenReturn(createdContact);
 
             // When
-            final var appointmentCreateRequest = aContextlessAppointmentCreateRequest(referralStart, startTime, endTime, CONTRACT_TYPE);
+            final var appointmentCreateRequest = aContextlessAppointmentCreateRequest(referralStart, startTime, endTime, CONTRACT_TYPE, referralId);
             final var response = service.createAppointment("X007", 1L, CONTEXT, appointmentCreateRequest);
 
             // Then
@@ -231,10 +234,10 @@ public class AppointmentServiceTest {
             final var startTime = referralStart.plusMinutes(2);
             final var endTime = startTime.plusHours(1);
 
-            when(referralService.getExistingMatchingNsi("X007", CONTEXT, 1L, CONTRACT_TYPE, referralStart)).thenReturn(empty());
+            when(referralService.getExistingMatchingNsi("X007", CONTEXT, 1L, CONTRACT_TYPE, referralStart, null)).thenReturn(empty());
 
             // When/Then
-            final var appointmentCreateRequest = aContextlessAppointmentCreateRequest(referralStart, startTime, endTime, CONTRACT_TYPE);
+            final var appointmentCreateRequest = aContextlessAppointmentCreateRequest(referralStart, startTime, endTime, CONTRACT_TYPE, null);
             final var exception = assertThrows(BadRequestException.class,
                 () -> service.createAppointment("X007", 1L, CONTEXT, appointmentCreateRequest));
             assertThat(exception.getMessage()).isEqualTo("Cannot find NSI for CRN: X007 Sentence: 1 and ContractType ACC");
@@ -499,10 +502,11 @@ public class AppointmentServiceTest {
     }
 
     private ContextlessAppointmentCreateRequest aContextlessAppointmentCreateRequest(
-        OffsetDateTime referralStart, OffsetDateTime startTime, OffsetDateTime endTime, String contractType) {
+        OffsetDateTime referralStart, OffsetDateTime startTime, OffsetDateTime endTime, String contractType, UUID referralId) {
         return ContextlessAppointmentCreateRequest.builder()
             .contractType(contractType)
             .referralStart(referralStart)
+            .referralId(referralId)
             .appointmentStart(startTime)
             .appointmentEnd(endTime)
             .officeLocationCode("CRSSHEF")
