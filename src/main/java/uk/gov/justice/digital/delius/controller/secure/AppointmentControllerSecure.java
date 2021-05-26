@@ -45,9 +45,9 @@ public class AppointmentControllerSecure {
     @ApiOperation(value = "Gets all appointments for a specific offender by CRN")
     public List<AppointmentDetail> getOffenderAppointmentsByCrn(
         final @PathVariable("crn") String crn,
-        final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam("from") @ApiParam(value = "date of the earliest appointment") Optional<LocalDate> from,
-        final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam("to") @ApiParam(value = "date of the latest appointment") Optional<LocalDate> to,
-        final @RequestParam("attended") Optional<Attended> attended) {
+        final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "from", required = false) @ApiParam(value = "date of the earliest appointment") Optional<LocalDate> from,
+        final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "to", required = false) @ApiParam(value = "date of the latest appointment") Optional<LocalDate> to,
+        final @RequestParam(value = "attended", required = false) Optional<Attended> attended) {
 
         final var filter = AppointmentFilter.builder()
             .from(from).to(to)
