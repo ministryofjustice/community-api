@@ -3,6 +3,7 @@ package uk.gov.justice.digital.delius.transformers;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.Appointment;
+import uk.gov.justice.digital.delius.data.api.AppointmentDetail;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactOutcomeType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
@@ -13,6 +14,11 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
+import uk.gov.justice.digital.delius.util.EntityHelper;
+import uk.gov.justice.digital.delius.utils.DateConverter;
+
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -95,6 +101,29 @@ public class AppointmentTransformerTest {
                         .build())).get(0).getAttended())
                 .isEqualTo(Appointment.Attended.UNATTENDED);
 
+    }
+
+    @Test
+    public void appointmentDetailFromContactHandlesNulls() {
+        final var contact = EntityHelper.aContact().toBuilder()
+            .contactStartTime(null)
+            .contactEndTime(null)
+            .officeLocation(null)
+            .notes(null)
+            .sensitive(null)
+            .contactOutcomeType(null)
+            .build();
+        final var observed = AppointmentTransformer.appointmentDetailOf(contact);
+        final var expectedDate = DateConverter.toOffsetDateTime(LocalDateTime.of(contact.getContactDate(), LocalTime.MIDNIGHT));
+        assertThat(observed)
+            .isNotNull()
+            .isInstanceOf(AppointmentDetail.class)
+            .hasFieldOrPropertyWithValue("appointmentStart", expectedDate)
+            .hasFieldOrPropertyWithValue("appointmentStart", expectedDate)
+            .hasFieldOrPropertyWithValue("officeLocation", null)
+            .hasFieldOrPropertyWithValue("notes", null)
+            .hasFieldOrPropertyWithValue("sensitive", null)
+            .hasFieldOrPropertyWithValue("outcome", null);
     }
 
     private Contact aContact() {
