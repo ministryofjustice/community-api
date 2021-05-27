@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -23,6 +24,9 @@ public class ContextlessNotificationCreateRequest {
     @NotNull
     @ApiModelProperty(required = true)
     private OffsetDateTime referralStart;
+
+    @ApiModelProperty
+    private UUID referralId;
 
     // Fields used for creating the contact
     @NotNull

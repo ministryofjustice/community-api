@@ -10,6 +10,7 @@ import lombok.With;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Data
 @With
@@ -30,6 +31,9 @@ public class ContextlessReferralStartRequest {
     @NotNull
     @ApiModelProperty(required = true)
     private Long sentenceId;
+
+    @ApiModelProperty
+    private UUID referralId;
 
     @NotNull
     private String notes;
