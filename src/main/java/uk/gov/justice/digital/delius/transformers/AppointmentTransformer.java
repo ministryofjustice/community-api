@@ -53,7 +53,7 @@ public class AppointmentTransformer {
             .team(ContactTransformer.teamOf(contact.getTeam()))
             .staff(ContactTransformer.staffOf(contact.getStaff()))
             .sensitive(booleanOfYesNo(contact.getSensitive()))
-            .outcome(Optional.of(contact.getContactOutcomeType())
+            .outcome(Optional.ofNullable(contact.getContactOutcomeType())
                 .map(type -> AppointmentOutcome.builder()
                     .code(type.getCode())
                     .description(type.getDescription())
