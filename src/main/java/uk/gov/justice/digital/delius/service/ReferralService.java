@@ -135,6 +135,15 @@ public class ReferralService {
         return existingNsis.stream().findFirst();
     }
 
+    /**
+     * There is an edge case when more that one Referral may be created in R&M that appear to cover the same Intervention,
+     * i.e. are for the same CRN and Sentence, cover the same Contract Type (e.g. Personal Wellbeing) and start on the same date.
+     * It is suspected that this is a rare scenario but can arise.
+     * This method comes into play when that situation arises and uses the referral id (in the form of a URN) to carry out a
+     * further level of filtering. This is only as a last resort when the normal filtering criteria doesn't identify a unique
+     * match and when the request provides a referral id.
+     * If after this level of filtering there are still duplicates an exception is thrown.
+     */
     @NotNull
     List<Nsi> findExistingNsiByReferralUrnIfSupplied(@NotNull final List<Nsi> existingNsis, final UUID referralId) {
         final var filteredNsis = ofNullable(referralId)
@@ -147,6 +156,10 @@ public class ReferralService {
         return filteredNsis;
     }
 
+    /**
+     * The URN is held as the first entry in the notes field. This may seem unsafe, however there is no other place to store it
+     * in Delius, and it is guaranteed that the notes field in Delius is only ever appended to and existing state never changed.
+     */
     @NotNull
     List<Nsi> filterExistingNsisByReferralUrn(@NotNull final List<Nsi> existingNsis, @NotNull final UUID referralId) {
         final var referralUrn = transformReferralIdToUrn(referralId).toLowerCase();
