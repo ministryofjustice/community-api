@@ -18,6 +18,7 @@ import uk.gov.justice.digital.delius.data.api.ProbationStatusDetail;
 import uk.gov.justice.digital.delius.data.api.ReplaceCustodyKeyDates;
 import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
 import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
+import uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.KeyDate;
@@ -378,7 +379,8 @@ public class ConvictionService {
                 probationStatusOf(offender),
                 previouslyKnownTerminationDateOf(offender),
                 inBreachOf(offender),
-                preSentenceActivityOf(offender)));
+                preSentenceActivityOf(offender),
+                awaitingPsrOf(offender)));
     }
 
     private ProbationStatus probationStatusOf(Offender offender) {
@@ -417,6 +419,17 @@ public class ConvictionService {
             .stream()
             .map(Event::getDisposal)
             .anyMatch(Objects::isNull);
+    }
+
+    private Boolean awaitingPsrOf(Offender offender) {
+
+        return offender.getActiveEvents()
+            .stream()
+            .filter(event -> event.getDisposal() == null)
+            .map(Event::getCourtAppearances)
+            .flatMap(Collection::stream)
+            .map(CourtAppearance::getOutcome)
+            .anyMatch(outcome -> ReferenceDataService.REFERENCE_DATA_PSR_ADJOURNED_CODE.equals(outcome.getCodeValue()));
     }
 
     private void addBulkTelemetry(Long offenderId, Event event, List<KeyDate> currentKeyDates, List<String> keyDatesToDelete, Map<String, LocalDate> keyDatesToBeAddedOrUpdated) {
