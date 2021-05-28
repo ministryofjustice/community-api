@@ -117,9 +117,9 @@ delius-integration-context:
           PWB: CRS05
           WOS: CRS06
       contact-mapping:
-        notification-contact-type: CRS01
+        notification-contact-type: CRSNOTE
         appointment-rar-contact-type: CRSAPT
-        appointment-non-rar-contact-type: CRS01
+        appointment-non-rar-contact-type: CRSSAA
         enforcement-refer-to-offender-manager: ROM
         end-type-to-outcome-type:
           CANCELLED: CRS01
