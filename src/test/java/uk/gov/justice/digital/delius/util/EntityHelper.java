@@ -31,7 +31,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Explanation;
 import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReport;
 import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReportDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.KeyDate;
-import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceCondition;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Nsi;
 import uk.gov.justice.digital.delius.jpa.standard.entity.NsiDocument;
@@ -59,7 +58,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.RecallReason;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Referral;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ReferralDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Release;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
@@ -891,6 +889,20 @@ public class EntityHelper {
             .contactOutcomeTypeId(100L)
             .code("CO1")
             .description("Some contact outcome type")
+            .build();
+    }
+
+    public static CourtAppearance aCourtAppearanceWithOutcome(String outcomeCode, String outcomeDescription) {
+        return CourtAppearance.builder()
+            .courtAppearanceId(1L)
+            .outcome(aStandardReference(outcomeCode, outcomeDescription))
+            .build();
+    }
+
+    public static StandardReference aStandardReference(String codeValue, String codeDescription) {
+        return StandardReference.builder()
+            .codeValue(codeValue)
+            .codeDescription(codeDescription)
             .build();
     }
 

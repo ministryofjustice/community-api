@@ -35,6 +35,7 @@ public class ReferenceDataService {
     public static final String POM_AUTO_TRANSFER_ALLOCATION_REASON_CODE = "AUT";
     public static final String POM_INTERNAL_TRANSFER_ALLOCATION_REASON_CODE = "INA";
     public static final String POM_EXTERNAL_TRANSFER_ALLOCATION_REASON_CODE = "EXT";
+    public static final String REFERENCE_DATA_PSR_ADJOURNED_CODE = "101";
     private static final String POM_ALLOCATION_REASON_DATASET = "POM ALLOCATION REASON";
     private static final String CUSTODY_EVENT_DATASET = "CUSTODY EVENT TYPE";
     private static final String CUSTODY_EVENT_PRISON_LOCATION_CHANGE_CODE = "CPL";

@@ -16,4 +16,6 @@ public class ProbationStatusDetail {
     private final Boolean inBreach;
     @ApiModelProperty(value = "True if the offender has a conviction with no sentence")
     private final Boolean preSentenceActivity;
+    @ApiModelProperty(value = "True if the offender has a event with no sentence which has been adjourned for a pre-sentence report")
+    private final Boolean awaitingPsr;
 }
