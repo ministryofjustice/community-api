@@ -32,7 +32,7 @@ public class OffendersResource_getProbationStatus extends IntegrationTestBase {
 
     @Test
     public void canGetOffenderProbationStatusByCrnForOffenderWithDuplicateInactiveEvents() {
-        final var response = given()
+        given()
             .auth()
             .oauth2(tokenWithRoleCommunity())
             .contentType(APPLICATION_JSON_VALUE)
@@ -47,7 +47,7 @@ public class OffendersResource_getProbationStatus extends IntegrationTestBase {
 
     @Test
     public void canGetOffenderProbationStatusByCrn() {
-        final var offenderDetail = given()
+        final var probationStatusDetail = given()
             .auth()
             .oauth2(tokenWithRoleCommunity())
             .contentType(APPLICATION_JSON_VALUE)
@@ -59,10 +59,11 @@ public class OffendersResource_getProbationStatus extends IntegrationTestBase {
             .body()
             .as(ProbationStatusDetail.class);
 
-        assertThat(offenderDetail).isNotNull();
-        assertThat(offenderDetail.getStatus()).isEqualTo(ProbationStatus.CURRENT);
-        assertThat(offenderDetail.getPreviouslyKnownTerminationDate()).isNull();
-        assertThat(offenderDetail.getInBreach()).isEqualTo(false);
-        assertThat(offenderDetail.getPreSentenceActivity()).isEqualTo(false);
+        assertThat(probationStatusDetail).isNotNull();
+        assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.CURRENT);
+        assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isNull();
+        assertThat(probationStatusDetail.getAwaitingPsr()).isFalse();
+        assertThat(probationStatusDetail.getInBreach()).isFalse();
+        assertThat(probationStatusDetail.getPreSentenceActivity()).isFalse();
     }
 }

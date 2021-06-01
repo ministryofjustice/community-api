@@ -1,5 +1,9 @@
 package uk.gov.justice.digital.delius.service;
 
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,13 +20,10 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.digital.delius.service.ReferenceDataService.REFERENCE_DATA_PSR_ADJOURNED_CODE;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aCourtAppearanceWithOutcome;
 
 @ExtendWith(MockitoExtension.class)
 public class ConvictionService_GetProbationStatusTest {
@@ -87,8 +88,9 @@ public class ConvictionService_GetProbationStatusTest {
 
         assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.CURRENT);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isNull();
-        assertThat(probationStatusDetail.getInBreach()).isEqualTo(true);
-        assertThat(probationStatusDetail.getPreSentenceActivity()).isEqualTo(false);
+        assertThat(probationStatusDetail.getInBreach()).isTrue();
+        assertThat(probationStatusDetail.getAwaitingPsr()).isFalse();
+        assertThat(probationStatusDetail.getPreSentenceActivity()).isFalse();
     }
 
     @Test
@@ -101,13 +103,15 @@ public class ConvictionService_GetProbationStatusTest {
         // If any active event is in breach then offender is in breach
         when(event.isInBreach()).thenReturn(false);
         when(event2.isInBreach()).thenReturn(true);
+        when(event2.getCourtAppearances()).thenReturn(List.of(aCourtAppearanceWithOutcome(REFERENCE_DATA_PSR_ADJOURNED_CODE, "Adjourned - PSR")));
 
         final var probationStatusDetail = convictionService.probationStatusFor(CRN).orElseThrow();
 
         assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.CURRENT);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isNull();
-        assertThat(probationStatusDetail.getInBreach()).isEqualTo(true);
-        assertThat(probationStatusDetail.getPreSentenceActivity()).isEqualTo(true);
+        assertThat(probationStatusDetail.getInBreach()).isTrue();
+        assertThat(probationStatusDetail.getPreSentenceActivity()).isTrue();
+        assertThat(probationStatusDetail.getAwaitingPsr()).isTrue();
     }
 
     @Test
@@ -124,8 +128,9 @@ public class ConvictionService_GetProbationStatusTest {
 
         assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.CURRENT);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isNull();
-        assertThat(probationStatusDetail.getInBreach()).isEqualTo(false);
-        assertThat(probationStatusDetail.getPreSentenceActivity()).isEqualTo(true);
+        assertThat(probationStatusDetail.getInBreach()).isFalse();
+        assertThat(probationStatusDetail.getAwaitingPsr()).isFalse();
+        assertThat(probationStatusDetail.getPreSentenceActivity()).isTrue();
     }
 
     @Test
@@ -143,7 +148,8 @@ public class ConvictionService_GetProbationStatusTest {
         assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.PREVIOUSLY_KNOWN);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isEqualTo(LocalDate.of(2020, 1, 4));
         assertThat(probationStatusDetail.getInBreach()).isNull();
-        assertThat(probationStatusDetail.getPreSentenceActivity()).isEqualTo(false);
+        assertThat(probationStatusDetail.getAwaitingPsr()).isFalse();
+        assertThat(probationStatusDetail.getPreSentenceActivity()).isFalse();
     }
 
     @Test
@@ -157,13 +163,15 @@ public class ConvictionService_GetProbationStatusTest {
         when(disposal.getTerminationDate()).thenReturn(LocalDate.of(2020, 1, 4));
         // preSentenceActivity is true if they have an active event with no disposal
         when(event2.getDisposal()).thenReturn(null);
+        when(event2.getCourtAppearances()).thenReturn(List.of(aCourtAppearanceWithOutcome("AS41", "Deferred")));
 
         final var probationStatusDetail = convictionService.probationStatusFor(CRN).orElseThrow();
 
         assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.PREVIOUSLY_KNOWN);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isEqualTo(LocalDate.of(2020, 1, 4));
         assertThat(probationStatusDetail.getInBreach()).isNull();
-        assertThat(probationStatusDetail.getPreSentenceActivity()).isEqualTo(true);
+        assertThat(probationStatusDetail.getAwaitingPsr()).isFalse();
+        assertThat(probationStatusDetail.getPreSentenceActivity()).isTrue();
     }
 
     @Test
@@ -179,7 +187,8 @@ public class ConvictionService_GetProbationStatusTest {
         assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.NOT_SENTENCED);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isNull();
         assertThat(probationStatusDetail.getInBreach()).isNull();
-        assertThat(probationStatusDetail.getPreSentenceActivity()).isEqualTo(true);
+        assertThat(probationStatusDetail.getPreSentenceActivity()).isTrue();
+        assertThat(probationStatusDetail.getAwaitingPsr()).isFalse();
     }
 
     @Test
@@ -193,7 +202,8 @@ public class ConvictionService_GetProbationStatusTest {
         assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.NOT_SENTENCED);
         assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isNull();
         assertThat(probationStatusDetail.getInBreach()).isNull();
-        assertThat(probationStatusDetail.getPreSentenceActivity()).isEqualTo(false);
+        assertThat(probationStatusDetail.getAwaitingPsr()).isFalse();
+        assertThat(probationStatusDetail.getPreSentenceActivity()).isFalse();
     }
 
     @Test
