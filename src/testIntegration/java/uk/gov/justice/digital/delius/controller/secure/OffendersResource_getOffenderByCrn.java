@@ -6,6 +6,8 @@ import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderManager;
 
+import java.time.LocalDate;
+
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -35,6 +37,24 @@ public class OffendersResource_getOffenderByCrn extends IntegrationTestBase {
       assertThat(offenderManager.orElseThrow().getTeam().getLocalDeliveryUnit().getCode()).isEqualTo("N02OMIC");
       assertThat(offenderManager.orElseThrow().getTeam().getLocalDeliveryUnit().getDescription()).isEqualTo("OMiC POM Responsibility");
       assertThat(offenderDetail.getCurrentTier()).isEqualTo("D2");
+
+      assertThat(offenderDetail.getOffenderProfile().getDisabilities()).hasSize(1);
+
+
+        final var disability = offenderDetail.getOffenderProfile().getDisabilities().get(0);
+
+        assertThat(disability.getDisabilityId()).isEqualTo(2500029000L);
+        assertThat(disability.getNotes()).isEqualTo("Some notes");
+        assertThat(disability.getStartDate()).isEqualTo(LocalDate.of(2021, 1, 5));
+        assertThat(disability.getEndDate()).isNull();
+        assertThat(disability.getDisabilityType().getCode()).isEqualTo("PC");
+        assertThat(disability.getDisabilityType().getDescription()).isEqualTo("Progressive Condition");
+        assertThat(disability.getProvisions().get(0).getProvisionId()).isEqualTo(2500022000L);
+        assertThat(disability.getProvisions().get(0).getProvisionType().getCode()).isEqualTo("99");
+        assertThat(disability.getProvisions().get(0).getProvisionType().getDescription()).isEqualTo("Other");
+        assertThat(disability.getProvisions().get(0).getNotes()).isEqualTo("stair lift");
+        assertThat(disability.getProvisions().get(0).getStartDate()).isEqualTo(LocalDate.of(2021, 1, 13));
+        assertThat(disability.getProvisions().get(0).getFinishDate()).isNull();
     }
 
   @Test

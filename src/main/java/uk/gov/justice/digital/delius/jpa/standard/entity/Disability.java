@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -28,6 +29,8 @@ public class Disability {
     private LocalDate finishDate;
     @Column(name = "NOTES")
     private String notes;
+    @OneToMany(mappedBy = "disability", fetch = FetchType.LAZY)
+    private List<Provision> provisions;
     @Column(name = "SOFT_DELETED")
     private Long softDeleted;
     @Column(name = "ROW_VERSION")
