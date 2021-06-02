@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.Optional;
 
 public class DateConverter {
 
@@ -24,5 +25,9 @@ public class DateConverter {
 
     public static OffsetDateTime toOffsetDateTime(LocalDateTime londonLocalDateTime) {
         return londonLocalDateTime.atZone(ZoneId.of(LOCAL_TIMEZONE)).toOffsetDateTime();
+    }
+
+    public static OffsetDateTime toOffsetDateTime(LocalDate date, LocalTime time) {
+        return toOffsetDateTime(date.atTime(Optional.ofNullable(time).orElse(LocalTime.MIDNIGHT)));
     }
 }

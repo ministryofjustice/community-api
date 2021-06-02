@@ -25,7 +25,9 @@ public class Contact {
     private LicenceCondition licenceCondition;
     private Nsi nsi;
     private String notes;
+    @ApiModelProperty(example = "12:00:00", dataType = "String")
     private LocalTime contactStartTime;
+    @ApiModelProperty(example = "13:00:00", dataType = "String")
     private LocalTime contactEndTime;
     private Boolean softDeleted;
     private Boolean alertActive;

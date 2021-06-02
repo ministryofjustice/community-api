@@ -28,6 +28,8 @@ public class ContactFilter implements Specification<Contact> {
     @Builder.Default
     private Optional<LocalDateTime> to = Optional.empty();
     private Long offenderId;
+    @Builder.Default
+    private Optional<Boolean> appointmentsOnly = Optional.empty();
 
     @Override
     public Predicate toPredicate(Root<Contact> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
@@ -40,6 +42,8 @@ public class ContactFilter implements Specification<Contact> {
         from.ifPresent(localDateTime -> predicateBuilder.add(cb.greaterThanOrEqualTo(root.get("createdDateTime"), localDateTime)));
 
         to.ifPresent(localDateTime -> predicateBuilder.add(cb.lessThanOrEqualTo(root.get("createdDateTime"), localDateTime)));
+
+        appointmentsOnly.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("contactType").get("attendanceContact"), value ? "Y" : "N")));
 
         ImmutableList<Predicate> predicates = predicateBuilder.build();
 

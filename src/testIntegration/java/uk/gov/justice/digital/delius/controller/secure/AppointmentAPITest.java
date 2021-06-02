@@ -1,28 +1,19 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.justice.digital.delius.data.api.AppointmentDetail;
-import uk.gov.justice.digital.delius.data.api.AppointmentType.OrderType;
 
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ExtendWith(SpringExtension.class)
 public class AppointmentAPITest extends IntegrationTestBase {
 
     @Test
     public void gettingOffenderAppointmentsByCrn() {
-
-        final var appointments = given()
+        given()
             .auth().oauth2(tokenWithRoleCommunity())
             .when()
             .get("/offenders/crn/X320741/appointments")
@@ -52,12 +43,7 @@ public class AppointmentAPITest extends IntegrationTestBase {
             .body("outcome.description", equalTo("Appointment Kept"))
             .body("outcome.attended", equalTo(true))
             .body("outcome.complied", equalTo(null))
-            .body("outcome.hoursCredited", equalTo(null))
-            .extract()
-            .body()
-            .as(AppointmentDetail[].class);
-
-        assertThat(appointments).hasSize(1);
+            .body("outcome.hoursCredited", equalTo(null));
     }
 
     @Test
