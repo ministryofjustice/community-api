@@ -27,7 +27,7 @@ public class IntegrationTestBase {
     @Autowired
     protected JwtAuthenticationHelper jwtAuthenticationHelper;
     @LocalServerPort
-    int port;
+    protected int port;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
