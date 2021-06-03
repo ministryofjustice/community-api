@@ -29,6 +29,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PartitionArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderTeam;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Provision;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
@@ -334,7 +335,32 @@ public class OffenderTransformer {
                         .builder()
                         .code(disability.getDisabilityType().getCodeValue())
                         .description(disability.getDisabilityType().getCodeDescription()).build())
+                .provisions(provisionsOf(disability.getProvisions()))
                 .build();
+    }
+
+    private static List<uk.gov.justice.digital.delius.data.api.Provision> provisionsOf(List<Provision> disabilityProvisions) {
+        return Optional.ofNullable(disabilityProvisions)
+            .map(provisions -> provisions
+                .stream()
+                .filter(provision -> provision.getSoftDeleted() == 0)
+                .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Provision::getStartDate)
+                    .reversed())
+                .map(OffenderTransformer::provisionOf).collect(toList())
+            )
+            .orElse(List.of());
+    }
+
+    private static uk.gov.justice.digital.delius.data.api.Provision provisionOf(Provision provision) {
+        return uk.gov.justice.digital.delius.data.api.Provision
+            .builder()
+            .provisionId(provision.getProvisionID())
+            .notes(provision.getNotes())
+            .startDate(provision.getStartDate())
+            .finishDate(provision.getFinishDate())
+            .provisionType(KeyValue.builder().code(provision.getProvisionType().getCodeValue())
+                .description(provision.getProvisionType().getCodeDescription()).build())
+            .build();
     }
 
     private static ResponsibleOfficer convertToResponsibleOfficer(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager om, Offender offender) {
