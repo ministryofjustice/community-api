@@ -55,4 +55,7 @@ public class AppointmentCreateRequest {
 
     @ApiModelProperty
     private Boolean sensitive;
+
+    @ApiModelProperty
+    private Boolean rarActivity;
 }
