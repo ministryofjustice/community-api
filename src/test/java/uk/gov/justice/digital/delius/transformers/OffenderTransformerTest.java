@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalIdentifier;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Disability;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
@@ -13,7 +12,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderTeam;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Provision;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
@@ -60,7 +58,7 @@ public class OffenderTransformerTest {
         assertThat(OffenderTransformer.fullOffenderOf(anOffender()
                 .toBuilder()
                 .disabilities(ImmutableList.of(
-                        Disability
+                        uk.gov.justice.digital.delius.jpa.standard.entity.Disability
                                 .builder()
                                 .softDeleted(0L)
                                 .disabilityId(1L)
@@ -70,20 +68,8 @@ public class OffenderTransformerTest {
                                         .codeValue("A")
                                         .codeDescription("Mental health")
                                         .build())
-                                .provisions(ImmutableList.of(Provision
-                                    .builder()
-                                    .softDeleted(0L)
-                                    .provisionID(1L)
-                                    .notes("This is an adjustment")
-                                    .startDate(LocalDate.now().minus(5, ChronoUnit.DAYS))
-                                    .provisionType(StandardReference
-                                        .builder()
-                                        .codeValue("O")
-                                        .codeDescription("Other")
-                                        .build())
-                                    .build()))
                                 .build(),
-                        Disability
+                        uk.gov.justice.digital.delius.jpa.standard.entity.Disability
                                 .builder()
                                 .softDeleted(0L)
                                 .disabilityId(2L)
@@ -94,7 +80,7 @@ public class OffenderTransformerTest {
                                         .codeDescription("Physical health")
                                         .build())
                                 .build(),
-                        Disability
+                        uk.gov.justice.digital.delius.jpa.standard.entity.Disability
                                 .builder()
                                 .softDeleted(0L)
                                 .disabilityId(3L)
@@ -147,60 +133,6 @@ public class OffenderTransformerTest {
                 .getDisabilities())
                 .extracting("disabilityId")
                 .containsExactly(1L);
-
-    }
-
-
-    @Test
-    public void disabilitiesCopiedWithProvisions() {
-        var disabilities = ImmutableList.of(Disability
-            .builder()
-            .softDeleted(0L)
-            .disabilityId(1L)
-            .startDate(LocalDate.now().minus(5, ChronoUnit.DAYS))
-            .disabilityType(StandardReference
-                .builder()
-                .codeValue("A")
-                .codeDescription("Mental health")
-                .build())
-            .provisions(ImmutableList.of(Provision
-                .builder()
-                .softDeleted(0L)
-                .provisionID(1L)
-                .notes("This is an adjustment")
-                .startDate(LocalDate.of(2021, 6, 1))
-                .provisionType(StandardReference
-                    .builder()
-                    .codeValue("O")
-                    .codeDescription("Other")
-                    .build())
-                .build()))
-            .build(),
-            Disability
-                .builder()
-                .softDeleted(0L)
-                .disabilityId(2L)
-                .startDate(LocalDate.now().minus(2, ChronoUnit.DAYS))
-                .disabilityType(StandardReference
-                    .builder()
-                    .codeValue("B")
-                    .codeDescription("Physical health")
-                    .build())
-                .build());
-
-        assertThat(OffenderTransformer.fullOffenderOf(anOffender()
-            .toBuilder()
-            .disabilities(disabilities)
-            .build())
-            .getOffenderProfile()
-            .getDisabilities())
-            .extracting("provisions")
-            .containsExactly(ImmutableList.of(), ImmutableList.of(uk.gov.justice.digital.delius.data.api.Provision.builder()
-                .notes("This is an adjustment")
-                .provisionId(1L)
-                .startDate(LocalDate.of(2021, 6, 1))
-                .provisionType(KeyValue.builder().code("O").description("Other").build())
-                .build()));
 
     }
 
