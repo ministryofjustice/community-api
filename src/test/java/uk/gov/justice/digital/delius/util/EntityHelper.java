@@ -899,6 +899,12 @@ public class EntityHelper {
             .build();
     }
 
+    public static CourtAppearance aCourtAppearanceWithOutOutcome() {
+        return CourtAppearance.builder()
+            .courtAppearanceId(2L)
+            .build();
+    }
+
     public static StandardReference aStandardReference(String codeValue, String codeDescription) {
         return StandardReference.builder()
             .codeValue(codeValue)

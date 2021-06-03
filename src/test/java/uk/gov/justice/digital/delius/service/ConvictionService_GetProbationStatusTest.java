@@ -23,6 +23,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.service.ReferenceDataService.REFERENCE_DATA_PSR_ADJOURNED_CODE;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aCourtAppearanceWithOutOutcome;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aCourtAppearanceWithOutcome;
 
 @ExtendWith(MockitoExtension.class)
@@ -164,6 +165,27 @@ public class ConvictionService_GetProbationStatusTest {
         // preSentenceActivity is true if they have an active event with no disposal
         when(event2.getDisposal()).thenReturn(null);
         when(event2.getCourtAppearances()).thenReturn(List.of(aCourtAppearanceWithOutcome("AS41", "Deferred")));
+
+        final var probationStatusDetail = convictionService.probationStatusFor(CRN).orElseThrow();
+
+        assertThat(probationStatusDetail.getStatus()).isEqualTo(ProbationStatus.PREVIOUSLY_KNOWN);
+        assertThat(probationStatusDetail.getPreviouslyKnownTerminationDate()).isEqualTo(LocalDate.of(2020, 1, 4));
+        assertThat(probationStatusDetail.getInBreach()).isNull();
+        assertThat(probationStatusDetail.getAwaitingPsr()).isFalse();
+        assertThat(probationStatusDetail.getPreSentenceActivity()).isTrue();
+    }
+    @Test
+    public void canGetProbationStatusForPreviouslyKnownOffenderWithPreSentenceActivityWithNoOutcome() {
+        when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
+        // PREVIOUSLY_KNOWN if currentDisposal is false and they have at least 1 event with a disposal
+        when(offender.getCurrentDisposal()).thenReturn(0L);
+        when(offender.getActiveEvents()).thenReturn(List.of(event, event2));
+        when(offender.getEvents()).thenReturn(List.of(event, event2));
+        when(event.getDisposal()).thenReturn(disposal);
+        when(disposal.getTerminationDate()).thenReturn(LocalDate.of(2020, 1, 4));
+        // preSentenceActivity is true if they have an active event with no disposal
+        when(event2.getDisposal()).thenReturn(null);
+        when(event2.getCourtAppearances()).thenReturn(List.of(aCourtAppearanceWithOutcome("AS41", "Deferred"), aCourtAppearanceWithOutOutcome()));
 
         final var probationStatusDetail = convictionService.probationStatusFor(CRN).orElseThrow();
 
