@@ -429,6 +429,7 @@ public class ConvictionService {
             .map(Event::getCourtAppearances)
             .flatMap(Collection::stream)
             .map(CourtAppearance::getOutcome)
+            .filter(Objects::nonNull)
             .anyMatch(outcome -> ReferenceDataService.REFERENCE_DATA_PSR_ADJOURNED_CODE.equals(outcome.getCodeValue()));
     }
 
