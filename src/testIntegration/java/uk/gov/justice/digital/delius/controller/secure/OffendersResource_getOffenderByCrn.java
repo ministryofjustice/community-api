@@ -40,9 +40,7 @@ public class OffendersResource_getOffenderByCrn extends IntegrationTestBase {
 
         assertThat(offenderDetail.getOffenderProfile().getDisabilities()).hasSize(1);
 
-
         final var disability = offenderDetail.getOffenderProfile().getDisabilities().get(0);
-
         assertThat(disability.getDisabilityId()).isEqualTo(2500029000L);
         assertThat(disability.getNotes()).isEqualTo("Some notes");
         assertThat(disability.getStartDate()).isEqualTo(LocalDate.of(2021, 1, 5));
@@ -88,7 +86,6 @@ public class OffendersResource_getOffenderByCrn extends IntegrationTestBase {
         final var path = "/offenders/crn/X440877";
 
         assertAccessForbiddenFor(path, createJwtWithUsername(username, "ROLE_COMMUNITY"), "You are excluded from viewing this offender record. Please contact a system administrator");
-
     }
 
     @Test
@@ -97,7 +94,6 @@ public class OffendersResource_getOffenderByCrn extends IntegrationTestBase {
         final var path = "/offenders/crn/X440877";
 
         assertAccessAllowedFor(path, createJwtWithUsernameAndScope(username, "IGNORE_DELIUS_EXCLUSIONS_ALWAYS", "ROLE_COMMUNITY"));
-
     }
 
     @Test
@@ -176,7 +172,6 @@ public class OffendersResource_getOffenderByCrn extends IntegrationTestBase {
             .extract()
             .body()
             .as(OffenderDetailSummary.class);
-
     }
 
     private void assertAccessForbiddenFor(String path, String accessToken, String message) {
