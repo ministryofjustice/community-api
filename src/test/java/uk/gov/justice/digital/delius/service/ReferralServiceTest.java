@@ -461,7 +461,7 @@ public class ReferralServiceTest {
             .contractType("Unknown")
             .build();
 
-        assertThrows(IllegalArgumentException.class, () -> referralService.startNsiReferral(OFFENDER_CRN, INTEGRATION_CONTEXT, nsiRequest));
+        assertThrows(BadRequestException.class, () -> referralService.startNsiReferral(OFFENDER_CRN, INTEGRATION_CONTEXT, nsiRequest));
     }
 
     private static Stream<Arguments> nsis() {
