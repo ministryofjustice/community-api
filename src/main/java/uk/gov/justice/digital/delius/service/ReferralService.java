@@ -188,14 +188,14 @@ public class ReferralService {
 
     String getNsiType(final NsiMapping nsiMapping, final String contactType) {
         return ofNullable(nsiMapping.getContractTypeToNsiType().get(contactType)).orElseThrow(
-            () -> new IllegalArgumentException("Nsi Type mapping from contractType does not exist for: " + contactType)
+            () -> new BadRequestException("Nsi Type mapping from contractType does not exist for: " + contactType)
         );
     }
 
     IntegrationContext getContext(String contextName) {
         var context = deliusIntegrationContextConfig.getIntegrationContexts().get(contextName);
         return ofNullable(context).orElseThrow(
-            () -> new IllegalArgumentException("IntegrationContext does not exist for: " + contextName)
+            () -> new BadRequestException("IntegrationContext does not exist for: " + contextName)
         );
     }
 }

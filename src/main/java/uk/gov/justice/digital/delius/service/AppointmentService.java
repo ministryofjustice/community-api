@@ -167,6 +167,7 @@ public class AppointmentService {
             .eventId(sentenceId)
             .requirementId(request.getRequirementId())
             .sensitive(request.getSensitive())
+            .rarActivity(request.getRarActivity())
             .build();
     }
 

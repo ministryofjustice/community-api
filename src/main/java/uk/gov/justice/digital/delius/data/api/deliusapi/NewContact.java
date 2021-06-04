@@ -25,6 +25,7 @@ public class NewContact {
     private LocalTime  endTime;
     private Boolean alert;
     private Boolean sensitive;
+    private Boolean rarActivity;
     private String notes;
     private String description;
     private Long nsiId;
