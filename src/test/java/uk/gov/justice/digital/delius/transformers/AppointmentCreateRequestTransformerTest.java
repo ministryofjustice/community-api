@@ -16,11 +16,57 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AppointmentCreateRequestTransformerTest {
 
     private static final String RAR_REQ_TYPE = "F";
-    private static final String NON_RAR_CONTACT_TYPE = "CRS01";
+    private static final String NON_RAR_CONTACT_TYPE = "CRSSAA";
     private static final String RAR_CONTACT_TYPE = "CRSAPT";
 
     @Test
-    public void appointmentCreateRequestFromContextlessClientRequest_usingNsiNoRequirement() {
+    public void appointmentCreateRequest_whereAppointmentCanCountTowardsRar_andNsiHasNoRequirement() {
+        OffsetDateTime start = now();
+        OffsetDateTime end = start.plusHours(1);
+
+        assertThat(AppointmentCreateRequestTransformer.appointmentOf(
+            aContextlessAppointmentCreateRequest(start, end, true),
+            Nsi.builder().nsiId(654321L).build(),
+            anIntegrationContext())
+        ).isEqualTo(
+            anAppointmentCreateRequest(start, end, RAR_CONTACT_TYPE, null)
+        );
+    }
+
+    @Test
+    public void appointmentCreateRequest_whereAppointmentCanCountTowardsRar_andNsiHasANonRarRequirement() {
+        OffsetDateTime start = now();
+        OffsetDateTime end = start.plusHours(1);
+
+        assertThat(AppointmentCreateRequestTransformer.appointmentOf(
+            aContextlessAppointmentCreateRequest(start, end, true),
+            Nsi.builder().nsiId(654321L).requirement(
+                Requirement.builder().requirementTypeMainCategory(KeyValue.builder().code("X").build()).build()
+            ).build(),
+            anIntegrationContext())
+        ).isEqualTo(
+            anAppointmentCreateRequest(start, end, RAR_CONTACT_TYPE, null)
+        );
+    }
+
+    @Test
+    public void appointmentCreateRequest_whereAppointmentCanCountTowardsRar_andNsiHasARarRequirement() {
+        OffsetDateTime start = now();
+        OffsetDateTime end = start.plusHours(1);
+
+        assertThat(AppointmentCreateRequestTransformer.appointmentOf(
+            aContextlessAppointmentCreateRequest(start, end, true),
+            Nsi.builder().nsiId(654321L).requirement(
+                Requirement.builder().requirementTypeMainCategory(KeyValue.builder().code(RAR_REQ_TYPE).build()).build()
+            ).build(),
+            anIntegrationContext())
+        ).isEqualTo(
+            anAppointmentCreateRequest(start, end, RAR_CONTACT_TYPE, true)
+        );
+    }
+
+    @Test
+    public void appointmentCreateRequest_whereAppointmentCannotCountTowardsRar_andNsiHasNoRequirement() {
         OffsetDateTime start = now();
         OffsetDateTime end = start.plusHours(1);
 
@@ -34,7 +80,7 @@ class AppointmentCreateRequestTransformerTest {
     }
 
     @Test
-    public void appointmentCreateRequestFromContextlessClientRequest_usingNsiNonRarRequirement() {
+    public void appointmentCreateRequest_whereAppointmentCannotCountTowardsRar_andNsiHasANonRarRequirement() {
         OffsetDateTime start = now();
         OffsetDateTime end = start.plusHours(1);
 
@@ -50,7 +96,7 @@ class AppointmentCreateRequestTransformerTest {
     }
 
     @Test
-    public void appointmentCreateRequestFromContextlessClientRequest_usingNsiRarRequirement_andNonRarAppt() {
+    public void appointmentCreateRequest_whereAppointmentCannotCountTowardsRar_andNsiHasARarRequirement() {
         OffsetDateTime start = now();
         OffsetDateTime end = start.plusHours(1);
 
@@ -61,23 +107,7 @@ class AppointmentCreateRequestTransformerTest {
             ).build(),
             anIntegrationContext())
         ).isEqualTo(
-            anAppointmentCreateRequest(start, end, RAR_CONTACT_TYPE, false)
-        );
-    }
-
-    @Test
-    public void appointmentCreateRequestFromContextlessClientRequest_usingNsiRarRequirement_andRarAppt() {
-        OffsetDateTime start = now();
-        OffsetDateTime end = start.plusHours(1);
-
-        assertThat(AppointmentCreateRequestTransformer.appointmentOf(
-            aContextlessAppointmentCreateRequest(start, end, true),
-            Nsi.builder().nsiId(654321L).requirement(
-                Requirement.builder().requirementTypeMainCategory(KeyValue.builder().code(RAR_REQ_TYPE).build()).build()
-            ).build(),
-            anIntegrationContext())
-        ).isEqualTo(
-            anAppointmentCreateRequest(start, end, RAR_CONTACT_TYPE, true)
+            anAppointmentCreateRequest(start, end, NON_RAR_CONTACT_TYPE, null)
         );
     }
 

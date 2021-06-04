@@ -9,6 +9,13 @@ import uk.gov.justice.digital.delius.data.api.Requirement;
 
 import static java.util.Optional.ofNullable;
 
+/*
+    Activity can count towards RAR    Sentence has RAR requirement    RAR Activity    Contact Type
+    Yes - service delivery            Yes                             TRUE            CRSAPT
+    No  - initial assessment          Yes                             null            CRSSAA
+    Yes - service delivery            No                              null            CRSAPT
+    No  - initial assessment          No                              null            CRSSAA
+*/
 public class AppointmentCreateRequestTransformer {
 
     public static AppointmentCreateRequest appointmentOf(final ContextlessAppointmentCreateRequest request,
@@ -19,7 +26,7 @@ public class AppointmentCreateRequestTransformer {
 
         return AppointmentCreateRequest.builder()
                 .nsiId(nsi.getNsiId())
-                .contactType(nsiContainsRarRequirement ?
+                .contactType(request.getCountsTowardsRarDays() ?
                     contactMapping.getAppointmentRarContactType() :
                     contactMapping.getAppointmentNonRarContactType())
                 .appointmentStart(request.getAppointmentStart())
@@ -33,10 +40,10 @@ public class AppointmentCreateRequestTransformer {
                 .build();
     }
 
-    private static Boolean isRarActivity(final Boolean nsiContainsRarRequirement, final Boolean countsTowardsRarDays) {
-        if ( !nsiContainsRarRequirement )
+    private static Boolean isRarActivity(final Boolean nsiContainsRarRequirement, final Boolean canCountTowardsRarDays) {
+        if ( !canCountTowardsRarDays )
             return null;
-        return countsTowardsRarDays ? true : false;
+        return nsiContainsRarRequirement ? true : null;
     }
 
     private static Boolean isRarRequirement(final Requirement requirement, final String requirementRehabilitationActivityType) {
