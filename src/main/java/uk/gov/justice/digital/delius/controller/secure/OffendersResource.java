@@ -622,7 +622,19 @@ public class OffendersResource {
             .orElse(new ResponseEntity<>(NOT_FOUND));
     }
 
-
+    @ApiOperation(value = "Reveals if the specified user can access details about the supplied offender", tags = "Authentication and users")
+    @RequestMapping(value = "/offenders/crn/{crn}/user/{username}/userAccess", method = RequestMethod.GET)
+    @ApiResponses(value = {
+        @ApiResponse(code = 403, message = "User is restricted from access to offender", response = AccessLimitation.class),
+        @ApiResponse(code = 404, message = "No such offender, or no such User (see body for detail)")
+    })
+    public ResponseEntity<AccessLimitation> checkUserAccessByCrn(
+        final @PathVariable("crn") String crn,
+        final @PathVariable("username") String username) {
+        return offenderService.getOffenderByCrn(crn)
+            .map(offender -> accessLimitationResponseEntityOf(offender, username))
+            .orElse(new ResponseEntity<>(NOT_FOUND));
+    }
 
     @RequestMapping(value = "/offenders/crn/{crn}/probationStatus", method = RequestMethod.GET)
     @ApiResponses(value = {
@@ -636,9 +648,11 @@ public class OffendersResource {
     }
 
     private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(final OffenderDetail offender) {
+        return accessLimitationResponseEntityOf(offender, currentUserSupplier.username().orElseThrow());
+    }
 
-        final var accessLimitation = userService.accessLimitationOf(currentUserSupplier.username().orElseThrow(), offender);
-
+    private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(final OffenderDetail offender, final String username) {
+        final var accessLimitation = userService.accessLimitationOf(username, offender);
         return new ResponseEntity<>(accessLimitation, (accessLimitation.isUserExcluded() || accessLimitation.isUserRestricted()) ? FORBIDDEN : OK);
     }
 }
