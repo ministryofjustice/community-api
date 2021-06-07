@@ -614,6 +614,7 @@ public class OffendersResource {
             @ApiResponse(code = 403, message = "User is restricted from access to offender", response = AccessLimitation.class),
             @ApiResponse(code = 404, message = "No such offender, or no such User (see body for detail)")
     })
+    @PreAuthorize("hasRole('ROLE_COMMUNITY') || hasRole('ROLE_PROBATION')")
     public ResponseEntity<AccessLimitation> checkUserAccessByCrn(
             final @PathVariable("crn") String crn) {
         return offenderService.getOffenderByCrn(crn)
