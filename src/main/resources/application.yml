@@ -111,6 +111,7 @@ delius-integration-context:
       requirement-rehabilitation-activity-type: F
       nsi-mapping:
         nsi-status: INPROG
+        nsi-end-status: COMP
         contract-type-to-nsi-type:
           ACC: CRS01
           ETE: CRS02

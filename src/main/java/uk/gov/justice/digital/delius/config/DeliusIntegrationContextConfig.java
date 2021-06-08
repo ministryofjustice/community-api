@@ -31,6 +31,7 @@ public class DeliusIntegrationContextConfig {
     @Data
     public static class NsiMapping {
         private String nsiStatus;
+        private String nsiEndStatus;
         private Map<String, String> contractTypeToNsiType;
     }
 
