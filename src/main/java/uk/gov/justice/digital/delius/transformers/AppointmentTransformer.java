@@ -14,9 +14,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OfficeLocation;
 import uk.gov.justice.digital.delius.utils.DateConverter;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,15 +32,11 @@ public class AppointmentTransformer {
                 .collect(Collectors.toList());
     }
 
-    private static OffsetDateTime offsetDateTimeOf(LocalDate date, LocalTime time) {
-        return DateConverter.toOffsetDateTime(date.atTime(Optional.ofNullable(time).orElse(LocalTime.MIDNIGHT)));
-    }
-
     public static AppointmentDetail appointmentDetailOf(Contact contact) {
         return AppointmentDetail.builder()
             .appointmentId(contact.getContactId())
-            .appointmentStart(offsetDateTimeOf(contact.getContactDate(), contact.getContactStartTime()))
-            .appointmentEnd(offsetDateTimeOf(contact.getContactDate(), contact.getContactEndTime()))
+            .appointmentStart(DateConverter.toOffsetDateTime(contact.getContactDate(), contact.getContactStartTime()))
+            .appointmentEnd(DateConverter.toOffsetDateTime(contact.getContactDate(), contact.getContactEndTime()))
             .type(appointmentTypeOf(contact.getContactType()))
             .officeLocation(Optional.ofNullable(contact.getOfficeLocation())
                 .map(OfficeLocationTransformer::officeLocationOf)
@@ -52,24 +45,24 @@ public class AppointmentTransformer {
             .provider(ContactTransformer.probationAreaOf(contact.getProbationArea()))
             .team(ContactTransformer.teamOf(contact.getTeam()))
             .staff(ContactTransformer.staffOf(contact.getStaff()))
-            .sensitive(booleanOfYesNo(contact.getSensitive()))
-            .outcome(Optional.ofNullable(contact.getContactOutcomeType())
-                .map(type -> AppointmentOutcome.builder()
-                    .code(type.getCode())
-                    .description(type.getDescription())
-
-                    // the following fields are taken from the contact as they are de-normalised there during contact creation.
-                    // these copies seem to be the canonical source.
-                    .attended(booleanOfYesNo(contact.getAttended()))
-                    .complied(booleanOfYesNo(contact.getComplied()))
-                    .hoursCredited(contact.getHoursCredited())
-                    .build())
-                .orElse(null))
+            .sensitive(ynToBoolean(contact.getSensitive()))
+            .outcome(appointmentOutcomeOf(contact))
             .build();
     }
 
-    private static Boolean booleanOfYesNo(String flag) {
-        return Optional.ofNullable(flag).map(s -> s.equals("Y")).orElse(null);
+    public static AppointmentOutcome appointmentOutcomeOf(Contact contact) {
+        return Optional.ofNullable(contact.getContactOutcomeType())
+            .map(type -> AppointmentOutcome.builder()
+                .code(type.getCode())
+                .description(type.getDescription())
+
+                // the following fields are taken from the contact as they are de-normalised there during contact creation.
+                // these copies seem to be the canonical source.
+                .attended(ynToBoolean(contact.getAttended()))
+                .complied(ynToBoolean(contact.getComplied()))
+                .hoursCredited(contact.getHoursCredited())
+                .build())
+            .orElse(null);
     }
 
     public static AppointmentType appointmentTypeOf(ContactType type) {
