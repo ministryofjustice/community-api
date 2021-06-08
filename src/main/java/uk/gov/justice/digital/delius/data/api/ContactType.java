@@ -16,4 +16,7 @@ public class ContactType {
     @ApiModelProperty(required = true)
     private String description;
     private String shortDescription;
+
+    @ApiModelProperty(name = "Does this contact type represent an appointment type")
+    private Boolean appointment;
 }
