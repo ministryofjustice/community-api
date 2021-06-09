@@ -89,6 +89,7 @@ import static uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeM
 @Validated
 public class OffendersResource {
 
+    private static final String RECALL_NSI_TYPE_CODE = "REC";
     private final OffenderService offenderService;
     private final ContactService contactService;
     private final ConvictionService convictionService;
@@ -557,6 +558,20 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 
+    @ApiOperation(value = "Return all the recall NSIs for the noms number, active convictions only", tags = "Sentence requirements and breach")
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 404, message = "The offender NOMS number is not found", response = ErrorResponse.class)
+        })
+    @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/convictions/active/nsis/recall")
+    public NsiWrapper getRecallNsisForOffenderByNomsNumberAndActiveConvictions(
+        @ApiParam(name = "nomsNumber", value = "NOMS number for the offender", example = "A1234GH", required = true)
+        @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber) {
+
+        return offenderService.offenderIdOfNomsNumber(nomsNumber)
+            .map((offenderId) -> nsiService.getNsiByCodesForOffenderActiveConvictions(offenderId, List.of(RECALL_NSI_TYPE_CODE)))
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
+    }
 
     @ApiOperation(value = "Return an NSI by crn, convictionId and nsiId", tags = "Convictions")
     @ApiResponses(
