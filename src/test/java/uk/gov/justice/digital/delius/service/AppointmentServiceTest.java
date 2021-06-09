@@ -158,7 +158,7 @@ public class AppointmentServiceTest {
 
             final var observed = service.appointmentDetailsFor(1L, filter);
 
-            assertThat(sortArgumentCaptor.getValue()).isEqualTo(Sort.by(DESC, "contactDate"));
+            assertThat(sortArgumentCaptor.getValue()).isEqualTo(Sort.by(DESC, "contactDate", "contactStartTime", "contactEndTime"));
             assertThat(specificationArgumentCaptor.getValue()).isEqualTo(filter.toBuilder().offenderId(1L).build());
             assertThat(observed).hasSize(2).extracting("appointmentId", Long.class).containsExactly(1L, 2L);
         }
