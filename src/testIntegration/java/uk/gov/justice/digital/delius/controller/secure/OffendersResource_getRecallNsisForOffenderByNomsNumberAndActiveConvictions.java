@@ -58,9 +58,13 @@ public class OffendersResource_getRecallNsisForOffenderByNomsNumberAndActiveConv
             .body("nsiType.code", recallNoOutcome, equalTo("REC"))
             .body("nsiOutcome", recallNoOutcome, nullValue())
             .body("nsiStatus.description", recallNoOutcome, equalTo("Recall Initiated"))
+            .body("outcomeRecall", recallNoOutcome, nullValue())
+            .body("recallRejectedOrWithdrawn", recallNoOutcome, equalTo(false))
 
             .body("nsiType.code", recallWithOutcome, equalTo("REC"))
             .body("nsiOutcome.code", recallWithOutcome, equalTo("REC01"))
+            .body("outcomeRecall", recallWithOutcome, equalTo(true))
+            .body("recallRejectedOrWithdrawn", recallWithOutcome, equalTo(false))
             .body("nsiStatus.description", recallWithOutcome, equalTo("PPCS Recall Decision Received"));
     }
 
