@@ -81,7 +81,7 @@ public class ConvictionService_GetProbationStatusTest {
         // If current disposal == 1L then probation status is CURRENT
         when(offender.getCurrentDisposal()).thenReturn(1L);
         when(offender.getActiveEvents()).thenReturn(List.of(event));
-        when(offender.getSoftDeleted()).thenReturn(0L);
+        when(offender.isSoftDeleted()).thenReturn(false);
         when(event.getDisposal()).thenReturn(Disposal.builder().build());
         when(event.isInBreach()).thenReturn(true);
 
@@ -100,7 +100,7 @@ public class ConvictionService_GetProbationStatusTest {
         // If current disposal == 1L then probation status is CURRENT
         when(offender.getCurrentDisposal()).thenReturn(1L);
         when(offender.getActiveEvents()).thenReturn(List.of(event, event2, event3));
-        when(offender.getSoftDeleted()).thenReturn(0L);
+        when(offender.isSoftDeleted()).thenReturn(false);
         // If any active event is in breach then offender is in breach
         when(event.isInBreach()).thenReturn(false);
         when(event2.isInBreach()).thenReturn(true);
@@ -119,7 +119,7 @@ public class ConvictionService_GetProbationStatusTest {
     public void canGetProbationStatusForCurrentOffenderWithNoCurrentBreach() {
         when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
         // If current disposal == 1L then probation status is CURRENT
-        when(offender.getSoftDeleted()).thenReturn(0L);
+        when(offender.isSoftDeleted()).thenReturn(false);
         when(offender.getCurrentDisposal()).thenReturn(1L);
         when(offender.getActiveEvents()).thenReturn(List.of(event));
         // If no active event is in breach then offender is not in breach

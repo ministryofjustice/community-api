@@ -101,7 +101,7 @@ public class Offender {
     private String emailAddress;
 
     @Column(name = "SOFT_DELETED")
-    private Long softDeleted;
+    private boolean softDeleted;
 
     @Column(name = "ROW_VERSION")
     private Long rowVersion;

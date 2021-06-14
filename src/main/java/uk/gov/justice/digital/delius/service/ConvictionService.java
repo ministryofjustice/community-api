@@ -374,7 +374,7 @@ public class ConvictionService {
 
     public Optional<ProbationStatusDetail> probationStatusFor(String crn) {
         return offenderRepository.findByCrn(crn)
-            .filter(offender -> offender.getSoftDeleted() == 0L)
+            .filter(offender -> !offender.isSoftDeleted())
             .map((offender) -> new ProbationStatusDetail(
                 probationStatusOf(offender),
                 previouslyKnownTerminationDateOf(offender),
