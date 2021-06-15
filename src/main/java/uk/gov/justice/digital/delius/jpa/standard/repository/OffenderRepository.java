@@ -16,6 +16,9 @@ import static java.util.stream.Collectors.toList;
 
 @Repository
 public interface OffenderRepository extends JpaRepository<Offender, Long>, JpaSpecificationExecutor<Offender> {
+
+    Optional<Offender> findByCrnAndSoftDeletedFalse(String crn);
+
     class DuplicateOffenderException extends RuntimeException {
         public DuplicateOffenderException(String message) {
             super(message);

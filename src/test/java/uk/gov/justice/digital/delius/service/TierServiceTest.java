@@ -65,7 +65,7 @@ public class TierServiceTest {
             final var telemetryProperties = Map.of(
                 "tier", "U" + tier, "crn", crn);
             Optional<Offender> offender = Optional.of(anOffender());
-            when(offenderRepository.findByCrn(crn)).thenReturn(offender);
+            when(offenderRepository.findByCrnAndSoftDeletedFalse(crn)).thenReturn(offender);
             when(referenceDataService.getTier(String.format("U%s", tier))).thenReturn(Optional.of(new StandardReference()));
             when(referenceDataService.getAtsTierChangeReason()).thenReturn(Optional.of(new StandardReference()));
             when(staffRepository.findByOfficerCode(anyString())).thenReturn(Optional.of(aStaff()));
@@ -82,7 +82,7 @@ public class TierServiceTest {
             final var telemetryProperties = Map.of(
                 "tier", "U" + tier, "crn", crn);
             Optional<Offender> offender = Optional.of(anOffender());
-            when(offenderRepository.findByCrn(crn)).thenReturn(offender);
+            when(offenderRepository.findByCrnAndSoftDeletedFalse(crn)).thenReturn(offender);
             when(referenceDataService.getTier(String.format("U%s", tier))).thenReturn(Optional.of(new StandardReference()));
             when(referenceDataService.getAtsTierChangeReason()).thenReturn(Optional.of(new StandardReference()));
             when(staffRepository.findByOfficerCode(anyString())).thenReturn(Optional.of(aStaff()));
@@ -99,7 +99,7 @@ public class TierServiceTest {
             final var telemetryProperties = Map.of(
                 "tier", "U" + tier, "crn", crn);
             Optional<Offender> offender = Optional.of(anOffender());
-            when(offenderRepository.findByCrn(crn)).thenReturn(offender);
+            when(offenderRepository.findByCrnAndSoftDeletedFalse(crn)).thenReturn(offender);
             when(referenceDataService.getAtsTierChangeReason()).thenReturn(Optional.of(new StandardReference()));
 
             when(referenceDataService.getTier(String.format("U%s", tier))).thenReturn(Optional.ofNullable(null));
@@ -119,7 +119,7 @@ public class TierServiceTest {
             final var telemetryProperties = Map.of(
                 "tier", "U" + tier, "crn", crn);
             Optional<Offender> offender = Optional.of(anOffender());
-            when(offenderRepository.findByCrn(crn)).thenReturn(offender);
+            when(offenderRepository.findByCrnAndSoftDeletedFalse(crn)).thenReturn(offender);
             try {
                 service.updateTier(crn, tier);
                 fail("Should have thrown a NotFoundException");
@@ -135,7 +135,7 @@ public class TierServiceTest {
             String tier = "A1";
             final var telemetryProperties = Map.of(
                 "tier", "U" + tier, "crn", crn);
-            when(offenderRepository.findByCrn(crn)).thenReturn(Optional.ofNullable(null));
+            when(offenderRepository.findByCrnAndSoftDeletedFalse(crn)).thenReturn(Optional.ofNullable(null));
             try {
                 service.updateTier(crn, tier);
                 fail("Should have thrown a NotFoundException");
@@ -151,7 +151,7 @@ public class TierServiceTest {
             String tier = "A1";
             final var telemetryProperties = Map.of(
                 "tier", "U" + tier, "crn", crn);
-            when(offenderRepository.findByCrn(crn)).thenReturn(Optional.of(Offender.builder().offenderManagers(List.of(anInactiveOffenderManager("somecode"))).build()));
+            when(offenderRepository.findByCrnAndSoftDeletedFalse(crn)).thenReturn(Optional.of(Offender.builder().offenderManagers(List.of(anInactiveOffenderManager("somecode"))).build()));
             when(referenceDataService.getTier(String.format("U%s", tier))).thenReturn(Optional.of(new StandardReference()));
             when(referenceDataService.getAtsTierChangeReason()).thenReturn(Optional.of(new StandardReference()));
 
@@ -174,7 +174,7 @@ public class TierServiceTest {
                 final var telemetryProperties = Map.of(
                     "tier", "U" + tier, "crn", crn);
                 Optional<Offender> offender = Optional.of(anOffender());
-                when(offenderRepository.findByCrn(crn)).thenReturn(offender);
+                when(offenderRepository.findByCrnAndSoftDeletedFalse(crn)).thenReturn(offender);
                 when(referenceDataService.getAtsTierChangeReason()).thenReturn(Optional.of(new StandardReference()));
                 when(referenceDataService.getTier(String.format("U%s", tier))).thenReturn(Optional.ofNullable(new StandardReference()));
 
@@ -194,7 +194,7 @@ public class TierServiceTest {
                 final var telemetryProperties = Map.of(
                     "tier", "U" + tier, "crn", crn);
                 Optional<Offender> offender = Optional.of(anOffender());
-                when(offenderRepository.findByCrn(crn)).thenReturn(offender);
+                when(offenderRepository.findByCrnAndSoftDeletedFalse(crn)).thenReturn(offender);
                 when(referenceDataService.getAtsTierChangeReason()).thenReturn(Optional.of(new StandardReference()));
                 when(referenceDataService.getTier(String.format("U%s", tier))).thenReturn(Optional.ofNullable(new StandardReference()));
                 when(staffRepository.findByOfficerCode(anyString())).thenReturn(Optional.of(aStaff()));

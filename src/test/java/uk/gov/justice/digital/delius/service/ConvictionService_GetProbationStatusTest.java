@@ -77,11 +77,10 @@ public class ConvictionService_GetProbationStatusTest {
 
     @Test
     public void canGetProbationStatusForCurrentOffenderInBreach() {
-        when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
+        when(offenderRepository.findByCrnAndSoftDeletedFalse(CRN)).thenReturn(Optional.of(offender));
         // If current disposal == 1L then probation status is CURRENT
         when(offender.getCurrentDisposal()).thenReturn(1L);
         when(offender.getActiveEvents()).thenReturn(List.of(event));
-        when(offender.getSoftDeleted()).thenReturn(0L);
         when(event.getDisposal()).thenReturn(Disposal.builder().build());
         when(event.isInBreach()).thenReturn(true);
 
@@ -96,11 +95,10 @@ public class ConvictionService_GetProbationStatusTest {
 
     @Test
     public void canGetProbationStatusForCurrentOffenderWithMultipleCurrentEventsInBreach() {
-        when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
+        when(offenderRepository.findByCrnAndSoftDeletedFalse(CRN)).thenReturn(Optional.of(offender));
         // If current disposal == 1L then probation status is CURRENT
         when(offender.getCurrentDisposal()).thenReturn(1L);
         when(offender.getActiveEvents()).thenReturn(List.of(event, event2, event3));
-        when(offender.getSoftDeleted()).thenReturn(0L);
         // If any active event is in breach then offender is in breach
         when(event.isInBreach()).thenReturn(false);
         when(event2.isInBreach()).thenReturn(true);
@@ -117,9 +115,8 @@ public class ConvictionService_GetProbationStatusTest {
 
     @Test
     public void canGetProbationStatusForCurrentOffenderWithNoCurrentBreach() {
-        when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
+        when(offenderRepository.findByCrnAndSoftDeletedFalse(CRN)).thenReturn(Optional.of(offender));
         // If current disposal == 1L then probation status is CURRENT
-        when(offender.getSoftDeleted()).thenReturn(0L);
         when(offender.getCurrentDisposal()).thenReturn(1L);
         when(offender.getActiveEvents()).thenReturn(List.of(event));
         // If no active event is in breach then offender is not in breach
@@ -136,7 +133,7 @@ public class ConvictionService_GetProbationStatusTest {
 
     @Test
     public void canGetProbationStatusForPreviouslyKnownOffender() {
-        when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
+        when(offenderRepository.findByCrnAndSoftDeletedFalse(CRN)).thenReturn(Optional.of(offender));
         // PREVIOUSLY_KNOWN if currentDisposal is false and they have at least 1 event with a disposal
         when(offender.getCurrentDisposal()).thenReturn(0L);
         when(offender.getEvents()).thenReturn(List.of(event));
@@ -155,7 +152,7 @@ public class ConvictionService_GetProbationStatusTest {
 
     @Test
     public void canGetProbationStatusForPreviouslyKnownOffenderWithPreSentenceActivity() {
-        when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
+        when(offenderRepository.findByCrnAndSoftDeletedFalse(CRN)).thenReturn(Optional.of(offender));
         // PREVIOUSLY_KNOWN if currentDisposal is false and they have at least 1 event with a disposal
         when(offender.getCurrentDisposal()).thenReturn(0L);
         when(offender.getActiveEvents()).thenReturn(List.of(event, event2));
@@ -176,7 +173,7 @@ public class ConvictionService_GetProbationStatusTest {
     }
     @Test
     public void canGetProbationStatusForPreviouslyKnownOffenderWithPreSentenceActivityWithNoOutcome() {
-        when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
+        when(offenderRepository.findByCrnAndSoftDeletedFalse(CRN)).thenReturn(Optional.of(offender));
         // PREVIOUSLY_KNOWN if currentDisposal is false and they have at least 1 event with a disposal
         when(offender.getCurrentDisposal()).thenReturn(0L);
         when(offender.getActiveEvents()).thenReturn(List.of(event, event2));
@@ -198,7 +195,7 @@ public class ConvictionService_GetProbationStatusTest {
 
     @Test
     public void canGetProbationStatusForOffenderWithNoSentenceAndPreSentenceActivity() {
-        when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
+        when(offenderRepository.findByCrnAndSoftDeletedFalse(CRN)).thenReturn(Optional.of(offender));
         when(offender.getCurrentDisposal()).thenReturn(0L);
         when(offender.getActiveEvents()).thenReturn(List.of(event));
         // preSentenceActivity is true if they have an active event with no disposal
@@ -215,7 +212,7 @@ public class ConvictionService_GetProbationStatusTest {
 
     @Test
     public void canGetProbationStatusForOffenderWithNoEvents() {
-        when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.of(offender));
+        when(offenderRepository.findByCrnAndSoftDeletedFalse(CRN)).thenReturn(Optional.of(offender));
         when(offender.getCurrentDisposal()).thenReturn(0L);
         when(offender.getActiveEvents()).thenReturn(Collections.emptyList());
 
@@ -230,7 +227,7 @@ public class ConvictionService_GetProbationStatusTest {
 
     @Test
     public void returnEmptyForNonExistentOffender() {
-        when(offenderRepository.findByCrn(CRN)).thenReturn(Optional.empty());
+        when(offenderRepository.findByCrnAndSoftDeletedFalse(CRN)).thenReturn(Optional.empty());
         final var probationStatusDetail = convictionService.probationStatusFor(CRN);
 
         assertThat(probationStatusDetail).isEmpty();

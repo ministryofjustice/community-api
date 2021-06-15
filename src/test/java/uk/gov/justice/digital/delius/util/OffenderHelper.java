@@ -49,7 +49,7 @@ public interface OffenderHelper {
                 .offenderAliases(Lists.newArrayList(OffenderAlias.builder().build()))
                 .offenderAddresses(Lists.newArrayList(OffenderAddress.builder().build()))
                 .partitionArea(PartitionArea.builder().area("Fulchester").build())
-                .softDeleted(0L)
+                .softDeleted(false)
                 .currentHighestRiskColour("FUSCHIA")
                 .currentDisposal(0L)
                 .currentRestriction(0L)
