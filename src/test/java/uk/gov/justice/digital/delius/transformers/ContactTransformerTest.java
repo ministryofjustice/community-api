@@ -91,7 +91,8 @@ class ContactTransformerTest {
             .hasFieldOrPropertyWithValue("officeLocation", null)
             .hasFieldOrPropertyWithValue("notes", null)
             .hasFieldOrPropertyWithValue("sensitive", null)
-            .hasFieldOrPropertyWithValue("outcome", null);
+            .hasFieldOrPropertyWithValue("outcome", null)
+            .hasFieldOrPropertyWithValue("rarActivity", false);
     }
 
     @Test
@@ -134,6 +135,7 @@ class ContactTransformerTest {
             .attended("Y")
             .complied("Y")
             .hoursCredited(123.456)
+            .rarActivity("Y")
             .build();
 
         final var observed = ContactTransformer.contactSummaryOf(contact);
@@ -163,7 +165,8 @@ class ContactTransformerTest {
             .hasFieldOrPropertyWithValue("outcome.description", "Some outcome")
             .hasFieldOrPropertyWithValue("outcome.attended", true)
             .hasFieldOrPropertyWithValue("outcome.complied", true)
-            .hasFieldOrPropertyWithValue("outcome.hoursCredited", 123.456);
+            .hasFieldOrPropertyWithValue("outcome.hoursCredited", 123.456)
+            .hasFieldOrPropertyWithValue("rarActivity", true);
 
     }
 }

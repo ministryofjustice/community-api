@@ -66,7 +66,8 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("outcome.description", appointment, equalTo("Appointment Kept"))
             .body("outcome.attended", appointment, equalTo(true))
             .body("outcome.complied", appointment, equalTo(null))
-            .body("outcome.hoursCredited", appointment, equalTo(null));
+            .body("outcome.hoursCredited", appointment, equalTo(null))
+            .body("rarActivity", appointment, equalTo(false));
     }
 
     @Test
