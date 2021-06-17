@@ -47,6 +47,7 @@ public class ContactTransformer {
             .staff(ContactTransformer.staffOf(contact.getStaff()))
             .sensitive(ynToBoolean(contact.getSensitive()))
             .outcome(AppointmentTransformer.appointmentOutcomeOf(contact))
+            .rarActivity(contact.isRarActivity())
             .build();
     }
 

@@ -177,4 +177,11 @@ public class Contact {
 
     @Column(name = "SENSITIVE")
     private String sensitive;
+
+    @Column(name = "RAR_ACTIVITY")
+    private String rarActivity;
+
+    public boolean isRarActivity() {
+        return "Y".equals(rarActivity);
+    }
 }
