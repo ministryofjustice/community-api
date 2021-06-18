@@ -123,7 +123,7 @@ public class CustodyResource {
         return custodyService.getCustodyByConvictionId(crn, convictionId);
     }
 
-    @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/recall", method = RequestMethod.PUT, consumes = "application/json")
+    @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/recalled", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
         @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
         @ApiResponse(code = 404, message = "The requested offender was not found"),
@@ -132,7 +132,7 @@ public class CustodyResource {
     @ApiOperation(value = "Updates the associated offender with recall information and returns the custory record")
     public Custody offenderRecalled(final @PathVariable String nomsNumber,
                                      final @RequestBody @Valid String details) {
-        return custodyService.recallOffender(nomsNumber, details);
+        return custodyService.offenderRecalled(nomsNumber, details);
     }
 
 }

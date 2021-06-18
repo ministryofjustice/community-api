@@ -227,7 +227,7 @@ public class CustodyService {
     }
 
     @Transactional
-    public Custody recallOffender(final String nomsNumber, final String recallDetails) {
+    public Custody offenderRecalled(final String nomsNumber, final String recallDetails) {
         final var offender = offenderRepository.findByNomsNumber(nomsNumber)
             .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
 
