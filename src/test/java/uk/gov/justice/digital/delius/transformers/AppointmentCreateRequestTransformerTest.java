@@ -107,7 +107,7 @@ class AppointmentCreateRequestTransformerTest {
             ).build(),
             anIntegrationContext())
         ).isEqualTo(
-            anAppointmentCreateRequest(start, end, NON_RAR_CONTACT_TYPE, null)
+            anAppointmentCreateRequest(start, end, NON_RAR_CONTACT_TYPE, false)
         );
     }
 
