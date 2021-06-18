@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.config.FeatureSwitches;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
+import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
@@ -22,6 +23,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionReposito
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository.DuplicateOffenderException;
 import uk.gov.justice.digital.delius.service.ConvictionService.DuplicateActiveCustodialConvictionsException;
+import uk.gov.justice.digital.delius.service.ConvictionService.SingleActiveCustodyConvictionNotFoundException;
 import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
 
 import java.time.LocalDate;
@@ -222,6 +224,23 @@ public class CustodyService {
         return Optional.ofNullable(convictionService.convictionFor(offender.getOffenderId(), convictionId)
                 .orElseThrow(() -> new NotFoundException(String.format("conviction with convictionId %d not found", convictionId))).getCustody())
                 .orElseThrow(() -> new BadRequestException(String.format("The conviction with convictionId %d is not a custodial sentence", convictionId)));
+    }
+
+    @Transactional
+    public Custody recallOffender(final String nomsNumber, final String recallDetails) {
+        final var offender = offenderRepository.findByNomsNumber(nomsNumber)
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
+
+        log.info("Offender {} recalled with recall details {}", nomsNumber, recallDetails);
+
+        try {
+            Event event = convictionService.getActiveCustodialEvent(offender.getOffenderId());
+            telemetryClient.trackEvent( "P2POffenderRecalled");
+            return ConvictionTransformer.custodyOf(event.getDisposal().getCustody());
+        } catch (SingleActiveCustodyConvictionNotFoundException e) {
+            telemetryClient.trackEvent( "P2POffenderRecallNoSingleConviction");
+            throw new ConflictingRequestException(e.getMessage());
+        }
     }
 
     private Event updateBookingNumberFor(final Offender offender, final Event event, final String bookingNumber) {

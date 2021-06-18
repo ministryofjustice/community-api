@@ -18,6 +18,7 @@ import uk.gov.justice.digital.delius.data.api.IDs;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustodyBookingNumber;
 import uk.gov.justice.digital.delius.data.api.UpdateOffenderNomsNumber;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.service.CustodyService;
 import uk.gov.justice.digital.delius.service.OffenderIdentifierService;
 
@@ -120,6 +121,18 @@ public class CustodyResource {
     public Custody getCustodyByConvictionId(final @PathVariable String crn,
                                  final @PathVariable Long convictionId) {
         return custodyService.getCustodyByConvictionId(crn, convictionId);
+    }
+
+    @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/recall", method = RequestMethod.PUT, consumes = "application/json")
+    @ApiResponses(value = {
+        @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
+        @ApiResponse(code = 404, message = "The requested offender was not found"),
+        @ApiResponse(code = 409, message = "The requested offender did not have a single active event")
+    })
+    @ApiOperation(value = "Updates the associated offender with recall information and returns the custory record")
+    public Custody offenderRecalled(final @PathVariable String nomsNumber,
+                                     final @RequestBody @Valid String details) {
+        return custodyService.recallOffender(nomsNumber, details);
     }
 
 }
