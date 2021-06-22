@@ -14,5 +14,5 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class OffenderReleasedNotification {
     @ApiModelProperty(value = "The date the offender was released from custody", example = "2020-10-25")
-    private LocalDate occurrred;
+    private LocalDate occurred;
 }

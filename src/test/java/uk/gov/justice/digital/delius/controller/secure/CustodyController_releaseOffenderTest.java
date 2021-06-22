@@ -94,7 +94,7 @@ public class CustodyController_releaseOffenderTest {
     private OffenderReleasedNotification createOffenderReleased(LocalDate releaseDate) {
         return OffenderReleasedNotification
             .builder()
-            .occurrred(releaseDate)
+            .occurred(releaseDate)
             .build();
     }
 

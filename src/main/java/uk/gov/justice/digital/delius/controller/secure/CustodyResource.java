@@ -145,7 +145,7 @@ public class CustodyResource {
     @ApiOperation(value = "Updates the associated offender with release information and returns the custody record")
     public Custody offenderReleased(final @PathVariable String nomsNumber,
                                     final @RequestBody @Valid OffenderReleasedNotification released) {
-        return custodyService.offenderReleased(nomsNumber, released.getOccurrred());
+        return custodyService.offenderReleased(nomsNumber, released.getOccurred());
     }
 
 }
