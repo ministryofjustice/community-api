@@ -12,7 +12,9 @@ import uk.gov.justice.digital.delius.data.api.Custody;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -30,7 +32,7 @@ public class CustodyResource_recallOffenderAPITest extends IntegrationTestBase {
         given()
             .auth().oauth2(token)
             .contentType("application/json")
-            .body("{\"details\" : \"Recalled due to bad behaviour \"}")
+            .body("{\"occurred\" : \"2020-12-22\"}")
             .when()
             .put("/offenders/nomsNumber/G0560UO/recalled")
             .then()
@@ -45,7 +47,7 @@ public class CustodyResource_recallOffenderAPITest extends IntegrationTestBase {
         given()
             .auth().oauth2(token)
             .contentType("application/json")
-            .body("{ \"details\" : \"Recalled due to bad behaviour \"}")
+            .body("{\"occurred\" : \"2020-12-22\"}")
             .when()
             .put("/offenders/nomsNumber/g4106un/recalled")
             .then()
@@ -53,7 +55,7 @@ public class CustodyResource_recallOffenderAPITest extends IntegrationTestBase {
             .statusCode(HttpStatus.CONFLICT.value())
             .body("developerMessage", equalTo("Expected offender 12 to have a single custody related event but found 0 events"));
 
-        verify(telemetryClient).trackEvent(eq("P2POffenderRecallNoSingleConviction"), any(), isNull());
+        verify(telemetryClient).trackEvent(eq("P2POffenderRecalledNoSingleConviction"), any(), isNull());
     }
 
     @Test
@@ -64,7 +66,7 @@ public class CustodyResource_recallOffenderAPITest extends IntegrationTestBase {
         given()
             .auth().oauth2(token)
             .contentType("application/json")
-            .body("{ \"details\" : \"Recalled due to bad behaviour \"}")
+            .body("{\"occurred\" : \"2020-12-22\"}")
             .when()
             .put("/offenders/nomsNumber/X1235YZ/recalled")
             .then()
@@ -77,13 +79,13 @@ public class CustodyResource_recallOffenderAPITest extends IntegrationTestBase {
 
     @Test
     @DisplayName("Successfully update the recalled offender")
-    public void processesOffenderRecall() {
+    public void processesOffenderRecalled() {
         final var token = tokenWithRoleCommunityAndCustodyUpdate();
 
         final var custody = given()
             .auth().oauth2(token)
             .contentType("application/json")
-            .body("{ \"details\" : \"Recalled due to bad behaviour \"}")
+            .body("{\"occurred\" : \"2020-12-22\"}")
             .when()
             .put("/offenders/nomsNumber/G9542VP/recalled")
             .then()

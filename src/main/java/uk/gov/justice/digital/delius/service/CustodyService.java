@@ -5,6 +5,7 @@ import io.vavr.control.Either;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.config.FeatureSwitches;
@@ -227,18 +228,18 @@ public class CustodyService {
     }
 
     @Transactional
-    public Custody offenderRecalled(final String nomsNumber, final String recallDetails) {
+    public Custody offenderRecalled(final String nomsNumber, final LocalDate occurredAt) {
         final var offender = offenderRepository.findByNomsNumber(nomsNumber)
             .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
 
-        log.info("Offender {} recalled with recall details {}", nomsNumber, recallDetails);
+        log.info("Offender {} recalled on {}", nomsNumber, occurredAt);
 
         try {
             Event event = convictionService.getActiveCustodialEvent(offender.getOffenderId());
             telemetryClient.trackEvent( "P2POffenderRecalled");
             return ConvictionTransformer.custodyOf(event.getDisposal().getCustody());
         } catch (SingleActiveCustodyConvictionNotFoundException e) {
-            telemetryClient.trackEvent( "P2POffenderRecallNoSingleConviction");
+            telemetryClient.trackEvent( "P2POffenderRecalledNoSingleConviction");
             throw new ConflictingRequestException(e.getMessage());
         }
     }

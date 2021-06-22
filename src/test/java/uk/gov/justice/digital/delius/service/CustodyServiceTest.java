@@ -1168,7 +1168,7 @@ public class CustodyServiceTest {
             @Test
             @DisplayName("then a ConflictingRequestException will be thrown")
             void willThrowNotFound() {
-                assertThatThrownBy(() -> custodyService.offenderRecalled("X12345", "Returned due to bad behaviour"))
+                assertThatThrownBy(() -> custodyService.offenderRecalled("X12345", LocalDate.of(2020, 11, 22)))
                     .isInstanceOf(ConflictingRequestException.class);
             }
         }
@@ -1185,7 +1185,7 @@ public class CustodyServiceTest {
             @Test
             @DisplayName("then a ConflictingRequestException will be thrown")
             void willThrowNotFound() {
-                assertThatThrownBy(() -> custodyService.offenderRecalled("G9542VP", "Returned due to bad behaviour"))
+                assertThatThrownBy(() -> custodyService.offenderRecalled("X12345", LocalDate.of(2020, 11, 22)))
                     .isInstanceOf(ConflictingRequestException.class);
             }
         }
@@ -1201,7 +1201,7 @@ public class CustodyServiceTest {
             @Test
             @DisplayName("then a NotFoundException will be thrown")
             void willThrowNotFound() {
-                assertThatThrownBy(() -> custodyService.offenderRecalled("X1234YZ", "Returned due to bad behaviour"))
+                assertThatThrownBy(() -> custodyService.offenderRecalled("X12345", LocalDate.of(2020, 11, 22)))
                     .isInstanceOf(NotFoundException.class);
             }
         }
@@ -1217,7 +1217,7 @@ public class CustodyServiceTest {
             @Test
             @DisplayName("then the custody event will be returned")
             void willReturnCustody() {
-                final var custody = custodyService.offenderRecalled("G9542VP", "Returned due to bad behaviour");
+                final var custody = custodyService.offenderRecalled("G9542VP", LocalDate.of(2020, 11, 22));
                 assertThat(custody.getStatus().getDescription()).isEqualTo("In Custody");
             }
         }

@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.IDs;
+import uk.gov.justice.digital.delius.data.api.OffenderRecalledNotification;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustodyBookingNumber;
 import uk.gov.justice.digital.delius.data.api.UpdateOffenderNomsNumber;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.service.CustodyService;
 import uk.gov.justice.digital.delius.service.OffenderIdentifierService;
 
@@ -129,10 +129,10 @@ public class CustodyResource {
         @ApiResponse(code = 404, message = "The requested offender was not found"),
         @ApiResponse(code = 409, message = "The requested offender did not have a single active event")
     })
-    @ApiOperation(value = "Updates the associated offender with recall information and returns the custory record")
+    @ApiOperation(value = "Updates the associated offender with recall information and returns the custody record")
     public Custody offenderRecalled(final @PathVariable String nomsNumber,
-                                     final @RequestBody @Valid String details) {
-        return custodyService.offenderRecalled(nomsNumber, details);
+                                     final @RequestBody @Valid OffenderRecalledNotification recalled) {
+        return custodyService.offenderRecalled(nomsNumber, recalled.getOccurred());
     }
 
 }
