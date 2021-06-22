@@ -1215,9 +1215,79 @@ public class CustodyServiceTest {
             }
 
             @Test
-            @DisplayName("then the custody event will be returned")
+            @DisplayName("then the custody record will be returned")
             void willReturnCustody() {
                 final var custody = custodyService.offenderRecalled("G9542VP", LocalDate.of(2020, 11, 22));
+                assertThat(custody.getStatus().getDescription()).isEqualTo("In Custody");
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("when calling offenderReleased")
+    class WhenOffenderReleased {
+        @Nested
+        @DisplayName("and there is more than one event for the offender")
+        class WhenHasMultipleActiveEvents {
+            @BeforeEach
+            void setup() throws ConvictionService.SingleActiveCustodyConvictionNotFoundException {
+                when(convictionService.getActiveCustodialEvent(anyLong()))
+                    .thenThrow(new ConvictionService.SingleActiveCustodyConvictionNotFoundException(99L, 2));
+            }
+
+            @Test
+            @DisplayName("then a ConflictingRequestException will be thrown")
+            void willThrowNotFound() {
+                assertThatThrownBy(() -> custodyService.offenderReleased("X12345", LocalDate.of(2020, 11, 22)))
+                    .isInstanceOf(ConflictingRequestException.class);
+            }
+        }
+
+        @Nested
+        @DisplayName("and there are no active events for the offender")
+        class WhenNoActiveEvents {
+            @BeforeEach
+            void setup() throws ConvictionService.SingleActiveCustodyConvictionNotFoundException {
+                when(convictionService.getActiveCustodialEvent(anyLong()))
+                    .thenThrow(new ConvictionService.SingleActiveCustodyConvictionNotFoundException(99L, 0));
+            }
+
+            @Test
+            @DisplayName("then a ConflictingRequestException will be thrown")
+            void willThrowNotFound() {
+                assertThatThrownBy(() -> custodyService.offenderReleased("X12345", LocalDate.of(2020, 11, 22)))
+                    .isInstanceOf(ConflictingRequestException.class);
+            }
+        }
+
+        @Nested
+        @DisplayName("and the offender is not found")
+        class WhenNoOffenderFound {
+            @BeforeEach
+            void setup() {
+                when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.empty());
+            }
+
+            @Test
+            @DisplayName("then a NotFoundException will be thrown")
+            void willThrowNotFound() {
+                assertThatThrownBy(() -> custodyService.offenderReleased("X12345", LocalDate.of(2020, 11, 22)))
+                    .isInstanceOf(NotFoundException.class);
+            }
+        }
+
+        @Nested
+        @DisplayName("and there is one active event for the offender")
+        class WhenHasSingleActiveEvent {
+            @BeforeEach
+            void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
+                when(convictionService.getActiveCustodialEvent(anyLong())).thenReturn(aCustodyEvent());
+            }
+
+            @Test
+            @DisplayName("then the custody record will be returned")
+            void willReturnCustody() {
+                final var custody = custodyService.offenderReleased("G9542VP", LocalDate.of(2020, 11, 22));
                 assertThat(custody.getStatus().getDescription()).isEqualTo("In Custody");
             }
         }
