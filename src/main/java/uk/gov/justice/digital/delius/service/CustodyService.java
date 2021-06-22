@@ -228,11 +228,11 @@ public class CustodyService {
     }
 
     @Transactional
-    public Custody offenderRecalled(final String nomsNumber, final LocalDate occurredAt) {
+    public Custody offenderRecalled(final String nomsNumber, final LocalDate occurred) {
         final var offender = offenderRepository.findByNomsNumber(nomsNumber)
             .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
 
-        log.info("Offender {} recalled on {}", nomsNumber, occurredAt);
+        log.info("Offender {} recalled on {}", nomsNumber, occurred);
 
         try {
             Event event = convictionService.getActiveCustodialEvent(offender.getOffenderId());
@@ -240,6 +240,23 @@ public class CustodyService {
             return ConvictionTransformer.custodyOf(event.getDisposal().getCustody());
         } catch (SingleActiveCustodyConvictionNotFoundException e) {
             telemetryClient.trackEvent( "P2POffenderRecalledNoSingleConviction");
+            throw new ConflictingRequestException(e.getMessage());
+        }
+    }
+
+    @Transactional
+    public Custody offenderReleased(final String nomsNumber, final LocalDate occurred) {
+        final var offender = offenderRepository.findByNomsNumber(nomsNumber)
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
+
+        log.info("Offender {} released on {}", nomsNumber, occurred);
+
+        try {
+            Event event = convictionService.getActiveCustodialEvent(offender.getOffenderId());
+            telemetryClient.trackEvent( "P2POffenderReleased");
+            return ConvictionTransformer.custodyOf(event.getDisposal().getCustody());
+        } catch (SingleActiveCustodyConvictionNotFoundException e) {
+            telemetryClient.trackEvent( "P2POffenderReleasedNoSingleConviction");
             throw new ConflictingRequestException(e.getMessage());
         }
     }
