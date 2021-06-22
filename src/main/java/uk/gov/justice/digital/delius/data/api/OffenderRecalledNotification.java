@@ -13,6 +13,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OffenderRecalledNotification {
-    @ApiModelProperty(value = "The date the recall occurred", example = "2020-10-25")
+    @ApiModelProperty(value = "The date the offender was returned to custody", example = "2020-10-25")
     private LocalDate occurred;
 }
