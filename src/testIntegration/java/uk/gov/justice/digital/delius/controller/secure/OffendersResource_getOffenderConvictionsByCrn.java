@@ -34,6 +34,13 @@ public class OffendersResource_getOffenderConvictionsByCrn extends IntegrationTe
         KeyValue sentenceType = conviction.getSentence().getSentenceType();
         assertThat(sentenceType.getCode()).isEqualTo("SC");
         assertThat(sentenceType.getDescription()).isEqualTo("CJA - Indeterminate Public Prot.");
+
+        // Should have mapped court appearance from sentencing appearance & responsible court detail
+        assertThat(conviction)
+            .hasFieldOrPropertyWithValue("courtAppearance.appearanceType.code", "S")
+            .hasFieldOrPropertyWithValue("courtAppearance.appearanceType.description", "Sentence")
+            .hasFieldOrPropertyWithValue("courtAppearance.courtName", "Sheffield Magistrates Court")
+            .hasFieldOrPropertyWithValue("responsibleCourt.courtName", "Sheffield Magistrates Court");
     }
 
     @Test

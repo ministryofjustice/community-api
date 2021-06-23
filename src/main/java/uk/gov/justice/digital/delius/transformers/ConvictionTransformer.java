@@ -78,6 +78,7 @@ public class ConvictionTransformer {
     }
 
     public static Conviction convictionOf(Event event) {
+        final var courtAppearances = Optional.ofNullable(event.getCourtAppearances());
         return Conviction.builder()
                 .active(event.isActiveFlag())
                 .convictionDate(event.getConvictionDate())
@@ -91,7 +92,9 @@ public class ConvictionTransformer {
                         .flatMap(disposal -> Optional.ofNullable(disposal.getCustody()).map(ConvictionTransformer::custodyOf))
                         .orElse(null))
                 .inBreach(event.isInBreach())
-                .latestCourtAppearanceOutcome(Optional.ofNullable(event.getCourtAppearances()).map(ConvictionTransformer::outcomeOf).orElse(null))
+                .latestCourtAppearanceOutcome(courtAppearances.map(ConvictionTransformer::outcomeOf).orElse(null))
+                .responsibleCourt(Optional.ofNullable(event.getCourt()).map(CourtTransformer::courtOf).orElse(null))
+                .courtAppearance(courtAppearances.map(CourtAppearanceBasicTransformer::latestOrSentencingCourtAppearanceOf).orElse(null))
                 .build();
     }
 

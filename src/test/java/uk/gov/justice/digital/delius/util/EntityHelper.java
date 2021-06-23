@@ -895,13 +895,19 @@ public class EntityHelper {
     public static CourtAppearance aCourtAppearanceWithOutcome(String outcomeCode, String outcomeDescription) {
         return CourtAppearance.builder()
             .courtAppearanceId(1L)
+            .appearanceDate(LocalDateTime.of(2015, 6, 10, 12, 0))
             .outcome(aStandardReference(outcomeCode, outcomeDescription))
+            .court(aCourt("some-court"))
+            .offender(anOffender())
             .build();
     }
 
     public static CourtAppearance aCourtAppearanceWithOutOutcome() {
         return CourtAppearance.builder()
             .courtAppearanceId(2L)
+            .appearanceDate(LocalDateTime.of(2015, 6, 11, 12, 0))
+            .court(aCourt("some-court"))
+            .offender(anOffender())
             .build();
     }
 
