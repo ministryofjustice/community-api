@@ -20,15 +20,28 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "COURT_APPEARANCE")
 @ToString(exclude = {"event"})
 public class CourtAppearance {
+    enum CourtAppearanceType {
+        SENTENCING("S");
+
+        private final String code;
+
+        CourtAppearanceType(String code) {
+            this.code = code;
+        }
+        public String getCode() {
+            return code;
+        }
+    }
 
     @Id
     @SequenceGenerator(name = "COURT_APPEARANCE_ID_GENERATOR", sequenceName = "COURT_APPEARANCE_ID_SEQ", allocationSize = 1)
@@ -112,4 +125,10 @@ public class CourtAppearance {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "OFFENDER_ID", insertable = false, updatable = false)
     private Offender offender;
+
+    public boolean isSentencing() {
+        return Optional.ofNullable(getAppearanceType())
+            .map(x -> x.getCodeValue().equals(CourtAppearanceType.SENTENCING.getCode()))
+            .orElse(false);
+    }
 }
