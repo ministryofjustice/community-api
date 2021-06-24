@@ -1262,6 +1262,7 @@ create table TEAM
         references DISTRICT,
     LOCAL_DELIVERY_UNIT_ID   NUMBER           not null,
     TELEPHONE                VARCHAR2(35),
+    EMAIL_ADDRESS            VARCHAR2(255),
     UNPAID_WORK_TEAM         CHAR             not null
         constraint YES_OR_NO_OR_UNKNOWN8
             check (UNPAID_WORK_TEAM IN ('N', 'Y', 'U')),

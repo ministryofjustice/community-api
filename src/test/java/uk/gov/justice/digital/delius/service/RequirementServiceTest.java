@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.LicenceConditions;
 import uk.gov.justice.digital.delius.data.api.PssRequirements;
@@ -253,7 +254,7 @@ public class RequirementServiceTest {
                     .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build()).build())
             );
 
-            assertThatExceptionOfType(IllegalStateException.class)
+            assertThatExceptionOfType(BadRequestException.class)
                 .isThrownBy(() -> requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE))
                 .withMessage("CRN: CRN EventId: 987654321 has multiple referral requirements");
         }
