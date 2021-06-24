@@ -10,6 +10,7 @@ public class TeamTransformer {
     public static Team teamOf(uk.gov.justice.digital.delius.jpa.standard.entity.Team team) {
         return Team.builder().code(team.getCode()).description(team.getDescription())
                 .telephone(team.getTelephone())
+                .emailAddress(team.getEmailAddress())
                 .borough(keyValueOf(team.getDistrict().getBorough()))
                 .district(keyValueOf(team.getDistrict()))
                 // Delius exposes districts as local delivery units.

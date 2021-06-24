@@ -17,6 +17,8 @@ public class Team {
     private String description;
     @ApiModelProperty(value = "Team telephone, often not populated", required = false, example = "OMU A")
     private String telephone;
+    @ApiModelProperty(value = "Team email address", required = false, example = "first.last@digital.justice.gov.uk")
+    private String emailAddress;
     @ApiModelProperty(value = "Local Delivery Unit - provides a geographic grouping of teams")
     private KeyValue localDeliveryUnit;
     @ApiModelProperty(value = "Team Type - provides a logical, not necessarily geographic, grouping of teams")

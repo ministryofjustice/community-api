@@ -116,10 +116,12 @@ public class StaffResource_StaffDetailsAPITest extends IntegrationTestBase {
         assertThat(jimSnowUserDetails.getEmail()).isEqualTo("jim.snow@justice.gov.uk");
         assertThat(jimSnowUserDetails.getStaff().getForenames()).isEqualTo("JIM");
         assertThat(jimSnowUserDetails.getStaff().getSurname()).isEqualTo("SNOW");
+        assertThat(jimSnowUserDetails.getTeams()).isNull();
 
         assertThat(sheilaHancockUserDetails.getEmail()).isEqualTo("sheila.hancock@justice.gov.uk");
         assertThat(sheilaHancockUserDetails.getStaff().getForenames()).isEqualTo("SHEILA LINDA");
         assertThat(sheilaHancockUserDetails.getStaff().getSurname()).isEqualTo("HANCOCK");
+        assertThat(sheilaHancockUserDetails.getTeams().stream().findFirst().get().getEmailAddress()).isEqualTo("Sheila.HancockNPS@moj.gov.uk");
     }
 
     @Test

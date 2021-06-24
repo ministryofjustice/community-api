@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.ConvictionRequirements;
 import uk.gov.justice.digital.delius.data.api.LicenceConditions;
@@ -129,7 +130,7 @@ public class RequirementService {
             .collect(toList());
 
         if ( requirements.size() > 1 ) {
-            throw new IllegalStateException(format("CRN: %s EventId: %d has multiple referral requirements", crn, eventId));
+            throw new BadRequestException(format("CRN: %s EventId: %d has multiple referral requirements", crn, eventId));
         }
 
         return requirements.stream().findFirst();
