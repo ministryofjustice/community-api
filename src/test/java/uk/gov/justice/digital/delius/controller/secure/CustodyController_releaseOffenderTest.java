@@ -37,12 +37,12 @@ public class CustodyController_releaseOffenderTest {
 
     @Test
     public void missingOffender_returnsNotFound() {
-        when(custodyService.offenderReleased("G3333AA", LocalDate.of(2020, 11, 22))).
-            thenThrow(new NotFoundException(String.format("Offender with nomsNumber %s not found", "G3333AA")));
+        when(custodyService.offenderReleased("G3333AA", createOffenderReleased()))
+            .thenThrow(new NotFoundException(String.format("Offender with nomsNumber %s not found", "G3333AA")));
 
         given()
             .contentType(APPLICATION_JSON_VALUE)
-            .body(createOffenderReleased(LocalDate.of(2020, 11, 22)))
+            .body(createOffenderReleased())
             .when()
             .put("/secure/offenders/nomsNumber/G3333AA/released")
             .then()
@@ -50,13 +50,49 @@ public class CustodyController_releaseOffenderTest {
     }
 
     @Test
-    public void multipleActiveConvictions_returnsConflict() {
-        when(custodyService.offenderReleased("G3333AA", LocalDate.of(2020, 11, 22))).
-            thenThrow(new ConflictingRequestException(String.format("Multiple active convictions found")));//;
+    public void missingPrisonCode_returnsBadRequest() {
 
         given()
             .contentType(APPLICATION_JSON_VALUE)
-            .body(createOffenderReleased(LocalDate.of(2020, 11, 22)))
+            .body(OffenderReleasedNotification.builder().releaseDate(LocalDate.of(2020, 11, 22)).build())
+            .when()
+            .put("/secure/offenders/nomsNumber/G3333AA/recalled")
+            .then()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    public void missingRecallDate_returnsBadRequest() {
+
+        given()
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(OffenderReleasedNotification.builder().nomsPrisonInstitutionCode("MDI").build())
+            .when()
+            .put("/secure/offenders/nomsNumber/G3333AA/recalled")
+            .then()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    public void missingRecallDateAndPrisonCode_returnsBadRequest() {
+
+        given()
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(OffenderReleasedNotification.builder().build())
+            .when()
+            .put("/secure/offenders/nomsNumber/G3333AA/recalled")
+            .then()
+            .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    public void multipleActiveConvictions_returnsConflict() {
+        when(custodyService.offenderReleased("G3333AA", createOffenderReleased()))
+            .thenThrow(new ConflictingRequestException(String.format("Multiple active convictions found")));
+
+        given()
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(createOffenderReleased())
             .when()
             .put("/secure/offenders/nomsNumber/G3333AA/released")
             .then()
@@ -65,12 +101,12 @@ public class CustodyController_releaseOffenderTest {
 
     @Test
     public void noActiveConvictions_returnsConflict() {
-        when(custodyService.offenderReleased("G3333AA", LocalDate.of(2020, 11, 22)))
+        when(custodyService.offenderReleased("G3333AA", createOffenderReleased()))
             .thenThrow(new ConflictingRequestException(String.format("No active convictions found")));
 
         given()
             .contentType(APPLICATION_JSON_VALUE)
-            .body(createOffenderReleased(LocalDate.of(2020, 11, 22)))
+            .body(createOffenderReleased())
             .when()
             .put("/secure/offenders/nomsNumber/G3333AA/released")
             .then()
@@ -79,22 +115,23 @@ public class CustodyController_releaseOffenderTest {
 
     @Test
     public void singleActiveConviction_success() {
-        when(custodyService.offenderReleased("G3333AA", LocalDate.of(2020, 11, 22)))
+        when(custodyService.offenderReleased("G3333AA", createOffenderReleased()))
             .thenReturn(Custody.builder().build());
 
         given()
             .contentType(APPLICATION_JSON_VALUE)
-            .body(createOffenderReleased(LocalDate.of(2020, 11, 22)))
+            .body(createOffenderReleased())
             .when()
             .put("/secure/offenders/nomsNumber/G3333AA/released")
             .then()
             .statusCode(HttpStatus.OK.value());
     }
 
-    private OffenderReleasedNotification createOffenderReleased(LocalDate releaseDate) {
+    private OffenderReleasedNotification createOffenderReleased() {
         return OffenderReleasedNotification
             .builder()
-            .occurred(releaseDate)
+            .nomsPrisonInstitutionCode("MDI")
+            .releaseDate(LocalDate.of(2020, 11, 22))
             .build();
     }
 

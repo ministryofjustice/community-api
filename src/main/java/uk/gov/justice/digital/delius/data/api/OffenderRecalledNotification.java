@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class OffenderRecalledNotification {
     @NotBlank(message = "Missing a NOMS prison institution code in nomsPrisonInstitutionCode")
-    @ApiModelProperty(value = "The Prison institution code in NOMIS the offender was recalled to ", required = true, example = "MDI")
+    @ApiModelProperty(value = "The Prison institution code in NOMIS the offender was recalled to", required = true, example = "MDI")
     private String nomsPrisonInstitutionCode;
 
     @NotNull(message = "Missing the date the offender was returned to custody in recallDate")
