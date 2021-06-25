@@ -132,8 +132,8 @@ public class CustodyResource {
     })
     @ApiOperation(value = "Updates the associated offender with recall information and returns the custody record")
     public Custody offenderRecalled(final @PathVariable String nomsNumber,
-                                     final @RequestBody @Valid OffenderRecalledNotification recalled) {
-        return custodyService.offenderRecalled(nomsNumber, recalled.getOccurred());
+                                     final @RequestBody @Valid OffenderRecalledNotification recallNotification) {
+        return custodyService.offenderRecalled(nomsNumber, recallNotification);
     }
 
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/released", method = RequestMethod.PUT, consumes = "application/json")
