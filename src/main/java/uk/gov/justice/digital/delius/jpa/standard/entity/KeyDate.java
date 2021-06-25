@@ -1,10 +1,23 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Data
 @ToString(exclude = {"custody"})
@@ -14,6 +27,8 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @Table(name = "KEY_DATE")
 public class KeyDate {
+    private static final String LICENCE_EXPIRY_DATE_CODE = "LED";
+    private static final String SENTENCE_EXPIRY_DATE_CODE = "SED";
     @Id
     @SequenceGenerator(name = "KEY_DATE_ID_GENERATOR", sequenceName = "KEY_DATE_ID_SEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "KEY_DATE_ID_GENERATOR")
@@ -45,6 +60,14 @@ public class KeyDate {
     private LocalDateTime lastUpdatedDatetime;
 
     public static boolean isSentenceExpiryKeyDate(String keyDateCode) {
-        return "SED".equals(keyDateCode);
+        return SENTENCE_EXPIRY_DATE_CODE.equals(keyDateCode);
+    }
+
+    public boolean isLicenceExpiryDate() {
+        return Optional.ofNullable(keyDateType).map(StandardReference::getCodeValue).filter(LICENCE_EXPIRY_DATE_CODE::equals).isPresent();
+    }
+
+    public boolean isDateInPast() {
+        return Optional.ofNullable(keyDate).filter(date -> date.isBefore(LocalDate.now())).isPresent();
     }
 }

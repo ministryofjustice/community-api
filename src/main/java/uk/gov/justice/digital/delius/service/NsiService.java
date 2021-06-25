@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.data.api.NsiWrapper;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.repository.NsiRepository;
 import uk.gov.justice.digital.delius.transformers.NsiTransformer;
 
@@ -16,6 +19,8 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class NsiService {
+    private static final String RECALL_NSI_TYPE_CODE = "REC";
+
     private final NsiRepository nsiRepository;
 
     private final ConvictionService convictionService;
@@ -55,4 +60,26 @@ public class NsiService {
                         .map(NsiTransformer::nsiOf)
                         .collect(Collectors.toList()));
     }
+    @Transactional(readOnly = true)
+    public NsiWrapper getNonExpiredRecallNsiForOffenderActiveConvictions(final Long offenderId) {
+
+        return new NsiWrapper(
+                nsiRepository.findByOffenderIdForActiveEvents(offenderId)
+                        .stream()
+                        .filter(nsi -> !nsi.isSoftDeleted())
+                        .filter(nsi -> RECALL_NSI_TYPE_CODE.equals(nsi.getNsiType().getCode()))
+                        .filter(nsi -> !hasRecallNsiAnExpiredLicence(nsi) )
+                        .map(NsiTransformer::nsiOf)
+                        .collect(Collectors.toList()));
+    }
+
+    private boolean hasRecallNsiAnExpiredLicence(uk.gov.justice.digital.delius.jpa.standard.entity.Nsi nsi) {
+        return Optional
+            .ofNullable(nsi.getEvent())
+            .map(Event::getDisposal)
+            .map(Disposal::getCustody)
+            .filter(Custody::hasReleaseLicenceExpired)
+            .isPresent();
+    }
+
 }
