@@ -34,6 +34,7 @@ public class RequirementTransformer {
                         .length(req.getLength())
                         .lengthUnit(lengthUnitOf(req))
                         .restrictive(restrictiveOf(req.getRequirementTypeMainCategory()))
+                        .rarCount(req.getRarCount())
                         .build())
                 .orElse(null);
     }
