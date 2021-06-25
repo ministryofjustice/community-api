@@ -67,4 +67,7 @@ public class Requirement {
 
     @Column(name = "LENGTH")
     private Long length;
+
+    @Column(name = "RAR_COUNT")
+    private Long rarCount;
 }

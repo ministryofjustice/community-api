@@ -15,7 +15,7 @@ public class RequirementsResource_getRequirements extends IntegrationTestBase {
     private static final Long KNOWN_CONVICTION_ID = 2500295343L;
 
     @Test
-    public void getLicenceConditionsByConvictionId() {
+    public void getLicenceConditionsAndRarCountByConvictionId() {
 
         given()
                 .auth()
@@ -25,7 +25,8 @@ public class RequirementsResource_getRequirements extends IntegrationTestBase {
                 .get(format(REQUIREMENTS_PATH, KNOWN_OFFENDER_CRN, KNOWN_CONVICTION_ID))
                 .then()
                 .statusCode(200)
-                .body("requirements[0].restrictive", equalTo( false));
+                .body("requirements[0].restrictive", equalTo( false))
+                .body("requirements.find { it.requirementId == 2500007925 }.rarCount", equalTo( 2));
     }
 
     @Test

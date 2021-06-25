@@ -77,6 +77,7 @@ public class RequirementTransformerTest {
             .requirementTypeSubCategory(StandardReference.builder()
                 .codeDescription("Sub")
                 .build())
+            .rarCount(10L)
             .build();
         uk.gov.justice.digital.delius.data.api.Requirement pssRequirement = RequirementTransformer.requirementOf(requirement);
 
@@ -95,6 +96,7 @@ public class RequirementTransformerTest {
         assertThat(pssRequirement.getRequirementTypeMainCategory().getDescription()).isEqualTo("Main");
         assertThat(pssRequirement.getRequirementTypeSubCategory().getDescription()).isEqualTo("Sub");
         assertThat(pssRequirement.getRestrictive()).isEqualTo(true);
+        assertThat(pssRequirement.getRarCount()).isEqualTo(10L);
     }
 
 }
