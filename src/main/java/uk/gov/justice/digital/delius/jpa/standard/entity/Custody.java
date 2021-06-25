@@ -126,4 +126,8 @@ public class Custody extends AuditableEntity {
                 .orElse(false);
     }
 
+    public boolean hasReleaseLicenceExpired() {
+        return keyDates.stream().anyMatch(keyDate -> keyDate.isLicenceExpiryDate() && keyDate.isDateInPast());
+    }
+
 }
