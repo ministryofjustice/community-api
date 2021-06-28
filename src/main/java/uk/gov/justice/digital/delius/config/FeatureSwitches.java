@@ -42,7 +42,6 @@ public class FeatureSwitches {
     }
 
     private NomsFeatures noms = new NomsFeatures();
-    private boolean applyLimitedAccessMarkers;
     private Registers registers = new Registers();
 
 
