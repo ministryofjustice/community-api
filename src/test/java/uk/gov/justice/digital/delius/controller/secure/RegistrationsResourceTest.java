@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.core.Authentication;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
@@ -13,6 +14,7 @@ import uk.gov.justice.digital.delius.data.api.Registration;
 import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.RegistrationService;
+import uk.gov.justice.digital.delius.service.UserAccessService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,12 +34,13 @@ class RegistrationsResourceTest {
 
     private final OffenderService offenderService = mock(OffenderService.class);
     private final RegistrationService registrationService = mock(RegistrationService.class);
+    private final UserAccessService userAccessService = mock(UserAccessService.class);
 
 
     @BeforeEach
     void setUp() {
         RestAssuredMockMvc.standaloneSetup(
-                new RegistrationResource(offenderService, registrationService),
+                new RegistrationResource(offenderService, registrationService, userAccessService),
                 new SecureControllerAdvice()
         );
     }
@@ -306,6 +309,8 @@ class RegistrationsResourceTest {
             when(offenderService.offenderIdOfCrn(any())).thenReturn(Optional.empty());
 
             given()
+                    .auth()
+                    .authentication(mock(Authentication.class))
                     .contentType(APPLICATION_JSON_VALUE)
                     .when()
                     .get("/secure/offenders/crn/{X12345}/registrations", "X12345")
@@ -323,6 +328,8 @@ class RegistrationsResourceTest {
             when(registrationService.registrationsFor(any())).thenReturn(List.of());
 
             given()
+                    .auth()
+                    .authentication(mock(Authentication.class))
                     .contentType(APPLICATION_JSON_VALUE)
                     .when()
                     .get("/secure/offenders/crn/{X12345}/registrations", "X12345")
@@ -378,6 +385,8 @@ class RegistrationsResourceTest {
 
 
             given()
+                    .auth()
+                    .authentication(mock(Authentication.class))
                     .contentType(APPLICATION_JSON_VALUE)
                     .when()
                     .get("/secure/offenders/crn/{X12345}/registrations", "X12345")
