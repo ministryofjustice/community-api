@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.2
+  hmpps: ministryofjustice/hmpps@3.5
   aws-cli: circleci/aws-cli@1.4.0
   aws-ecs: circleci/aws-ecs@2.0.0
   mem: circleci/rememborb@0.0.1
@@ -244,4 +244,11 @@ workflows:
       - hmpps/gradle_owasp_dependency_check:
           context:
             - hmpps-common-vars
+      - hmpps/trivy_latest_scan:
+          context:
+            - hmpps-common-vars
+      - hmpps/veracode_policy_scan:
+          context:
+            - hmpps-common-vars
+            - veracode-credentials
 
