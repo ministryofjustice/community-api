@@ -16,6 +16,7 @@ import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.OffenderRecalledNotification;
+import uk.gov.justice.digital.delius.data.api.OffenderReleasedNotification;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustodyBookingNumber;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CustodyHistory;
@@ -1255,7 +1256,11 @@ public class CustodyServiceTest {
             @Test
             @DisplayName("then a ConflictingRequestException will be thrown")
             void willThrowNotFound() {
-                assertThatThrownBy(() -> custodyService.offenderReleased("X12345", LocalDate.of(2020, 11, 22)))
+                assertThatThrownBy(() -> custodyService.offenderReleased("X12345",
+                    OffenderReleasedNotification.builder()
+                        .nomsPrisonInstitutionCode("MDI")
+                        .releaseDate(LocalDate.of(2020, 11, 22))
+                        .build()))
                     .isInstanceOf(ConflictingRequestException.class);
             }
         }
@@ -1272,7 +1277,11 @@ public class CustodyServiceTest {
             @Test
             @DisplayName("then a ConflictingRequestException will be thrown")
             void willThrowNotFound() {
-                assertThatThrownBy(() -> custodyService.offenderReleased("X12345", LocalDate.of(2020, 11, 22)))
+                assertThatThrownBy(() -> custodyService.offenderReleased("X12345",
+                    OffenderReleasedNotification.builder()
+                        .nomsPrisonInstitutionCode("MDI")
+                        .releaseDate(LocalDate.of(2020, 11, 22))
+                        .build()))
                     .isInstanceOf(ConflictingRequestException.class);
             }
         }
@@ -1288,7 +1297,11 @@ public class CustodyServiceTest {
             @Test
             @DisplayName("then a NotFoundException will be thrown")
             void willThrowNotFound() {
-                assertThatThrownBy(() -> custodyService.offenderReleased("X12345", LocalDate.of(2020, 11, 22)))
+                assertThatThrownBy(() -> custodyService.offenderReleased("X12345",
+                    OffenderReleasedNotification.builder()
+                        .nomsPrisonInstitutionCode("MDI")
+                        .releaseDate(LocalDate.of(2020, 11, 22))
+                        .build()))
                     .isInstanceOf(NotFoundException.class);
             }
         }
@@ -1304,7 +1317,11 @@ public class CustodyServiceTest {
             @Test
             @DisplayName("then the custody record will be returned")
             void willReturnCustody() {
-                final var custody = custodyService.offenderReleased("G9542VP", LocalDate.of(2020, 11, 22));
+                final var custody = custodyService.offenderReleased("G9542VP",
+                    OffenderReleasedNotification.builder()
+                        .nomsPrisonInstitutionCode("MDI")
+                        .releaseDate(LocalDate.of(2020, 11, 22))
+                        .build());
                 assertThat(custody.getStatus().getDescription()).isEqualTo("In Custody");
             }
         }

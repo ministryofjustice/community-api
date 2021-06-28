@@ -37,12 +37,12 @@ public class CustodyController_recallOffenderTest {
 
     @Test
     public void missingOffender_returnsNotFound() {
-        when(custodyService.offenderRecalled("G3333AA", new OffenderRecalledNotification("MDI", LocalDate.of(2020, 11, 22))))
+        when(custodyService.offenderRecalled("G3333AA", createOffenderRecalled()))
             .thenThrow(new NotFoundException(String.format("Offender with nomsNumber %s not found", "G3333AA")));
 
         given()
             .contentType(APPLICATION_JSON_VALUE)
-            .body(createOffenderRecalled("MDI", LocalDate.of(2020, 11, 22)))
+            .body(createOffenderRecalled())
             .when()
             .put("/secure/offenders/nomsNumber/G3333AA/recalled")
             .then()
@@ -54,7 +54,7 @@ public class CustodyController_recallOffenderTest {
 
         given()
             .contentType(APPLICATION_JSON_VALUE)
-            .body(createOffenderRecalled(null, LocalDate.of(2020, 11, 22)))
+            .body(OffenderRecalledNotification.builder().recallDate(LocalDate.of(2020, 11, 22)).build())
             .when()
             .put("/secure/offenders/nomsNumber/G3333AA/recalled")
             .then()
@@ -66,7 +66,7 @@ public class CustodyController_recallOffenderTest {
 
         given()
             .contentType(APPLICATION_JSON_VALUE)
-            .body(createOffenderRecalled("MDI", null))
+            .body(OffenderRecalledNotification.builder().nomsPrisonInstitutionCode("MDI").build())
             .when()
             .put("/secure/offenders/nomsNumber/G3333AA/recalled")
             .then()
@@ -78,7 +78,7 @@ public class CustodyController_recallOffenderTest {
 
         given()
             .contentType(APPLICATION_JSON_VALUE)
-            .body(createOffenderRecalled(null, null))
+            .body(OffenderRecalledNotification.builder().build())
             .when()
             .put("/secure/offenders/nomsNumber/G3333AA/recalled")
             .then()
@@ -87,12 +87,12 @@ public class CustodyController_recallOffenderTest {
 
     @Test
     public void multipleActiveConvictions_returnsConflict() {
-        when(custodyService.offenderRecalled("G3333AA", new OffenderRecalledNotification("MDI", LocalDate.of(2020, 11, 22))))
+        when(custodyService.offenderRecalled("G3333AA", createOffenderRecalled()))
             .thenThrow(new ConflictingRequestException(String.format("Multiple active convictions found")));
 
         given()
             .contentType(APPLICATION_JSON_VALUE)
-            .body(createOffenderRecalled("MDI", LocalDate.of(2020, 11, 22)))
+            .body(createOffenderRecalled())
             .when()
             .put("/secure/offenders/nomsNumber/G3333AA/recalled")
             .then()
@@ -101,12 +101,12 @@ public class CustodyController_recallOffenderTest {
 
     @Test
     public void noActiveConvictions_returnsConflict() {
-        when(custodyService.offenderRecalled("G3333AA", new OffenderRecalledNotification("MDI", LocalDate.of(2020, 11, 22))))
+        when(custodyService.offenderRecalled("G3333AA", createOffenderRecalled()))
             .thenThrow(new ConflictingRequestException(String.format("No active convictions found")));
 
         given()
             .contentType(APPLICATION_JSON_VALUE)
-            .body(createOffenderRecalled("MDI", LocalDate.of(2020, 11, 22)))
+            .body(createOffenderRecalled())
             .when()
             .put("/secure/offenders/nomsNumber/G3333AA/recalled")
             .then()
@@ -115,23 +115,23 @@ public class CustodyController_recallOffenderTest {
 
     @Test
     public void singleActiveConviction_success() {
-        when(custodyService.offenderRecalled("G3333AA", new OffenderRecalledNotification("MDI", LocalDate.of(2020, 11, 22))))
+        when(custodyService.offenderRecalled("G3333AA", createOffenderRecalled()))
             .thenReturn(Custody.builder().build());
 
         given()
             .contentType(APPLICATION_JSON_VALUE)
-            .body(createOffenderRecalled("MDI", LocalDate.of(2020, 11, 22)))
+            .body(createOffenderRecalled())
             .when()
             .put("/secure/offenders/nomsNumber/G3333AA/recalled")
             .then()
             .statusCode(HttpStatus.OK.value());
     }
 
-    private OffenderRecalledNotification createOffenderRecalled(String nomsPrisonInstitutionCode, LocalDate recallDate) {
+    private OffenderRecalledNotification createOffenderRecalled() {
         return OffenderRecalledNotification
             .builder()
-            .nomsPrisonInstitutionCode(nomsPrisonInstitutionCode)
-            .recallDate(recallDate)
+            .nomsPrisonInstitutionCode("MDI")
+            .recallDate(LocalDate.of(2020, 11, 22))
             .build();
     }
 

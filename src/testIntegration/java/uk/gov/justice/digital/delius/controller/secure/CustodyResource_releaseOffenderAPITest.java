@@ -12,7 +12,9 @@ import uk.gov.justice.digital.delius.data.api.Custody;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -30,7 +32,7 @@ public class CustodyResource_releaseOffenderAPITest extends IntegrationTestBase 
         given()
             .auth().oauth2(token)
             .contentType("application/json")
-            .body("{\"occurred\" : \"2020-12-22\"}")
+            .body("{\"nomsPrisonInstitutionCode\" : \"MDI\", \"releaseDate\" : \"2020-12-22\"}")
             .when()
             .put("/offenders/nomsNumber/G0560UO/released")
             .then()
@@ -45,7 +47,7 @@ public class CustodyResource_releaseOffenderAPITest extends IntegrationTestBase 
         given()
             .auth().oauth2(token)
             .contentType("application/json")
-            .body("{\"occurred\" : \"2020-12-22\"}")
+            .body("{\"nomsPrisonInstitutionCode\" : \"MDI\", \"releaseDate\" : \"2020-12-22\"}")
             .when()
             .put("/offenders/nomsNumber/g4106un/released")
             .then()
@@ -64,7 +66,7 @@ public class CustodyResource_releaseOffenderAPITest extends IntegrationTestBase 
         given()
             .auth().oauth2(token)
             .contentType("application/json")
-            .body("{\"occurred\" : \"2020-12-22\"}")
+            .body("{\"nomsPrisonInstitutionCode\" : \"MDI\", \"releaseDate\" : \"2020-12-22\"}")
             .when()
             .put("/offenders/nomsNumber/X1235YZ/released")
             .then()
@@ -83,7 +85,7 @@ public class CustodyResource_releaseOffenderAPITest extends IntegrationTestBase 
         final var custody = given()
             .auth().oauth2(token)
             .contentType("application/json")
-            .body("{\"occurred\" : \"2020-12-22\"}")
+            .body("{\"nomsPrisonInstitutionCode\" : \"MDI\", \"releaseDate\" : \"2020-12-22\"}")
             .when()
             .put("/offenders/nomsNumber/G9542VP/released")
             .then()

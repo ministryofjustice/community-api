@@ -13,6 +13,7 @@ import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.OffenderRecalledNotification;
+import uk.gov.justice.digital.delius.data.api.OffenderReleasedNotification;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustodyBookingNumber;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CustodyHistory;
@@ -232,7 +233,6 @@ public class CustodyService {
         final var offender = offenderRepository.findByNomsNumber(nomsNumber)
             .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
 
-        log.info("Offender {} recalled from {} on {}", nomsNumber, recalledNotification.getNomsPrisonInstitutionCode(), recalledNotification.getRecallDate());
         final var telemetryProperties = Map.of("offenderNo", nomsNumber,
             "recallDate", recalledNotification.getRecallDate().format(DateTimeFormatter.ISO_DATE),
             "institution", recalledNotification.getNomsPrisonInstitutionCode());
@@ -249,18 +249,20 @@ public class CustodyService {
     }
 
     @Transactional
-    public Custody offenderReleased(final String nomsNumber, final LocalDate occurred) {
+    public Custody offenderReleased(final String nomsNumber, final OffenderReleasedNotification releasedNotification) {
         final var offender = offenderRepository.findByNomsNumber(nomsNumber)
             .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
 
-        log.info("Offender {} released on {}", nomsNumber, occurred);
+        final var telemetryProperties = Map.of("offenderNo", nomsNumber,
+            "recallDate", releasedNotification.getReleaseDate().format(DateTimeFormatter.ISO_DATE),
+            "institution", releasedNotification.getNomsPrisonInstitutionCode());
 
         try {
             Event event = convictionService.getActiveCustodialEvent(offender.getOffenderId());
-            telemetryClient.trackEvent( "P2POffenderReleased");
+            telemetryClient.trackEvent( "P2POffenderReleased", telemetryProperties, null);
             return ConvictionTransformer.custodyOf(event.getDisposal().getCustody());
         } catch (SingleActiveCustodyConvictionNotFoundException e) {
-            telemetryClient.trackEvent( "P2POffenderReleasedNoSingleConviction");
+            telemetryClient.trackEvent( "P2POffenderReleasedNoSingleConviction", telemetryProperties, null);
             throw new ConflictingRequestException(e.getMessage());
         }
     }
