@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -27,4 +29,8 @@ public class Team {
     private KeyValue district;
     @ApiModelProperty(value = "Team's borough")
     private KeyValue borough;
+    @ApiModelProperty(value = "Team's start date")
+    private LocalDate startDate;
+    @ApiModelProperty(value = "Team's end date")
+    private LocalDate endDate;
 }
