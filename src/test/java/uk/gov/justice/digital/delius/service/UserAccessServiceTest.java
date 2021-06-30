@@ -46,9 +46,9 @@ class UserAccessServiceTest {
     @BeforeEach
     public void setUp(){
         userAccessService = new UserAccessService(userService, offenderService, currentUserSupplier,
-            Set.of(SCOPE_IGNORE_EXCLUSIONS), Set.of(SCOPE_IGNORE_RESTRICTIONS), true);
+            Set.of(SCOPE_IGNORE_EXCLUSIONS), Set.of(SCOPE_IGNORE_RESTRICTIONS));
         userAccessServiceToggleOff = new UserAccessService(userService, offenderService, currentUserSupplier,
-            Set.of(SCOPE_IGNORE_EXCLUSIONS), Set.of(SCOPE_IGNORE_RESTRICTIONS), false);
+            Set.of(SCOPE_IGNORE_EXCLUSIONS), Set.of(SCOPE_IGNORE_RESTRICTIONS));
     }
 
     @Test
@@ -78,13 +78,6 @@ class UserAccessServiceTest {
             .withMessage(EXCLUSION_MESSAGE);
 
         verify(offenderService, atMostOnce()).getOffenderByCrn(CRN);
-        verifyNoMoreInteractions(offenderService, userService, currentUserSupplier, offender);
-    }
-
-    @Test
-    public void givenUserIsExcluded_andToggleOff_thenAccessAllowed(){
-        userAccessServiceToggleOff.checkExclusionsAndRestrictions(CRN, Collections.emptySet());
-
         verifyNoMoreInteractions(offenderService, userService, currentUserSupplier, offender);
     }
 
@@ -131,12 +124,6 @@ class UserAccessServiceTest {
             .withMessage(RESTRICTION_MESSAGE);
 
         verify(offenderService, atMost(2)).getOffenderByCrn(CRN);
-        verifyNoMoreInteractions(offenderService, userService, currentUserSupplier, offender);
-    }
-
-    @Test
-    public void givenUserIsRestricted_andToggleOff_thenAccessAllowed(){
-        userAccessServiceToggleOff.checkExclusionsAndRestrictions(CRN, Collections.emptySet());
         verifyNoMoreInteractions(offenderService, userService, currentUserSupplier, offender);
     }
 
