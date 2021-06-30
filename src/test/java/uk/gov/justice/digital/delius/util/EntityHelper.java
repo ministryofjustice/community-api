@@ -383,24 +383,32 @@ public class EntityHelper {
                 .build();
     }
 
+    public static PersonalContact aPersonalContact() {
+        return PersonalContact.builder()
+            .personalContactId(2500058493L)
+            .relationship("Father")
+            .startDate(LocalDateTime.of(2019, 9, 13, 0, 0))
+            .endDate(LocalDateTime.of(2020, 9, 13, 0, 0))
+            .firstName("Smile")
+            .otherNames("Danger")
+            .surname("Barry")
+            .previousSurname("Steve")
+            .mobileNumber("0123456789")
+            .emailAddress("example@example.com")
+            .notes("Some personal contact notes")
+            .relationshipType(aStandardReference("RT01", "Drug Worker"))
+            .createdDatetime(LocalDateTime.now())
+            .lastUpdatedDatetime(LocalDateTime.now())
+            .title(aStandardReference("LDY", "Lady"))
+            .gender(aStandardReference("F", "Female"))
+            .build();
+    }
+
     public static PersonalContactDocument aPersonalContactDocument() {
         final var document = new PersonalContactDocument();
         populateBasics(document);
         document.setPersonalContact(aPersonalContact());
         return document;
-    }
-
-    private static PersonalContact aPersonalContact() {
-        return PersonalContact
-                .builder()
-                .relationship("Father")
-                .relationshipType(
-                        StandardReference
-                                .builder()
-                                .codeDescription("GP")
-                                .build()
-                )
-                .build();
     }
 
     public static ReferralDocument aReferralDocument(final Long eventId) {

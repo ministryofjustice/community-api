@@ -45,12 +45,14 @@ public class PersonalContact {
     private Long softDeleted;
     @Column(name = "ROW_VERSION")
     private Long rowVersion;
-    @Column(name = "GENDER_ID")
-    private Long genderId;
+    @ManyToOne
+    @JoinColumn(name = "GENDER_ID")
+    private StandardReference gender;
     @Column(name = "NOTES")
     private String notes;
-    @Column(name = "TITLE_ID")
-    private Long titleId;
+    @ManyToOne
+    @JoinColumn(name = "TITLE_ID")
+    private StandardReference title;
     @ManyToOne
     @JoinColumn(name = "RELATIONSHIP_TYPE_ID")
     private StandardReference relationshipType;

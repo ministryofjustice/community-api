@@ -240,6 +240,10 @@ public class Offender {
     @JoinColumn(name = "CURRENT_TIER")
     private StandardReference currentTier;
 
+    @OneToMany
+    @JoinColumn(name = "OFFENDER_ID")
+    @Where(clause = "SOFT_DELETED != 1")
+    private List<PersonalContact> personalContacts;
 
     public Optional<PrisonOffenderManager> getResponsibleOfficerWhoIsPrisonOffenderManager() {
         return getActivePrisonOffenderManager()

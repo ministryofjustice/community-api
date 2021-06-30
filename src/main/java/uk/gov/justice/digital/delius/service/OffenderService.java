@@ -14,6 +14,7 @@ import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderIdentifiers;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
 import uk.gov.justice.digital.delius.data.api.OffenderManager;
+import uk.gov.justice.digital.delius.data.api.PersonalContact;
 import uk.gov.justice.digital.delius.data.api.PrimaryIdentifiers;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
@@ -27,11 +28,13 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderPrimaryIden
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository.DuplicateOffenderException;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
+import uk.gov.justice.digital.delius.transformers.PersonalContactTransformer;
 import uk.gov.justice.digital.delius.transformers.ReleaseTransformer;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.function.Predicate.not;
 
@@ -242,5 +245,10 @@ public class OffenderService {
                         .build());
     }
 
-
+    @Transactional(readOnly = true)
+    public List<PersonalContact> getOffenderPersonalContactsByCrn(String crn) {
+        return offenderRepository.findByCrn(crn)
+            .map(offender -> offender.getPersonalContacts().stream().map(PersonalContactTransformer::personalContactOf).collect(Collectors.toList()))
+            .orElseThrow(() -> new NotFoundException("Offender not found"));
+    }
 }

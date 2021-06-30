@@ -46,6 +46,7 @@ import uk.gov.justice.digital.delius.data.api.OffenderAssessments;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
+import uk.gov.justice.digital.delius.data.api.PersonalContact;
 import uk.gov.justice.digital.delius.data.api.PrimaryIdentifiers;
 import uk.gov.justice.digital.delius.data.api.ProbationStatusDetail;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
@@ -694,6 +695,15 @@ public class OffendersResource {
     public ProbationStatusDetail getOffenderProbationStatusByCrn(final @PathVariable("crn") String crn) {
         return convictionService.probationStatusFor(crn)
             .orElseThrow(() -> new NotFoundException("Offender not found"));
+    }
+
+    @ApiOperation(value = "Gets all offender personal contacts by CRN")
+    @GetMapping(path = "/offenders/crn/{crn}/personalContacts")
+    public List<PersonalContact> getAllOffenderPersonalContactsByCrn(
+        @ApiParam(name = "crn", value = "CRN of the offender", example = "X320741", required = true)
+        @NotNull
+        @PathVariable(value = "crn") final String crn) {
+        return offenderService.getOffenderPersonalContactsByCrn(crn);
     }
 
     private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(final OffenderDetail offender) {
