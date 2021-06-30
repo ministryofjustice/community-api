@@ -17,6 +17,8 @@ public class TeamTransformer {
                 .localDeliveryUnit(keyValueOf(team.getDistrict()))
                 // Delius repurposes LDUs to represent a logical grouping of teams which it describes as "team types"
                 .teamType(keyValueOf(team.getLocalDeliveryUnit()))
+                .startDate(team.getStartDate())
+                .endDate(team.getEndDate())
                 .build();
     }
 

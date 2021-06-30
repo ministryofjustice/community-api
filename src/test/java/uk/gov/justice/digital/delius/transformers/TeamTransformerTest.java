@@ -5,6 +5,9 @@ import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
+
+import java.time.LocalDate;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aDistrict;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aTeam;
@@ -62,12 +65,40 @@ public class TeamTransformerTest {
     @Test
     public void willCopyLduAcrossAsTeamType() {
         assertThat(TeamTransformer
-                .teamOf(aTeam().toBuilder()
-                        .localDeliveryUnit(LocalDeliveryUnit.builder().code("LL")
-                                .description("My Description").build())
-                        .build())
-                .getTeamType()).isEqualTo(
-                KeyValue.builder().code("LL").description("My Description").build());
+            .teamOf(aTeam().toBuilder()
+                .localDeliveryUnit(LocalDeliveryUnit.builder().code("LL")
+                    .description("My Description").build())
+                .build())
+            .getTeamType()).isEqualTo(
+            KeyValue.builder().code("LL").description("My Description").build());
+    }
+
+    @Test
+    public void willStartDate() {
+        assertThat(TeamTransformer
+            .teamOf(aTeam().toBuilder()
+                .startDate(LocalDate.now())
+                .build())
+            .getStartDate()).isEqualTo(LocalDate.now());
+
+        assertThat(TeamTransformer
+            .teamOf(aTeam().toBuilder()
+                .build())
+            .getStartDate()).isEqualTo(LocalDate.now());
+    }
+
+    @Test
+    public void willEndDate() {
+        assertThat(TeamTransformer
+            .teamOf(aTeam().toBuilder()
+                .endDate(LocalDate.now())
+                .build())
+            .getEndDate()).isEqualTo(LocalDate.now());
+
+        assertThat(TeamTransformer
+            .teamOf(aTeam().toBuilder()
+                .build())
+            .getEndDate()).isNull();
     }
 
     @Test
