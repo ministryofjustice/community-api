@@ -7,7 +7,6 @@ import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.NsiMapping;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
-import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.data.api.ContextlessReferralEndRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessReferralStartRequest;
 import uk.gov.justice.digital.delius.data.api.Nsi;
@@ -151,7 +150,7 @@ public class ReferralService {
             .orElse(existingNsis);
 
         if (filteredNsis.size() > 1) {
-            throw new ConflictingRequestException("Multiple existing matching NSIs found");
+            throw new BadRequestException("Multiple existing matching NSIs found");
         }
         return filteredNsis;
     }

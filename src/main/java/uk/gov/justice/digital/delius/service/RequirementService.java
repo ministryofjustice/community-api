@@ -123,6 +123,7 @@ public class RequirementService {
 
         var requirements = getRequirementsByConvictionId(crn, eventId)
             .getRequirements().stream()
+            .filter(Requirement::getActive)
             .filter(requirement ->
                 ofNullable(requirement.getRequirementTypeMainCategory())
                     .map(cat -> requirementTypeCode.equals(cat.getCode()))

@@ -228,6 +228,7 @@ public class RequirementServiceTest {
             when(disposal.getRequirements()).thenReturn(Collections.singletonList(Requirement
                 .builder()
                 .requirementId(99L)
+                .activeFlag(1L)
                 .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build())
                 .build()));
             var requirement = requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE);
@@ -235,11 +236,24 @@ public class RequirementServiceTest {
         }
 
         @Test
-        public void whenGetReferralRequirementByConvictionId_AndRequirementNotMatchingCategory_thenThrowException() {
+        public void whenGetReferralRequirementByConvictionId_AndRequirementNotMatchingCategory_thenNoMatch() {
             when(disposal.getRequirements()).thenReturn(Collections.singletonList(Requirement
                 .builder()
                 .requirementId(99L)
+                .activeFlag(1L)
                 .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("X").build())
+                .build()));
+
+            assertThat(requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE)).isEmpty();
+        }
+
+        @Test
+        public void whenGetReferralRequirementByConvictionId_AndRequirementNotActive_thenNoMatch() {
+            when(disposal.getRequirements()).thenReturn(Collections.singletonList(Requirement
+                .builder()
+                .requirementId(99L)
+                .activeFlag(0L)
+                .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build())
                 .build()));
 
             assertThat(requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE)).isEmpty();
@@ -248,9 +262,9 @@ public class RequirementServiceTest {
         @Test
         public void whenGetReferralRequirementByConvictionId_AndMultipleRequirementsExist_thenThrowException() {
             when(disposal.getRequirements()).thenReturn(Arrays.asList(
-                Requirement.builder().requirementId(99L)
+                Requirement.builder().requirementId(99L).activeFlag(1L)
                     .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build()).build(),
-                Requirement.builder().requirementId(100L)
+                Requirement.builder().requirementId(100L).activeFlag(1L)
                     .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build()).build())
             );
 

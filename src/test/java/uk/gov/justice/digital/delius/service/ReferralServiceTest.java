@@ -443,7 +443,7 @@ public class ReferralServiceTest {
             when(nsiService.getNsiByCodes(any(), any(), any())).thenReturn(
                 of(NsiWrapper.builder().nsis(asList(MATCHING_NSI, MATCHING_NSI)).build()));
 
-            final var exception = assertThrows(ConflictingRequestException.class,
+            final var exception = assertThrows(BadRequestException.class,
                 () -> referralService.getExistingMatchingNsi(OFFENDER_CRN, INTEGRATION_CONTEXT, REFERRAL_START_REQUEST.getSentenceId(), REFERRAL_START_REQUEST.getContractType(), REFERRAL_START_REQUEST.getStartedAt(), REFERRAL_START_REQUEST.getReferralId()));
 
             assertThat(exception.getMessage()).isEqualTo("Multiple existing matching NSIs found");
