@@ -41,10 +41,10 @@ public class PersonalCircumstance {
     @Column(name = "LAST_UPDATED_DATETIME")
     private LocalDateTime lastUpdatedDatetime;
     @JoinColumn(name = "CIRCUMSTANCE_TYPE_ID")
-    @OneToOne
+    @ManyToOne
     private CircumstanceType circumstanceType;
     @JoinColumn(name = "CIRCUMSTANCE_SUB_TYPE_ID")
-    @OneToOne
+    @ManyToOne
     private CircumstanceSubType circumstanceSubType;
     @Column(name = "NOTES")
     private String notes;
@@ -59,6 +59,6 @@ public class PersonalCircumstance {
     @Column(name = "OFFENDER_ADDRESS_ID")
     private Long offenderAddressId;
     @JoinColumn(name = "PROBATION_AREA_ID")
-    @OneToOne
+    @ManyToOne
     private ProbationArea probationArea;
 }

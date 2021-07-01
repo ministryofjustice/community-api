@@ -10,7 +10,6 @@ import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.IDs;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.ManagedOffender;
-import uk.gov.justice.digital.delius.data.api.OffenderAssessments;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderLanguages;
@@ -20,13 +19,14 @@ import uk.gov.justice.digital.delius.data.api.PhoneNumber;
 import uk.gov.justice.digital.delius.data.api.PreviousConviction;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.data.api.Team;
+import uk.gov.justice.digital.delius.jpa.standard.entity.AddressAssessment;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disability;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
-import uk.gov.justice.digital.delius.jpa.standard.entity.OGRSAssessment;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAddress;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PartitionArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalCircumstance;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderTeam;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Provision;
@@ -101,25 +101,48 @@ public class OffenderTransformer {
     }
 
     private static Address addressOf(OffenderAddress address) {
+        final var personalCircumstance = Optional.ofNullable(address.getPersonalCircumstances())
+            .flatMap(personalCircumstances -> personalCircumstances.stream()
+                .filter(x -> x.getEndDate() == null || x.getEndDate().isAfter(LocalDate.now()))
+                .max(Comparator.comparing(PersonalCircumstance::getStartDate)));
+
         return Address.builder()
-                .addressNumber(address.getAddressNumber())
-                .buildingName(address.getBuildingName())
-                .streetName(address.getStreetName())
-                .district(address.getDistrict())
-                .town(address.getTownCity())
-                .county(address.getCounty())
-                .postcode(address.getPostcode())
-                .telephoneNumber(address.getTelephoneNumber())
-                .notes(address.getNotes())
-                .noFixedAbode(ynToBoolean(address.getNoFixedAbode()))
-                .from(address.getStartDate())
-                .to(address.getEndDate())
-                .status(Optional.ofNullable(address.getAddressStatus()).map(status ->
-                        KeyValue.builder()
-                                .code(status.getCodeValue())
-                                .description(status.getCodeDescription()).build())
-                        .orElse(null))
-                .build();
+            .addressNumber(address.getAddressNumber())
+            .buildingName(address.getBuildingName())
+            .streetName(address.getStreetName())
+            .district(address.getDistrict())
+            .town(address.getTownCity())
+            .county(address.getCounty())
+            .postcode(address.getPostcode())
+            .telephoneNumber(address.getTelephoneNumber())
+            .notes(address.getNotes())
+            .noFixedAbode(ynToBoolean(address.getNoFixedAbode()))
+            .from(address.getStartDate())
+            .to(address.getEndDate())
+            .status(Optional.ofNullable(address.getAddressStatus()).map(status ->
+                KeyValue.builder()
+                        .code(status.getCodeValue())
+                        .description(status.getCodeDescription()).build())
+                .orElse(null))
+            .type(personalCircumstance
+                .map(PersonalCircumstance::getCircumstanceSubType)
+                .map(x -> KeyValue.builder()
+                    .code(x.getCodeValue())
+                    .description(x.getCodeDescription())
+                    .build())
+                .orElse(null))
+            .typeVerified(personalCircumstance
+                .map(PersonalCircumstance::getEvidenced)
+                .map(TypesTransformer::ynToBoolean)
+                .orElse(false))
+            .latestAssessmentDate(Optional.ofNullable(address.getAddressAssessments())
+                .flatMap(assessments -> assessments.stream()
+                    .map(AddressAssessment::getAssessmentDate)
+                    .max(Comparator.naturalOrder()))
+                .orElse(null))
+            .createdDatetime(address.getCreatedDatetime())
+            .lastUpdatedDatetime(address.getLastUpdatedDatetime())
+            .build();
     }
 
     private static ContactDetails contactDetailsOf(Offender offender) {
