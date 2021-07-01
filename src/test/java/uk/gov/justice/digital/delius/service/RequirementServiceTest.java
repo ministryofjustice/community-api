@@ -231,7 +231,7 @@ public class RequirementServiceTest {
                 .activeFlag(1L)
                 .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build())
                 .build()));
-            var requirement = requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE);
+            var requirement = requirementService.getActiveRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE);
             assertThat(requirement.orElse(null).getRequirementId()).isEqualTo(99L);
         }
 
@@ -244,7 +244,7 @@ public class RequirementServiceTest {
                 .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("X").build())
                 .build()));
 
-            assertThat(requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE)).isEmpty();
+            assertThat(requirementService.getActiveRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE)).isEmpty();
         }
 
         @Test
@@ -256,7 +256,7 @@ public class RequirementServiceTest {
                 .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build())
                 .build()));
 
-            assertThat(requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE)).isEmpty();
+            assertThat(requirementService.getActiveRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE)).isEmpty();
         }
 
         @Test
@@ -269,7 +269,7 @@ public class RequirementServiceTest {
             );
 
             assertThatExceptionOfType(BadRequestException.class)
-                .isThrownBy(() -> requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE))
+                .isThrownBy(() -> requirementService.getActiveRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE))
                 .withMessage("CRN: CRN EventId: 987654321 has multiple referral requirements");
         }
 
@@ -277,7 +277,7 @@ public class RequirementServiceTest {
         public void whenGetReferralRequirementByConvictionId_AndNoRequirementsExist_thenReturnEmptyOptional() {
             when(disposal.getRequirements()).thenReturn(Collections.emptyList());
 
-            assertThat(requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE)).isEmpty();
+            assertThat(requirementService.getActiveRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE)).isEmpty();
         }
 
         @Test

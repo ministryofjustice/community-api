@@ -181,7 +181,7 @@ public class ReferralService {
     }
 
     Optional<Long> getRequirement(String crn, Long sentenceId, IntegrationContext context) {
-        return requirementService.getRequirement(crn, sentenceId, context.getRequirementRehabilitationActivityType())
+        return requirementService.getActiveRequirement(crn, sentenceId, context.getRequirementRehabilitationActivityType())
             .map(Requirement::getRequirementId);
     }
 

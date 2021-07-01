@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
-import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.data.api.ContextlessReferralEndRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessReferralStartRequest;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
@@ -160,7 +159,7 @@ public class ReferralServiceTest {
         public void creatingNewNsiCallsDeliusApi() {
 
             Requirement requirement = Requirement.builder().requirementId(REQUIREMENT_ID).build();
-            when(requirementService.getRequirement(OFFENDER_CRN, SENTENCE_ID, RAR_TYPE_CODE)).thenReturn(of(requirement));
+            when(requirementService.getActiveRequirement(OFFENDER_CRN, SENTENCE_ID, RAR_TYPE_CODE)).thenReturn(of(requirement));
             var deliusApiResponse = NsiDto.builder().id(66853L).build();
 
             when(deliusApiClient.createNewNsi(any())).thenReturn(deliusApiResponse);
@@ -193,7 +192,7 @@ public class ReferralServiceTest {
         public void creatingNewNsiFromReferralRequestWithNoId() {
 
             Requirement requirement = Requirement.builder().requirementId(REQUIREMENT_ID).build();
-            when(requirementService.getRequirement(OFFENDER_CRN, SENTENCE_ID, RAR_TYPE_CODE)).thenReturn(of(requirement));
+            when(requirementService.getActiveRequirement(OFFENDER_CRN, SENTENCE_ID, RAR_TYPE_CODE)).thenReturn(of(requirement));
             var deliusApiResponse = NsiDto.builder().id(66853L).build();
 
             when(deliusApiClient.createNewNsi(any())).thenReturn(deliusApiResponse);
@@ -225,7 +224,7 @@ public class ReferralServiceTest {
         @Test
         public void creatingNewNsiCallsDeliusApi_withNoRequirement() {
 
-            when(requirementService.getRequirement(OFFENDER_CRN, SENTENCE_ID, RAR_TYPE_CODE)).thenReturn(empty());
+            when(requirementService.getActiveRequirement(OFFENDER_CRN, SENTENCE_ID, RAR_TYPE_CODE)).thenReturn(empty());
             var deliusApiResponse = NsiDto.builder().id(66853L).build();
 
             when(deliusApiClient.createNewNsi(any())).thenReturn(deliusApiResponse);
@@ -454,7 +453,7 @@ public class ReferralServiceTest {
     public void throwsExceptionIfNsiTypeMappingNotFound() {
 
         Requirement requirement = Requirement.builder().requirementId(REQUIREMENT_ID).build();
-        when(requirementService.getRequirement(OFFENDER_CRN, SENTENCE_ID, RAR_TYPE_CODE)).thenReturn(of(requirement));
+        when(requirementService.getActiveRequirement(OFFENDER_CRN, SENTENCE_ID, RAR_TYPE_CODE)).thenReturn(of(requirement));
 
         var nsiRequest = REFERRAL_START_REQUEST
             .toBuilder()
