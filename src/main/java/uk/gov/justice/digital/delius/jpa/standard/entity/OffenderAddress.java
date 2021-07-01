@@ -4,15 +4,21 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -73,4 +79,19 @@ public class OffenderAddress {
     @Column(name = "TOWN_CITY")
     private String townCity;
 
+    @Column(name = "CREATED_DATETIME")
+    private LocalDateTime createdDatetime;
+
+    @Column(name = "LAST_UPDATED_DATETIME")
+    private LocalDateTime lastUpdatedDatetime;
+
+    @OneToMany
+    @JoinColumn(name = "OFFENDER_ADDRESS_ID")
+    @Where(clause = "SOFT_DELETED != 1")
+    private List<PersonalCircumstance> personalCircumstances;
+
+    @OneToMany
+    @JoinColumn(name = "OFFENDER_ADDRESS_ID")
+    @Where(clause = "SOFT_DELETED != 1")
+    private List<AddressAssessment> addressAssessments;
 }

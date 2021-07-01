@@ -53,7 +53,19 @@ public class OffendersResource_getOffenderByCrn extends IntegrationTestBase {
         assertThat(disability.getProvisions().get(0).getNotes()).isEqualTo("stair lift");
         assertThat(disability.getProvisions().get(0).getStartDate()).isEqualTo(LocalDate.of(2021, 1, 13));
         assertThat(disability.getProvisions().get(0).getFinishDate()).isNull();
+
+        assertThat(offenderDetail.getContactDetails().getAddresses())
+            .hasSize(1)
+            .first()
+            .hasFieldOrPropertyWithValue("postcode", "S10 2NA")
+            .hasFieldOrPropertyWithValue("status.code", "M")
+            .hasFieldOrPropertyWithValue("status.description", "Main")
+            .hasFieldOrPropertyWithValue("type.code", "APMP1")
+            .hasFieldOrPropertyWithValue("type.description", "MiP approved")
+            .hasFieldOrPropertyWithValue("typeVerified", true);
+
     }
+
 
     @Test
     public void canGetOffenderSummaryByCrn() {

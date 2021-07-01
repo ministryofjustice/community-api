@@ -577,4 +577,29 @@ public class OffenderTransformerTest {
                 );
     }
 
+    @Test
+    void addressesAreTransformed() {
+        final var source = EntityHelper.anOffender();
+        final var address = source.getOffenderAddresses().get(0);
+
+        final var observed = OffenderTransformer.fullOffenderOf(source).getContactDetails().getAddresses();
+
+        assertThat(observed)
+            .hasSize(1)
+            .first()
+            .hasFieldOrPropertyWithValue("town", address.getTownCity())
+            .hasFieldOrPropertyWithValue("type.code", "A02")
+            .hasFieldOrPropertyWithValue("type.description", "Approved Premises")
+            .hasFieldOrPropertyWithValue("typeVerified", true)
+            .hasFieldOrPropertyWithValue("latestAssessmentDate", LocalDateTime.of(2010, 6, 11, 12, 0))
+            .hasFieldOrPropertyWithValue("from", address.getStartDate())
+            .hasFieldOrPropertyWithValue("to", address.getEndDate())
+            .hasFieldOrPropertyWithValue("status.code", "M")
+            .hasFieldOrPropertyWithValue("status.description", "Main")
+            .hasFieldOrPropertyWithValue("noFixedAbode", true)
+            .usingRecursiveComparison()
+            .ignoringFields("town", "type", "typeVerified", "latestAssessmentDate", "from", "to", "status", "noFixedAbode")
+            .isEqualTo(address);
+    }
+
 }
