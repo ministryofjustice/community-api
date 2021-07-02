@@ -7,6 +7,7 @@ import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderManager;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,6 +27,14 @@ public class OffendersResource_getOffenderByCrn extends IntegrationTestBase {
             .extract()
             .body()
             .as(OffenderDetail.class);
+
+        assertThat(offenderDetail)
+            .hasFieldOrPropertyWithValue("firstName", "Aadland")
+            .hasFieldOrPropertyWithValue("middleNames", List.of("Danger"))
+            .hasFieldOrPropertyWithValue("surname", "Bertrand")
+            .hasFieldOrPropertyWithValue("preferredName", "Bob")
+            .hasFieldOrPropertyWithValue("offenderProfile.genderIdentity", "Prefer to self-describe")
+            .hasFieldOrPropertyWithValue("offenderProfile.selfDescribedGender", "Jedi");
 
         assertThat(offenderDetail.getOtherIds().getCrn()).isEqualTo("X320741");
         final var offenderManager = offenderDetail.getOffenderManagers().stream().filter(OffenderManager::getActive).findAny();

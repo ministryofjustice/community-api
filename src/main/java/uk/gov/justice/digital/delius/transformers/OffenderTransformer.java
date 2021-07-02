@@ -85,6 +85,8 @@ public class OffenderTransformer {
                 .riskColour(Optional.ofNullable(offender.getCurrentHighestRiskColour()).orElse(null))
                 .offenderDetails(offender.getOffenderDetails())
                 .disabilities(disabilitiesOf(offender.getDisabilities()))
+                .genderIdentity(Optional.ofNullable(offender.getGenderIdentity()).map(StandardReference::getCodeDescription).orElse(null))
+                .selfDescribedGender(offender.getSelfDescribedGender())
                 .build();
     }
 
@@ -195,6 +197,7 @@ public class OffenderTransformer {
                 .gender(offender.getGender().getCodeDescription())
                 .middleNames(combinedMiddleNamesOf(offender.getSecondName(), offender.getThirdName()))
                 .surname(offender.getSurname())
+                .preferredName(offender.getPreferredName())
                 .previousSurname(offender.getPreviousSurname())
                 .title(Optional.ofNullable(offender.getTitle()).map(StandardReference::getCodeDescription).orElse(null))
                 .contactDetails(contactDetailsOf(offender))

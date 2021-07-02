@@ -4021,6 +4021,11 @@ create table OFFENDER
             check (MENTAL_HEALTH IN ('Y', 'N')),
     CDC_CUSTODY_START_DATE         DATE,
     DYNAMIC_RSR_SCORE              NUMBER(5, 2),
+    PREFERRED_NAME VARCHAR2(35),
+    GENDER_IDENTITY_ID NUMBER
+        constraint R_1314
+            references R_STANDARD_REFERENCE_LIST,
+    GENDER_IDENTITY_DESCRIPTION VARCHAR2(50),
     foreign key (INSTITUTION_ID, ESTABLISHMENT) references R_INSTITUTION
 )
     ;
