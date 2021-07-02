@@ -87,6 +87,7 @@ public interface OffenderHelper {
                 .religion(StandardReference.builder().codeDescription("COFE").build())
                 .restrictionMessage("Restriction message")
                 .secondName("Arthur")
+                .thirdName("Steve")
                 .surname("Sykes")
                 .telephoneNumber("018118055")
                 .title(StandardReference.builder().codeDescription("Mr").build())
@@ -115,6 +116,9 @@ public interface OffenderHelper {
                         .startDate(LocalDate.now())
                         .disabilityType(StandardReference.builder().codeValue("SI").codeDescription("Speech Impairment").build())
                         .build()))
+                .preferredName("Bob")
+                .genderIdentity(StandardReference.builder().codeDescription("Prefer to self describe").build())
+                .selfDescribedGender("Jedi")
                 .build();
     }
 }

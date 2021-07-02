@@ -25,6 +25,8 @@ public class OffenderDetail {
     private String surname;
     @ApiModelProperty(example = "Davis")
     private String previousSurname;
+    @ApiModelProperty(name = "Preferred name or commonly known as", example = "Bob")
+    private String preferredName;
     @ApiModelProperty(example = "1982-10-24")
     private LocalDate dateOfBirth;
     @ApiModelProperty(example = "Male")
