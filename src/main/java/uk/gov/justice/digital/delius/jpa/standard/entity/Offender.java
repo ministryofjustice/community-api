@@ -114,6 +114,16 @@ public class Offender {
     @JoinColumn(name = "GENDER_ID")
     private StandardReference gender;
 
+    @Column(name = "PREFERRED_NAME")
+    private String preferredName;
+
+    @ManyToOne()
+    @JoinColumn(name = "GENDER_IDENTITY_ID")
+    private StandardReference genderIdentity;
+
+    @Column(name = "GENDER_IDENTITY_DESCRIPTION")
+    private String selfDescribedGender;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ETHNICITY_ID")
     private StandardReference ethnicity;

@@ -602,4 +602,19 @@ public class OffenderTransformerTest {
             .isEqualTo(address);
     }
 
+    @Test
+    void basicInfoCopied() {
+        final var source = EntityHelper.anOffender();
+
+        final var observed = OffenderTransformer.fullOffenderOf(source);
+
+        assertThat(observed)
+            .hasFieldOrPropertyWithValue("firstName", "Bill")
+            .hasFieldOrPropertyWithValue("middleNames", List.of("Arthur", "Steve"))
+            .hasFieldOrPropertyWithValue("surname", "Sykes")
+            .hasFieldOrPropertyWithValue("preferredName", "Bob")
+            .hasFieldOrPropertyWithValue("offenderProfile.genderIdentity", "Prefer to self describe")
+            .hasFieldOrPropertyWithValue("offenderProfile.selfDescribedGender", "Jedi");
+    }
+
 }
