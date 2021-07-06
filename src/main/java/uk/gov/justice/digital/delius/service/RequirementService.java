@@ -117,7 +117,8 @@ public class RequirementService {
     // In the context of NSI's for interventions, the offender's sentence is the event against which
     // the NSI is created. This sentence is supplied by interventions as part of the "referral sent
     // request". This method takes the sentence and finds any associated requirements and returns one
-    // that has a main category of F - rehab activity requirement. It is invalid for multiple active ones to exist.
+    // that has a main category of F - rehab activity requirement. If multiple active ones exist
+    // the one with the latest start date is chosen.
     // NB. The called method getRequirementsByConvictionId accepts an event id (conviction or sentence)
     // and perhaps should have been named getRequirementsByEventId
     public Optional<Requirement> getActiveRequirement(String crn, Long eventId, String requirementTypeCode) {
