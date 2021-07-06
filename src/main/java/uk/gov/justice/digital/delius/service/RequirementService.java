@@ -24,6 +24,7 @@ import java.util.function.Predicate;
 
 import static java.lang.String.format;
 import static java.util.Comparator.comparing;
+import static java.util.Comparator.reverseOrder;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 
@@ -130,7 +131,7 @@ public class RequirementService {
                 ofNullable(requirement.getRequirementTypeMainCategory())
                     .map(cat -> requirementTypeCode.equals(cat.getCode()))
                     .orElse(false))
-            .sorted(comparing(Requirement::getStartDate).reversed())
+            .sorted(comparing(Requirement::getStartDate, reverseOrder()).thenComparing(Requirement::getCreatedDatetime, reverseOrder()))
             .findFirst();
     }
 }

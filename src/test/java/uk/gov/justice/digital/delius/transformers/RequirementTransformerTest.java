@@ -10,6 +10,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCate
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,6 +52,7 @@ public class RequirementTransformerTest {
         LocalDate startDate = LocalDate.of(2020, 3, 1);
         LocalDate terminationDate = LocalDate.of(2020, 4, 1);
         LocalDate expectedStartDate = LocalDate.of(2020, 5, 1);
+        LocalDateTime createdDatetime = LocalDateTime.of(2020, 5, 1, 2, 3, 4);
         Requirement requirement = Requirement.builder()
             .requirementId(88L)
             .activeFlag(1L)
@@ -59,6 +61,7 @@ public class RequirementTransformerTest {
             .expectedEndDate(expectedEndDate)
             .startDate(startDate)
             .terminationDate(terminationDate)
+            .createdDatetime(createdDatetime)
             .length(6L)
             .requirementNotes("Notes")
             .adRequirementTypeMainCategory(AdRequirementTypeMainCategory.builder()
@@ -90,6 +93,7 @@ public class RequirementTransformerTest {
         assertThat(pssRequirement.getRequirementNotes()).isEqualTo("Notes");
         assertThat(pssRequirement.getStartDate()).isEqualTo(startDate);
         assertThat(pssRequirement.getTerminationDate()).isEqualTo(terminationDate);
+        assertThat(pssRequirement.getCreatedDatetime()).isEqualTo(createdDatetime);
         assertThat(pssRequirement.getExpectedStartDate()).isEqualTo(expectedStartDate);
         assertThat(pssRequirement.getAdRequirementTypeMainCategory().getDescription()).isEqualTo("AdMain");
         assertThat(pssRequirement.getAdRequirementTypeSubCategory().getDescription()).isEqualTo("AdSub");

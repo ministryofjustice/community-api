@@ -262,10 +262,16 @@ public class RequirementServiceTest {
 
         @Test
         public void whenGetReferralRequirementByConvictionId_AndMultipleRequirementsExist_thenSelectLatest() {
+            LocalDateTime now = LocalDateTime.now();
             when(disposal.getRequirements()).thenReturn(Arrays.asList(
-                Requirement.builder().requirementId(99L).activeFlag(1L).startDate(now().minusDays(1))
+                Requirement.builder().requirementId(99L).activeFlag(1L)
+                    .startDate(now.minusDays(1).toLocalDate()).createdDatetime(now)
                     .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build()).build(),
-                Requirement.builder().requirementId(100L).activeFlag(1L).startDate(now())
+                Requirement.builder().requirementId(100L).activeFlag(1L)
+                    .startDate(now.toLocalDate()).createdDatetime(now.plusHours(2))
+                    .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build()).build(),
+                Requirement.builder().requirementId(101L).activeFlag(1L)
+                    .startDate(now.toLocalDate()).createdDatetime(now.plusHours(1))
                     .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build()).build())
             );
 
