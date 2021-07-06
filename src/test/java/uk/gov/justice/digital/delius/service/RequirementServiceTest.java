@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
+import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.when;
@@ -260,17 +261,16 @@ public class RequirementServiceTest {
         }
 
         @Test
-        public void whenGetReferralRequirementByConvictionId_AndMultipleRequirementsExist_thenThrowException() {
+        public void whenGetReferralRequirementByConvictionId_AndMultipleRequirementsExist_thenSelectLatest() {
             when(disposal.getRequirements()).thenReturn(Arrays.asList(
-                Requirement.builder().requirementId(99L).activeFlag(1L)
+                Requirement.builder().requirementId(99L).activeFlag(1L).startDate(now().minusDays(1))
                     .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build()).build(),
-                Requirement.builder().requirementId(100L).activeFlag(1L)
+                Requirement.builder().requirementId(100L).activeFlag(1L).startDate(now())
                     .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build()).build())
             );
 
-            assertThatExceptionOfType(BadRequestException.class)
-                .isThrownBy(() -> requirementService.getActiveRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE))
-                .withMessage("CRN: CRN EventId: 987654321 has multiple referral requirements");
+            Optional<uk.gov.justice.digital.delius.data.api.Requirement> activeRequirement = requirementService.getActiveRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE);
+            assertThat(activeRequirement.get().getRequirementId()).isEqualTo(100L);
         }
 
         @Test

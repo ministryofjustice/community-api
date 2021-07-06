@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import static java.lang.String.format;
+import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 
@@ -121,21 +122,14 @@ public class RequirementService {
     // and perhaps should have been named getRequirementsByEventId
     public Optional<Requirement> getActiveRequirement(String crn, Long eventId, String requirementTypeCode) {
 
-        var requirements = getRequirementsByConvictionId(crn, eventId)
+        return getRequirementsByConvictionId(crn, eventId)
             .getRequirements().stream()
             .filter(Requirement::getActive)
             .filter(requirement ->
                 ofNullable(requirement.getRequirementTypeMainCategory())
                     .map(cat -> requirementTypeCode.equals(cat.getCode()))
                     .orElse(false))
-            .collect(toList());
-
-        if ( requirements.size() > 1 ) {
-            throw new BadRequestException(format("CRN: %s EventId: %d has multiple referral requirements", crn, eventId));
-        }
-
-        return requirements.stream().findFirst();
+            .sorted(comparing(Requirement::getStartDate).reversed())
+            .findFirst();
     }
-
-
 }
