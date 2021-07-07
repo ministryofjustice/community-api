@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -22,6 +23,7 @@ public class Requirement {
     private LocalDate terminationDate;
     private LocalDate expectedStartDate;
     private LocalDate expectedEndDate;
+    private LocalDateTime createdDatetime;
     @ApiModelProperty(value = "Is the requirement currently active")
     private Boolean active;
     private KeyValue requirementTypeSubCategory;

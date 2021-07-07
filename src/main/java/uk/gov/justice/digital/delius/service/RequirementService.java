@@ -23,6 +23,8 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import static java.lang.String.format;
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.reverseOrder;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 
@@ -116,26 +118,20 @@ public class RequirementService {
     // In the context of NSI's for interventions, the offender's sentence is the event against which
     // the NSI is created. This sentence is supplied by interventions as part of the "referral sent
     // request". This method takes the sentence and finds any associated requirements and returns one
-    // that has a main category of F - rehab activity requirement. It is invalid for multiple active ones to exist.
+    // that has a main category of F - rehab activity requirement. If multiple active ones exist
+    // the one with the latest start date is chosen.
     // NB. The called method getRequirementsByConvictionId accepts an event id (conviction or sentence)
     // and perhaps should have been named getRequirementsByEventId
     public Optional<Requirement> getActiveRequirement(String crn, Long eventId, String requirementTypeCode) {
 
-        var requirements = getRequirementsByConvictionId(crn, eventId)
+        return getRequirementsByConvictionId(crn, eventId)
             .getRequirements().stream()
             .filter(Requirement::getActive)
             .filter(requirement ->
                 ofNullable(requirement.getRequirementTypeMainCategory())
                     .map(cat -> requirementTypeCode.equals(cat.getCode()))
                     .orElse(false))
-            .collect(toList());
-
-        if ( requirements.size() > 1 ) {
-            throw new BadRequestException(format("CRN: %s EventId: %d has multiple referral requirements", crn, eventId));
-        }
-
-        return requirements.stream().findFirst();
+            .sorted(comparing(Requirement::getStartDate, reverseOrder()).thenComparing(Requirement::getCreatedDatetime, reverseOrder()))
+            .findFirst();
     }
-
-
 }
