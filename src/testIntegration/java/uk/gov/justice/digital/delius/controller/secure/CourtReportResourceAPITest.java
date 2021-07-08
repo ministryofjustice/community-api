@@ -8,12 +8,12 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-public class CourtReportResourceAPITest extends IntegrationTestBase {
+class CourtReportResourceAPITest extends IntegrationTestBase {
 
     private static final String COURT_REPORT_PATH_FORMAT = "/offenders/crn/%s/courtReports/%s";
 
     @Test
-    public void givenUnknownCrn_whenGetCourtReport_thenReturnNotFound() {
+    void givenUnknownCrn_whenGetCourtReport_thenReturnNotFound() {
         given()
             .auth()
             .oauth2(tokenWithRoleCommunity())
@@ -25,7 +25,7 @@ public class CourtReportResourceAPITest extends IntegrationTestBase {
     }
 
     @Test
-    public void givenKnownCrnUnknownReportId_whenGetCourtReport_thenReturnNotFound() {
+    void givenKnownCrnUnknownReportId_whenGetCourtReport_thenReturnNotFound() {
         given()
             .auth()
             .oauth2(tokenWithRoleCommunity())
@@ -37,7 +37,7 @@ public class CourtReportResourceAPITest extends IntegrationTestBase {
     }
 
     @Test
-    public void canGetOffenderDetailsByCrn() {
+    void canGetOffenderDetailsByCrn() {
         given()
             .auth()
             .oauth2(tokenWithRoleCommunity())
@@ -55,7 +55,6 @@ public class CourtReportResourceAPITest extends IntegrationTestBase {
             .body("sentToCourtDate", equalTo("2021-02-04T00:00:00"))
             .body("receivedByCourtDate", equalTo("2021-02-05T00:00:00"))
             .body("courtReportType.code", equalTo("CJF"))
-            .body("courtReportType.description", equalTo("Pre-Sentence Report - Fast"))
-        ;
+            .body("courtReportType.description", equalTo("Pre-Sentence Report - Fast"));
     }
 }
