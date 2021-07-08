@@ -37,7 +37,7 @@ public class CourtReportResource {
     private final CourtReportService courtReportService;
     private final UserAccessService userAccessService;
 
-    @ApiOperation(value = "Return the CourtReport for an offender and report ID", tags = {"Court Report"})
+    @ApiOperation(value = "Return the CourtReport for an offender and report ID", tags = {"Court appearances"})
     @ApiResponses(
         value = {
             @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
