@@ -52,7 +52,7 @@ class CourtReportResourceTest {
         when(offenderService.offenderIdOfCrn(CRN)).thenReturn(Optional.of(OFFENDER_ID));
         when(courtReportService.courtReportMinimalFor(OFFENDER_ID, REPORT_ID)).thenReturn(Optional.of(courtReportMinimal));
 
-        final var responseEntity = courtReportResource.getOffenderCourtReportsByCrn(CRN, REPORT_ID, authentication);
+        final var responseEntity = courtReportResource.getOffenderCourtReportByCrnAndCourtReportId(CRN, REPORT_ID, authentication);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody()).isSameAs(courtReportMinimal);
@@ -65,7 +65,7 @@ class CourtReportResourceTest {
 
         when(offenderService.offenderIdOfCrn(CRN)).thenReturn(Optional.empty());
 
-        final var responseEntity = courtReportResource.getOffenderCourtReportsByCrn(CRN, REPORT_ID, authentication);
+        final var responseEntity = courtReportResource.getOffenderCourtReportByCrnAndCourtReportId(CRN, REPORT_ID, authentication);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 
@@ -78,7 +78,7 @@ class CourtReportResourceTest {
         when(offenderService.offenderIdOfCrn(CRN)).thenReturn(Optional.of(OFFENDER_ID));
         when(courtReportService.courtReportMinimalFor(OFFENDER_ID, REPORT_ID)).thenReturn(Optional.empty());
 
-        final var responseEntity = courtReportResource.getOffenderCourtReportsByCrn(CRN, REPORT_ID, authentication);
+        final var responseEntity = courtReportResource.getOffenderCourtReportByCrnAndCourtReportId(CRN, REPORT_ID, authentication);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 

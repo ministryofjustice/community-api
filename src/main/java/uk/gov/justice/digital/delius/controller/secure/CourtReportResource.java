@@ -46,7 +46,7 @@ public class CourtReportResource {
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
         })
     @RequestMapping(value = "offenders/crn/{crn}/courtReports/{courtReportId}", method = RequestMethod.GET)
-    public ResponseEntity<CourtReportMinimal> getOffenderCourtReportsByCrn(final @PathVariable("crn") String crn,
+    public ResponseEntity<CourtReportMinimal> getOffenderCourtReportByCrnAndCourtReportId(final @PathVariable("crn") String crn,
                                                                         final @PathVariable Long courtReportId,
                                                                         final Authentication authentication) {
         userAccessService.checkExclusionsAndRestrictions(crn, authentication.getAuthorities());
