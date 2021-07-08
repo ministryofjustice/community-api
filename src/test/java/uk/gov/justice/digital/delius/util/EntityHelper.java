@@ -270,27 +270,40 @@ public class EntityHelper {
     public static Court aCourt(final String code) {
         return Court.builder().code(code).courtId(99L).courtName("Sheffield Crown Court").build();
     }
-    private static CourtReport aCourtReport() {
+
+    public static CourtReport aCourtReport(LocalDateTime requestedDate, LocalDateTime requiredDate, LocalDateTime completedDate, RCourtReportType courtReportType) {
         return CourtReport
+            .builder()
+            .courtReportId(1L)
+            .offenderId(1L)
+            .dateRequested(requestedDate)
+            .dateRequired(requiredDate)
+            .completedDate(completedDate)
+            .allocationDate(LocalDateTime.now())
+            .sentToCourtDate(LocalDateTime.now())
+            .receivedByCourtDate(LocalDateTime.now())
+            .courtReportType(courtReportType)
+            .courtAppearance(CourtAppearance
                 .builder()
-                .dateRequested(LocalDateTime.now())
-                .courtReportType(RCourtReportType
-                        .builder()
-                        .description("Pre-Sentence Report - Standard")
-                        .code("CJS")
-                        .build())
-                .courtAppearance(CourtAppearance
-                        .builder()
-                        .court(Court
-                                .builder()
-                                .courtName("Sheffield Magistrates Court")
-                                .build())
-                        .event(Event
-                                .builder()
-                                .eventId(1L)
-                                .build())
-                        .build())
-                .build();
+                .court(Court
+                    .builder()
+                    .courtName("Sheffield Magistrates Court")
+                    .build())
+                .event(Event
+                    .builder()
+                    .eventId(1L)
+                    .build())
+                .build())
+            .build();
+    }
+
+    private static CourtReport aCourtReport() {
+        final var courtReportType = RCourtReportType
+                                        .builder()
+                                        .description("Pre-Sentence Report - Standard")
+                                        .code("CJS")
+                                        .build();
+        return aCourtReport(LocalDateTime.now(), LocalDateTime.now().plusDays(1), null, courtReportType);
     }
 
     private static void populateBasics(final Document document) {

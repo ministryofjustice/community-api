@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import uk.gov.justice.digital.delius.data.api.CourtReport;
+import uk.gov.justice.digital.delius.data.api.CourtReportMinimal;
+import uk.gov.justice.digital.delius.data.api.KeyValue;
 
 import java.util.Optional;
 
@@ -39,6 +41,23 @@ public class CourtReportTransformer {
                         .build();
     }
 
-
+    public static CourtReportMinimal courtReportMinimalOf(uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport report) {
+        return CourtReportMinimal.builder()
+            .courtReportId(report.getCourtReportId())
+            .offenderId(report.getOffenderId())
+            .requestedDate(report.getDateRequested())
+            .requiredDate(report.getDateRequired())
+            .allocationDate(report.getAllocationDate())
+            .completedDate(report.getCompletedDate())
+            .sentToCourtDate(report.getSentToCourtDate())
+            .receivedByCourtDate(report.getReceivedByCourtDate())
+            .courtReportType(Optional.ofNullable(report.getCourtReportType())
+                                                    .map(reportType -> KeyValue.builder()
+                                                                        .code(reportType.getCode())
+                                                                        .description(reportType.getDescription())
+                                                                        .build())
+                                                    .orElse(null))
+            .build();
+    }
 
 }

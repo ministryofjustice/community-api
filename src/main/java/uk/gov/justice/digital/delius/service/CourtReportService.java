@@ -3,6 +3,7 @@ package uk.gov.justice.digital.delius.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.data.api.CourtReport;
+import uk.gov.justice.digital.delius.data.api.CourtReportMinimal;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CourtReportRepository;
 import uk.gov.justice.digital.delius.transformers.CourtReportTransformer;
 
@@ -37,10 +38,19 @@ public class CourtReportService {
 
     public Optional<CourtReport> courtReportFor(Long offenderId, Long courtReportId) {
 
-        Optional<uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport> maybeCourtReport = courtReportRepository.findByOffenderIdAndCourtReportId(offenderId, courtReportId);
-        return maybeCourtReport
-                .filter(this::notDeleted)
+        return notDeletedCourtReportFor(offenderId, courtReportId)
                 .map(CourtReportTransformer::courtReportOf);
+    }
+
+    public Optional<CourtReportMinimal> courtReportMinimalFor(Long offenderId, Long courtReportId) {
+
+        return notDeletedCourtReportFor(offenderId, courtReportId)
+            .map(CourtReportTransformer::courtReportMinimalOf);
+    }
+
+    private Optional<uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport> notDeletedCourtReportFor(Long offenderId, Long courtReportId) {
+        Optional<uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport> maybeCourtReport = courtReportRepository.findByOffenderIdAndCourtReportId(offenderId, courtReportId);
+        return maybeCourtReport.filter(this::notDeleted);
     }
 
     private boolean notDeleted(uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport courtReport) {

@@ -74,4 +74,9 @@ public class CourtReportServiceTest {
         verify(courtReportRepository).findByOffenderIdAndCourtReportId(1L, 4L);
     }
 
+    @Test
+    public void minimalCourtReport() {
+        assertThat(courtReportService.courtReportMinimalFor(1L, 0L).get().getCourtReportId()).isEqualTo(4);
+    }
+
 }
