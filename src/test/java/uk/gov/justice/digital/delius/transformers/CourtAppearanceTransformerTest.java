@@ -32,7 +32,7 @@ public class CourtAppearanceTransformerTest {
                     .build(),
                 uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport.builder()
                     .courtReportId(2L)
-                    .softDeleted(1L)
+                    .softDeleted(true)
                     .build(),
                 uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport.builder()
                     .courtReportId(3L)

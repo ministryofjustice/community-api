@@ -34,10 +34,10 @@ public class CourtReportServiceTest {
         when(courtReportRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(
                 CourtReport.builder().courtReportId(1L).offenderId(1L).dateRequested(LocalDateTime.now().minusDays(98)).build(),
                 CourtReport.builder().courtReportId(2L).offenderId(1L).dateRequested(LocalDateTime.now().minusDays(1)).build(),
-                CourtReport.builder().courtReportId(3L).offenderId(1L).dateRequested(LocalDateTime.now()).softDeleted(1L).build(),
+                CourtReport.builder().courtReportId(3L).offenderId(1L).dateRequested(LocalDateTime.now()).softDeleted(true).build(),
                 CourtReport.builder().courtReportId(4L).offenderId(1L).dateRequested(LocalDateTime.now().minusDays(99)).build()
         ));
-        when(courtReportRepository.findByOffenderIdAndCourtReportId(any(), any())).thenReturn(
+        when(courtReportRepository.findByOffenderIdAndCourtReportIdAndSoftDeletedFalse(any(), any())).thenReturn(
                 Optional.of(CourtReport.builder().courtReportId(4L).offenderId(1L).build()));
 
     }
@@ -55,23 +55,15 @@ public class CourtReportServiceTest {
     }
 
     @Test
-    public void courtReportForFiltersRecords() {
-        when(courtReportRepository.findByOffenderIdAndCourtReportId(any(), any())).thenReturn(
-                Optional.of(CourtReport.builder().courtReportId(4L).offenderId(1L).softDeleted(1L).build()));
-
-        assertThat(courtReportService.courtReportFor(1L, 4L).isPresent()).isFalse();
-
-        when(courtReportRepository.findByOffenderIdAndCourtReportId(any(), any())).thenReturn(
-                Optional.of(CourtReport.builder().courtReportId(4L).offenderId(1L).softDeleted(0L).build()));
-
-        assertThat(courtReportService.courtReportFor(1L, 4L).isPresent()).isTrue();
-    }
-
-    @Test
     public void courtReportForUsesBothOffenderIdAndCourtIdForLookup() {
         courtReportService.courtReportFor(1L, 4L);
 
-        verify(courtReportRepository).findByOffenderIdAndCourtReportId(1L, 4L);
+        verify(courtReportRepository).findByOffenderIdAndCourtReportIdAndSoftDeletedFalse(1L, 4L);
+    }
+
+    @Test
+    public void minimalCourtReport() {
+        assertThat(courtReportService.courtReportMinimalFor(1L, 0L).get().getCourtReportId()).isEqualTo(4);
     }
 
 }
