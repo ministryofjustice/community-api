@@ -74,7 +74,7 @@ public class CourtReport {
     private String recommendationsNotStated;
 
     @Column(name = "SOFT_DELETED")
-    private Long softDeleted;
+    private boolean softDeleted;
 
     @Column(name = "PARTITION_AREA_ID")
     private Long partitionAreaId;

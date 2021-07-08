@@ -13,7 +13,7 @@ class CourtReportResourceAPITest extends IntegrationTestBase {
     private static final String COURT_REPORT_PATH_FORMAT = "/offenders/crn/%s/courtReports/%s";
 
     @Test
-    void givenUnknownCrn_whenGetCourtReport_thenReturnNotFound() {
+    void givenUnknownCrn_whenGetCourtReport_thenNotFound() {
         given()
             .auth()
             .oauth2(tokenWithRoleCommunity())
@@ -25,7 +25,7 @@ class CourtReportResourceAPITest extends IntegrationTestBase {
     }
 
     @Test
-    void givenKnownCrnUnknownReportId_whenGetCourtReport_thenReturnNotFound() {
+    void givenKnownCrnUnknownReportId_whenGetCourtReport_thenNotFound() {
         given()
             .auth()
             .oauth2(tokenWithRoleCommunity())
@@ -33,11 +33,11 @@ class CourtReportResourceAPITest extends IntegrationTestBase {
             .when()
             .get(String.format(COURT_REPORT_PATH_FORMAT, "X320741", "123"))
             .then()
-            .statusCode(404);
+            .statusCode(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
-    void canGetOffenderDetailsByCrn() {
+    void givenKnownValues_whenGetCourtReport_thenReturn() {
         given()
             .auth()
             .oauth2(tokenWithRoleCommunity())
@@ -56,5 +56,17 @@ class CourtReportResourceAPITest extends IntegrationTestBase {
             .body("receivedByCourtDate", equalTo("2021-02-05T00:00:00"))
             .body("courtReportType.code", equalTo("CJF"))
             .body("courtReportType.description", equalTo("Pre-Sentence Report - Fast"));
+    }
+
+    @Test
+    void givenKnownValuesButSoftDeletedReport_whenGetCourtReport_thenNotFound() {
+        given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get(String.format(COURT_REPORT_PATH_FORMAT, "X320741", "2"))
+            .then()
+            .statusCode(HttpStatus.NOT_FOUND.value());
     }
 }

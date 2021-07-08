@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import java.util.Optional;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -8,22 +7,19 @@ import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.CourtReportMinimal;
 import uk.gov.justice.digital.delius.service.CourtReportService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.UserAccessService;
-
-import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @Slf4j
@@ -46,20 +42,19 @@ public class CourtReportResource {
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
         })
     @RequestMapping(value = "offenders/crn/{crn}/courtReports/{courtReportId}", method = RequestMethod.GET)
-    public ResponseEntity<CourtReportMinimal> getOffenderCourtReportByCrnAndCourtReportId(final @PathVariable("crn") String crn,
+    public CourtReportMinimal getOffenderCourtReportByCrnAndCourtReportId(final @PathVariable("crn") String crn,
                                                                         final @PathVariable Long courtReportId,
                                                                         final Authentication authentication) {
         userAccessService.checkExclusionsAndRestrictions(crn, authentication.getAuthorities());
 
         log.info("Call to getOffenderCourtReportByCrnAndCourtReportId");
-        return courtReportResponseEntityOf(offenderService.offenderIdOfCrn(crn), courtReportId);
+        final var offenderId = offenderService.offenderIdOfCrn(crn).orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
+        return courtReportResponseEntityOf(offenderId, courtReportId);
     }
 
-    private ResponseEntity<CourtReportMinimal> courtReportResponseEntityOf(Optional<Long> maybeOffenderId,  Long courtReportId) {
-        final var maybeCourtReport = maybeOffenderId.flatMap(offenderId -> courtReportService.courtReportMinimalFor(offenderId, courtReportId));
-        return maybeCourtReport.map(courtReport -> new ResponseEntity<>(courtReport, OK))
-                                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-
+    private CourtReportMinimal courtReportResponseEntityOf(Long offenderId,  Long courtReportId) {
+        return courtReportService.courtReportMinimalFor(offenderId, courtReportId)
+                .orElseThrow(() -> new NotFoundException(String.format("Court report with ID %s not found", courtReportId)));
     }
 
 }

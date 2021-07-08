@@ -7,8 +7,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.CourtReportMinimal;
 import uk.gov.justice.digital.delius.service.CourtReportService;
 import uk.gov.justice.digital.delius.service.OffenderService;
@@ -16,6 +16,7 @@ import uk.gov.justice.digital.delius.service.UserAccessService;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -52,10 +53,9 @@ class CourtReportResourceTest {
         when(offenderService.offenderIdOfCrn(CRN)).thenReturn(Optional.of(OFFENDER_ID));
         when(courtReportService.courtReportMinimalFor(OFFENDER_ID, REPORT_ID)).thenReturn(Optional.of(courtReportMinimal));
 
-        final var responseEntity = courtReportResource.getOffenderCourtReportByCrnAndCourtReportId(CRN, REPORT_ID, authentication);
+        final var courtReport = courtReportResource.getOffenderCourtReportByCrnAndCourtReportId(CRN, REPORT_ID, authentication);
 
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody()).isSameAs(courtReportMinimal);
+        assertThat(courtReport).isSameAs(courtReportMinimal);
 
         verify(userAccessService).checkExclusionsAndRestrictions(eq(CRN), eq(emptyList()));
     }
@@ -65,9 +65,11 @@ class CourtReportResourceTest {
 
         when(offenderService.offenderIdOfCrn(CRN)).thenReturn(Optional.empty());
 
-        final var responseEntity = courtReportResource.getOffenderCourtReportByCrnAndCourtReportId(CRN, REPORT_ID, authentication);
-
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        var thrown = assertThrows(
+            NotFoundException.class,
+            () -> courtReportResource.getOffenderCourtReportByCrnAndCourtReportId(CRN, REPORT_ID, authentication)
+        );
+        assertThat(thrown.getMessage()).contains("Offender with crn X321741 not found");
 
         verify(userAccessService).checkExclusionsAndRestrictions(eq(CRN), eq(emptyList()));
     }
@@ -78,9 +80,11 @@ class CourtReportResourceTest {
         when(offenderService.offenderIdOfCrn(CRN)).thenReturn(Optional.of(OFFENDER_ID));
         when(courtReportService.courtReportMinimalFor(OFFENDER_ID, REPORT_ID)).thenReturn(Optional.empty());
 
-        final var responseEntity = courtReportResource.getOffenderCourtReportByCrnAndCourtReportId(CRN, REPORT_ID, authentication);
-
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        var thrown = assertThrows(
+            NotFoundException.class,
+            () -> courtReportResource.getOffenderCourtReportByCrnAndCourtReportId(CRN, REPORT_ID, authentication)
+        );
+        assertThat(thrown.getMessage()).contains("Court report with ID 1 not found");
 
         verify(userAccessService).checkExclusionsAndRestrictions(eq(CRN), eq(emptyList()));
     }

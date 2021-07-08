@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface CourtReportRepository extends JpaRepository<CourtReport, Long> {
     List<CourtReport> findByOffenderId(Long offenderId);
 
-    Optional<CourtReport> findByOffenderIdAndCourtReportId(Long offenderId, Long courtReportId);
+    Optional<CourtReport> findByOffenderIdAndCourtReportIdAndSoftDeletedFalse(Long offenderId, Long courtReportId);
 }

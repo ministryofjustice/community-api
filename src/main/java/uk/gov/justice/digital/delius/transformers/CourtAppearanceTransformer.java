@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
-import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
 
 public class CourtAppearanceTransformer {
 
@@ -47,7 +46,7 @@ public class CourtAppearanceTransformer {
 
     private static List<CourtReport> courtReportsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport> courtReports) {
         return courtReports.stream()
-            .filter(report -> !convertToBoolean(report.getSoftDeleted()))
+            .filter(report -> !report.isSoftDeleted())
             .map(CourtReportTransformer::courtReportOf)
             .collect(toList());
     }
