@@ -98,7 +98,6 @@ features:
         update-bulk-key-dates: false
         update-key-dates: false
         update-prison-location: false
-  apply-limited-access-markers: false
   registers:
     court-code-allowed-pattern: ""
 
@@ -111,6 +110,7 @@ delius-integration-context:
       requirement-rehabilitation-activity-type: F
       nsi-mapping:
         nsi-status: INPROG
+        nsi-end-status: COMP
         contract-type-to-nsi-type:
           ACC: CRS01
           ETE: CRS02

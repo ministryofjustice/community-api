@@ -8,6 +8,55 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class OffendersResource_checkUserAccessByCrn extends IntegrationTestBase {
+    @Test
+    public void canCheckUserAccessByCrnWithRoleProbation() {
+        // this endpoint can be called with regular delius user tokens (ROLE_PROBATION)
+        final var accessLimitation = given()
+            .auth()
+            .oauth2(createJwtWithUsername("bob.jones", "ROLE_PROBATION"))
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get("/offenders/crn/X320741/userAccess")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(AccessLimitation.class);
+
+        assertThat(accessLimitation.isUserExcluded()).isFalse();
+        assertThat(accessLimitation.getExclusionMessage()).isNullOrEmpty();
+        assertThat(accessLimitation.isUserRestricted()).isFalse();
+        assertThat(accessLimitation.getRestrictionMessage()).isNullOrEmpty();
+    }
+
+    @Test
+    public void canOnlyCheckUserAccessByCrnAndUsernameWithRoleCommunity() {
+        // since this endpoint allows arbitrary username access lookups, it is
+        // not available to regular user (ROLE_PROBATION) tokens
+        given()
+            .auth()
+            .oauth2(createJwt("ROLE_COMMUNITY"))
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get("/offenders/crn/X320741/user/bob.jones/userAccess")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(AccessLimitation.class);
+
+        given()
+            .auth()
+            .oauth2(createJwt("ROLE_PROBATION"))
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get("/offenders/crn/X320741/user/bob.jones/userAccess")
+            .then()
+            .statusCode(403)
+            .extract()
+            .body()
+            .as(AccessLimitation.class);
+    }
 
     @Test
     public void canCheckUserAccessByCrnNoRestrictionsOrExclusions() {

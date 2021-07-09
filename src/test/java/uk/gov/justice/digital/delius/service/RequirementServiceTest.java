@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.LicenceConditions;
 import uk.gov.justice.digital.delius.data.api.PssRequirements;
@@ -30,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
+import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.when;
@@ -227,42 +229,76 @@ public class RequirementServiceTest {
             when(disposal.getRequirements()).thenReturn(Collections.singletonList(Requirement
                 .builder()
                 .requirementId(99L)
+                .activeFlag(1L)
+                .softDeleted(0L)
                 .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build())
                 .build()));
-            var requirement = requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE);
+            var requirement = requirementService.getActiveRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE);
             assertThat(requirement.orElse(null).getRequirementId()).isEqualTo(99L);
         }
 
         @Test
-        public void whenGetReferralRequirementByConvictionId_AndRequirementNotMatchingCategory_thenThrowException() {
+        public void whenGetReferralRequirementByConvictionId_AndRequirementNotMatchingCategory_thenNoMatch() {
             when(disposal.getRequirements()).thenReturn(Collections.singletonList(Requirement
                 .builder()
                 .requirementId(99L)
+                .activeFlag(1L)
+                .softDeleted(0L)
                 .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("X").build())
                 .build()));
 
-            assertThat(requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE)).isEmpty();
+            assertThat(requirementService.getActiveRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE)).isEmpty();
         }
 
         @Test
-        public void whenGetReferralRequirementByConvictionId_AndMultipleRequirementsExist_thenThrowException() {
+        public void whenGetReferralRequirementByConvictionId_AndRequirementNotActive_thenNoMatch() {
+            when(disposal.getRequirements()).thenReturn(Collections.singletonList(Requirement
+                .builder()
+                .requirementId(99L)
+                .activeFlag(0L)
+                .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build())
+                .build()));
+
+            assertThat(requirementService.getActiveRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE)).isEmpty();
+        }
+
+        @Test
+        public void whenGetReferralRequirementByConvictionId_AndRequirementSoftDeleted_thenNoMatch() {
+            when(disposal.getRequirements()).thenReturn(Collections.singletonList(Requirement
+                .builder()
+                .requirementId(99L)
+                .activeFlag(1L)
+                .softDeleted(1L)
+                .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build())
+                .build()));
+
+            assertThat(requirementService.getActiveRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE)).isEmpty();
+        }
+
+        @Test
+        public void whenGetReferralRequirementByConvictionId_AndMultipleRequirementsExist_thenSelectLatest() {
+            LocalDateTime now = LocalDateTime.now();
             when(disposal.getRequirements()).thenReturn(Arrays.asList(
-                Requirement.builder().requirementId(99L)
+                Requirement.builder().requirementId(99L).activeFlag(1L).softDeleted(0L)
+                    .startDate(now.minusDays(1).toLocalDate()).createdDatetime(now)
                     .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build()).build(),
-                Requirement.builder().requirementId(100L)
+                Requirement.builder().requirementId(100L).activeFlag(1L).softDeleted(0L)
+                    .startDate(now.toLocalDate()).createdDatetime(now.plusHours(2))
+                    .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build()).build(),
+                Requirement.builder().requirementId(101L).activeFlag(1L).softDeleted(0L)
+                    .startDate(now.toLocalDate()).createdDatetime(now.plusHours(1))
                     .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build()).build())
             );
 
-            assertThatExceptionOfType(IllegalStateException.class)
-                .isThrownBy(() -> requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE))
-                .withMessage("CRN: CRN EventId: 987654321 has multiple referral requirements");
+            Optional<uk.gov.justice.digital.delius.data.api.Requirement> activeRequirement = requirementService.getActiveRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE);
+            assertThat(activeRequirement.get().getRequirementId()).isEqualTo(100L);
         }
 
         @Test
         public void whenGetReferralRequirementByConvictionId_AndNoRequirementsExist_thenReturnEmptyOptional() {
             when(disposal.getRequirements()).thenReturn(Collections.emptyList());
 
-            assertThat(requirementService.getRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE)).isEmpty();
+            assertThat(requirementService.getActiveRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE)).isEmpty();
         }
 
         @Test

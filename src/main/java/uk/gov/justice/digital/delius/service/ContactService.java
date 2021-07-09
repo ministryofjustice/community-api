@@ -1,10 +1,14 @@
 package uk.gov.justice.digital.delius.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.Contact;
+import uk.gov.justice.digital.delius.data.api.ContactSummary;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
@@ -28,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.springframework.data.domain.Sort.Direction.DESC;
 import static uk.gov.justice.digital.delius.jpa.standard.entity.Contact.*;
 
 @Service
@@ -47,6 +52,12 @@ public class ContactService {
 
     public List<Contact> contactsFor(final Long offenderId, final ContactFilter filter) {
         return ContactTransformer.contactsOf(contactRepository.findAll(filter.toBuilder().offenderId(offenderId).build()));
+    }
+
+    public Page<ContactSummary> contactSummariesFor(final Long offenderId, final ContactFilter filter, final int page, final int pageSize) {
+        final var pagination = PageRequest.of(page, pageSize, Sort.by(DESC, "contactDate", "contactStartTime", "contactEndTime"));
+        return contactRepository.findAll(filter.toBuilder().offenderId(offenderId).build(), pagination)
+            .map(ContactTransformer::contactSummaryOf);
     }
 
     @Transactional

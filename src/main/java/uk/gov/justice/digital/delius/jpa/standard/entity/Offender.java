@@ -101,7 +101,7 @@ public class Offender {
     private String emailAddress;
 
     @Column(name = "SOFT_DELETED")
-    private Long softDeleted;
+    private boolean softDeleted;
 
     @Column(name = "ROW_VERSION")
     private Long rowVersion;
@@ -113,6 +113,16 @@ public class Offender {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "GENDER_ID")
     private StandardReference gender;
+
+    @Column(name = "PREFERRED_NAME")
+    private String preferredName;
+
+    @ManyToOne()
+    @JoinColumn(name = "GENDER_IDENTITY_ID")
+    private StandardReference genderIdentity;
+
+    @Column(name = "GENDER_IDENTITY_DESCRIPTION")
+    private String selfDescribedGender;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ETHNICITY_ID")
@@ -240,6 +250,10 @@ public class Offender {
     @JoinColumn(name = "CURRENT_TIER")
     private StandardReference currentTier;
 
+    @OneToMany
+    @JoinColumn(name = "OFFENDER_ID")
+    @Where(clause = "SOFT_DELETED != 1")
+    private List<PersonalContact> personalContacts;
 
     public Optional<PrisonOffenderManager> getResponsibleOfficerWhoIsPrisonOffenderManager() {
         return getActivePrisonOffenderManager()

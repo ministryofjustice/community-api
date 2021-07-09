@@ -270,27 +270,40 @@ public class EntityHelper {
     public static Court aCourt(final String code) {
         return Court.builder().code(code).courtId(99L).courtName("Sheffield Crown Court").build();
     }
-    private static CourtReport aCourtReport() {
+
+    public static CourtReport aCourtReport(LocalDateTime requestedDate, LocalDateTime requiredDate, LocalDateTime completedDate, RCourtReportType courtReportType) {
         return CourtReport
+            .builder()
+            .courtReportId(1L)
+            .offenderId(1L)
+            .dateRequested(requestedDate)
+            .dateRequired(requiredDate)
+            .completedDate(completedDate)
+            .allocationDate(LocalDateTime.now())
+            .sentToCourtDate(LocalDateTime.now())
+            .receivedByCourtDate(LocalDateTime.now())
+            .courtReportType(courtReportType)
+            .courtAppearance(CourtAppearance
                 .builder()
-                .dateRequested(LocalDateTime.now())
-                .courtReportType(RCourtReportType
-                        .builder()
-                        .description("Pre-Sentence Report - Standard")
-                        .code("CJS")
-                        .build())
-                .courtAppearance(CourtAppearance
-                        .builder()
-                        .court(Court
-                                .builder()
-                                .courtName("Sheffield Magistrates Court")
-                                .build())
-                        .event(Event
-                                .builder()
-                                .eventId(1L)
-                                .build())
-                        .build())
-                .build();
+                .court(Court
+                    .builder()
+                    .courtName("Sheffield Magistrates Court")
+                    .build())
+                .event(Event
+                    .builder()
+                    .eventId(1L)
+                    .build())
+                .build())
+            .build();
+    }
+
+    private static CourtReport aCourtReport() {
+        final var courtReportType = RCourtReportType
+                                        .builder()
+                                        .description("Pre-Sentence Report - Standard")
+                                        .code("CJS")
+                                        .build();
+        return aCourtReport(LocalDateTime.now(), LocalDateTime.now().plusDays(1), null, courtReportType);
     }
 
     private static void populateBasics(final Document document) {
@@ -383,24 +396,32 @@ public class EntityHelper {
                 .build();
     }
 
+    public static PersonalContact aPersonalContact() {
+        return PersonalContact.builder()
+            .personalContactId(2500058493L)
+            .relationship("Father")
+            .startDate(LocalDateTime.of(2019, 9, 13, 0, 0))
+            .endDate(LocalDateTime.of(2020, 9, 13, 0, 0))
+            .firstName("Smile")
+            .otherNames("Danger")
+            .surname("Barry")
+            .previousSurname("Steve")
+            .mobileNumber("0123456789")
+            .emailAddress("example@example.com")
+            .notes("Some personal contact notes")
+            .relationshipType(aStandardReference("RT01", "Drug Worker"))
+            .createdDatetime(LocalDateTime.now())
+            .lastUpdatedDatetime(LocalDateTime.now())
+            .title(aStandardReference("LDY", "Lady"))
+            .gender(aStandardReference("F", "Female"))
+            .build();
+    }
+
     public static PersonalContactDocument aPersonalContactDocument() {
         final var document = new PersonalContactDocument();
         populateBasics(document);
         document.setPersonalContact(aPersonalContact());
         return document;
-    }
-
-    private static PersonalContact aPersonalContact() {
-        return PersonalContact
-                .builder()
-                .relationship("Father")
-                .relationshipType(
-                        StandardReference
-                                .builder()
-                                .codeDescription("GP")
-                                .build()
-                )
-                .build();
     }
 
     public static ReferralDocument aReferralDocument(final Long eventId) {
@@ -468,19 +489,19 @@ public class EntityHelper {
         return document;
     }
 
-    private static PersonalCircumstance aPersonalCircumstance() {
-        return PersonalCircumstance
-                .builder()
-                .startDate(LocalDate.now())
-                .circumstanceType(CircumstanceType
-                        .builder()
-                        .codeDescription("AP - Medication in Posession - Assessment")
-                        .build())
-                .circumstanceSubType(CircumstanceSubType
-                        .builder()
-                        .codeDescription("MiP approved")
-                        .build())
-                .build();
+    public static PersonalCircumstance aPersonalCircumstance() {
+        return PersonalCircumstance.builder()
+            .personalCircumstanceId(1000L)
+            .offenderId(1001L)
+            .notes("Some notes")
+            .evidenced("Y")
+            .startDate(LocalDate.of(2021, 7, 9))
+            .endDate(LocalDate.of(2021, 7, 10))
+            .circumstanceType(CircumstanceType.builder().codeValue("CT").codeDescription("AP - Medication in Posession - Assessment").build())
+            .circumstanceSubType(CircumstanceSubType.builder().codeValue("CST").codeDescription("MiP approved").build())
+            .createdDatetime(LocalDateTime.of(2021, 7, 9, 9, 12))
+            .lastUpdatedDatetime(LocalDateTime.of(2021, 7, 9, 9, 32))
+            .build();
     }
 
     public static UPWAppointmentDocument aUPWAppointmentDocument(final Long eventId) {
@@ -895,7 +916,19 @@ public class EntityHelper {
     public static CourtAppearance aCourtAppearanceWithOutcome(String outcomeCode, String outcomeDescription) {
         return CourtAppearance.builder()
             .courtAppearanceId(1L)
+            .appearanceDate(LocalDateTime.of(2015, 6, 10, 12, 0))
             .outcome(aStandardReference(outcomeCode, outcomeDescription))
+            .court(aCourt("some-court"))
+            .offender(anOffender())
+            .build();
+    }
+
+    public static CourtAppearance aCourtAppearanceWithOutOutcome() {
+        return CourtAppearance.builder()
+            .courtAppearanceId(2L)
+            .appearanceDate(LocalDateTime.of(2015, 6, 11, 12, 0))
+            .court(aCourt("some-court"))
+            .offender(anOffender())
             .build();
     }
 

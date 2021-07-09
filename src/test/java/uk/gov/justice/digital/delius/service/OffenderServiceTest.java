@@ -8,13 +8,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderPrimaryIdentifiersRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
+import uk.gov.justice.digital.delius.util.EntityHelper;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.util.EntityHelper.anOffender;
@@ -231,6 +234,31 @@ class OffenderServiceTest {
                     ));
 
             assertThat(service.singleOffenderIdOfNomsNumber("A1234ZZ").isLeft()).isTrue();
+        }
+    }
+
+    @Nested
+    class GetOffenderPersonalContactsByCrn {
+        @Test
+        void throwsNotFoundWhenOffenderMissing() {
+            when(offenderRepository.findByCrn("some-crn")).thenReturn(Optional.empty());
+            assertThrows(NotFoundException.class,
+                () -> service.getOffenderPersonalContactsByCrn("some-crn"),
+                "Offender not found");
+        }
+
+        @Test
+        void getsOffenderPersonalContacts() {
+            final var contact = EntityHelper.aPersonalContact();
+            final var offender = EntityHelper.anOffender().toBuilder()
+                .personalContacts(List.of(contact))
+                .build();
+            when(offenderRepository.findByCrn("some-crn")).thenReturn(Optional.of(offender));
+
+            final var observed = service.getOffenderPersonalContactsByCrn("some-crn");
+            assertThat(observed).asList()
+                .hasSize(1).first()
+                .hasFieldOrPropertyWithValue("personalContactId", contact.getPersonalContactId());
         }
     }
 }

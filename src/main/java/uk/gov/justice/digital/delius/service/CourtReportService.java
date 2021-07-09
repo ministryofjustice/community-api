@@ -3,6 +3,7 @@ package uk.gov.justice.digital.delius.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.data.api.CourtReport;
+import uk.gov.justice.digital.delius.data.api.CourtReportMinimal;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CourtReportRepository;
 import uk.gov.justice.digital.delius.transformers.CourtReportTransformer;
 
@@ -11,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
-import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
 
 @Service
 public class CourtReportService {
@@ -29,7 +29,7 @@ public class CourtReportService {
         List<uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport> courtReports = courtReportRepository.findByOffenderId(offenderId);
         return courtReports
             .stream()
-            .filter(this::notDeleted)
+            .filter(courtReport -> !courtReport.isSoftDeleted())
             .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport::getDateRequested).reversed())
             .map(CourtReportTransformer::courtReportOf)
             .collect(toList());
@@ -37,14 +37,14 @@ public class CourtReportService {
 
     public Optional<CourtReport> courtReportFor(Long offenderId, Long courtReportId) {
 
-        Optional<uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport> maybeCourtReport = courtReportRepository.findByOffenderIdAndCourtReportId(offenderId, courtReportId);
-        return maybeCourtReport
-                .filter(this::notDeleted)
+        return courtReportRepository.findByOffenderIdAndCourtReportIdAndSoftDeletedFalse(offenderId, courtReportId)
                 .map(CourtReportTransformer::courtReportOf);
     }
 
-    private boolean notDeleted(uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport courtReport) {
-        return !convertToBoolean(courtReport.getSoftDeleted());
+    public Optional<CourtReportMinimal> courtReportMinimalFor(Long offenderId, Long courtReportId) {
+
+        return courtReportRepository.findByOffenderIdAndCourtReportIdAndSoftDeletedFalse(offenderId, courtReportId)
+            .map(CourtReportTransformer::courtReportMinimalOf);
     }
 
 }

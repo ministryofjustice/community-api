@@ -4,6 +4,7 @@ import lombok.val;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -116,10 +117,14 @@ public class StaffResource_StaffDetailsAPITest extends IntegrationTestBase {
         assertThat(jimSnowUserDetails.getEmail()).isEqualTo("jim.snow@justice.gov.uk");
         assertThat(jimSnowUserDetails.getStaff().getForenames()).isEqualTo("JIM");
         assertThat(jimSnowUserDetails.getStaff().getSurname()).isEqualTo("SNOW");
+        assertThat(jimSnowUserDetails.getTeams()).isNull();
 
         assertThat(sheilaHancockUserDetails.getEmail()).isEqualTo("sheila.hancock@justice.gov.uk");
         assertThat(sheilaHancockUserDetails.getStaff().getForenames()).isEqualTo("SHEILA LINDA");
         assertThat(sheilaHancockUserDetails.getStaff().getSurname()).isEqualTo("HANCOCK");
+        assertThat(sheilaHancockUserDetails.getTeams().stream().findFirst().get().getEmailAddress()).isEqualTo("Sheila.HancockNPS@moj.gov.uk");
+        assertThat(sheilaHancockUserDetails.getTeams().stream().findFirst().get().getStartDate()).isEqualTo(LocalDate.of(2014, 8,29));
+        assertThat(sheilaHancockUserDetails.getTeams().stream().findFirst().get().getEndDate()).isEqualTo(LocalDate.of(2025, 6, 30));
     }
 
     @Test

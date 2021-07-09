@@ -117,6 +117,32 @@ public class ConvictionTransformerTest {
     }
 
     @Test
+    public void responsibleCourtMappedFromCourt() {
+        assertThat(ConvictionTransformer.convictionOf(
+            anEvent()
+                .toBuilder()
+                .court(EntityHelper.aCourt("some-court"))
+                .build()))
+            .isNotNull()
+            .hasFieldOrPropertyWithValue("responsibleCourt.courtId", 99L)
+            .hasFieldOrPropertyWithValue("responsibleCourt.courtName", "Sheffield Crown Court");
+    }
+
+    @Test
+    public void courtMappedFromLatestAppearance() {
+        assertThat(ConvictionTransformer.convictionOf(
+            anEvent()
+                .toBuilder()
+                .courtAppearances(List.of(
+                    aCourtAppearanceWithNoOutcome(LocalDateTime.of(2015, 6, 10, 12, 0)),
+                    aCourtAppearanceWithNoOutcome(LocalDateTime.of(2015, 6, 11, 12, 0))
+                ))
+                .build()))
+            .isNotNull()
+            .hasFieldOrPropertyWithValue("courtAppearance.appearanceDate", LocalDateTime.of(2015, 6, 11, 12, 0));
+    }
+
+    @Test
     public void indexMappedFromEventNumberString() {
         assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().eventNumber("5").build()).getIndex())).isEqualTo("5");
     }
@@ -416,22 +442,16 @@ public class ConvictionTransformerTest {
     }
 
     private CourtAppearance aCourtAppearance(String outcomeDescription, String outcomeCode, LocalDateTime appearanceDate) {
-        return CourtAppearance
-            .builder()
+        return EntityHelper.aCourtAppearanceWithOutcome(outcomeCode,outcomeDescription)
+            .toBuilder()
             .appearanceDate(appearanceDate)
-            .outcome(StandardReference
-                .builder()
-                .codeValue(outcomeCode)
-                .codeDescription(outcomeDescription)
-                .build())
             .build();
     }
 
     private CourtAppearance aCourtAppearanceWithNoOutcome(LocalDateTime appearanceDate) {
-        return CourtAppearance
-            .builder()
+        return EntityHelper.aCourtAppearanceWithOutOutcome()
+            .toBuilder()
             .appearanceDate(appearanceDate)
-            .outcome(null)
             .build();
     }
 

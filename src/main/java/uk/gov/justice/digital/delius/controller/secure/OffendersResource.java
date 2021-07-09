@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +37,7 @@ import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.AccessLimitation;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Contact;
+import uk.gov.justice.digital.delius.data.api.ContactSummary;
 import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Nsi;
@@ -44,6 +46,7 @@ import uk.gov.justice.digital.delius.data.api.OffenderAssessments;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
+import uk.gov.justice.digital.delius.data.api.PersonalContact;
 import uk.gov.justice.digital.delius.data.api.PrimaryIdentifiers;
 import uk.gov.justice.digital.delius.data.api.ProbationStatusDetail;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
@@ -67,6 +70,8 @@ import uk.gov.justice.digital.delius.service.UserService;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -82,6 +87,7 @@ import static uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeM
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 @PreAuthorize("hasRole('ROLE_COMMUNITY')")
+@Validated
 public class OffendersResource {
 
     private final OffenderService offenderService;
@@ -214,17 +220,18 @@ public class OffendersResource {
         return offender.orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
     }
 
-    @ApiOperation(value = "Returns the contact details for an offender", tags = "Contact and attendance")
+    @ApiOperation(value = "Returns the contact details for an offender by NOMS number", tags = "Contact and attendance")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+                @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+                @ApiResponse(code = 404, message = "Offender does not exist"),
+                @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
             })
     @GetMapping(value = "/offenders/nomsNumber/{nomsNumber}/contacts")
     public ResponseEntity<List<Contact>> getOffenderContactReportByNomsNumber(@ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true) @NotNull final @PathVariable("nomsNumber") String nomsNumber,
-                                                                              final @RequestParam("contactTypes") Optional<List<String>> contactTypes,
-                                                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final @RequestParam("from") Optional<LocalDateTime> from,
-                                                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final @RequestParam("to") Optional<LocalDateTime> to) {
+                                                                              final @RequestParam(value = "contactTypes", required = false) Optional<List<String>> contactTypes,
+                                                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final @RequestParam(value = "from", required = false) Optional<LocalDateTime> from,
+                                                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final @RequestParam(value = "to", required = false) Optional<LocalDateTime> to) {
         final var contactFilter = ContactFilter.builder()
                 .contactTypes(contactTypes)
                 .from(from)
@@ -234,6 +241,35 @@ public class OffendersResource {
         return offenderService.offenderIdOfNomsNumber(nomsNumber)
                 .map(offenderId -> new ResponseEntity<>(contactService.contactsFor(offenderId, contactFilter), HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @ApiOperation(value = "Returns the contact summaries for an offender by CRN", tags = "Contact and attendance")
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "Offender does not exist"),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+    @GetMapping(value = "/offenders/crn/{crn}/contact-summary")
+    public Page<ContactSummary> getOffenderContactSummariesByCrn(
+        final @ApiParam(name = "crn", value = "CRN of the offender", example = "X123456", required = true) @NotNull @PathVariable("crn") String crn,
+        final @ApiParam(name = "page", value = "Page number (0-based)", example = "0") @RequestParam(required = false, defaultValue = "0") @PositiveOrZero int page,
+        final @ApiParam(name = "pageSize", value = "Optional size of page", example = "20") @RequestParam(required = false, defaultValue = "1000") @Positive int pageSize,
+        final @RequestParam(value = "contactTypes", required = false) Optional<List<String>> contactTypes,
+        final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam(value = "from", required = false) Optional<LocalDateTime> from,
+        final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam(value = "to", required = false) Optional<LocalDateTime> to,
+        final @RequestParam(value = "appointmentsOnly", required = false) Optional<Boolean> appointmentsOnly) {
+
+        final var contactFilter = ContactFilter.builder()
+            .contactTypes(contactTypes)
+            .from(from)
+            .to(to)
+            .appointmentsOnly(appointmentsOnly)
+            .build();
+
+        return offenderService.offenderIdOfCrn(crn)
+            .map(offenderId -> contactService.contactSummariesFor(offenderId, contactFilter, page, pageSize))
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN '%s' does not exist", crn)));
     }
 
     @ApiOperation(
@@ -522,6 +558,20 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 
+    @ApiOperation(value = "Return all the recall NSIs for the noms number, active convictions only when licence has not expired", tags = "Sentence requirements and breach")
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 404, message = "The offender NOMS number is not found", response = ErrorResponse.class)
+        })
+    @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/convictions/active/nsis/recall")
+    public NsiWrapper getRecallNsisForOffenderByNomsNumberAndActiveConvictions(
+        @ApiParam(name = "nomsNumber", value = "NOMS number for the offender", example = "A1234GH", required = true)
+        @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber) {
+
+        return offenderService.offenderIdOfNomsNumber(nomsNumber)
+            .map(nsiService::getNonExpiredRecallNsiForOffenderActiveConvictions)
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
+    }
 
     @ApiOperation(value = "Return an NSI by crn, convictionId and nsiId", tags = "Convictions")
     @ApiResponses(
@@ -614,6 +664,7 @@ public class OffendersResource {
             @ApiResponse(code = 403, message = "User is restricted from access to offender", response = AccessLimitation.class),
             @ApiResponse(code = 404, message = "No such offender, or no such User (see body for detail)")
     })
+    @PreAuthorize("hasAnyRole('ROLE_COMMUNITY', 'ROLE_PROBATION')")
     public ResponseEntity<AccessLimitation> checkUserAccessByCrn(
             final @PathVariable("crn") String crn) {
         return offenderService.getOffenderByCrn(crn)
@@ -621,7 +672,19 @@ public class OffendersResource {
             .orElse(new ResponseEntity<>(NOT_FOUND));
     }
 
-
+    @ApiOperation(value = "Reveals if the specified user can access details about the supplied offender", tags = "Authentication and users")
+    @RequestMapping(value = "/offenders/crn/{crn}/user/{username}/userAccess", method = RequestMethod.GET)
+    @ApiResponses(value = {
+        @ApiResponse(code = 403, message = "User is restricted from access to offender", response = AccessLimitation.class),
+        @ApiResponse(code = 404, message = "No such offender, or no such User (see body for detail)")
+    })
+    public ResponseEntity<AccessLimitation> checkUserAccessByCrn(
+        final @PathVariable("crn") String crn,
+        final @PathVariable("username") String username) {
+        return offenderService.getOffenderByCrn(crn)
+            .map(offender -> accessLimitationResponseEntityOf(offender, username))
+            .orElse(new ResponseEntity<>(NOT_FOUND));
+    }
 
     @RequestMapping(value = "/offenders/crn/{crn}/probationStatus", method = RequestMethod.GET)
     @ApiResponses(value = {
@@ -634,10 +697,21 @@ public class OffendersResource {
             .orElseThrow(() -> new NotFoundException("Offender not found"));
     }
 
+    @ApiOperation(value = "Gets all offender personal contacts by CRN")
+    @GetMapping(path = "/offenders/crn/{crn}/personalContacts")
+    public List<PersonalContact> getAllOffenderPersonalContactsByCrn(
+        @ApiParam(name = "crn", value = "CRN of the offender", example = "X320741", required = true)
+        @NotNull
+        @PathVariable(value = "crn") final String crn) {
+        return offenderService.getOffenderPersonalContactsByCrn(crn);
+    }
+
     private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(final OffenderDetail offender) {
+        return accessLimitationResponseEntityOf(offender, currentUserSupplier.username().orElseThrow());
+    }
 
-        final var accessLimitation = userService.accessLimitationOf(currentUserSupplier.username().orElseThrow(), offender);
-
+    private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(final OffenderDetail offender, final String username) {
+        final var accessLimitation = userService.accessLimitationOf(username, offender);
         return new ResponseEntity<>(accessLimitation, (accessLimitation.isUserExcluded() || accessLimitation.isUserRestricted()) ? FORBIDDEN : OK);
     }
 }

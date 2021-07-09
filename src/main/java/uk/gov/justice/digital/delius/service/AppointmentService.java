@@ -63,7 +63,7 @@ public class AppointmentService {
     public List<AppointmentDetail> appointmentDetailsFor(Long offenderId, AppointmentFilter filter) {
         final var contacts = contactRepository.findAll(
             filter.toBuilder().offenderId(offenderId).build(),
-            Sort.by(DESC, "contactDate"));
+            Sort.by(DESC, "contactDate", "contactStartTime", "contactEndTime"));
         return contacts.stream().map(AppointmentTransformer::appointmentDetailOf).collect(Collectors.toList());
     }
 
@@ -167,6 +167,7 @@ public class AppointmentService {
             .eventId(sentenceId)
             .requirementId(request.getRequirementId())
             .sensitive(request.getSensitive())
+            .rarActivity(request.getRarActivity())
             .build();
     }
 

@@ -9,8 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.config.FeatureSwitches;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
+import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.Custody;
+import uk.gov.justice.digital.delius.data.api.OffenderRecalledNotification;
+import uk.gov.justice.digital.delius.data.api.OffenderReleasedNotification;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustodyBookingNumber;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CustodyHistory;
@@ -22,6 +25,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionReposito
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository.DuplicateOffenderException;
 import uk.gov.justice.digital.delius.service.ConvictionService.DuplicateActiveCustodialConvictionsException;
+import uk.gov.justice.digital.delius.service.ConvictionService.SingleActiveCustodyConvictionNotFoundException;
 import uk.gov.justice.digital.delius.transformers.ConvictionTransformer;
 
 import java.time.LocalDate;
@@ -222,6 +226,45 @@ public class CustodyService {
         return Optional.ofNullable(convictionService.convictionFor(offender.getOffenderId(), convictionId)
                 .orElseThrow(() -> new NotFoundException(String.format("conviction with convictionId %d not found", convictionId))).getCustody())
                 .orElseThrow(() -> new BadRequestException(String.format("The conviction with convictionId %d is not a custodial sentence", convictionId)));
+    }
+
+    @Transactional
+    public Custody offenderRecalled(final String nomsNumber, final OffenderRecalledNotification recalledNotification) {
+        final var offender = offenderRepository.findByNomsNumber(nomsNumber)
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
+
+        final var telemetryProperties = Map.of("offenderNo", nomsNumber,
+            "recallDate", recalledNotification.getRecallDate().format(DateTimeFormatter.ISO_DATE),
+            "institution", recalledNotification.getNomsPrisonInstitutionCode());
+
+        try {
+            Event event = convictionService.getActiveCustodialEvent(offender.getOffenderId());
+
+            telemetryClient.trackEvent("P2POffenderRecalled", telemetryProperties, null);
+            return ConvictionTransformer.custodyOf(event.getDisposal().getCustody());
+        } catch (SingleActiveCustodyConvictionNotFoundException e) {
+            telemetryClient.trackEvent("P2POffenderRecalledNoSingleConviction", telemetryProperties, null);
+            throw new ConflictingRequestException(e.getMessage());
+        }
+    }
+
+    @Transactional
+    public Custody offenderReleased(final String nomsNumber, final OffenderReleasedNotification releasedNotification) {
+        final var offender = offenderRepository.findByNomsNumber(nomsNumber)
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
+
+        final var telemetryProperties = Map.of("offenderNo", nomsNumber,
+            "recallDate", releasedNotification.getReleaseDate().format(DateTimeFormatter.ISO_DATE),
+            "institution", releasedNotification.getNomsPrisonInstitutionCode());
+
+        try {
+            Event event = convictionService.getActiveCustodialEvent(offender.getOffenderId());
+            telemetryClient.trackEvent( "P2POffenderReleased", telemetryProperties, null);
+            return ConvictionTransformer.custodyOf(event.getDisposal().getCustody());
+        } catch (SingleActiveCustodyConvictionNotFoundException e) {
+            telemetryClient.trackEvent( "P2POffenderReleasedNoSingleConviction", telemetryProperties, null);
+            throw new ConflictingRequestException(e.getMessage());
+        }
     }
 
     private Event updateBookingNumberFor(final Offender offender, final Event event, final String bookingNumber) {

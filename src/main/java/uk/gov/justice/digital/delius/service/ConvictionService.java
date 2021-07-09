@@ -373,8 +373,7 @@ public class ConvictionService {
     }
 
     public Optional<ProbationStatusDetail> probationStatusFor(String crn) {
-        return offenderRepository.findByCrn(crn)
-            .filter(offender -> offender.getSoftDeleted() == 0L)
+        return offenderRepository.findByCrnAndSoftDeletedFalse(crn)
             .map((offender) -> new ProbationStatusDetail(
                 probationStatusOf(offender),
                 previouslyKnownTerminationDateOf(offender),
@@ -429,6 +428,7 @@ public class ConvictionService {
             .map(Event::getCourtAppearances)
             .flatMap(Collection::stream)
             .map(CourtAppearance::getOutcome)
+            .filter(Objects::nonNull)
             .anyMatch(outcome -> ReferenceDataService.REFERENCE_DATA_PSR_ADJOURNED_CODE.equals(outcome.getCodeValue()));
     }
 

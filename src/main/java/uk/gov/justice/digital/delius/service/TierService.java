@@ -86,7 +86,7 @@ public class TierService {
     }
 
     private Offender getOffender(String crn, Map<String, String> telemetryProperties) {
-        return offenderRepository.findByCrn(crn).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureOffenderNotFound", String.format("Offender with CRN %s not found", crn)));
+        return offenderRepository.findByCrnAndSoftDeletedFalse(crn).orElseThrow(() -> logAndThrow(telemetryProperties, "TierUpdateFailureOffenderNotFound", String.format("Offender with CRN %s not found", crn)));
     }
 
     private void writeTierUpdate(StandardReference tier, Long offenderId, StandardReference changeReason) {

@@ -1,11 +1,59 @@
 package uk.gov.justice.digital.delius.util;
 
 import org.assertj.core.util.Lists;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
+import uk.gov.justice.digital.delius.jpa.standard.entity.AddressAssessment;
+import uk.gov.justice.digital.delius.jpa.standard.entity.CircumstanceSubType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Disability;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAddress;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Officer;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PartitionArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalCircumstance;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 public interface OffenderHelper {
+    static OffenderAddress anOffenderAddress() {
+        return OffenderAddress.builder()
+            .offenderAddressID(123L)
+            .offenderID(100L)
+            .startDate(LocalDate.of(2010, 6, 10))
+            .endDate(LocalDate.of(2020, 7, 11))
+            .softDeleted(0L)
+            .addressStatus(StandardReference.builder().codeValue("M").codeDescription("Main").build())
+            .noFixedAbode("Y")
+            .notes("Some address notes")
+            .addressNumber("32")
+            .buildingName("HMPPS Digital Studio")
+            .streetName("Scotland Street")
+            .district("Sheffield City Centre")
+            .townCity("Sheffield")
+            .county("South Yorkshire")
+            .postcode("S3 7BS")
+            .telephoneNumber("0123456789")
+            .createdDatetime(LocalDateTime.of(2021, 6, 10, 13, 0))
+            .lastUpdatedDatetime(LocalDateTime.of(2021, 6, 10, 14, 0))
+            .personalCircumstances(List.of(PersonalCircumstance.builder()
+                .startDate(LocalDate.of(2010, 6, 11))
+                .circumstanceSubType(CircumstanceSubType.builder()
+                    .codeValue("A02")
+                    .codeDescription("Approved Premises")
+                    .build())
+                .evidenced("Y")
+                .build()))
+            .addressAssessments(List.of(
+                AddressAssessment.builder().assessmentDate(LocalDateTime.of(2010, 6, 10, 12, 0)).build(),
+                AddressAssessment.builder().assessmentDate(LocalDateTime.of(2010, 6, 11, 12, 0)).build()
+            ))
+            .build();
+    }
+
      static Offender anOffender() {
         return Offender.builder()
                 .allowSMS("Y")
@@ -39,6 +87,7 @@ public interface OffenderHelper {
                 .religion(StandardReference.builder().codeDescription("COFE").build())
                 .restrictionMessage("Restriction message")
                 .secondName("Arthur")
+                .thirdName("Steve")
                 .surname("Sykes")
                 .telephoneNumber("018118055")
                 .title(StandardReference.builder().codeDescription("Mr").build())
@@ -47,9 +96,9 @@ public interface OffenderHelper {
                 .previousConvictionDate(LocalDate.of(2016, 1, 1))
                 .prevConvictionDocumentName("CONV1234")
                 .offenderAliases(Lists.newArrayList(OffenderAlias.builder().build()))
-                .offenderAddresses(Lists.newArrayList(OffenderAddress.builder().build()))
+                .offenderAddresses(Lists.newArrayList(anOffenderAddress()))
                 .partitionArea(PartitionArea.builder().area("Fulchester").build())
-                .softDeleted(0L)
+                .softDeleted(false)
                 .currentHighestRiskColour("FUSCHIA")
                 .currentDisposal(0L)
                 .currentRestriction(0L)
@@ -67,6 +116,9 @@ public interface OffenderHelper {
                         .startDate(LocalDate.now())
                         .disabilityType(StandardReference.builder().codeValue("SI").codeDescription("Speech Impairment").build())
                         .build()))
+                .preferredName("Bob")
+                .genderIdentity(StandardReference.builder().codeDescription("Prefer to self describe").build())
+                .selfDescribedGender("Jedi")
                 .build();
     }
 }

@@ -16,6 +16,7 @@ import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @ExtendWith(FlywayRestoreExtension.class)
@@ -67,6 +68,19 @@ public class OffendersResource_updateTier extends IntegrationTestBase {
             .post("/offenders/crn/XNOTFOUND/tier/B1")
             .then()
             .statusCode(404);
+    }
+
+    @Test
+    public void updateTierFails_offenderSoftDeleted_returnsNotFound() {
+        given()
+            .auth()
+            .oauth2(tokenWithRoleManagementTierUpdate())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .post("/offenders/crn/CRN31/tier/B1")
+            .then()
+            .statusCode(404)
+        .body("developerMessage", equalTo("Offender with CRN CRN31 not found"));
     }
 
     @Test

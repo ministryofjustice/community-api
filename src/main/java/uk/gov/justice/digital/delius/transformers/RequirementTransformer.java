@@ -24,6 +24,7 @@ public class RequirementTransformer {
                         .commencementDate(req.getCommencementDate())
                         .expectedEndDate(req.getExpectedEndDate())
                         .expectedStartDate(req.getExpectedStartDate())
+                        .createdDatetime(req.getCreatedDatetime())
                         .requirementId(req.getRequirementId())
                         .requirementNotes(req.getRequirementNotes())
                         .requirementTypeMainCategory(requirementTypeMainCategoryOf(req.getRequirementTypeMainCategory()))
@@ -34,6 +35,8 @@ public class RequirementTransformer {
                         .length(req.getLength())
                         .lengthUnit(lengthUnitOf(req))
                         .restrictive(restrictiveOf(req.getRequirementTypeMainCategory()))
+                        .rarCount(req.getRarCount())
+                        .softDeleted(zeroOneToBoolean(req.getSoftDeleted()))
                         .build())
                 .orElse(null);
     }

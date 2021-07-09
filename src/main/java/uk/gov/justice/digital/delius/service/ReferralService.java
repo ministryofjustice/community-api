@@ -7,7 +7,6 @@ import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.NsiMapping;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
-import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.data.api.ContextlessReferralEndRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessReferralStartRequest;
 import uk.gov.justice.digital.delius.data.api.Nsi;
@@ -151,7 +150,7 @@ public class ReferralService {
             .orElse(existingNsis);
 
         if (filteredNsis.size() > 1) {
-            throw new ConflictingRequestException("Multiple existing matching NSIs found");
+            throw new BadRequestException("Multiple existing matching NSIs found");
         }
         return filteredNsis;
     }
@@ -182,20 +181,20 @@ public class ReferralService {
     }
 
     Optional<Long> getRequirement(String crn, Long sentenceId, IntegrationContext context) {
-        return requirementService.getRequirement(crn, sentenceId, context.getRequirementRehabilitationActivityType())
+        return requirementService.getActiveRequirement(crn, sentenceId, context.getRequirementRehabilitationActivityType())
             .map(Requirement::getRequirementId);
     }
 
     String getNsiType(final NsiMapping nsiMapping, final String contactType) {
         return ofNullable(nsiMapping.getContractTypeToNsiType().get(contactType)).orElseThrow(
-            () -> new IllegalArgumentException("Nsi Type mapping from contractType does not exist for: " + contactType)
+            () -> new BadRequestException("Nsi Type mapping from contractType does not exist for: " + contactType)
         );
     }
 
     IntegrationContext getContext(String contextName) {
         var context = deliusIntegrationContextConfig.getIntegrationContexts().get(contextName);
         return ofNullable(context).orElseThrow(
-            () -> new IllegalArgumentException("IntegrationContext does not exist for: " + contextName)
+            () -> new BadRequestException("IntegrationContext does not exist for: " + contextName)
         );
     }
 }

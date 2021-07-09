@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.ReplaceOperation;
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,6 @@ import org.springframework.data.jpa.domain.Specification;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
-import uk.gov.justice.digital.delius.data.api.Appointment;
 import uk.gov.justice.digital.delius.data.api.Appointment.Attended;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentType;
@@ -28,7 +26,9 @@ import uk.gov.justice.digital.delius.data.api.AppointmentType.RequiredOptional;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentRescheduleRequest;
+import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Nsi;
+import uk.gov.justice.digital.delius.data.api.Requirement;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ReplaceContact;
@@ -59,7 +59,6 @@ import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -159,7 +158,7 @@ public class AppointmentServiceTest {
 
             final var observed = service.appointmentDetailsFor(1L, filter);
 
-            assertThat(sortArgumentCaptor.getValue()).isEqualTo(Sort.by(DESC, "contactDate"));
+            assertThat(sortArgumentCaptor.getValue()).isEqualTo(Sort.by(DESC, "contactDate", "contactStartTime", "contactEndTime"));
             assertThat(specificationArgumentCaptor.getValue()).isEqualTo(filter.toBuilder().offenderId(1L).build());
             assertThat(observed).hasSize(2).extracting("appointmentId", Long.class).containsExactly(1L, 2L);
         }
@@ -193,7 +192,7 @@ public class AppointmentServiceTest {
             when(deliusApiClient.createNewContact(deliusNewContactRequest)).thenReturn(createdContact);
 
             // When
-            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, null, true);
+            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, null, true, true);
             final var response = service.createAppointment("X007", 1L, appointmentCreateRequest);
 
             // Then
@@ -209,7 +208,7 @@ public class AppointmentServiceTest {
             havingContactType(false, builder -> builder, RAR_CONTACT_TYPE);
 
             // When
-            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, NSI_ID, false);
+            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, NSI_ID, false, null);
             assertThrows(BadRequestException.class,
                 () -> service.createAppointment("X007", 1L, appointmentCreateRequest),
                 "contact type 'X007' does not exist");
@@ -224,7 +223,7 @@ public class AppointmentServiceTest {
             havingContactType(true, builder -> builder.attendanceContact("N"), RAR_CONTACT_TYPE);
 
             // When
-            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, NSI_ID, false);
+            final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, NSI_ID, false, null);
             assertThrows(BadRequestException.class,
                 () -> service.createAppointment("X007", 1L, appointmentCreateRequest),
                 "contact type 'X007' is not an appointment type");
@@ -238,7 +237,7 @@ public class AppointmentServiceTest {
             final var startTime = referralStart.plusMinutes(2);
             final var endTime = startTime.plusHours(1);
 
-            final var nsi = Nsi.builder().nsiId(NSI_ID).build();
+            final Nsi nsi = aNsiWithRARRequirement();
             when(referralService.getExistingMatchingNsi("X007", CONTEXT, 1L, CONTRACT_TYPE, referralStart, referralId))
                 .thenReturn(of(nsi));
 
@@ -468,6 +467,14 @@ public class AppointmentServiceTest {
         when(contactTypeRepository.findByCode(contactTypeAsString)).thenReturn(result);
     }
 
+    private Nsi aNsiWithRARRequirement() {
+        return Nsi.builder().nsiId(NSI_ID).requirement(
+            Requirement.builder().requirementTypeMainCategory(
+                KeyValue.builder().code(RAR_TYPE_CODE).build()
+            ).build()
+        ).build();
+    }
+
     private String asString(JsonPatch patch) {
         try {
             return objectMapper.writeValueAsString(patch);
@@ -490,6 +497,7 @@ public class AppointmentServiceTest {
             .endTime(toLondonLocalTime(endTime))
             .alert(null)
             .sensitive(sensitive)
+            .rarActivity(true)
             .notes("/url")
             .description(null)
             .eventId(1L)
@@ -511,7 +519,7 @@ public class AppointmentServiceTest {
             .build();
     }
 
-    private AppointmentCreateRequest aAppointmentCreateRequest(OffsetDateTime startTime, OffsetDateTime endTime, Long nsiId, boolean sensitive) {
+    private AppointmentCreateRequest aAppointmentCreateRequest(OffsetDateTime startTime, OffsetDateTime endTime, Long nsiId, boolean sensitive, Boolean rarActivity) {
         return AppointmentCreateRequest.builder()
             .nsiId(nsiId)
             .contactType(RAR_CONTACT_TYPE)
@@ -523,6 +531,7 @@ public class AppointmentServiceTest {
             .staffCode("CRSUATU")
             .teamCode("CRSUAT")
             .sensitive(sensitive)
+            .rarActivity(rarActivity)
             .build();
     }
 

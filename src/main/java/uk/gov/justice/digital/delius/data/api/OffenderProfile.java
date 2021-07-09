@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,4 +26,10 @@ public class OffenderProfile {
     private PreviousConviction previousConviction;
     private String riskColour;
     private List<Disability> disabilities;
+
+    @ApiModelProperty(name = "Gender identity", example = "Prefer to self-describe")
+    private String genderIdentity;
+
+    @ApiModelProperty(name = "Self described gender identity", example = "Jedi")
+    private String selfDescribedGender;
 }

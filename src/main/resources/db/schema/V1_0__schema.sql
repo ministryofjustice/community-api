@@ -1262,6 +1262,7 @@ create table TEAM
         references DISTRICT,
     LOCAL_DELIVERY_UNIT_ID   NUMBER           not null,
     TELEPHONE                VARCHAR2(35),
+    EMAIL_ADDRESS            VARCHAR2(255),
     UNPAID_WORK_TEAM         CHAR             not null
         constraint YES_OR_NO_OR_UNKNOWN8
             check (UNPAID_WORK_TEAM IN ('N', 'Y', 'U')),
@@ -4020,6 +4021,11 @@ create table OFFENDER
             check (MENTAL_HEALTH IN ('Y', 'N')),
     CDC_CUSTODY_START_DATE         DATE,
     DYNAMIC_RSR_SCORE              NUMBER(5, 2),
+    PREFERRED_NAME VARCHAR2(35),
+    GENDER_IDENTITY_ID NUMBER
+        constraint R_1314
+            references R_STANDARD_REFERENCE_LIST,
+    GENDER_IDENTITY_DESCRIPTION VARCHAR2(50),
     foreign key (INSTITUTION_ID, ESTABLISHMENT) references R_INSTITUTION
 )
     ;

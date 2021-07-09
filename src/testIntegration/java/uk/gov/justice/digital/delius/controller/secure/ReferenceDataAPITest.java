@@ -91,8 +91,8 @@ public class ReferenceDataAPITest extends IntegrationTestBase {
                     .get("/referenceData/sets")
                     .then()
                     .statusCode(200)
-                    // currently 157 different codes sets in seed data
-                    .body("referenceDataSets.size()", is(157))
+                    // currently 158 different codes sets in seed data
+                    .body("referenceDataSets.size()", is(158))
                     .body("referenceDataSets.find { it.code == 'ADDITIONAL IDENTIFIER TYPE' }.description", is("Additional Identifier Type"))
                     .body("referenceDataSets[0].code", notNullValue())
                     .body("referenceDataSets[0].description", notNullValue());

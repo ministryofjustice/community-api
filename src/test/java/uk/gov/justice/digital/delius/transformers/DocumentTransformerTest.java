@@ -267,7 +267,7 @@ public class DocumentTransformerTest {
                 .offenderDocumentsDetailsOfPersonalContactDocuments(ImmutableList.of(document)).get(0);
 
         assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("PERSONAL_CONTACT_DOCUMENT");
-        assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Personal contact of type GP with Father");
+        assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Personal contact of type Drug Worker with Father");
         assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Personal contact related document");
     }
 

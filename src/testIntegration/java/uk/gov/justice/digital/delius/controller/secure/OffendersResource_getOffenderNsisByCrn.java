@@ -63,6 +63,8 @@ public class OffendersResource_getOffenderNsisByCrn extends IntegrationTestBase 
         assertThat(nsi.getNsiManagers().get(0).getTeam().getCode()).isEqualTo("N02UAT");
         assertThat(nsi.getNsiManagers().get(0).getStaff().getStaff().getForenames()).isEqualTo("Unallocated Staff(N02)");
         assertThat(nsi.getNsiManagers().get(0).getStaff().getStaff().getSurname()).isEqualTo("Staff");
+        assertThat(nsi.isRecallRejectedOrWithdrawn()).isNull();
+        assertThat(nsi.isOutcomeRecall()).isNull();
     }
 
     @Test

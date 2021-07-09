@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -38,6 +39,9 @@ public class Requirement {
     @Column(name = "EXPECTED_END_DATE")
     private LocalDate expectedEndDate;
 
+    @Column(name = "CREATED_DATETIME")
+    private LocalDateTime createdDatetime;
+
     @Column(name = "ACTIVE_FLAG")
     private Long activeFlag;
 
@@ -67,4 +71,10 @@ public class Requirement {
 
     @Column(name = "LENGTH")
     private Long length;
+
+    @Column(name = "RAR_COUNT")
+    private Long rarCount;
+
+    @Column(name = "SOFT_DELETED")
+    private Long softDeleted = 0L;
 }

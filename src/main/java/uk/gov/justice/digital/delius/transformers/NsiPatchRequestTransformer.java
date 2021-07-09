@@ -23,6 +23,8 @@ public class NsiPatchRequestTransformer {
     private static final String TARGET_NSI_OUTCOME_FIELD_NAME = "outcome";
     private static final String TARGET_END_DATE_TIME_FIELD_NAME = "endDate";
     private static final String TARGET_NOTES_FIELD_NAME = "notes";
+    private static final String TARGET_STATUS_DATE_TIME = "statusDate";
+    private static final String TARGET_STATUS = "status";
 
     public JsonPatch mapEndTypeToOutcomeOf(final ContextlessReferralEndRequest request, final IntegrationContext context) {
 
@@ -34,6 +36,8 @@ public class NsiPatchRequestTransformer {
         patchOperations.add(new ReplaceOperation(of(TARGET_NSI_OUTCOME_FIELD_NAME), valueOf(outcomeType)));
         patchOperations.add(new ReplaceOperation(of(TARGET_END_DATE_TIME_FIELD_NAME), valueOf(toLondonLocalDateTime(request.getEndedAt()).toString()))); // ISO-8601 format
         patchOperations.add(new ReplaceOperation(of(TARGET_NOTES_FIELD_NAME), valueOf(request.getNotes())));
+        patchOperations.add(new ReplaceOperation(of(TARGET_STATUS_DATE_TIME), valueOf(toLondonLocalDateTime(request.getEndedAt()).toString()))); // ISO-8601 format
+        patchOperations.add(new ReplaceOperation(of(TARGET_STATUS), valueOf(context.getNsiMapping().getNsiEndStatus())));
 
         return new JsonPatch(patchOperations);
     }

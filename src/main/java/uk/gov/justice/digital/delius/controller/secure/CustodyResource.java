@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.IDs;
+import uk.gov.justice.digital.delius.data.api.OffenderRecalledNotification;
+import uk.gov.justice.digital.delius.data.api.OffenderReleasedNotification;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustodyBookingNumber;
 import uk.gov.justice.digital.delius.data.api.UpdateOffenderNomsNumber;
@@ -120,6 +122,30 @@ public class CustodyResource {
     public Custody getCustodyByConvictionId(final @PathVariable String crn,
                                  final @PathVariable Long convictionId) {
         return custodyService.getCustodyByConvictionId(crn, convictionId);
+    }
+
+    @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/recalled", method = RequestMethod.PUT, consumes = "application/json")
+    @ApiResponses(value = {
+        @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
+        @ApiResponse(code = 404, message = "The requested offender was not found"),
+        @ApiResponse(code = 409, message = "The requested offender did not have a single active event")
+    })
+    @ApiOperation(value = "Updates the associated offender with recall information and returns the custody record")
+    public Custody offenderRecalled(final @PathVariable String nomsNumber,
+                                     final @RequestBody @Valid OffenderRecalledNotification recallNotification) {
+        return custodyService.offenderRecalled(nomsNumber, recallNotification);
+    }
+
+    @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/released", method = RequestMethod.PUT, consumes = "application/json")
+    @ApiResponses(value = {
+        @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
+        @ApiResponse(code = 404, message = "The requested offender was not found"),
+        @ApiResponse(code = 409, message = "The requested offender did not have a single active event")
+    })
+    @ApiOperation(value = "Updates the associated offender with release information and returns the custody record")
+    public Custody offenderReleased(final @PathVariable String nomsNumber,
+                                    final @RequestBody @Valid OffenderReleasedNotification releasedNotification) {
+        return custodyService.offenderReleased(nomsNumber, releasedNotification);
     }
 
 }

@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.service;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,7 +13,9 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.repository.NsiRepository;
 import uk.gov.justice.digital.delius.util.EntityHelper;
 
+import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -20,6 +23,7 @@ import static java.time.LocalDate.now;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -201,6 +205,62 @@ public class NsiServiceTest {
                     .build())
                 .event(event)
             .build();
+    }
+
+    @Nested
+    class GetNonExpiredRecallNsiForOffenderActiveConvictions {
+
+        @Test
+        @DisplayName("non recalls are excluded")
+        void nonRecallsAreExcluded() {
+            when(nsiRepository.findByOffenderIdForActiveEvents(any())).thenReturn(List.of(buildNsi(EVENT, "BRE")));
+
+            assertThat(nsiService.getNonExpiredRecallNsiForOffenderActiveConvictions(OFFENDER_ID).getNsis()).hasSize(0);
+        }
+
+        @Test
+        @DisplayName("an recall NSI with no event would not get excluded")
+        void anRecallNSIWithNoEventWouldNotGetExcluded() {
+            // scenario that can't happen assuming Delius data is in a valid state - but tested to ensure it does no error
+            when(nsiRepository.findByOffenderIdForActiveEvents(any())).thenReturn(List.of(buildNsi(null, "REC")));
+
+            assertThat(nsiService.getNonExpiredRecallNsiForOffenderActiveConvictions(OFFENDER_ID).getNsis()).hasSize(1);
+        }
+
+        @Test
+        @DisplayName("a recall NSI with no custodial sentence would not get excluded")
+        void aRecallNSIWithNoCustodialSentenceWouldNotGetExcluded() {
+            // scenario that can't happen assuming Delius data is in a valid state - but tested to ensure it does no error
+            when(nsiRepository.findByOffenderIdForActiveEvents(any())).thenReturn(List.of(buildNsi(EntityHelper.anEvent(), "REC")));
+
+            assertThat(nsiService.getNonExpiredRecallNsiForOffenderActiveConvictions(OFFENDER_ID).getNsis()).hasSize(1);
+        }
+
+        @Test
+        @DisplayName("a recall NSI with a future LED will not be excluded")
+        void aRecallNSIWithAFutureLEDWillNotBeExcluded() {
+            when(nsiRepository.findByOffenderIdForActiveEvents(any())).thenReturn(List.of(aRecall(LocalDate.now().plusDays(1))));
+
+            assertThat(nsiService.getNonExpiredRecallNsiForOffenderActiveConvictions(OFFENDER_ID).getNsis()).hasSize(1);
+        }
+
+        @Test
+        @DisplayName("a recall with a past LED will be excluded")
+        void aRecallWithAPastLEDWillBeExcluded() {
+            when(nsiRepository.findByOffenderIdForActiveEvents(any())).thenReturn(List.of(aRecall(LocalDate.now().minusDays(1))));
+
+            assertThat(nsiService.getNonExpiredRecallNsiForOffenderActiveConvictions(OFFENDER_ID).getNsis()).hasSize(0);
+        }
+
+
+        private uk.gov.justice.digital.delius.jpa.standard.entity.Nsi aRecall(LocalDate licenceExpiryDate) {
+            return buildNsi(EntityHelper.aCustodyEvent(
+                EVENT_ID,
+                List.of(EntityHelper.aKeyDate("LED",
+                    "Licence Expiry Date",
+                    licenceExpiryDate))),
+                "REC");
+        }
     }
 
 }

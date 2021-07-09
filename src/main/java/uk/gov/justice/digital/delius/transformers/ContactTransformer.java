@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius.transformers;
 
 import com.google.common.collect.ImmutableList;
 import uk.gov.justice.digital.delius.data.api.Contact;
+import uk.gov.justice.digital.delius.data.api.ContactSummary;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Nsi;
@@ -19,6 +20,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderLocation;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderTeam;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
+import uk.gov.justice.digital.delius.utils.DateConverter;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +31,25 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBo
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
 
 public class ContactTransformer {
+
+    public static ContactSummary contactSummaryOf(uk.gov.justice.digital.delius.jpa.standard.entity.Contact contact) {
+        return ContactSummary.builder()
+            .contactId(contact.getContactId())
+            .contactStart(DateConverter.toOffsetDateTime(contact.getContactDate(), contact.getContactStartTime()))
+            .contactEnd(DateConverter.toOffsetDateTime(contact.getContactDate(), contact.getContactEndTime()))
+            .type(contactTypeOf(contact.getContactType()))
+            .officeLocation(Optional.ofNullable(contact.getOfficeLocation())
+                .map(OfficeLocationTransformer::officeLocationOf)
+                .orElse(null))
+            .notes(contact.getNotes())
+            .provider(ContactTransformer.probationAreaOf(contact.getProbationArea()))
+            .team(ContactTransformer.teamOf(contact.getTeam()))
+            .staff(ContactTransformer.staffOf(contact.getStaff()))
+            .sensitive(ynToBoolean(contact.getSensitive()))
+            .outcome(AppointmentTransformer.appointmentOutcomeOf(contact))
+            .rarActivity(contact.isRarActivity())
+            .build();
+    }
 
     public static List<Contact> contactsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.Contact> contacts) {
         return contacts.stream()
@@ -167,6 +188,7 @@ public class ContactTransformer {
                 .code(contactType.getCode())
                 .description(contactType.getDescription())
                 .shortDescription(Optional.ofNullable(contactType.getShortDescription()).orElse(null))
+                .appointment(ynToBoolean(contactType.getAttendanceContact()))
                 .build();
     }
 
@@ -177,5 +199,4 @@ public class ContactTransformer {
                         .description(cot.getDescription())
                         .build()).orElse(null);
     }
-
 }

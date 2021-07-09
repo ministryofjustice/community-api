@@ -28,6 +28,7 @@ class NsiPatchRequestTransformerTest {
     public void before() {
 
         integrationContext = new IntegrationContext();
+        integrationContext.getNsiMapping().setNsiEndStatus("COMP");
         integrationContext.getContactMapping().setEndTypeToOutcomeType(
             new HashMap<>() {{
                 this.put("CANCELLED", "CRS01");
@@ -47,7 +48,9 @@ class NsiPatchRequestTransformerTest {
         ).isEqualTo("""
             [{"op":"replace","path":"/outcome","value":"CRS01"},\
             {"op":"replace","path":"/endDate","value":"2021-06-01T01:00:00.000000001"},\
-            {"op":"replace","path":"/notes","value":"some notes"}]\
+            {"op":"replace","path":"/notes","value":"some notes"},\
+            {"op":"replace","path":"/statusDate","value":"2021-06-01T01:00:00.000000001"},\
+            {"op":"replace","path":"/status","value":"COMP"}]\
             """);
 
         assertThat(
@@ -57,7 +60,9 @@ class NsiPatchRequestTransformerTest {
         ).isEqualTo("""
             [{"op":"replace","path":"/outcome","value":"CRS02"},\
             {"op":"replace","path":"/endDate","value":"2021-06-01T01:00:00.000000001"},\
-            {"op":"replace","path":"/notes","value":"some notes"}]\
+            {"op":"replace","path":"/notes","value":"some notes"},\
+            {"op":"replace","path":"/statusDate","value":"2021-06-01T01:00:00.000000001"},\
+            {"op":"replace","path":"/status","value":"COMP"}]\
             """);
 
         assertThat(
@@ -67,7 +72,9 @@ class NsiPatchRequestTransformerTest {
         ).isEqualTo("""
             [{"op":"replace","path":"/outcome","value":"CRS03"},\
             {"op":"replace","path":"/endDate","value":"2021-06-01T01:00:00.000000001"},\
-            {"op":"replace","path":"/notes","value":"some notes"}]\
+            {"op":"replace","path":"/notes","value":"some notes"},\
+            {"op":"replace","path":"/statusDate","value":"2021-06-01T01:00:00.000000001"},\
+            {"op":"replace","path":"/status","value":"COMP"}]\
             """);
     }
 

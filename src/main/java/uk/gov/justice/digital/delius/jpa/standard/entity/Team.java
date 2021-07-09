@@ -57,6 +57,9 @@ public class Team {
     @Column(name = "TELEPHONE")
     private String telephone;
 
+    @Column(name = "EMAIL_ADDRESS")
+    private String emailAddress;
+
     @Column(name = "UNPAID_WORK_TEAM")
     private String unpaidWorkTeam;
 
