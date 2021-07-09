@@ -22,6 +22,8 @@ public class PersonalCircumstanceTransformer {
                 .offenderId(personalCircumstance.getOffenderId())
                 .notes(personalCircumstance.getNotes())
                 .evidenced(ynToBoolean(personalCircumstance.getEvidenced()))
+                .createdDatetime(personalCircumstance.getCreatedDatetime())
+                .lastUpdatedDatetime(personalCircumstance.getLastUpdatedDatetime())
             .build();
     }
 

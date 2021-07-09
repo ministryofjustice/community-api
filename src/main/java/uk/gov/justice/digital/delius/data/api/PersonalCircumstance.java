@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -34,5 +35,8 @@ public class PersonalCircumstance {
     private String notes;
     @ApiModelProperty(value = "true if evidence was supplied for this circumstance", example = "true")
     private Boolean evidenced;
-
+    @ApiModelProperty(name = "Date and time that this personal circumstance was created", example = "2021-06-11T13:00:00")
+    private LocalDateTime createdDatetime;
+    @ApiModelProperty(name = "Date and time that this personal circumstance was last updated", example = "2021-06-11T14:00:00")
+    private LocalDateTime lastUpdatedDatetime;
 }
