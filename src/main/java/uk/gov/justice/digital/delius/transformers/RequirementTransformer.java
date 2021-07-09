@@ -36,6 +36,7 @@ public class RequirementTransformer {
                         .lengthUnit(lengthUnitOf(req))
                         .restrictive(restrictiveOf(req.getRequirementTypeMainCategory()))
                         .rarCount(req.getRarCount())
+                        .softDeleted(zeroOneToBoolean(req.getSoftDeleted()))
                         .build())
                 .orElse(null);
     }
