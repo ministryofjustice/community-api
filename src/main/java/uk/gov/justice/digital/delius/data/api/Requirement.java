@@ -37,6 +37,7 @@ public class Requirement {
     private String lengthUnit;
     @ApiModelProperty(value = "Is the main category restrictive")
     private Boolean restrictive;
+    private Boolean softDeleted;
 
     @ApiModelProperty(value = "Total RAR days completed")
     private Long rarCount;

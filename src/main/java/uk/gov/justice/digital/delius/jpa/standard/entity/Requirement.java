@@ -74,4 +74,7 @@ public class Requirement {
 
     @Column(name = "RAR_COUNT")
     private Long rarCount;
+
+    @Column(name = "SOFT_DELETED")
+    private Long softDeleted = 0L;
 }

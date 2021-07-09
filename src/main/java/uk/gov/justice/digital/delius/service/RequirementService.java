@@ -127,6 +127,7 @@ public class RequirementService {
         return getRequirementsByConvictionId(crn, eventId)
             .getRequirements().stream()
             .filter(Requirement::getActive)
+            .filter(requirement -> !requirement.getSoftDeleted())
             .filter(requirement ->
                 ofNullable(requirement.getRequirementTypeMainCategory())
                     .map(cat -> requirementTypeCode.equals(cat.getCode()))
