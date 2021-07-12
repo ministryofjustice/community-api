@@ -13,13 +13,22 @@ public class PersonalContactTransformerTest {
 
         assertThat(observed)
             .usingRecursiveComparison()
-            .ignoringFields("gender", "relationshipType", "title")
+            .ignoringFields("gender", "relationshipType", "title", "address.town")
             .isEqualTo(source);
 
         assertThat(observed)
             .hasFieldOrPropertyWithValue("gender", source.getGender().getCodeDescription())
             .hasFieldOrPropertyWithValue("relationshipType.code", source.getRelationshipType().getCodeValue())
             .hasFieldOrPropertyWithValue("relationshipType.description", source.getRelationshipType().getCodeDescription())
-            .hasFieldOrPropertyWithValue("title", source.getTitle().getCodeDescription());
+            .hasFieldOrPropertyWithValue("title", source.getTitle().getCodeDescription())
+            .hasFieldOrPropertyWithValue("address.town", source.getAddress().getTownCity());
+    }
+
+    @Test
+    public void transformsPersonalContactWithoutAddress() {
+        final var source = EntityHelper.aPersonalContact().toBuilder().address(null).build();
+        final var observed = PersonalContactTransformer.personalContactOf(source);
+
+        assertThat(observed.getAddress()).isNull();
     }
 }

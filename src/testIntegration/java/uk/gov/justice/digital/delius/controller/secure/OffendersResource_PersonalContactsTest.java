@@ -62,6 +62,12 @@ public class OffendersResource_PersonalContactsTest extends IntegrationTestBase 
             .body("title", equalTo("Lady"))
             .body("firstName", equalTo("Smile"))
             .body("surname", equalTo("Barry"))
-            .body("relationship", equalTo("Good friend"));
+            .body("relationship", equalTo("Good friend"))
+            .body("address.addressNumber", equalTo("64"))
+            .body("address.streetName", equalTo("Ermin Street"))
+            .body("address.town", equalTo("Wrenthorpe"))
+            .body("address.county", equalTo("West Yorkshire"))
+            .body("address.postcode", equalTo("WF2 8WT"))
+            .body("address.telephoneNumber", equalTo("07073735801"));
     }
 }

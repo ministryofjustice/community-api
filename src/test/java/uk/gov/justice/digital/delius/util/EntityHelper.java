@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.util;
 
 import com.google.common.collect.ImmutableList;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Address;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AddressAssessment;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AddressAssessmentDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ApprovedPremisesReferral;
@@ -396,6 +397,23 @@ public class EntityHelper {
                 .build();
     }
 
+    public static Address anAddress() {
+        return Address.builder()
+            .addressId(1000L)
+            .addressNumber("32")
+            .buildingName("HMPPS Digital Studio")
+            .streetName("Scotland Street")
+            .district("Sheffield City Centre")
+            .townCity("Sheffield")
+            .county("South Yorkshire")
+            .postcode("S3 7BS")
+            .telephoneNumber("0123456789")
+            .createdDatetime(LocalDateTime.of(2021, 6, 10, 13, 0))
+            .lastUpdatedDatetime(LocalDateTime.of(2021, 6, 10, 14, 0))
+            .softDeleted(0L)
+            .build();
+    }
+
     public static PersonalContact aPersonalContact() {
         return PersonalContact.builder()
             .personalContactId(2500058493L)
@@ -414,6 +432,7 @@ public class EntityHelper {
             .lastUpdatedDatetime(LocalDateTime.now())
             .title(aStandardReference("LDY", "Lady"))
             .gender(aStandardReference("F", "Female"))
+            .address(anAddress())
             .build();
     }
 
