@@ -60,4 +60,7 @@ public class PersonalContact {
 
     @ApiModelProperty(name = "Date and time this record was last updated", example = "2021-06-10T14:00:00Z")
     private LocalDateTime lastUpdatedDatetime;
+
+    @ApiModelProperty(name = "The personal contact address")
+    private AddressSummary address;
 }

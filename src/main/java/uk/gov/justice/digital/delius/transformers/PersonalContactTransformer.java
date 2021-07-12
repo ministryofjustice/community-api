@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.transformers;
 
+import uk.gov.justice.digital.delius.data.api.AddressSummary;
 import uk.gov.justice.digital.delius.data.api.PersonalContact;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
@@ -24,6 +25,18 @@ public class PersonalContactTransformer {
             .relationshipType(KeyValueTransformer.keyValueOf(personalContact.getRelationshipType()))
             .createdDatetime(personalContact.getCreatedDatetime())
             .lastUpdatedDatetime(personalContact.getLastUpdatedDatetime())
+            .address(Optional.ofNullable(personalContact.getAddress())
+                .map(address -> AddressSummary.builder()
+                    .addressNumber(address.getAddressNumber())
+                    .buildingName(address.getBuildingName())
+                    .streetName(address.getStreetName())
+                    .district(address.getDistrict())
+                    .town(address.getTownCity())
+                    .county(address.getCounty())
+                    .postcode(address.getPostcode())
+                    .telephoneNumber(address.getTelephoneNumber())
+                    .build())
+                .orElse(null))
             .build();
     }
 }

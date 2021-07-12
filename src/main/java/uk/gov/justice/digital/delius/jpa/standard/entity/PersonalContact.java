@@ -4,12 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,8 +26,6 @@ public class PersonalContact {
     private LocalDateTime startDate;
     @Column(name = "END_DATE")
     private LocalDateTime endDate;
-    @Column(name = "ADDRESS_ID")
-    private Long addressId;
     @Column(name = "PARTITION_AREA_ID")
     private Long partitionAreaId;
     @Column(name = "FIRST_NAME")
@@ -67,5 +66,8 @@ public class PersonalContact {
     @Column(name = "TRAINING_SESSION_ID")
     private Long trainingSessionId;
 
-
+    @ManyToOne
+    @JoinColumn(name = "ADDRESS_ID")
+    @Where(clause = "SOFT_DELETED != 1")
+    private Address address;
 }
