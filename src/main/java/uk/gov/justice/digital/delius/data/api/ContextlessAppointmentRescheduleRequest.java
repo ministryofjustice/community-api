@@ -26,4 +26,7 @@ public class ContextlessAppointmentRescheduleRequest {
     @NotNull
     @ApiModelProperty(required = true)
     private Boolean initiatedByServiceProvider;
+
+    @ApiModelProperty
+    private String officeLocationCode;
 }

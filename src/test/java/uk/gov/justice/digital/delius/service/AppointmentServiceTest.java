@@ -415,7 +415,7 @@ public class AppointmentServiceTest {
                 .event(Event.builder().eventId(EVENT_ID).build())
                 .build()));
 
-            final var deliusNewContactRequest = aDeliusReplaceContactRequest(updatedStartTime, updatedEndTime, EVENT_ID, NSI_ID, SP_INITIATED_RESCHEDULE);
+            final var deliusNewContactRequest = aDeliusReplaceContactRequest(updatedStartTime, updatedEndTime, "CRSLOND", EVENT_ID, NSI_ID, SP_INITIATED_RESCHEDULE);
             final var replacedContact = ContactDto.builder()
                 .id(2L)
                 .nsiId(NSI_ID)
@@ -424,11 +424,45 @@ public class AppointmentServiceTest {
                 .date(updatedStartTime.toLocalDate())
                 .startTime(updatedStartTime.toLocalTime())
                 .endTime(updatedEndTime.toLocalTime())
+                .officeLocation("CRSLOND")
                 .build();
             when(deliusApiClient.replaceContact(appointmentId, deliusNewContactRequest)).thenReturn(replacedContact);
 
             // When
-            final var appointmentRescheduleRequest = aContextlessAppointmentRescheduleRequest(updatedStartTime, updatedEndTime, true);
+            final var appointmentRescheduleRequest = aContextlessAppointmentRescheduleRequest(updatedStartTime, updatedEndTime, "CRSLOND", true);
+            final var response = service.rescheduleAppointment("X007", appointmentId, CONTEXT, appointmentRescheduleRequest);
+
+            // Then
+            assertThat(response.getAppointmentId()).isEqualTo(2L);
+        }
+
+        @Test
+        public void replacesAppointmentWithoutLocation() {
+            // Given
+            final var appointmentId = 1L;
+            final var updatedStartTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+            final var updatedEndTime = updatedStartTime.plusHours(1);
+
+            when(contactRepository.findById(appointmentId)).thenReturn(Optional.of(Contact.builder()
+                .nsi(uk.gov.justice.digital.delius.jpa.standard.entity.Nsi.builder().nsiId(NSI_ID).build())
+                .event(Event.builder().eventId(EVENT_ID).build())
+                .build()));
+
+            final var deliusNewContactRequest = aDeliusReplaceContactRequest(updatedStartTime, updatedEndTime, "CRSLOND", EVENT_ID, NSI_ID, SP_INITIATED_RESCHEDULE);
+            final var replacedContact = ContactDto.builder()
+                .id(2L)
+                .nsiId(NSI_ID)
+                .eventId(EVENT_ID)
+                .typeDescription("Office Visit")
+                .date(updatedStartTime.toLocalDate())
+                .startTime(updatedStartTime.toLocalTime())
+                .endTime(updatedEndTime.toLocalTime())
+                .officeLocation(null)
+                .build();
+            when(deliusApiClient.replaceContact(appointmentId, deliusNewContactRequest)).thenReturn(replacedContact);
+
+            // When
+            final var appointmentRescheduleRequest = aContextlessAppointmentRescheduleRequest(updatedStartTime, updatedEndTime, null, true);
             final var response = service.rescheduleAppointment("X007", appointmentId, CONTEXT, appointmentRescheduleRequest);
 
             // Then
@@ -445,7 +479,7 @@ public class AppointmentServiceTest {
             when(contactRepository.findById(appointmentId)).thenReturn(Optional.empty());
 
             // When
-            final var appointmentRescheduleRequest = aContextlessAppointmentRescheduleRequest(updatedStartTime, updatedEndTime, false);
+            final var appointmentRescheduleRequest = aContextlessAppointmentRescheduleRequest(updatedStartTime, updatedEndTime, "CRSLOND", false);
             final var exception = assertThrows(BadRequestException.class,
                 () -> service.rescheduleAppointment("X007", appointmentId, CONTEXT, appointmentRescheduleRequest));
             assertThat(exception.getMessage()).isEqualTo("Cannot find Appointment for CRN: X007 and Appointment Id 1");
@@ -522,13 +556,14 @@ public class AppointmentServiceTest {
             .build();
     }
 
-    private ReplaceContact aDeliusReplaceContactRequest(OffsetDateTime updatedStartTime, OffsetDateTime updatedEndTime, Long eventId, Long nsiId, String outcome) {
+    private ReplaceContact aDeliusReplaceContactRequest(OffsetDateTime updatedStartTime, OffsetDateTime updatedEndTime, String officeLocation, Long eventId, Long nsiId, String outcome) {
         return ReplaceContact.builder()
             .offenderCrn("X007")
             .outcome(outcome)
             .date(toLondonLocalDate(updatedStartTime))
             .startTime(toLondonLocalTime(updatedStartTime))
             .endTime(toLondonLocalTime(updatedEndTime))
+            .officeLocation(officeLocation)
             .eventId(eventId)
             .nsiId(nsiId)
             .requirementId(null)
@@ -551,10 +586,11 @@ public class AppointmentServiceTest {
             .build();
     }
 
-    private ContextlessAppointmentRescheduleRequest aContextlessAppointmentRescheduleRequest(OffsetDateTime updatedStartTime, OffsetDateTime updatedEndTime, Boolean initiatedBySp) {
+    private ContextlessAppointmentRescheduleRequest aContextlessAppointmentRescheduleRequest(OffsetDateTime updatedStartTime, OffsetDateTime updatedEndTime, String officeLocationCode, Boolean initiatedBySp) {
         return ContextlessAppointmentRescheduleRequest.builder()
             .updatedAppointmentStart(updatedStartTime)
             .updatedAppointmentEnd(updatedEndTime)
+            .officeLocationCode(officeLocationCode)
             .initiatedByServiceProvider(initiatedBySp)
             .build();
     }
