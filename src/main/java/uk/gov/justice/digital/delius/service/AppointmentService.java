@@ -108,6 +108,7 @@ public class AppointmentService {
                 .updatedAppointmentStart(contextlessRequest.getUpdatedAppointmentStart())
                 .updatedAppointmentEnd(contextlessRequest.getUpdatedAppointmentEnd())
                 .outcome(outcomeType)
+                .officeLocationCode(contextlessRequest.getOfficeLocationCode())
                 .build())
             .orElseThrow(() -> new BadRequestException(format("Cannot find rescheduled outcome type for initiated-by-Service-Provider: %s", contextlessRequest.getInitiatedByServiceProvider())));
 
@@ -178,6 +179,7 @@ public class AppointmentService {
             .date(toLondonLocalDate(request.getUpdatedAppointmentStart()))
             .startTime(toLondonLocalTime(request.getUpdatedAppointmentStart()))
             .endTime(toLondonLocalTime(request.getUpdatedAppointmentEnd()))
+            .officeLocation(request.getOfficeLocationCode())
             .nsiId(existingContact.getNsi().getNsiId())
             .eventId(existingContact.getEvent().getEventId())
             .build();

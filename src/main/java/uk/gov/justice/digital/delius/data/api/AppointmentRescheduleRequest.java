@@ -26,4 +26,7 @@ public class AppointmentRescheduleRequest {
     @NotNull
     @ApiModelProperty(required = true)
     private String outcome;
+
+    @ApiModelProperty
+    private String officeLocationCode;
 }
