@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.CourtReportMinimal;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
+import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.CourtReportService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.UserAccessService;
@@ -28,8 +31,11 @@ class CourtReportResourceTest {
     private static final String CRN = "X321741";
     private static final Long REPORT_ID = 1L;
     private static final Long OFFENDER_ID = 100L;
+    private static final Long CONVICTION_ID = 200L;
     private static final CourtReportMinimal courtReportMinimal = CourtReportMinimal.builder().offenderId(OFFENDER_ID).build();
 
+    @Mock
+    private ConvictionService convictionService;
     @Mock
     private OffenderService offenderService;
     @Mock
@@ -48,7 +54,7 @@ class CourtReportResourceTest {
     }
 
     @Test
-    void givenKnownCrnAndReportId_whenGetReports_thenCheckExclusionsAndReturn() {
+    void givenKnownCrnAndReportId_whenGetReport_thenCheckExclusionsAndReturn() {
 
         when(offenderService.offenderIdOfCrn(CRN)).thenReturn(Optional.of(OFFENDER_ID));
         when(courtReportService.courtReportMinimalFor(OFFENDER_ID, REPORT_ID)).thenReturn(Optional.of(courtReportMinimal));
@@ -61,7 +67,7 @@ class CourtReportResourceTest {
     }
 
     @Test
-    void givenUnknownCrn_whenGetReports_thenCheckExclusionsAndReturn404() {
+    void givenUnknownCrn_whenGetReport_thenCheckExclusionsAndReturn404() {
 
         when(offenderService.offenderIdOfCrn(CRN)).thenReturn(Optional.empty());
 
@@ -75,7 +81,7 @@ class CourtReportResourceTest {
     }
 
     @Test
-    void givenUnknownReportId_whenGetReports_thenCheckExclusionsAndReturn404() {
+    void givenUnknownReportId_whenGetReport_thenCheckExclusionsAndReturn404() {
 
         when(offenderService.offenderIdOfCrn(CRN)).thenReturn(Optional.of(OFFENDER_ID));
         when(courtReportService.courtReportMinimalFor(OFFENDER_ID, REPORT_ID)).thenReturn(Optional.empty());
@@ -85,6 +91,20 @@ class CourtReportResourceTest {
             () -> courtReportResource.getOffenderCourtReportByCrnAndCourtReportId(CRN, REPORT_ID, authentication)
         );
         assertThat(thrown.getMessage()).contains("Court report with ID 1 not found");
+
+        verify(userAccessService).checkExclusionsAndRestrictions(eq(CRN), eq(emptyList()));
+    }
+
+    @Test
+    void givenKnownCrnAndConvictionId_whenGetReports_thenCheckExclusionsAndReturn() {
+
+        when(offenderService.offenderIdOfCrn(CRN)).thenReturn(Optional.ofNullable(OFFENDER_ID));
+        when(convictionService.eventFor(OFFENDER_ID, CONVICTION_ID)).thenReturn(Optional.of(Event.builder().eventId(CONVICTION_ID).build()));
+        when(courtReportService.courtReportsMinimalFor(OFFENDER_ID, CONVICTION_ID)).thenReturn(List.of(courtReportMinimal));
+
+        final var courtReport = courtReportResource.getOffenderCourtReportsByCrnAndConvictionId(CRN, CONVICTION_ID, authentication);
+
+        assertThat(courtReport.get(0)).isSameAs(courtReportMinimal);
 
         verify(userAccessService).checkExclusionsAndRestrictions(eq(CRN), eq(emptyList()));
     }

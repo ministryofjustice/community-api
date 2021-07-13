@@ -1,0 +1,379 @@
+{
+  "consumer": {
+    "name": "court-case-service"
+  },
+  "interactions": [
+    {
+      "_id": "a6e9443b53cdee8bbaceb551665bc79fd819e33e",
+      "description": "a request for a NSIs by CRN and conviction ID",
+      "providerStates": [
+        {
+          "name": "an NSI exists for CRN X320741 and conviction id 2500295345"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/secure/offenders/crn/X320741/convictions/2500295345/nsis",
+        "query": {
+          "nsiCodes": [
+            "BRE"
+          ]
+        }
+      },
+      "response": {
+        "body": {
+          "nsis": [
+            {
+              "actualStartDate": "2000-01-31",
+              "nsiId": 100,
+              "nsiStatus": {
+                "code": "description"
+              },
+              "nsiSubType": {
+                "code": "description"
+              },
+              "nsiType": {
+                "code": "description"
+              },
+              "statusDateTime": "2000-01-31T13:00:00"
+            }
+          ]
+        },
+        "generators": {
+          "body": {
+            "$.nsis[*].actualStartDate": {
+              "format": "yyyy-MM-dd",
+              "type": "Date"
+            },
+            "$.nsis[*].nsiId": {
+              "max": 2147483647,
+              "min": 0,
+              "type": "RandomInt"
+            },
+            "$.nsis[*].statusDateTime": {
+              "format": "yyyy-MM-dd'T'HH:mm:ss",
+              "type": "DateTime"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.nsis": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.nsis[*].actualStartDate": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "date": "yyyy-MM-dd",
+                  "match": "date"
+                }
+              ]
+            },
+            "$.nsis[*].nsiId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "number"
+                }
+              ]
+            },
+            "$.nsis[*].nsiStatus.code": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.nsis[*].nsiSubType.code": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.nsis[*].nsiType.code": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.nsis[*].statusDateTime": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "timestamp",
+                  "timestamp": "yyyy-MM-dd'T'HH:mm:ss"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "_id": "d37369d6dc1baf35dd337e073d70858eea355c81",
+      "description": "a request for a PREVIOUSLY KNOWN probation status detail by CRN",
+      "providerStates": [
+        {
+          "name": "probation status detail is available for CRN CRN40"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/secure/offenders/crn/CRN40/probationStatus"
+      },
+      "response": {
+        "body": {
+          "awaitingPsr": true,
+          "preSentenceActivity": true,
+          "previouslyKnownTerminationDate": "2000-01-31",
+          "status": "string"
+        },
+        "generators": {
+          "body": {
+            "$.previouslyKnownTerminationDate": {
+              "format": "yyyy-MM-dd",
+              "type": "Date"
+            },
+            "$.status": {
+              "size": 20,
+              "type": "RandomString"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.awaitingPsr": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.preSentenceActivity": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.previouslyKnownTerminationDate": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "date": "yyyy-MM-dd",
+                  "match": "date"
+                }
+              ]
+            },
+            "$.status": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "_id": "c35ee25bba47b1ab9bfee43577bc1ba5b50d835d",
+      "description": "a request for a CURRENT probation status detail by CRN",
+      "providerStates": [
+        {
+          "name": "probation status detail is available for CRN X320741"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/secure/offenders/crn/X320741/probationStatus"
+      },
+      "response": {
+        "body": {
+          "awaitingPsr": true,
+          "inBreach": true,
+          "preSentenceActivity": true,
+          "status": "string"
+        },
+        "generators": {
+          "body": {
+            "$.status": {
+              "size": 20,
+              "type": "RandomString"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.awaitingPsr": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.inBreach": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.preSentenceActivity": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.status": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    }
+  ],
+  "metadata": {
+    "pact-jvm": {
+      "version": "4.2.6"
+    },
+    "pactSpecification": {
+      "version": "3.0.0"
+    }
+  },
+  "provider": {
+    "name": "community-api"
+  },
+  "createdAt": "2021-06-04T07:29:11+00:00",
+  "_links": {
+    "self": {
+      "title": "Pact",
+      "name": "Pact between court-case-service (2021-06-04) and community-api",
+      "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/pacts/provider/community-api/consumer/court-case-service/version/2021-06-04"
+    },
+    "pb:consumer": {
+      "title": "Consumer",
+      "name": "court-case-service",
+      "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/pacticipants/court-case-service"
+    },
+    "pb:consumer-version": {
+      "title": "Consumer version",
+      "name": "2021-06-04",
+      "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/pacticipants/court-case-service/versions/2021-06-04"
+    },
+    "pb:provider": {
+      "title": "Provider",
+      "name": "community-api",
+      "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/pacticipants/community-api"
+    },
+    "pb:pact-version": {
+      "title": "Pact content version permalink",
+      "name": "1cdec1ba6feb54d88ae635c6296734c43b9434a1",
+      "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/pacts/provider/community-api/consumer/court-case-service/pact-version/1cdec1ba6feb54d88ae635c6296734c43b9434a1"
+    },
+    "pb:latest-pact-version": {
+      "title": "Latest version of this pact",
+      "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/pacts/provider/community-api/consumer/court-case-service/latest"
+    },
+    "pb:all-pact-versions": {
+      "title": "All versions of this pact",
+      "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/pacts/provider/community-api/consumer/court-case-service/versions"
+    },
+    "pb:latest-untagged-pact-version": {
+      "title": "Latest untagged version of this pact",
+      "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/pacts/provider/community-api/consumer/court-case-service/latest-untagged"
+    },
+    "pb:latest-tagged-pact-version": {
+      "title": "Latest tagged version of this pact",
+      "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/pacts/provider/community-api/consumer/court-case-service/latest/{tag}",
+      "templated": true
+    },
+    "pb:previous-distinct": {
+      "title": "Previous distinct version of this pact",
+      "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/pacts/provider/community-api/consumer/court-case-service/version/2021-06-04/previous-distinct"
+    },
+    "pb:diff-previous-distinct": {
+      "title": "Diff with previous distinct version of this pact",
+      "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/pacts/provider/community-api/consumer/court-case-service/version/2021-06-04/diff/previous-distinct"
+    },
+    "pb:diff": {
+      "title": "Diff with another specified version of this pact",
+      "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/pacts/provider/community-api/consumer/court-case-service/pact-version/1cdec1ba6feb54d88ae635c6296734c43b9434a1/diff/pact-version/{pactVersion}",
+      "templated": true
+    },
+    "pb:pact-webhooks": {
+      "title": "Webhooks for the pact between court-case-service and community-api",
+      "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/webhooks/provider/community-api/consumer/court-case-service"
+    },
+    "pb:consumer-webhooks": {
+      "title": "Webhooks for all pacts with provider community-api",
+      "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/webhooks/consumer/community-api"
+    },
+    "pb:tag-prod-version": {
+      "title": "PUT to this resource to tag this consumer version as 'production'",
+      "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/pacticipants/court-case-service/versions/2021-06-04/tags/prod"
+    },
+    "pb:tag-version": {
+      "title": "PUT to this resource to tag this consumer version",
+      "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/pacticipants/court-case-service/versions/2021-06-04/tags/{tag}"
+    },
+    "pb:publish-verification-results": {
+      "title": "Publish verification results",
+      "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/pacts/provider/community-api/consumer/court-case-service/pact-version/1cdec1ba6feb54d88ae635c6296734c43b9434a1/verification-results"
+    },
+    "pb:latest-verification-results": {
+      "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/pacts/provider/community-api/consumer/court-case-service/pact-version/1cdec1ba6feb54d88ae635c6296734c43b9434a1/verification-results/latest"
+    },
+    "pb:triggered-webhooks": {
+      "title": "Webhooks triggered by the publication of this pact",
+      "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/pacts/provider/community-api/consumer/court-case-service/version/2021-06-04/triggered-webhooks"
+    },
+    "pb:matrix-for-consumer-version": {
+      "title": "View matrix rows for the consumer version to which this pact belongs",
+      "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/matrix?q[][pacticipant]=court-case-service&q[][version]=2021-06-04&latestby=cvpv"
+    },
+    "curies": [
+      {
+        "name": "pb",
+        "href": "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk/doc/{rel}?context=pact",
+        "templated": true
+      }
+    ]
+  }
+}
+
