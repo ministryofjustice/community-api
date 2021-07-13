@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius.jpa.standard.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -39,4 +40,16 @@ public interface ContactRepository extends JpaRepository<Contact, Long>, JpaSpec
     )
     List<Contact> findByOffenderAndNsiId(@Param("offenderId") Long offenderId,
                                          @Param("nsiId") Long nsiId);
+
+    /**
+     * Get appointment (contact with type.attendanceContact) by offender id & contact id.
+     * Specifying both offender & contact ids effectively validates that the appointment is associated to the offender.
+     */
+    @Query("SELECT contact FROM Contact contact "
+        + "WHERE contact.offenderId = :offenderId "
+        + "AND contact.contactId = :contactId "
+        + "AND contact.contactType.attendanceContact = 'Y' "
+        + "AND contact.softDeleted = 0"
+    )
+    Optional<Contact> findOffenderAppointment(Long contactId, Long offenderId);
 }

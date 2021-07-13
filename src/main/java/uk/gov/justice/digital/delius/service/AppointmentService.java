@@ -32,6 +32,7 @@ import uk.gov.justice.digital.delius.utils.DateConverter;
 import uk.gov.justice.digital.delius.utils.JsonPatchSupport;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -65,6 +66,15 @@ public class AppointmentService {
             filter.toBuilder().offenderId(offenderId).build(),
             Sort.by(DESC, "contactDate", "contactStartTime", "contactEndTime"));
         return contacts.stream().map(AppointmentTransformer::appointmentDetailOf).collect(Collectors.toList());
+    }
+
+    /**
+     * Get appointment by offender id & appointment (contact) id.
+     * This effectively validates that the appointment is associated to the specified offender.
+     */
+    public Optional<AppointmentDetail> getAppointment(Long appointmentId, Long offenderId) {
+        return contactRepository.findOffenderAppointment(appointmentId, offenderId)
+            .map(AppointmentTransformer::appointmentDetailOf);
     }
 
     @Transactional

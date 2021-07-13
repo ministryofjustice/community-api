@@ -20,6 +20,7 @@ import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.Integ
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.data.api.Appointment.Attended;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
+import uk.gov.justice.digital.delius.data.api.AppointmentDetail;
 import uk.gov.justice.digital.delius.data.api.AppointmentType;
 import uk.gov.justice.digital.delius.data.api.AppointmentType.OrderType;
 import uk.gov.justice.digital.delius.data.api.AppointmentType.RequiredOptional;
@@ -148,7 +149,7 @@ public class AppointmentServiceTest {
         }
 
         @Test
-        public void gettingAppointmentDetail() {
+        public void gettingAppointmentDetails() {
             final var contacts = List.of(
                 EntityHelper.aContact().toBuilder().contactId(1L).build(),
                 EntityHelper.aContact().toBuilder().contactId(2L).build());
@@ -161,6 +162,21 @@ public class AppointmentServiceTest {
             assertThat(sortArgumentCaptor.getValue()).isEqualTo(Sort.by(DESC, "contactDate", "contactStartTime", "contactEndTime"));
             assertThat(specificationArgumentCaptor.getValue()).isEqualTo(filter.toBuilder().offenderId(1L).build());
             assertThat(observed).hasSize(2).extracting("appointmentId", Long.class).containsExactly(1L, 2L);
+        }
+
+        @Test
+        public void gettingAppointment() {
+            final var contact = EntityHelper.aContact().toBuilder().contactId(200L).build();
+            when(contactRepository.findOffenderAppointment( 100L, 200L)).thenReturn(Optional.of(contact));
+            final var observed = service.getAppointment(100L, 200L);
+            assertThat(observed).isPresent().map(AppointmentDetail::getAppointmentId).hasValue(200L);
+        }
+
+        @Test
+        public void gettingMissingAppointment() {
+            when(contactRepository.findOffenderAppointment(100L, 200L)).thenReturn(Optional.empty());
+            final var observed = service.getAppointment(100L, 200L);
+            assertThat(observed).isNotPresent();
         }
 
         private AppointmentFilter anAppointmentFilter() {

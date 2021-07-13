@@ -38,8 +38,8 @@ public class AppointmentControllerSecure {
     @RequestMapping(value = "/offenders/crn/{crn}/appointments", method = RequestMethod.GET)
     @ApiResponses(
         value = {
-            @ApiResponse(code = 200, message = "All offender appointments", response = AppointmentDetail.class, responseContainer = "List"),
             @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY"),
+            @ApiResponse(code = 404, message = "Offender not found"),
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
         })
     @ApiOperation(value = "Gets all appointments for a specific offender by CRN")
@@ -56,5 +56,20 @@ public class AppointmentControllerSecure {
         final var id = offenderService.offenderIdOfCrn(crn)
             .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s does not exist", crn)));
         return appointmentService.appointmentDetailsFor(id, filter);
+    }
+
+    @RequestMapping(value = "/offenders/crn/{crn}/appointments/{appointmentId}", method = RequestMethod.GET)
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY"),
+            @ApiResponse(code = 404, message = "Appointment or offender not found"),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+    @ApiOperation(value = "Gets offender appointment by CRN & appointment id")
+    public AppointmentDetail getOffenderAppointmentByCrn(final @PathVariable("crn") String crn, final @PathVariable("appointmentId") Long appointmentId) {
+        final var offenderId = offenderService.offenderIdOfCrn(crn)
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s does not exist", crn)));
+        return appointmentService.getAppointment(appointmentId, offenderId)
+            .orElseThrow(() -> new NotFoundException(String.format("Appointment with id %d does not exist", appointmentId)));
     }
 }
