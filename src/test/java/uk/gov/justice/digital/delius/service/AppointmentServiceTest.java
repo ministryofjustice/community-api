@@ -448,7 +448,7 @@ public class AppointmentServiceTest {
                 .event(Event.builder().eventId(EVENT_ID).build())
                 .build()));
 
-            final var deliusNewContactRequest = aDeliusReplaceContactRequest(updatedStartTime, updatedEndTime, "CRSLOND", EVENT_ID, NSI_ID, SP_INITIATED_RESCHEDULE);
+            final var deliusNewContactRequest = aDeliusReplaceContactRequest(updatedStartTime, updatedEndTime, null, EVENT_ID, NSI_ID, SP_INITIATED_RESCHEDULE);
             final var replacedContact = ContactDto.builder()
                 .id(2L)
                 .nsiId(NSI_ID)
