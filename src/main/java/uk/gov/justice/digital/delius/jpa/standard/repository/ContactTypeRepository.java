@@ -16,6 +16,6 @@ public interface ContactTypeRepository extends JpaRepository<ContactType, Long> 
     @Query("SELECT DISTINCT type FROM ContactType type " +
         "INNER JOIN FETCH type.contactCategories category " +
         "WHERE category.codeValue = 'AL' AND type.selectable = 'Y' AND type.scheduleFutureAppointments = 'Y' " +
-        "AND type.attendanceContact = 'Y'")
+        "AND type.attendanceContact = true")
     List<ContactType> findAllSelectableAppointmentTypes();
 }

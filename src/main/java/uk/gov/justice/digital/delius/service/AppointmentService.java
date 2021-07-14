@@ -15,7 +15,6 @@ import uk.gov.justice.digital.delius.data.api.AppointmentDetail;
 import uk.gov.justice.digital.delius.data.api.AppointmentRescheduleRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentRescheduleResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentType;
-import uk.gov.justice.digital.delius.data.api.AppointmentType.RequiredOptional;
 import uk.gov.justice.digital.delius.data.api.AppointmentUpdateResponse;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
@@ -32,6 +31,7 @@ import uk.gov.justice.digital.delius.utils.DateConverter;
 import uk.gov.justice.digital.delius.utils.JsonPatchSupport;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -65,6 +65,15 @@ public class AppointmentService {
             filter.toBuilder().offenderId(offenderId).build(),
             Sort.by(DESC, "contactDate", "contactStartTime", "contactEndTime"));
         return contacts.stream().map(AppointmentTransformer::appointmentDetailOf).collect(Collectors.toList());
+    }
+
+    /**
+     * Get appointment by offender id & appointment (contact) id.
+     * This effectively validates that the appointment is associated to the specified offender.
+     */
+    public Optional<AppointmentDetail> getAppointment(Long appointmentId, Long offenderId) {
+        return contactRepository.findByContactIdAndOffenderIdAndContactTypeAttendanceContactIsTrueAndSoftDeletedIsFalse(appointmentId, offenderId)
+            .map(AppointmentTransformer::appointmentDetailOf);
     }
 
     @Transactional
@@ -141,7 +150,7 @@ public class AppointmentService {
         final var type = this.contactTypeRepository.findByCode(contactTypeCode)
             .orElseThrow(() -> new BadRequestException(format("contact type '%s' does not exist", contactTypeCode)));
 
-        if (!type.getAttendanceContact().equals("Y")) {
+        if (!type.getAttendanceContact()) {
             throw new BadRequestException(format("contact type '%s' is not an appointment type", contactTypeCode));
         }
     }

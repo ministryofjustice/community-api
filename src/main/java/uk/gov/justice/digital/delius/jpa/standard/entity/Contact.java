@@ -70,7 +70,7 @@ public class Contact {
 
     @Column(name = "SOFT_DELETED")
     @Builder.Default
-    private Long softDeleted = 0L;
+    private Boolean softDeleted = false;
 
     @Column(name = "TRUST_PROVIDER_FLAG")
     @Builder.Default

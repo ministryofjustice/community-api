@@ -76,7 +76,7 @@ class NotificationServiceTest {
             when(referralService.getExistingMatchingNsi("X007", CONTEXT, 100L, CONTRACT_TYPE, referralStart, referralId))
                 .thenReturn(Optional.of(Nsi.builder().nsiId(99L).build()));
             when(contactTypeRepository.findByCode(NOTIFICATION_CONTACT_TYPE))
-                .thenReturn(Optional.of(ContactType.builder().code(NOTIFICATION_CONTACT_TYPE).attendanceContact("N").build()));
+                .thenReturn(Optional.of(ContactType.builder().code(NOTIFICATION_CONTACT_TYPE).attendanceContact(false).build()));
 
             final var deliusNewContactRequest = aDeliusNewContactRequest(contactDateTime, 99L, 100L);
             final var createdContact = ContactDto.builder().id(3L).build();
@@ -100,7 +100,7 @@ class NotificationServiceTest {
             when(referralService.getExistingMatchingNsi("X007", CONTEXT, 100L, CONTRACT_TYPE, referralStart, referralId))
                 .thenReturn(Optional.of(Nsi.builder().nsiId(99L).build()));
             when(contactTypeRepository.findByCode(NOTIFICATION_CONTACT_TYPE))
-                .thenReturn(Optional.of(ContactType.builder().code(NOTIFICATION_CONTACT_TYPE).attendanceContact("N").build()));
+                .thenReturn(Optional.of(ContactType.builder().code(NOTIFICATION_CONTACT_TYPE).attendanceContact(false).build()));
 
             final var deliusNewContactRequest = aDeliusNewContactRequest(contactDateTime, 99L, 100L);
             final var createdContact = ContactDto.builder().id(3L).build();
@@ -145,7 +145,7 @@ class NotificationServiceTest {
             when(referralService.getExistingMatchingNsi("X007", CONTEXT, 100L, CONTRACT_TYPE, referralStart, referralId))
                 .thenReturn(Optional.of(Nsi.builder().nsiId(99L).build()));
             when(contactTypeRepository.findByCode(NOTIFICATION_CONTACT_TYPE))
-                .thenReturn(Optional.of(ContactType.builder().code(NOTIFICATION_CONTACT_TYPE).attendanceContact("Y").build()));
+                .thenReturn(Optional.of(ContactType.builder().code(NOTIFICATION_CONTACT_TYPE).attendanceContact(true).build()));
 
             // When
             final var appointmentCreateRequest = aContextlessNotificationCreateRequest(referralStart, contactDateTime, CONTRACT_TYPE, referralId);

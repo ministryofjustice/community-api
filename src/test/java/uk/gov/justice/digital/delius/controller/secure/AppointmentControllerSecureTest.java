@@ -81,6 +81,28 @@ public class AppointmentControllerSecureTest {
                 .build());
     }
 
+    @Test
+    public void gettingAppointment() {
+        final var appointment = anAppointmentDetail(100L);
+        when(offenderService.offenderIdOfCrn("CRN1")).thenReturn(Optional.of(1L));
+        when(appointmentService.getAppointment(100L, 1L))
+            .thenReturn(Optional.of(appointment));
+
+        final var observed = given()
+            .when()
+            .get("/secure/offenders/crn/CRN1/appointments/100")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(AppointmentDetail.class);
+
+        assertThat(observed)
+            .usingRecursiveComparison()
+            .ignoringFields("appointmentStart", "appointmentEnd")
+            .isEqualTo(appointment);
+    }
+
     private static AppointmentDetail anAppointmentDetail(Long id) {
         return AppointmentDetail.builder()
             .appointmentId(id)
