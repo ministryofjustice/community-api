@@ -15,7 +15,6 @@ import uk.gov.justice.digital.delius.data.api.AppointmentDetail;
 import uk.gov.justice.digital.delius.data.api.AppointmentRescheduleRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentRescheduleResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentType;
-import uk.gov.justice.digital.delius.data.api.AppointmentType.RequiredOptional;
 import uk.gov.justice.digital.delius.data.api.AppointmentUpdateResponse;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
@@ -73,7 +72,7 @@ public class AppointmentService {
      * This effectively validates that the appointment is associated to the specified offender.
      */
     public Optional<AppointmentDetail> getAppointment(Long appointmentId, Long offenderId) {
-        return contactRepository.findOffenderAppointment(appointmentId, offenderId)
+        return contactRepository.findByContactIdAndOffenderIdAndContactTypeAttendanceContactIsTrueAndSoftDeletedIsFalse(appointmentId, offenderId)
             .map(AppointmentTransformer::appointmentDetailOf);
     }
 
@@ -151,7 +150,7 @@ public class AppointmentService {
         final var type = this.contactTypeRepository.findByCode(contactTypeCode)
             .orElseThrow(() -> new BadRequestException(format("contact type '%s' does not exist", contactTypeCode)));
 
-        if (!type.getAttendanceContact().equals("Y")) {
+        if (!type.getAttendanceContact()) {
             throw new BadRequestException(format("contact type '%s' is not an appointment type", contactTypeCode));
         }
     }

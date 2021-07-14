@@ -103,7 +103,7 @@ class ContactTransformerTest {
             .contactStartTime(LocalTime.of(12, 0))
             .contactEndTime(LocalTime.of(13, 0))
             .contactType(EntityHelper.aContactType().toBuilder()
-                .attendanceContact("Y")
+                .attendanceContact(true)
                 .code("CT1")
                 .description("Some contact type")
                 .shortDescription("Some contact type short description")

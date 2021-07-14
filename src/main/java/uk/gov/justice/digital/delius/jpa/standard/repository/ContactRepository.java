@@ -26,7 +26,7 @@ public interface ContactRepository extends JpaRepository<Contact, Long>, JpaSpec
         + "AND contact.event.eventId = :eventId "
         + "AND contact.contactDate <= :contactDate "
         + "AND (contact.enforcement = '1' OR contact.contactOutcomeType != null) "
-        + "AND contact.contactType.attendanceContact = 'Y' "
+        + "AND contact.contactType.attendanceContact = true "
         + "AND contact.contactType.nationalStandardsContact = 'Y'"
     )
     List<Contact> findByOffenderAndEventId(@Param("offenderId") Long offenderId,
@@ -45,11 +45,5 @@ public interface ContactRepository extends JpaRepository<Contact, Long>, JpaSpec
      * Get appointment (contact with type.attendanceContact) by offender id & contact id.
      * Specifying both offender & contact ids effectively validates that the appointment is associated to the offender.
      */
-    @Query("SELECT contact FROM Contact contact "
-        + "WHERE contact.offenderId = :offenderId "
-        + "AND contact.contactId = :contactId "
-        + "AND contact.contactType.attendanceContact = 'Y' "
-        + "AND contact.softDeleted = 0"
-    )
-    Optional<Contact> findOffenderAppointment(Long contactId, Long offenderId);
+    Optional<Contact> findByContactIdAndOffenderIdAndContactTypeAttendanceContactIsTrueAndSoftDeletedIsFalse(Long contactId, Long offenderId);
 }

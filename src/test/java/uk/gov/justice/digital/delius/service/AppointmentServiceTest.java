@@ -167,14 +167,14 @@ public class AppointmentServiceTest {
         @Test
         public void gettingAppointment() {
             final var contact = EntityHelper.aContact().toBuilder().contactId(200L).build();
-            when(contactRepository.findOffenderAppointment( 100L, 200L)).thenReturn(Optional.of(contact));
+            when(contactRepository.findByContactIdAndOffenderIdAndContactTypeAttendanceContactIsTrueAndSoftDeletedIsFalse( 100L, 200L)).thenReturn(Optional.of(contact));
             final var observed = service.getAppointment(100L, 200L);
             assertThat(observed).isPresent().map(AppointmentDetail::getAppointmentId).hasValue(200L);
         }
 
         @Test
         public void gettingMissingAppointment() {
-            when(contactRepository.findOffenderAppointment(100L, 200L)).thenReturn(Optional.empty());
+            when(contactRepository.findByContactIdAndOffenderIdAndContactTypeAttendanceContactIsTrueAndSoftDeletedIsFalse(100L, 200L)).thenReturn(Optional.empty());
             final var observed = service.getAppointment(100L, 200L);
             assertThat(observed).isNotPresent();
         }
@@ -197,7 +197,7 @@ public class AppointmentServiceTest {
             final var startTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
             final var endTime = startTime.plusHours(1);
 
-            havingContactType(true, builder -> builder.attendanceContact("Y"), RAR_CONTACT_TYPE);
+            havingContactType(true, builder -> builder.attendanceContact(true), RAR_CONTACT_TYPE);
 
             final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, null, true);
             final var createdContact = ContactDto.builder().id(3L).typeDescription("Office Visit")
@@ -236,7 +236,7 @@ public class AppointmentServiceTest {
             final var startTime = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
             final var endTime = startTime.plusHours(1);
 
-            havingContactType(true, builder -> builder.attendanceContact("N"), RAR_CONTACT_TYPE);
+            havingContactType(true, builder -> builder.attendanceContact(false), RAR_CONTACT_TYPE);
 
             // When
             final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, NSI_ID, false, null);
@@ -257,7 +257,7 @@ public class AppointmentServiceTest {
             when(referralService.getExistingMatchingNsi("X007", CONTEXT, 1L, CONTRACT_TYPE, referralStart, referralId))
                 .thenReturn(of(nsi));
 
-            havingContactType(true, builder -> builder.attendanceContact("Y"), RAR_CONTACT_TYPE);
+            havingContactType(true, builder -> builder.attendanceContact(true), RAR_CONTACT_TYPE);
 
             final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, NSI_ID, null);
             final var createdContact = ContactDto.builder().id(3L)
@@ -304,7 +304,7 @@ public class AppointmentServiceTest {
                 new ReplaceOperation(JsonPointer.of("contactType"), valueOf(RAR_CONTACT_TYPE))));
             when(jsonPatchSupport.getAsText("/contactType", jsonPatch)).thenReturn(of(RAR_CONTACT_TYPE));
 
-            havingContactType(true, builder -> builder.attendanceContact("N"), RAR_CONTACT_TYPE);
+            havingContactType(true, builder -> builder.attendanceContact(false), RAR_CONTACT_TYPE);
 
             // When
             final var exception = assertThrows(BadRequestException.class,
@@ -321,7 +321,7 @@ public class AppointmentServiceTest {
                 new ReplaceOperation(JsonPointer.of("contactType"), valueOf(RAR_CONTACT_TYPE))));
             when(jsonPatchSupport.getAsText("/contactType", jsonPatch)).thenReturn(of(RAR_CONTACT_TYPE));
 
-            havingContactType(false, builder -> builder.attendanceContact("N"), RAR_CONTACT_TYPE);
+            havingContactType(false, builder -> builder.attendanceContact(false), RAR_CONTACT_TYPE);
 
             // When
             final var exception = assertThrows(BadRequestException.class,
@@ -341,7 +341,7 @@ public class AppointmentServiceTest {
             final var updatedContact = ContactDto.builder().id(3L).build();
             when(deliusApiClient.patchContact(appointmentId, jsonPatch)).thenReturn(updatedContact);
 
-            havingContactType(true, builder -> builder.attendanceContact("Y"), RAR_CONTACT_TYPE);
+            havingContactType(true, builder -> builder.attendanceContact(true), RAR_CONTACT_TYPE);
 
             // When
             final var response = service.patchAppointment(crn, appointmentId, jsonPatch);

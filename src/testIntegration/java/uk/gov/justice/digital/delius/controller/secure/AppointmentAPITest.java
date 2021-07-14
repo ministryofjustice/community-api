@@ -95,6 +95,28 @@ public class AppointmentAPITest extends IntegrationTestBase {
             .statusCode(HttpStatus.NOT_FOUND.value());
     }
 
+    @Test
+    public void attemptingToGetNonAppointmentContact() {
+        given()
+            .auth().oauth2(tokenWithRoleCommunity())
+            .when()
+            .get("/offenders/crn/X320811/appointments/2502719242")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    public void attemptingToGetSoftDeletedAppointment() {
+        given()
+            .auth().oauth2(tokenWithRoleCommunity())
+            .when()
+            .get("/offenders/crn/X320811/appointments/2502719243")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
     private void shouldReturnWellKnownAppointment(ValidatableResponse response) {
         response
             .body("appointmentId", equalTo(2502719240L))
