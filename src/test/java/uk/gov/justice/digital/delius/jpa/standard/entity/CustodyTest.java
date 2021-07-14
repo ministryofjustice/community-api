@@ -86,6 +86,17 @@ public class CustodyTest {
         }
 
         @Test
+        @DisplayName("licence is expired when no LED within key dates but is PSS phase")
+        void licenceIsExpiredWhenNoLEDWithinKeyDatesButIsPSSPhase() {
+            final var futureSentenceExpiryDate = aKeyDate("SED", "SentenceExpiryDate", LocalDate.now().plusMonths(12));
+            final var custodyInPSSWithNoLED = custody.toBuilder()
+                .custodialStatus(StandardReference.builder().codeValue("P").build())
+                .keyDates(List.of(futureSentenceExpiryDate)).build();
+
+            assertThat(custodyInPSSWithNoLED.hasReleaseLicenceExpired()).isTrue();
+        }
+
+        @Test
         @DisplayName("licence not expired when future LED found")
         void licenceNotExpiredWhenFutureLEDFound() {
             final var pastSentenceExpiryDate = aKeyDate("SED", "SentenceExpiryDate", LocalDate.now().minusMonths(12));
