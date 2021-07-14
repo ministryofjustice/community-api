@@ -112,6 +112,7 @@ public class AppointmentTransformerTest {
             .notes(null)
             .sensitive(null)
             .contactOutcomeType(null)
+            .rarActivity(null)
             .build();
         final var observed = AppointmentTransformer.appointmentDetailOf(contact);
         final var expectedDate = DateConverter.toOffsetDateTime(LocalDateTime.of(contact.getContactDate(), LocalTime.MIDNIGHT));
@@ -123,7 +124,8 @@ public class AppointmentTransformerTest {
             .hasFieldOrPropertyWithValue("officeLocation", null)
             .hasFieldOrPropertyWithValue("notes", null)
             .hasFieldOrPropertyWithValue("sensitive", null)
-            .hasFieldOrPropertyWithValue("outcome", null);
+            .hasFieldOrPropertyWithValue("outcome", null)
+            .hasFieldOrPropertyWithValue("rarActivity", null);
     }
 
     private Contact aContact() {
