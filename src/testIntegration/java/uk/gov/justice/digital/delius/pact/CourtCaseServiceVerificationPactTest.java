@@ -6,6 +6,7 @@ import au.com.dius.pact.provider.junit5.PactVerificationInvocationContextProvide
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
+import au.com.dius.pact.provider.junitsupport.loader.VersionSelector;
 import org.apache.http.HttpRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
@@ -13,7 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import uk.gov.justice.digital.delius.controller.secure.IntegrationTestBase;
 
 @Provider("community-api")
-@PactBroker(url = "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk")
+@PactBroker(url = "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk",
+    consumerVersionSelectors={
+        @VersionSelector(tag = "main", latest = "false")
+    })
 class CourtCaseServiceVerificationPactTest extends IntegrationTestBase {
 
     @BeforeEach
