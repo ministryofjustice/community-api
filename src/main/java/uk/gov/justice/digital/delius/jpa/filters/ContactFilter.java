@@ -43,7 +43,7 @@ public class ContactFilter implements Specification<Contact> {
 
         to.ifPresent(localDateTime -> predicateBuilder.add(cb.lessThanOrEqualTo(root.get("createdDateTime"), localDateTime)));
 
-        appointmentsOnly.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("contactType").get("attendanceContact"), value ? "Y" : "N")));
+        appointmentsOnly.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("contactType").get("attendanceContact"), value)));
 
         ImmutableList<Predicate> predicates = predicateBuilder.build();
 

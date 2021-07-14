@@ -79,7 +79,7 @@ public class ContactTransformer {
                 .notes(contact.getNotes())
                 .nsi(NsiTransformer.nsiOf(contact.getNsi()))
                 .requirement(RequirementTransformer.requirementOf(contact.getRequirement()))
-                .softDeleted(zeroOneToBoolean(contact.getSoftDeleted()))
+                .softDeleted(contact.getSoftDeleted())
                 .probationArea(probationAreaOf(contact.getProbationArea()))
                 .partitionArea(partitionAreaOf(contact.getPartitionArea()))
                 .providerEmployee(providerEmployeeOf(contact.getProviderEmployee()))
@@ -188,7 +188,7 @@ public class ContactTransformer {
                 .code(contactType.getCode())
                 .description(contactType.getDescription())
                 .shortDescription(Optional.ofNullable(contactType.getShortDescription()).orElse(null))
-                .appointment(ynToBoolean(contactType.getAttendanceContact()))
+                .appointment(contactType.getAttendanceContact())
                 .build();
     }
 
