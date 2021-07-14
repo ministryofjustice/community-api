@@ -9,6 +9,7 @@ import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
 import au.com.dius.pact.provider.junitsupport.loader.VersionSelector;
 import org.apache.http.HttpRequest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import uk.gov.justice.digital.delius.controller.secure.IntegrationTestBase;
@@ -18,6 +19,7 @@ import uk.gov.justice.digital.delius.controller.secure.IntegrationTestBase;
     consumerVersionSelectors={
         @VersionSelector(tag = "main", latest = "false")
     })
+@Disabled
 class CourtCaseServiceVerificationPactTest extends IntegrationTestBase {
 
     @BeforeEach
