@@ -2,7 +2,6 @@ package uk.gov.justice.digital.delius.service;
 
 import com.microsoft.applicationinsights.TelemetryClient;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -146,7 +145,7 @@ public class ConvictionService {
 
     @Transactional(readOnly = true)
     public List<Conviction> convictionsWithActiveRequirementFor(Long offenderId, String requirementTypeMainCategoryCode) {
-        List<uk.gov.justice.digital.delius.jpa.standard.entity.Event> events = eventRepository.findByOffenderIdAndActiveFlagTrue(offenderId);
+        final var events = eventRepository.findByOffenderIdAndActiveFlagTrue(offenderId);
 
         return events
             .stream()
@@ -165,35 +164,40 @@ public class ConvictionService {
 
     @Transactional(readOnly = true)
     public Optional<Conviction> convictionFor(Long offenderId, Long eventId) {
-        val event = eventRepository.findById(eventId);
+        final var event = eventRepository.findById(eventId);
         return event
             .filter(e -> offenderId.equals(e.getOffenderId()))
             .filter(e -> !e.isSoftDeleted())
             .map(ConvictionTransformer::convictionOf);
     }
 
+    @Transactional(readOnly = true)
+    public Optional<Event> eventFor(Long offenderId, Long eventId) {
+        return eventRepository.findByEventIdAndOffenderIdAndSoftDeletedFalse(eventId, offenderId);
+    }
+
     @Transactional
     public Conviction addCourtCaseFor(Long offenderId, CourtCase courtCase) {
-        val event = eventEntityBuilder.eventOf(
+        final var event = eventEntityBuilder.eventOf(
             offenderId,
             courtCase,
             calculateNextEventNumber(offenderId));
 
-        val conviction = ConvictionTransformer.convictionOf(eventRepository.save(event));
+        final var conviction = ConvictionTransformer.convictionOf(eventRepository.save(event));
         spgNotificationService.notifyNewCourtCaseCreated(event);
         return conviction;
     }
 
     @Transactional(readOnly = true)
     public Optional<Long> getConvictionIdByPrisonBookingNumber(String prisonBookingNumber) throws DuplicateActiveCustodialConvictionsException {
-        val events = eventRepository.findByPrisonBookingNumber(prisonBookingNumber);
+        final var events = eventRepository.findByPrisonBookingNumber(prisonBookingNumber);
 
         if (events.size() == 1) {
             return firstEventId(events);
         }
 
         // allow being relaxed and allow inactive events to be filtered out
-        val activeEvents = activeEvents(events);
+        final var activeEvents = activeEvents(events);
 
         switch (activeEvents.size()) {
             case 0:
@@ -206,7 +210,7 @@ public class ConvictionService {
     }
 
     public Optional<Event> getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(Long offenderId, String prisonBookingNumber) throws DuplicateActiveCustodialConvictionsException {
-        val events = activeCustodyEvents(offenderId);
+        final var events = activeCustodyEvents(offenderId);
 
         switch (events.size()) {
             case 0:
@@ -224,7 +228,7 @@ public class ConvictionService {
     }
 
     public Result<Optional<Event>, DuplicateConvictionsForSentenceDateException> getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(Long offenderId, LocalDate sentenceStartDate) {
-        val events = activeCustodyEvents(offenderId)
+        final var events = activeCustodyEvents(offenderId)
             .stream()
             .filter(event -> didSentenceStartAroundDate(event, sentenceStartDate))
             .collect(toList());
@@ -247,7 +251,7 @@ public class ConvictionService {
 
     @Transactional
     public CustodyKeyDate addOrReplaceCustodyKeyDateByOffenderId(Long offenderId, String typeCode, CreateCustodyKeyDate custodyKeyDate) throws CustodyTypeCodeIsNotValidException {
-        var custodialEvents = getAllActiveCustodialEvents(offenderId);
+        final var custodialEvents = getAllActiveCustodialEvents(offenderId);
         if (custodialEvents.isEmpty()) {
             throw new SingleActiveCustodyConvictionNotFoundException(offenderId, 0);
         }
@@ -257,7 +261,7 @@ public class ConvictionService {
             throw new SingleActiveCustodyConvictionNotFoundException(offenderId, custodialEvents.size());
         }
 
-        val custodyKeyDateType = lookupSupplier.custodyKeyDateTypeSupplier().apply(typeCode)
+       final var custodyKeyDateType = lookupSupplier.custodyKeyDateTypeSupplier().apply(typeCode)
             .orElseThrow(() -> new CustodyTypeCodeIsNotValidException(String.format("%s is not a valid custody key date", typeCode)));
 
         return custodialEvents
@@ -298,7 +302,7 @@ public class ConvictionService {
 
     @Transactional
     public void deleteCustodyKeyDateByOffenderId(Long offenderId, String typeCode) {
-        var custodialEvents = getAllActiveCustodialEvents(offenderId);
+        final var custodialEvents = getAllActiveCustodialEvents(offenderId);
         if (custodialEvents.isEmpty()) {
             throw new SingleActiveCustodyConvictionNotFoundException(offenderId, 0);
         }
@@ -318,7 +322,7 @@ public class ConvictionService {
 
     @Transactional(readOnly = true)
     public Event getActiveCustodialEvent(Long offenderId) {
-        val activeCustodyConvictions = activeCustodyEvents(offenderId);
+        final var activeCustodyConvictions = activeCustodyEvents(offenderId);
 
         if (activeCustodyConvictions.size() != 1) {
             throw new SingleActiveCustodyConvictionNotFoundException(offenderId, activeCustodyConvictions.size());
@@ -483,7 +487,6 @@ public class ConvictionService {
         final var datesAmendedOrUpdated = datesAddedOrUpdated(keyDatesToBeAddedOrUpdated);
         final var datesRemoved = datesRemoved(currentKeyDates, keyDatesToDelete);
 
-
         if (!keyDatesToDelete.isEmpty() || !keyDatesToBeAddedOrUpdated.isEmpty()) {
             contactService.addContactForBulkCustodyKeyDateUpdate(offenderRepository.findByOffenderId(offenderId)
                 .orElseThrow(), event, datesAmendedOrUpdated, datesRemoved);
@@ -591,7 +594,7 @@ public class ConvictionService {
     }
 
     private CustodyKeyDate addOrReplaceCustodyKeyDate(Event event, String typeCode, CreateCustodyKeyDate custodyKeyDate, boolean shouldNotifyIAPS) throws CustodyTypeCodeIsNotValidException {
-        val custodyKeyDateType = lookupSupplier.custodyKeyDateTypeSupplier().apply(typeCode)
+        final var custodyKeyDateType = lookupSupplier.custodyKeyDateTypeSupplier().apply(typeCode)
             .orElseThrow(() -> new CustodyTypeCodeIsNotValidException(String.format("%s is not a valid custody key date", typeCode)));
 
         return addOrReplaceCustodyKeyDate(event, custodyKeyDateType, custodyKeyDate, shouldNotifyIAPS);
@@ -606,7 +609,7 @@ public class ConvictionService {
             "date", custodyKeyDate.getDate().toString());
 
 
-        val maybeExistingKeyDate = event.getDisposal().getCustody().getKeyDates()
+        final var maybeExistingKeyDate = event.getDisposal().getCustody().getKeyDates()
             .stream()
             .filter(matchTypeCode(typeCode))
             .findAny();
@@ -621,7 +624,7 @@ public class ConvictionService {
         });
 
         if (maybeExistingKeyDate.isEmpty()) {
-            val keyDate = keyDateEntityBuilder.keyDateOf(event.getDisposal().getCustody(), custodyKeyDateType, custodyKeyDate.getDate());
+            final var keyDate = keyDateEntityBuilder.keyDateOf(event.getDisposal().getCustody(), custodyKeyDateType, custodyKeyDate.getDate());
             event.getDisposal()
                 .getCustody()
                 .getKeyDates()
@@ -653,8 +656,8 @@ public class ConvictionService {
             "eventNumber", event.getEventNumber(),
             "type", typeCode);
 
-        val keyDates = event.getDisposal().getCustody().getKeyDates();
-        val maybeKeyDateToRemove = keyDates
+        final var keyDates = event.getDisposal().getCustody().getKeyDates();
+        final var maybeKeyDateToRemove = keyDates
             .stream()
             .filter(matchTypeCode(typeCode))
             .findAny();

@@ -53,7 +53,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory.REHABILITATION_ACTIVITY_REQUIREMENT_CODE;
 
 @ExtendWith(MockitoExtension.class)
-public class ConvictionServiceTest {
+class ConvictionServiceTest {
 
     private static final Long ANY_OFFENDER_ID = 123L;
     private static final String EXCLUSION_REQUIREMENT_CODE = "X";
@@ -99,7 +99,7 @@ public class ConvictionServiceTest {
     }
 
     @Test
-    public void convictionsOrderedByCreationDate() {
+    void convictionsOrderedByCreationDate() {
         when(eventRepository.findByOffenderId(1L))
                 .thenReturn(ImmutableList.of(
                         aEvent().toBuilder().eventId(99L).referralDate(now().minusDays(1)).build(),
@@ -115,7 +115,7 @@ public class ConvictionServiceTest {
     }
 
     @Test
-    public void convictionForEventIdButIsSoftDeleted() {
+    void convictionForEventIdButIsSoftDeleted() {
         when(eventRepository.findById(99L))
             .thenReturn(Optional.of(
                 aEvent().toBuilder().eventId(99L).softDeleted(true).referralDate(now().minusDays(1)).build()
@@ -125,7 +125,7 @@ public class ConvictionServiceTest {
     }
 
     @Test
-    public void convictionForEventId() {
+    void convictionForEventId() {
         when(eventRepository.findById(99L))
             .thenReturn(Optional.of(
                 aEvent().toBuilder().eventId(99L).offenderId(1L).build()
@@ -135,7 +135,15 @@ public class ConvictionServiceTest {
     }
 
     @Test
-    public void deletedRecordsIgnored() {
+    void eventForEventId() {
+        var event = Event.builder().eventId(99L).build();
+        when(eventRepository.findByEventIdAndOffenderIdAndSoftDeletedFalse(99L, 1L)).thenReturn(Optional.of(event));
+
+        assertThat(convictionService.eventFor(1L, 99L)).isPresent();
+    }
+
+    @Test
+    void deletedRecordsIgnored() {
         when(eventRepository.findByOffenderId(1L))
                 .thenReturn(ImmutableList.of(
                         aEvent().toBuilder().eventId(1L).build(),

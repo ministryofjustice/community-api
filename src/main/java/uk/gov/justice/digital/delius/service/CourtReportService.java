@@ -10,6 +10,7 @@ import uk.gov.justice.digital.delius.transformers.CourtReportTransformer;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -47,4 +48,11 @@ public class CourtReportService {
             .map(CourtReportTransformer::courtReportMinimalOf);
     }
 
+    public List<CourtReportMinimal> courtReportsMinimalFor(Long offenderId, Long eventId) {
+
+        return courtReportRepository.findByOffenderIdAndEventId(offenderId, eventId)
+            .stream()
+            .map(CourtReportTransformer::courtReportMinimalOf)
+            .collect(Collectors.toList());
+    }
 }
