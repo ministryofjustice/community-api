@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,7 +36,8 @@ public class ContactType {
     private String shortDescription;
 
     @Column(name = "ATTENDANCE_CONTACT")
-    private String attendanceContact;
+    @Type(type = "yes_no")
+    private Boolean attendanceContact;
 
     @Column(name = "NATIONAL_STANDARDS_CONTACT")
     private String nationalStandardsContact;

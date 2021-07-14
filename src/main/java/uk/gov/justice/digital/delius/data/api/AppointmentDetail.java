@@ -53,4 +53,7 @@ public class AppointmentDetail {
 
     @ApiModelProperty(name = "Outcome")
     private AppointmentOutcome outcome;
+
+    @ApiModelProperty(name = "RAR activity flag", example = "true")
+    private Boolean rarActivity;
 }

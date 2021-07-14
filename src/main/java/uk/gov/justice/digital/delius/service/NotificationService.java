@@ -54,7 +54,7 @@ public class NotificationService {
         final var type = this.contactTypeRepository.findByCode(contactTypeCode)
             .orElseThrow(() -> new BadRequestException(format("contact type '%s' does not exist", contactTypeCode)));
 
-        if (type.getAttendanceContact().equals("Y")) {
+        if (type.getAttendanceContact()) {
             throw new BadRequestException(format("contact type '%s' must not be an appointment type", contactTypeCode));
         }
     }

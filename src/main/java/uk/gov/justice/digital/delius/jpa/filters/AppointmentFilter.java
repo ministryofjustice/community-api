@@ -57,7 +57,7 @@ public class AppointmentFilter implements Specification<Contact> {
 
         attended.ifPresent(attendedFlag -> predicateBuilder.add(mapAttended.apply(attendedFlag)));
 
-        predicateBuilder.add(cb.and(cb.equal(root.get("contactType").get("attendanceContact"), "Y")));
+        predicateBuilder.add(cb.and(cb.equal(root.get("contactType").get("attendanceContact"), true)));
         predicateBuilder.add(cb.and(cb.equal(root.get("softDeleted"), 0L)));
 
         ImmutableList<Predicate> predicates = predicateBuilder.build();
