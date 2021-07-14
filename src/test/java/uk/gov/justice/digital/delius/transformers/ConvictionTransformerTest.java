@@ -26,11 +26,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.justice.digital.delius.service.ReferenceDataService.REFERENCE_DATA_PSR_ADJOURNED_CODE;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aKeyDate;
 
-public class ConvictionTransformerTest {
+class ConvictionTransformerTest {
     @Test
-    public void convictionIdMappedFromEventId() {
+    void convictionIdMappedFromEventId() {
         assertThat(ConvictionTransformer.convictionOf(
             anEvent()
                 .toBuilder()
@@ -41,7 +42,7 @@ public class ConvictionTransformerTest {
     }
 
     @Test
-    public void offencesCollatedFromMainAndAdditionalOffences() {
+    void offencesCollatedFromMainAndAdditionalOffences() {
 
         assertThat(ConvictionTransformer.convictionOf(
             anEvent()
@@ -54,33 +55,33 @@ public class ConvictionTransformerTest {
     }
 
     @Test
-    public void activeMappedForZeroOneActiveFlag() {
+    void activeMappedForZeroOneActiveFlag() {
         assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().activeFlag(true).build()).getActive())).isTrue();
         assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().activeFlag(false).build()).getActive())).isFalse();
 
     }
 
     @Test
-    public void inBreachMappedForZeroOneInBreach() {
+    void inBreachMappedForZeroOneInBreach() {
         assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().inBreach(true).build()).getInBreach())).isTrue();
         assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().inBreach(false).build()).getInBreach())).isFalse();
 
     }
 
     @Test
-    public void sentenceIsMappedWhenEvenHasDisposal() {
+    void sentenceIsMappedWhenEvenHasDisposal() {
         assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().disposal(null).build()).getSentence())).isNull();
         assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().disposal(aDisposal()).build()).getSentence())).isNotNull();
     }
 
     @Test
-    public void sentenceIdIsMappedWhenEventHasDisposal() {
+    void sentenceIdIsMappedWhenEventHasDisposal() {
         Sentence sentence = ConvictionTransformer.convictionOf(anEvent().toBuilder().disposal(disposalBuilder().disposalId(1234L).build()).build()).getSentence();
         assertThat(sentence.getSentenceId()).isEqualTo(1234L);
     }
 
     @Test
-    public void enteredSentenceEndDateOverridesExpectedSentenceEndDate() {
+    void enteredSentenceEndDateOverridesExpectedSentenceEndDate() {
         final var expectedEndDate = LocalDate.now().minusDays(1);
         final var enteredEndDate = LocalDate.now().minusDays(2);
         final var disposal = disposalBuilder().enteredSentenceEndDate(enteredEndDate).expectedSentenceEndDate(expectedEndDate).build();
@@ -88,36 +89,21 @@ public class ConvictionTransformerTest {
     }
 
     @Test
-    public void expectedSentenceEndDateIsMappedIfEnteredSentenceEndDateNotPresent() {
+    void expectedSentenceEndDateIsMappedIfEnteredSentenceEndDateNotPresent() {
         final var expectedEndDate = LocalDate.now().minusDays(1);
         final var disposal = disposalBuilder().expectedSentenceEndDate(expectedEndDate).build();
         assertThat(ConvictionTransformer.convictionOf(anEvent().toBuilder().disposal(disposal).build()).getSentence().getExpectedSentenceEndDate()).isEqualTo(expectedEndDate);
     }
 
     @Test
-    public void expectedSentenceEndDateMappingCanHandleNulls() {
+    void expectedSentenceEndDateMappingCanHandleNulls() {
         assertThat(ConvictionTransformer.convictionOf(anEvent().toBuilder().disposal(aDisposal()).build()).getSentence().getExpectedSentenceEndDate()).isNull();
     }
 
-    @Test
-    public void outcomeMappedFromLastCourtAppearance() {
-        assertThat(ConvictionTransformer.convictionOf(
-            anEvent()
-                .toBuilder()
-                .courtAppearances(ImmutableList.of(
-                    aCourtAppearanceWithNoOutcome(LocalDateTime.now()),
-                    aCourtAppearance("Final Review", "Y", LocalDateTime.now().minusDays(1)),
-                    aCourtAppearance("Adjourned", "X", LocalDateTime.now().minusDays(2))
-                ))
-                .build()).getLatestCourtAppearanceOutcome())
-            .isNotNull()
-            .hasFieldOrPropertyWithValue("code", "Y")
-            .hasFieldOrPropertyWithValue("description", "Final Review");
 
-    }
 
     @Test
-    public void responsibleCourtMappedFromCourt() {
+    void responsibleCourtMappedFromCourt() {
         assertThat(ConvictionTransformer.convictionOf(
             anEvent()
                 .toBuilder()
@@ -129,26 +115,12 @@ public class ConvictionTransformerTest {
     }
 
     @Test
-    public void courtMappedFromLatestAppearance() {
-        assertThat(ConvictionTransformer.convictionOf(
-            anEvent()
-                .toBuilder()
-                .courtAppearances(List.of(
-                    aCourtAppearanceWithNoOutcome(LocalDateTime.of(2015, 6, 10, 12, 0)),
-                    aCourtAppearanceWithNoOutcome(LocalDateTime.of(2015, 6, 11, 12, 0))
-                ))
-                .build()))
-            .isNotNull()
-            .hasFieldOrPropertyWithValue("courtAppearance.appearanceDate", LocalDateTime.of(2015, 6, 11, 12, 0));
-    }
-
-    @Test
-    public void indexMappedFromEventNumberString() {
+    void indexMappedFromEventNumberString() {
         assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().eventNumber("5").build()).getIndex())).isEqualTo("5");
     }
 
     @Test
-    public void custodyNotSetWhenDisposalNotPresent() {
+    void custodyNotSetWhenDisposalNotPresent() {
         assertThat(
             ConvictionTransformer.convictionOf(
                 anEvent()
@@ -160,7 +132,7 @@ public class ConvictionTransformerTest {
     }
 
     @Test
-    public void custodyNotSetWhenCustodyNotPresentInDisposal() {
+    void custodyNotSetWhenCustodyNotPresentInDisposal() {
         assertThat(
             ConvictionTransformer.convictionOf(
                 anEvent()
@@ -176,7 +148,7 @@ public class ConvictionTransformerTest {
     }
 
     @Test
-    public void custodySetWhenCustodyPresentInDisposal() {
+    void custodySetWhenCustodyPresentInDisposal() {
         assertThat(
             ConvictionTransformer.convictionOf(
                 anEvent()
@@ -192,7 +164,7 @@ public class ConvictionTransformerTest {
     }
 
     @Test
-    public void bookingNumberCopiedFromCustodyPrisonerNumber() {
+    void bookingNumberCopiedFromCustodyPrisonerNumber() {
         assertThat(
             ConvictionTransformer.convictionOf(
                 anEvent()
@@ -213,7 +185,7 @@ public class ConvictionTransformerTest {
     }
 
     @Test
-    public void institutionCopiedFromCustodyWhenPresent() {
+    void institutionCopiedFromCustodyWhenPresent() {
         assertThat(
             ConvictionTransformer.convictionOf(
                 anEvent()
@@ -235,7 +207,7 @@ public class ConvictionTransformerTest {
     }
 
     @Test
-    public void institutionNotCopiedFromCustodyWhenNotPresent() {
+    void institutionNotCopiedFromCustodyWhenNotPresent() {
 
         assertThat(
             ConvictionTransformer.convictionOf(
@@ -259,7 +231,7 @@ public class ConvictionTransformerTest {
 
 
     @Test
-    public void unpaidWorkMappedWherePresent() {
+    void unpaidWorkMappedWherePresent() {
 
         Event event = EntityHelper.anEvent().toBuilder()
             .disposal(Disposal.builder()
@@ -319,7 +291,7 @@ public class ConvictionTransformerTest {
     }
 
     @Test
-    public void unpaidWorkIsNullWhereNonePresent() {
+    void unpaidWorkIsNullWhereNonePresent() {
         Event event = EntityHelper.anEvent().toBuilder()
             .disposal(Disposal.builder()
                 .unpaidWorkDetails(null)
@@ -332,7 +304,7 @@ public class ConvictionTransformerTest {
     }
 
     @Test
-    public void sentenceStartDateCopiedWhenPresent() {
+    void sentenceStartDateCopiedWhenPresent() {
         Event event = EntityHelper.anEvent().toBuilder()
             .disposal(Disposal.builder()
                 .startDate(LocalDate.of(2020, 2, 22))
@@ -344,7 +316,7 @@ public class ConvictionTransformerTest {
     }
 
     @Test
-    public void sentenceTerminationDetailsCopiedWhenPresent() {
+    void sentenceTerminationDetailsCopiedWhenPresent() {
 
         final StandardReference standardReference = StandardReference.builder()
             .standardReferenceListId(3758L)
@@ -365,7 +337,7 @@ public class ConvictionTransformerTest {
     }
 
     @Test
-    public void sentenceType(){
+    void sentenceType(){
         Event event = EntityHelper.anEvent().toBuilder()
             .disposal(Disposal.builder()
                 .disposalType(DisposalType.builder().sentenceType("SC").description("SC Description").build())
@@ -441,18 +413,66 @@ public class ConvictionTransformerTest {
         }
     }
 
-    private CourtAppearance aCourtAppearance(String outcomeDescription, String outcomeCode, LocalDateTime appearanceDate) {
-        return EntityHelper.aCourtAppearanceWithOutcome(outcomeCode,outcomeDescription)
-            .toBuilder()
-            .appearanceDate(appearanceDate)
-            .build();
-    }
+    @Nested
+    class CourtAppearanceRelated {
+        @Test
+        void outcomeMappedFromLastCourtAppearance() {
+            assertThat(ConvictionTransformer.convictionOf(
+                anEvent()
+                    .toBuilder()
+                    .courtAppearances(ImmutableList.of(
+                        aCourtAppearanceWithNoOutcome(LocalDateTime.now()),
+                        aCourtAppearance("Final Review", "Y", LocalDateTime.now().minusDays(1)),
+                        aCourtAppearance("Adjourned", "X", LocalDateTime.now().minusDays(2))
+                    ))
+                    .build()).getLatestCourtAppearanceOutcome())
+                .isNotNull()
+                .hasFieldOrPropertyWithValue("code", "Y")
+                .hasFieldOrPropertyWithValue("description", "Final Review");
+        }
 
-    private CourtAppearance aCourtAppearanceWithNoOutcome(LocalDateTime appearanceDate) {
-        return EntityHelper.aCourtAppearanceWithOutOutcome()
-            .toBuilder()
-            .appearanceDate(appearanceDate)
-            .build();
+        @Test
+        void outcomeIndicatesAwaitingPsr() {
+            assertThat(ConvictionTransformer.convictionOf(
+                anEvent()
+                    .toBuilder()
+                    .courtAppearances(ImmutableList.of(
+                        aCourtAppearanceWithNoOutcome(LocalDateTime.now()),
+                        aCourtAppearance("Final Review", "Y", LocalDateTime.now().minusDays(1)),
+                        aCourtAppearance("PSR Adjourned", REFERENCE_DATA_PSR_ADJOURNED_CODE, LocalDateTime.now().minusDays(2))
+                    ))
+                    .build()))
+                .isNotNull()
+                .hasFieldOrPropertyWithValue("awaitingPsr", true);
+        }
+
+        @Test
+        void courtMappedFromLatestAppearance() {
+            assertThat(ConvictionTransformer.convictionOf(
+                anEvent()
+                    .toBuilder()
+                    .courtAppearances(List.of(
+                        aCourtAppearanceWithNoOutcome(LocalDateTime.of(2015, 6, 10, 12, 0)),
+                        aCourtAppearanceWithNoOutcome(LocalDateTime.of(2015, 6, 11, 12, 0))
+                    ))
+                    .build()))
+                .isNotNull()
+                .hasFieldOrPropertyWithValue("courtAppearance.appearanceDate", LocalDateTime.of(2015, 6, 11, 12, 0));
+        }
+
+        private CourtAppearance aCourtAppearance(String outcomeDescription, String outcomeCode, LocalDateTime appearanceDate) {
+            return EntityHelper.aCourtAppearanceWithOutcome(outcomeCode,outcomeDescription)
+                .toBuilder()
+                .appearanceDate(appearanceDate)
+                .build();
+        }
+
+        private CourtAppearance aCourtAppearanceWithNoOutcome(LocalDateTime appearanceDate) {
+            return EntityHelper.aCourtAppearanceWithOutOutcome()
+                .toBuilder()
+                .appearanceDate(appearanceDate)
+                .build();
+        }
     }
 
     private AdditionalOffence anAdditionalOffence() {

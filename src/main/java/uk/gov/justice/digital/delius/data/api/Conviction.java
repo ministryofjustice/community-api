@@ -26,6 +26,9 @@ public class Conviction {
     @ApiModelProperty(name = "Conviction in breach flag", example = "true")
     private Boolean inBreach;
 
+    @ApiModelProperty(name = "Conviction is awaiting pre-sentence report", example = "true")
+    private boolean awaitingPsr;
+
     @ApiModelProperty(name = "Date of this conviction", example = "2021-06-10")
     private LocalDate convictionDate;
 
