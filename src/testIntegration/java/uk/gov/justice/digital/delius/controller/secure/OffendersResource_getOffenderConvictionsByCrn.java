@@ -2,7 +2,6 @@ package uk.gov.justice.digital.delius.controller.secure;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.Conviction;
-import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Offence;
 
 import java.util.stream.Stream;
@@ -13,9 +12,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-public class OffendersResource_getOffenderConvictionsByCrn extends IntegrationTestBase {
+class OffendersResource_getOffenderConvictionsByCrn extends IntegrationTestBase {
     @Test
-    public void canGetOffenderConvictionsByCrn() {
+    void canGetOffenderConvictionsByCrn() {
         final var convictions = given()
                 .auth()
                 .oauth2(tokenWithRoleCommunity())
@@ -29,9 +28,10 @@ public class OffendersResource_getOffenderConvictionsByCrn extends IntegrationTe
                 .as(Conviction[].class);
 
         final var conviction = Stream.of(convictions).filter(Conviction::getActive).findAny().orElseThrow();
+        assertThat(conviction.isAwaitingPsr()).isTrue();
         final var offence = conviction.getOffences().stream().filter(Offence::getMainOffence).findAny().orElseThrow();
         assertThat(offence.getDetail().getCode()).isEqualTo("00102");
-        KeyValue sentenceType = conviction.getSentence().getSentenceType();
+        final var sentenceType = conviction.getSentence().getSentenceType();
         assertThat(sentenceType.getCode()).isEqualTo("SC");
         assertThat(sentenceType.getDescription()).isEqualTo("CJA - Indeterminate Public Prot.");
 
@@ -44,7 +44,7 @@ public class OffendersResource_getOffenderConvictionsByCrn extends IntegrationTe
     }
 
     @Test
-    public void canGetOffenderConvictionByCrnAndConvictionId() {
+    void canGetOffenderConvictionByCrnAndConvictionId() {
         final var conviction = given()
             .auth()
             .oauth2(tokenWithRoleCommunity())
@@ -59,11 +59,10 @@ public class OffendersResource_getOffenderConvictionsByCrn extends IntegrationTe
 
         final var offence = conviction.getOffences().stream().filter(Offence::getMainOffence).findAny().orElseThrow();
         assertThat(offence.getDetail().getCode()).isEqualTo("05600");
-
     }
 
     @Test
-    public void convictionsHaveAssociatedUnpaidWorkData() {
+    void convictionsHaveAssociatedUnpaidWorkData() {
         given()
                 .auth()
                 .oauth2(tokenWithRoleCommunity())
@@ -83,7 +82,7 @@ public class OffendersResource_getOffenderConvictionsByCrn extends IntegrationTe
     }
 
     @Test
-    public void getOffenderConvictionsByCrn_offenderNotFound_returnsNotFound() {
+    void getOffenderConvictionsByCrn_offenderNotFound_returnsNotFound() {
         given()
                 .auth()
                 .oauth2(tokenWithRoleCommunity())
@@ -95,7 +94,7 @@ public class OffendersResource_getOffenderConvictionsByCrn extends IntegrationTe
     }
 
     @Test
-    public void canGetActiveConvictionsOnly(){
+    void canGetActiveConvictionsOnly(){
         final var convictions = given()
             .auth()
             .oauth2(tokenWithRoleCommunity())

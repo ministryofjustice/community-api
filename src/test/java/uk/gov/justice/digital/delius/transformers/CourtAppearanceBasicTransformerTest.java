@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.delius.transformers;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -9,14 +11,12 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.justice.digital.delius.service.ReferenceDataService.REFERENCE_DATA_PSR_ADJOURNED_CODE;
 
 
 @ExtendWith(MockitoExtension.class)
-public class CourtAppearanceBasicTransformerTest {
+class CourtAppearanceBasicTransformerTest {
 
     public static final LocalDateTime APPEARANCE_DATE = LocalDateTime.of(1975, 9, 6, 20, 45);
     public static final String COURT_CODE = "C2";
@@ -25,7 +25,7 @@ public class CourtAppearanceBasicTransformerTest {
     public static final String APPEARANCE_TYPE_CODE = "codeDescription";
 
     @Test
-    public void populatesDto() {
+    void populatesDto() {
         final var courtAppearance = aCourtAppearance(APPEARANCE_DATE, APPEARANCE_TYPE_CODE);
 
         final var observed = CourtAppearanceBasicTransformer.courtAppearanceOf(courtAppearance);
@@ -34,7 +34,7 @@ public class CourtAppearanceBasicTransformerTest {
     }
 
     @Test
-    public void getsSentencingAppearance() {
+    void getsSentencingAppearance() {
         final var sentencingDate = LocalDateTime.of(2005, 6, 10, 10, 0);
         final var otherAppearance = aCourtAppearance(LocalDateTime.of(2005, 6, 11, 10, 0), APPEARANCE_TYPE_CODE);
         final var sentencingAppearance = aCourtAppearance(sentencingDate, "S");
@@ -45,7 +45,7 @@ public class CourtAppearanceBasicTransformerTest {
     }
 
     @Test
-    public void getsLatestAppearanceWhenNoSentencingAppearance() {
+    void getsLatestAppearanceWhenNoSentencingAppearance() {
         final var latestDate = LocalDateTime.of(2005, 6, 12, 10, 0);
         final var appearance = aCourtAppearance(LocalDateTime.of(2005, 6, 11, 10, 0), APPEARANCE_TYPE_CODE);
         final var latestAppearance = aCourtAppearance(latestDate, APPEARANCE_TYPE_CODE);
@@ -53,6 +53,34 @@ public class CourtAppearanceBasicTransformerTest {
         final var observed = CourtAppearanceBasicTransformer.latestOrSentencingCourtAppearanceOf(List.of(appearance, latestAppearance));
 
         shouldBeCourtAppearanceBasic(observed, latestDate, APPEARANCE_TYPE_CODE);
+    }
+
+    @Test
+    void givenNoOutcomes_whenGetAwaitingPsr_thenFalse() {
+        final var awaitingPsr = CourtAppearanceBasicTransformer.awaitingPsrOf(List.of(CourtAppearance.builder().build()));
+
+        assertThat(awaitingPsr).isFalse();
+    }
+
+    @Test
+    void givenOutcomeWithWrongCode_whenGetAwaitingPsr_thenFalse() {
+        final var outcome = StandardReference.builder().codeValue("XXX").codeDescription("some other outcome").build();
+
+        final var awaitingPsr = CourtAppearanceBasicTransformer.awaitingPsrOf(List.of(CourtAppearance.builder().outcome(outcome).build()));
+
+        assertThat(awaitingPsr).isFalse();
+    }
+
+    @Test
+    void givenOutcomeWithRequiredCode_whenGetAwaitingPsr_thenTrue() {
+        final var outcome = StandardReference.builder()
+                                                            .codeValue(REFERENCE_DATA_PSR_ADJOURNED_CODE)
+                                                            .codeDescription("A PSR")
+                                                            .build();
+
+        final var awaitingPsr = CourtAppearanceBasicTransformer.awaitingPsrOf(List.of(CourtAppearance.builder().outcome(outcome).build()));
+
+        assertThat(awaitingPsr).isTrue();
     }
 
     private CourtAppearance aCourtAppearance(LocalDateTime date, String typeCode) {
