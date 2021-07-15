@@ -91,6 +91,14 @@ public class OffendersResource_getOffenderByCrn extends IntegrationTestBase {
             .as(OffenderDetailSummary.class);
 
         assertThat(offenderDetail.getOtherIds().getCrn()).isEqualTo("X320741");
+
+        assertThat(offenderDetail)
+            .hasFieldOrPropertyWithValue("firstName", "Aadland")
+            .hasFieldOrPropertyWithValue("middleNames", List.of("Danger"))
+            .hasFieldOrPropertyWithValue("surname", "Bertrand")
+            .hasFieldOrPropertyWithValue("preferredName", "Bob")
+            .hasFieldOrPropertyWithValue("offenderProfile.genderIdentity", "Prefer to self-describe")
+            .hasFieldOrPropertyWithValue("offenderProfile.selfDescribedGender", "Jedi");
     }
 
     @Test
