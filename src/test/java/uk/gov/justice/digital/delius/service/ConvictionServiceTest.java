@@ -246,7 +246,7 @@ class ConvictionServiceTest {
                 .thenReturn(asList(
                     aEvent().toBuilder().eventId(99L).offenderId(1L).softDeleted(false)
                         .disposal(Disposal.builder().disposalId(98L).requirements(
-                            singletonList(Requirement.builder().activeFlag(0L).build())).build())
+                            singletonList(Requirement.builder().activeFlag(false).build())).build())
                         .build()
                 ));
 
@@ -260,7 +260,7 @@ class ConvictionServiceTest {
                 .thenReturn(asList(
                     aEvent().toBuilder().eventId(99L).offenderId(1L).softDeleted(false)
                         .disposal(Disposal.builder().disposalId(98L).requirements(
-                            singletonList(Requirement.builder().activeFlag(1L).requirementTypeMainCategory(
+                            singletonList(Requirement.builder().activeFlag(false).requirementTypeMainCategory(
                                 RequirementTypeMainCategory.builder().code(EXCLUSION_REQUIREMENT_CODE).build()).build())).build())
                         .build()
                 ));
@@ -275,12 +275,12 @@ class ConvictionServiceTest {
                 .thenReturn(asList(
                     aEvent().toBuilder().eventId(99L).offenderId(1L).referralDate(now()).softDeleted(false)
                         .disposal(Disposal.builder().disposalId(98L).disposalType(aNcDisposalType()).requirements(
-                            singletonList(Requirement.builder().activeFlag(1L).requirementTypeMainCategory(
+                            singletonList(Requirement.builder().activeFlag(true).requirementTypeMainCategory(
                                 RequirementTypeMainCategory.builder().code(REHABILITATION_ACTIVITY_REQUIREMENT_CODE).build()).build())).build())
                         .build(),
                     aEvent().toBuilder().eventId(101L).offenderId(1L).referralDate(now().plusDays(1)).softDeleted(false)
                         .disposal(Disposal.builder().disposalId(100L).disposalType(aNcDisposalType()).requirements(
-                            singletonList(Requirement.builder().activeFlag(1L).requirementTypeMainCategory(
+                            singletonList(Requirement.builder().activeFlag(true).requirementTypeMainCategory(
                                 RequirementTypeMainCategory.builder().code(REHABILITATION_ACTIVITY_REQUIREMENT_CODE).build()).build())).build())
                         .build()
                 ));

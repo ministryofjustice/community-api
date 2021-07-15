@@ -59,6 +59,8 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.RecallReason;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Referral;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ReferralDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Release;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
+import uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
@@ -482,6 +484,18 @@ public class EntityHelper {
                 .toBuilder()
                 .event(anEvent(eventId))
                 .build();
+    }
+
+    public static Requirement aRarRequirement() {
+        return Requirement.builder()
+            .requirementId(1000L)
+            .requirementTypeMainCategory(RequirementTypeMainCategory.builder()
+                .code(RequirementTypeMainCategory.REHABILITATION_ACTIVITY_REQUIREMENT_CODE)
+                .description("Rehabilitation activity")
+                .build())
+            .activeFlag(true)
+            .softDeleted(false)
+            .build();
     }
 
     public static Nsi aNsi() {

@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
+
+import static uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory.REHABILITATION_ACTIVITY_REQUIREMENT_CODE;
 
 @Data
 @NoArgsConstructor
@@ -43,7 +46,7 @@ public class Requirement {
     private LocalDateTime createdDatetime;
 
     @Column(name = "ACTIVE_FLAG")
-    private Long activeFlag;
+    private Boolean activeFlag;
 
     @JoinColumn(name = "RQMNT_TYPE_SUB_CATEGORY_ID")
     @OneToOne
@@ -76,5 +79,11 @@ public class Requirement {
     private Long rarCount;
 
     @Column(name = "SOFT_DELETED")
-    private Long softDeleted = 0L;
+    private Boolean softDeleted = false;
+
+    public boolean isRarRequirement() {
+        return Optional.ofNullable(getRequirementTypeMainCategory())
+            .map(t -> REHABILITATION_ACTIVITY_REQUIREMENT_CODE.equals(t.getCode()))
+            .orElse(false);
+    }
 }

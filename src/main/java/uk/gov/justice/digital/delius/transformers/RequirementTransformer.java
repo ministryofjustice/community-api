@@ -11,14 +11,12 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
 import java.util.Optional;
 
-import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
-
 public class RequirementTransformer {
 
     public static uk.gov.justice.digital.delius.data.api.Requirement requirementOf(Requirement requirement) {
         return Optional.ofNullable(requirement)
                 .map(req -> uk.gov.justice.digital.delius.data.api.Requirement.builder()
-                        .active(zeroOneToBoolean(req.getActiveFlag()))
+                        .active(req.getActiveFlag())
                         .adRequirementTypeMainCategory(adRequirementMainCategoryOf(req.getAdRequirementTypeMainCategory()))
                         .adRequirementTypeSubCategory(KeyValueTransformer.keyValueOf(req.getAdRequirementTypeSubCategory()))
                         .commencementDate(req.getCommencementDate())
@@ -36,7 +34,7 @@ public class RequirementTransformer {
                         .lengthUnit(lengthUnitOf(req))
                         .restrictive(restrictiveOf(req.getRequirementTypeMainCategory()))
                         .rarCount(req.getRarCount())
-                        .softDeleted(zeroOneToBoolean(req.getSoftDeleted()))
+                        .softDeleted(req.getSoftDeleted())
                         .build())
                 .orElse(null);
     }

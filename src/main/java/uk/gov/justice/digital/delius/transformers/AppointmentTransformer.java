@@ -11,7 +11,10 @@ import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactOutcomeType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Nsi;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OfficeLocation;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
+import uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.utils.DateConverter;
 
 import java.util.List;
@@ -48,6 +51,18 @@ public class AppointmentTransformer {
             .sensitive(ynToBoolean(contact.getSensitive()))
             .outcome(appointmentOutcomeOf(contact))
             .rarActivity(ynToBoolean(contact.getRarActivity()))
+            .requirement(
+                Optional.ofNullable(contact.getNsi())
+                    .filter(nsi -> !nsi.isSoftDeleted())
+                    .map(Nsi::getRqmnt)
+                    .filter(r -> !r.getSoftDeleted())
+                    .map(r -> AppointmentDetail.AppointmentRequirementDetail.builder()
+                        .requirementId(r.getRequirementId())
+                        .isActive(r.getActiveFlag())
+                        .isRar(r.isRarRequirement())
+                        .build())
+                    .orElse(null)
+            )
             .build();
     }
 

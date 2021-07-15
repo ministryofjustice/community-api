@@ -229,8 +229,8 @@ public class RequirementServiceTest {
             when(disposal.getRequirements()).thenReturn(Collections.singletonList(Requirement
                 .builder()
                 .requirementId(99L)
-                .activeFlag(1L)
-                .softDeleted(0L)
+                .activeFlag(true)
+                .softDeleted(false)
                 .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build())
                 .build()));
             var requirement = requirementService.getActiveRequirement(CRN, CONVICTION_ID, REHABILITATION_ACTIVITY_REQUIREMENT_TYPE);
@@ -242,8 +242,8 @@ public class RequirementServiceTest {
             when(disposal.getRequirements()).thenReturn(Collections.singletonList(Requirement
                 .builder()
                 .requirementId(99L)
-                .activeFlag(1L)
-                .softDeleted(0L)
+                .activeFlag(true)
+                .softDeleted(false)
                 .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("X").build())
                 .build()));
 
@@ -255,7 +255,7 @@ public class RequirementServiceTest {
             when(disposal.getRequirements()).thenReturn(Collections.singletonList(Requirement
                 .builder()
                 .requirementId(99L)
-                .activeFlag(0L)
+                .activeFlag(false)
                 .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build())
                 .build()));
 
@@ -267,8 +267,8 @@ public class RequirementServiceTest {
             when(disposal.getRequirements()).thenReturn(Collections.singletonList(Requirement
                 .builder()
                 .requirementId(99L)
-                .activeFlag(1L)
-                .softDeleted(1L)
+                .activeFlag(true)
+                .softDeleted(true)
                 .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build())
                 .build()));
 
@@ -279,13 +279,13 @@ public class RequirementServiceTest {
         public void whenGetReferralRequirementByConvictionId_AndMultipleRequirementsExist_thenSelectLatest() {
             LocalDateTime now = LocalDateTime.now();
             when(disposal.getRequirements()).thenReturn(Arrays.asList(
-                Requirement.builder().requirementId(99L).activeFlag(1L).softDeleted(0L)
+                Requirement.builder().requirementId(99L).activeFlag(true).softDeleted(false)
                     .startDate(now.minusDays(1).toLocalDate()).createdDatetime(now)
                     .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build()).build(),
-                Requirement.builder().requirementId(100L).activeFlag(1L).softDeleted(0L)
+                Requirement.builder().requirementId(100L).activeFlag(true).softDeleted(false)
                     .startDate(now.toLocalDate()).createdDatetime(now.plusHours(2))
                     .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build()).build(),
-                Requirement.builder().requirementId(101L).activeFlag(1L).softDeleted(0L)
+                Requirement.builder().requirementId(101L).activeFlag(true).softDeleted(false)
                     .startDate(now.toLocalDate()).createdDatetime(now.plusHours(1))
                     .requirementTypeMainCategory(RequirementTypeMainCategory.builder().code("F").build()).build())
             );

@@ -55,7 +55,7 @@ public class RequirementTransformerTest {
         LocalDateTime createdDatetime = LocalDateTime.of(2020, 5, 1, 2, 3, 4);
         Requirement requirement = Requirement.builder()
             .requirementId(88L)
-            .activeFlag(1L)
+            .activeFlag(true)
             .commencementDate(commencementDate)
             .expectedStartDate(expectedStartDate)
             .expectedEndDate(expectedEndDate)
@@ -81,7 +81,7 @@ public class RequirementTransformerTest {
                 .codeDescription("Sub")
                 .build())
             .rarCount(10L)
-            .softDeleted(1L)
+            .softDeleted(true)
             .build();
         uk.gov.justice.digital.delius.data.api.Requirement pssRequirement = RequirementTransformer.requirementOf(requirement);
 
