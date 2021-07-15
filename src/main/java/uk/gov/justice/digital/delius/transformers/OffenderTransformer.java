@@ -225,6 +225,7 @@ public class OffenderTransformer {
                 .middleNames(combinedMiddleNamesOf(offender.getSecondName(), offender.getThirdName()))
                 .surname(offender.getSurname())
                 .previousSurname(offender.getPreviousSurname())
+                .preferredName(offender.getPreferredName())
                 .title(Optional.ofNullable(offender.getTitle()).map(StandardReference::getCodeDescription).orElse(null))
                 .contactDetails(contactDetailsSummaryOf(offender))
                 .otherIds(idsOf(offender))
