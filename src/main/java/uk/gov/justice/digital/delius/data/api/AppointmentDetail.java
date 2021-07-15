@@ -56,4 +56,22 @@ public class AppointmentDetail {
 
     @ApiModelProperty(name = "RAR activity flag", example = "true")
     private Boolean rarActivity;
+
+    @ApiModelProperty(name = "The related requirement if present")
+    private AppointmentRequirementDetail requirement;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AppointmentRequirementDetail {
+        @ApiModelProperty(name = "The unique identifier for an associated requirement", example = "25000000")
+        private Long requirementId;
+
+        @ApiModelProperty(name = "The requirement is a RAR requirement", example = "true")
+        private Boolean isRar;
+
+        @ApiModelProperty(name = "The requirement is active", example = "true")
+        private Boolean isActive;
+    }
 }

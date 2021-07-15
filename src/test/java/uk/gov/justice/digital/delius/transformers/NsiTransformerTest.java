@@ -116,7 +116,7 @@ class NsiTransformerTest {
                 .activeFlag(1L)
                 .softDeleted(0L)
                 .nsiManagers(List.of(EntityHelper.aNsiManager(), EntityHelper.aNsiManager()))
-                .rqmnt(Requirement.builder().activeFlag(1L).build()).build();
+                .rqmnt(Requirement.builder().activeFlag(true).build()).build();
     }
 
 }

@@ -22,6 +22,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.KeyDate;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
@@ -154,7 +155,7 @@ public class ConvictionService {
                     .map(Disposal::getRequirements)
                     .stream()
                     .flatMap(Collection::stream)
-                    .filter(requirement -> convertToBoolean(requirement.getActiveFlag()))
+                    .filter(Requirement::getActiveFlag)
                     .map(requirement -> requirement.getRequirementTypeMainCategory().getCode())
                     .anyMatch(code -> requirementTypeMainCategoryCode.equals(code)))
             .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Event::getReferralDate).reversed())

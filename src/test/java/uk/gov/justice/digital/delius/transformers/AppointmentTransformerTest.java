@@ -104,6 +104,22 @@ public class AppointmentTransformerTest {
     }
 
     @Test
+    public void rarRequirementMappedFromRarRequirement() {
+        final var requirement = EntityHelper.aRarRequirement();
+        final var source = EntityHelper.aContact()
+            .toBuilder()
+            .nsi(EntityHelper.aNsi().toBuilder().rqmnt(requirement).build())
+            .build();
+
+        final var observed = AppointmentTransformer.appointmentDetailOf(source);
+
+        assertThat(observed)
+            .hasFieldOrPropertyWithValue("requirement.requirementId", requirement.getRequirementId())
+            .hasFieldOrPropertyWithValue("requirement.isRar", true)
+            .hasFieldOrPropertyWithValue("requirement.isActive", true);
+    }
+
+    @Test
     public void appointmentDetailFromContactHandlesNulls() {
         final var contact = EntityHelper.aContact().toBuilder()
             .contactStartTime(null)
@@ -113,6 +129,7 @@ public class AppointmentTransformerTest {
             .sensitive(null)
             .contactOutcomeType(null)
             .rarActivity(null)
+            .nsi(null)
             .build();
         final var observed = AppointmentTransformer.appointmentDetailOf(contact);
         final var expectedDate = DateConverter.toOffsetDateTime(LocalDateTime.of(contact.getContactDate(), LocalTime.MIDNIGHT));
@@ -125,7 +142,8 @@ public class AppointmentTransformerTest {
             .hasFieldOrPropertyWithValue("notes", null)
             .hasFieldOrPropertyWithValue("sensitive", null)
             .hasFieldOrPropertyWithValue("outcome", null)
-            .hasFieldOrPropertyWithValue("rarActivity", null);
+            .hasFieldOrPropertyWithValue("rarActivity", null)
+            .hasFieldOrPropertyWithValue("requirement", null);
     }
 
     private Contact aContact() {
