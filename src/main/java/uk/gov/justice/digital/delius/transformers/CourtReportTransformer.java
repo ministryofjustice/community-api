@@ -65,14 +65,13 @@ public class CourtReportTransformer {
     }
 
     private static List<ReportManager> reportManagersOf(final List<uk.gov.justice.digital.delius.jpa.standard.entity.ReportManager> reportManagers) {
-        return Optional.ofNullable(reportManagers).orElse(Collections.emptyList())
-            .stream()
-            .map(reportManager -> ReportManager.builder()
-                .active(reportManager.isActive())
-                .staff(StaffTransformer.staffOf(reportManager.getStaff()))
-                .build()
-            )
-            .collect(Collectors.toList());
+        return reportManagers.stream()
+                .map(reportManager -> ReportManager.builder()
+                    .active(reportManager.isActive())
+                    .staff(StaffTransformer.staffOf(reportManager.getStaff()))
+                    .build()
+                )
+                .collect(Collectors.toList());
     }
 
 }
