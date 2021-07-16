@@ -140,6 +140,34 @@ public class AppointmentBookingControllerTest {
     }
 
     @Test
+    public void reschedulesAppointmentWithOfficeLocationUsingContextlessClientEndpoint() {
+        OffsetDateTime now = Instant.now().atZone(ZoneId.of("UTC")).toOffsetDateTime().truncatedTo(ChronoUnit.SECONDS);
+
+        ContextlessAppointmentRescheduleRequest appointmentRescheduleRequest = ContextlessAppointmentRescheduleRequest.builder()
+            .updatedAppointmentStart(now)
+            .updatedAppointmentEnd(now.plusHours(1))
+            .officeLocationCode("CRSEXTL")
+            .initiatedByServiceProvider(true)
+            .build();
+        when(appointmentService.rescheduleAppointment("1", 2L, "commissioned-rehabilitation-services", appointmentRescheduleRequest))
+            .thenReturn(AppointmentRescheduleResponse.builder().appointmentId(3L).build());
+
+        Long appointmentIdResponse = given()
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(appointmentRescheduleRequest)
+            .when()
+            .post("/secure/offenders/crn/1/appointments/2/reschedule/context/commissioned-rehabilitation-services")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(AppointmentCreateResponse.class)
+            .getAppointmentId();
+
+        assertThat(appointmentIdResponse).isEqualTo(3L);
+    }
+
+    @Test
     public void updatesAppointmentOutcomeUsingContextlessClientEndpoint() {
 
         ContextlessAppointmentOutcomeRequest request = ContextlessAppointmentOutcomeRequest.builder()

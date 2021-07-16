@@ -15,6 +15,7 @@ import java.time.LocalTime;
 public class ReplaceContact {
     private String offenderCrn;
     private String outcome;
+    private String officeLocation;  // Null location means no change
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
