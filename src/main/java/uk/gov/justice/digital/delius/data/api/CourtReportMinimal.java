@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.data.api;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,4 +22,5 @@ public class CourtReportMinimal {
     private final LocalDateTime sentToCourtDate;
     private final LocalDateTime receivedByCourtDate;
     private final KeyValue courtReportType;
+    private final List<ReportManager> reportManagers;
 }

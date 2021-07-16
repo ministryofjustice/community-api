@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RCourtReportType;
@@ -22,7 +23,10 @@ class CourtReportTransformerTest {
             .description("Pre-Sentence Report - Fast")
             .code("CJF")
             .build();
-        final var courtReportEntity = EntityHelper.aCourtReport(requestedDate, requiredDate, completedDate, courtReportType);
+        final var reportManager1 = EntityHelper.aReportManager(false);
+        final var reportManager2 = EntityHelper.aReportManager(true);
+
+        final var courtReportEntity = EntityHelper.aCourtReport(requestedDate, requiredDate, completedDate, courtReportType, List.of(reportManager1, reportManager2));
 
         var courtReport = CourtReportTransformer.courtReportMinimalOf(courtReportEntity);
 
@@ -36,6 +40,10 @@ class CourtReportTransformerTest {
         assertThat(courtReport.getReceivedByCourtDate()).isNotNull();
         assertThat(courtReport.getAllocationDate()).isNotNull();
         assertThat(courtReport.getSentToCourtDate()).isNotNull();
+        assertThat(courtReport.getReportManagers()).hasSize(2);
+        assertThat(courtReport.getReportManagers().get(0).getStaff().getForenames()).isEqualTo("John");
+        assertThat(courtReport.getReportManagers().get(0).getStaff().getForenames()).isEqualTo("John");
+        assertThat(courtReport.getReportManagers()).extracting("active").contains(true, false);
     }
 
     @DisplayName("Mapping of court report entity with no type ensuring null proof")

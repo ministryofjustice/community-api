@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -48,6 +51,9 @@ public class CourtReport {
 
     @Column(name = "RECEIVED_BY_COURT_DATE")
     private LocalDateTime receivedByCourtDate;
+
+    @OneToMany(mappedBy = "courtReport", fetch = FetchType.EAGER)
+    private List<ReportManager> reportManagers;
 
     @Column(name = "VIDEO_LINK")
     private String videoLink;
