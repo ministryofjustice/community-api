@@ -11,6 +11,7 @@ import org.mockito.quality.Strictness;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RCourtReportType;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CourtReportRepository;
+import uk.gov.justice.digital.delius.util.EntityHelper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,13 +35,13 @@ class CourtReportServiceTest {
     void before() {
         courtReportService = new CourtReportService(courtReportRepository);
         when(courtReportRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(
-                CourtReport.builder().courtReportId(1L).offenderId(1L).dateRequested(LocalDateTime.now().minusDays(98)).build(),
-                CourtReport.builder().courtReportId(2L).offenderId(1L).dateRequested(LocalDateTime.now().minusDays(1)).build(),
-                CourtReport.builder().courtReportId(3L).offenderId(1L).dateRequested(LocalDateTime.now()).softDeleted(true).build(),
-                CourtReport.builder().courtReportId(4L).offenderId(1L).dateRequested(LocalDateTime.now().minusDays(99)).build()
+                CourtReport.builder().courtReportId(1L).offenderId(1L).dateRequested(LocalDateTime.now().minusDays(98)).reportManagers(emptyList()).build(),
+                CourtReport.builder().courtReportId(2L).offenderId(1L).dateRequested(LocalDateTime.now().minusDays(1)).reportManagers(emptyList()).build(),
+                CourtReport.builder().courtReportId(3L).offenderId(1L).dateRequested(LocalDateTime.now()).softDeleted(true).reportManagers(emptyList()).build(),
+                CourtReport.builder().courtReportId(4L).offenderId(1L).dateRequested(LocalDateTime.now().minusDays(99)).reportManagers(emptyList()).build()
         ));
         when(courtReportRepository.findByOffenderIdAndCourtReportIdAndSoftDeletedFalse(any(), any())).thenReturn(
-                Optional.of(CourtReport.builder().courtReportId(4L).offenderId(1L).build()));
+                Optional.of(CourtReport.builder().courtReportId(4L).offenderId(1L).reportManagers(emptyList()).build()));
     }
 
     @Test
@@ -81,10 +82,12 @@ class CourtReportServiceTest {
         var report1 = CourtReport.builder()
             .dateRequested(LocalDateTime.now())
             .courtReportType(RCourtReportType.builder().code("CJF").description("PSR - Fast").build())
+            .reportManagers(List.of(EntityHelper.aReportManager(true)))
             .build();
         var report2 = CourtReport.builder()
             .dateRequested(LocalDateTime.now())
             .courtReportType(RCourtReportType.builder().code("XXX").description("Some other report").build())
+            .reportManagers(emptyList())
             .build();
         when(courtReportRepository.findByOffenderIdAndEventId(1L, 99L)).thenReturn(List.of(report1, report2));
 
