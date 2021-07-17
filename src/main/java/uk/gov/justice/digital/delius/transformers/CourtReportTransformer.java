@@ -1,17 +1,20 @@
 package uk.gov.justice.digital.delius.transformers;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import uk.gov.justice.digital.delius.data.api.CourtReport;
 import uk.gov.justice.digital.delius.data.api.CourtReportMinimal;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
-
-import java.util.Optional;
+import uk.gov.justice.digital.delius.data.api.ReportManager;
 
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
 
 public class CourtReportTransformer {
 
-    public static CourtReport courtReportOf(uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport report) {
+    public static CourtReport courtReportOf(final uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport report) {
         return CourtReport.builder()
                         .courtReportId(report.getCourtReportId())
                         .dateRequested(report.getDateRequested())
@@ -41,7 +44,7 @@ public class CourtReportTransformer {
                         .build();
     }
 
-    public static CourtReportMinimal courtReportMinimalOf(uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport report) {
+    public static CourtReportMinimal courtReportMinimalOf(final uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport report) {
         return CourtReportMinimal.builder()
             .courtReportId(report.getCourtReportId())
             .offenderId(report.getOffenderId())
@@ -57,7 +60,18 @@ public class CourtReportTransformer {
                                                                         .description(reportType.getDescription())
                                                                         .build())
                                                     .orElse(null))
+            .reportManagers(reportManagersOf(report.getReportManagers()))
             .build();
+    }
+
+    private static List<ReportManager> reportManagersOf(final List<uk.gov.justice.digital.delius.jpa.standard.entity.ReportManager> reportManagers) {
+        return reportManagers.stream()
+                .map(reportManager -> ReportManager.builder()
+                    .active(reportManager.isActive())
+                    .staff(StaffTransformer.staffOf(reportManager.getStaff()))
+                    .build()
+                )
+                .collect(Collectors.toList());
     }
 
 }

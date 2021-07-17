@@ -59,6 +59,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.RecallReason;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Referral;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ReferralDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Release;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ReportManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ResponsibleOfficer;
@@ -274,7 +275,7 @@ public class EntityHelper {
         return Court.builder().code(code).courtId(99L).courtName("Sheffield Crown Court").build();
     }
 
-    public static CourtReport aCourtReport(LocalDateTime requestedDate, LocalDateTime requiredDate, LocalDateTime completedDate, RCourtReportType courtReportType) {
+    public static CourtReport aCourtReport(LocalDateTime requestedDate, LocalDateTime requiredDate, LocalDateTime completedDate, RCourtReportType courtReportType, List<ReportManager> reportManagers) {
         return CourtReport
             .builder()
             .courtReportId(1L)
@@ -297,7 +298,12 @@ public class EntityHelper {
                     .eventId(1L)
                     .build())
                 .build())
+            .reportManagers(reportManagers)
             .build();
+    }
+
+    public static CourtReport aCourtReport(LocalDateTime requestedDate, LocalDateTime requiredDate, LocalDateTime completedDate, RCourtReportType courtReportType) {
+        return aCourtReport(requestedDate, requiredDate, completedDate, courtReportType, List.of(aReportManager(true)));
     }
 
     private static CourtReport aCourtReport() {
@@ -307,6 +313,13 @@ public class EntityHelper {
                                         .code("CJS")
                                         .build();
         return aCourtReport(LocalDateTime.now(), LocalDateTime.now().plusDays(1), null, courtReportType);
+    }
+
+    public static ReportManager aReportManager(final boolean active) {
+        return ReportManager.builder()
+            .active(active)
+            .staff(aStaff())
+            .build();
     }
 
     private static void populateBasics(final Document document) {
