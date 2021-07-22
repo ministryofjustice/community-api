@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.ContactSummary;
@@ -28,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -371,7 +373,8 @@ public class ContactService {
     }
 
     public List<uk.gov.justice.digital.delius.data.api.ContactType> getAllContactTypes(final List<String> categories) {
-        return contactTypeRepository.findAllByContactCategoriesCodeValueInAndSelectable(categories)
+        return (CollectionUtils.isEmpty(categories) ? contactTypeRepository.findAllBySelectableTrue()
+        : contactTypeRepository.findAllByContactCategoriesCodeValueInAndSelectableTrue(categories))
             .stream().map(ContactTransformer::contactTypeOf).collect(toList());
     }
 }

@@ -37,7 +37,7 @@ public class ContactMetaController {
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
         })
     @ApiOperation(value = "Determines all valid appointment types & their meta")
-    public List<ContactType> getAllAppointmentTypes(final @RequestParam(value = "categories") List<String> categories) {
+    public List<ContactType> getAllAppointmentTypes(final @RequestParam(value = "categories", required = false) List<String> categories) {
         return this.contactService.getAllContactTypes(categories);
     }
 }
