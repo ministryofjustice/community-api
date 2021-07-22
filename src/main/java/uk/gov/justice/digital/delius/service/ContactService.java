@@ -31,7 +31,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static uk.gov.justice.digital.delius.jpa.standard.entity.Contact.*;
 
@@ -368,4 +370,8 @@ public class ContactService {
                 .build());
     }
 
+    public List<uk.gov.justice.digital.delius.data.api.ContactType> getAllContactTypes(final List<String> categories) {
+        return contactTypeRepository.findAllByContactCategoriesCodeValueInAndSelectable(categories)
+            .stream().map(ContactTransformer::contactTypeOf).collect(toList());
+    }
 }

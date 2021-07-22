@@ -18,4 +18,7 @@ public interface ContactTypeRepository extends JpaRepository<ContactType, Long> 
         "WHERE category.codeValue = 'AL' AND type.selectable = 'Y' AND type.scheduleFutureAppointments = 'Y' " +
         "AND type.attendanceContact = true")
     List<ContactType> findAllSelectableAppointmentTypes();
+
+    List<ContactType> findAllByContactCategoriesCodeValueInAndSelectable(final List<String> codeValue);
+
 }
