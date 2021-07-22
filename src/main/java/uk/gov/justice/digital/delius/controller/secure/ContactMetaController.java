@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
-import uk.gov.justice.digital.delius.data.api.AppointmentType;
 import uk.gov.justice.digital.delius.data.api.ContactType;
 import uk.gov.justice.digital.delius.service.ContactService;
 
@@ -36,8 +35,8 @@ public class ContactMetaController {
             @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY"),
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
         })
-    @ApiOperation(value = "Determines all valid appointment types & their meta")
-    public List<ContactType> getAllAppointmentTypes(final @RequestParam(value = "categories", required = false) List<String> categories) {
-        return this.contactService.getAllContactTypes(categories);
+    @ApiOperation(value = "Determines all valid contact types ")
+    public List<ContactType> getContactTypes(final @RequestParam(value = "categories", required = false) List<String> categories) {
+        return this.contactService.getContactTypes(categories);
     }
 }

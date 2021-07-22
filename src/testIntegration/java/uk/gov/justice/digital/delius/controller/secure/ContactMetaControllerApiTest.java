@@ -11,7 +11,19 @@ import static org.hamcrest.Matchers.equalTo;
 public class ContactMetaControllerApiTest extends IntegrationTestBase {
 
     @Test
-    public void getAllContactTypes(){
+    public void attemptingToGetContactTypesWithoutCorrectRole() {
+        final var token = createJwt("SOME_OTHER_ROLE");
+        given()
+            .auth().oauth2(token)
+            .when()
+            .get("/contact-types")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
+    @Test
+    public void getAllContactTypes() {
         final var token = createJwt("ROLE_COMMUNITY");
 
         final var officeVisit = withArgs("COAP");
@@ -30,7 +42,7 @@ public class ContactMetaControllerApiTest extends IntegrationTestBase {
     }
 
     @Test
-    public void getContactTypesForACategory(){
+    public void getContactTypesForACategory() {
         final var token = createJwt("ROLE_COMMUNITY");
 
         final var phoneContact = withArgs("CTOB");
@@ -45,12 +57,10 @@ public class ContactMetaControllerApiTest extends IntegrationTestBase {
             .assertThat()
             .statusCode(HttpStatus.OK.value())
             .body("size()", equalTo(43))
-            .root("find { it.contactType == '%s' }")
+            .root("find { it.code == '%s' }")
             .body("description", phoneContact, equalTo("Phone Contact to Offender"))
             .body("appointment", phoneContact, equalTo(false))
             .body("description", emailContact, equalTo("eMail/Text to Offender"))
             .body("appointment", emailContact, equalTo(false));
-
-
     }
 }
