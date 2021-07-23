@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.ContactSummary;
@@ -28,10 +29,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static uk.gov.justice.digital.delius.jpa.standard.entity.Contact.*;
 
@@ -151,6 +155,12 @@ public class ContactService {
             .team(team)
             .contactType(contactTypeRepository.findByCode(TIER_UPDATE_CONTACT_TYPE).orElseThrow(() -> new NotFoundException("Cannot find contact type for tier update")))
             .build());
+    }
+
+    public List<uk.gov.justice.digital.delius.data.api.ContactType> getContactTypes(final List<String> categories) {
+        return (CollectionUtils.isEmpty(categories) ? contactTypeRepository.findAllBySelectableTrue()
+            : contactTypeRepository.findAllByContactCategoriesCodeValueInAndSelectableTrue(categories))
+            .stream().map(ContactTransformer::contactTypeOf).collect(toList());
     }
 
     private String notesForKeyDatesUpdate(final Map<String, LocalDate> datesAmendedOrUpdated, final Map<String, LocalDate> datesRemoved) {

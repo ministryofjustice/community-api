@@ -46,7 +46,8 @@ public class ContactType {
     private String alertFlag;
 
     @Column(name = "SELECTABLE", nullable = false, length = 1)
-    private String selectable;
+    @Type(type = "yes_no")
+    private Boolean selectable;
 
     /**
      * This is used in Delius to populate the list of available contact types on the schedule future appointments feature.

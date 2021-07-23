@@ -62,6 +62,15 @@ public class ContactTransformer {
         return NsiTransformer.nsiOf(nsi);
     }
 
+    public static uk.gov.justice.digital.delius.data.api.ContactType contactTypeOf(ContactType contactType) {
+        return uk.gov.justice.digital.delius.data.api.ContactType.builder()
+            .code(contactType.getCode())
+            .description(contactType.getDescription())
+            .shortDescription(Optional.ofNullable(contactType.getShortDescription()).orElse(null))
+            .appointment(contactType.getAttendanceContact())
+            .build();
+    }
+
     private static uk.gov.justice.digital.delius.data.api.Contact contactOf(uk.gov.justice.digital.delius.jpa.standard.entity.Contact contact) {
         return uk.gov.justice.digital.delius.data.api.Contact.builder()
                 .eventId(eventIdOf(contact.getEvent()))
@@ -183,14 +192,6 @@ public class ContactTransformer {
                         .build()).orElse(null);
     }
 
-    private static uk.gov.justice.digital.delius.data.api.ContactType contactTypeOf(ContactType contactType) {
-        return uk.gov.justice.digital.delius.data.api.ContactType.builder()
-                .code(contactType.getCode())
-                .description(contactType.getDescription())
-                .shortDescription(Optional.ofNullable(contactType.getShortDescription()).orElse(null))
-                .appointment(contactType.getAttendanceContact())
-                .build();
-    }
 
     private static KeyValue contactOutcomeTypeOf(ContactOutcomeType contactOutcomeType) {
         return Optional.ofNullable(contactOutcomeType).map(cot ->
