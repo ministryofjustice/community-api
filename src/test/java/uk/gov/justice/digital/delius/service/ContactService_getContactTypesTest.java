@@ -50,7 +50,7 @@ public class ContactService_getContactTypesTest {
     }
 
     @Test
-    @DisplayName("will return all contact types ")
+    @DisplayName("will return all contact types")
     void willReturnAllContactTypes() {
         ContactType entityContactType = aContactType("COAP", "Office Visit", "Office", true);
         when(contactTypeRepository.findAllBySelectableTrue()).thenReturn(of(entityContactType));
@@ -77,5 +77,4 @@ public class ContactService_getContactTypesTest {
             .attendanceContact(appointment)
             .build();
     }
-
 }

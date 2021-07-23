@@ -7,7 +7,6 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.withArgs;
 import static org.hamcrest.Matchers.equalTo;
 
-
 public class ContactMetaControllerApiTest extends IntegrationTestBase {
 
     @Test
