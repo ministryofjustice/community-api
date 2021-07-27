@@ -1,5 +1,5 @@
 plugins {
-    id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.3.4"
+    id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.3.5"
     id 'groovy'
     id 'org.unbroken-dome.test-sets' version '4.0.0'
     id "au.com.dius.pact" version "4.2.7"
@@ -35,9 +35,9 @@ dependencies {
     implementation 'com.github.java-json-tools:json-patch:1.13'
 
     // needed for record serialisation
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.3'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.3'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.4'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.4'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.4'
 
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
