@@ -122,6 +122,24 @@ public class OffendersResource {
     }
 
     @ApiOperation(
+        value = "Return the responsible officer (RO) for an offender",
+        notes = "Accepts an offender CRN in the format A999999",
+        tags = "Offender managers")
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+    @GetMapping(path = "/offenders/crn/{crn}/responsibleOfficers")
+    public ResponseEntity<List<ResponsibleOfficer>> getResponsibleOfficersForOffenderCrn(
+        @ApiParam(name = "crn", value = "CRN for the offender", example = "X320741", required = true) @NotNull @PathVariable(value = "crn") final String crn,
+        @ApiParam(name = "current", value = "Current only", example = "false") @RequestParam(name = "current", required = false, defaultValue = "false") final boolean current) {
+        return offenderService.getResponsibleOfficersForCrn(crn, current)
+            .map(responsibleOfficer -> new ResponseEntity<>(responsibleOfficer, OK))
+            .orElse(new ResponseEntity<>(NOT_FOUND));
+    }
+
+    @ApiOperation(
             value = "Returns the current community and prison offender managers for an offender",
             notes = "Accepts a NOMIS offender nomsNumber in the format A9999AA",
             tags = {"Offender managers", "-- Popular core APIs --"})

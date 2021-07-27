@@ -204,6 +204,13 @@ public class OffenderService {
     }
 
     @Transactional(readOnly = true)
+    public Optional<List<ResponsibleOfficer>> getResponsibleOfficersForCrn(String crn, boolean current) {
+        return offenderRepository.findByCrn(crn).map(
+            offender -> OffenderTransformer.responsibleOfficersOf(offender, current));
+    }
+
+
+    @Transactional(readOnly = true)
     public OffenderLatestRecall getOffenderLatestRecall(Long offenderId) {
         final var actualCustodialEvent = convictionService.getActiveCustodialEvent(offenderId);
         final var custody = findCustodyOrThrow(actualCustodialEvent);
