@@ -32,6 +32,7 @@ public class ContactControllerSecure {
         value = {
             @ApiResponse(code = 200, message = "Contact with matching id and crn", response = Contact.class),
             @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY"),
+            @ApiResponse(code = 404, message = "Contact or offender not found"),
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
         }
     )
