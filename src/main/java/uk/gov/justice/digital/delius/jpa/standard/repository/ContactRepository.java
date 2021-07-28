@@ -46,4 +46,6 @@ public interface ContactRepository extends JpaRepository<Contact, Long>, JpaSpec
      * Specifying both offender & contact ids effectively validates that the appointment is associated to the offender.
      */
     Optional<Contact> findByContactIdAndOffenderIdAndContactTypeAttendanceContactIsTrueAndSoftDeletedIsFalse(Long contactId, Long offenderId);
+
+    Optional<Contact> findByContactIdAndOffenderIdAndSoftDeletedIsFalse(Long contactId, Long offenderId);
 }

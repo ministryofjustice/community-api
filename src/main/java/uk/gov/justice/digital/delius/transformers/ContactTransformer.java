@@ -71,7 +71,7 @@ public class ContactTransformer {
             .build();
     }
 
-    private static uk.gov.justice.digital.delius.data.api.Contact contactOf(uk.gov.justice.digital.delius.jpa.standard.entity.Contact contact) {
+    public static uk.gov.justice.digital.delius.data.api.Contact contactOf(uk.gov.justice.digital.delius.jpa.standard.entity.Contact contact) {
         return uk.gov.justice.digital.delius.data.api.Contact.builder()
                 .eventId(eventIdOf(contact.getEvent()))
                 .alertActive(ynToBoolean(contact.getAlertActive()))
