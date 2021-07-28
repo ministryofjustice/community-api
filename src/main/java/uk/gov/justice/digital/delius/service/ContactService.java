@@ -29,15 +29,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static org.springframework.data.domain.Sort.Direction.DESC;
-import static uk.gov.justice.digital.delius.jpa.standard.entity.Contact.*;
+import static uk.gov.justice.digital.delius.jpa.standard.entity.Contact.builder;
 
 @Service
 @AllArgsConstructor
@@ -161,6 +159,10 @@ public class ContactService {
         return (CollectionUtils.isEmpty(categories) ? contactTypeRepository.findAllBySelectableTrue()
             : contactTypeRepository.findAllByContactCategoriesCodeValueInAndSelectableTrue(categories))
             .stream().map(ContactTransformer::contactTypeOf).collect(toList());
+    }
+
+    public Optional<Contact> getContact(final Long offenderId, final Long contactId) {
+        return contactRepository.findByContactIdAndOffenderIdAndSoftDeletedIsFalse(contactId, offenderId).map(ContactTransformer::contactOf);
     }
 
     private String notesForKeyDatesUpdate(final Map<String, LocalDate> datesAmendedOrUpdated, final Map<String, LocalDate> datesRemoved) {
