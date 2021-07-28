@@ -35,7 +35,7 @@ import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 import static org.springframework.data.domain.Sort.Direction.DESC;
-import static uk.gov.justice.digital.delius.jpa.standard.entity.Contact.builder;
+import static uk.gov.justice.digital.delius.jpa.standard.entity.Contact.*;
 
 @Service
 @AllArgsConstructor
