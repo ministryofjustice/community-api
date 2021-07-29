@@ -102,6 +102,7 @@ public class ContactTransformer {
                 .complied(ynToBoolean(contact.getComplied()))
                 .uploadLinked(ynToBoolean(contact.getUploadLinked()))
                 .documentLinked(ynToBoolean(contact.getDocumentLinked()))
+                .contactDate(contact.getContactDate())
                 .build();
     }
 

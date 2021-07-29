@@ -10,6 +10,7 @@ import java.time.ZoneOffset;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.ContactSummary;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceCondition;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceConditionTypeMainCat;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
@@ -97,7 +98,78 @@ class ContactTransformerTest {
 
     @Test
     public void contactSummaryFromContact() {
-        final var contact = EntityHelper.aContact().toBuilder()
+        final var contact = aContact();
+
+        final var observed = ContactTransformer.contactSummaryOf(contact);
+        final var date = LocalDate.of(2021, 6, 1);
+        assertThat(observed)
+            .isNotNull()
+            .isInstanceOf(ContactSummary.class)
+            .hasFieldOrPropertyWithValue("contactId", 1L)
+            .hasFieldOrPropertyWithValue("contactStart", OffsetDateTime.of(date, LocalTime.of(12, 0), ZoneOffset.ofHours(1)))
+            .hasFieldOrPropertyWithValue("contactEnd", OffsetDateTime.of(date, LocalTime.of(13, 0), ZoneOffset.ofHours(1)))
+            .hasFieldOrPropertyWithValue("type.code", "CT1")
+            .hasFieldOrPropertyWithValue("type.description", "Some contact type")
+            .hasFieldOrPropertyWithValue("type.shortDescription", "Some contact type short description")
+            .hasFieldOrPropertyWithValue("type.appointment", true)
+            .hasFieldOrPropertyWithValue("officeLocation.code", "OL1")
+            .hasFieldOrPropertyWithValue("officeLocation.description", "Some office location")
+            .hasFieldOrPropertyWithValue("notes", "Some notes")
+            .hasFieldOrPropertyWithValue("provider.code", "PA1")
+            .hasFieldOrPropertyWithValue("provider.description", "Some probation area")
+            .hasFieldOrPropertyWithValue("team.code", "T1")
+            .hasFieldOrPropertyWithValue("team.description", "Some team")
+            .hasFieldOrPropertyWithValue("staff.code", "S1")
+            .hasFieldOrPropertyWithValue("staff.forenames", "FN1 FN2")
+            .hasFieldOrPropertyWithValue("staff.surname", "SN")
+            .hasFieldOrPropertyWithValue("sensitive", true)
+            .hasFieldOrPropertyWithValue("outcome.code", "O1")
+            .hasFieldOrPropertyWithValue("outcome.description", "Some outcome")
+            .hasFieldOrPropertyWithValue("outcome.attended", true)
+            .hasFieldOrPropertyWithValue("outcome.complied", true)
+            .hasFieldOrPropertyWithValue("outcome.hoursCredited", 123.456)
+            .hasFieldOrPropertyWithValue("rarActivity", true);
+
+    }
+
+    @Test
+    public void apiContactFromEntityContact() {
+        final var contact = aContact();
+
+        final var observed = ContactTransformer.contactOf(contact);
+        final var date = LocalDate.of(2021, 6, 1);
+        assertThat(observed)
+            .isNotNull()
+            .isInstanceOf(uk.gov.justice.digital.delius.data.api.Contact.class)
+            .hasFieldOrPropertyWithValue("contactId", 1L)
+            .hasFieldOrPropertyWithValue("linkedContactId", 200L)
+            .hasFieldOrPropertyWithValue("alertActive", false)
+            .hasFieldOrPropertyWithValue("contactStartTime", LocalTime.of(12, 0))
+            .hasFieldOrPropertyWithValue("contactEndTime", LocalTime.of(13, 0))
+            .hasFieldOrPropertyWithValue("contactDate", date)
+            .hasFieldOrPropertyWithValue("contactType.code", "CT1")
+            .hasFieldOrPropertyWithValue("contactType.description", "Some contact type")
+            .hasFieldOrPropertyWithValue("contactType.shortDescription", "Some contact type short description")
+            .hasFieldOrPropertyWithValue("contactType.appointment", true)
+            .hasFieldOrPropertyWithValue("contactOutcomeType.code", "O1")
+            .hasFieldOrPropertyWithValue("contactOutcomeType.description", "Some outcome")
+            .hasFieldOrPropertyWithValue("notes", "Some notes")
+            .hasFieldOrPropertyWithValue("probationArea.code", "PA1")
+            .hasFieldOrPropertyWithValue("probationArea.description", "Some probation area")
+            .hasFieldOrPropertyWithValue("team.code", "T1")
+            .hasFieldOrPropertyWithValue("team.description", "Some team")
+            .hasFieldOrPropertyWithValue("staff.code", "S1")
+            .hasFieldOrPropertyWithValue("staff.forenames", "FN1 FN2")
+            .hasFieldOrPropertyWithValue("staff.surname", "SN")
+            .hasFieldOrPropertyWithValue("attended", true)
+            .hasFieldOrPropertyWithValue("complied", true)
+            .hasFieldOrPropertyWithValue("hoursCredited", 123.456)
+            .hasFieldOrPropertyWithValue("uploadLinked", true)
+            .hasFieldOrPropertyWithValue("documentLinked", true);
+
+    }
+    private Contact aContact() {
+        return EntityHelper.aContact().toBuilder()
             .contactId(1L)
             .contactDate(LocalDate.of(2021, 6, 1))
             .contactStartTime(LocalTime.of(12, 0))
@@ -136,37 +208,10 @@ class ContactTransformerTest {
             .complied("Y")
             .hoursCredited(123.456)
             .rarActivity("Y")
+            .alertActive("N")
+            .linkedContactId(200L)
+            .uploadLinked("Y")
+            .documentLinked("Y")
             .build();
-
-        final var observed = ContactTransformer.contactSummaryOf(contact);
-        final var date = LocalDate.of(2021, 6, 1);
-        assertThat(observed)
-            .isNotNull()
-            .isInstanceOf(ContactSummary.class)
-            .hasFieldOrPropertyWithValue("contactId", 1L)
-            .hasFieldOrPropertyWithValue("contactStart", OffsetDateTime.of(date, LocalTime.of(12, 0), ZoneOffset.ofHours(1)))
-            .hasFieldOrPropertyWithValue("contactEnd", OffsetDateTime.of(date, LocalTime.of(13, 0), ZoneOffset.ofHours(1)))
-            .hasFieldOrPropertyWithValue("type.code", "CT1")
-            .hasFieldOrPropertyWithValue("type.description", "Some contact type")
-            .hasFieldOrPropertyWithValue("type.shortDescription", "Some contact type short description")
-            .hasFieldOrPropertyWithValue("type.appointment", true)
-            .hasFieldOrPropertyWithValue("officeLocation.code", "OL1")
-            .hasFieldOrPropertyWithValue("officeLocation.description", "Some office location")
-            .hasFieldOrPropertyWithValue("notes", "Some notes")
-            .hasFieldOrPropertyWithValue("provider.code", "PA1")
-            .hasFieldOrPropertyWithValue("provider.description", "Some probation area")
-            .hasFieldOrPropertyWithValue("team.code", "T1")
-            .hasFieldOrPropertyWithValue("team.description", "Some team")
-            .hasFieldOrPropertyWithValue("staff.code", "S1")
-            .hasFieldOrPropertyWithValue("staff.forenames", "FN1 FN2")
-            .hasFieldOrPropertyWithValue("staff.surname", "SN")
-            .hasFieldOrPropertyWithValue("sensitive", true)
-            .hasFieldOrPropertyWithValue("outcome.code", "O1")
-            .hasFieldOrPropertyWithValue("outcome.description", "Some outcome")
-            .hasFieldOrPropertyWithValue("outcome.attended", true)
-            .hasFieldOrPropertyWithValue("outcome.complied", true)
-            .hasFieldOrPropertyWithValue("outcome.hoursCredited", 123.456)
-            .hasFieldOrPropertyWithValue("rarActivity", true);
-
     }
 }

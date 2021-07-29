@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -47,5 +48,5 @@ public class Contact {
     private Boolean complied;
     private Boolean documentLinked;
     private Boolean uploadLinked;
-
+    private LocalDate contactDate;
 }
