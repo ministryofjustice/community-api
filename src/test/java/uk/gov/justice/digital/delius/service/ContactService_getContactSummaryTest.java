@@ -4,12 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 
@@ -20,7 +17,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aContact;
 
 @ExtendWith(MockitoExtension.class)
-public class ContactService_getContactTest {
+public class ContactService_getContactSummaryTest {
 
     @Mock
     private ContactRepository contactRepository;
@@ -29,9 +26,6 @@ public class ContactService_getContactTest {
 
     @InjectMocks
     private ContactService contactService;
-
-    @Captor
-    private ArgumentCaptor<Contact> contactArgumentCaptor;
 
     @BeforeEach
     public void setup() {
@@ -45,7 +39,7 @@ public class ContactService_getContactTest {
         final var contactId = 10L;
         final var entityContact = aContact().toBuilder().contactId(contactId).build();
         when(contactRepository.findByContactIdAndOffenderIdAndSoftDeletedIsFalse(contactId, offenderId)).thenReturn(Optional.of(entityContact));
-        final Optional<uk.gov.justice.digital.delius.data.api.Contact> contact = contactService.getContact(offenderId, contactId);
-        assertThat(contact).isPresent().map(uk.gov.justice.digital.delius.data.api.Contact::getContactId).hasValue(entityContact.getContactId());
+        final Optional<uk.gov.justice.digital.delius.data.api.ContactSummary> contactSummary = contactService.getContactSummary(offenderId, contactId);
+        assertThat(contactSummary).isPresent().map(uk.gov.justice.digital.delius.data.api.ContactSummary::getContactId).hasValue(entityContact.getContactId());
     }
 }

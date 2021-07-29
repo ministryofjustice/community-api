@@ -161,8 +161,8 @@ public class ContactService {
             .stream().map(ContactTransformer::contactTypeOf).collect(toList());
     }
 
-    public Optional<Contact> getContact(final Long offenderId, final Long contactId) {
-        return contactRepository.findByContactIdAndOffenderIdAndSoftDeletedIsFalse(contactId, offenderId).map(ContactTransformer::contactOf);
+    public Optional<ContactSummary> getContactSummary(final Long offenderId, final Long contactId) {
+        return contactRepository.findByContactIdAndOffenderIdAndSoftDeletedIsFalse(contactId, offenderId).map(ContactTransformer::contactSummaryOf);
     }
 
     private String notesForKeyDatesUpdate(final Map<String, LocalDate> datesAmendedOrUpdated, final Map<String, LocalDate> datesRemoved) {
