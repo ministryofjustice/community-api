@@ -7,11 +7,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
-import uk.gov.justice.digital.delius.data.api.Contact;
+import uk.gov.justice.digital.delius.data.api.ContactSummary;
 import uk.gov.justice.digital.delius.service.ContactService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
-import java.util.Optional;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
@@ -37,11 +36,11 @@ public class ContactControllerSecureTest {
         final var crn = "X123";
         final var offenderId = 20L;
         final var contactId = 10L;
-        final var aContact = Contact.builder().contactId(contactId).build();
+        final var aContact = ContactSummary.builder().contactId(contactId).build();
 
         when(offenderService.offenderIdOfCrn(crn)).thenReturn(of(offenderId));
-        when(contactService.getContact(offenderId, contactId)).thenReturn(of(aContact));
-        final var observed = controller.getOffenderContactByCrn(crn, contactId);
+        when(contactService.getContactSummary(offenderId, contactId)).thenReturn(of(aContact));
+        final var observed = controller.getOffenderContactSummaryByCrn(crn, contactId);
         assertThat(observed).usingRecursiveComparison().isEqualTo(aContact);
     }
     @Test
@@ -49,7 +48,7 @@ public class ContactControllerSecureTest {
     public void gettingContactForUnknownOffenderCrnReturnsNotFound() {
         when(offenderService.offenderIdOfCrn("notFoundCrnNumber")).thenReturn(empty());
         assertThrows(NotFoundException.class, () -> {
-            controller.getOffenderContactByCrn("notFoundCrnNumber", 1234L);
+            controller.getOffenderContactSummaryByCrn("notFoundCrnNumber", 1234L);
         });
     }
     @Test
@@ -58,9 +57,9 @@ public class ContactControllerSecureTest {
         final var crn = "X123";
         final var offenderId = 20L;
         when(offenderService.offenderIdOfCrn(crn)).thenReturn(of(offenderId));
-        when(contactService.getContact(offenderId, 000L)).thenReturn(empty());
+        when(contactService.getContactSummary(offenderId, 000L)).thenReturn(empty());
         assertThrows(NotFoundException.class, () -> {
-            controller.getOffenderContactByCrn(crn, 000L);
+            controller.getOffenderContactSummaryByCrn(crn, 000L);
         });
     }
 

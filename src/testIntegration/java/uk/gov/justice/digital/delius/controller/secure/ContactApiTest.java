@@ -29,7 +29,7 @@ public class ContactApiTest extends IntegrationTestBase {
     }
 
     @Test
-    @DisplayName("will return a contact")
+    @DisplayName("will return a contact summary")
     public void getAContact() {
         final var token = createJwt("ROLE_COMMUNITY");
         final var response = given()
