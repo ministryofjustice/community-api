@@ -75,6 +75,7 @@ class NsiTransformerTest {
         assertThat(nsi.getLengthUnit()).isEqualTo("Months");
         assertThat(nsi.getNotes()).isEqualTo("Some notes");
         assertThat(nsi.getActive()).isEqualTo(true);
+        assertThat(nsi.getSoftDeleted()).isEqualTo(false);
 
         assertThat(nsi.getNsiManagers()).isNotNull();
         assertThat(nsi.getNsiManagers()).hasSize(2);
