@@ -145,8 +145,9 @@ class ContactTransformerTest {
             .lastUpdatedDateTime(now)
             .lastUpdatedByUser(EntityHelper.aUser().toBuilder()
                 .forename("John")
-                .forename2("Michael"
-                ).surname("Smith").build())
+                .forename2("Michael")
+                .surname("Smith")
+                .build())
             .build();
 
         final var observed = ContactTransformer.contactSummaryOf(contact);
