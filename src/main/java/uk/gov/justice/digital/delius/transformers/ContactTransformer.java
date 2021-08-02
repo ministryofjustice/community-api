@@ -20,6 +20,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderLocation;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderTeam;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
+import uk.gov.justice.digital.delius.jpa.standard.entity.User;
 import uk.gov.justice.digital.delius.utils.DateConverter;
 
 import java.util.List;
@@ -48,6 +49,8 @@ public class ContactTransformer {
             .sensitive(ynToBoolean(contact.getSensitive()))
             .outcome(AppointmentTransformer.appointmentOutcomeOf(contact))
             .rarActivity(contact.isRarActivity())
+            .lastUpdatedDateTime(Optional.ofNullable(contact.getLastUpdatedDateTime()).map(DateConverter::toOffsetDateTime).orElse(null))
+            .lastUpdatedByUser(humanOf(contact.getLastUpdatedByUser()))
             .build();
     }
 
@@ -199,5 +202,12 @@ public class ContactTransformer {
                         .code(cot.getCode())
                         .description(cot.getDescription())
                         .build()).orElse(null);
+    }
+    private static Human humanOf(final User user){
+        return Optional.ofNullable(user).map(u -> Human.builder()
+            .forenames(combinedForenamesOf(u.getForename(), u.getForename2()))
+            .surname(u.getSurname())
+            .build().capitalise()
+        ).orElse(null);
     }
 }

@@ -80,6 +80,8 @@ class ContactTransformerTest {
             .notes(null)
             .sensitive(null)
             .contactOutcomeType(null)
+            .lastUpdatedDateTime(null)
+            .lastUpdatedByUser(null)
             .build();
         final var observed = ContactTransformer.contactSummaryOf(contact);
         final var expectedDate = DateConverter.toOffsetDateTime(LocalDateTime.of(contact.getContactDate(), LocalTime.MIDNIGHT));
@@ -92,11 +94,15 @@ class ContactTransformerTest {
             .hasFieldOrPropertyWithValue("notes", null)
             .hasFieldOrPropertyWithValue("sensitive", null)
             .hasFieldOrPropertyWithValue("outcome", null)
-            .hasFieldOrPropertyWithValue("rarActivity", false);
+            .hasFieldOrPropertyWithValue("rarActivity", false)
+            .hasFieldOrPropertyWithValue("lastUpdatedDateTime", null)
+            .hasFieldOrPropertyWithValue("lastUpdatedByUser", null)
+        ;
     }
 
     @Test
     public void contactSummaryFromContact() {
+        final var now = LocalDateTime.now();
         final var contact = EntityHelper.aContact().toBuilder()
             .contactId(1L)
             .contactDate(LocalDate.of(2021, 6, 1))
@@ -136,6 +142,11 @@ class ContactTransformerTest {
             .complied("Y")
             .hoursCredited(123.456)
             .rarActivity("Y")
+            .lastUpdatedDateTime(now)
+            .lastUpdatedByUser(EntityHelper.aUser().toBuilder()
+                .forename("John")
+                .forename2("Michael"
+                ).surname("Smith").build())
             .build();
 
         final var observed = ContactTransformer.contactSummaryOf(contact);
@@ -166,7 +177,10 @@ class ContactTransformerTest {
             .hasFieldOrPropertyWithValue("outcome.attended", true)
             .hasFieldOrPropertyWithValue("outcome.complied", true)
             .hasFieldOrPropertyWithValue("outcome.hoursCredited", 123.456)
-            .hasFieldOrPropertyWithValue("rarActivity", true);
+            .hasFieldOrPropertyWithValue("rarActivity", true)
+            .hasFieldOrPropertyWithValue("lastUpdatedDateTime", OffsetDateTime.of(now, ZoneOffset.ofHours(1)))
+            .hasFieldOrPropertyWithValue("lastUpdatedByUser.surname", "Smith")
+            .hasFieldOrPropertyWithValue("lastUpdatedByUser.forenames", "John Michael");
 
     }
 }

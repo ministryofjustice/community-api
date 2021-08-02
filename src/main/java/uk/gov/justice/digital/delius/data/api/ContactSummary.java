@@ -54,4 +54,10 @@ public class ContactSummary {
 
     @ApiModelProperty(name = "RAR activity flag", example = "true")
     private Boolean rarActivity;
+
+    @ApiModelProperty(name = "Date time when contact was last updated", example = "2021-05-25T10:00:00+01:00")
+    private OffsetDateTime lastUpdatedDateTime;
+
+    @ApiModelProperty(name = "Details of the person last updated the contact")
+    private Human lastUpdatedByUser;
 }

@@ -44,6 +44,9 @@ public class ContactApiTest extends IntegrationTestBase {
             .body("staff.forenames", equalTo("Unallocated"))
             .body("staff.surname", equalTo("Staff"))
             .body("staff.unallocated", equalTo(true))
-            .body("notes", equalTo("The notes field"));
+            .body("notes", equalTo("The notes field"))
+            .body("lastUpdatedDateTime", equalTo("2019-09-13T00:00:00+01:00"))
+            .body("lastUpdatedByUser.surname", equalTo("Marke"))
+            .body("lastUpdatedByUser.forenames", equalTo("Andy"));
     }
 }

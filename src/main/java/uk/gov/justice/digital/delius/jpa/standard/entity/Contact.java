@@ -171,6 +171,10 @@ public class Contact {
     @LastModifiedBy
     private Long lastUpdatedUserId;
 
+    @JoinColumn(name = "LAST_UPDATED_USER_ID", referencedColumnName = "USER_ID", updatable = false, insertable = false)
+    @ManyToOne
+    private User lastUpdatedByUser;
+
     @Column(name = "LAST_UPDATED_DATETIME")
     @LastModifiedDate
     private LocalDateTime lastUpdatedDateTime;
