@@ -35,6 +35,7 @@ public class Nsi {
     private String notes;
     private ProbationArea intendedProvider;
     private Boolean active;
+    private Boolean softDeleted;
 
     static <E extends Enum<E>> E valueOf(E defaultValue, String code) {
         try {
