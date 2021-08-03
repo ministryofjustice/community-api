@@ -83,6 +83,7 @@ public class ReferralServiceTest {
         .referralDate(LocalDate.of(2021, 1, 20))
         .nsiStatus(KeyValue.builder().code(NSI_STATUS).build())
         .requirement(Requirement.builder().requirementId(REQUIREMENT_ID).build())
+        .softDeleted(false)
         .intendedProvider(ProbationArea.builder().code(PROVIDER_CODE).build())
         .nsiManagers(singletonList(
             NsiManager.builder()
@@ -467,6 +468,8 @@ public class ReferralServiceTest {
         return Stream.of(
             Arguments.of(REFERRAL_START_REQUEST, MATCHING_NSI, true),
             Arguments.of(REFERRAL_START_REQUEST, MATCHING_NSI.withNsiOutcome(KeyValue.builder().code("CANCELLED").build()), false),
+            Arguments.of(REFERRAL_START_REQUEST, MATCHING_NSI.withSoftDeleted(false), true),
+            Arguments.of(REFERRAL_START_REQUEST, MATCHING_NSI.withSoftDeleted(true), false),
             Arguments.of(REFERRAL_START_REQUEST.withStartedAt(OffsetDateTime.of(2017, 1, 1, 12, 0, 0, 0, ZoneOffset.UTC)), MATCHING_NSI, false)
         );
     }

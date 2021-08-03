@@ -38,6 +38,7 @@ public class NsiTransformer {
                 .notes(n.getNotes())
                 .intendedProvider(ProbationAreaTransformer.probationAreaOf(n.getIntendedProvider(), INCLUDE_INTENDED_PROVIDER_TEAMS))
                 .active(zeroOneToBoolean(nsi.getActiveFlag()))
+                .softDeleted(zeroOneToBoolean(nsi.getSoftDeleted()))
 
                 .build()).orElse(null);
     }

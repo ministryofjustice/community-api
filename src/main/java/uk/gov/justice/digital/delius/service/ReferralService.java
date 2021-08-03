@@ -115,6 +115,7 @@ public class ReferralService {
         var existingNsis = nsiService.getNsiByCodes(offenderId, sentenceId, Collections.singletonList(getNsiType(nsiMapping, contractType)))
             .map(wrapper -> wrapper.getNsis().stream()
                 // eventID, offenderID, nsi type are handled in the NSI service
+                .filter(nsi -> !nsi.getSoftDeleted())
                 .filter(nsi -> ofNullable(nsi.getReferralDate()).map(n -> n.equals(toLondonLocalDate(startedAt))).orElse(false))
                 .filter(nsi -> ofNullable(nsi.getNsiStatus()).map(n -> n.getCode().equals(nsiMapping.getNsiStatus())).orElse(false))
                 .filter(nsi -> Objects.isNull(nsi.getNsiOutcome()))
