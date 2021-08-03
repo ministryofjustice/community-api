@@ -43,8 +43,10 @@ class OffendersResource_getOffenderConvictionsByCrn extends IntegrationTestBase 
             .hasFieldOrPropertyWithValue("courtAppearance.appearanceType.description", "Sentence")
             .hasFieldOrPropertyWithValue("courtAppearance.courtName", "Sheffield Magistrates Court")
             .hasFieldOrPropertyWithValue("responsibleCourt.courtName", "Sheffield Magistrates Court")
-            // Should have mapped additional sentences
+            // Should have mapped sentence detail
             .extracting(Conviction::getSentence)
+            .hasFieldOrPropertyWithValue("failureToComplyLimit", 3L)
+            // Should have mapped additional sentences
             .extracting(Sentence::getAdditionalSentences).asList()
             .hasSize(1)
             .first()

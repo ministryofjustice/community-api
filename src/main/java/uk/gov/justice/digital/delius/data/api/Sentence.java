@@ -36,4 +36,7 @@ public class Sentence {
 
     @ApiModelProperty(name = "Additional sentences if present")
     private List<AdditionalSentence> additionalSentences;
+
+    @ApiModelProperty(name = "Maximum number of appointments with a failure to comply outcome before a breach should be initiated")
+    private Long failureToComplyLimit;
 }

@@ -167,6 +167,9 @@ public class ConvictionTransformer {
                 .additionalSentences(Optional.ofNullable(additionalSentences)
                     .map(x -> x.stream().map(ConvictionTransformer::additionalSentenceOf).collect(toList()))
                     .orElse(null))
+                .failureToComplyLimit(Optional.ofNullable(disposal.getDisposalType())
+                    .map(DisposalType::getFailureToComplyLimit)
+                    .orElse(null))
                 .build();
 
     }

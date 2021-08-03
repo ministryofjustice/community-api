@@ -21,6 +21,7 @@ import java.util.Optional;
 public class DisposalType {
     private static final String nonStatutoryCustodyCode = "NC";
     private static final String statutoryCustodyCode = "SC";
+
     @Id
     @Column(name = "DISPOSAL_TYPE_ID")
     private Long disposalTypeId;
@@ -30,6 +31,9 @@ public class DisposalType {
 
     @Column(name = "SENTENCE_TYPE")
     private String sentenceType;
+
+    @Column(name = "FTC_LIMIT")
+    private Long failureToComplyLimit;
 
     public boolean isCustodial() {
         return Optional
