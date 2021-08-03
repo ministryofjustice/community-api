@@ -259,7 +259,7 @@ public class OffendersResource {
         final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam(value = "from", required = false) Optional<LocalDateTime> from,
         final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam(value = "to", required = false) Optional<LocalDateTime> to,
         final @RequestParam(value = "appointmentsOnly", required = false) Optional<Boolean> appointmentsOnly,
-        final @RequestParam(value = "eventId", required = false) Optional<Long> eventId,
+        final @RequestParam(value = "convictionId", required = false) Optional<Long> convictionId,
         final @RequestParam(value = "attended", required = false) Optional<Boolean> attended,
         final @RequestParam(value = "complied", required = false) Optional<Boolean> complied,
         final @RequestParam(value = "nationalStandard", required = false) Optional<Boolean> nationalStandard) {
@@ -269,7 +269,7 @@ public class OffendersResource {
             .from(from)
             .to(to)
             .appointmentsOnly(appointmentsOnly)
-            .eventId(eventId)
+            .convictionId(convictionId)
             .attended(attended)
             .complied(complied)
             .nationalStandard(nationalStandard)

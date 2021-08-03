@@ -76,7 +76,7 @@ public class OffendersResource_getOffenderContactSummariesByCrn {
 
         given()
             .when()
-            .get("/secure/offenders/crn/CRN1/contact-summary?page=10&pageSize=20&from=2021-05-26T00:00:00Z&to=2021-06-02T00:00:00Z&contactTypes=CT1,CT2&appointmentsOnly=true&eventId=56331&attended=true&complied=true&nationalStandard=true")
+            .get("/secure/offenders/crn/CRN1/contact-summary?page=10&pageSize=20&from=2021-05-26T00:00:00Z&to=2021-06-02T00:00:00Z&contactTypes=CT1,CT2&appointmentsOnly=true&convictionId=56331&attended=true&complied=true&nationalStandard=true")
             .then()
             .statusCode(200)
             .body("number", equalTo(10))
@@ -95,7 +95,7 @@ public class OffendersResource_getOffenderContactSummariesByCrn {
                 .to(Optional.of(LocalDateTime.of(2021, 6, 2, 0, 0)))
                 .contactTypes(Optional.of(List.of("CT1", "CT2")))
                 .appointmentsOnly(Optional.of(true))
-                .eventId(Optional.of(56331L))
+                .convictionId(Optional.of(56331L))
                 .attended(Optional.of(true))
                 .complied(Optional.of(true))
                 .nationalStandard(Optional.of(true))

@@ -96,11 +96,11 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
     }
 
     @Test
-    public void gettingOffenderContactSummariesByCrnAndFilteringByEventId() {
+    public void gettingOffenderContactSummariesByCrnAndFilteringByConvictionId() {
         given()
             .auth().oauth2(tokenWithRoleCommunity())
             .when()
-            .get("/offenders/crn/X320741/contact-summary?eventId=2500297061")
+            .get("/offenders/crn/X320741/contact-summary?convictionId=2500297061")
             .then()
             .assertThat()
             .statusCode(HttpStatus.OK.value())

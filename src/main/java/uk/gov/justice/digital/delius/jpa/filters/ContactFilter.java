@@ -31,7 +31,7 @@ public class ContactFilter implements Specification<Contact> {
     @Builder.Default
     private Optional<Boolean> appointmentsOnly = Optional.empty();
     @Builder.Default
-    private Optional<Long> eventId = Optional.empty();
+    private Optional<Long> convictionId = Optional.empty();
     @Builder.Default
     private Optional<Boolean> attended = Optional.empty();
     @Builder.Default
@@ -53,7 +53,7 @@ public class ContactFilter implements Specification<Contact> {
 
         appointmentsOnly.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("contactType").get("attendanceContact"), value)));
 
-        eventId.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("event").get("eventId"), value)));
+        convictionId.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("event").get("eventId"), value)));
 
         attended.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("attended"), value ? "Y" : "N")));
 
