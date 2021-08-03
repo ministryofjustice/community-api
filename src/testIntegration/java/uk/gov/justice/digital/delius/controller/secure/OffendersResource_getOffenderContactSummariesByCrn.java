@@ -11,6 +11,7 @@ import static io.restassured.RestAssured.withArgs;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 public class OffendersResource_getOffenderContactSummariesByCrn extends IntegrationTestBase {
     private final List<Argument> registration = withArgs(2503537767L);
@@ -83,6 +84,30 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("first", equalTo(true))
             .body("last", equalTo(true))
             .body("totalPages", equalTo(1))
+            .body("totalElements", equalTo(3))
+            .body("size", equalTo(1000))
+            .body("numberOfElements", equalTo(3))
+            .body("content.size()", equalTo(3))
+            .root("content.find { it.contactId == %d }")
+
+            .body("", registration, equalTo(null))
+
+            .body("", appointment, notNullValue());
+    }
+
+    @Test
+    public void gettingOffenderContactSummariesByCrnAndFilteringByEventId() {
+        given()
+            .auth().oauth2(tokenWithRoleCommunity())
+            .when()
+            .get("/offenders/crn/X320741/contact-summary?eventId=2500297061")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("number", equalTo(0))
+            .body("first", equalTo(true))
+            .body("last", equalTo(true))
+            .body("totalPages", equalTo(1))
             .body("totalElements", equalTo(1))
             .body("size", equalTo(1000))
             .body("numberOfElements", equalTo(1))
@@ -91,8 +116,165 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
 
             .body("", registration, equalTo(null))
 
-            .body("", appointment, notNullValue());
+            .body("", withArgs(2502726145L), notNullValue());
     }
+
+    @Test
+    public void gettingOffenderContactSummariesByCrnAndFilteringByAttendedTrue() {
+        given()
+            .auth().oauth2(tokenWithRoleCommunity())
+            .when()
+            .get("/offenders/crn/X320741/contact-summary?attended=true")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("number", equalTo(0))
+            .body("first", equalTo(true))
+            .body("last", equalTo(true))
+            .body("totalPages", equalTo(1))
+            .body("totalElements", equalTo(1))
+            .body("size", equalTo(1000))
+            .body("numberOfElements", equalTo(1))
+            .body("content.size()", equalTo(1))
+            .root("content.find { it.contactId == %d }")
+
+            .body("", registration, equalTo(null))
+
+            .body("", withArgs(2502719240L), notNullValue())
+            .body("outcome.attended", withArgs(2502719240L), equalTo(true));
+    }
+
+    @Test
+    public void gettingOffenderContactSummariesByCrnAndFilteringByAttendedFalse() {
+        given()
+            .auth().oauth2(tokenWithRoleCommunity())
+            .when()
+            .get("/offenders/crn/X320741/contact-summary?attended=false")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("number", equalTo(0))
+            .body("first", equalTo(true))
+            .body("last", equalTo(true))
+            .body("totalPages", equalTo(1))
+            .body("totalElements", equalTo(2))
+            .body("size", equalTo(1000))
+            .body("numberOfElements", equalTo(2))
+            .body("content.size()", equalTo(2))
+            .root("content.find { it.contactId == %d }")
+
+            .body("", registration, equalTo(null))
+
+            .body("", withArgs(2502719244L), notNullValue())
+            .body("outcome.attended", withArgs(2502719244L), equalTo(false));
+    }
+
+    @Test
+    public void gettingOffenderContactSummariesByCrnAndFilteringByCompliedTrue() {
+        given()
+            .auth().oauth2(tokenWithRoleCommunity())
+            .when()
+            .get("/offenders/crn/X320741/contact-summary?complied=true")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("number", equalTo(0))
+            .body("first", equalTo(true))
+            .body("last", equalTo(true))
+            .body("totalPages", equalTo(1))
+            .body("totalElements", equalTo(1))
+            .body("size", equalTo(1000))
+            .body("numberOfElements", equalTo(1))
+            .body("content.size()", equalTo(1))
+            .root("content.find { it.contactId == %d }")
+
+            .body("", registration, equalTo(null))
+
+            .body("", withArgs(2502719245L), notNullValue());
+    }
+
+    @Test
+    public void gettingOffenderContactSummariesByCrnAndFilteringByCompliedFalse() {
+        given()
+            .auth().oauth2(tokenWithRoleCommunity())
+            .when()
+            .get("/offenders/crn/X320741/contact-summary?complied=false")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("number", equalTo(0))
+            .body("first", equalTo(true))
+            .body("last", equalTo(true))
+            .body("totalPages", equalTo(1))
+            .body("totalElements", equalTo(1))
+            .body("size", equalTo(1000))
+            .body("numberOfElements", equalTo(1))
+            .body("content.size()", equalTo(1))
+            .root("content.find { it.contactId == %d }")
+
+            .body("", withArgs(2502719244L), notNullValue());
+    }
+
+    @Test
+    public void gettingOffenderContactSummariesByCrnAndFilteringByNationalStandardTrue() {
+        given()
+            .auth().oauth2(tokenWithRoleCommunity())
+            .when()
+            .get("/offenders/crn/X320741/contact-summary?nationalStandard=true")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("number", equalTo(0))
+            .body("first", equalTo(true))
+            .body("last", equalTo(true))
+            .body("totalPages", equalTo(1))
+            .body("totalElements", equalTo(4))
+            .body("size", equalTo(1000))
+            .body("numberOfElements", equalTo(4))
+            .body("content.size()", equalTo(4))
+            .root("content.find { it.contactId == %d }")
+
+            .body("", registration, equalTo(null))
+
+            .body("", withArgs(2502719244L), notNullValue())
+            .body("type.description", withArgs(2502719244L), equalTo("3 Way Meeting (NS)"))
+
+            .body("", withArgs(2502719245L), notNullValue())
+            .body("type.description", withArgs(2502719245L), equalTo("3 Way Meeting (NS)"))
+
+            .body("", withArgs(2502719240L), notNullValue())
+            .body("type.description", withArgs(2502719240L), equalTo("3 Way Meeting (NS)"))
+
+            .body("", withArgs(2502719239L), notNullValue())
+            .body("type.description", withArgs(2502719239L), equalTo("Alcohol Screening"))
+
+            .body("", withArgs(2502743375L), nullValue());
+
+    }
+
+    @Test
+    public void gettingOffenderContactSummariesByCrnAndFilteringByNationalStandardFalse() {
+        given()
+            .auth().oauth2(tokenWithRoleCommunity())
+            .when()
+            .get("/offenders/crn/X320741/contact-summary?nationalStandard=false")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("number", equalTo(0))
+            .body("first", equalTo(true))
+            .body("last", equalTo(true))
+            .body("totalPages", equalTo(1))
+            .body("totalElements", greaterThan(10))
+            .body("size", equalTo(1000))
+            .body("numberOfElements", greaterThan(10))
+            .body("content.size()", greaterThan(10))
+            .root("content.find { it.contactId == %d }")
+
+            .body("", withArgs(2502743375L), notNullValue())
+            .body("type.description", withArgs(2502743375L), equalTo("NOMIS Case Notes - General"));
+    }
+
 
     @Test
     public void gettingOffenderContactSummariesByCrnDefaultsToFirstPage() {

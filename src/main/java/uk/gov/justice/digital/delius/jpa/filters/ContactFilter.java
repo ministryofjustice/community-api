@@ -30,6 +30,14 @@ public class ContactFilter implements Specification<Contact> {
     private Long offenderId;
     @Builder.Default
     private Optional<Boolean> appointmentsOnly = Optional.empty();
+    @Builder.Default
+    private Optional<Long> eventId = Optional.empty();
+    @Builder.Default
+    private Optional<Boolean> attended = Optional.empty();
+    @Builder.Default
+    private Optional<Boolean> complied = Optional.empty();
+    @Builder.Default
+    private Optional<Boolean> nationalStandard = Optional.empty();
 
     @Override
     public Predicate toPredicate(Root<Contact> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
@@ -44,6 +52,14 @@ public class ContactFilter implements Specification<Contact> {
         to.ifPresent(localDateTime -> predicateBuilder.add(cb.lessThanOrEqualTo(root.get("createdDateTime"), localDateTime)));
 
         appointmentsOnly.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("contactType").get("attendanceContact"), value)));
+
+        eventId.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("event").get("eventId"), value)));
+
+        attended.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("attended"), value ? "Y" : "N")));
+
+        complied.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("complied"), value ? "Y" : "N")));
+
+        nationalStandard.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("contactType").get("nationalStandardsContact"), value ? "Y" : "N")));
 
         ImmutableList<Predicate> predicates = predicateBuilder.build();
 
