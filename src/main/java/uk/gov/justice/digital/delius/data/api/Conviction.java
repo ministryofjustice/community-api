@@ -26,6 +26,12 @@ public class Conviction {
     @ApiModelProperty(name = "Conviction in breach flag", example = "true")
     private Boolean inBreach;
 
+    @ApiModelProperty(name = "Total number of failure to comply outcomes since the last breach end", example = "3")
+    private Long ftcCount;
+
+    @ApiModelProperty(name = "Date of the last breach end, or null if no previous breach has occurred", example = "2021-05-13")
+    private LocalDate breachEnd;
+
     @ApiModelProperty(name = "Conviction is awaiting pre-sentence report", example = "true")
     private boolean awaitingPsr;
 

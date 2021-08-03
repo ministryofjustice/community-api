@@ -63,10 +63,27 @@ class ConvictionTransformerTest {
     }
 
     @Test
-    void inBreachMappedForZeroOneInBreach() {
-        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().inBreach(true).build()).getInBreach())).isTrue();
-        assertThat((ConvictionTransformer.convictionOf(anEvent().toBuilder().inBreach(false).build()).getInBreach())).isFalse();
+    void breachPropertiesMappedWhenNotInBreach() {
+        final var source = anEvent().toBuilder().inBreach(false).ftcCount(0L).build();
+        final var observed = ConvictionTransformer.convictionOf(source);
+        assertThat(observed)
+            .hasFieldOrPropertyWithValue("inBreach", false)
+            .hasFieldOrPropertyWithValue("breachEnd", null)
+            .hasFieldOrPropertyWithValue("ftcCount", 0L);
+    }
 
+    @Test
+    void breachPropertiesMappedWhenInBreach() {
+        final var source = anEvent().toBuilder()
+            .inBreach(true)
+            .breachEnd(LocalDate.of(2021, 5, 20))
+            .ftcCount(3L)
+            .build();
+        final var observed = ConvictionTransformer.convictionOf(source);
+        assertThat(observed)
+            .hasFieldOrPropertyWithValue("inBreach", true)
+            .hasFieldOrPropertyWithValue("breachEnd", LocalDate.of(2021, 5, 20))
+            .hasFieldOrPropertyWithValue("ftcCount", 3L);
     }
 
     @Test
