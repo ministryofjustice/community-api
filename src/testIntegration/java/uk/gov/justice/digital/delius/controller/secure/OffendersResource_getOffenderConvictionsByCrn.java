@@ -37,12 +37,16 @@ class OffendersResource_getOffenderConvictionsByCrn extends IntegrationTestBase 
         assertThat(sentenceType.getCode()).isEqualTo("SC");
         assertThat(sentenceType.getDescription()).isEqualTo("CJA - Indeterminate Public Prot.");
 
-        // Should have mapped court appearance from sentencing appearance & responsible court detail
         assertThat(conviction)
+            // Should have mapped court appearance from sentencing appearance & responsible court detail
             .hasFieldOrPropertyWithValue("courtAppearance.appearanceType.code", "S")
             .hasFieldOrPropertyWithValue("courtAppearance.appearanceType.description", "Sentence")
             .hasFieldOrPropertyWithValue("courtAppearance.courtName", "Sheffield Magistrates Court")
             .hasFieldOrPropertyWithValue("responsibleCourt.courtName", "Sheffield Magistrates Court")
+            // Should have mapped (empty) breach detail
+            .hasFieldOrPropertyWithValue("inBreach", false)
+            .hasFieldOrPropertyWithValue("breachEnd", null)
+            .hasFieldOrPropertyWithValue("failureToComplyCount", 0L)
             // Should have mapped sentence detail
             .extracting(Conviction::getSentence)
             .hasFieldOrPropertyWithValue("failureToComplyLimit", 3L)
