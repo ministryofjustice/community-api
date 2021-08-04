@@ -6,9 +6,11 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Court;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.service.ReferenceDataService;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class CourtAppearanceBasicTransformer {
@@ -50,4 +52,11 @@ public class CourtAppearanceBasicTransformer {
             );
     }
 
+    public static boolean outcomeContainsAwaitingPsr(final List<CourtAppearance> courtAppearances) {
+        return courtAppearances
+            .stream()
+            .map(CourtAppearance::getOutcome)
+            .filter(Objects::nonNull)
+            .anyMatch(outcome -> ReferenceDataService.REFERENCE_DATA_PSR_ADJOURNED_CODE.equals(outcome.getCodeValue()));
+    }
 }

@@ -19,7 +19,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.KeyDate;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.entity.UpwAppointment;
 import uk.gov.justice.digital.delius.jpa.standard.entity.UpwDetails;
-import uk.gov.justice.digital.delius.service.ReferenceDataService;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -81,7 +80,6 @@ public class ConvictionTransformer {
 
     public static Conviction convictionOf(Event event) {
         final var courtAppearances = Optional.ofNullable(event.getCourtAppearances());
-        final var latestOutcome = courtAppearances.map(ConvictionTransformer::latestOutcomeOf).orElse(null);
         return Conviction.builder()
                 .active(event.isActiveFlag())
                 .convictionDate(event.getConvictionDate())
@@ -99,11 +97,15 @@ public class ConvictionTransformer {
                 .inBreach(event.isInBreach())
                 .failureToComplyCount(event.getFailureToComplyCount())
                 .breachEnd(event.getBreachEnd())
-                .latestCourtAppearanceOutcome(latestOutcome)
+                .latestCourtAppearanceOutcome(courtAppearances.map(ConvictionTransformer::latestOutcomeOf).orElse(null))
                 .responsibleCourt(Optional.ofNullable(event.getCourt()).map(CourtTransformer::courtOf).orElse(null))
                 .courtAppearance(courtAppearances.map(CourtAppearanceBasicTransformer::latestOrSentencingCourtAppearanceOf).orElse(null))
-                .awaitingPsr(Optional.ofNullable(latestOutcome).map(outcome -> ReferenceDataService.REFERENCE_DATA_PSR_ADJOURNED_CODE.equals(outcome.getCode())).orElse(Boolean.FALSE))
+                .awaitingPsr(isAwaitingPsr(event.getDisposal(), courtAppearances))
                 .build();
+    }
+
+    private static boolean isAwaitingPsr(Disposal disposal, Optional<List<CourtAppearance>> courtAppearances) {
+        return disposal == null && courtAppearances.map(CourtAppearanceBasicTransformer::outcomeContainsAwaitingPsr).orElse(Boolean.FALSE);
     }
 
     private static AdditionalSentence additionalSentenceOf(uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalSentence additionalSentence) {

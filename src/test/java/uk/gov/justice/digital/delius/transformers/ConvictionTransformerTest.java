@@ -456,8 +456,9 @@ class ConvictionTransformerTest {
 
         @Test
         void givenPsrAdjournmentIsSuperseded_outcomeDoesNotContainAwaitingPsr() {
+
             assertThat(ConvictionTransformer.convictionOf(
-                anEvent()
+                anEvent(aDisposal())
                     .toBuilder()
                     .courtAppearances(ImmutableList.of(
                         aCourtAppearance("ORA Adult Custody (inc PSS)", "325", LocalDateTime.now()),
@@ -576,6 +577,15 @@ class ConvictionTransformerTest {
         return Offence
             .builder()
             .ogrsOffenceCategory(StandardReference.builder().build())
+            .build();
+    }
+
+    private Event anEvent(Disposal disposal) {
+        return Event
+            .builder()
+            .disposal(disposal)
+            .additionalOffences(ImmutableList.of())
+            .courtAppearances(ImmutableList.of())
             .build();
     }
 
