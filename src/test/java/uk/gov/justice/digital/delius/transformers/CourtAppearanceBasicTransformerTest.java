@@ -57,7 +57,7 @@ class CourtAppearanceBasicTransformerTest {
 
     @Test
     void givenNoOutcomes_whenGetAwaitingPsr_thenFalse() {
-        final var awaitingPsr = CourtAppearanceBasicTransformer.awaitingPsrOf(List.of(CourtAppearance.builder().build()));
+        final var awaitingPsr = CourtAppearanceBasicTransformer.outcomeContainsAwaitingPsr(List.of(CourtAppearance.builder().build()));
 
         assertThat(awaitingPsr).isFalse();
     }
@@ -66,7 +66,7 @@ class CourtAppearanceBasicTransformerTest {
     void givenOutcomeWithWrongCode_whenGetAwaitingPsr_thenFalse() {
         final var outcome = StandardReference.builder().codeValue("XXX").codeDescription("some other outcome").build();
 
-        final var awaitingPsr = CourtAppearanceBasicTransformer.awaitingPsrOf(List.of(CourtAppearance.builder().outcome(outcome).build()));
+        final var awaitingPsr = CourtAppearanceBasicTransformer.outcomeContainsAwaitingPsr(List.of(CourtAppearance.builder().outcome(outcome).build()));
 
         assertThat(awaitingPsr).isFalse();
     }
@@ -78,7 +78,7 @@ class CourtAppearanceBasicTransformerTest {
                                                             .codeDescription("A PSR")
                                                             .build();
 
-        final var awaitingPsr = CourtAppearanceBasicTransformer.awaitingPsrOf(List.of(CourtAppearance.builder().outcome(outcome).build()));
+        final var awaitingPsr = CourtAppearanceBasicTransformer.outcomeContainsAwaitingPsr(List.of(CourtAppearance.builder().outcome(outcome).build()));
 
         assertThat(awaitingPsr).isTrue();
     }

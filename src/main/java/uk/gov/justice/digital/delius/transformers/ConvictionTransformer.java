@@ -97,11 +97,15 @@ public class ConvictionTransformer {
                 .inBreach(event.isInBreach())
                 .failureToComplyCount(event.getFailureToComplyCount())
                 .breachEnd(event.getBreachEnd())
-                .latestCourtAppearanceOutcome(courtAppearances.map(ConvictionTransformer::outcomeOf).orElse(null))
+                .latestCourtAppearanceOutcome(courtAppearances.map(ConvictionTransformer::latestOutcomeOf).orElse(null))
                 .responsibleCourt(Optional.ofNullable(event.getCourt()).map(CourtTransformer::courtOf).orElse(null))
                 .courtAppearance(courtAppearances.map(CourtAppearanceBasicTransformer::latestOrSentencingCourtAppearanceOf).orElse(null))
-                .awaitingPsr(courtAppearances.map(CourtAppearanceBasicTransformer::awaitingPsrOf).orElse(false))
+                .awaitingPsr(isAwaitingPsr(event.getDisposal(), courtAppearances))
                 .build();
+    }
+
+    private static boolean isAwaitingPsr(Disposal disposal, Optional<List<CourtAppearance>> courtAppearances) {
+        return disposal == null && courtAppearances.map(CourtAppearanceBasicTransformer::outcomeContainsAwaitingPsr).orElse(Boolean.FALSE);
     }
 
     private static AdditionalSentence additionalSentenceOf(uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalSentence additionalSentence) {
@@ -114,7 +118,7 @@ public class ConvictionTransformer {
             .build();
     }
 
-    private static KeyValue outcomeOf(List<CourtAppearance> courtAppearances) {
+    private static KeyValue latestOutcomeOf(List<CourtAppearance> courtAppearances) {
         return courtAppearances
                 .stream()
                 .filter(courtAppearance -> courtAppearance.getOutcome() != null).max(Comparator.comparing(CourtAppearance::getAppearanceDate))

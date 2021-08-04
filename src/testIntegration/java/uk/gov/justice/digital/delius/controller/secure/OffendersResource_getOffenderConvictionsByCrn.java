@@ -30,7 +30,7 @@ class OffendersResource_getOffenderConvictionsByCrn extends IntegrationTestBase 
                 .as(Conviction[].class);
 
         final var conviction = Stream.of(convictions).filter(Conviction::getActive).findAny().orElseThrow();
-        assertThat(conviction.isAwaitingPsr()).isTrue();
+        assertThat(conviction.isAwaitingPsr()).isFalse();
         final var offence = conviction.getOffences().stream().filter(Offence::getMainOffence).findAny().orElseThrow();
         assertThat(offence.getDetail().getCode()).isEqualTo("00102");
         final var sentenceType = conviction.getSentence().getSentenceType();

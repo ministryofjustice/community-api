@@ -52,7 +52,7 @@ public class CourtAppearanceBasicTransformer {
             );
     }
 
-    public static boolean awaitingPsrOf(final List<CourtAppearance> courtAppearances) {
+    public static boolean outcomeContainsAwaitingPsr(final List<CourtAppearance> courtAppearances) {
         return courtAppearances
             .stream()
             .map(CourtAppearance::getOutcome)
