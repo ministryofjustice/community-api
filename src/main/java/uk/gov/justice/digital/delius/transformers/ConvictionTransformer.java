@@ -19,6 +19,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.KeyDate;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.entity.UpwAppointment;
 import uk.gov.justice.digital.delius.jpa.standard.entity.UpwDetails;
+import uk.gov.justice.digital.delius.service.ReferenceDataService;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -80,6 +81,7 @@ public class ConvictionTransformer {
 
     public static Conviction convictionOf(Event event) {
         final var courtAppearances = Optional.ofNullable(event.getCourtAppearances());
+        final var latestOutcome = courtAppearances.map(ConvictionTransformer::latestOutcomeOf).orElse(null);
         return Conviction.builder()
                 .active(event.isActiveFlag())
                 .convictionDate(event.getConvictionDate())
@@ -97,10 +99,10 @@ public class ConvictionTransformer {
                 .inBreach(event.isInBreach())
                 .failureToComplyCount(event.getFailureToComplyCount())
                 .breachEnd(event.getBreachEnd())
-                .latestCourtAppearanceOutcome(courtAppearances.map(ConvictionTransformer::outcomeOf).orElse(null))
+                .latestCourtAppearanceOutcome(latestOutcome)
                 .responsibleCourt(Optional.ofNullable(event.getCourt()).map(CourtTransformer::courtOf).orElse(null))
                 .courtAppearance(courtAppearances.map(CourtAppearanceBasicTransformer::latestOrSentencingCourtAppearanceOf).orElse(null))
-                .awaitingPsr(courtAppearances.map(CourtAppearanceBasicTransformer::awaitingPsrOf).orElse(false))
+                .awaitingPsr(Optional.ofNullable(latestOutcome).map(outcome -> ReferenceDataService.REFERENCE_DATA_PSR_ADJOURNED_CODE.equals(outcome.getCode())).orElse(Boolean.FALSE))
                 .build();
     }
 
@@ -114,7 +116,7 @@ public class ConvictionTransformer {
             .build();
     }
 
-    private static KeyValue outcomeOf(List<CourtAppearance> courtAppearances) {
+    private static KeyValue latestOutcomeOf(List<CourtAppearance> courtAppearances) {
         return courtAppearances
                 .stream()
                 .filter(courtAppearance -> courtAppearance.getOutcome() != null).max(Comparator.comparing(CourtAppearance::getAppearanceDate))

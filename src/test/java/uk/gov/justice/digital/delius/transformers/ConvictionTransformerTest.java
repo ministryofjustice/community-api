@@ -455,14 +455,28 @@ class ConvictionTransformerTest {
         }
 
         @Test
-        void outcomeIndicatesAwaitingPsr() {
+        void givenPsrAdjournmentIsSuperseded_outcomeDoesNotContainAwaitingPsr() {
             assertThat(ConvictionTransformer.convictionOf(
                 anEvent()
                     .toBuilder()
                     .courtAppearances(ImmutableList.of(
-                        aCourtAppearanceWithNoOutcome(LocalDateTime.now()),
+                        aCourtAppearance("ORA Adult Custody (inc PSS)", "325", LocalDateTime.now()),
                         aCourtAppearance("Final Review", "Y", LocalDateTime.now().minusDays(1)),
                         aCourtAppearance("PSR Adjourned", REFERENCE_DATA_PSR_ADJOURNED_CODE, LocalDateTime.now().minusDays(2))
+                    ))
+                    .build()))
+                .isNotNull()
+                .hasFieldOrPropertyWithValue("awaitingPsr", false);
+        }
+
+        @Test
+        void givenMostRecentOutcomeIsPsr_outcomeIsAwaitingPsr() {
+            assertThat(ConvictionTransformer.convictionOf(
+                anEvent()
+                    .toBuilder()
+                    .courtAppearances(ImmutableList.of(
+                        aCourtAppearance("PSR Adjourned", REFERENCE_DATA_PSR_ADJOURNED_CODE, LocalDateTime.now().minusDays(2)),
+                        aCourtAppearance("Something else", "100", LocalDateTime.now().minusDays(5))
                     ))
                     .build()))
                 .isNotNull()

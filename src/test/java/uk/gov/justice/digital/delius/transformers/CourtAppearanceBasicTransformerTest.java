@@ -12,7 +12,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.justice.digital.delius.service.ReferenceDataService.REFERENCE_DATA_PSR_ADJOURNED_CODE;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -53,34 +52,6 @@ class CourtAppearanceBasicTransformerTest {
         final var observed = CourtAppearanceBasicTransformer.latestOrSentencingCourtAppearanceOf(List.of(appearance, latestAppearance));
 
         shouldBeCourtAppearanceBasic(observed, latestDate, APPEARANCE_TYPE_CODE);
-    }
-
-    @Test
-    void givenNoOutcomes_whenGetAwaitingPsr_thenFalse() {
-        final var awaitingPsr = CourtAppearanceBasicTransformer.awaitingPsrOf(List.of(CourtAppearance.builder().build()));
-
-        assertThat(awaitingPsr).isFalse();
-    }
-
-    @Test
-    void givenOutcomeWithWrongCode_whenGetAwaitingPsr_thenFalse() {
-        final var outcome = StandardReference.builder().codeValue("XXX").codeDescription("some other outcome").build();
-
-        final var awaitingPsr = CourtAppearanceBasicTransformer.awaitingPsrOf(List.of(CourtAppearance.builder().outcome(outcome).build()));
-
-        assertThat(awaitingPsr).isFalse();
-    }
-
-    @Test
-    void givenOutcomeWithRequiredCode_whenGetAwaitingPsr_thenTrue() {
-        final var outcome = StandardReference.builder()
-                                                            .codeValue(REFERENCE_DATA_PSR_ADJOURNED_CODE)
-                                                            .codeDescription("A PSR")
-                                                            .build();
-
-        final var awaitingPsr = CourtAppearanceBasicTransformer.awaitingPsrOf(List.of(CourtAppearance.builder().outcome(outcome).build()));
-
-        assertThat(awaitingPsr).isTrue();
     }
 
     private CourtAppearance aCourtAppearance(LocalDateTime date, String typeCode) {
