@@ -27,7 +27,7 @@ public class Conviction {
     private Boolean inBreach;
 
     @ApiModelProperty(name = "Total number of failure to comply outcomes since the last breach end", example = "3")
-    private Long ftcCount;
+    private Long failureToComplyCount;
 
     @ApiModelProperty(name = "Date of the last breach end, or null if no previous breach has occurred", example = "2021-05-13")
     private LocalDate breachEnd;

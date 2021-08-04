@@ -64,12 +64,12 @@ class ConvictionTransformerTest {
 
     @Test
     void breachPropertiesMappedWhenNotInBreach() {
-        final var source = anEvent().toBuilder().inBreach(false).ftcCount(0L).build();
+        final var source = anEvent().toBuilder().inBreach(false).failureToComplyCount(0L).build();
         final var observed = ConvictionTransformer.convictionOf(source);
         assertThat(observed)
             .hasFieldOrPropertyWithValue("inBreach", false)
             .hasFieldOrPropertyWithValue("breachEnd", null)
-            .hasFieldOrPropertyWithValue("ftcCount", 0L);
+            .hasFieldOrPropertyWithValue("failureToComplyCount", 0L);
     }
 
     @Test
@@ -77,13 +77,13 @@ class ConvictionTransformerTest {
         final var source = anEvent().toBuilder()
             .inBreach(true)
             .breachEnd(LocalDate.of(2021, 5, 20))
-            .ftcCount(3L)
+            .failureToComplyCount(3L)
             .build();
         final var observed = ConvictionTransformer.convictionOf(source);
         assertThat(observed)
             .hasFieldOrPropertyWithValue("inBreach", true)
             .hasFieldOrPropertyWithValue("breachEnd", LocalDate.of(2021, 5, 20))
-            .hasFieldOrPropertyWithValue("ftcCount", 3L);
+            .hasFieldOrPropertyWithValue("failureToComplyCount", 3L);
     }
 
     @Test

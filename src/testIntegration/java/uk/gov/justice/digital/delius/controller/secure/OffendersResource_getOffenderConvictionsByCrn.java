@@ -46,7 +46,7 @@ class OffendersResource_getOffenderConvictionsByCrn extends IntegrationTestBase 
             // Should have mapped (empty) breach detail
             .hasFieldOrPropertyWithValue("inBreach", false)
             .hasFieldOrPropertyWithValue("breachEnd", null)
-            .hasFieldOrPropertyWithValue("ftcCount", 0L)
+            .hasFieldOrPropertyWithValue("failureToComplyCount", 0L)
             // Should have mapped sentence detail
             .extracting(Conviction::getSentence)
             .hasFieldOrPropertyWithValue("failureToComplyLimit", 3L)

@@ -95,7 +95,7 @@ public class ConvictionTransformer {
                         .flatMap(disposal -> Optional.ofNullable(disposal.getCustody()).map(ConvictionTransformer::custodyOf))
                         .orElse(null))
                 .inBreach(event.isInBreach())
-                .ftcCount(event.getFtcCount())
+                .failureToComplyCount(event.getFailureToComplyCount())
                 .breachEnd(event.getBreachEnd())
                 .latestCourtAppearanceOutcome(courtAppearances.map(ConvictionTransformer::outcomeOf).orElse(null))
                 .responsibleCourt(Optional.ofNullable(event.getCourt()).map(CourtTransformer::courtOf).orElse(null))
