@@ -28,6 +28,8 @@ public class Nsi {
     private LocalDateTime statusDateTime;
     private LocalDate actualStartDate;
     private LocalDate expectedStartDate;
+    private LocalDate actualEndDate;
+    private LocalDate expectedEndDate;
     private LocalDate referralDate;
     private Long length;
     private String lengthUnit;

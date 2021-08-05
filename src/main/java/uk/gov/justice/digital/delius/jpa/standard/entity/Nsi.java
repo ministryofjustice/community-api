@@ -47,6 +47,12 @@ public class Nsi {
     @Column(name = "EXPECTED_START_DATE")
     private LocalDate expectedStartDate;
 
+    @Column(name = "EXPECTED_END_DATE")
+    private LocalDate expectedEndDate;
+
+    @Column(name = "ACTUAL_END_DATE")
+    private LocalDate actualEndDate;
+
     @JoinColumn(name = "NSI_TYPE_ID")
     @OneToOne
     private NsiType nsiType;

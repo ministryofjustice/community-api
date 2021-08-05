@@ -30,6 +30,8 @@ public class NsiTransformer {
                 .nsiStatus(nsiStatusOf(n.getNsiStatus()))
                 .actualStartDate(n.getActualStartDate())
                 .expectedStartDate(n.getExpectedStartDate())
+                .actualEndDate(n.getActualEndDate())
+                .expectedEndDate(n.getExpectedEndDate())
                 .referralDate(n.getReferralDate())
                 .statusDateTime(n.getNsiStatusDateTime())
                 .length(n.getLength())
@@ -39,7 +41,6 @@ public class NsiTransformer {
                 .intendedProvider(ProbationAreaTransformer.probationAreaOf(n.getIntendedProvider(), INCLUDE_INTENDED_PROVIDER_TEAMS))
                 .active(zeroOneToBoolean(nsi.getActiveFlag()))
                 .softDeleted(zeroOneToBoolean(nsi.getSoftDeleted()))
-
                 .build()).orElse(null);
     }
 
