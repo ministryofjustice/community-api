@@ -72,6 +72,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -258,6 +259,8 @@ public class OffendersResource {
         final @RequestParam(value = "contactTypes", required = false) Optional<List<String>> contactTypes,
         final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam(value = "from", required = false) Optional<LocalDateTime> from,
         final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam(value = "to", required = false) Optional<LocalDateTime> to,
+        final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "contactDateFrom", required = false) Optional<LocalDate> contactDateFrom,
+        final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "contactDateTo", required = false) Optional<LocalDate> contactDateTo,
         final @RequestParam(value = "appointmentsOnly", required = false) Optional<Boolean> appointmentsOnly,
         final @RequestParam(value = "convictionId", required = false) Optional<Long> convictionId,
         final @RequestParam(value = "attended", required = false) Optional<Boolean> attended,
@@ -268,6 +271,8 @@ public class OffendersResource {
             .contactTypes(contactTypes)
             .from(from)
             .to(to)
+            .contactDateFrom(contactDateFrom)
+            .contactDateTo(contactDateTo)
             .appointmentsOnly(appointmentsOnly)
             .convictionId(convictionId)
             .attended(attended)

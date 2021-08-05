@@ -11,6 +11,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -21,21 +22,32 @@ public class ContactFilter implements Specification<Contact> {
 
     @Builder.Default
     private Optional<List<String>> contactTypes = Optional.empty();
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+
     @Builder.Default
     private Optional<LocalDateTime> from = Optional.empty();
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+
     @Builder.Default
     private Optional<LocalDateTime> to = Optional.empty();
+
+    @Builder.Default
+    private Optional<LocalDate> contactDateFrom = Optional.empty();
+
+    @Builder.Default
+    private Optional<LocalDate> contactDateTo = Optional.empty();
+
     private Long offenderId;
     @Builder.Default
     private Optional<Boolean> appointmentsOnly = Optional.empty();
+
     @Builder.Default
     private Optional<Long> convictionId = Optional.empty();
+
     @Builder.Default
     private Optional<Boolean> attended = Optional.empty();
+
     @Builder.Default
     private Optional<Boolean> complied = Optional.empty();
+    
     @Builder.Default
     private Optional<Boolean> nationalStandard = Optional.empty();
 
@@ -50,6 +62,10 @@ public class ContactFilter implements Specification<Contact> {
         from.ifPresent(localDateTime -> predicateBuilder.add(cb.greaterThanOrEqualTo(root.get("createdDateTime"), localDateTime)));
 
         to.ifPresent(localDateTime -> predicateBuilder.add(cb.lessThanOrEqualTo(root.get("createdDateTime"), localDateTime)));
+
+        contactDateFrom.ifPresent(localDate -> predicateBuilder.add(cb.greaterThanOrEqualTo(root.get("contactDate"), localDate)));
+
+        contactDateTo.ifPresent(localDate -> predicateBuilder.add(cb.lessThanOrEqualTo(root.get("contactDate"), localDate)));
 
         appointmentsOnly.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("contactType").get("attendanceContact"), value)));
 
