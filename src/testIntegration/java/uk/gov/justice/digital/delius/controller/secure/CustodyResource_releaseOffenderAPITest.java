@@ -78,6 +78,47 @@ public class CustodyResource_releaseOffenderAPITest extends IntegrationTestBase 
     }
 
     @Test
+    @DisplayName("Will also return 404 for a offender that has multiple nomis records with multiple active sentences")
+    public void duplicateOffender() {
+        final var token = tokenWithRoleCommunityAndCustodyUpdate();
+
+        given()
+            .auth().oauth2(token)
+            .contentType("application/json")
+            .body("{\"nomsPrisonInstitutionCode\" : \"MDI\", \"releaseDate\" : \"2020-12-22\"}")
+            .when()
+            .put("/offenders/nomsNumber/G3636DD/released")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.NOT_FOUND.value())
+            .body("developerMessage", equalTo("Expecting only a single active offender but found 2 offenders with noms number G3636DD"));
+
+        verify(telemetryClient).trackEvent(eq("P2POffenderReleasedMultipleOffendersFound"), any(), isNull());
+    }
+
+    @Test
+    @DisplayName("Will succeed for an offender that has multiple nomis records where one is on an active sentence and the other is not")
+    public void duplicateOffenderSingleActive() {
+        final var token = tokenWithRoleCommunityAndCustodyUpdate();
+
+        final var custody = given()
+            .auth().oauth2(token)
+            .contentType("application/json")
+            .body("{\"nomsPrisonInstitutionCode\" : \"MDI\", \"releaseDate\" : \"2020-12-22\"}")
+            .when()
+            .put("/offenders/nomsNumber/G3232DD/released")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .extract()
+            .body()
+            .as(Custody.class);
+
+        assertThat(custody.getInstitution().getNomsPrisonInstitutionCode()).isEqualTo("BWI");
+        verify(telemetryClient).trackEvent(eq("P2POffenderReleased"), any(), isNull());
+    }
+
+    @Test
     @DisplayName("Successfully update the released offender")
     public void processesOffenderReleased() {
         final var token = tokenWithRoleCommunityAndCustodyUpdate();

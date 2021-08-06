@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -230,41 +229,48 @@ public class CustodyService {
 
     @Transactional
     public Custody offenderRecalled(final String nomsNumber, final OffenderRecalledNotification recalledNotification) {
-        final var offender = offenderRepository.findByNomsNumber(nomsNumber)
-            .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
-
-        final var telemetryProperties = Map.of("offenderNo", nomsNumber,
-            "recallDate", recalledNotification.getRecallDate().format(DateTimeFormatter.ISO_DATE),
-            "institution", recalledNotification.getNomsPrisonInstitutionCode());
-
-        try {
-            Event event = convictionService.getActiveCustodialEvent(offender.getOffenderId());
-
-            telemetryClient.trackEvent("P2POffenderRecalled", telemetryProperties, null);
-            return ConvictionTransformer.custodyOf(event.getDisposal().getCustody());
-        } catch (SingleActiveCustodyConvictionNotFoundException e) {
-            telemetryClient.trackEvent("P2POffenderRecalledNoSingleConviction", telemetryProperties, null);
-            throw new ConflictingRequestException(e.getMessage());
-        }
+        return findByNomsNumber(nomsNumber)
+            .map(offender -> {
+                final var telemetryProperties = Map.of("offenderNo", nomsNumber,
+                    "recallDate", recalledNotification.getRecallDate().format(DateTimeFormatter.ISO_DATE),
+                    "institution", recalledNotification.getNomsPrisonInstitutionCode());
+                try {
+                    final var event = convictionService.getActiveCustodialEvent(offender.getOffenderId());
+                    telemetryClient.trackEvent("P2POffenderRecalled", telemetryProperties, null);
+                    return ConvictionTransformer.custodyOf(event.getDisposal().getCustody());
+                } catch (final SingleActiveCustodyConvictionNotFoundException e) {
+                    telemetryClient.trackEvent("P2POffenderRecalledNoSingleConviction", telemetryProperties, null);
+                    throw new ConflictingRequestException(e.getMessage());
+                }
+            }).getOrElseThrow(error -> {
+                if (error.reason == MultipleOffendersFound) {
+                    telemetryClient.trackEvent("P2POffenderRecalledMultipleOffendersFound",  Map.of("offenderNo", nomsNumber), null);
+                }
+                return new NotFoundException(error.getMessage());
+            });
     }
 
     @Transactional
     public Custody offenderReleased(final String nomsNumber, final OffenderReleasedNotification releasedNotification) {
-        final var offender = offenderRepository.findByNomsNumber(nomsNumber)
-            .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
-
-        final var telemetryProperties = Map.of("offenderNo", nomsNumber,
-            "recallDate", releasedNotification.getReleaseDate().format(DateTimeFormatter.ISO_DATE),
-            "institution", releasedNotification.getNomsPrisonInstitutionCode());
-
-        try {
-            Event event = convictionService.getActiveCustodialEvent(offender.getOffenderId());
-            telemetryClient.trackEvent( "P2POffenderReleased", telemetryProperties, null);
-            return ConvictionTransformer.custodyOf(event.getDisposal().getCustody());
-        } catch (SingleActiveCustodyConvictionNotFoundException e) {
-            telemetryClient.trackEvent( "P2POffenderReleasedNoSingleConviction", telemetryProperties, null);
-            throw new ConflictingRequestException(e.getMessage());
-        }
+        return findByNomsNumber(nomsNumber)
+            .map(offender -> {
+                final var telemetryProperties = Map.of("offenderNo", nomsNumber,
+                    "releaseDate", releasedNotification.getReleaseDate().format(DateTimeFormatter.ISO_DATE),
+                    "institution", releasedNotification.getNomsPrisonInstitutionCode());
+                try {
+                    final var event = convictionService.getActiveCustodialEvent(offender.getOffenderId());
+                    telemetryClient.trackEvent("P2POffenderReleased", telemetryProperties, null);
+                    return ConvictionTransformer.custodyOf(event.getDisposal().getCustody());
+                } catch (final SingleActiveCustodyConvictionNotFoundException e) {
+                    telemetryClient.trackEvent("P2POffenderReleasedNoSingleConviction", telemetryProperties, null);
+                    throw new ConflictingRequestException(e.getMessage());
+                }
+            }).getOrElseThrow(error -> {
+                if (error.reason == MultipleOffendersFound) {
+                    telemetryClient.trackEvent("P2POffenderReleasedMultipleOffendersFound",  Map.of("offenderNo", nomsNumber), null);
+                }
+                return new NotFoundException(error.getMessage());
+            });
     }
 
     private Event updateBookingNumberFor(final Offender offender, final Event event, final String bookingNumber) {
@@ -341,19 +347,11 @@ public class CustodyService {
     }
 
     private Either<PrisonLocationUpdateError, Offender> findByNomsNumber(final String nomsNumber) {
-        final Supplier<Either<PrisonLocationUpdateError, Offender>> notFoundError = () -> Either
-                .left(PrisonLocationUpdateError.offenderNotFound(nomsNumber));
-
-        final Function<DuplicateOffenderException, Either<PrisonLocationUpdateError, Offender>> multipleOffenderError = duplicateError -> Either
-                .left(PrisonLocationUpdateError.multipleOffenders(duplicateError));
-
-        final Function<Optional<Offender>, Either<PrisonLocationUpdateError, Offender>> offenderOrNotFoundError = maybeOffender -> maybeOffender
-                .map((Function<Offender, Either<PrisonLocationUpdateError, Offender>>) Either::right)
-                .orElseGet(notFoundError);
-
         return offenderRepository
-                .findMostLikelyByNomsNumber(nomsNumber)
-                .fold(multipleOffenderError, offenderOrNotFoundError);
+            .findMostLikelyByNomsNumber(nomsNumber)
+            .mapLeft(PrisonLocationUpdateError::multipleOffenders)
+            .flatMap(maybeOffender -> maybeOffender.map(Either::<PrisonLocationUpdateError, Offender>right)
+                .orElse(Either.left(PrisonLocationUpdateError.offenderNotFound(nomsNumber))));
     }
 
     private Either<PrisonLocationUpdateError, List<Event>> getAllActiveCustodialEvents(final Offender offender) {
@@ -428,7 +426,7 @@ public class CustodyService {
         final private String message;
 
         public static PrisonLocationUpdateError offenderNotFound(final String nomsNumber) {
-            return new PrisonLocationUpdateError(OffenderNotFound, String.format("offender with nomsNumber %s not found", nomsNumber));
+            return new PrisonLocationUpdateError(OffenderNotFound, String.format("Offender with nomsNumber %s not found", nomsNumber));
         }
 
         public static PrisonLocationUpdateError multipleOffenders(final DuplicateOffenderException duplicateError) {
