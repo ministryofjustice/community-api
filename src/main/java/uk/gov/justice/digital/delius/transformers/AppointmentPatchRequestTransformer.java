@@ -21,6 +21,7 @@ public class AppointmentPatchRequestTransformer {
     private static final String TARGET_NOTES_FIELD_NAME = "notes";
     private static final String TARGET_OUTCOME_FIELD_NAME = "outcome";
     private static final String TARGET_ENFORCEMENT_FIELD_NAME = "enforcement";
+    private static final String TARGET_OFFICE_LOCATION_FIELD_NAME = "officeLocation";
 
     public static JsonPatch mapAttendanceFieldsToOutcomeOf(final ContextlessAppointmentOutcomeRequest request, final IntegrationContext context) {
 
@@ -30,6 +31,15 @@ public class AppointmentPatchRequestTransformer {
 
         addReplaceOperationForOutcomeIfAttended(
             context, request.getAttended(), request.getNotifyPPOfAttendanceBehaviour(), patchOperations);
+
+        return new JsonPatch(patchOperations);
+    }
+
+    public static JsonPatch mapOfficeLocation(final String officeLocation) {
+
+        final var patchOperations = new ArrayList<JsonPatchOperation>();
+
+        patchOperations.add(new ReplaceOperation(of(TARGET_OFFICE_LOCATION_FIELD_NAME), valueOf(officeLocation)));
 
         return new JsonPatch(patchOperations);
     }

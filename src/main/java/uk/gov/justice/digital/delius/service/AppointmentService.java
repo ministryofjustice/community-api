@@ -12,6 +12,8 @@ import uk.gov.justice.digital.delius.data.api.Appointment;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentDetail;
+import uk.gov.justice.digital.delius.data.api.AppointmentRelocateRequest;
+import uk.gov.justice.digital.delius.data.api.AppointmentRelocateResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentRescheduleRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentRescheduleResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentType;
@@ -39,6 +41,7 @@ import static java.util.Optional.ofNullable;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static uk.gov.justice.digital.delius.transformers.AppointmentCreateRequestTransformer.appointmentOf;
 import static uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf;
+import static uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer.mapOfficeLocation;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDate;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalTime;
 
@@ -122,6 +125,16 @@ public class AppointmentService {
             .orElseThrow(() -> new BadRequestException(format("Cannot find rescheduled outcome type for initiated-by-Service-Provider: %s", contextlessRequest.getInitiatedByServiceProvider())));
 
         return rescheduleAppointment(crn, appointmentId, rescheduleRequest);
+    }
+
+    @Transactional
+    public AppointmentRelocateResponse relocateAppointment(String crn, Long appointmentId, AppointmentRelocateRequest request) {
+
+        contactRepository.findById(appointmentId).orElseThrow(() -> new BadRequestException(format("Cannot find Appointment for CRN: %s and Appointment Id %d", crn, appointmentId)));
+
+        final var jsonPatch = mapOfficeLocation(request.getOfficeLocationCode());
+        final var contactDto = deliusApiClient.patchContact(appointmentId, jsonPatch);
+        return new AppointmentRelocateResponse(contactDto.getId());
     }
 
     @Transactional
