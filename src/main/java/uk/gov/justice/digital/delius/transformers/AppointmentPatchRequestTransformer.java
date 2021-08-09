@@ -37,11 +37,7 @@ public class AppointmentPatchRequestTransformer {
 
     public static JsonPatch mapOfficeLocation(final String officeLocation) {
 
-        final var patchOperations = new ArrayList<JsonPatchOperation>();
-
-        patchOperations.add(new ReplaceOperation(of(TARGET_OFFICE_LOCATION_FIELD_NAME), valueOf(officeLocation)));
-
-        return new JsonPatch(patchOperations);
+        return new JsonPatch(List.of(new ReplaceOperation(of(TARGET_OFFICE_LOCATION_FIELD_NAME), valueOf(officeLocation))));
     }
 
     private static void addReplaceOperationForOutcomeIfAttended(final IntegrationContext context,
