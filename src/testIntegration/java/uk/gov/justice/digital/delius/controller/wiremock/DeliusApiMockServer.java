@@ -131,12 +131,12 @@ public class DeliusApiMockServer extends WireMockServer {
         ));
     }
 
-    public void stubPatchContactToDeliusApi() {
-        stubFor(patch(urlPathMatching("/v1/contact/2500029015")).willReturn(aResponse()
+    public void stubPatchContactToDeliusApi(Long appointmentId) {
+        stubFor(patch(urlPathMatching("/v1/contact/" + appointmentId)).willReturn(aResponse()
             .withHeader("Content-Type", "application/json")
             .withStatus(200)
             .withBody("{\n" +
-                "    \"id\": 2500029015,\n" +
+                "    \"id\": " + appointmentId + ",\n" +
                 "    \"offenderCrn\": \"X320741\",\n" +
                 "    \"type\": \"CRSAPT\",\n" +
                 "    \"provider\": \"CRS\",\n" +
