@@ -29,10 +29,12 @@ class NsiTransformerTest {
     void testTransform() {
         final LocalDate expectedStartDate = LocalDate.of(2020, Month.APRIL, 1);
         final LocalDate actualStartDate = LocalDate.of(2020, Month.APRIL, 1);
+        final LocalDate expectedEndDate = LocalDate.of(2021, Month.APRIL, 1);
+        final LocalDate actualEndDate = LocalDate.of(2021, Month.APRIL, 1);
         final LocalDate referralDate = LocalDate.of(2020, Month.FEBRUARY, 1);
         final LocalDateTime statusDate = LocalDateTime.of(2020, Month.MAY, 1, 9, 0, 0);
 
-        final var nsiEntity = buildNsiEntity(expectedStartDate, actualStartDate, referralDate, statusDate)
+        final var nsiEntity = buildNsiEntity(expectedStartDate, actualStartDate, expectedEndDate, actualEndDate, referralDate, statusDate)
                 .toBuilder()
                 .nsiManagers(List.of(
                         EntityHelper.aNsiManager()
@@ -64,6 +66,8 @@ class NsiTransformerTest {
         assertThat(nsi.getNsiId()).isEqualTo(100L);
         assertThat(nsi.getActualStartDate()).isEqualTo(actualStartDate);
         assertThat(nsi.getExpectedStartDate()).isEqualTo(expectedStartDate);
+        assertThat(nsi.getActualEndDate()).isEqualTo(actualEndDate);
+        assertThat(nsi.getExpectedEndDate()).isEqualTo(expectedEndDate);
         assertThat(nsi.getNsiStatus().getCode()).isEqualTo("STX");
         assertThat(nsi.getReferralDate()).isEqualTo(referralDate);
         assertThat(nsi.getStatusDateTime()).isEqualTo(statusDate);
@@ -99,6 +103,8 @@ class NsiTransformerTest {
 
    private uk.gov.justice.digital.delius.jpa.standard.entity.Nsi buildNsiEntity(LocalDate expectedStartDate,
                                                                                 LocalDate actualStartDate,
+                                                                                LocalDate expectedEndDate,
+                                                                                LocalDate actualEndDate,
                                                                                 LocalDate referralDate,
                                                                                 LocalDateTime statusDate) {
         return uk.gov.justice.digital.delius.jpa.standard.entity.Nsi.builder()
@@ -109,6 +115,8 @@ class NsiTransformerTest {
                 .nsiOutcome(StandardReference.builder().codeDescription("Outcome Type Desc").codeValue("OC").build())
                 .actualStartDate(actualStartDate)
                 .expectedStartDate(expectedStartDate)
+                .expectedEndDate(expectedEndDate)
+                .actualEndDate(actualEndDate)
                 .nsiStatusDateTime(statusDate)
                 .referralDate(referralDate)
                 .nsiManagers(Arrays.asList(EntityHelper.aNsiManager(), EntityHelper.aNsiManager()))
