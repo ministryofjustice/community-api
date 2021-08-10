@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
+import uk.gov.justice.digital.delius.data.api.AppointmentRelocateRequest;
+import uk.gov.justice.digital.delius.data.api.AppointmentRelocateResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentRescheduleResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentUpdateResponse;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
@@ -162,6 +164,29 @@ public class AppointmentBookingControllerTest {
             .extract()
             .body()
             .as(AppointmentCreateResponse.class)
+            .getAppointmentId();
+
+        assertThat(appointmentIdResponse).isEqualTo(3L);
+    }
+
+    @Test
+    public void relocatesAppointmentWithOfficeLocation() {
+        AppointmentRelocateRequest appointmentRelocateRequest = AppointmentRelocateRequest.builder()
+            .officeLocationCode("CRSLOND")
+            .build();
+        when(appointmentService.relocateAppointment("1", 2L, appointmentRelocateRequest))
+            .thenReturn(AppointmentRelocateResponse.builder().appointmentId(3L).build());
+
+        Long appointmentIdResponse = given()
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(appointmentRelocateRequest)
+            .when()
+            .post("/secure/offenders/crn/1/appointments/2/relocate")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(AppointmentRelocateResponse.class)
             .getAppointmentId();
 
         assertThat(appointmentIdResponse).isEqualTo(3L);

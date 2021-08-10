@@ -77,6 +77,7 @@ public class CustodyServiceTest {
         featureSwitches.getNoms().getUpdate().getBooking().setNumber(true);
         custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches);
         when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
+        when(offenderRepository.findMostLikelyByNomsNumber(anyString())).thenReturn(Either.right(Optional.of(Offender.builder().offenderId(99L).build())));
         when(convictionService.getAllActiveCustodialEvents(anyLong()))
                 .thenReturn(List.of(EntityHelper.aCustodyEvent()));
     }
@@ -1205,7 +1206,7 @@ public class CustodyServiceTest {
         class WhenNoOffenderFound {
             @BeforeEach
             void setup() {
-                when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.empty());
+                when(offenderRepository.findMostLikelyByNomsNumber(anyString())).thenReturn(Either.right(Optional.empty()));
             }
 
             @Test
@@ -1291,7 +1292,7 @@ public class CustodyServiceTest {
         class WhenNoOffenderFound {
             @BeforeEach
             void setup() {
-                when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.empty());
+                when(offenderRepository.findMostLikelyByNomsNumber(anyString())).thenReturn(Either.right(Optional.empty()));
             }
 
             @Test

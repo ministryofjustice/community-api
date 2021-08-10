@@ -12,6 +12,7 @@ import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer.mapAttendanceFieldsToOutcomeOf;
+import static uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer.mapOfficeLocation;
 
 class AppointmentPatchRequestTransformerTest {
 
@@ -65,6 +66,15 @@ class AppointmentPatchRequestTransformerTest {
             .isEqualTo("[{\"op\":\"replace\",\"path\":\"/notes\",\"value\":\"some notes\"}," +
                 "{\"op\":\"replace\",\"path\":\"/outcome\",\"value\":\"AFTC\"}," +
                 "{\"op\":\"replace\",\"path\":\"/enforcement\",\"value\":\"ROM\"}]");
+    }
+
+    @Test
+    public void transformsJsonPatchUsingOfficeLocation() throws JsonProcessingException {
+
+        final var patch = mapOfficeLocation("CRSLOND");
+
+        assertThat(objectMapper.writeValueAsString(patch))
+            .isEqualTo("[{\"op\":\"replace\",\"path\":\"/officeLocation\",\"value\":\"CRSLOND\"}]");
     }
 
     @Test

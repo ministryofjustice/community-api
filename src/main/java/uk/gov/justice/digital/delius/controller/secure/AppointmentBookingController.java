@@ -18,10 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
+import uk.gov.justice.digital.delius.data.api.AppointmentRelocateResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentRescheduleResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentUpdateResponse;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
+import uk.gov.justice.digital.delius.data.api.AppointmentRelocateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentRescheduleRequest;
 import uk.gov.justice.digital.delius.service.AppointmentService;
 
@@ -97,6 +99,25 @@ public class AppointmentBookingController {
                                                                               final @RequestBody ContextlessAppointmentRescheduleRequest appointmentRescheduleRequest) {
 
         return appointmentService.rescheduleAppointment(crn, appointmentId, context, appointmentRescheduleRequest);
+    }
+
+    @RequestMapping(value = "/offenders/crn/{crn}/appointments/{appointmentId}/relocate",
+        method = RequestMethod.POST,
+        consumes = "application/json")
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 200, message = "Updated", response = String.class),
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_INTERVENTIONS_UPDATE"),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+
+    @ApiOperation(value = "Relocates an appointment")
+    public AppointmentRelocateResponse relocateAppointment(final @PathVariable("crn") String crn,
+                                                           final @PathVariable("appointmentId") Long appointmentId,
+                                                           final @RequestBody AppointmentRelocateRequest appointmentRelocateRequest) {
+
+        return appointmentService.relocateAppointment(crn, appointmentId, appointmentRelocateRequest);
     }
 
     @RequestMapping(value = "/offenders/crn/{crn}/appointments/{appointmentId}/outcome/context/{contextName}",

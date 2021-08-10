@@ -13,6 +13,7 @@ import uk.gov.justice.digital.delius.JwtParameters;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusApiExtension;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusApiMockServer;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
+import uk.gov.justice.digital.delius.data.api.AppointmentRelocateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentRescheduleRequest;
@@ -139,7 +140,7 @@ public class AppointmentBookingAPITest extends IntegrationTestBase {
     @Test
     public void shouldReturnOKAfterPatchingUpdatingAppointmentUsingContextlessClientEndpoint() {
 
-        deliusApiMockServer.stubPatchContactToDeliusApi();
+        deliusApiMockServer.stubPatchContactToDeliusApi(2500029015L);
 
         final var token = createJwt("bob", Collections.singletonList("ROLE_COMMUNITY_INTERVENTIONS_UPDATE"));
 
@@ -180,6 +181,27 @@ public class AppointmentBookingAPITest extends IntegrationTestBase {
             .assertThat()
             .statusCode(HttpStatus.OK.value())
             .body("appointmentId", equalTo(2500029016L));
+    }
+
+    @Test
+    public void shouldReturnOKAfterRelocatingAppointment() {
+
+        deliusApiMockServer.stubPatchContactToDeliusApi(2512709905L);
+
+        final var token = createJwt("bob", Collections.singletonList("ROLE_COMMUNITY_INTERVENTIONS_UPDATE"));
+
+        given()
+            .when()
+            .auth().oauth2(token)
+            .contentType(String.valueOf(ContentType.APPLICATION_JSON))
+            .body(AppointmentRelocateRequest.builder()
+                .officeLocationCode("CRSLOND")
+                .build())
+            .post("offenders/crn/X320741/appointments/2512709905/relocate")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("appointmentId", equalTo(2512709905L));
     }
 
     private String createJwt(final String user, final List<String> roles) {

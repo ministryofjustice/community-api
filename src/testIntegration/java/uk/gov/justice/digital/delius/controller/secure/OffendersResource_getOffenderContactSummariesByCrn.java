@@ -275,6 +275,28 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("type.description", withArgs(2502743375L), equalTo("NOMIS Case Notes - General"));
     }
 
+    @Test
+    public void gettingOffenderContactSummariesByCrnAndFilteringByContactDate() {
+        given()
+            .auth().oauth2(tokenWithRoleCommunity())
+            .when()
+            .get("/offenders/crn/X320741/contact-summary?contactDateFrom=2020-09-04&contactDateTo=2020-09-04&contactDateFrom=2020-09-04")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("number", equalTo(0))
+            .body("first", equalTo(true))
+            .body("last", equalTo(true))
+            .body("totalPages", equalTo(1))
+            .body("totalElements", greaterThan(1))
+            .body("size", equalTo(1000))
+            .body("numberOfElements", greaterThan(1))
+            .body("content.size()", greaterThan(1))
+            .root("content.find { it.contactId == %d }")
+
+            .body("", withArgs(2502719245L), notNullValue())
+            .body("contactStart", withArgs(2502719245L), equalTo("2020-09-04T00:00:00+01:00"));
+    }
 
     @Test
     public void gettingOffenderContactSummariesByCrnDefaultsToFirstPage() {

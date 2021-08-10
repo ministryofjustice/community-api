@@ -21,6 +21,7 @@ import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.data.api.Appointment.Attended;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentDetail;
+import uk.gov.justice.digital.delius.data.api.AppointmentRelocateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentType;
 import uk.gov.justice.digital.delius.data.api.AppointmentType.OrderType;
 import uk.gov.justice.digital.delius.data.api.AppointmentType.RequiredOptional;
@@ -401,6 +402,46 @@ public class AppointmentServiceTest {
     }
 
     @Nested
+    class relocateAppointments {
+
+        @Test
+        public void throwsExceptionAppointmentNotFound() {
+            // Given
+            final var appointmentId = 1L;
+
+            when(contactRepository.findById(appointmentId)).thenReturn(Optional.empty());
+
+            // When
+            final var appointmentRelocateRequest = anAppointmentRelocateRequest("CRSLOND");
+            final var exception = assertThrows(BadRequestException.class,
+                () -> service.relocateAppointment("X007", appointmentId, appointmentRelocateRequest));
+            assertThat(exception.getMessage()).isEqualTo("Cannot find Appointment for CRN: X007 and Appointment Id 1");
+        }
+
+        @Test
+        public void patchesOfficeLocationCode() {
+            // Given
+            final var crn = "X123456";
+            final var appointmentId = 123456L;
+
+            when(contactRepository.findById(appointmentId)).thenReturn(of(Contact.builder().contactId(appointmentId).build()));
+
+            final var expectedJsonPatch = "[{\"op\":\"replace\",\"path\":\"/officeLocation\",\"value\":\"CRSLOND\"}]";
+            final var updatedContact = ContactDto.builder().id(appointmentId).build();
+            when(deliusApiClient.patchContact(eq(appointmentId), argThat(patch -> asString(patch).equals(expectedJsonPatch))))
+                .thenReturn(updatedContact);
+
+            // When
+            final var request = AppointmentRelocateRequest.builder().officeLocationCode("CRSLOND").build();
+            final var response = service.relocateAppointment(crn, appointmentId, request);
+
+            // Then
+            assertThat(response.getAppointmentId()).isEqualTo(updatedContact.getId());
+            verify(deliusApiClient).patchContact(eq(appointmentId), argThat(patch -> asString(patch).equals(expectedJsonPatch)));
+        }
+    }
+
+    @Nested
     class replaceAppointments {
 
         @Test
@@ -592,6 +633,12 @@ public class AppointmentServiceTest {
             .updatedAppointmentEnd(updatedEndTime)
             .officeLocationCode(officeLocationCode)
             .initiatedByServiceProvider(initiatedBySp)
+            .build();
+    }
+
+    private AppointmentRelocateRequest anAppointmentRelocateRequest(String officeLocationCode) {
+        return AppointmentRelocateRequest.builder()
+            .officeLocationCode(officeLocationCode)
             .build();
     }
 
