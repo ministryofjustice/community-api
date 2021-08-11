@@ -33,6 +33,10 @@ spring:
       pageable:
         max-page-size: 10000
 
+  ldap:
+    base-environment:
+      java.naming.ldap.derefAliases: never
+
 jwt:
   secret: 'ChangeMe!'
   lifetimeSeconds: 60000
