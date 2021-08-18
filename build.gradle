@@ -1,5 +1,5 @@
 plugins {
-    id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.3.5"
+    id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.3.6"
     id 'groovy'
     id 'org.unbroken-dome.test-sets' version '4.0.0'
     id "au.com.dius.pact" version "4.2.7"
