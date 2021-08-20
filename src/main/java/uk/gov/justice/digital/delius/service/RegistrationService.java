@@ -8,6 +8,7 @@ import uk.gov.justice.digital.delius.transformers.RegistrationTransformer;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
@@ -27,6 +28,11 @@ public class RegistrationService {
 
     public List<Registration> activeRegistrationsFor(Long offenderId) {
         return transform(registrationRepository.findActiveByOffenderId(offenderId));
+    }
+
+    public Optional<Registration> registration(Long offenderId, Long registrationId) {
+        return registrationRepository.findByOffenderIdAndRegistrationId(offenderId, registrationId)
+            .map(RegistrationTransformer::registrationOfWithReviews);
     }
 
     private List<Registration> transform(List<uk.gov.justice.digital.delius.jpa.standard.entity.Registration> registrations) {

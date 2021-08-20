@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius.transformers;
 
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Registration;
+import uk.gov.justice.digital.delius.data.api.RegistrationReview;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Deregistration;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RegisterType;
@@ -9,16 +10,24 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
 
 public class RegistrationTransformer {
-
     public static Registration registrationOf(uk.gov.justice.digital.delius.jpa.standard.entity.Registration registration) {
+        return registrationOf(registration, false);
+    }
+
+    public static Registration registrationOfWithReviews(uk.gov.justice.digital.delius.jpa.standard.entity.Registration registration) {
+        return registrationOf(registration, true);
+    }
+
+    public static Registration registrationOf(uk.gov.justice.digital.delius.jpa.standard.entity.Registration registration, boolean includeReviewHistory) {
         final Predicate<Deregistration> hasDeregistered = notUsed -> convertToBoolean(registration.getDeregistered());
 
-        return Registration.builder()
+        var builder = Registration.builder()
                 .registrationId(registration.getRegistrationId())
                 .offenderId(registration.getOffenderId())
                 .endDate(Optional.ofNullable(registration.getLatestDeregistration())
@@ -56,8 +65,13 @@ public class RegistrationTransformer {
                         .filter(hasDeregistered)
                         .map(Deregistration::getDeregisteringNotes)
                         .orElse(null))
-                .numberOfPreviousDeregistrations(registration.getDeregistrations().size())
-            .build();
+                .numberOfPreviousDeregistrations(registration.getDeregistrations().size());
+
+        if(includeReviewHistory) {
+            builder.registrationReviews(registration.getRegistrationReviews().stream().map(RegistrationTransformer::registrationReviewOf).collect(Collectors.toList()));
+        }
+
+        return builder.build();
     }
 
     private static KeyValue keyValueOf(StandardReference register) {
@@ -74,5 +88,14 @@ public class RegistrationTransformer {
                 .build();
     }
 
-
+    private static RegistrationReview registrationReviewOf(uk.gov.justice.digital.delius.jpa.standard.entity.RegistrationReview registrationReview) {
+        return RegistrationReview.builder()
+            .reviewDate(registrationReview.getReviewDate())
+            .reviewDateDue(registrationReview.getReviewDateDue())
+            .notes(registrationReview.getNotes())
+            .reviewingTeam(ContactTransformer.teamOf(registrationReview.getReviewingTeam()))
+            .reviewingOfficer(ContactTransformer.staffOf(registrationReview.getReviewingStaff()))
+            .completed(registrationReview.isCompleted())
+            .build();
+    }
 }

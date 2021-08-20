@@ -4,9 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -71,6 +73,10 @@ public class Registration {
     @JoinColumn(name = "REGISTER_CATEGORY_ID")
     private StandardReference registerCategory;
 
+    @JoinColumn(name = "REGISTRATION_ID")
+    @OneToMany(fetch = FetchType.LAZY)
+    @Where(clause = "SOFT_DELETED != 1")
+    private List<RegistrationReview> registrationReviews;
 
     public Deregistration getLatestDeregistration() {
         return deregistrations

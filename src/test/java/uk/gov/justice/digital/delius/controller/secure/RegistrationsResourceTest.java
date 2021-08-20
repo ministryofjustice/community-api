@@ -11,6 +11,7 @@ import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.Registration;
+import uk.gov.justice.digital.delius.data.api.RegistrationReview;
 import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.RegistrationService;
@@ -88,7 +89,6 @@ class RegistrationsResourceTest {
         @Test
         @DisplayName("Will return each registration registered")
         void WillReturnEachRegistration() {
-            when(registrationService.registrationsFor(any())).thenReturn(List.of());
             when(registrationService.registrationsFor(any()))
                     .thenReturn(List.of(
                             Registration
@@ -240,7 +240,6 @@ class RegistrationsResourceTest {
         @Test
         @DisplayName("Will return each registration registered")
         void WillReturnEachRegistration() {
-            when(registrationService.registrationsFor(any())).thenReturn(List.of());
             when(registrationService.registrationsFor(any()))
                     .thenReturn(List.of(
                             Registration
@@ -321,7 +320,6 @@ class RegistrationsResourceTest {
             verify(offenderService).offenderIdOfCrn("X12345");
         }
 
-
         @Test
         @DisplayName("Will return 200 OK even when offender has no registered registrations")
         void WillReturn200EvenOffenderHasNoRegistrations() {
@@ -340,7 +338,6 @@ class RegistrationsResourceTest {
         @Test
         @DisplayName("Will return each registration registered")
         void WillReturnEachRegistration() {
-            when(registrationService.registrationsFor(any())).thenReturn(List.of());
             when(registrationService.registrationsFor(any()))
                     .thenReturn(List.of(
                             Registration
@@ -383,7 +380,6 @@ class RegistrationsResourceTest {
 
                     ));
 
-
             given()
                     .auth()
                     .authentication(mock(Authentication.class))
@@ -396,4 +392,124 @@ class RegistrationsResourceTest {
         }
     }
 
+    @Nested
+    @DisplayName("getOffenderRegistrationById")
+    class GetOffenderRegistration {
+        @BeforeEach
+        void setUp() {
+            when(offenderService.offenderIdOfCrn(any()))
+                .thenReturn(Optional.of(99L));
+            when(registrationService.registrationsFor(any())).thenReturn(List.of());
+        }
+
+        @Test
+        @DisplayName("Will return 404 when offender not found")
+        void WillReturn404WhenOffenderNotFound() {
+            when(offenderService.offenderIdOfCrn(any())).thenReturn(Optional.empty());
+
+            given()
+                .auth()
+                .authentication(mock(Authentication.class))
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/secure/offenders/crn/{X12345}/registrations/6789", "X12345")
+                .then()
+                .statusCode(404)
+                .body("developerMessage", containsString("Offender with crn X12345 does not exist"));
+
+            verify(offenderService).offenderIdOfCrn("X12345");
+        }
+
+        @Test
+        @DisplayName("Will return 404 when registration not found")
+        void WillReturn404WhenRegistrationNotFound() {
+            when(offenderService.offenderIdOfCrn(any())).thenReturn(Optional.of(99L));
+
+            when(registrationService.registration(99L, 6789L)).thenReturn(Optional.empty());
+
+            given()
+                .auth()
+                .authentication(mock(Authentication.class))
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/secure/offenders/crn/{X12345}/registrations/{6789}", "X12345", "6789")
+                .then()
+                .statusCode(404)
+                .body("developerMessage", containsString("No registration found with id 6789"));
+
+            verify(offenderService).offenderIdOfCrn("X12345");
+        }
+
+        @Test
+        @DisplayName("Will return the registration")
+        void WillReturnRegistrationWithGivenId() {
+            when(offenderService.offenderIdOfCrn(any())).thenReturn(Optional.of(99L));
+
+            when(registrationService.registration(99L, 6789L))
+                .thenReturn(
+                    Optional.of(Registration
+                        .builder()
+                        .registrationId(2500064995L)
+                        .offenderId(99L)
+                        .register(KeyValue
+                            .builder()
+                            .code("5")
+                            .description("Public Protection")
+                            .build())
+                        .type(KeyValue
+                            .builder()
+                            .code("REG15")
+                            .description("Risk to Known Adult")
+                            .build())
+                        .riskColour("Red")
+                        .startDate(LocalDate.parse("2019-09-11"))
+                        .nextReviewDate(LocalDate.parse("2020-12-11"))
+                        .notes("Next review should be the final one")
+                        .reviewPeriodMonths(6L)
+                        .active(true)
+                        .registeringTeam(KeyValue
+                            .builder()
+                            .code("N02T01")
+                            .description("OMU A")
+                            .build())
+                        .registeringOfficer(StaffHuman
+                            .builder()
+                            .forenames("Sandra Karen")
+                            .surname("Kane")
+                            .build())
+                        .registeringProbationArea(KeyValue
+                            .builder()
+                            .code("N02")
+                            .description("NPS North East")
+                            .build())
+                        .warnUser(true)
+                        .registrationReviews(List.of(RegistrationReview.builder()
+                            .completed(false)
+                            .notes("Some review notes")
+                            .reviewDate(LocalDate.parse("2021-08-20"))
+                            .reviewDateDue(LocalDate.parse("2022-03-20"))
+                            .reviewingOfficer(StaffHuman
+                                .builder()
+                                .forenames("Sandra Karen")
+                                .surname("Kane")
+                                .build()).reviewingTeam(KeyValue
+                                .builder()
+                                .code("N02T01")
+                                .description("OMU A")
+                                .build())
+                            .build()))
+                        .build()));
+
+
+            given()
+                .auth()
+                .authentication(mock(Authentication.class))
+                .contentType(APPLICATION_JSON_VALUE)
+                .when()
+                .get("/secure/offenders/crn/{X12345}/registrations/{6789}", "X12345", "6789")
+                .then()
+                .statusCode(200)
+                .body("registrationId", is(2500064995L));
+        }
+    }
 }
