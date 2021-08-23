@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.8
+  hmpps: ministryofjustice/hmpps@3.10
   aws-cli: circleci/aws-cli@1.4.0
   aws-ecs: circleci/aws-ecs@2.0.0
   mem: circleci/rememborb@0.0.1
@@ -242,8 +242,21 @@ workflows:
       - hmpps/trivy_latest_scan:
           context:
             - hmpps-common-vars
-      - hmpps/veracode_policy_scan:
+      - hmpps/veracode_pipeline_scan:
           context:
             - hmpps-common-vars
             - veracode-credentials
+  security-weekly:
+    triggers:
+      - schedule:
+          cron: "32 5 * * 1"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - hmpps/veracode_policy_scan:
+          context:
+            - veracode-credentials
+            - hmpps-common-vars
 
