@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Builder
@@ -61,4 +62,5 @@ public class Registration {
     private String deregisteringNotes;
     @ApiModelProperty(value = "Count of number times this was de-registered")
     private int numberOfPreviousDeregistrations;
+    List<RegistrationReview> registrationReviews;
 }

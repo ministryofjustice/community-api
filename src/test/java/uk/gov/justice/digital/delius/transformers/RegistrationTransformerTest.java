@@ -1,10 +1,13 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.justice.digital.delius.data.api.KeyValue;
+import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Deregistration;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RegisterType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Registration;
+import uk.gov.justice.digital.delius.jpa.standard.entity.RegistrationReview;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
@@ -417,8 +420,8 @@ public class RegistrationTransformerTest {
     }
 
     @Test
-    public void deregisteringCountIsSummOfPreviousDeregistrations() {
-        final var registartion =                 aRegistration()
+    public void deregisteringCountIsSumOfPreviousDeregistrations() {
+        final var registration =                 aRegistration()
                 .toBuilder()
                 .deregistered(1L)
                 .deregistrations(
@@ -441,7 +444,47 @@ public class RegistrationTransformerTest {
                         )
                 )
                 .build();
-        assertThat(RegistrationTransformer.registrationOf(registartion).getNumberOfPreviousDeregistrations()).isEqualTo(3);
+        assertThat(RegistrationTransformer.registrationOf(registration).getNumberOfPreviousDeregistrations()).isEqualTo(3);
+    }
+
+    @Test
+    public void registrationOfWithReviewsMapsReviewHistory() {
+        final var registration = aRegistration().toBuilder().registrationReviews(List.of(RegistrationReview.builder()
+            .completed(false)
+            .notes("Some review notes")
+            .reviewDate(LocalDate.parse("2021-08-20"))
+            .reviewDateDue(LocalDate.parse("2022-03-20"))
+            .reviewingStaff(Staff
+                .builder()
+                .forename("Sandra Karen")
+                .surname("Kane")
+                .build())
+            .reviewingTeam(Team
+                .builder()
+                .code("N02T01")
+                .description("OMU A")
+                .build())
+            .build())).build();
+
+        assertThat(RegistrationTransformer.registrationOfWithReviews(registration).getRegistrationReviews())
+            .isNotNull()
+            .hasSize(1)
+            .containsExactly(uk.gov.justice.digital.delius.data.api.RegistrationReview.builder()
+                .completed(false)
+                .notes("Some review notes")
+                .reviewDate(LocalDate.parse("2021-08-20"))
+                .reviewDateDue(LocalDate.parse("2022-03-20"))
+                .reviewingOfficer(StaffHuman
+                    .builder()
+                    .forenames("Sandra Karen")
+                    .surname("Kane")
+                    .build())
+                .reviewingTeam(KeyValue
+                    .builder()
+                    .code("N02T01")
+                    .description("OMU A")
+                    .build())
+                .build());
     }
 
     private Registration aRegistration() {

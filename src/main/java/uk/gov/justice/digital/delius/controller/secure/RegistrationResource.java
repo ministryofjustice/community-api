@@ -19,6 +19,7 @@ import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.data.api.Registration;
 import uk.gov.justice.digital.delius.data.api.Registrations;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.RegistrationService;
@@ -97,6 +98,29 @@ public class RegistrationResource {
         }
         return registrationsOf(offenderService.offenderIdOfCrn(crn));
     }
+
+    @ApiOperation(
+        value = "Returns a specific registration for an offender", notes = "requires ROLE_COMMUNITY")
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "Offender not found", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+    @GetMapping(value = "offenders/crn/{crn}/registrations/{registrationId}")
+    public Registration getOffenderRegistrationDetailsByCrn(
+        final @PathVariable("crn") String crn,
+        final @PathVariable("registrationId") Long registrationId,
+        Authentication authentication
+    ) {
+        userAccessService.checkExclusionsAndRestrictions(crn, authentication.getAuthorities());
+
+        final var offenderId =  offenderService.offenderIdOfCrn(crn)
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s does not exist", crn)));
+        return registrationService.registration(offenderId, registrationId)
+            .orElseThrow(() -> new NotFoundException(String.format("No registration found with id %d", registrationId)));
+    }
+
 
     private Registrations activeRegistrationsOf(Optional<Long> maybeOffenderId) {
         return maybeOffenderId

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Registration;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface RegistrationRepository extends JpaRepository<Registration, Long> {
     List<Registration> findByOffenderId(Long offenderId);
@@ -24,4 +25,6 @@ public interface RegistrationRepository extends JpaRepository<Registration, Long
         "and registration.deregistered = 0 " +
         "order by registration.createdDatetime desc")
     Page<Registration> findActiveMappaRegistrationByOffenderId(Long offenderId, Pageable pageable);
+
+    Optional<Registration> findByOffenderIdAndRegistrationId(Long offenderId, Long registrationId);
 }
