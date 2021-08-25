@@ -40,7 +40,8 @@ public class ContactType {
     private Boolean attendanceContact;
 
     @Column(name = "NATIONAL_STANDARDS_CONTACT")
-    private String nationalStandardsContact;
+    @Type(type = "yes_no")
+    private Boolean nationalStandardsContact;
 
     @Column(name = "CONTACT_ALERT_FLAG")
     private String alertFlag;

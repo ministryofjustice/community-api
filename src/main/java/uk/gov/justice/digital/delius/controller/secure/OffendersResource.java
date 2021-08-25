@@ -265,7 +265,8 @@ public class OffendersResource {
         final @RequestParam(value = "convictionId", required = false) Optional<Long> convictionId,
         final @RequestParam(value = "attended", required = false) Optional<Boolean> attended,
         final @RequestParam(value = "complied", required = false) Optional<Boolean> complied,
-        final @RequestParam(value = "nationalStandard", required = false) Optional<Boolean> nationalStandard) {
+        final @RequestParam(value = "nationalStandard", required = false) Optional<Boolean> nationalStandard,
+        final @RequestParam(value = "outcome", required = false) Optional<Boolean> outcome) {
 
         final var contactFilter = ContactFilter.builder()
             .contactTypes(contactTypes)
@@ -278,6 +279,7 @@ public class OffendersResource {
             .attended(attended)
             .complied(complied)
             .nationalStandard(nationalStandard)
+            .outcome(outcome)
             .build();
 
         return offenderService.offenderIdOfCrn(crn)

@@ -19,4 +19,7 @@ public class ContactType {
 
     @ApiModelProperty(name = "Does this contact type represent an appointment type")
     private Boolean appointment;
+
+    @ApiModelProperty(name = "Does this contact type represent a nsi contact")
+    private Boolean nsi;
 }

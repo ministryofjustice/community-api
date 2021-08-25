@@ -76,7 +76,7 @@ public class OffendersResource_getOffenderContactSummariesByCrn {
 
         given()
             .when()
-            .get("/secure/offenders/crn/CRN1/contact-summary?page=10&pageSize=20&from=2021-05-26T00:00:00Z&to=2021-06-02T00:00:00Z&contactTypes=CT1,CT2&appointmentsOnly=true&convictionId=56331&attended=true&complied=true&nationalStandard=true")
+            .get("/secure/offenders/crn/CRN1/contact-summary?page=10&pageSize=20&from=2021-05-26T00:00:00Z&to=2021-06-02T00:00:00Z&contactTypes=CT1,CT2&appointmentsOnly=true&convictionId=56331&attended=true&complied=true&nationalStandard=true&outcome=true")
             .then()
             .statusCode(200)
             .body("number", equalTo(10))
@@ -99,6 +99,7 @@ public class OffendersResource_getOffenderContactSummariesByCrn {
                 .attended(Optional.of(true))
                 .complied(Optional.of(true))
                 .nationalStandard(Optional.of(true))
+                .outcome(Optional.of(true))
                 .build());
     }
 

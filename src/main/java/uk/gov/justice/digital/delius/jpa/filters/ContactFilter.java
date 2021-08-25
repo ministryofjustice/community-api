@@ -51,6 +51,9 @@ public class ContactFilter implements Specification<Contact> {
     @Builder.Default
     private Optional<Boolean> nationalStandard = Optional.empty();
 
+    @Builder.Default
+    private Optional<Boolean> outcome = Optional.empty();
+
     @Override
     public Predicate toPredicate(Root<Contact> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
         ImmutableList.Builder<Predicate> predicateBuilder = ImmutableList.builder();
@@ -75,7 +78,9 @@ public class ContactFilter implements Specification<Contact> {
 
         complied.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("complied"), value ? "Y" : "N")));
 
-        nationalStandard.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("contactType").get("nationalStandardsContact"), value ? "Y" : "N")));
+        nationalStandard.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("contactType").get("nationalStandardsContact"), value)));
+
+        outcome.ifPresent(value -> predicateBuilder.add(value ? cb.isNotNull(root.get("contactOutcomeType")) : cb.isNull(root.get("contactOutcomeType"))));
 
         ImmutableList<Predicate> predicates = predicateBuilder.build();
 
