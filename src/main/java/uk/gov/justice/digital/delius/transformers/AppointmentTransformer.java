@@ -90,6 +90,7 @@ public class AppointmentTransformer {
                 Pair.of(OrderType.CJA, type.getCjaOrderLevel()),
                 Pair.of(OrderType.LEGACY, type.getLegacyOrderLevel())
             ).filter(x -> x.getValue().equals("Y")).map(Pair::getKey).collect(Collectors.toList()))
+            .nsi(type.getNationalStandardsContact())
             .build();
     }
 

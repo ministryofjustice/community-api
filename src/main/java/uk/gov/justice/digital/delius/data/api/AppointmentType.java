@@ -27,6 +27,9 @@ public class AppointmentType {
     @ApiModelProperty(name = "Requires location", example = "REQUIRED", position = 3)
     private RequiredOptional requiresLocation;
 
+    @ApiModelProperty(name = "Does this appointment type represent a nsi appointment")
+    private Boolean nsi;
+
     @NotNull
     @JsonInclude
     @ApiModelProperty(
