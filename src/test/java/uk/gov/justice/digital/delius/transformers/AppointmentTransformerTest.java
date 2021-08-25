@@ -111,7 +111,7 @@ public class AppointmentTransformerTest {
             .contactType(ContactType.builder().code("123").description("National Standard")
                 .nationalStandardsContact(true).cjaOrderLevel("Y")
                 .legacyOrderLevel("Y").build())
-            .build())).hasFieldOrPropertyWithValue("type.nsi", true);
+            .build())).hasFieldOrPropertyWithValue("type.nationalStandard", true);
     }
 
     @Test

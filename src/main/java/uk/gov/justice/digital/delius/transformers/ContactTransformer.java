@@ -71,7 +71,7 @@ public class ContactTransformer {
             .description(contactType.getDescription())
             .shortDescription(Optional.ofNullable(contactType.getShortDescription()).orElse(null))
             .appointment(contactType.getAttendanceContact())
-            .nsi(contactType.getNationalStandardsContact())
+            .nationalStandard(contactType.getNationalStandardsContact())
             .build();
     }
 
