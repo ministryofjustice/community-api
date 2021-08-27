@@ -249,7 +249,7 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("type.description", withArgs(2502719239L), equalTo("Alcohol Screening"))
 
             .body("", withArgs(2502743375L), nullValue())
-            .body("type.nsi", withArgs(2502719239L), equalTo(true));
+            .body("type.nationalStandard", withArgs(2502719239L), equalTo(true));
 
     }
 
@@ -274,7 +274,7 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
 
             .body("", withArgs(2502743375L), notNullValue())
             .body("type.description", withArgs(2502743375L), equalTo("NOMIS Case Notes - General"))
-            .body("type.nsi", withArgs(2502743375L), equalTo(false));
+            .body("type.nationalStandard", withArgs(2502743375L), equalTo(false));
     }
 
     @Test

@@ -104,6 +104,17 @@ public class AppointmentTransformerTest {
     }
 
     @Test
+    public void nationalStandardMappedToNsiType() {
+
+        assertThat(AppointmentTransformer.appointmentDetailOf(EntityHelper.aContact()
+            .toBuilder()
+            .contactType(ContactType.builder().code("123").description("National Standard")
+                .nationalStandardsContact(true).cjaOrderLevel("Y")
+                .legacyOrderLevel("Y").build())
+            .build())).hasFieldOrPropertyWithValue("type.nationalStandard", true);
+    }
+
+    @Test
     public void rarRequirementMappedFromRarRequirement() {
         final var requirement = EntityHelper.aRarRequirement();
         final var source = EntityHelper.aContact()
