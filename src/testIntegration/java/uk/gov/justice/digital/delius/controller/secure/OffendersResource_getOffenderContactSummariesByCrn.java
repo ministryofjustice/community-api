@@ -345,6 +345,53 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
     }
 
     @Test
+    public void gettingOffenderContactSummariesByCrnAndFilteringByIncludeTypesAndAppointments() {
+        given()
+            .auth().oauth2(tokenWithRoleCommunity())
+            .when()
+            .get("/offenders/crn/X320741/contact-summary?include=appointments&include=type_eter&include=type_ccmp")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("number", equalTo(0))
+            .body("first", equalTo(true))
+            .body("last", equalTo(true))
+            .body("totalPages", equalTo(1))
+            .body("totalElements", equalTo(7))
+            .body("size", equalTo(1000))
+            .body("numberOfElements", equalTo(7))
+            .body("content.size()", equalTo(7))
+            .root("content.find { it.contactId == %d }")
+
+            // appointments
+            .body("type.code", withArgs(2502719240L), equalTo("C084"))
+            .body("type.appointment", withArgs(2502719240L), equalTo(true))
+
+            .body("type.code", withArgs(2502719245L), equalTo("C084"))
+            .body("type.appointment", withArgs(2502719245L), equalTo(true))
+
+            .body("type.code", withArgs(2502719245L), equalTo("C084"))
+            .body("type.appointment", withArgs(2502719245L), equalTo(true))
+
+            .body("type.code", withArgs(2502719244L), equalTo("C084"))
+            .body("type.appointment", withArgs(2502719244L), equalTo(true))
+
+            // type matching CCMP
+            .body("type.code", withArgs(2502721488L), equalTo("CCMP"))
+            .body("type.appointment", withArgs(2502721488L), equalTo(false))
+
+            // type matching ETER
+            .body("type.code", withArgs(2512709905L), equalTo("ETER"))
+            .body("type.appointment", withArgs(2512709905L), equalTo(false))
+
+            .body("type.code", withArgs(2502709905L), equalTo("ETER"))
+            .body("type.appointment", withArgs(2502709905L), equalTo(false))
+
+            .body("type.code", withArgs(2502709898L), equalTo("ETER"))
+            .body("type.appointment", withArgs(2502709898L), equalTo(false));
+    }
+
+    @Test
     public void gettingOffenderContactSummariesByCrnDefaultsToFirstPage() {
         given()
             .auth().oauth2(tokenWithRoleCommunity())

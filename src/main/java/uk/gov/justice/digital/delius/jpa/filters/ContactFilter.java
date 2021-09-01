@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.format.annotation.DateTimeFormat;
+import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -13,13 +13,17 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Builder(toBuilder = true)
 @EqualsAndHashCode
 public class ContactFilter implements Specification<Contact> {
 
+    public static final String INCLUDE_TYPE_PREFIX = "TYPE_";
+    public static final String INCLUDE_APPOINTMENTS = "APPOINTMENTS";
     @Builder.Default
     private Optional<List<String>> contactTypes = Optional.empty();
 
@@ -54,6 +58,9 @@ public class ContactFilter implements Specification<Contact> {
     @Builder.Default
     private Optional<Boolean> outcome = Optional.empty();
 
+    @Builder.Default
+    private Optional<List<String>> include = Optional.empty();
+
     @Override
     public Predicate toPredicate(Root<Contact> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
         ImmutableList.Builder<Predicate> predicateBuilder = ImmutableList.builder();
@@ -82,8 +89,37 @@ public class ContactFilter implements Specification<Contact> {
 
         outcome.ifPresent(value -> predicateBuilder.add(value ? cb.isNotNull(root.get("contactOutcomeType")) : cb.isNull(root.get("contactOutcomeType"))));
 
+        List<Predicate> includePredicates = getIncludePredicates(root, query, cb);
+
+        if (includePredicates.size() > 0 ) {
+            predicateBuilder.add(cb.or(includePredicates.toArray(new Predicate[0])));
+        }
+
         ImmutableList<Predicate> predicates = predicateBuilder.build();
 
-        return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        return cb.and(predicates.toArray(new Predicate[0]));
+    }
+
+    private List<Predicate> getIncludePredicates(Root<Contact> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+        return include.map(value -> value.stream()
+            .map(inc -> inc.trim().toUpperCase())
+            .distinct().map(inc -> {
+                if(inc.startsWith(INCLUDE_TYPE_PREFIX)) {
+                    return cb.equal(root.get("contactType").get("code"), getIncludeValue(inc));
+                } else if(inc.equals(INCLUDE_APPOINTMENTS)) {
+                    return cb.equal(root.get("contactType").get("attendanceContact"), true);
+                } else {
+                    throw new BadRequestException("Unknown include parameter");
+                }
+        }).collect(Collectors.toList())).orElse(Collections.emptyList());
+    }
+
+    private String getIncludeValue(final String includeParameter) {
+        var values = includeParameter.split("_",2);
+
+        if (values.length > 1) {
+            return values[1];
+        }
+        return "";
     }
 }
