@@ -79,6 +79,7 @@ public class Requirement {
     private Long rarCount;
 
     @Column(name = "SOFT_DELETED")
+    @Builder.Default
     private Boolean softDeleted = false;
 
     public boolean isRarRequirement() {

@@ -47,7 +47,7 @@ public class Event {
     private boolean inBreach;
 
     @Column(name = "FTC_COUNT", nullable = false)
-    private Long failureToComplyCount = 0L;
+    private Long failureToComplyCount;
 
     @Column(name = "BREACH_END")
     private LocalDate breachEnd;
