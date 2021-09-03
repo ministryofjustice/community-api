@@ -1,14 +1,17 @@
 package uk.gov.justice.digital.delius.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.ManagedOffender;
+import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffHelperRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
@@ -30,6 +33,7 @@ public class StaffService {
     private final StaffRepository staffRepository;
     private final LdapRepository ldapRepository;
     private final StaffHelperRepository staffHelperRepository;
+    private final OffenderRepository offenderRepository;
 
 
     @Transactional(readOnly = true)
@@ -152,4 +156,7 @@ public class StaffService {
         return Stream.of(forenames.split("[, ]")).findFirst().orElseThrow();
     }
 
+    public List<OffenderDetailSummary> getOffenderCasesForUser(String username, Pageable pageable) {
+        return offenderRepository.getOffendersWithOneActiveEventAndRarRequirementForStaff(username, pageable).stream().map(offender -> OffenderTransformer.offenderSummaryOf(offender)).collect(Collectors.toList());
+    }
 }
