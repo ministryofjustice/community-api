@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.justice.digital.delius.data.api.Case;
 import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.ManagedOffender;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
@@ -156,7 +157,10 @@ public class StaffService {
         return Stream.of(forenames.split("[, ]")).findFirst().orElseThrow();
     }
 
-    public List<OffenderDetailSummary> getOffenderCasesForUser(String username, Pageable pageable) {
-        return offenderRepository.getOffendersWithOneActiveEventAndRarRequirementForStaff(username, pageable).stream().map(offender -> OffenderTransformer.offenderSummaryOf(offender)).collect(Collectors.toList());
+    public List<Case> getOffenderCasesForUser(final String username, final Pageable pageable) {
+        return offenderRepository.getOffendersWithOneActiveEventAndRarRequirementForStaff(username, pageable)
+            .stream()
+            .map(OffenderTransformer::caseOf)
+            .collect(Collectors.toList());
     }
 }

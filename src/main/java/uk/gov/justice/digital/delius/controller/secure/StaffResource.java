@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
+import uk.gov.justice.digital.delius.data.api.Case;
 import uk.gov.justice.digital.delius.data.api.ManagedOffender;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
@@ -84,11 +85,17 @@ public class StaffResource {
         return staffService.getStaffDetailsByUsernames(usernames);
     }
 
+    @ApiOperation(value = "EXPERIMENTAL: Return list of of currently managed offenders, with RAR requirement and only a single active sentence",
+        notes = "Accepts a Delius Username. No backward compatibility guaranteed - intended for the use of the Manage a Supervision service, behaviour or responses may be modified in the future.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+        @ApiResponse(code = 404, message = "Not found", response = ErrorResponse.class),
+        @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
     @GetMapping(path = "/staff/username/{username}/cases")
-    public List<OffenderDetailSummary> getManageSupervisionsCases(@ApiParam(name = "username", value = "Delius username", example = "SheliaHancockNPS", required = true)
+    public List<Case> getCases(@ApiParam(name = "username", value = "Delius username", example = "SheliaHancockNPS", required = true)
                                                            @NotNull
                                                            @PathVariable(value = "username") final String username,
-                                                                  @PageableDefault(sort = {"offenderId"}, direction = Direction.ASC) final Pageable pageable) {
+                                                 @PageableDefault(sort = {"secondName", "firstName"}, direction = Direction.ASC, size = Integer.MAX_VALUE) final Pageable pageable) {
         return staffService.getOffenderCasesForUser(username, pageable);
     }
 }

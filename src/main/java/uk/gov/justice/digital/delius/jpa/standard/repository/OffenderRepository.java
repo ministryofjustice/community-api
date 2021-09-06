@@ -53,8 +53,8 @@ public interface OffenderRepository extends JpaRepository<Offender, Long>, JpaSp
             "join e.disposal d join d.requirements r " +
             "join r.requirementTypeMainCategory rtmc " +
             "where e.softDeleted != 1 and e.activeFlag = 1 and d.softDeleted != 1 and r.startDate < CURRENT_TIMESTAMP AND (r.terminationDate IS NULL OR r.terminationDate > CURRENT_TIMESTAMP) and rtmc.code = 'F' " +
-            "GROUP BY e.offenderId " +
-            "HAVING count(e.eventId) = 1) " +
+            "group by e.offenderId " +
+            "having count(e.eventId) = 1) " +
         "and u.distinguishedName = :username")
     List<Offender> getOffendersWithOneActiveEventAndRarRequirementForStaff(@Param("username") String username, Pageable pageable);
 

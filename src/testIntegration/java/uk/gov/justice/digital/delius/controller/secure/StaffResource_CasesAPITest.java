@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.justice.digital.delius.data.api.Case;
 import uk.gov.justice.digital.delius.data.api.ManagedOffender;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 
@@ -13,8 +14,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class StaffResource_CasesAPITest extends IntegrationTestBase {
     @Test
-    public void getCurrentManagedOffendersForOfficer() {
-        OffenderDetailSummary[] offenders = given()
+    public void getCasesForUser() {
+        Case[] cases = given()
                 .auth()
                 .oauth2(tokenWithRoleCommunity())
                 .contentType(APPLICATION_JSON_VALUE)
@@ -23,10 +24,13 @@ public class StaffResource_CasesAPITest extends IntegrationTestBase {
                 .then()
                 .extract()
                 .body()
-                .as(OffenderDetailSummary[].class);
+                .as(Case[].class);
 
-        List<OffenderDetailSummary> mos = Arrays.asList(offenders);
+        List<Case> mos = Arrays.asList(cases);
         assertThat(mos).hasSize(1);
-        assertThat(mos).extracting("offenderId").contains(2500343964L);
+        assertThat(mos).extracting("crn").contains("X320741");
+        assertThat(mos).extracting("firstName").contains("Aadland");
+        assertThat(mos).extracting("middleNames").contains(List.of("Danger"));
+        assertThat(mos).extracting("surname").contains("Bertrand");
     }
 }
