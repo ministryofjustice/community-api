@@ -18,6 +18,7 @@ import static java.util.Optional.ofNullable;
 @AllArgsConstructor
 public class AppointmentPatchRequestTransformer {
 
+    private static final String NON_ATTENDANCE_VALUE = "no";
     private static final String TARGET_NOTES_FIELD_NAME = "notes";
     private static final String TARGET_OUTCOME_FIELD_NAME = "outcome";
     private static final String TARGET_ENFORCEMENT_FIELD_NAME = "enforcement";
@@ -55,7 +56,7 @@ public class AppointmentPatchRequestTransformer {
 
         patchOperations.add(new ReplaceOperation(of(TARGET_OUTCOME_FIELD_NAME), valueOf(outcomeType)));
 
-        if ( notifyBehaviour ) {
+        if ( notifyBehaviour || NON_ATTENDANCE_VALUE.equalsIgnoreCase(attended)) {
             patchOperations.add(new ReplaceOperation(of(TARGET_ENFORCEMENT_FIELD_NAME),
                 valueOf(context.getContactMapping().getEnforcementReferToOffenderManager())));
         }

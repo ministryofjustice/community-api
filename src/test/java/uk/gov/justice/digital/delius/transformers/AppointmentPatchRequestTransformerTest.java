@@ -69,6 +69,35 @@ class AppointmentPatchRequestTransformerTest {
     }
 
     @Test
+    public void transformsJsonPatchCollapsingNonAttendedToOutcomeWithEnforcement() throws JsonProcessingException {
+
+        final var attendedValue = "No";
+        final var notifyPPOfAttendanceBehaviourValue = false;
+        final var request = buildRequest(attendedValue, notifyPPOfAttendanceBehaviourValue);
+
+        final var patch = mapAttendanceFieldsToOutcomeOf(request, integrationContext);
+
+        assertThat(objectMapper.writeValueAsString(patch))
+            .isEqualTo("[{\"op\":\"replace\",\"path\":\"/notes\",\"value\":\"some notes\"}," +
+                "{\"op\":\"replace\",\"path\":\"/outcome\",\"value\":\"AFTA\"}," +
+                "{\"op\":\"replace\",\"path\":\"/enforcement\",\"value\":\"ROM\"}]");
+    }
+
+    @Test
+    public void transformsJsonPatchCollapsingAttendedToOutcomeWithoutEnforcement() throws JsonProcessingException {
+
+        final var attendedValue = "lAtE";
+        final var notifyPPOfAttendanceBehaviourValue = false;
+        final var request = buildRequest(attendedValue, notifyPPOfAttendanceBehaviourValue);
+
+        final var patch = mapAttendanceFieldsToOutcomeOf(request, integrationContext);
+
+        assertThat(objectMapper.writeValueAsString(patch))
+            .isEqualTo("[{\"op\":\"replace\",\"path\":\"/notes\",\"value\":\"some notes\"}," +
+                "{\"op\":\"replace\",\"path\":\"/outcome\",\"value\":\"ATTC\"}]");
+    }
+
+    @Test
     public void transformsJsonPatchUsingOfficeLocation() throws JsonProcessingException {
 
         final var patch = mapOfficeLocation("CRSLOND");
