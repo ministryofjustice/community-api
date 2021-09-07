@@ -1,13 +1,13 @@
 package uk.gov.justice.digital.delius.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.justice.digital.delius.data.api.Case;
+import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
 import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.ManagedOffender;
-import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
@@ -157,10 +157,8 @@ public class StaffService {
         return Stream.of(forenames.split("[, ]")).findFirst().orElseThrow();
     }
 
-    public List<Case> getOffenderCasesForUser(final String username, final Pageable pageable) {
-        return offenderRepository.getOffendersWithOneActiveEventAndRarRequirementForStaff(username, pageable)
-            .stream()
-            .map(OffenderTransformer::caseOf)
-            .collect(Collectors.toList());
+    public Page<StaffCaseloadEntry> getOffenderCasesForUser(final String username, final Pageable pageable) {
+        return offenderRepository.getOffendersWithOneActiveEventCommunitySentenceAndRarRequirementForStaff(username, pageable)
+            .map(OffenderTransformer::caseOf);
     }
 }

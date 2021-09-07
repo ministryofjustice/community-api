@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import uk.gov.justice.digital.delius.data.api.AdditionalIdentifier;
 import uk.gov.justice.digital.delius.data.api.Address;
-import uk.gov.justice.digital.delius.data.api.Case;
+import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
 import uk.gov.justice.digital.delius.data.api.ContactDetails;
 import uk.gov.justice.digital.delius.data.api.ContactDetailsSummary;
 import uk.gov.justice.digital.delius.data.api.Human;
@@ -555,8 +555,8 @@ public class OffenderTransformer {
                 .orElse(List.of());
     }
 
-    public static Case caseOf(final Offender offender) {
-        return Case.builder().crn(offender.getCrn()).firstName(offender.getFirstName())
+    public static StaffCaseloadEntry caseOf(final Offender offender) {
+        return StaffCaseloadEntry.builder().crn(offender.getCrn()).firstName(offender.getFirstName())
             .middleNames(combinedMiddleNamesOf(offender.getSecondName(), offender.getThirdName()))
             .surname(offender.getSurname())
             .preferredName(offender.getPreferredName())
