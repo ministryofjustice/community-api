@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.delius.jpa.standard.repository;
 
 import io.vavr.control.Either;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -41,6 +43,25 @@ public interface OffenderRepository extends JpaRepository<Offender, Long>, JpaSp
 
     @Query(value = "SELECT OFFENDER_ID FROM (SELECT QRY_PAG.*, ROWNUM rnum FROM (SELECT OFFENDER_ID FROM OFFENDER) QRY_PAG WHERE ROWNUM <= ?2) WHERE rnum >= ?1", nativeQuery = true)
     List<BigDecimal> listOffenderIds(int lower, int upper);
+
+    @Query(value = "select o from Offender o " +
+        "join o.offenderManagers om " +
+        "join om.staff s " +
+        "join s.user u " +
+        "where o.softDeleted != 1 " +
+        "and o.offenderId in (" +
+            "select e.offenderId from Event e " +
+            "join e.disposal d " +
+            "join d.disposalType dt " +
+            "join d.requirements r  " +
+            "join r.requirementTypeMainCategory rtmc " +
+            "where e.softDeleted != 1 and e.activeFlag = 1 and d.softDeleted != 1 " +
+            "and r.startDate < CURRENT_TIMESTAMP AND (r.terminationDate IS NULL OR r.terminationDate > CURRENT_TIMESTAMP) " +
+            "and dt.sentenceType = 'SP' and rtmc.code = 'F' " +
+            "group by e.offenderId " +
+            "having count(e.eventId) = 1) " +
+        "and u.distinguishedName = :username")
+    Page<Offender> getOffendersWithOneActiveEventCommunitySentenceAndRarRequirementForStaff(@Param("username") String username, Pageable pageable);
 
     default Either<DuplicateOffenderException, Optional<Offender>> findMostLikelyByNomsNumber(String nomsNumber) {
         final var offenders = findAllByNomsNumber(nomsNumber);
