@@ -10,10 +10,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
 import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffHelperRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
@@ -48,6 +53,9 @@ public class StaffServiceTest {
     @Mock
     private StaffHelperRepository staffHelperRepository;
 
+    @Mock
+    private OffenderRepository offenderRepository;
+
     @Captor
     private ArgumentCaptor<Staff> staffCaptor;
 
@@ -56,7 +64,8 @@ public class StaffServiceTest {
         staffService = new StaffService(
                 staffRepository,
                 ldapRepository,
-                staffHelperRepository);
+                staffHelperRepository,
+                offenderRepository);
     }
 
     @Test
@@ -367,5 +376,17 @@ public class StaffServiceTest {
         void willCreateStaffWithCodeFromPrefixAndProbationAreaCode() {
             assertThat(staffCaptor.getValue().getOfficerCode()).isEqualTo("MDIPOMU");
         }
+    }
+    @Test
+    public void getOffenderCasesForUser() {
+        when(offenderRepository.getOffendersWithOneActiveEventCommunitySentenceAndRarRequirementForStaff(any(), any())).thenReturn(new PageImpl(
+            ImmutableList.of(Offender.builder().crn("X12345").firstName("Brian").secondName("Simon").surname("Friar").build(),
+                Offender.builder().crn("X45521").firstName("Tyler").secondName("Argyll").surname("Adams").build()))
+        );
+
+        var cases = staffService.getOffenderCasesForUser("ABC123", Pageable.unpaged());
+
+        assertThat(cases).containsExactly(StaffCaseloadEntry.builder().crn("X12345").firstName("Brian").middleNames(ImmutableList.of("Simon")).surname("Friar").build(),
+            StaffCaseloadEntry.builder().crn("X45521").firstName("Tyler").middleNames(ImmutableList.of("Argyll")).surname("Adams").build());
     }
 }
