@@ -7,9 +7,10 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.CaseAllocation;
 import java.util.Optional;
 
 public class CaseAllocationTransformer {
-    private static final String RETAINED_CODE = "R";
+    private static final String ASSESSED_ENHANCED = "R";
+    private static final String NOT_ASSESSED = "N";
 
-    public static RiskResourcingDetails riskResourcingDetailsOf(CaseAllocation caseAllocation) {
+    public static RiskResourcingDetails riskResourcingDetailsOf(final CaseAllocation caseAllocation) {
         final var resourcingDecision = Optional
             .ofNullable(caseAllocation.getAllocationDecision())
             .map(decision -> RiskResourcingDetails.ResourcingDecision.builder()
@@ -26,10 +27,11 @@ public class CaseAllocationTransformer {
             .build();
     }
 
-    private static Boolean isEnhanced(ResourcingDecision resourcingDecision) {
+    private static Boolean isEnhanced(final ResourcingDecision resourcingDecision) {
         return Optional
             .ofNullable(resourcingDecision)
-            .map(decision -> decision.getCode().equals(RETAINED_CODE))
+            .filter(decision -> !decision.getCode().equals(NOT_ASSESSED))
+            .map(decision -> decision.getCode().equals(ASSESSED_ENHANCED))
             .orElse(null);
     }
 }
