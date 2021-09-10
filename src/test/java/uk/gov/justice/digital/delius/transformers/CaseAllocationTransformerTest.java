@@ -87,4 +87,22 @@ class CaseAllocationTransformerTest {
         final var resourcingDetails = CaseAllocationTransformer.riskResourcingDetailsOf(caseAllocation);
         assertThat(resourcingDetails.getEnhancedResourcing()).isFalse();
     }
+
+    @Test
+    @DisplayName("will indicated if decision is not enhanced resourcing when allocated")
+    void enhancedNullWhenNotAssessed() {
+        final var caseAllocation = CaseAllocation
+            .builder()
+            .allocationDecision(StandardReference
+                .builder()
+                .codeValue("N")
+                .codeDescription("Not Assessed")
+                .build())
+            .allocationDecisionDate(LocalDateTime.parse("2020-07-19T10:00:00"))
+            .event(Event.builder().eventId(88L).build())
+            .build();
+
+        final var resourcingDetails = CaseAllocationTransformer.riskResourcingDetailsOf(caseAllocation);
+        assertThat(resourcingDetails.getEnhancedResourcing()).isNull();
+    }
 }
