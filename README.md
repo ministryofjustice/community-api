@@ -199,4 +199,4 @@ by whereabouts health monitoring (e.g. pager duty) and not other systems who wis
 
 There is an alert in Application Insights called `Community API - Inactivity alert`. It fires if community-api hasn't received any successful requests in the last 10 minutes.
 
-If the alert fires then look for any recent releases of community-api that may have introduced a problem. If not then ask in the MOJ Slack channel `hmpps-community-pr` for assistance. Note that the alert occasionally first overnight during quiet periods - these can be ignored.
+If the alert fires then look for any recent releases of community-api that may have introduced a problem. If not then ask in the MOJ Slack channel `hmpps-community-pr` for assistance. Note that the alert occasionally fires overnight during quiet periods - these can be ignored.
