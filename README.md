@@ -192,3 +192,11 @@ rather than calling the `api/health` endpoint.
 - `api/health`: provides information about the application health and its dependencies.  This should only be used
 by whereabouts health monitoring (e.g. pager duty) and not other systems who wish to find out the state of whereabouts.
 - `api/info`: provides information about the version of deployed application.
+
+## Alerts
+
+### Inactivity alert
+
+There is an alert in Application Insights called `Community API - Inactivity alert`. It fires if community-api hasn't received and real requests in the last 10 minutes.
+
+If the alert fires then look for any recent releases of community-api that may have introduced a problem. If not then ask in the MOJ Slack channel `hmpps-community-pr` for assistance. Note that the alert occasionally first overnight during quiet periods - these can be ignored.
