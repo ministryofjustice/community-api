@@ -60,7 +60,7 @@ public interface OffenderRepository extends JpaRepository<Offender, Long>, JpaSp
             "and dt.sentenceType = 'SP' and rtmc.code = 'F' " +
             "group by e.offenderId " +
             "having count(e.eventId) = 1) " +
-        "and u.distinguishedName = :username")
+        "and upper(u.distinguishedName) = upper(:username)")
     Page<Offender> getOffendersWithOneActiveEventCommunitySentenceAndRarRequirementForStaff(@Param("username") String username, Pageable pageable);
 
     default Either<DuplicateOffenderException, Optional<Offender>> findMostLikelyByNomsNumber(String nomsNumber) {
