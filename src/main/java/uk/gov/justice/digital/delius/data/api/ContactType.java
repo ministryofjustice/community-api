@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -22,4 +24,10 @@ public class ContactType {
 
     @ApiModelProperty(name = "Does this contact type represent a national standard contact")
     private Boolean nationalStandard;
+
+    @ApiModelProperty(name = "Active categories this contact type belongs belongs to")
+    private List<KeyValue> categories;
+
+    @ApiModelProperty(name = "Does this contact type represent a system generated type")
+    private Boolean systemGenerated;
 }

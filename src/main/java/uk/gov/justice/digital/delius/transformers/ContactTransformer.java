@@ -19,10 +19,12 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderEmployee;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderLocation;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderTeam;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import uk.gov.justice.digital.delius.jpa.standard.entity.User;
 import uk.gov.justice.digital.delius.utils.DateConverter;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,7 +40,7 @@ public class ContactTransformer {
             .contactId(contact.getContactId())
             .contactStart(DateConverter.toOffsetDateTime(contact.getContactDate(), contact.getContactStartTime()))
             .contactEnd(DateConverter.toOffsetDateTime(contact.getContactDate(), contact.getContactEndTime()))
-            .type(contactTypeOf(contact.getContactType()))
+            .type(contactTypeOf(contact.getContactType(), true))
             .officeLocation(Optional.ofNullable(contact.getOfficeLocation())
                 .map(OfficeLocationTransformer::officeLocationOf)
                 .orElse(null))
@@ -66,13 +68,29 @@ public class ContactTransformer {
     }
 
     public static uk.gov.justice.digital.delius.data.api.ContactType contactTypeOf(ContactType contactType) {
-        return uk.gov.justice.digital.delius.data.api.ContactType.builder()
+        return contactTypeOf(contactType, false);
+    }
+
+    public static uk.gov.justice.digital.delius.data.api.ContactType contactTypeOf(ContactType contactType, boolean includeCategories) {
+        var builder = uk.gov.justice.digital.delius.data.api.ContactType.builder()
             .code(contactType.getCode())
             .description(contactType.getDescription())
             .shortDescription(Optional.ofNullable(contactType.getShortDescription()).orElse(null))
             .appointment(contactType.getAttendanceContact())
             .nationalStandard(contactType.getNationalStandardsContact())
-            .build();
+            .systemGenerated(contactType.getSystemGenerated());
+
+            if(includeCategories) {
+                builder.categories(Optional.ofNullable(contactType.getContactCategories())
+                    .map(categories -> categories.stream()
+                        .filter(StandardReference::isActive)
+                        .map(ContactTransformer::contactTypeCategoryOf)
+                        .collect(Collectors.toList())
+                    ).orElse(Collections.emptyList())
+                );
+            }
+
+            return builder.build();
     }
 
     public static uk.gov.justice.digital.delius.data.api.Contact contactOf(uk.gov.justice.digital.delius.jpa.standard.entity.Contact contact) {
@@ -210,5 +228,12 @@ public class ContactTransformer {
             .surname(u.getSurname())
             .build().capitalise()
         ).orElse(null);
+    }
+
+    private static KeyValue contactTypeCategoryOf(final StandardReference category) {
+        return Optional.ofNullable(category).map(c -> KeyValue.builder()
+            .code(c.getCodeValue())
+            .description(c.getCodeDescription())
+            .build()).orElse(null);
     }
 }
