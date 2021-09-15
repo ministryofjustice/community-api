@@ -84,7 +84,7 @@ public class ContactTransformer {
                 builder.categories(Optional.ofNullable(contactType.getContactCategories())
                     .map(categories -> categories.stream()
                         .filter(StandardReference::isActive)
-                        .map(ContactTransformer::contactTypeCategoryOf)
+                        .map(KeyValueTransformer::keyValueOf)
                         .collect(Collectors.toList())
                     ).orElse(Collections.emptyList())
                 );
@@ -228,12 +228,5 @@ public class ContactTransformer {
             .surname(u.getSurname())
             .build().capitalise()
         ).orElse(null);
-    }
-
-    private static KeyValue contactTypeCategoryOf(final StandardReference category) {
-        return Optional.ofNullable(category).map(c -> KeyValue.builder()
-            .code(c.getCodeValue())
-            .description(c.getCodeDescription())
-            .build()).orElse(null);
     }
 }
