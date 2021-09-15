@@ -1,5 +1,16 @@
 package uk.gov.justice.digital.delius.transformers;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import uk.gov.justice.digital.delius.data.api.ContactSummary;
+import uk.gov.justice.digital.delius.data.api.KeyValue;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceCondition;
+import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceConditionTypeMainCat;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.util.EntityHelper;
+import uk.gov.justice.digital.delius.utils.DateConverter;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -7,15 +18,7 @@ import java.time.Month;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import uk.gov.justice.digital.delius.data.api.ContactSummary;
-import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceCondition;
-import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceConditionTypeMainCat;
-import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
-import uk.gov.justice.digital.delius.util.EntityHelper;
-import uk.gov.justice.digital.delius.utils.DateConverter;
-
+import static com.google.common.collect.ImmutableList.of;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ContactTransformerTest {
@@ -113,6 +116,8 @@ class ContactTransformerTest {
                 .code("CT1")
                 .description("Some contact type")
                 .shortDescription("Some contact type short description")
+                .systemGenerated(true)
+                .contactCategories(of(StandardReference.builder().codeValue("AL").codeDescription("All/Available").selectable("Y").build()))
                 .build())
             .officeLocation(EntityHelper.anOfficeLocation().toBuilder()
                 .code("OL1")
@@ -162,6 +167,7 @@ class ContactTransformerTest {
             .hasFieldOrPropertyWithValue("type.description", "Some contact type")
             .hasFieldOrPropertyWithValue("type.shortDescription", "Some contact type short description")
             .hasFieldOrPropertyWithValue("type.appointment", true)
+            .hasFieldOrPropertyWithValue("type.systemGenerated", true)
             .hasFieldOrPropertyWithValue("officeLocation.code", "OL1")
             .hasFieldOrPropertyWithValue("officeLocation.description", "Some office location")
             .hasFieldOrPropertyWithValue("notes", "Some notes")
@@ -183,5 +189,22 @@ class ContactTransformerTest {
             .hasFieldOrPropertyWithValue("lastUpdatedByUser.surname", "Smith")
             .hasFieldOrPropertyWithValue("lastUpdatedByUser.forenames", "John Michael");
 
+        assertThat(observed.getType().getCategories())
+            .containsExactly(KeyValue.builder().code("AL").description("All/Available").build());
+    }
+
+    @Test
+    public void contactTypeOfHandlesNullCategoryList() {
+        assertThat(ContactTransformer.contactTypeOf(ContactType.builder().contactCategories(null).build(), true).getCategories()).isEmpty();
+    }
+
+    @Test
+    public void contactTypeOnlyIncludesActiveCategories() {
+        assertThat(ContactTransformer.contactTypeOf(ContactType.builder().contactCategories(of(
+            StandardReference.builder().codeValue("AL").codeDescription("All/Available").selectable("Y").build(),
+            StandardReference.builder().codeValue("CAT1").codeDescription("Some Category").selectable("N").build()))
+            .build(), true)
+            .getCategories())
+            .containsExactly(KeyValue.builder().code("AL").description("All/Available").build());
     }
 }

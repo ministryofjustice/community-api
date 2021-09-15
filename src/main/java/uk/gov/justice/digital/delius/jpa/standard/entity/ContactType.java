@@ -66,6 +66,9 @@ public class ContactType {
     @Column(name = "LEGACY_ORDERS", nullable = false, length = 1)
     private String  legacyOrderLevel;
 
+    @Column(name = "SGC_FLAG")
+    private Boolean systemGenerated;
+
     @ManyToMany()
     @JoinTable(
         name = "R_CONTACT_TYPECONTACT_CATEGORY",

@@ -42,6 +42,12 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("type.description", registration, equalTo("New Registration"))
             .body("type.shortDescription", registration, equalTo("ERGN - SGC"))
             .body("type.appointment", registration, equalTo(false))
+            .body("type.systemGenerated", registration, equalTo(true))
+            .body("type.categories.size()", registration, equalTo(2))
+            .body("type.categories[0].code", registration, equalTo("RR"))
+            .body("type.categories[0].description", registration, equalTo("Risk & Registers"))
+            .body("type.categories[1].code", registration, equalTo("AL"))
+            .body("type.categories[1].description", registration, equalTo("All/Always"))
             .body("officeLocation", registration, equalTo(null))
             .body("notes", registration, equalTo("""
                 Type: Public Protection - MAPPA
