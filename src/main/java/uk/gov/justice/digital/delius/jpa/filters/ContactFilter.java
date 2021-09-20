@@ -95,12 +95,13 @@ public class ContactFilter implements Specification<Contact> {
         outcome.ifPresent(value -> predicateBuilder.add(value ? cb.isNotNull(root.get("contactOutcomeType")) : cb.isNull(root.get("contactOutcomeType"))));
 
         rarActivity.ifPresent(value -> {
-            predicateBuilder.add(value ? cb.equal(root.get("rarActivity"), "Y") : cb.notEqual(root.get("rarActivity"), "Y"));
-            predicateBuilder.add(cb.equal(root.get("requirement").get("softDeleted"), false ));
-            predicateBuilder.add(value ? cb.equal(root.get("requirement").get("requirementTypeMainCategory")
-                .get("code"), REHABILITATION_ACTIVITY_REQUIREMENT_CODE)
-                : cb.notEqual(root.get("requirement").get("requirementTypeMainCategory")
-                .get("code"), REHABILITATION_ACTIVITY_REQUIREMENT_CODE ));
+            if(value){
+                rarActivityOnlyFilter(root, cb, predicateBuilder);
+            }
+            else{
+                nonRarActivityOnlyFilter(root, cb, predicateBuilder);
+            }
+
         });
 
         List<Predicate> includePredicates = getIncludePredicates(root, query, cb);
@@ -112,6 +113,20 @@ public class ContactFilter implements Specification<Contact> {
         ImmutableList<Predicate> predicates = predicateBuilder.build();
 
         return cb.and(predicates.toArray(new Predicate[0]));
+    }
+
+    private void nonRarActivityOnlyFilter(Root<Contact> root, CriteriaBuilder cb, ImmutableList.Builder<Predicate> predicateBuilder) {
+        predicateBuilder.add(cb.equal(root.get("rarActivity"), "N"));
+        predicateBuilder.add(cb.or(cb.isNull(root.get("requirement")),
+            cb.notEqual(root.get("requirement").get("requirementTypeMainCategory")
+            .get("code"), REHABILITATION_ACTIVITY_REQUIREMENT_CODE )));
+    }
+
+    private void rarActivityOnlyFilter(Root<Contact> root, CriteriaBuilder cb, ImmutableList.Builder<Predicate> predicateBuilder) {
+        predicateBuilder.add(cb.equal(root.get("requirement").get("softDeleted"), false ));
+        predicateBuilder.add(cb.equal(root.get("rarActivity"), "Y"));
+        predicateBuilder.add(cb.equal(root.get("requirement").get("requirementTypeMainCategory")
+            .get("code"), REHABILITATION_ACTIVITY_REQUIREMENT_CODE));
     }
 
     private List<Predicate> getIncludePredicates(Root<Contact> root, CriteriaQuery<?> query, CriteriaBuilder cb) {

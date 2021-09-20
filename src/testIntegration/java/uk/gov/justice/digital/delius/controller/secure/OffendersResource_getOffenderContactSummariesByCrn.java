@@ -409,10 +409,10 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("first", equalTo(true))
             .body("last", equalTo(true))
             .body("totalPages", equalTo(1))
-            .body("totalElements", greaterThan(0))
+            .body("totalElements", equalTo(1))
             .body("size", equalTo(1000))
-            .body("numberOfElements", greaterThan(0))
-            .body("content.size()", greaterThan(0))
+            .body("numberOfElements", equalTo(1))
+            .body("content.size()", equalTo(1))
             .root("content.find { it.contactId == %d }")
 
             .body("", withArgs(2502709898L), notNullValue())
@@ -431,13 +431,13 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("first", equalTo(true))
             .body("last", equalTo(true))
             .body("totalPages", equalTo(1))
-            .body("totalElements", equalTo(10))
+            .body("totalElements", equalTo(1))
             .body("size", equalTo(1000))
-            .body("numberOfElements", equalTo(10))
-            .body("content.size()", equalTo(10))
+            .body("numberOfElements", equalTo(1))
+            .body("content.size()", equalTo(1))
             .root("content.find { it.contactId == %d }")
 
-            .body("", withArgs(2502743375L), notNullValue())
+            .body("", withArgs(2502719193L), notNullValue())
             .body("rarActivity", withArgs(2502743375L), equalTo(false));
     }
     @Test
