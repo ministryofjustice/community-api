@@ -396,7 +396,50 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("type.code", withArgs(2502709898L), equalTo("ETER"))
             .body("type.appointment", withArgs(2502709898L), equalTo(false));
     }
+    @Test
+    public void gettingOffenderContactSummariesByCrnAndFilteringByRarActivityTrue() {
+        given()
+            .auth().oauth2(tokenWithRoleCommunity())
+            .when()
+            .get("/offenders/crn/X320741/contact-summary?rarActivity=true")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("number", equalTo(0))
+            .body("first", equalTo(true))
+            .body("last", equalTo(true))
+            .body("totalPages", equalTo(1))
+            .body("totalElements", greaterThan(0))
+            .body("size", equalTo(1000))
+            .body("numberOfElements", greaterThan(0))
+            .body("content.size()", greaterThan(0))
+            .root("content.find { it.contactId == %d }")
 
+            .body("", withArgs(2502709898L), notNullValue())
+            .body("rarActivity", withArgs(2502709898L), equalTo(true));
+    }
+    @Test
+    public void gettingOffenderContactSummariesByCrnAndFilteringByRarActivityFalse() {
+        given()
+            .auth().oauth2(tokenWithRoleCommunity())
+            .when()
+            .get("/offenders/crn/X320741/contact-summary?rarActivity=false")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("number", equalTo(0))
+            .body("first", equalTo(true))
+            .body("last", equalTo(true))
+            .body("totalPages", equalTo(1))
+            .body("totalElements", equalTo(10))
+            .body("size", equalTo(1000))
+            .body("numberOfElements", equalTo(10))
+            .body("content.size()", equalTo(10))
+            .root("content.find { it.contactId == %d }")
+
+            .body("", withArgs(2502743375L), notNullValue())
+            .body("rarActivity", withArgs(2502743375L), equalTo(false));
+    }
     @Test
     public void gettingOffenderContactSummariesByCrnDefaultsToFirstPage() {
         given()

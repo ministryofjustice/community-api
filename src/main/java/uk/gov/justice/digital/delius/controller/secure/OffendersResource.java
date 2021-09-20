@@ -267,7 +267,8 @@ public class OffendersResource {
         final @RequestParam(value = "complied", required = false) Optional<Boolean> complied,
         final @RequestParam(value = "nationalStandard", required = false) Optional<Boolean> nationalStandard,
         final @RequestParam(value = "outcome", required = false) Optional<Boolean> outcome,
-        final @ApiParam(name = "include", value = "Contacts to include. Can be a contact type code, prefixed with 'type_' or appointments", example = "type_ccmp", allowMultiple = true) @RequestParam(value = "include", required = false) Optional<List<String>> include) {
+        final @ApiParam(name = "include", value = "Contacts to include. Can be a contact type code, prefixed with 'type_' or appointments", example = "type_ccmp", allowMultiple = true) @RequestParam(value = "include", required = false) Optional<List<String>> include,
+        final @RequestParam(value = "rarActivity", required = false) Optional<Boolean> rarActivity) {
 
         final var contactFilter = ContactFilter.builder()
             .contactTypes(contactTypes)
@@ -282,6 +283,7 @@ public class OffendersResource {
             .nationalStandard(nationalStandard)
             .outcome(outcome)
             .include(include)
+            .rarActivity(rarActivity)
             .build();
 
         return offenderService.offenderIdOfCrn(crn)

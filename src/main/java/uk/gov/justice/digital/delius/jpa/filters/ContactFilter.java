@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory.REHABILITATION_ACTIVITY_REQUIREMENT_CODE;
+
 @Builder(toBuilder = true)
 @EqualsAndHashCode
 public class ContactFilter implements Specification<Contact> {
@@ -61,6 +63,9 @@ public class ContactFilter implements Specification<Contact> {
     @Builder.Default
     private Optional<List<String>> include = Optional.empty();
 
+    @Builder.Default
+    private Optional<Boolean> rarActivity = Optional.empty();
+
     @Override
     public Predicate toPredicate(Root<Contact> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
         ImmutableList.Builder<Predicate> predicateBuilder = ImmutableList.builder();
@@ -88,6 +93,15 @@ public class ContactFilter implements Specification<Contact> {
         nationalStandard.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("contactType").get("nationalStandardsContact"), value)));
 
         outcome.ifPresent(value -> predicateBuilder.add(value ? cb.isNotNull(root.get("contactOutcomeType")) : cb.isNull(root.get("contactOutcomeType"))));
+
+        rarActivity.ifPresent(value -> {
+            predicateBuilder.add(value ? cb.equal(root.get("rarActivity"), "Y") : cb.notEqual(root.get("rarActivity"), "Y"));
+            predicateBuilder.add(cb.equal(root.get("requirement").get("softDeleted"), false ));
+            predicateBuilder.add(value ? cb.equal(root.get("requirement").get("requirementTypeMainCategory")
+                .get("code"), REHABILITATION_ACTIVITY_REQUIREMENT_CODE)
+                : cb.notEqual(root.get("requirement").get("requirementTypeMainCategory")
+                .get("code"), REHABILITATION_ACTIVITY_REQUIREMENT_CODE ));
+        });
 
         List<Predicate> includePredicates = getIncludePredicates(root, query, cb);
 
