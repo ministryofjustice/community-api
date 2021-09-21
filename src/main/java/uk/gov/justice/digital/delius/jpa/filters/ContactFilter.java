@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory.REHABILITATION_ACTIVITY_REQUIREMENT_CODE;
+
 @Builder(toBuilder = true)
 @EqualsAndHashCode
 public class ContactFilter implements Specification<Contact> {
@@ -61,6 +63,9 @@ public class ContactFilter implements Specification<Contact> {
     @Builder.Default
     private Optional<List<String>> include = Optional.empty();
 
+    @Builder.Default
+    private Optional<Boolean> rarActivity = Optional.empty();
+
     @Override
     public Predicate toPredicate(Root<Contact> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
         ImmutableList.Builder<Predicate> predicateBuilder = ImmutableList.builder();
@@ -89,6 +94,7 @@ public class ContactFilter implements Specification<Contact> {
 
         outcome.ifPresent(value -> predicateBuilder.add(value ? cb.isNotNull(root.get("contactOutcomeType")) : cb.isNull(root.get("contactOutcomeType"))));
 
+        rarActivity.filter(value -> value).ifPresent(value -> rarActivityOnlyFilter(root, cb, predicateBuilder));
         List<Predicate> includePredicates = getIncludePredicates(root, query, cb);
 
         if (includePredicates.size() > 0 ) {
@@ -98,6 +104,13 @@ public class ContactFilter implements Specification<Contact> {
         ImmutableList<Predicate> predicates = predicateBuilder.build();
 
         return cb.and(predicates.toArray(new Predicate[0]));
+    }
+
+    private void rarActivityOnlyFilter(Root<Contact> root, CriteriaBuilder cb, ImmutableList.Builder<Predicate> predicateBuilder) {
+        predicateBuilder.add(cb.equal(root.get("requirement").get("softDeleted"), false));
+        predicateBuilder.add(cb.equal(root.get("rarActivity"), "Y"));
+        predicateBuilder.add(cb.equal(root.get("requirement").get("requirementTypeMainCategory")
+            .get("code"), REHABILITATION_ACTIVITY_REQUIREMENT_CODE));
     }
 
     private List<Predicate> getIncludePredicates(Root<Contact> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
