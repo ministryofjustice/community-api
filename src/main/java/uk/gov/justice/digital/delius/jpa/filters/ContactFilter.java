@@ -114,8 +114,10 @@ public class ContactFilter implements Specification<Contact> {
     }
 
     private void nonRarActivityOnlyFilter(Root<Contact> root, CriteriaBuilder cb, ImmutableList.Builder<Predicate> predicateBuilder) {
-        predicateBuilder.add(cb.equal(root.get("rarActivity"), "N"));
-        predicateBuilder.add(cb.or(cb.isNull(root.get("requirement")),
+        predicateBuilder.add(cb.or(
+            cb.equal(root.get("rarActivity"), "N"), cb.isNull(root.get("requirement")),
+            cb.equal(root.get("requirement").get("softDeleted"), true),
+            cb.isNull(root.get("requirement").get("requirementTypeMainCategory")),
             cb.notEqual(root.get("requirement").get("requirementTypeMainCategory")
                 .get("code"), REHABILITATION_ACTIVITY_REQUIREMENT_CODE)));
     }
