@@ -431,14 +431,17 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("first", equalTo(true))
             .body("last", equalTo(true))
             .body("totalPages", equalTo(1))
-            .body("totalElements", equalTo(1))
+            .body("totalElements", greaterThan(40))
             .body("size", equalTo(1000))
-            .body("numberOfElements", equalTo(1))
-            .body("content.size()", equalTo(1))
+            .body("numberOfElements", greaterThan(40))
+            .body("content.size()", greaterThan(40))
             .root("content.find { it.contactId == %d }")
 
             .body("", withArgs(2502719193L), notNullValue())
-            .body("rarActivity", withArgs(2502719193L), equalTo(false));
+            .body("rarActivity", withArgs(2502719193L), equalTo(false))
+
+            .body("", withArgs(2502709898L), notNullValue())
+            .body("rarActivity", withArgs(2502709898L), equalTo(true));
     }
     @Test
     public void gettingOffenderContactSummariesByCrnDefaultsToFirstPage() {

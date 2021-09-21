@@ -94,14 +94,7 @@ public class ContactFilter implements Specification<Contact> {
 
         outcome.ifPresent(value -> predicateBuilder.add(value ? cb.isNotNull(root.get("contactOutcomeType")) : cb.isNull(root.get("contactOutcomeType"))));
 
-        rarActivity.ifPresent(value -> {
-            if (value) {
-                rarActivityOnlyFilter(root, cb, predicateBuilder);
-            } else {
-                nonRarActivityOnlyFilter(root, cb, predicateBuilder);
-            }
-        });
-
+        rarActivity.filter(value -> value).ifPresent(value -> rarActivityOnlyFilter(root, cb, predicateBuilder));
         List<Predicate> includePredicates = getIncludePredicates(root, query, cb);
 
         if (includePredicates.size() > 0 ) {
@@ -111,15 +104,6 @@ public class ContactFilter implements Specification<Contact> {
         ImmutableList<Predicate> predicates = predicateBuilder.build();
 
         return cb.and(predicates.toArray(new Predicate[0]));
-    }
-
-    private void nonRarActivityOnlyFilter(Root<Contact> root, CriteriaBuilder cb, ImmutableList.Builder<Predicate> predicateBuilder) {
-        predicateBuilder.add(cb.or(
-            cb.equal(root.get("rarActivity"), "N"), cb.isNull(root.get("requirement")),
-            cb.equal(root.get("requirement").get("softDeleted"), true),
-            cb.isNull(root.get("requirement").get("requirementTypeMainCategory")),
-            cb.notEqual(root.get("requirement").get("requirementTypeMainCategory")
-                .get("code"), REHABILITATION_ACTIVITY_REQUIREMENT_CODE)));
     }
 
     private void rarActivityOnlyFilter(Root<Contact> root, CriteriaBuilder cb, ImmutableList.Builder<Predicate> predicateBuilder) {
