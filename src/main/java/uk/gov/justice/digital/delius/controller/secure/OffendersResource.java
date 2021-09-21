@@ -268,7 +268,7 @@ public class OffendersResource {
         final @RequestParam(value = "nationalStandard", required = false) Optional<Boolean> nationalStandard,
         final @RequestParam(value = "outcome", required = false) Optional<Boolean> outcome,
         final @ApiParam(name = "include", value = "Contacts to include. Can be a contact type code, prefixed with 'type_' or appointments", example = "type_ccmp", allowMultiple = true) @RequestParam(value = "include", required = false) Optional<List<String>> include,
-        final @RequestParam(value = "rarActivity", required = false) Optional<Boolean> rarActivity) {
+        final @ApiParam(name = "rarActivity", value = "Contacts with rarActivity flag true as well as has a linked requirement with requirementTypeMainCategory code of F (REHABILITATION_ACTIVITY_REQUIREMENT_CODE)", example = "true") @RequestParam(value = "rarActivity", required = false) Optional<Boolean> rarActivity) {
 
         final var contactFilter = ContactFilter.builder()
             .contactTypes(contactTypes)
