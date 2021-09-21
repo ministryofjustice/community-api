@@ -438,7 +438,7 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .root("content.find { it.contactId == %d }")
 
             .body("", withArgs(2502719193L), notNullValue())
-            .body("rarActivity", withArgs(2502743375L), equalTo(false));
+            .body("rarActivity", withArgs(2502719193L), equalTo(false));
     }
     @Test
     public void gettingOffenderContactSummariesByCrnDefaultsToFirstPage() {
