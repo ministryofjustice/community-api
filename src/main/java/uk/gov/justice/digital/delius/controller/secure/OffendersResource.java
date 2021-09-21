@@ -37,6 +37,7 @@ import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.AccessLimitation;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Contact;
+import uk.gov.justice.digital.delius.data.api.ContactLevel;
 import uk.gov.justice.digital.delius.data.api.ContactSummary;
 import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
@@ -263,6 +264,7 @@ public class OffendersResource {
         final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "contactDateTo", required = false) Optional<LocalDate> contactDateTo,
         final @RequestParam(value = "appointmentsOnly", required = false) Optional<Boolean> appointmentsOnly,
         final @RequestParam(value = "convictionId", required = false) Optional<Long> convictionId,
+        final @ApiParam(name = "contactLevel", value = "The primary entity type that a contact can be related to") Optional<ContactLevel> contactLevel,
         final @RequestParam(value = "attended", required = false) Optional<Boolean> attended,
         final @RequestParam(value = "complied", required = false) Optional<Boolean> complied,
         final @RequestParam(value = "nationalStandard", required = false) Optional<Boolean> nationalStandard,
