@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ContactDateRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 import uk.gov.justice.digital.delius.util.EntityHelper;
@@ -29,6 +30,7 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 @ExtendWith(MockitoExtension.class)
 public class ContactService_contactSummariesFor {
     @Mock private ContactRepository contactRepository;
+    @Mock private ContactDateRepository contactDateRepository;
     @Mock private ContactTypeRepository contactTypeRepository;
     @InjectMocks private ContactService subject;
 

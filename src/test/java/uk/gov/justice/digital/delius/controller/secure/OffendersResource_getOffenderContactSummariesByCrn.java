@@ -11,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import uk.gov.justice.digital.delius.data.api.AppointmentOutcome;
 import uk.gov.justice.digital.delius.data.api.ContactSummary;
 import uk.gov.justice.digital.delius.data.api.ContactType;

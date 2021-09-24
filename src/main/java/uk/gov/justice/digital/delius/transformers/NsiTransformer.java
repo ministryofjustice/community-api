@@ -40,7 +40,7 @@ public class NsiTransformer {
                 .notes(n.getNotes())
                 .intendedProvider(ProbationAreaTransformer.probationAreaOf(n.getIntendedProvider(), INCLUDE_INTENDED_PROVIDER_TEAMS))
                 .active(zeroOneToBoolean(nsi.getActiveFlag()))
-                .softDeleted(zeroOneToBoolean(nsi.getSoftDeleted()))
+                .softDeleted(nsi.getSoftDeleted())
                 .build()).orElse(null);
     }
 
@@ -79,7 +79,7 @@ public class NsiTransformer {
                 .build()).orElse(null);
     }
 
-    private static KeyValue nsiTypeOf(final NsiType nsiType) {
+    public static KeyValue nsiTypeOf(final NsiType nsiType) {
         return Optional.ofNullable(nsiType).map(nsit -> KeyValue.builder()
             .code(nsit.getCode())
             .description(nsit.getDescription())

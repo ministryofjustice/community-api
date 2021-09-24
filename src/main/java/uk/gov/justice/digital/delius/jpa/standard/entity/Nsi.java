@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @NoArgsConstructor
@@ -87,16 +88,17 @@ public class Nsi {
     private ProbationArea intendedProvider;
 
     @Column(name = "SOFT_DELETED")
-    @Builder.Default()
-    private Long softDeleted = 0L;
+    @Builder.Default
+    private Boolean softDeleted = false;
 
     @Column(name = "ACTIVE_FLAG")
     @Builder.Default()
     private Long activeFlag = 0L;
 
-    public boolean isSoftDeleted() {
-        return this.softDeleted != 0L;
-    }
     public boolean isActive() { return this.activeFlag != 0L; }
+
+    public boolean isRarNsi() {
+        return Optional.ofNullable(getRqmnt()).map(r -> !r.getSoftDeleted() && r.isRarRequirement()).orElse(false);
+    }
 
 }

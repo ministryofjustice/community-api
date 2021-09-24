@@ -162,7 +162,7 @@ public class NsiServiceTest {
                 .nsiType(uk.gov.justice.digital.delius.jpa.standard.entity.NsiType.builder()
                         .code("BRE")
                         .build())
-              .softDeleted(1L)
+              .softDeleted(true)
                 .build();
 
         when(nsiRepository.findByOffenderIdForActiveEvents(OFFENDER_ID)).thenReturn(singletonList(deletedNsiEntity));

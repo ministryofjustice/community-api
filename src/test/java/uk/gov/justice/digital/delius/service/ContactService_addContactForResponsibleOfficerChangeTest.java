@@ -6,10 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ContactDateRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 
@@ -33,10 +35,13 @@ import static uk.gov.justice.digital.delius.util.EntityHelper.anActivePrisonOffe
 @ExtendWith(MockitoExtension.class)
 public class ContactService_addContactForResponsibleOfficerChangeTest {
 
+    @InjectMocks
     private ContactService contactService;
 
     @Mock
     private ContactRepository contactRepository;
+    @Mock
+    private ContactDateRepository contactDateRepository;
     @Mock
     private ContactTypeRepository contactTypeRepository;
     @Captor
@@ -44,7 +49,6 @@ public class ContactService_addContactForResponsibleOfficerChangeTest {
 
     @BeforeEach
     public void setup() {
-        contactService = new ContactService(contactRepository, contactTypeRepository);
         when(contactTypeRepository.findByCode(any())).thenReturn(Optional.of(aContactType()));
     }
 

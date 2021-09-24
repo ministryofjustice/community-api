@@ -51,7 +51,7 @@ public class AppointmentTransformer {
             .rarActivity(ynToBoolean(contact.getRarActivity()))
             .requirement(
                 Optional.ofNullable(contact.getNsi())
-                    .filter(nsi -> !nsi.isSoftDeleted())
+                    .filter(nsi -> !nsi.getSoftDeleted())
                     .map(Nsi::getRqmnt)
                     .filter(r -> !r.getSoftDeleted())
                     .map(r -> AppointmentDetail.AppointmentRequirementDetail.builder()

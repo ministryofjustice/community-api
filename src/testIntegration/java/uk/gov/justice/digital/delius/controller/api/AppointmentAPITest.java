@@ -60,7 +60,7 @@ public class AppointmentAPITest {
             .body()
             .as(Appointment[].class);
 
-        assertThat(appointments).hasSize(3);
+        assertThat(appointments).hasSize(4);
     }
 
     @Test
