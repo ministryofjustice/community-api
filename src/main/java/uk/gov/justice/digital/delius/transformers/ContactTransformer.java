@@ -3,7 +3,7 @@ package uk.gov.justice.digital.delius.transformers;
 import com.google.common.collect.ImmutableList;
 import uk.gov.justice.digital.delius.data.api.ActivityLogGroup;
 import uk.gov.justice.digital.delius.data.api.ActivityLogGroup.ActivityLogEntry;
-import uk.gov.justice.digital.delius.data.api.ActivityLogGroup.ActivityLogEntryRar;
+import uk.gov.justice.digital.delius.data.api.ContactRarActivity;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.ContactSummary;
 import uk.gov.justice.digital.delius.data.api.Human;
@@ -57,6 +57,7 @@ public class ContactTransformer {
             .rarActivity(contact.isRarActivity())
             .lastUpdatedDateTime(Optional.ofNullable(contact.getLastUpdatedDateTime()).map(DateConverter::toOffsetDateTime).orElse(null))
             .lastUpdatedByUser(humanOf(contact.getLastUpdatedByUser()))
+            .rarActivityDetail(contactRarActivityOf(contact))
             .build();
     }
 
@@ -266,18 +267,22 @@ public class ContactTransformer {
             .staff(ContactTransformer.staffOf(contact.getStaff()))
             .sensitive(ynToBoolean(contact.getSensitive()))
             .outcome(AppointmentTransformer.appointmentOutcomeOf(contact))
-            .rarActivity(Optional.ofNullable(contact.getRarComponent())
-                .map(rc -> rc.fold(
-                        nsi -> ActivityLogEntryRar.builder().requirementId(nsi.getRqmnt().getRequirementId())
-                            .nsiId(nsi.getNsiId())
-                            .type(NsiTransformer.nsiTypeOf(nsi.getNsiType()))
-                            .subtype(KeyValueTransformer.keyValueOf(nsi.getNsiSubType())),
-                        // current policy (Sep-2021) is that RAR recording is done against an NSI, so we can afford to have poor defaults here.
-                        r -> ActivityLogEntryRar.builder().requirementId(r.getRequirementId())
-                    ).build())
-                .orElse(null))
+            .rarActivity(contactRarActivityOf(contact))
             .lastUpdatedDateTime(Optional.ofNullable(contact.getLastUpdatedDateTime()).map(DateConverter::toOffsetDateTime).orElse(null))
             .lastUpdatedByUser(humanOf(contact.getLastUpdatedByUser()))
             .build();
+    }
+
+    private static ContactRarActivity contactRarActivityOf(uk.gov.justice.digital.delius.jpa.standard.entity.Contact contact) {
+        return Optional.ofNullable(contact.getRarComponent())
+            .map(rc -> rc.fold(
+                    nsi -> ContactRarActivity.builder().requirementId(nsi.getRqmnt().getRequirementId())
+                        .nsiId(nsi.getNsiId())
+                        .type(NsiTransformer.nsiTypeOf(nsi.getNsiType()))
+                        .subtype(KeyValueTransformer.keyValueOf(nsi.getNsiSubType())),
+                    // current policy (Sep-2021) is that RAR recording is done against an NSI, so we can afford to have poor defaults here.
+                    r -> ContactRarActivity.builder().requirementId(r.getRequirementId())
+                ).build())
+            .orElse(null);
     }
 }

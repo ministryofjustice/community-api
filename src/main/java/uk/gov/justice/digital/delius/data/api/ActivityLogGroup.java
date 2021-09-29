@@ -64,32 +64,13 @@ public class ActivityLogGroup {
         @ApiModelProperty(name = "Outcome")
         private AppointmentOutcome outcome;
 
-        @ApiModelProperty(name = "RAR details, otherwise, this activity log entry is not counted in the RAR days calculation", example = "true")
-        private ActivityLogEntryRar rarActivity;
+        @ApiModelProperty(name = "RAR details, otherwise, this activity log entry is not counted in the RAR days calculation")
+        private ContactRarActivity rarActivity;
 
         @ApiModelProperty(name = "Date time when contact was last updated", example = "2021-05-25T10:00:00+01:00")
         private OffsetDateTime lastUpdatedDateTime;
 
         @ApiModelProperty(name = "Details of the person last updated the contact")
         private Human lastUpdatedByUser;
-    }
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ActivityLogEntryRar {
-        @NotNull
-        @ApiModelProperty(name = "The ID of the RAR requirement", required = true)
-        private Long requirementId;
-
-        @ApiModelProperty(name = "The ID of NSI if present")
-        private Long nsiId;
-
-        @ApiModelProperty(name = "The RAR type if known")
-        private KeyValue type;
-
-        @ApiModelProperty(name = "The RAR subtype if known")
-        private KeyValue subtype;
     }
 }
