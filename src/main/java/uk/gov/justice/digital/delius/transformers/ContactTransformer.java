@@ -266,14 +266,16 @@ public class ContactTransformer {
             .staff(ContactTransformer.staffOf(contact.getStaff()))
             .sensitive(ynToBoolean(contact.getSensitive()))
             .outcome(AppointmentTransformer.appointmentOutcomeOf(contact))
-            .rarActivity(contact.getRarComponent().map(rc -> rc.fold(
-                nsi -> ActivityLogEntryRar.builder().requirementId(nsi.getRqmnt().getRequirementId())
-                    .nsiId(nsi.getNsiId())
-                    .type(NsiTransformer.nsiTypeOf(nsi.getNsiType()))
-                    .subtype(KeyValueTransformer.keyValueOf(nsi.getNsiSubType())),
-                // current policy (Sep-2021) is that RAR recording is done against an NSI, so we can afford to have poor defaults here.
-                r -> ActivityLogEntryRar.builder().requirementId(r.getRequirementId())
-            ).build()).orElse(null))
+            .rarActivity(Optional.ofNullable(contact.getRarComponent())
+                .map(rc -> rc.fold(
+                        nsi -> ActivityLogEntryRar.builder().requirementId(nsi.getRqmnt().getRequirementId())
+                            .nsiId(nsi.getNsiId())
+                            .type(NsiTransformer.nsiTypeOf(nsi.getNsiType()))
+                            .subtype(KeyValueTransformer.keyValueOf(nsi.getNsiSubType())),
+                        // current policy (Sep-2021) is that RAR recording is done against an NSI, so we can afford to have poor defaults here.
+                        r -> ActivityLogEntryRar.builder().requirementId(r.getRequirementId())
+                    ).build())
+                .orElse(null))
             .lastUpdatedDateTime(Optional.ofNullable(contact.getLastUpdatedDateTime()).map(DateConverter::toOffsetDateTime).orElse(null))
             .lastUpdatedByUser(humanOf(contact.getLastUpdatedByUser()))
             .build();

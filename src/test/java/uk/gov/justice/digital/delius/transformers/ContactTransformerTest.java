@@ -197,6 +197,31 @@ class ContactTransformerTest {
         }
 
         @Test
+        public void handlesCommonMissingData() {
+            final var source = aContact().toBuilder()
+                .event(null)
+                .contactStartTime(null)
+                .contactEndTime(null)
+                .notes(null)
+                .contactOutcomeType(null)
+                .nsi(null)
+                .requirement(null)
+                .build();
+            final var observed = ContactTransformer.activityLogGroupsOf(List.of(source));
+
+            assertThat(observed).asList().hasSize(1).element(0)
+                .extracting("entries").asList()
+                .hasSize(1)
+                .element(0)
+                .hasFieldOrPropertyWithValue("convictionId", null)
+                .hasFieldOrPropertyWithValue("startTime", null)
+                .hasFieldOrPropertyWithValue("endTime", null)
+                .hasFieldOrPropertyWithValue("outcome", null)
+                .hasFieldOrPropertyWithValue("notes", null)
+                .hasFieldOrPropertyWithValue("rarActivity", null);
+        }
+
+        @Test
         public void activityLogItems() {
             final var source = List.of(aContact());
             final var observed = ContactTransformer.activityLogGroupsOf(source);

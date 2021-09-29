@@ -204,9 +204,9 @@ public class Contact {
      * NOTE: This is not a definitive RAR count & must be deduplicated by date as multiple RAR appointments on a single day are counted once.
      * @return Optional RAR components if this contact is considered part of the total RAR count.
      */
-    public Optional<Either<Nsi, Requirement>> getRarComponent() {
+    public Either<Nsi, Requirement> getRarComponent() {
         if (!isRarActivity() || "N".equals(getAttended())) {
-            return Optional.empty();
+            return null;
         }
 
         // the NSI is the primary component of RAR, so we check that first.
@@ -216,6 +216,7 @@ public class Contact {
             .map(Either::<Nsi, Requirement>left)
             .or(() -> Optional.ofNullable(getRequirement())
                 .filter(r -> !r.getSoftDeleted() && r.isRarRequirement())
-                .map(Either::<Nsi, Requirement>right));
+                .map(Either::<Nsi, Requirement>right))
+            .orElse(null);
     }
 }

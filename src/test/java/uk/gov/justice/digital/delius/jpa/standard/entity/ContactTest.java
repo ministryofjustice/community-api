@@ -14,7 +14,7 @@ public class ContactTest {
         @Test
         void whenRarThroughNsi() {
             final var contact = aRarContact();
-            assertThat(contact.getRarComponent()).hasValue(Either.left(contact.getNsi()));
+            assertThat(contact.getRarComponent()).isEqualTo(Either.left(contact.getNsi()));
         }
 
         @Test
@@ -23,46 +23,46 @@ public class ContactTest {
                 .requirement(EntityHelper.aRarRequirement())
                 .nsi(null)
                 .build();
-            assertThat(contact.getRarComponent()).hasValue(Either.right(contact.getRequirement()));
+            assertThat(contact.getRarComponent()).isEqualTo(Either.right(contact.getRequirement()));
         }
 
         @Test
         void whenNoRarComponent() {
             final var contact = aRarContact().toBuilder().nsi(null).build();
-            assertThat(contact.getRarComponent()).isEmpty();
+            assertThat(contact.getRarComponent()).isNull();
         }
 
         @Test
         void whenRarActivityFlagUnset() {
             final var contact = aRarContact().toBuilder().rarActivity(null).build();
-            assertThat(contact.getRarComponent()).isEmpty();
+            assertThat(contact.getRarComponent()).isNull();
         }
 
         @Test
         void whenNotAttended() {
             final var contact = aRarContact().toBuilder().attended("N").build();
-            assertThat(contact.getRarComponent()).isEmpty();
+            assertThat(contact.getRarComponent()).isNull();
         }
 
         @Test
         void whenNsiIsSoftDeleted() {
             final var contact = aRarContact();
             contact.getNsi().setSoftDeleted(true);
-            assertThat(contact.getRarComponent()).isEmpty();
+            assertThat(contact.getRarComponent()).isNull();
         }
 
         @Test
         void whenNsiHasSoftDeletedRarRequirement() {
             final var contact = aRarContact();
             contact.getNsi().getRqmnt().setSoftDeleted(true);
-            assertThat(contact.getRarComponent()).isEmpty();
+            assertThat(contact.getRarComponent()).isNull();
         }
 
         @Test
         void whenNsiHasNonRarRequirement() {
             final var contact = aRarContact();
             contact.getNsi().getRqmnt().getRequirementTypeMainCategory().setCode("NOT_RAR");
-            assertThat(contact.getRarComponent()).isEmpty();
+            assertThat(contact.getRarComponent()).isNull();
         }
 
         private Contact aRarContact() {
