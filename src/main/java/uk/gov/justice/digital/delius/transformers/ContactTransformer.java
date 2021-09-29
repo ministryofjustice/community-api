@@ -1,6 +1,9 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import com.google.common.collect.ImmutableList;
+import uk.gov.justice.digital.delius.data.api.ActivityLogGroup;
+import uk.gov.justice.digital.delius.data.api.ActivityLogGroup.ActivityLogEntry;
+import uk.gov.justice.digital.delius.data.api.ActivityLogGroup.ActivityLogEntryRar;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.ContactSummary;
 import uk.gov.justice.digital.delius.data.api.Human;
@@ -24,7 +27,9 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import uk.gov.justice.digital.delius.jpa.standard.entity.User;
 import uk.gov.justice.digital.delius.utils.DateConverter;
 
+import java.time.LocalTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,7 +39,6 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBo
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOneToBoolean;
 
 public class ContactTransformer {
-
     public static ContactSummary contactSummaryOf(uk.gov.justice.digital.delius.jpa.standard.entity.Contact contact) {
         return ContactSummary.builder()
             .contactId(contact.getContactId())
@@ -222,11 +226,58 @@ public class ContactTransformer {
                         .description(cot.getDescription())
                         .build()).orElse(null);
     }
+
     private static Human humanOf(final User user){
         return Optional.ofNullable(user).map(u -> Human.builder()
             .forenames(combinedForenamesOf(u.getForename(), u.getForename2()))
             .surname(u.getSurname())
             .build().capitalise()
         ).orElse(null);
+    }
+
+    public static List<ActivityLogGroup> activityLogGroupsOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.Contact> contacts) {
+        final var groups = contacts.stream().collect(Collectors.groupingBy(
+            uk.gov.justice.digital.delius.jpa.standard.entity.Contact::getContactDate,
+            Collectors.collectingAndThen(Collectors.toList(), list -> list.stream()
+                .map(ContactTransformer::activityLogEntryOf)
+                .sorted(Comparator.comparing(e -> Optional.ofNullable(e.getStartTime()).orElse(LocalTime.MIDNIGHT)))
+                .collect(Collectors.toList()))
+        ));
+
+
+        return groups.entrySet().stream()
+            .map(x -> ActivityLogGroup.builder()
+                .date(x.getKey())
+                .rarDay(x.getValue().stream().anyMatch(e -> e.getRarActivity() != null))
+                .entries(x.getValue())
+                .build())
+            .sorted(Comparator.comparing(ActivityLogGroup::getDate).reversed())
+            .collect(Collectors.toList());
+    }
+
+    private static ActivityLogEntry activityLogEntryOf(uk.gov.justice.digital.delius.jpa.standard.entity.Contact contact) {
+        return ActivityLogEntry.builder()
+            .contactId(contact.getContactId())
+            .convictionId(Optional.ofNullable(contact.getEvent()).map(Event::getEventId).orElse(null))
+            .startTime(contact.getContactStartTime())
+            .endTime(contact.getContactEndTime())
+            .type(contactTypeOf(contact.getContactType(), true))
+            .notes(contact.getNotes())
+            .staff(ContactTransformer.staffOf(contact.getStaff()))
+            .sensitive(ynToBoolean(contact.getSensitive()))
+            .outcome(AppointmentTransformer.appointmentOutcomeOf(contact))
+            .rarActivity(Optional.ofNullable(contact.getRarComponent())
+                .map(rc -> rc.fold(
+                        nsi -> ActivityLogEntryRar.builder().requirementId(nsi.getRqmnt().getRequirementId())
+                            .nsiId(nsi.getNsiId())
+                            .type(NsiTransformer.nsiTypeOf(nsi.getNsiType()))
+                            .subtype(KeyValueTransformer.keyValueOf(nsi.getNsiSubType())),
+                        // current policy (Sep-2021) is that RAR recording is done against an NSI, so we can afford to have poor defaults here.
+                        r -> ActivityLogEntryRar.builder().requirementId(r.getRequirementId())
+                    ).build())
+                .orElse(null))
+            .lastUpdatedDateTime(Optional.ofNullable(contact.getLastUpdatedDateTime()).map(DateConverter::toOffsetDateTime).orElse(null))
+            .lastUpdatedByUser(humanOf(contact.getLastUpdatedByUser()))
+            .build();
     }
 }

@@ -35,6 +35,7 @@ import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.AccessLimitation;
+import uk.gov.justice.digital.delius.data.api.ActivityLogGroup;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.ContactSummary;
@@ -55,6 +56,7 @@ import uk.gov.justice.digital.delius.data.api.SentenceStatus;
 import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
+import uk.gov.justice.digital.delius.jpa.filters.ContactFilter.ConvictionDatesFilter;
 import uk.gov.justice.digital.delius.service.AssessmentService;
 import uk.gov.justice.digital.delius.service.ContactService;
 import uk.gov.justice.digital.delius.service.ConvictionService;
@@ -268,8 +270,7 @@ public class OffendersResource {
         final @RequestParam(value = "nationalStandard", required = false) Optional<Boolean> nationalStandard,
         final @RequestParam(value = "outcome", required = false) Optional<Boolean> outcome,
         final @ApiParam(name = "include", value = "Contacts to include. Can be a contact type code, prefixed with 'type_' or appointments", example = "type_ccmp", allowMultiple = true) @RequestParam(value = "include", required = false) Optional<List<String>> include,
-        final @ApiParam(name = "rarActivity", value = "Contacts with rarActivity flag true as well as has a linked requirement with requirementTypeMainCategory code " +
-            "of F (REHABILITATION_ACTIVITY_REQUIREMENT_CODE). If this filter is set to false, no filter will be applied.", example = "true")
+        final @ApiParam(name = "rarActivity", value = "Counts toward the RAR day calculation. If this filter is set to false then no filter will be applied.", example = "true")
         @RequestParam(value = "rarActivity", required = false) Optional<Boolean> rarActivity) {
 
         final var contactFilter = ContactFilter.builder()
@@ -290,6 +291,63 @@ public class OffendersResource {
 
         return offenderService.offenderIdOfCrn(crn)
             .map(offenderId -> contactService.contactSummariesFor(offenderId, contactFilter, page, pageSize))
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN '%s' does not exist", crn)));
+    }
+
+    @ApiOperation(value = "EXPERIMENTAL: Returns a date grouped activity log for an offender by CRN", tags = "Contact and attendance")
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "Offender does not exist"),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+    @GetMapping(value = "/offenders/crn/{crn}/activity-log")
+    public Page<ActivityLogGroup> getActivityLogByCrn(
+        final @ApiParam(name = "crn", value = "CRN of the offender", example = "X123456", required = true) @NotNull @PathVariable("crn") String crn,
+        final @ApiParam(name = "page", value = "Page number (0-based)", example = "0") @RequestParam(required = false, defaultValue = "0") @PositiveOrZero int page,
+        final @ApiParam(name = "pageSize", value = "Optional size of page", example = "20") @RequestParam(required = false, defaultValue = "1000") @Positive int pageSize,
+        final @RequestParam(value = "contactTypes", required = false) Optional<List<String>> contactTypes,
+        final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "contactDateFrom", required = false) Optional<LocalDate> contactDateFrom,
+        final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "contactDateTo", required = false) Optional<LocalDate> contactDateTo,
+        final @RequestParam(value = "appointmentsOnly", required = false) Optional<Boolean> appointmentsOnly,
+        final @RequestParam(value = "convictionId", required = false) Optional<Long> convictionId,
+        final @ApiParam(name = "convictionDatesOf", value = "Filters to the specified conviction ID or any offender level contact within the dates of the conviction.")
+        @RequestParam(value = "convictionDatesOf", required = false) Optional<Long> convictionDatesOf,
+        final @RequestParam(value = "attended", required = false) Optional<Boolean> attended,
+        final @RequestParam(value = "complied", required = false) Optional<Boolean> complied,
+        final @RequestParam(value = "nationalStandard", required = false) Optional<Boolean> nationalStandard,
+        final @ApiParam(name = "outcome", value = "Has an outcome", example = "true")  @RequestParam(value = "outcome", required = false) Optional<Boolean> outcome,
+        final @ApiParam(name = "rarActivity", value = "Counts toward the RAR day calculation, if this filter is set to false then no filter will be applied", example = "true")
+        @RequestParam(value = "rarActivity", required = false) Optional<Boolean> rarActivity
+    ) {
+        return offenderService.offenderIdOfCrn(crn)
+            .map(offenderId -> {
+                final var convictionDateFilter = convictionDatesOf
+                    .map(id -> convictionService.convictionFor(offenderId, id)
+                        .orElseThrow(() -> new NotFoundException(String.format("Conviction with ID '%d' does not exist", id))))
+                    .map(conviction -> new ConvictionDatesFilter(
+                        conviction.getConvictionId(),
+                        Optional.ofNullable(conviction.getConvictionDate()),
+                        Optional.ofNullable(conviction.getSentence().getTerminationDate())
+                    ));
+
+                final var filter = ContactFilter.builder()
+                    .contactTypes(contactTypes)
+                    .offenderId(offenderId)
+                    .contactDateFrom(contactDateFrom)
+                    .contactDateTo(contactDateTo)
+                    .appointmentsOnly(appointmentsOnly)
+                    .convictionId(convictionId)
+                    .convictionDatesOf(convictionDateFilter)
+                    .attended(attended)
+                    .complied(complied)
+                    .nationalStandard(nationalStandard)
+                    .outcome(outcome)
+                    .rarActivity(rarActivity)
+                    .build();
+
+                return contactService.activityLogFor(filter, page, pageSize);
+            })
             .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN '%s' does not exist", crn)));
     }
 

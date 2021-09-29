@@ -1,12 +1,12 @@
 package uk.gov.justice.digital.delius.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ContactDateRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 
@@ -22,15 +22,12 @@ public class ContactService_getContactSummaryTest {
     @Mock
     private ContactRepository contactRepository;
     @Mock
+    private ContactDateRepository contactDateRepository;
+    @Mock
     private ContactTypeRepository contactTypeRepository;
 
     @InjectMocks
     private ContactService contactService;
-
-    @BeforeEach
-    public void setup() {
-        contactService = new ContactService(contactRepository, contactTypeRepository);
-    }
 
     @Test
     @DisplayName("will return a contact for given contact id and offender id ")

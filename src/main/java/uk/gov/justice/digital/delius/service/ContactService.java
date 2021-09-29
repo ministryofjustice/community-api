@@ -2,12 +2,14 @@ package uk.gov.justice.digital.delius.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
+import uk.gov.justice.digital.delius.data.api.ActivityLogGroup;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.ContactSummary;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
@@ -21,6 +23,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ContactDateRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 import uk.gov.justice.digital.delius.transformers.ContactTransformer;
@@ -50,6 +53,7 @@ public class ContactService {
     private static final String TIER_UPDATE_CONTACT_TYPE = "ETCH20";
     public static final String DELIUS_DATE_FORMAT = "E MMM dd yyyy"; // e.g. "Tue Nov 24 2020"
     private final ContactRepository contactRepository;
+    private final ContactDateRepository contactDateRepository;
     private final ContactTypeRepository contactTypeRepository;
 
     public List<Contact> contactsFor(final Long offenderId, final ContactFilter filter) {
@@ -60,6 +64,22 @@ public class ContactService {
         final var pagination = PageRequest.of(page, pageSize, Sort.by(DESC, "contactDate", "contactStartTime", "contactEndTime"));
         return contactRepository.findAll(filter.toBuilder().offenderId(offenderId).build(), pagination)
             .map(ContactTransformer::contactSummaryOf);
+    }
+
+    public Page<ActivityLogGroup> activityLogFor(ContactFilter filter, int page, int pageSize) {
+        // 1. calculate pagination based on distinct contact dates.
+        final var pageable = PageRequest.of(page, pageSize, Sort.by(DESC, "contactDate"));
+        final var dates = contactDateRepository.findAll(filter, pageable);
+        final var minDate = dates.stream().min(LocalDate::compareTo);
+        final var maxDate = dates.stream().max(LocalDate::compareTo);
+        if (minDate.isEmpty() || maxDate.isEmpty()) {
+            return new PageImpl<>(List.of(), pageable, dates.getTotalElements());
+        }
+
+        // 2. use resulting date range to filter the contact log.
+        final var contactFilter = filter.toBuilder().contactDateFrom(minDate).contactDateTo(maxDate).build();
+        final var contacts = contactRepository.findAll(contactFilter);
+        return new PageImpl<>(ContactTransformer.activityLogGroupsOf(contacts), pageable, dates.getTotalElements());
     }
 
     @Transactional
@@ -379,5 +399,4 @@ public class ContactService {
                 .alertActive(contactType.getAlertFlag())
                 .build());
     }
-
 }

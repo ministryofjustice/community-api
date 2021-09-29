@@ -55,7 +55,7 @@ public class NsiService {
         return new NsiWrapper(
                 nsiRepository.findByOffenderIdForActiveEvents(offenderId)
                         .stream()
-                        .filter(nsi -> !nsi.isSoftDeleted())
+                        .filter(nsi -> !nsi.getSoftDeleted())
                         .filter(nsi -> nsiCodes.contains(nsi.getNsiType().getCode()))
                         .map(NsiTransformer::nsiOf)
                         .collect(Collectors.toList()));
@@ -66,7 +66,7 @@ public class NsiService {
         return new NsiWrapper(
                 nsiRepository.findByOffenderIdForActiveEvents(offenderId)
                         .stream()
-                        .filter(nsi -> !nsi.isSoftDeleted())
+                        .filter(nsi -> !nsi.getSoftDeleted())
                         .filter(nsi -> RECALL_NSI_TYPE_CODE.equals(nsi.getNsiType().getCode()))
                         .filter(nsi -> !hasRecallNsiAnExpiredLicence(nsi) )
                         .map(NsiTransformer::nsiOf)

@@ -516,17 +516,20 @@ public class EntityHelper {
     public static Nsi aNsi() {
         return Nsi
                 .builder()
+                .nsiId(50L)
                 .nsiType(NsiType
                         .builder()
+                        .code("NT1")
                         .description("Custody - Accredited Programme")
                         .build())
                 .nsiSubType(StandardReference
                         .builder()
+                        .codeValue("NST1")
                         .codeDescription("Healthy Sex Programme (HCP)")
                         .build())
                 .referralDate(LocalDate.now())
                 .nsiManagers(List.of(aNsiManager()))
-                .softDeleted(0L)
+                .softDeleted(false)
                 .build();
     }
 

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
+import io.vavr.control.Either;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +15,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Optional;
 
 @Data
 @NoArgsConstructor
@@ -185,7 +187,36 @@ public class Contact {
     @Column(name = "RAR_ACTIVITY")
     private String rarActivity;
 
+    /**
+     * Determines whether this contact has the RAR activity flag set.
+     * NOTE: this does NOT mean that this contact counts towards RAR.
+     * @return true if the RAR activity flag is set, false otherwise.
+     */
     public boolean isRarActivity() {
         return "Y".equals(rarActivity);
+    }
+
+    /**
+     * Determines whether this contact is considered part of the total RAR count & gets the primary RAR component present.
+     * For a contact to be considered for RAR, it must not be unattended (Sep-2021), have the RAR activity flag set & either:
+     * a) linked to a RAR requirement directly
+     * b) linked to a rar requirement via an NSI
+     * NOTE: This is not a definitive RAR count & must be deduplicated by date as multiple RAR appointments on a single day are counted once.
+     * @return Optional RAR components if this contact is considered part of the total RAR count.
+     */
+    public Either<Nsi, Requirement> getRarComponent() {
+        if (!isRarActivity() || "N".equals(getAttended())) {
+            return null;
+        }
+
+        // the NSI is the primary component of RAR, so we check that first.
+        // we also don't have to be careful with defaults here as the requirement and nsi foreign keys are mutually exclusive.
+        return Optional.ofNullable(getNsi())
+            .filter(nsi -> !nsi.getSoftDeleted() && nsi.isRarNsi())
+            .map(Either::<Nsi, Requirement>left)
+            .or(() -> Optional.ofNullable(getRequirement())
+                .filter(r -> !r.getSoftDeleted() && r.isRarRequirement())
+                .map(Either::<Nsi, Requirement>right))
+            .orElse(null);
     }
 }
