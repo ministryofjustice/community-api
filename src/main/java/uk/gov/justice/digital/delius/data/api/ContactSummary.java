@@ -52,6 +52,11 @@ public class ContactSummary {
     @ApiModelProperty(name = "Outcome")
     private AppointmentOutcome outcome;
 
+    /**
+     * The RAR activity flag.
+     * @implNote this does NOT mean that this contact counts towards RAR.
+     * @see ContactSummary::rarActivityMeta consumers looking contacts that count toward RAR should prefer this instead
+     */
     @ApiModelProperty(name = "RAR activity flag", example = "true")
     private Boolean rarActivity;
 
@@ -60,4 +65,7 @@ public class ContactSummary {
 
     @ApiModelProperty(name = "Details of the person last updated the contact")
     private Human lastUpdatedByUser;
+
+    @ApiModelProperty(name = "RAR details, otherwise, this activity log entry is not counted in the RAR days calculation")
+    private ContactRarActivity rarActivityDetail;
 }

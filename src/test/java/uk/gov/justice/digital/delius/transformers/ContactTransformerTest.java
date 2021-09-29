@@ -88,6 +88,8 @@ class ContactTransformerTest {
             .contactOutcomeType(null)
             .lastUpdatedDateTime(null)
             .lastUpdatedByUser(null)
+            .nsi(null)
+            .requirement(null)
             .build();
         final var observed = ContactTransformer.contactSummaryOf(contact);
         final var expectedDate = DateConverter.toOffsetDateTime(LocalDateTime.of(contact.getContactDate(), LocalTime.MIDNIGHT));
@@ -103,7 +105,7 @@ class ContactTransformerTest {
             .hasFieldOrPropertyWithValue("rarActivity", false)
             .hasFieldOrPropertyWithValue("lastUpdatedDateTime", null)
             .hasFieldOrPropertyWithValue("lastUpdatedByUser", null)
-        ;
+            .hasFieldOrPropertyWithValue("rarActivityDetail", null);
     }
 
     @Test
@@ -141,7 +143,13 @@ class ContactTransformerTest {
             .hasFieldOrPropertyWithValue("rarActivity", true)
             .hasFieldOrPropertyWithValue("lastUpdatedDateTime", OffsetDateTime.of(contact.getLastUpdatedDateTime(), ZoneOffset.ofHours(1)))
             .hasFieldOrPropertyWithValue("lastUpdatedByUser.surname", "Smith")
-            .hasFieldOrPropertyWithValue("lastUpdatedByUser.forenames", "John Michael");
+            .hasFieldOrPropertyWithValue("lastUpdatedByUser.forenames", "John Michael")
+            .hasFieldOrPropertyWithValue("rarActivityDetail.requirementId", 1000L)
+            .hasFieldOrPropertyWithValue("rarActivityDetail.nsiId", 50L)
+            .hasFieldOrPropertyWithValue("rarActivityDetail.type.code", "NT1")
+            .hasFieldOrPropertyWithValue("rarActivityDetail.type.description", "Custody - Accredited Programme")
+            .hasFieldOrPropertyWithValue("rarActivityDetail.subtype.code", "NST1")
+            .hasFieldOrPropertyWithValue("rarActivityDetail.subtype.description", "Healthy Sex Programme (HCP)");
 
         assertThat(observed.getType().getCategories())
             .containsExactly(KeyValue.builder().code("AL").description("All/Available").build());
@@ -161,8 +169,6 @@ class ContactTransformerTest {
             .getCategories())
             .containsExactly(KeyValue.builder().code("AL").description("All/Available").build());
     }
-
-
 
     @Nested
     public class ActivityLogGroupOf {
