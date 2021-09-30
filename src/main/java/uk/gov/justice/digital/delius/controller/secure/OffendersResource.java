@@ -52,6 +52,7 @@ import uk.gov.justice.digital.delius.data.api.PrimaryIdentifiers;
 import uk.gov.justice.digital.delius.data.api.ProbationStatusDetail;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficerSwitch;
+import uk.gov.justice.digital.delius.data.api.Sentence;
 import uk.gov.justice.digital.delius.data.api.SentenceStatus;
 import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
@@ -328,7 +329,7 @@ public class OffendersResource {
                     .map(conviction -> new ConvictionDatesFilter(
                         conviction.getConvictionId(),
                         Optional.ofNullable(conviction.getConvictionDate()),
-                        Optional.ofNullable(conviction.getSentence().getTerminationDate())
+                        Optional.ofNullable(conviction.getSentence()).map(Sentence::getTerminationDate)
                     ));
 
                 final var filter = ContactFilter.builder()

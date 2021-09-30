@@ -124,6 +124,40 @@ public class OffendersResource_getActivityLogByCrnTest {
                 .build());
     }
 
+    @Test
+    void gettingActivityLogEntryWithNoSentence() {
+        final var conviction = Conviction.builder()
+            .convictionId(20L)
+            .convictionDate(LocalDate.of(2021, 2, 1))
+            .sentence(null)
+            .build();
+
+        final var groups = List.of(
+            anActivityLogGroup(LocalDate.of(2021, 2, 1))
+        );
+
+        when(offenderService.offenderIdOfCrn("CRN1")).thenReturn(Optional.of(10L));
+        when(convictionService.convictionFor(10L, 20L)).thenReturn(Optional.of(conviction));
+        when(contactService.activityLogFor(filterCaptor.capture(), eq(1), eq(2)))
+            .thenReturn(new PageImpl<>(groups, PageRequest.of(1, 2), 1000));
+
+        final var body = given()
+            .when()
+            .get("/secure/offenders/crn/CRN1/activity-log?" +
+                "page=1&pageSize=2&" +
+                "convictionDatesOf=20&")
+            .then()
+            .statusCode(200);
+
+        assertThat(filterCaptor.getValue())
+            .isEqualTo(ContactFilter.builder()
+                .offenderId(10L)
+                .convictionDatesOf(Optional.of(new ConvictionDatesFilter(20L,
+                    Optional.of(LocalDate.of(2021, 2, 1)),
+                    Optional.empty())))
+                .build());
+    }
+
     private static ActivityLogGroup anActivityLogGroup(LocalDate date) {
         return ActivityLogGroup.builder()
             .date(date)
