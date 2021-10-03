@@ -6,6 +6,7 @@ import uk.gov.justice.digital.delius.data.api.ActivityLogGroup.ActivityLogEntry;
 import uk.gov.justice.digital.delius.data.api.ContactRarActivity;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.ContactSummary;
+import uk.gov.justice.digital.delius.data.api.Enforcement;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Nsi;
@@ -270,7 +271,13 @@ public class ContactTransformer {
             .rarActivity(contactRarActivityOf(contact))
             .lastUpdatedDateTime(Optional.ofNullable(contact.getLastUpdatedDateTime()).map(DateConverter::toOffsetDateTime).orElse(null))
             .lastUpdatedByUser(humanOf(contact.getLastUpdatedByUser()))
+            .enforcement(Optional.ofNullable(contact.getEnforcement()).map(ContactTransformer::enforcementOf).orElse(null))
             .build();
+    }
+
+    private static Enforcement enforcementOf(uk.gov.justice.digital.delius.jpa.standard.entity.Enforcement enforcement) {
+        return Enforcement.builder().enforcementAction(KeyValue.builder()
+            .code(enforcement.getEnforcementAction().getCode()).description(enforcement.getEnforcementAction().getDescription()).build()).build();
     }
 
     private static ContactRarActivity contactRarActivityOf(uk.gov.justice.digital.delius.jpa.standard.entity.Contact contact) {

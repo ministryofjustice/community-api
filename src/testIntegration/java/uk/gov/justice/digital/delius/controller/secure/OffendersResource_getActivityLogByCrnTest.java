@@ -47,6 +47,8 @@ public class OffendersResource_getActivityLogByCrnTest extends IntegrationTestBa
             .body("lastUpdatedDateTime", equalTo("2019-09-04T00:00:00+01:00"))
             .body("lastUpdatedByUser.forenames", equalTo("Andy"))
             .body("lastUpdatedByUser.surname", equalTo("Marke"))
+            .body("enforcement.enforcementAction.code", equalTo("WLS"))
+            .body("enforcement.enforcementAction.description", equalTo("Enforcement Letter Requested"))
 
             // Offender level, non-RAR
             .root("content.find { it.date == '2021-02-01' }.entries.find { it.contactId == 2503537765 }")

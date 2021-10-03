@@ -15,7 +15,10 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
+
+import static java.lang.String.format;
 
 @Data
 @NoArgsConstructor
@@ -149,7 +152,7 @@ public class Contact {
     private String complied;
 
     @Column(name = "ENFORCEMENT")
-    private String enforcement;
+    private Boolean enforcementContact;
 
     @Column(name = "DOCUMENT_LINKED")
     private String documentLinked;
@@ -186,6 +189,9 @@ public class Contact {
 
     @Column(name = "RAR_ACTIVITY")
     private String rarActivity;
+
+    @OneToOne(mappedBy = "contact")
+    private Enforcement enforcement;
 
     /**
      * Determines whether this contact has the RAR activity flag set.

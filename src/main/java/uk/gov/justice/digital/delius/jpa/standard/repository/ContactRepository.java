@@ -15,7 +15,7 @@ public interface ContactRepository extends JpaRepository<Contact, Long>, JpaSpec
         + "WHERE contact.offenderId = :offenderId "
         + "AND contact.event.eventId = :eventId "
         + "AND contact.contactDate <= :contactDate "
-        + "AND contact.enforcement = '1'")
+        + "AND contact.enforcementContact = true")
     List<Contact> findByOffenderAndEventIdEnforcement(@Param("offenderId") Long offenderId,
                                                     @Param("eventId") Long eventId,
                                                     @Param("contactDate") LocalDate contactDate);
@@ -25,7 +25,7 @@ public interface ContactRepository extends JpaRepository<Contact, Long>, JpaSpec
         + "WHERE contact.offenderId = :offenderId "
         + "AND contact.event.eventId = :eventId "
         + "AND contact.contactDate <= :contactDate "
-        + "AND (contact.enforcement = '1' OR contact.contactOutcomeType != null) "
+        + "AND (contact.enforcementContact = true OR contact.contactOutcomeType != null) "
         + "AND contact.contactType.attendanceContact = true "
         + "AND contact.contactType.nationalStandardsContact = 'Y'"
     )
