@@ -72,5 +72,8 @@ public class ActivityLogGroup {
 
         @ApiModelProperty(name = "Details of the person last updated the contact")
         private Human lastUpdatedByUser;
+
+        @ApiModelProperty(name = "Enforcement details of this contact")
+        private Enforcement enforcement;
     }
 }

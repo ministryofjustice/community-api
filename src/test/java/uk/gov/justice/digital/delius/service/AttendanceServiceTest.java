@@ -113,7 +113,7 @@ public class AttendanceServiceTest {
                 .complied(complied)
                 .contactType(ContactType.builder().code(CONTACT_TYPE_CODE).description(CONTACT_TYPE_DESC).build())
                 .contactOutcomeType(ContactOutcomeType.builder().code("COT-CODE").description(OUTCOME).build())
-                .enforcement("1")
+                .enforcementContact(true)
                 .build();
     }
 }

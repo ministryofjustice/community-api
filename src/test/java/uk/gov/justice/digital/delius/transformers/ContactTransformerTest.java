@@ -7,6 +7,8 @@ import uk.gov.justice.digital.delius.data.api.ContactSummary;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Enforcement;
+import uk.gov.justice.digital.delius.jpa.standard.entity.EnforcementAction;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceCondition;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LicenceConditionTypeMainCat;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
@@ -212,6 +214,7 @@ class ContactTransformerTest {
                 .contactOutcomeType(null)
                 .nsi(null)
                 .requirement(null)
+                .enforcement(null)
                 .build();
             final var observed = ContactTransformer.activityLogGroupsOf(List.of(source));
 
@@ -224,7 +227,8 @@ class ContactTransformerTest {
                 .hasFieldOrPropertyWithValue("endTime", null)
                 .hasFieldOrPropertyWithValue("outcome", null)
                 .hasFieldOrPropertyWithValue("notes", null)
-                .hasFieldOrPropertyWithValue("rarActivity", null);
+                .hasFieldOrPropertyWithValue("rarActivity", null)
+                .hasFieldOrPropertyWithValue("enforcement", null);
         }
 
         @Test
@@ -265,7 +269,9 @@ class ContactTransformerTest {
                 .hasFieldOrPropertyWithValue("rarActivity.subtype.description", "Healthy Sex Programme (HCP)")
                 .hasFieldOrPropertyWithValue("lastUpdatedDateTime", OffsetDateTime.of(2021, 5, 1, 12, 15, 0, 0, ZoneOffset.ofHours(1)))
                 .hasFieldOrPropertyWithValue("lastUpdatedByUser.surname", "Smith")
-                .hasFieldOrPropertyWithValue("lastUpdatedByUser.forenames", "John Michael");
+                .hasFieldOrPropertyWithValue("lastUpdatedByUser.forenames", "John Michael")
+                .hasFieldOrPropertyWithValue("enforcement.enforcementAction.code", "WLS")
+                .hasFieldOrPropertyWithValue("enforcement.enforcementAction.description", "Enforcement Letter Requested");
         }
     }
 
@@ -321,6 +327,9 @@ class ContactTransformerTest {
             .nsi(EntityHelper.aNsi().toBuilder()
                 .rqmnt(EntityHelper.aRarRequirement())
                 .build())
+            .enforcement(Enforcement.builder().
+                enforcementAction(EnforcementAction.builder()
+                    .code("WLS").description("Enforcement Letter Requested").build()).build())
             .build();
     }
 }
