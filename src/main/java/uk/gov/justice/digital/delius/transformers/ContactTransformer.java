@@ -56,9 +56,10 @@ public class ContactTransformer {
             .sensitive(ynToBoolean(contact.getSensitive()))
             .outcome(AppointmentTransformer.appointmentOutcomeOf(contact))
             .rarActivity(contact.isRarActivity())
+            .rarActivityDetail(contactRarActivityOf(contact))
+            .enforcement(Optional.ofNullable(contact.getEnforcement()).map(ContactTransformer::enforcementOf).orElse(null))
             .lastUpdatedDateTime(Optional.ofNullable(contact.getLastUpdatedDateTime()).map(DateConverter::toOffsetDateTime).orElse(null))
             .lastUpdatedByUser(humanOf(contact.getLastUpdatedByUser()))
-            .rarActivityDetail(contactRarActivityOf(contact))
             .build();
     }
 
