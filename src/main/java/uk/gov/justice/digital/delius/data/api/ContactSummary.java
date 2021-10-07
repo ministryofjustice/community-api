@@ -68,4 +68,7 @@ public class ContactSummary {
 
     @ApiModelProperty(name = "RAR details, otherwise, this activity log entry is not counted in the RAR days calculation")
     private ContactRarActivity rarActivityDetail;
+
+    @ApiModelProperty(name = "Enforcement details of this contact")
+    private Enforcement enforcement;
 }

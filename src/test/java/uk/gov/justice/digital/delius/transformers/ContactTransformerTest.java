@@ -92,6 +92,7 @@ class ContactTransformerTest {
             .lastUpdatedByUser(null)
             .nsi(null)
             .requirement(null)
+            .enforcement(null)
             .build();
         final var observed = ContactTransformer.contactSummaryOf(contact);
         final var expectedDate = DateConverter.toOffsetDateTime(LocalDateTime.of(contact.getContactDate(), LocalTime.MIDNIGHT));
@@ -105,9 +106,10 @@ class ContactTransformerTest {
             .hasFieldOrPropertyWithValue("sensitive", null)
             .hasFieldOrPropertyWithValue("outcome", null)
             .hasFieldOrPropertyWithValue("rarActivity", false)
+            .hasFieldOrPropertyWithValue("rarActivityDetail", null)
+            .hasFieldOrPropertyWithValue("enforcement", null)
             .hasFieldOrPropertyWithValue("lastUpdatedDateTime", null)
-            .hasFieldOrPropertyWithValue("lastUpdatedByUser", null)
-            .hasFieldOrPropertyWithValue("rarActivityDetail", null);
+            .hasFieldOrPropertyWithValue("lastUpdatedByUser", null);
     }
 
     @Test
@@ -143,15 +145,17 @@ class ContactTransformerTest {
             .hasFieldOrPropertyWithValue("outcome.complied", true)
             .hasFieldOrPropertyWithValue("outcome.hoursCredited", 123.456)
             .hasFieldOrPropertyWithValue("rarActivity", true)
-            .hasFieldOrPropertyWithValue("lastUpdatedDateTime", OffsetDateTime.of(contact.getLastUpdatedDateTime(), ZoneOffset.ofHours(1)))
-            .hasFieldOrPropertyWithValue("lastUpdatedByUser.surname", "Smith")
-            .hasFieldOrPropertyWithValue("lastUpdatedByUser.forenames", "John Michael")
             .hasFieldOrPropertyWithValue("rarActivityDetail.requirementId", 1000L)
             .hasFieldOrPropertyWithValue("rarActivityDetail.nsiId", 50L)
             .hasFieldOrPropertyWithValue("rarActivityDetail.type.code", "NT1")
             .hasFieldOrPropertyWithValue("rarActivityDetail.type.description", "Custody - Accredited Programme")
             .hasFieldOrPropertyWithValue("rarActivityDetail.subtype.code", "NST1")
-            .hasFieldOrPropertyWithValue("rarActivityDetail.subtype.description", "Healthy Sex Programme (HCP)");
+            .hasFieldOrPropertyWithValue("rarActivityDetail.subtype.description", "Healthy Sex Programme (HCP)")
+            .hasFieldOrPropertyWithValue("enforcement.enforcementAction.code", "WLS")
+            .hasFieldOrPropertyWithValue("enforcement.enforcementAction.description", "Enforcement Letter Requested")
+            .hasFieldOrPropertyWithValue("lastUpdatedDateTime", OffsetDateTime.of(contact.getLastUpdatedDateTime(), ZoneOffset.ofHours(1)))
+            .hasFieldOrPropertyWithValue("lastUpdatedByUser.surname", "Smith")
+            .hasFieldOrPropertyWithValue("lastUpdatedByUser.forenames", "John Michael");
 
         assertThat(observed.getType().getCategories())
             .containsExactly(KeyValue.builder().code("AL").description("All/Available").build());
