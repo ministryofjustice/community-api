@@ -5,8 +5,10 @@ import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderManager;
+import uk.gov.justice.digital.delius.utils.DateConverter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
@@ -62,7 +64,7 @@ public class OffendersResource_getOffenderByCrn extends IntegrationTestBase {
         assertThat(disability.getProvisions().get(0).getNotes()).isEqualTo("stair lift");
         assertThat(disability.getProvisions().get(0).getStartDate()).isEqualTo(LocalDate.of(2021, 1, 13));
         assertThat(disability.getProvisions().get(0).getFinishDate()).isNull();
-
+        assertThat(disability.getLastUpdatedDateTime()).isEqualTo(LocalDateTime.of(2021, 1, 12, 16, 7, 51));
         assertThat(offenderDetail.getContactDetails().getAddresses())
             .hasSize(1)
             .first()
