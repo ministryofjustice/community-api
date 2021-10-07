@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -23,5 +24,5 @@ public class Disability {
     private List<Provision> provisions;
 
     @ApiModelProperty(name = "Date time when disability was last updated", example = "2020-09-20T11:00:00+01:00")
-    private OffsetDateTime lastUpdatedDateTime;
+    private LocalDateTime lastUpdatedDateTime;
 }

@@ -366,7 +366,7 @@ public class OffenderTransformer {
                         .description(disability.getDisabilityType().getCodeDescription()).build())
                 .provisions(provisionsOf(disability.getProvisions()))
                 .lastUpdatedDateTime(Optional.ofNullable(disability.getLastUpdatedDatetime())
-                    .map(DateConverter::toOffsetDateTime).orElse(null))
+                    .orElse(null))
                 .build();
     }
 
