@@ -33,6 +33,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderTeam;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Provision;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.utils.DateConverter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -364,6 +365,8 @@ public class OffenderTransformer {
                         .code(disability.getDisabilityType().getCodeValue())
                         .description(disability.getDisabilityType().getCodeDescription()).build())
                 .provisions(provisionsOf(disability.getProvisions()))
+                .lastUpdatedDateTime(Optional.ofNullable(disability.getLastUpdatedDatetime())
+                    .map(DateConverter::toOffsetDateTime).orElse(null))
                 .build();
     }
 
