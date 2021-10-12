@@ -39,4 +39,10 @@ public class Sentence {
 
     @ApiModelProperty(name = "Maximum number of appointments with a failure to comply outcome before a breach should be initiated")
     private Long failureToComplyLimit;
+
+    @ApiModelProperty(name = "A CJA 2003 or later order")
+    private Boolean cja2003Order;
+
+    @ApiModelProperty(name = "A legacy order (pre-CJA 2003)")
+    private Boolean  legacyOrder;
 }

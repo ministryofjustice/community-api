@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,6 +29,14 @@ public class DisposalType {
 
     @Column(name = "DESCRIPTION")
     private String description;
+
+    @Column(name = "CJA2003")
+    @Type(type = "yes_no")
+    private Boolean cja2003Order;
+
+    @Column(name = "PRE_CJA2003")
+    @Type(type = "yes_no")
+    private Boolean  legacyOrder;
 
     @Column(name = "SENTENCE_TYPE")
     private String sentenceType;

@@ -176,6 +176,12 @@ public class ConvictionTransformer {
                 .failureToComplyLimit(Optional.ofNullable(disposal.getDisposalType())
                     .map(DisposalType::getFailureToComplyLimit)
                     .orElse(null))
+                .cja2003Order(Optional.ofNullable(disposal.getDisposalType())
+                    .map(DisposalType::getCja2003Order)
+                    .orElse(null))
+                .legacyOrder(Optional.ofNullable(disposal.getDisposalType())
+                    .map(DisposalType::getLegacyOrder)
+                    .orElse(null))
                 .build();
 
     }

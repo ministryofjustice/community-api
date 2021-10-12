@@ -361,6 +361,8 @@ class ConvictionTransformerTest {
                 .disposalType(DisposalType.builder()
                     .sentenceType("SC")
                     .description("SC Description")
+                    .cja2003Order(true)
+                    .legacyOrder(true)
                     .failureToComplyLimit(10L)
                     .build())
                 .build())
@@ -368,6 +370,8 @@ class ConvictionTransformerTest {
         final var conviction = ConvictionTransformer.convictionOf(event);
         assertThat(conviction.getSentence().getSentenceType().getCode()).isEqualTo("SC");
         assertThat(conviction.getSentence().getSentenceType().getDescription()).isEqualTo("SC Description");
+        assertThat(conviction.getSentence().getCja2003Order()).isEqualTo(true);
+        assertThat(conviction.getSentence().getLegacyOrder()).isEqualTo(true);
         assertThat(conviction.getSentence().getFailureToComplyLimit()).isEqualTo(10L);
     }
 
