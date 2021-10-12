@@ -30,6 +30,12 @@ public class AppointmentType {
     @ApiModelProperty(name = "Does this appointment type represent a national standard appointment")
     private Boolean nationalStandard;
 
+    @ApiModelProperty(name = "Appointment can be used on the whole order")
+    private Boolean wholeOrderLevel;
+
+    @ApiModelProperty(name = "Appointment can be used at the offender level")
+    private Boolean offenderLevel;
+
     @NotNull
     @JsonInclude
     @ApiModelProperty(
@@ -38,6 +44,8 @@ public class AppointmentType {
         position = 4
     )
     private List<OrderType> orderTypes;
+
+    private List<KeyValue> requirementTypeMainCategories;
 
     public enum OrderType {
         /**

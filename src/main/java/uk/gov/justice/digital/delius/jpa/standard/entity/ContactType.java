@@ -66,6 +66,14 @@ public class ContactType {
     @Column(name = "LEGACY_ORDERS", nullable = false, length = 1)
     private String  legacyOrderLevel;
 
+    @Column(name = "OFFENDER_LEVEL_CONTACT", nullable = false, length = 1)
+    @Type(type = "yes_no")
+    private Boolean wholeOrderLevel;
+
+    @Column(name = "OFFENDER_EVENT_0", nullable = false, length = 1)
+    @Type(type = "yes_no")
+    private Boolean offenderLevel;
+
     @Column(name = "SGC_FLAG")
     private Boolean systemGenerated;
 
@@ -76,4 +84,12 @@ public class ContactType {
         inverseJoinColumns = { @JoinColumn(name = "STANDARD_REFERENCE_LIST_ID", nullable = false) }
     )
     private List<StandardReference> contactCategories;
+
+    @ManyToMany
+    @JoinTable(
+        name = "R_CON_TYPE_REQ_TYPE_MAINCAT",
+        joinColumns = {@JoinColumn(name = "CONTACT_TYPE_ID", nullable = false)},
+    inverseJoinColumns = {@JoinColumn(name = "RQMNT_TYPE_MAIN_CATEGORY_ID", nullable = false)}
+        )
+    private List<RequirementTypeMainCategory> requirementTypeCategories;
 }
