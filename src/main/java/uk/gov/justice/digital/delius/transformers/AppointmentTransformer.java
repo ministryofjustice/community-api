@@ -13,6 +13,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ContactOutcomeType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Nsi;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OfficeLocation;
+import uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.utils.DateConverter;
 
 import java.util.List;
@@ -89,6 +90,12 @@ public class AppointmentTransformer {
                 Pair.of(OrderType.LEGACY, type.getLegacyOrderLevel())
             ).filter(x -> x.getValue().equals("Y")).map(Pair::getKey).collect(Collectors.toList()))
             .nationalStandard(type.getNationalStandardsContact())
+            .offenderLevel(type.getOffenderLevel())
+            .wholeOrderLevel(type.getWholeOrderLevel())
+            .requirementTypeMainCategories(Optional.ofNullable(type.getRequirementTypeCategories())
+                .map(cats -> cats.stream()
+                    .map(AppointmentTransformer::keyValueOf).collect(Collectors.toList()))
+                .orElse(null))
             .build();
     }
 
@@ -142,6 +149,13 @@ public class AppointmentTransformer {
         return KeyValue.builder()
             .code(contactType.getCode())
             .description(contactType.getDescription())
+            .build();
+    }
+
+    private static KeyValue keyValueOf(RequirementTypeMainCategory mainCategoryType) {
+        return KeyValue.builder()
+            .code(mainCategoryType.getCode())
+            .description(mainCategoryType.getDescription())
             .build();
     }
 

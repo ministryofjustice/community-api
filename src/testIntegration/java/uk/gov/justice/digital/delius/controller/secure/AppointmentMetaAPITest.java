@@ -6,11 +6,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.justice.digital.delius.data.api.KeyValue;
 
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.withArgs;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 
@@ -51,12 +54,31 @@ public class AppointmentMetaAPITest extends IntegrationTestBase {
             .body("description", alcohol, equalTo("Citizenship Alcohol Session (NS)"))
             .body("requiresLocation", alcohol, equalTo("REQUIRED"))
             .body("orderTypes", alcohol, equalTo(List.of("CJA")))
+            .body("wholeOrderLevel", alcohol, equalTo(false))
+            .body("offenderLevel", alcohol, equalTo(false))
+            .body("requirementTypeMainCategories.size", alcohol, equalTo(3))
+            .body("requirementTypeMainCategories[0].code", alcohol, equalTo("Q"))
+            .body("requirementTypeMainCategories[0].description", alcohol, equalTo("Specified Activity"))
+            .body("requirementTypeMainCategories[1].code", alcohol, equalTo("Y"))
+            .body("requirementTypeMainCategories[1].description", alcohol, equalTo("Supervision"))
+            .body("requirementTypeMainCategories[2].code", alcohol, equalTo("F"))
+            .body("requirementTypeMainCategories[2].description", alcohol, equalTo("Rehabilitation Activity Requirement (RAR)"))
+
             .body("description", homeVisit, equalTo("Home Visit to Case (NS)"))
             .body("requiresLocation", homeVisit, equalTo("NOT_REQUIRED"))
             .body("orderTypes", homeVisit, equalTo(List.of("CJA", "LEGACY")))
+            .body("wholeOrderLevel", homeVisit, equalTo(true))
+            .body("offenderLevel", homeVisit, equalTo(false))
+            .body("requirementTypeMainCategories.size", homeVisit, equalTo(2))
+            .body("requirementTypeMainCategories[0].code", homeVisit, equalTo("Y"))
+            .body("requirementTypeMainCategories[0].description", homeVisit, equalTo("Supervision"))
+            .body("requirementTypeMainCategories[1].code", homeVisit, equalTo("RM39"))
+            .body("requirementTypeMainCategories[1].description", homeVisit, equalTo("Local - Herts Local Activities"))
+
             .body("description", other, equalTo("Other Appointment (Non NS)"))
             .body("requiresLocation", other, equalTo("OPTIONAL"))
             .body("orderTypes", other, equalTo(List.of("CJA", "LEGACY")))
+
             .body("orderTypes", polygraph, equalTo(List.of()));
     }
 }
