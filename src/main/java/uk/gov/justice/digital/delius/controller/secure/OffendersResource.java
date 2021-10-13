@@ -54,6 +54,7 @@ import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficerSwitch;
 import uk.gov.justice.digital.delius.data.api.Sentence;
 import uk.gov.justice.digital.delius.data.api.SentenceStatus;
+import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
 import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
@@ -784,6 +785,17 @@ public class OffendersResource {
         @NotNull
         @PathVariable(value = "crn") final String crn) {
         return offenderService.getOffenderPersonalContactsByCrn(crn);
+    }
+
+    @ApiOperation(value = "EXPERIMENTAL: Determines whether the offender with the specified CRN is managed, with RAR requirement and only a single active sentence",
+        notes = "No backward compatibility guaranteed - intended for the use of the Manage a Supervision service, behaviour or responses may be modified in the future.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+        @ApiResponse(code = 404, message = "Not found or offender is not eligible", response = ErrorResponse.class),
+        @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
+    @GetMapping(path = "/offenders/crn/{crn}/manage-supervisions-eligibility")
+    public StaffCaseloadEntry getManageSupervisionsEligibility(final @ApiParam(name = "crn", value = "CRN of the offender", example = "X123456", required = true) @NotNull @PathVariable("crn") String crn) {
+        return offenderService.getManageSupervisionsEligibleOffenderByCrn(crn);
     }
 
     private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(final OffenderDetail offender) {

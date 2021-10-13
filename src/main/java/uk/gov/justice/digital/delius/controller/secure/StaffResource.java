@@ -91,11 +91,12 @@ public class StaffResource {
         @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
         @ApiResponse(code = 404, message = "Not found", response = ErrorResponse.class),
         @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
-    @GetMapping(path = "/staff/username/{username}/cases")
-    public Page<StaffCaseloadEntry> getCases(@ApiParam(name = "username", value = "Delius username", example = "SheliaHancockNPS", required = true)
-                                                           @NotNull
-                                                           @PathVariable(value = "username") final String username,
-                                             @PageableDefault(sort = {"secondName", "firstName"}, direction = Direction.ASC, size = Integer.MAX_VALUE) final Pageable pageable) {
-        return staffService.getOffenderCasesForUser(username, pageable);
+    @GetMapping(path = "/staff/username/{username}/manage-supervisions-eligible-offenders")
+    public Page<StaffCaseloadEntry> getManageSupervisionsEligibleOffenders(
+        @ApiParam(name = "username", value = "Delius username", example = "SheliaHancockNPS", required = true)
+        @NotNull
+        @PathVariable(value = "username") final String username,
+        @PageableDefault(sort = {"secondName", "firstName"}, direction = Direction.ASC, size = Integer.MAX_VALUE) final Pageable pageable) {
+        return staffService.getManageSupervisionsEligibleOffendersByUsername(username, pageable);
     }
 }

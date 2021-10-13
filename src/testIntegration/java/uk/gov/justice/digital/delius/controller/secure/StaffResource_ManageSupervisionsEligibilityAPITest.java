@@ -10,15 +10,15 @@ import static io.restassured.RestAssured.withArgs;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-public class StaffResource_CasesAPITest extends IntegrationTestBase {
+public class StaffResource_ManageSupervisionsEligibilityAPITest extends IntegrationTestBase {
     @Test
-    public void getCasesForUser() {
+    public void getsEligibleOffenders() {
         given()
             .auth()
             .oauth2(tokenWithRoleCommunity())
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get("staff/username/bernard.beaks/cases")
+            .get("/staff/username/bernard.beaks/manage-supervisions-eligible-offenders")
             .then()
             .assertThat()
             .statusCode(HttpStatus.OK.value())

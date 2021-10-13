@@ -157,7 +157,7 @@ public class StaffService {
         return Stream.of(forenames.split("[, ]")).findFirst().orElseThrow();
     }
 
-    public Page<StaffCaseloadEntry> getOffenderCasesForUser(final String username, final Pageable pageable) {
+    public Page<StaffCaseloadEntry> getManageSupervisionsEligibleOffendersByUsername(final String username, final Pageable pageable) {
         return offenderRepository.getOffendersWithOneActiveEventCommunitySentenceAndRarRequirementForStaff(username, pageable)
             .map(OffenderTransformer::caseOf);
     }

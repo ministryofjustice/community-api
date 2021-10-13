@@ -378,13 +378,13 @@ public class StaffServiceTest {
         }
     }
     @Test
-    public void getOffenderCasesForUser() {
+    public void getManageSupervisionsEligibleOffendersByUsername() {
         when(offenderRepository.getOffendersWithOneActiveEventCommunitySentenceAndRarRequirementForStaff(any(), any())).thenReturn(new PageImpl(
             ImmutableList.of(Offender.builder().crn("X12345").firstName("Brian").secondName("Simon").surname("Friar").build(),
                 Offender.builder().crn("X45521").firstName("Tyler").secondName("Argyll").surname("Adams").build()))
         );
 
-        var cases = staffService.getOffenderCasesForUser("ABC123", Pageable.unpaged());
+        var cases = staffService.getManageSupervisionsEligibleOffendersByUsername("ABC123", Pageable.unpaged());
 
         assertThat(cases).containsExactly(StaffCaseloadEntry.builder().crn("X12345").firstName("Brian").middleNames(ImmutableList.of("Simon")).surname("Friar").build(),
             StaffCaseloadEntry.builder().crn("X45521").firstName("Tyler").middleNames(ImmutableList.of("Argyll")).surname("Adams").build());
