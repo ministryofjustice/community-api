@@ -50,6 +50,8 @@ class OffendersResource_getOffenderConvictionsByCrn extends IntegrationTestBase 
             // Should have mapped sentence detail
             .extracting(Conviction::getSentence)
             .hasFieldOrPropertyWithValue("failureToComplyLimit", 3L)
+            .hasFieldOrPropertyWithValue("cja2003Order", true)
+            .hasFieldOrPropertyWithValue("legacyOrder", false)
             // Should have mapped additional sentences
             .extracting(Sentence::getAdditionalSentences).asList()
             .hasSize(1)
