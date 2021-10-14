@@ -17,6 +17,7 @@ import uk.gov.justice.digital.delius.data.api.OffenderManager;
 import uk.gov.justice.digital.delius.data.api.PersonalContact;
 import uk.gov.justice.digital.delius.data.api.PrimaryIdentifiers;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
+import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
 import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
 import uk.gov.justice.digital.delius.jpa.filters.OffenderFilterTransformer;
 import uk.gov.justice.digital.delius.jpa.oracle.annotations.NationalUserOverride;
@@ -250,5 +251,11 @@ public class OffenderService {
         return offenderRepository.findByCrn(crn)
             .map(offender -> offender.getPersonalContacts().stream().map(PersonalContactTransformer::personalContactOf).collect(Collectors.toList()))
             .orElseThrow(() -> new NotFoundException("Offender not found"));
+    }
+
+    public StaffCaseloadEntry getManageSupervisionsEligibleOffenderByCrn(final String crn) {
+        return offenderRepository.getOffenderWithOneActiveEventCommunitySentenceAndRarRequirementByCrn(crn)
+            .map(OffenderTransformer::caseOf)
+            .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN '%s' is not eligible for the manage supervisions service", crn)));
     }
 }
