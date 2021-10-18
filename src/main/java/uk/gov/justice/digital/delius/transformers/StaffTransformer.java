@@ -4,12 +4,15 @@ import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.data.api.StaffHuman;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.User;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static uk.gov.justice.digital.delius.transformers.ProbationAreaTransformer.probationAreaOf;
 
 public class StaffTransformer {
 
@@ -23,6 +26,7 @@ public class StaffTransformer {
                 .teams(staff.getTeams().stream()
                         .map(TeamTransformer::teamOf)
                         .collect(Collectors.toList()))
+                .probationArea(probationAreaOf(staff.getProbationArea(), false))
                 .build();
     }
 
