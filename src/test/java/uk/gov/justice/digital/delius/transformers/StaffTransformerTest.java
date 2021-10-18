@@ -8,6 +8,8 @@ import com.google.common.collect.ImmutableList;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.Human;
+import uk.gov.justice.digital.delius.data.api.KeyValue;
+import uk.gov.justice.digital.delius.data.api.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.User;
 
 public class StaffTransformerTest {
@@ -79,4 +81,19 @@ public class StaffTransformerTest {
             .isNull();
     }
 
+
+    @Test
+    public void probationAreaTakenFromStaff() {
+        assertThat(StaffTransformer.staffDetailsOf(
+            aStaff()).getProbationArea())
+            .isEqualTo(ProbationArea.builder()
+                .probationAreaId(1L)
+                .code("NO2")
+                .description("NPS North East")
+                .nps(null)
+                .organisation(KeyValue.builder().code(null).description(null).build())
+                .institution(null)
+                .teams(null)
+                .build());
+    }
 }

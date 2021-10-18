@@ -28,4 +28,6 @@ public class StaffDetails {
     private Human staff;
     @ApiModelProperty(value = "all teams related to this staff member")
     private List<Team> teams;
+    @ApiModelProperty(value = "provider this staff member is associated with")
+    private ProbationArea probationArea;
 }

@@ -2,6 +2,8 @@ package uk.gov.justice.digital.delius.controller.secure;
 
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import uk.gov.justice.digital.delius.data.api.KeyValue;
+import uk.gov.justice.digital.delius.data.api.ProbationArea;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 
 import java.time.LocalDate;
@@ -60,6 +62,13 @@ public class StaffResource_StaffDetailsAPITest extends IntegrationTestBase {
                 .as(StaffDetails.class);
 
         assertThat(staffDetails).isNotNull();
+
+        assertThat(staffDetails.getProbationArea()).isEqualTo((ProbationArea.builder()
+            .probationAreaId(11L)
+            .code("ESX")
+            .description("Essex")
+            .organisation(KeyValue.builder().code("EA").description("Eastern").build())
+            .build()));
     }
 
     @Test
