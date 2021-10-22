@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,4 +28,20 @@ public class ContactOutcomeType {
 
     @Column(name = "DESCRIPTION")
     private String description;
+
+    @Column(name = "OUTCOME_COMPLIANT_ACCEPTABLE", length = 1)
+    @Type(type = "yes_no")
+    private Boolean compliantAcceptable;
+
+    @Column(name = "OUTCOME_ATTENDANCE", length = 1)
+    @Type(type = "yes_no")
+    private Boolean attendance;
+
+    @Column(name = "ACTION_REQUIRED", nullable = false)
+    @Type(type = "yes_no")
+    private Boolean actionRequired;
+
+    @Column(name = "ENFORCEABLE", length = 1)
+    @Type(type = "yes_no")
+    private Boolean enforceable;
 }
