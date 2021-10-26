@@ -49,8 +49,8 @@ public class ContactMetaController {
             @ApiResponse(code = 404, message = "The contact type does not exit"),
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
         })
-    @ApiOperation(value = "Returns all selectable contact types or those in specified categories")
+    @ApiOperation(value = "Returns all selectable contact outcomes for a given contact type")
     public AvailableContactOutcomeTypes getContactTypeOutcomes(final @ApiParam(name = "contactTypeCode", value = "contact type code", example = "APAT", required = true) @NotNull @PathVariable("contactTypeCode")  String contactTypeCode) {
-        throw new NotImplementedException();
+        return this.contactService.getContactOutcomes(contactTypeCode);
     }
 }
