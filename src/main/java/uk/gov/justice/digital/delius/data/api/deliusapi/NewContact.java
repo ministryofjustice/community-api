@@ -31,4 +31,5 @@ public class NewContact {
     private Long nsiId;
     private Long eventId;
     private Long requirementId;
+    private String enforcement;
 }

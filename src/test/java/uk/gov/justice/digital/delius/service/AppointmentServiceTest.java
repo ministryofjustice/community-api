@@ -83,6 +83,7 @@ public class AppointmentServiceTest {
     private static final String RAR_CONTACT_TYPE = "CRSAPT";
     private static final String SP_INITIATED_RESCHEDULE = "RSSR";
     private static final String OF_INITIATED_RESCHEDULE = "RSOF";
+    private static final String ROM_ENFORCEMENT = "ROM";
     private static final String CONTEXT = "commissioned-rehabilitation-services";
     private static final Long EVENT_ID = 99L;
     private static final Long NSI_ID = 98L;
@@ -116,10 +117,12 @@ public class AppointmentServiceTest {
         integrationContext.setTeamCode(TEAM_CODE);
         integrationContext.setRequirementRehabilitationActivityType(RAR_TYPE_CODE);
         integrationContext.getContactMapping().setAppointmentRarContactType(RAR_CONTACT_TYPE);
+        integrationContext.getContactMapping().setEnforcementReferToOffenderManager(ROM_ENFORCEMENT);
         integrationContext.getContactMapping().setAttendanceAndBehaviourNotifiedMappingToOutcomeType(
             new HashMap<>() {{
                 this.put("late", new HashMap<>() {{
                     this.put(false, "ATTC");
+                    this.put(true, "ATTC");
                 }});
             }}
         );
@@ -274,6 +277,37 @@ public class AppointmentServiceTest {
 
             // When
             final var appointmentCreateRequest = aContextlessAppointmentCreateRequest(referralStart, startTime, endTime, CONTRACT_TYPE, referralId);
+            final var response = service.createAppointment("X007", 1L, CONTEXT, appointmentCreateRequest);
+
+            // Then
+            assertThat(response.getAppointmentId()).isEqualTo(3L);
+        }
+
+
+        @Test
+        public void createsHistoricAppointmentUsingContextlessClientRequest() {
+            // Given
+            final var referralId = UUID.randomUUID();
+            final var referralStart = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+            final var startTime = referralStart.plusMinutes(2);
+            final var endTime = startTime.plusHours(1);
+
+            final Nsi nsi = aNsiWithRARRequirement();
+            when(referralService.getExistingMatchingNsi("X007", CONTEXT, 1L, CONTRACT_TYPE, referralStart, referralId))
+                .thenReturn(of(nsi));
+
+            havingContactType(true, builder -> builder.attendanceContact(true), RAR_CONTACT_TYPE);
+
+            final var deliusNewContactRequest = aDeliusNewContactRequest(startTime, endTime, NSI_ID, null, "ATTC", "ROM");
+            final var createdContact = ContactDto.builder().id(3L)
+                .date(LocalDate.of(2021, 1, 31))
+                .startTime(LocalTime.of(10, 0))
+                .endTime(LocalTime.of(11, 0))
+                .build();
+            when(deliusApiClient.createNewContact(deliusNewContactRequest)).thenReturn(createdContact);
+
+            // When
+            final var appointmentCreateRequest = aContextlessAppointmentCreateRequest(referralStart, startTime, endTime, CONTRACT_TYPE, referralId, "LATE", true);
             final var response = service.createAppointment("X007", 1L, CONTEXT, appointmentCreateRequest);
 
             // Then
@@ -579,6 +613,10 @@ public class AppointmentServiceTest {
     }
 
     private NewContact aDeliusNewContactRequest(OffsetDateTime startTime, OffsetDateTime endTime, Long nsiId, Boolean sensitive) {
+        return aDeliusNewContactRequest(startTime, endTime, nsiId, sensitive, null, null);
+    }
+
+    private NewContact aDeliusNewContactRequest(OffsetDateTime startTime, OffsetDateTime endTime, Long nsiId, Boolean sensitive, String outcome, String enforcement) {
         return NewContact.builder()
             .offenderCrn("X007")
             .type(RAR_CONTACT_TYPE)
@@ -598,6 +636,8 @@ public class AppointmentServiceTest {
             .eventId(1L)
             .nsiId(nsiId)
             .requirementId(null)
+            .outcome(outcome)
+            .enforcement(enforcement)
             .build();
     }
 
@@ -648,6 +688,11 @@ public class AppointmentServiceTest {
 
     private ContextlessAppointmentCreateRequest aContextlessAppointmentCreateRequest(
         OffsetDateTime referralStart, OffsetDateTime startTime, OffsetDateTime endTime, String contractType, UUID referralId) {
+        return aContextlessAppointmentCreateRequest(referralStart, startTime, endTime, contractType, referralId, null, null);
+    }
+
+    private ContextlessAppointmentCreateRequest aContextlessAppointmentCreateRequest(
+        OffsetDateTime referralStart, OffsetDateTime startTime, OffsetDateTime endTime, String contractType, UUID referralId, String attended, Boolean notifyPP) {
         return ContextlessAppointmentCreateRequest.builder()
             .contractType(contractType)
             .referralStart(referralStart)
@@ -657,6 +702,8 @@ public class AppointmentServiceTest {
             .officeLocationCode("CRSSHEF")
             .notes("/url")
             .countsTowardsRarDays(true)
+            .attended(attended)
+            .notifyPPOfAttendanceBehaviour(notifyPP)
             .build();
     }
 
