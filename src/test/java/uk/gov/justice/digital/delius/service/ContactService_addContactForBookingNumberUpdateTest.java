@@ -38,8 +38,6 @@ public class ContactService_addContactForBookingNumberUpdateTest {
     @Mock
     private ContactRepository contactRepository;
     @Mock
-    private ContactDateRepository contactDateRepository;
-    @Mock
     private ContactTypeRepository contactTypeRepository;
     @Captor
     private ArgumentCaptor<Contact> contactArgumentCaptor;

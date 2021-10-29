@@ -6,7 +6,6 @@ import uk.gov.justice.digital.delius.data.api.AppointmentDetail;
 import uk.gov.justice.digital.delius.data.api.AppointmentOutcome;
 import uk.gov.justice.digital.delius.data.api.AppointmentType;
 import uk.gov.justice.digital.delius.data.api.AppointmentType.OrderType;
-import uk.gov.justice.digital.delius.data.api.AppointmentType.RequiredOptional;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactOutcomeType;
@@ -84,7 +83,7 @@ public class AppointmentTransformer {
         return AppointmentType.builder()
             .contactType(type.getCode())
             .description(type.getDescription())
-            .requiresLocation(locationFlagToRequiredOptional(type.getLocationFlag()))
+            .requiresLocation(ContactTransformer.toRequiredOptional(type.getLocationFlag()))
             .orderTypes(Stream.of(
                 Pair.of(OrderType.CJA, type.getCjaOrderLevel()),
                 Pair.of(OrderType.LEGACY, type.getLegacyOrderLevel())
@@ -165,15 +164,4 @@ public class AppointmentTransformer {
         ).orElse(null);
     }
 
-    private static RequiredOptional locationFlagToRequiredOptional(String value) {
-        if (value == null) {
-            return null;
-        }
-        return switch (value) {
-            case "Y" -> RequiredOptional.REQUIRED;
-            case "B" -> RequiredOptional.OPTIONAL;
-            case "N" -> RequiredOptional.NOT_REQUIRED;
-            default -> throw new RuntimeException(String.format("Invalid location flag '%s'", value));
-        };
-    }
 }

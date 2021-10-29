@@ -61,7 +61,8 @@ public class ContactType {
     private String scheduleFutureAppointments;
 
     @Column(name = "CONTACT_LOCATION_FLAG", length = 1, nullable = false)
-    private String locationFlag;
+    @Enumerated(EnumType.STRING)
+    private YesNoBlank locationFlag;
 
     @Column(name = "CJA_ORDERS", nullable = false, length = 1)
     private String cjaOrderLevel;

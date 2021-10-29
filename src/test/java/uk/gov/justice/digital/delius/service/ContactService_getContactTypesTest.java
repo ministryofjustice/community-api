@@ -1,18 +1,13 @@
 package uk.gov.justice.digital.delius.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactDateRepository;
-import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 
 import java.util.List;
@@ -30,13 +25,7 @@ public class ContactService_getContactTypesTest {
     private ContactService contactService;
 
     @Mock
-    private ContactRepository contactRepository;
-    @Mock
-    private ContactDateRepository contactDateRepository;
-    @Mock
     private ContactTypeRepository contactTypeRepository;
-    @Captor
-    private ArgumentCaptor<Contact> contactArgumentCaptor;
 
     @Test
     @DisplayName("will return all contact types for given categories")

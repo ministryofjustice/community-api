@@ -12,25 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AvailableContactOutcomeTypes {
-
-    private ContactOutcomeTypeRequired outcomeRequired;
+    private RequiredOptional outcomeRequired;
 
     private List<ContactOutcomeTypeDetail> outcomeTypes;
-
-    public enum ContactOutcomeTypeRequired {
-        /**
-         * A contact outcome is required if the contact date is in the past.
-         */
-        REQUIRED,
-
-        /**
-         * A contact outcome may be provided but is not required.
-         */
-        OPTIONAL,
-
-        /**
-         * A contact outcome cannot be provided for this contact type.
-         */
-        NOT_ALLOWED
-    }
 }

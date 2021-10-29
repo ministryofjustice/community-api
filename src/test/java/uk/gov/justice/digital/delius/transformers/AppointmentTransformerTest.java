@@ -1,9 +1,9 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.Appointment;
 import uk.gov.justice.digital.delius.data.api.AppointmentDetail;
+import uk.gov.justice.digital.delius.jpa.standard.YesNoBlank;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactOutcomeType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
@@ -19,13 +19,14 @@ import uk.gov.justice.digital.delius.utils.DateConverter;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AppointmentTransformerTest {
     @Test
     public void appointmentOutcomeMappedFromContactOutcomeType() {
-        assertThat(AppointmentTransformer.appointmentsOf(ImmutableList.of(
+        assertThat(AppointmentTransformer.appointmentsOf(List.of(
                 aContact()
                     .toBuilder()
                     .contactOutcomeType(ContactOutcomeType
@@ -41,7 +42,7 @@ public class AppointmentTransformerTest {
 
     @Test
     public void appointmentTypeMappedFromContactType() {
-        assertThat(AppointmentTransformer.appointmentsOf(ImmutableList.of(
+        assertThat(AppointmentTransformer.appointmentsOf(List.of(
                 aContact()
                     .toBuilder()
                     .contactType(ContactType
@@ -56,7 +57,7 @@ public class AppointmentTransformerTest {
     }
     @Test
     public void officeLocationMappedFromOfficeLocation() {
-        assertThat(AppointmentTransformer.appointmentsOf(ImmutableList.of(
+        assertThat(AppointmentTransformer.appointmentsOf(List.of(
                 aContact()
                     .toBuilder()
                     .officeLocation(OfficeLocation
@@ -72,7 +73,7 @@ public class AppointmentTransformerTest {
 
     @Test
     public void attendedMappedToNotRecordedWhenNull() {
-        assertThat(AppointmentTransformer.appointmentsOf(ImmutableList.of(
+        assertThat(AppointmentTransformer.appointmentsOf(List.of(
                 aContact()
                         .toBuilder()
                         .attended(null)
@@ -83,7 +84,7 @@ public class AppointmentTransformerTest {
 
     @Test
     public void attendedMappedToAttendedWhenY() {
-        assertThat(AppointmentTransformer.appointmentsOf(ImmutableList.of(
+        assertThat(AppointmentTransformer.appointmentsOf(List.of(
                 aContact()
                         .toBuilder()
                         .attended("Y")
@@ -94,7 +95,7 @@ public class AppointmentTransformerTest {
 
     @Test
     public void attendedMappedToNotAttendedWhenN() {
-        assertThat(AppointmentTransformer.appointmentsOf(ImmutableList.of(
+        assertThat(AppointmentTransformer.appointmentsOf(List.of(
                 aContact()
                         .toBuilder()
                         .attended("N")
@@ -108,9 +109,13 @@ public class AppointmentTransformerTest {
 
         assertThat(AppointmentTransformer.appointmentDetailOf(EntityHelper.aContact()
             .toBuilder()
-            .contactType(ContactType.builder().code("123").description("National Standard")
-                .nationalStandardsContact(true).cjaOrderLevel("Y")
-                .legacyOrderLevel("Y").build())
+            .contactType(ContactType.builder().code("123")
+                .description("National Standard")
+                .nationalStandardsContact(true)
+                .cjaOrderLevel("Y")
+                .legacyOrderLevel("Y")
+                .outcomeFlag(YesNoBlank.B)
+                .locationFlag(YesNoBlank.B).build())
             .build())).hasFieldOrPropertyWithValue("type.nationalStandard", true);
     }
 
