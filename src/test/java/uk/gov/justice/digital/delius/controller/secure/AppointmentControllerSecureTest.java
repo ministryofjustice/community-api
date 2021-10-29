@@ -15,7 +15,7 @@ import uk.gov.justice.digital.delius.data.api.AppointmentDetail;
 import uk.gov.justice.digital.delius.data.api.AppointmentOutcome;
 import uk.gov.justice.digital.delius.data.api.AppointmentType;
 import uk.gov.justice.digital.delius.data.api.AppointmentType.OrderType;
-import uk.gov.justice.digital.delius.data.api.AppointmentType.RequiredOptional;
+import uk.gov.justice.digital.delius.data.api.RequiredOptional;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.OfficeLocation;
 import uk.gov.justice.digital.delius.data.api.StaffHuman;

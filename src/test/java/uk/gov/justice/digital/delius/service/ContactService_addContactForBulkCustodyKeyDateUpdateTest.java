@@ -40,8 +40,6 @@ public class ContactService_addContactForBulkCustodyKeyDateUpdateTest {
     @Mock
     private ContactRepository contactRepository;
     @Mock
-    private ContactDateRepository contactDateRepository;
-    @Mock
     private ContactTypeRepository contactTypeRepository;
     @Captor
     private ArgumentCaptor<Contact> contactArgumentCaptor;

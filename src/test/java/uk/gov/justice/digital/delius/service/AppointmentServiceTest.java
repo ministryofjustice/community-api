@@ -24,7 +24,7 @@ import uk.gov.justice.digital.delius.data.api.AppointmentDetail;
 import uk.gov.justice.digital.delius.data.api.AppointmentRelocateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentType;
 import uk.gov.justice.digital.delius.data.api.AppointmentType.OrderType;
-import uk.gov.justice.digital.delius.data.api.AppointmentType.RequiredOptional;
+import uk.gov.justice.digital.delius.data.api.RequiredOptional;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentRescheduleRequest;
@@ -35,6 +35,7 @@ import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ReplaceContact;
 import uk.gov.justice.digital.delius.jpa.filters.AppointmentFilter;
+import uk.gov.justice.digital.delius.jpa.standard.YesNoBlank;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType.ContactTypeBuilder;
@@ -66,6 +67,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.data.domain.Sort.Direction.DESC;
+import static uk.gov.justice.digital.delius.jpa.standard.YesNoBlank.B;
+import static uk.gov.justice.digital.delius.jpa.standard.YesNoBlank.N;
+import static uk.gov.justice.digital.delius.jpa.standard.YesNoBlank.Y;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDate;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalTime;
 
@@ -530,9 +534,9 @@ public class AppointmentServiceTest {
     @Test
     public void gettingAllAppointmentTypes() {
         final var types = List.of(
-            anAppointmentContactType(1, "Y", true, true),
-            anAppointmentContactType(2, "B", true, false),
-            anAppointmentContactType(3, "N", false, false)
+            anAppointmentContactType(1, Y, true, true),
+            anAppointmentContactType(2, B, true, false),
+            anAppointmentContactType(3, N, false, false)
         );
         when(contactTypeRepository.findAllSelectableAppointmentTypes()).thenReturn(types);
 
@@ -656,7 +660,7 @@ public class AppointmentServiceTest {
             .build();
     }
 
-    private static ContactType anAppointmentContactType(int id, String locationFlag, boolean cja, boolean legacy) {
+    private static ContactType anAppointmentContactType(int id, YesNoBlank locationFlag, boolean cja, boolean legacy) {
         return ContactType.builder()
             .code(String.format("T%d", id))
             .description(String.format("D%d", id))

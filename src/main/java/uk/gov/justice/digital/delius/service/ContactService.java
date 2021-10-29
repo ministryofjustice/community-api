@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.ActivityLogGroup;
+import uk.gov.justice.digital.delius.data.api.AvailableContactOutcomeTypes;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.ContactSummary;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
@@ -179,6 +180,12 @@ public class ContactService {
         return (CollectionUtils.isEmpty(categories) ? contactTypeRepository.findAllBySelectableTrue()
             : contactTypeRepository.findAllByContactCategoriesCodeValueInAndSelectableTrue(categories))
             .stream().map(ContactTransformer::contactTypeOf).collect(toList());
+    }
+
+    public AvailableContactOutcomeTypes getContactOutcomes(final String contactTypeCode) {
+        return contactTypeRepository.findByCode(contactTypeCode)
+            .map(ContactTransformer::availableContactOutcomeTypesOf)
+            .orElseThrow(() -> new NotFoundException("Contact type not found"));
     }
 
     public Optional<ContactSummary> getContactSummary(final Long offenderId, final Long contactId) {

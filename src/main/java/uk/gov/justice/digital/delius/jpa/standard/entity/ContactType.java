@@ -5,9 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
+import uk.gov.justice.digital.delius.jpa.standard.YesNoBlank;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -58,7 +61,8 @@ public class ContactType {
     private String scheduleFutureAppointments;
 
     @Column(name = "CONTACT_LOCATION_FLAG", length = 1, nullable = false)
-    private String locationFlag;
+    @Enumerated(EnumType.STRING)
+    private YesNoBlank locationFlag;
 
     @Column(name = "CJA_ORDERS", nullable = false, length = 1)
     private String cjaOrderLevel;
@@ -77,11 +81,15 @@ public class ContactType {
     @Column(name = "SGC_FLAG")
     private Boolean systemGenerated;
 
+    @Column(name = "CONTACT_OUTCOME_FLAG", columnDefinition = "CHAR(1)", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private YesNoBlank outcomeFlag;
+
     @ManyToMany()
     @JoinTable(
         name = "R_CONTACT_TYPECONTACT_CATEGORY",
-        joinColumns = { @JoinColumn(name = "CONTACT_TYPE_ID", nullable = false) },
-        inverseJoinColumns = { @JoinColumn(name = "STANDARD_REFERENCE_LIST_ID", nullable = false) }
+        joinColumns = {@JoinColumn(name = "CONTACT_TYPE_ID", nullable = false)},
+        inverseJoinColumns = {@JoinColumn(name = "STANDARD_REFERENCE_LIST_ID", nullable = false)}
     )
     private List<StandardReference> contactCategories;
 
@@ -89,7 +97,15 @@ public class ContactType {
     @JoinTable(
         name = "R_CON_TYPE_REQ_TYPE_MAINCAT",
         joinColumns = {@JoinColumn(name = "CONTACT_TYPE_ID", nullable = false)},
-    inverseJoinColumns = {@JoinColumn(name = "RQMNT_TYPE_MAIN_CATEGORY_ID", nullable = false)}
-        )
+        inverseJoinColumns = {@JoinColumn(name = "RQMNT_TYPE_MAIN_CATEGORY_ID", nullable = false)}
+    )
     private List<RequirementTypeMainCategory> requirementTypeCategories;
+
+    @ManyToMany()
+    @JoinTable(
+        name = "R_CONTACT_TYPE_OUTCOME",
+        joinColumns = {@JoinColumn(name = "CONTACT_TYPE_ID", nullable = false)},
+        inverseJoinColumns = {@JoinColumn(name = "CONTACT_OUTCOME_TYPE_ID", nullable = false)}
+    )
+    private List<ContactOutcomeType> contactOutcomeTypes;
 }

@@ -3,14 +3,19 @@ package uk.gov.justice.digital.delius.transformers;
 import com.google.common.collect.ImmutableList;
 import uk.gov.justice.digital.delius.data.api.ActivityLogGroup;
 import uk.gov.justice.digital.delius.data.api.ActivityLogGroup.ActivityLogEntry;
+import uk.gov.justice.digital.delius.data.api.AvailableContactOutcomeTypes;
+import uk.gov.justice.digital.delius.data.api.ContactOutcomeTypeDetail;
 import uk.gov.justice.digital.delius.data.api.ContactRarActivity;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.ContactSummary;
 import uk.gov.justice.digital.delius.data.api.Enforcement;
+import uk.gov.justice.digital.delius.data.api.EnforcementAction;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Nsi;
+import uk.gov.justice.digital.delius.data.api.RequiredOptional;
 import uk.gov.justice.digital.delius.data.api.StaffHuman;
+import uk.gov.justice.digital.delius.jpa.standard.YesNoBlank;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactOutcomeType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
@@ -292,5 +297,53 @@ public class ContactTransformer {
                     r -> ContactRarActivity.builder().requirementId(r.getRequirementId())
                 ).build())
             .orElse(null);
+    }
+
+    public static AvailableContactOutcomeTypes availableContactOutcomeTypesOf(uk.gov.justice.digital.delius.jpa.standard.entity.ContactType contactType) {
+        return Optional.ofNullable(contactType).map(
+            ct -> AvailableContactOutcomeTypes.builder()
+                .outcomeRequired(toRequiredOptional(ct.getOutcomeFlag()))
+                .outcomeTypes(ct.getContactOutcomeTypes()
+                    .stream()
+                    .map(ContactTransformer::toContactOutcomeTypeDetail).
+                    collect(Collectors.toList()))
+                .build()
+        ).orElse(null);
+    }
+
+    private static ContactOutcomeTypeDetail toContactOutcomeTypeDetail(final ContactOutcomeType contactOutcomeType) {
+        return Optional.ofNullable(contactOutcomeType).map(ctd -> ContactOutcomeTypeDetail.builder()
+                .code(ctd.getCode())
+                .description(ctd.getDescription())
+                .actionRequired(ctd.getActionRequired())
+                .attendance(ctd.getAttendance())
+                .compliantAcceptable(ctd.getCompliantAcceptable())
+                .enforceable(ctd.getEnforceable())
+                .enforcements(Optional.ofNullable(ctd.getEnforcementActions()).map( e -> e.stream()
+                    .map(ContactTransformer::toEnforcementAction)
+                    .collect(Collectors.toList())).orElse(Collections.emptyList()))
+                .build())
+            .orElse(null);
+    }
+
+    private static EnforcementAction toEnforcementAction(final uk.gov.justice.digital.delius.jpa.standard.entity.EnforcementAction enforcementAction) {
+        return Optional.ofNullable(enforcementAction).map(ea -> EnforcementAction.builder()
+                .code(ea.getCode())
+                .description(ea.getDescription())
+                .outstandingContactAction(ea.getOutstandingContactAction())
+                .responseByPeriod(ea.getResponseByPeriod())
+                .build())
+            .orElse(null);
+    }
+
+    public static RequiredOptional toRequiredOptional(YesNoBlank value) {
+        if (value == null) {
+            throw new RuntimeException(String.format("Invalid null Yes/No/Blank flag value"));
+        }
+        return switch (value) {
+            case Y -> RequiredOptional.REQUIRED;
+            case B -> RequiredOptional.OPTIONAL;
+            case N -> RequiredOptional.NOT_REQUIRED;
+        };
     }
 }
