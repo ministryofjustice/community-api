@@ -32,7 +32,7 @@ class DeliusDocumentsServiceTest {
         NewDocument newDocument = new NewDocument();
 
         Assertions.assertThrows(BadRequestException.class, () -> {
-            deliusDocumentsService.createDocument("X1923", 9849L, "C/UPW", newDocument);
+            deliusDocumentsService.createDocument("X1923", 9849L, "EASU", newDocument);
         });
     }
 
