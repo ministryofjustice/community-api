@@ -14,7 +14,7 @@ import static java.lang.String.format;
 
 @Service
 public class DeliusDocumentsService {
-    private static final String CP_UPW = "CP/UPW";
+    private static final String CP_UPW = "EASU";
 
     private final DeliusApiClient deliusApiClient;
     private final ContactTypeRepository contactTypeRepository;
