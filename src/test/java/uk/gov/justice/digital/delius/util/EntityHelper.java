@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.util;
 
-import com.google.common.collect.ImmutableList;
+import uk.gov.justice.digital.delius.jpa.standard.YesNoBlank;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalSentence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Address;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AddressAssessment;
@@ -27,6 +27,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.DisposalType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Document;
+import uk.gov.justice.digital.delius.jpa.standard.entity.EnforcementAction;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.EventDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Explanation;
@@ -80,8 +81,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.codehaus.groovy.runtime.InvokerHelper.asList;
 
 @SuppressWarnings("SameParameterValue")
 public class EntityHelper {
@@ -683,7 +682,7 @@ public class EntityHelper {
                 .officerCode(officerCode)
                 .forename("John")
                 .surname("Smith")
-                .teams(ImmutableList.of())
+                .teams(List.of())
                 .probationArea(aProbationArea())
                 .build();
     }
@@ -864,7 +863,7 @@ public class EntityHelper {
                 .privateSector(0L)
                 .organisation(Organisation.builder().build())
                 .providerTeams(new ArrayList<>())
-                .teams(new ArrayList<>(asList(aTeam())))
+                .teams(mutableListOf(aTeam()))
                 .build();
     }
 
@@ -875,7 +874,7 @@ public class EntityHelper {
                 .probationAreaId(1L)
                 .description("HMP Wandsworth")
                 .institution(aPrisonInstitution())
-                .teams(new ArrayList<>(asList(aTeam())))
+                .teams(mutableListOf(aTeam()))
                 .build();
     }
 
@@ -908,6 +907,8 @@ public class EntityHelper {
                 .alertFlag("N")
                 .cjaOrderLevel("Y")
                 .legacyOrderLevel("Y")
+                .locationFlag(YesNoBlank.B)
+                .outcomeFlag(YesNoBlank.B)
                 .build();
     }
 
@@ -961,6 +962,21 @@ public class EntityHelper {
             .contactOutcomeTypeId(100L)
             .code("CO1")
             .description("Some contact outcome type")
+            .attendance(false)
+            .enforceable(false)
+            .compliantAcceptable(true)
+            .actionRequired(false)
+            .enforcementActions(List.of(anEnforcementAction()))
+            .build();
+    }
+
+    public static EnforcementAction anEnforcementAction() {
+        return EnforcementAction.builder()
+            .id(8453L)
+            .code("ENF")
+            .description("An enforcement action")
+            .outstandingContactAction(true)
+            .responseByPeriod(5L)
             .build();
     }
 

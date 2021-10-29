@@ -11,7 +11,6 @@ import org.springframework.data.domain.Sort;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactDateRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
-import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 import uk.gov.justice.digital.delius.util.EntityHelper;
 
 import java.time.LocalDate;
@@ -27,7 +26,6 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 public class ContactService_activityLogForTest {
     @Mock private ContactRepository contactRepository;
     @Mock private ContactDateRepository contactDateRepository;
-    @Mock private ContactTypeRepository contactTypeRepository;
     @InjectMocks private ContactService subject;
 
     @Test

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.justice.digital.delius.data.api.AvailableContactOutcomeTypes;
 import uk.gov.justice.digital.delius.data.api.ContactType;
 import uk.gov.justice.digital.delius.service.ContactService;
 
@@ -30,7 +31,19 @@ public class ContactMetaControllerTest {
         assertThat(observed).isEqualTo(contactTypes);
     }
 
+    @Test
+    public void gettingContactOutcomes() {
+        final var availableContactOutcomeTypes = anAvailableContactOutcomeTypes();
+        when(contactService.getContactOutcomes("LT")).thenReturn(availableContactOutcomeTypes);
+        final var observed = contactMetaController.getContactTypeOutcomes("LT");
+        assertThat(observed).isEqualTo(availableContactOutcomeTypes);
+    }
+
     private ContactType aContactType() {
         return ContactType.builder().build();
+    }
+
+    private AvailableContactOutcomeTypes anAvailableContactOutcomeTypes() {
+        return AvailableContactOutcomeTypes.builder().build();
     }
 }

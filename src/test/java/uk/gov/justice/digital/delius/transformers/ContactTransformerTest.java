@@ -1,8 +1,10 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import uk.gov.justice.digital.delius.data.api.AvailableContactOutcomeTypes;
+import uk.gov.justice.digital.delius.data.api.ContactOutcomeTypeDetail;
 import uk.gov.justice.digital.delius.data.api.ContactSummary;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
@@ -23,8 +25,15 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 
-import static com.google.common.collect.ImmutableList.of;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static uk.gov.justice.digital.delius.data.api.RequiredOptional.NOT_REQUIRED;
+import static uk.gov.justice.digital.delius.data.api.RequiredOptional.OPTIONAL;
+import static uk.gov.justice.digital.delius.data.api.RequiredOptional.REQUIRED;
+import static uk.gov.justice.digital.delius.jpa.standard.YesNoBlank.B;
+import static uk.gov.justice.digital.delius.jpa.standard.YesNoBlank.N;
+import static uk.gov.justice.digital.delius.jpa.standard.YesNoBlank.Y;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aContactOutcomeType;
 
 class ContactTransformerTest {
 
@@ -168,12 +177,51 @@ class ContactTransformerTest {
 
     @Test
     public void contactTypeOnlyIncludesActiveCategories() {
-        assertThat(ContactTransformer.contactTypeOf(ContactType.builder().contactCategories(of(
+        assertThat(ContactTransformer.contactTypeOf(ContactType.builder().contactCategories(List.of(
             StandardReference.builder().codeValue("AL").codeDescription("All/Available").selectable("Y").build(),
             StandardReference.builder().codeValue("CAT1").codeDescription("Some Category").selectable("N").build()))
             .build(), true)
             .getCategories())
             .containsExactly(KeyValue.builder().code("AL").description("All/Available").build());
+    }
+
+    @Test
+    void availableContactOutcomeTypesOf() {
+        assertThat(ContactTransformer.availableContactOutcomeTypesOf(ContactType.builder()
+            .outcomeFlag(B)
+            .contactOutcomeTypes(List.of(aContactOutcomeType()))
+            .build()))
+            .isEqualTo(AvailableContactOutcomeTypes.builder()
+                .outcomeRequired(OPTIONAL)
+                .outcomeTypes(List.of(ContactOutcomeTypeDetail.builder()
+                    .code("CO1")
+                    .description("Some contact outcome type")
+                    .compliantAcceptable(true)
+                    .attendance(false)
+                    .actionRequired(false)
+                    .enforceable(false)
+                    .enforcements(List.of(uk.gov.justice.digital.delius.data.api.EnforcementAction.builder()
+                        .code("ENF")
+                        .description("An enforcement action")
+                        .outstandingContactAction(true)
+                        .responseByPeriod(5L)
+                        .build()))
+                    .build()))
+                .build());
+    }
+
+    @Test
+    void toRequiredOptionalThrowsExceptionIfNullValue() {
+        assertThatThrownBy(() -> ContactTransformer.toRequiredOptional(null))
+            .isInstanceOf(RuntimeException.class)
+            .hasMessageContaining("Invalid null Yes/No/Blank flag value");
+    }
+
+    @Test
+    void toRequiredOptionalMapsValues() {
+        assertThat(ContactTransformer.toRequiredOptional(Y)).isEqualTo(REQUIRED);
+        assertThat(ContactTransformer.toRequiredOptional(B)).isEqualTo(OPTIONAL);
+        assertThat(ContactTransformer.toRequiredOptional(N)).isEqualTo(NOT_REQUIRED);
     }
 
     @Nested
@@ -292,7 +340,7 @@ class ContactTransformerTest {
                 .description("Some contact type")
                 .shortDescription("Some contact type short description")
                 .systemGenerated(true)
-                .contactCategories(of(StandardReference.builder().codeValue("AL").codeDescription("All/Available").selectable("Y").build()))
+                .contactCategories(List.of(StandardReference.builder().codeValue("AL").codeDescription("All/Available").selectable("Y").build()))
                 .build())
             .officeLocation(EntityHelper.anOfficeLocation().toBuilder()
                 .code("OL1")
@@ -314,7 +362,7 @@ class ContactTransformerTest {
                 .surname("SN")
                 .build())
             .sensitive("Y")
-            .contactOutcomeType(EntityHelper.aContactOutcomeType().toBuilder()
+            .contactOutcomeType(aContactOutcomeType().toBuilder()
                 .code("O1")
                 .description("Some outcome")
                 .build())
