@@ -3,10 +3,10 @@ package uk.gov.justice.digital.delius.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.data.api.UploadedDocumentCreateResponse;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
-import uk.gov.justice.digital.delius.data.api.deliusapi.NewDocument;
 import uk.gov.justice.digital.delius.data.api.deliusapi.UploadedDocumentDto;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 
@@ -26,7 +26,7 @@ public class DeliusDocumentsService {
     }
 
     @Transactional
-    public UploadedDocumentCreateResponse createDocument(String crn, Long eventId, String contactTypeCode, NewDocument document) {
+    public UploadedDocumentCreateResponse createDocument(String crn, Long eventId, String contactTypeCode, MultipartFile document) {
         this.assertCompletedUPWAssessmentContactType(contactTypeCode);
 
         final var newContact= makeNewContact(crn, eventId, contactTypeCode);
@@ -53,7 +53,7 @@ public class DeliusDocumentsService {
         final var type = this.contactTypeRepository.findByCode(contactTypeCode)
             .orElseThrow(() -> new BadRequestException(format("contact type '%s' does not exist", contactTypeCode)));
 
-        if (type.getCode() != CP_UPW) {
+        if (!type.getCode().equals(CP_UPW)) {
             throw new BadRequestException(format("contact type '%s' is not a completed UPW assessment type", contactTypeCode));
         }
     }

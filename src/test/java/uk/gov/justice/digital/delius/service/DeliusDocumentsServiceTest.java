@@ -2,7 +2,6 @@ package uk.gov.justice.digital.delius.service;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
-import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,11 +9,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.mock.web.MockMultipartFile;
+
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.data.api.UploadedDocumentCreateResponse;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
-import uk.gov.justice.digital.delius.data.api.deliusapi.NewDocument;
 import uk.gov.justice.digital.delius.data.api.deliusapi.UploadedDocumentDto;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
@@ -26,12 +28,16 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 class DeliusDocumentsServiceTest {
 
+    public static final long EVENT_ID = 9849L;
+    private static final String CRN = "X1923";
     private DeliusDocumentsService deliusDocumentsService;
-
+    private final MultipartFile file = multiPartFile();
     @Mock
     private DeliusApiClient deliusApiClient;
     @Mock
     private ContactTypeRepository contactTypeRepository;
+
+
 
     @BeforeEach
     private void setup(){
@@ -40,7 +46,6 @@ class DeliusDocumentsServiceTest {
 
     @Test
     public void shouldThrowExceptionIfContactTypeIsNotCompletedUnpaidWork(){
-        NewDocument newDocument = new NewDocument();
         String incorrect = "INCORRECT";
 
         ContactType contactType = new ContactType();
@@ -48,7 +53,7 @@ class DeliusDocumentsServiceTest {
         when(contactTypeRepository.findByCode(incorrect)).thenReturn(Optional.of(contactType));
 
         BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-            deliusDocumentsService.createDocument("X1923", 9849L, incorrect, newDocument);
+            deliusDocumentsService.createDocument("X1923", 9849L, incorrect, file);
         });
 
         assertThat(exception.getMessage()).isEqualTo(format("contact type '%s' is not a completed UPW assessment type", incorrect));
@@ -56,40 +61,37 @@ class DeliusDocumentsServiceTest {
 
     @Test
     public void shouldThrowExceptionIfContactTypeIsNotFound(){
-        NewDocument newDocument = new NewDocument();
         String invalid = "INVALID";
 
         when(contactTypeRepository.findByCode(invalid)).thenReturn(Optional.empty());
 
         BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-            deliusDocumentsService.createDocument("X1923", 9849L, invalid, newDocument);
+            deliusDocumentsService.createDocument("X1923", 9849L, invalid, file);
         });
         assertThat(exception.getMessage()).isEqualTo(format("contact type '%s' does not exist", invalid));
     }
 
     @Test
     public void testWeCanCreateANewDocumentInDelius(){
-        String crn = "X1923";
-        long eventId = 9849L;
         String easu = "EASU";
         long contactId = 123L;
 
-        NewDocument newDocument = new NewDocument();
         ContactType contactType = new ContactType();
         contactType.setCode(easu);
 
         when(contactTypeRepository.findByCode(easu)).thenReturn(Optional.of(contactType));
 
-        NewContact newContact = NewContact.builder().offenderCrn(crn).eventId(eventId).type(easu).build();
-        ContactDto contactDto = ContactDto.builder().offenderCrn(crn).eventId(eventId).type(easu).id(contactId).build();
+        NewContact newContact = NewContact.builder().offenderCrn(CRN).eventId(EVENT_ID).type(easu).build();
+        ContactDto contactDto = ContactDto.builder().offenderCrn(CRN).eventId(EVENT_ID).type(easu).id(contactId).build();
         when(deliusApiClient.createNewContact(newContact)).thenReturn(contactDto);
 
         String author_name = "Author Name";
         LocalDateTime now = LocalDateTime.now();
         String documentName = "Document Name";
-        when(deliusApiClient.uploadDocument(crn, contactId, newDocument)).thenReturn(
+
+        when(deliusApiClient.uploadDocument(CRN, contactId, file)).thenReturn(
             UploadedDocumentDto.builder()
-                .crn(crn)
+                .crn(CRN)
                 .author(author_name)
                 .documentName(documentName)
                 .dateLastModified(now)
@@ -98,13 +100,22 @@ class DeliusDocumentsServiceTest {
                 .build()
         );
 
-        UploadedDocumentCreateResponse response = deliusDocumentsService.createDocument(crn, eventId, easu, newDocument);
+        UploadedDocumentCreateResponse response = deliusDocumentsService.createDocument(CRN, EVENT_ID, easu, file);
 
-        assertThat(response.getCrn()).isEqualTo(crn);
+        assertThat(response.getCrn()).isEqualTo(CRN);
         assertThat(response.getAuthor()).isEqualTo(author_name);
         assertThat(response.getDocumentName()).isEqualTo(documentName);
         assertThat(response.getDateLastModified()).isEqualTo(now);
         assertThat(response.getLastModifiedUser()).isEqualTo(author_name);
         assertThat(response.getCreationDate()).isEqualTo(now);
+    }
+
+    private MultipartFile multiPartFile(){
+        return new MockMultipartFile(
+            "file",
+            "filename",
+            MediaType.TEXT_PLAIN_VALUE,
+            "Test information contained in a document".getBytes()
+        );
     }
 }
