@@ -29,8 +29,8 @@ public class DeliusDocumentsService {
     public UploadedDocumentCreateResponse createDocument(String crn, Long eventId, String contactTypeCode, NewDocument document) {
         this.assertCompletedUPWAssessmentContactType(contactTypeCode);
 
-        final var newContact = makeNewContact(crn, eventId, contactTypeCode);
-        final var contactDto = deliusApiClient.createNewContact(newContact);
+        final var newContact= makeNewContact(crn, eventId, contactTypeCode);
+        final var contactDto= deliusApiClient.createNewContact(newContact);
 
         UploadedDocumentDto uploadedDocumentDto = deliusApiClient.uploadDocument(crn, contactDto.getId(), document);
 
