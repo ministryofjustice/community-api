@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius.controller.secure;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +18,11 @@ import uk.gov.justice.digital.delius.service.DeliusDocumentsService;
 
 @RestController
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
+@AllArgsConstructor
 public class DeliusDocumentsController {
 
     private DeliusDocumentsService deliusDocumentsService;
-    private final String contactType = "EASU";
+    private final static String CONTACT_TYPE = "EASU";
 
     @PostMapping(path = "/offender/{crn}/event/{eventId}/document", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiResponses(
@@ -34,8 +36,8 @@ public class DeliusDocumentsController {
         @RequestPart MultipartFile file,
         @PathVariable String crn,
         @PathVariable Long eventId
-    ){
-        UploadedDocumentCreateResponse response = deliusDocumentsService.createDocument(crn, eventId, contactType, file);
+    ) {
+        UploadedDocumentCreateResponse response = deliusDocumentsService.createDocument(crn, eventId, CONTACT_TYPE, file);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

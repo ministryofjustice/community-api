@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import static java.lang.String.format;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,8 +10,6 @@ import uk.gov.justice.digital.delius.data.api.UploadedDocumentCreateResponse;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
 import uk.gov.justice.digital.delius.data.api.deliusapi.UploadedDocumentDto;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
-
-import static java.lang.String.format;
 
 @Service
 public class DeliusDocumentsService {
@@ -33,7 +32,6 @@ public class DeliusDocumentsService {
         final var contactDto= deliusApiClient.createNewContact(newContact);
 
         UploadedDocumentDto uploadedDocumentDto = deliusApiClient.uploadDocument(crn, contactDto.getId(), document);
-
         return makeResponse(uploadedDocumentDto);
     }
 
@@ -59,6 +57,7 @@ public class DeliusDocumentsService {
     }
 
     private NewContact makeNewContact(String crn, Long eventId, String contactType) {
+        //todo - establish which parameters below are mandatory and set them
         return NewContact.builder()
             .offenderCrn(crn)
             .type(contactType)
@@ -77,6 +76,4 @@ public class DeliusDocumentsService {
             //.rarActivity(request.getRarActivity())
             .build();
     }
-
-
 }
