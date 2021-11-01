@@ -50,7 +50,7 @@ public class DeliusApiMockServer extends WireMockServer {
     }
 
     public void stubPostNewDocumentToDeliusApi() {
-        stubFor(post(urlPathMatching("/v1/offenders/X320741/contacts/17666633/documents"))
+        stubFor(post(urlPathMatching("/v1/offenders/X320741/contacts/2500029015/documents"))
             .willReturn(aResponse()
             .withHeader("Content-Type", "application/json")
             .withStatus(201)
@@ -118,7 +118,7 @@ public class DeliusApiMockServer extends WireMockServer {
             .withStatus(201)
             .withBody("""
                 {
-                    "id": 17666633,
+                    "id": 2500029015,
                     "offenderCrn": "X320741",
                     "type": "CRSAPT",
                     "typeDescription": "Appointment with CRS Provider (NS)",
