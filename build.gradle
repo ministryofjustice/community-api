@@ -56,8 +56,6 @@ dependencies {
     testImplementation 'io.rest-assured:spring-mock-mvc:3.3.0'
     testIntegrationImplementation "com.github.tomakehurst:wiremock:2.27.2"
     testImplementation 'io.swagger.parser.v3:swagger-parser-v2-converter:2.0.25'
-
-    testImplementation 'org.springframework:spring-test'
 }
 
 testIntegration {
