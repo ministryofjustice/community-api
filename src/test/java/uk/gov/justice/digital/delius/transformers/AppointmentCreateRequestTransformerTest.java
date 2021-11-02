@@ -9,6 +9,7 @@ import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.data.api.Requirement;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 
 import static java.time.OffsetDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -111,7 +112,27 @@ class AppointmentCreateRequestTransformerTest {
         );
     }
 
+    @Test
+    public void appointmentCreateRequest_whereAppointmentContainsAttendedAndNotifyPPFlag() {
+        OffsetDateTime start = now();
+        OffsetDateTime end = start.plusHours(1);
+
+        assertThat(AppointmentCreateRequestTransformer.appointmentOf(
+            aContextlessAppointmentCreateRequest(start, end, false, "LATE", true),
+            Nsi.builder().nsiId(654321L).requirement(
+                Requirement.builder().requirementTypeMainCategory(KeyValue.builder().code(RAR_REQ_TYPE).build()).build()
+            ).build(),
+            anIntegrationContext())
+        ).isEqualTo(
+            anAppointmentCreateRequest(start, end, NON_RAR_CONTACT_TYPE, false, "AFTC", "ROM")
+        );
+    }
+
     private AppointmentCreateRequest anAppointmentCreateRequest(OffsetDateTime start, OffsetDateTime end, String contactType, Boolean rarActivity) {
+        return anAppointmentCreateRequest(start, end, contactType, rarActivity, null, null);
+    }
+
+    private AppointmentCreateRequest anAppointmentCreateRequest(OffsetDateTime start, OffsetDateTime end, String contactType, Boolean rarActivity, String outcome, String enforcement) {
         return AppointmentCreateRequest.builder()
             .nsiId(654321L)
             .requirementId(null)
@@ -127,6 +148,10 @@ class AppointmentCreateRequestTransformerTest {
     }
 
     private ContextlessAppointmentCreateRequest aContextlessAppointmentCreateRequest(OffsetDateTime start, OffsetDateTime end, boolean countsTowardsRarDays) {
+        return aContextlessAppointmentCreateRequest(start, end, countsTowardsRarDays, null, null);
+    }
+
+    private ContextlessAppointmentCreateRequest aContextlessAppointmentCreateRequest(OffsetDateTime start, OffsetDateTime end, boolean countsTowardsRarDays, String attended, Boolean notifyPP) {
         return ContextlessAppointmentCreateRequest.builder()
             .appointmentStart(start)
             .appointmentEnd(end)
@@ -143,6 +168,19 @@ class AppointmentCreateRequestTransformerTest {
         integrationContext.getContactMapping().setAppointmentRarContactType(RAR_CONTACT_TYPE);
         integrationContext.getContactMapping().setAppointmentNonRarContactType(NON_RAR_CONTACT_TYPE);
         integrationContext.setRequirementRehabilitationActivityType(RAR_REQ_TYPE);
+        integrationContext.getContactMapping().setEnforcementReferToOffenderManager("ROM");
+        integrationContext.getContactMapping().setAttendanceAndBehaviourNotifiedMappingToOutcomeType(
+            new HashMap<>() {{
+                this.put("no", new HashMap<>() {{
+                    this.put(true, "AFTA");
+                    this.put(false, "AFTA");
+                }});
+                this.put("late", new HashMap<>() {{
+                    this.put(true, "AFTC");
+                    this.put(false, "ATTC");
+                }});
+            }}
+        );
         return integrationContext;
     }
 }

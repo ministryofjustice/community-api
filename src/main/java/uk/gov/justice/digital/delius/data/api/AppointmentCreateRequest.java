@@ -58,4 +58,10 @@ public class AppointmentCreateRequest {
 
     @ApiModelProperty
     private Boolean rarActivity;
+
+    @ApiModelProperty
+    private String outcome;
+
+    @ApiModelProperty
+    private String enforcement;
 }

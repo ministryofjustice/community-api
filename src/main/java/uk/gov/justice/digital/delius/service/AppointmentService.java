@@ -191,6 +191,8 @@ public class AppointmentService {
             .requirementId(request.getRequirementId())
             .sensitive(request.getSensitive())
             .rarActivity(request.getRarActivity())
+            .outcome(request.getOutcome())
+            .enforcement(request.getEnforcement())
             .build();
     }
 
