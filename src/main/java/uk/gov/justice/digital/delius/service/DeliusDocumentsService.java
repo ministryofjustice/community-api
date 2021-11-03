@@ -6,10 +6,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
+import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
+import uk.gov.justice.digital.delius.data.api.OffenderManager;
 import uk.gov.justice.digital.delius.data.api.UploadedDocumentCreateResponse;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
 import uk.gov.justice.digital.delius.data.api.deliusapi.UploadedDocumentDto;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
+import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDate;
+import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalTime;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 
 @Service
 public class DeliusDocumentsService {
@@ -17,11 +26,16 @@ public class DeliusDocumentsService {
 
     private final DeliusApiClient deliusApiClient;
     private final ContactTypeRepository contactTypeRepository;
+    private final OffenderManagerService offenderManagerService;
 
     @Autowired
-    public DeliusDocumentsService(DeliusApiClient deliusApiClient, ContactTypeRepository contactTypeRepository) {
+    public DeliusDocumentsService(
+        DeliusApiClient deliusApiClient,
+        ContactTypeRepository contactTypeRepository,
+        OffenderManagerService offenderManagerService) {
         this.deliusApiClient = deliusApiClient;
         this.contactTypeRepository = contactTypeRepository;
+        this.offenderManagerService = offenderManagerService;
     }
 
     @Transactional
@@ -57,23 +71,33 @@ public class DeliusDocumentsService {
     }
 
     private NewContact makeNewContact(String crn, Long eventId, String contactType) {
+
+        CommunityOrPrisonOffenderManager offenderManager = getActiveOffenderManager(crn);
         //todo - establish which parameters below are mandatory and set them
         return NewContact.builder()
             .offenderCrn(crn)
             .type(contactType)
-            /*.provider(request.getProviderCode())
-            .team(request.getTeamCode())
-            .staff(request.getStaffCode())
-            .officeLocation(request.getOfficeLocationCode())
-            .date(toLondonLocalDate(request.getAppointmentStart()))
-            .startTime(toLondonLocalTime(request.getAppointmentStart()))
-            .endTime(toLondonLocalTime(request.getAppointmentEnd()))*/
-            //.notes(request.getNotes())
-            //.nsiId(request.getNsiId())
+            .provider(offenderManager.getProbationArea().getCode())
+            .team(offenderManager.getTeam().getCode())
+            .staff(offenderManager.getStaffCode())
+            .date(LocalDate.now())
+            .startTime(LocalTime.now())
+            .endTime(LocalTime.now())
             .eventId(eventId)
-            //.requirementId(request.getRequirementId())
-            //.sensitive(request.getSensitive())
-            //.rarActivity(request.getRarActivity())
             .build();
+    }
+
+    private CommunityOrPrisonOffenderManager getActiveOffenderManager(String crn) {
+
+        return getAllOffenderManagers(crn)
+            .stream()
+            .filter(CommunityOrPrisonOffenderManager::getIsResponsibleOfficer)
+            .findAny()
+            .orElseThrow(() -> new NotFoundException(format("No active Offender Manager found for crn %s", crn)));
+    }
+
+    private List<CommunityOrPrisonOffenderManager> getAllOffenderManagers(String crn) {
+        return offenderManagerService.getAllOffenderManagersForCrn(crn, true)
+            .orElseThrow(() -> new NotFoundException(format("Offender not found for crn %s", crn)));
     }
 }

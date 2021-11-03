@@ -30,6 +30,8 @@ class DeliusDocumentsServiceTest {
     private DeliusApiClient deliusApiClient;
     @Mock
     private ContactTypeRepository contactTypeRepository;
+    @Mock
+    private OffenderManagerService offenderManagerService;
 
     private DeliusDocumentsService deliusDocumentsService;
 
@@ -39,7 +41,7 @@ class DeliusDocumentsServiceTest {
 
     @BeforeEach
     private void setup(){
-        deliusDocumentsService = new DeliusDocumentsService(deliusApiClient, contactTypeRepository);
+        deliusDocumentsService = new DeliusDocumentsService(deliusApiClient, contactTypeRepository, offenderManagerService);
     }
 
     @Test
@@ -69,6 +71,43 @@ class DeliusDocumentsServiceTest {
 
     @Test
     public void testWeCanCreateANewDocumentInDelius() {
+        String easu = "EASU";
+        long contactId = 123L;
+
+        ContactType contactType = new ContactType();
+        contactType.setCode(easu);
+        when(contactTypeRepository.findByCode(easu)).thenReturn(Optional.of(contactType));
+
+        NewContact newContact = NewContact.builder().offenderCrn(CRN).eventId(EVENT_ID).type(easu).build();
+        ContactDto contactDto = ContactDto.builder().offenderCrn(CRN).eventId(EVENT_ID).type(easu).id(contactId).build();
+        when(deliusApiClient.createNewContact(newContact)).thenReturn(contactDto);
+
+        String author_name = "Author Name";
+        LocalDateTime now = LocalDateTime.now();
+        String documentName = "Document Name";
+        when(deliusApiClient.uploadDocument(CRN, contactId, file)).thenReturn(
+            UploadedDocumentDto.builder()
+                .crn(CRN)
+                .author(author_name)
+                .documentName(documentName)
+                .dateLastModified(now)
+                .lastModifiedUser(author_name)
+                .creationDate(now)
+                .build()
+        );
+
+        UploadedDocumentCreateResponse response = deliusDocumentsService.createDocument(CRN, EVENT_ID, easu, file);
+
+        assertThat(response.getCrn()).isEqualTo(CRN);
+        assertThat(response.getAuthor()).isEqualTo(author_name);
+        assertThat(response.getDocumentName()).isEqualTo(documentName);
+        assertThat(response.getDateLastModified()).isEqualTo(now);
+        assertThat(response.getLastModifiedUser()).isEqualTo(author_name);
+        assertThat(response.getCreationDate()).isEqualTo(now);
+    }
+
+    @Test
+    public void shouldCreateContactWithActiveOffenderManager() {
         String easu = "EASU";
         long contactId = 123L;
 
