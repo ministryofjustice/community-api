@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -13,6 +15,10 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
+import uk.gov.justice.digital.delius.controller.NotFoundException;
+import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
+import uk.gov.justice.digital.delius.data.api.ProbationArea;
+import uk.gov.justice.digital.delius.data.api.Team;
 import uk.gov.justice.digital.delius.data.api.UploadedDocumentCreateResponse;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
@@ -20,7 +26,9 @@ import uk.gov.justice.digital.delius.data.api.deliusapi.UploadedDocumentDto;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,118 +40,167 @@ class DeliusDocumentsServiceTest {
     private ContactTypeRepository contactTypeRepository;
     @Mock
     private OffenderManagerService offenderManagerService;
+    @Captor
+    private ArgumentCaptor<NewContact> newContactArgumentCaptor;
 
     private DeliusDocumentsService deliusDocumentsService;
 
-    public static final long EVENT_ID = 9849L;
-    private static final String CRN = "X1923";
+    private final long eventId = 9849L;
+    private final String crn = "X1923";
+    private final long contactId = 123L;
+    private final String EASU = "EASU";
+    private final String authorName = "Author Name";
+    private final String documentName = "Document Name";
+    private final LocalDateTime now = LocalDateTime.now();
+    private final ContactType contactType = new ContactType();
     private final MultipartFile file = multiPartFile();
 
+
     @BeforeEach
-    private void setup(){
+    private void setup() {
         deliusDocumentsService = new DeliusDocumentsService(deliusApiClient, contactTypeRepository, offenderManagerService);
+        contactType.setCode(EASU);
     }
 
     @Test
-    public void shouldThrowExceptionIfContactTypeIsNotCompletedUnpaidWork(){
+    public void shouldThrowExceptionIfContactTypeIsNotCompletedUnpaidWork() {
         String incorrect = "INCORRECT";
-
-        ContactType contactType = new ContactType();
-        contactType.setCode(incorrect);
-        when(contactTypeRepository.findByCode(incorrect)).thenReturn(Optional.of(contactType));
+        ContactType incorrectContactType = new ContactType();
+        incorrectContactType.setCode(incorrect);
+        when(contactTypeRepository.findByCode(incorrect)).thenReturn(Optional.of(incorrectContactType));
 
         BadRequestException exception = assertThrows(BadRequestException.class, () ->
-            deliusDocumentsService.createDocument(CRN, EVENT_ID, incorrect, file));
+            deliusDocumentsService.createDocument(crn, eventId, incorrect, file));
 
         assertThat(exception.getMessage()).isEqualTo(format("contact type '%s' is not a completed UPW assessment type", incorrect));
     }
 
     @Test
-    public void shouldThrowExceptionIfContactTypeIsNotFound(){
+    public void shouldThrowExceptionIfContactTypeIsNotFound() {
         String invalid = "INVALID";
-
         when(contactTypeRepository.findByCode(invalid)).thenReturn(Optional.empty());
 
         BadRequestException exception = assertThrows(BadRequestException.class, () ->
-            deliusDocumentsService.createDocument(CRN, EVENT_ID, invalid, file));
+            deliusDocumentsService.createDocument(crn, eventId, invalid, file));
         assertThat(exception.getMessage()).isEqualTo(format("contact type '%s' does not exist", invalid));
     }
 
     @Test
-    public void testWeCanCreateANewDocumentInDelius() {
-        String easu = "EASU";
-        long contactId = 123L;
+    public void shouldCreateANewDocumentInDelius() {
 
         ContactType contactType = new ContactType();
-        contactType.setCode(easu);
-        when(contactTypeRepository.findByCode(easu)).thenReturn(Optional.of(contactType));
+        contactType.setCode(EASU);
 
-        NewContact newContact = NewContact.builder().offenderCrn(CRN).eventId(EVENT_ID).type(easu).build();
-        ContactDto contactDto = ContactDto.builder().offenderCrn(CRN).eventId(EVENT_ID).type(easu).id(contactId).build();
-        when(deliusApiClient.createNewContact(newContact)).thenReturn(contactDto);
-
-        String author_name = "Author Name";
-        LocalDateTime now = LocalDateTime.now();
-        String documentName = "Document Name";
-        when(deliusApiClient.uploadDocument(CRN, contactId, file)).thenReturn(
+        when(contactTypeRepository.findByCode(EASU)).thenReturn(Optional.of(contactType));
+        when(offenderManagerService.getAllOffenderManagersForCrn(crn, true)).thenReturn(offenderManagers());
+        when(deliusApiClient.createNewContact(newContactArgumentCaptor.capture())).thenReturn(contactDto());
+        when(deliusApiClient.uploadDocument(crn, contactId, file)).thenReturn(
             UploadedDocumentDto.builder()
-                .crn(CRN)
-                .author(author_name)
+                .crn(crn)
+                .author(authorName)
                 .documentName(documentName)
                 .dateLastModified(now)
-                .lastModifiedUser(author_name)
+                .lastModifiedUser(authorName)
                 .creationDate(now)
                 .build()
         );
 
-        UploadedDocumentCreateResponse response = deliusDocumentsService.createDocument(CRN, EVENT_ID, easu, file);
+        UploadedDocumentCreateResponse response = deliusDocumentsService.createDocument(crn, eventId, EASU, file);
 
-        assertThat(response.getCrn()).isEqualTo(CRN);
-        assertThat(response.getAuthor()).isEqualTo(author_name);
+        assertThat(response.getCrn()).isEqualTo(crn);
+        assertThat(response.getAuthor()).isEqualTo(authorName);
         assertThat(response.getDocumentName()).isEqualTo(documentName);
         assertThat(response.getDateLastModified()).isEqualTo(now);
-        assertThat(response.getLastModifiedUser()).isEqualTo(author_name);
+        assertThat(response.getLastModifiedUser()).isEqualTo(authorName);
         assertThat(response.getCreationDate()).isEqualTo(now);
     }
 
     @Test
     public void shouldCreateContactWithActiveOffenderManager() {
-        String easu = "EASU";
-        long contactId = 123L;
 
-        ContactType contactType = new ContactType();
-        contactType.setCode(easu);
-        when(contactTypeRepository.findByCode(easu)).thenReturn(Optional.of(contactType));
-
-        NewContact newContact = NewContact.builder().offenderCrn(CRN).eventId(EVENT_ID).type(easu).build();
-        ContactDto contactDto = ContactDto.builder().offenderCrn(CRN).eventId(EVENT_ID).type(easu).id(contactId).build();
-        when(deliusApiClient.createNewContact(newContact)).thenReturn(contactDto);
-
-        String author_name = "Author Name";
-        LocalDateTime now = LocalDateTime.now();
-        String documentName = "Document Name";
-        when(deliusApiClient.uploadDocument(CRN, contactId, file)).thenReturn(
+        when(contactTypeRepository.findByCode(EASU)).thenReturn(Optional.of(contactType));
+        when(offenderManagerService.getAllOffenderManagersForCrn(crn, true)).thenReturn(offenderManagers());
+        when(deliusApiClient.createNewContact(newContactArgumentCaptor.capture())).thenReturn(contactDto());
+        when(deliusApiClient.uploadDocument(crn, contactId, file)).thenReturn(
             UploadedDocumentDto.builder()
-                .crn(CRN)
-                .author(author_name)
+                .crn(crn)
+                .author(authorName)
                 .documentName(documentName)
                 .dateLastModified(now)
-                .lastModifiedUser(author_name)
+                .lastModifiedUser(authorName)
                 .creationDate(now)
                 .build()
         );
 
-        UploadedDocumentCreateResponse response = deliusDocumentsService.createDocument(CRN, EVENT_ID, easu, file);
+        deliusDocumentsService.createDocument(crn, eventId, EASU, file);
 
-        assertThat(response.getCrn()).isEqualTo(CRN);
-        assertThat(response.getAuthor()).isEqualTo(author_name);
-        assertThat(response.getDocumentName()).isEqualTo(documentName);
-        assertThat(response.getDateLastModified()).isEqualTo(now);
-        assertThat(response.getLastModifiedUser()).isEqualTo(author_name);
-        assertThat(response.getCreationDate()).isEqualTo(now);
+        NewContact newContact = newContactArgumentCaptor.getValue();
+        assertThat(newContact.getType()).isEqualTo(EASU);
+        assertThat(newContact.getProvider()).isEqualTo("2345");
+        assertThat(newContact.getTeam()).isEqualTo("Team code");
+        assertThat(newContact.getStaff()).isEqualTo("Staff code");
+        assertThat(newContact.getDate()).isEqualTo(LocalDate.now());
+        assertThat(newContact.getEventId()).isEqualTo(eventId);
     }
 
-    private MultipartFile multiPartFile(){
+    @Test
+    public void shouldThrowExceptionIfOffenderHasNoOffenderManagers() {
+        ContactType contactType = new ContactType();
+        contactType.setCode(EASU);
+
+        when(contactTypeRepository.findByCode(EASU)).thenReturn(Optional.of(contactType));
+        when(offenderManagerService.getAllOffenderManagersForCrn(crn, true)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(NotFoundException.class, ()
+            -> deliusDocumentsService.createDocument(crn, eventId, EASU, file));
+
+        assertThat(exception.getMessage()).isEqualTo("Offender Managers not found for crn %s", crn);
+    }
+
+    @Test
+    public void shouldThrowExceptionIfOffenderHasNoOffenderActiveManager() {
+        ContactType contactType = new ContactType();
+        contactType.setCode(EASU);
+
+        when(contactTypeRepository.findByCode(EASU)).thenReturn(Optional.of(contactType));
+        when(offenderManagerService.getAllOffenderManagersForCrn(crn, true)).thenReturn(
+            Optional.of(List.of(CommunityOrPrisonOffenderManager.builder().isResponsibleOfficer(false).build()))
+        );
+
+        Exception exception = assertThrows(NotFoundException.class, ()
+            -> deliusDocumentsService.createDocument(crn, eventId, EASU, file));
+
+        assertThat(exception.getMessage()).isEqualTo("No active Offender Manager found for crn %s", crn);
+    }
+
+    private Optional<List<CommunityOrPrisonOffenderManager>> offenderManagers() {
+        return Optional.of(
+            List.of(
+                CommunityOrPrisonOffenderManager
+                    .builder()
+                    .isResponsibleOfficer(true)
+                    .probationArea(ProbationArea.builder().code("2345").build())
+                    .staffCode("Staff code")
+                    .team(Team.builder().code("Team code").build())
+                    .build(),
+                CommunityOrPrisonOffenderManager
+                    .builder()
+                    .isResponsibleOfficer(false)
+                    .build()
+            )
+        );
+    }
+    private ContactDto contactDto() {
+        return ContactDto
+            .builder()
+            .offenderCrn(crn)
+            .eventId(eventId)
+            .type(EASU)
+            .id(contactId)
+            .build();
+    }
+
+    private MultipartFile multiPartFile() {
         return new MockMultipartFile(
             "file",
             "filename",

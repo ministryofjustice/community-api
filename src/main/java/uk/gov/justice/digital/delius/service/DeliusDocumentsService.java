@@ -73,7 +73,6 @@ public class DeliusDocumentsService {
     private NewContact makeNewContact(String crn, Long eventId, String contactType) {
 
         CommunityOrPrisonOffenderManager offenderManager = getActiveOffenderManager(crn);
-        //todo - establish which parameters below are mandatory and set them
         return NewContact.builder()
             .offenderCrn(crn)
             .type(contactType)
@@ -82,7 +81,6 @@ public class DeliusDocumentsService {
             .staff(offenderManager.getStaffCode())
             .date(LocalDate.now())
             .startTime(LocalTime.now())
-            .endTime(LocalTime.now())
             .eventId(eventId)
             .build();
     }
@@ -98,6 +96,6 @@ public class DeliusDocumentsService {
 
     private List<CommunityOrPrisonOffenderManager> getAllOffenderManagers(String crn) {
         return offenderManagerService.getAllOffenderManagersForCrn(crn, true)
-            .orElseThrow(() -> new NotFoundException(format("Offender not found for crn %s", crn)));
+            .orElseThrow(() -> new NotFoundException(format("Offender Managers not found for crn %s", crn)));
     }
 }
