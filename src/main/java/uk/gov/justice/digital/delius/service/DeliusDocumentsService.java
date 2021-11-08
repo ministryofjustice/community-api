@@ -34,10 +34,10 @@ public class DeliusDocumentsService {
         this.offenderManagerService = offenderManagerService;
     }
 
-    public UploadedDocumentCreateResponse createUPWDocument(String crn, Long eventId, String contactTypeCode, MultipartFile document) {
+    public UploadedDocumentCreateResponse createUPWDocument(String crn, Long convictionId, String contactTypeCode, MultipartFile document) {
         assertCompletedUPWAssessmentContactType(contactTypeCode);
 
-        final var newContact= makeNewContact(crn, eventId, contactTypeCode);
+        final var newContact= makeNewContact(crn, convictionId, contactTypeCode);
         final var contactDto= deliusApiClient.createNewContact(newContact);
 
         UploadedDocumentDto uploadedDocumentDto = deliusApiClient.uploadDocument(crn, contactDto.getId(), document);
@@ -64,7 +64,7 @@ public class DeliusDocumentsService {
         }
     }
 
-    private NewContact makeNewContact(String crn, Long eventId, String contactType) {
+    private NewContact makeNewContact(String crn, Long convictionId, String contactType) {
         CommunityOrPrisonOffenderManager offenderManager = getActiveOffenderManager(crn);
         return NewContact.builder()
             .offenderCrn(crn)
@@ -74,7 +74,7 @@ public class DeliusDocumentsService {
             .staff(offenderManager.getStaffCode())
             .date(LocalDate.now())
             .startTime(LocalTime.now())
-            .eventId(eventId)
+            .eventId(convictionId)
             .build();
     }
 

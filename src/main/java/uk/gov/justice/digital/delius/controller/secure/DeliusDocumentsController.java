@@ -25,7 +25,7 @@ public class DeliusDocumentsController {
     private DeliusDocumentsService deliusDocumentsService;
     private final static String CONTACT_TYPE = "EASU";
 
-    @PostMapping(path = "/offender/{crn}/event/{eventId}/document", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(path = "/offender/{crn}/conviction/{convictionId}/document", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiResponses(
         value = {
             @ApiResponse(code = 201, message = "Created", response = String.class),
@@ -38,9 +38,9 @@ public class DeliusDocumentsController {
     public ResponseEntity<UploadedDocumentCreateResponse> createUPWDocumentInDelius(
         @RequestPart MultipartFile file,
         @PathVariable String crn,
-        @PathVariable Long eventId
+        @PathVariable Long convictionId
     ) {
-        UploadedDocumentCreateResponse response = deliusDocumentsService.createUPWDocument(crn, eventId, CONTACT_TYPE, file);
+        UploadedDocumentCreateResponse response = deliusDocumentsService.createUPWDocument(crn, convictionId, CONTACT_TYPE, file);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }
