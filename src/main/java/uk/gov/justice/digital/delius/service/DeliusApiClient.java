@@ -20,8 +20,6 @@ import uk.gov.justice.digital.delius.data.api.deliusapi.UploadedDocumentDto;
 
 import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 
-import java.io.IOException;
-
 @Service
 @Slf4j
 public class DeliusApiClient {
@@ -108,6 +106,3 @@ public class DeliusApiClient {
             .block();
     }
 }
-
-
-

@@ -15,7 +15,6 @@ public class UploadedDocumentCreateResponse {
     private Long id;
     private String documentName;
     private String crn;
-    private String author;
     private LocalDateTime dateLastModified;
     private String lastModifiedUser;
     private LocalDateTime creationDate;

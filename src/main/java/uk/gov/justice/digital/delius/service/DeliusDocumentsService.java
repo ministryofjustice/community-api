@@ -3,7 +3,6 @@ package uk.gov.justice.digital.delius.service;
 import static java.lang.String.format;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
@@ -35,7 +34,6 @@ public class DeliusDocumentsService {
         this.offenderManagerService = offenderManagerService;
     }
 
-    @Transactional
     public UploadedDocumentCreateResponse createUPWDocument(String crn, Long eventId, String contactTypeCode, MultipartFile document) {
         assertCompletedUPWAssessmentContactType(contactTypeCode);
 
@@ -51,7 +49,6 @@ public class DeliusDocumentsService {
             uploadedDocumentDto.getId(),
             uploadedDocumentDto.getDocumentName(),
             uploadedDocumentDto.getCrn(),
-            uploadedDocumentDto.getAuthor(),
             uploadedDocumentDto.getDateLastModified(),
             uploadedDocumentDto.getLastModifiedUser(),
             uploadedDocumentDto.getCreationDate()
