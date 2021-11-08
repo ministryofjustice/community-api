@@ -108,7 +108,6 @@ class DeliusDocumentsServiceTest {
         UploadedDocumentCreateResponse response = deliusDocumentsService.createUPWDocument(crn, eventId, EASU, file);
 
         assertThat(response.getCrn()).isEqualTo(crn);
-        assertThat(response.getAuthor()).isEqualTo(authorName);
         assertThat(response.getDocumentName()).isEqualTo(documentName);
         assertThat(response.getDateLastModified()).isEqualTo(now);
         assertThat(response.getLastModifiedUser()).isEqualTo(authorName);

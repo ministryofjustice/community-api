@@ -65,7 +65,6 @@ public class DeliusDocumentsService {
     }
 
     private NewContact makeNewContact(String crn, Long eventId, String contactType) {
-
         CommunityOrPrisonOffenderManager offenderManager = getActiveOffenderManager(crn);
         return NewContact.builder()
             .offenderCrn(crn)
@@ -80,7 +79,6 @@ public class DeliusDocumentsService {
     }
 
     private CommunityOrPrisonOffenderManager getActiveOffenderManager(String crn) {
-
         return getAllOffenderManagers(crn)
             .stream()
             .filter(CommunityOrPrisonOffenderManager::getIsResponsibleOfficer)
