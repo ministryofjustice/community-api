@@ -3,9 +3,11 @@ package uk.gov.justice.digital.delius.controller.secure;
 import io.restassured.RestAssured;
 import static io.restassured.RestAssured.given;
 import io.restassured.builder.MultiPartSpecBuilder;
+import io.restassured.specification.MultiPartSpecification;
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -40,6 +42,9 @@ public class DeliusDocumentsAPITest extends IntegrationTestBase {
     @Autowired
     protected JwtAuthenticationHelper jwtAuthenticationHelper;
 
+    private final String crn = "X320741";
+    private final String url = format("/offender/%s/event/%s/document", crn, 2500029015L);
+
     @BeforeEach
     public void setup() {
         RestAssured.port = port;
@@ -47,33 +52,49 @@ public class DeliusDocumentsAPITest extends IntegrationTestBase {
     }
 
     @Test
-    public void shouldCreateNewDocumentInDelius() {
+    @DisplayName("Will reject request without correct role")
+    void willRejectRequestWithoutCorrectRole() {
+        final var token = createJwt("ROLE_COMMUNITY");
+
+        given()
+            .auth().oauth2(token)
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+            .multiPart(getFile())
+            .when()
+            .post(url)
+            .then()
+            .statusCode(403);
+    }
+
+    @Test
+    @DisplayName("Uploads a new UPW document to Delius")
+    public void createNewDocumentInDelius() {
         deliusApiMockServer.stubPostContactToDeliusApi();
         deliusApiMockServer.stubPostNewDocumentToDeliusApi();
 
         final var token = createJwt("bob", Collections.singletonList("ROLE_PROBATION"));
 
-        String crn = "X320741";
-        Long eventId = 2500029015L;
-
         given()
             .when()
             .auth().oauth2(token)
             .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
-            .multiPart( new MultiPartSpecBuilder("Test-Content-In-File".getBytes()).
-                fileName("upwDocument.pdf").
-                controlName("file").
-                mimeType("text/plain").
-                build()
-            )
-            .post(format("/offender/%s/event/%s/document", crn, eventId))
+            .multiPart(getFile())
+            .post(url)
             .then()
             .assertThat()
             .statusCode(HttpStatus.CREATED.value())
             .body(
                 "documentName", equalTo("upwDocument.pdf"),
-                "crn", equalTo("X320741")
+                "crn", equalTo(crn)
             );
+    }
+
+    private MultiPartSpecification getFile() {
+        return new MultiPartSpecBuilder("Test-Content-In-File".getBytes()).
+            fileName("upwDocument.pdf").
+            controlName("file").
+            mimeType("text/plain").
+            build();
     }
 
     private String createJwt(final String user, final List<String> roles) {
