@@ -66,6 +66,9 @@ public class DeliusDocumentsAPITest extends IntegrationTestBase {
             .post(url)
             .then()
             .statusCode(403);
+
+        deliusApiMockServer.verify(0, anyRequestedFor(urlEqualTo("/v1/contact")));
+        deliusApiMockServer.verify(0, anyRequestedFor(urlPathMatching("/v1/offenders/.*/contacts/.*/documents")));
     }
 
     @Test
@@ -91,6 +94,9 @@ public class DeliusDocumentsAPITest extends IntegrationTestBase {
                 "documentName", equalTo("upwDocument.pdf"),
                 "crn", equalTo(crn)
             );
+
+        deliusApiMockServer.verify(1, anyRequestedFor(urlEqualTo("/v1/contact")));
+        deliusApiMockServer.verify(1, anyRequestedFor(urlPathMatching("/v1/offenders/.*/contacts/.*/documents")));
     }
 
     @Test
@@ -111,6 +117,9 @@ public class DeliusDocumentsAPITest extends IntegrationTestBase {
             .then()
             .assertThat()
             .statusCode(404);
+
+        deliusApiMockServer.verify(0, anyRequestedFor(urlEqualTo("/v1/contact")));
+        deliusApiMockServer.verify(0, anyRequestedFor(urlPathMatching("/v1/offenders/.*/contacts/.*/documents")));
     }
 
     private MultiPartSpecification getFile() {
