@@ -42,9 +42,6 @@ public class DeliusDocumentsAPITest extends IntegrationTestBase {
     @Autowired
     protected JwtAuthenticationHelper jwtAuthenticationHelper;
 
-    private final String crn = "X320741";
-    private final String url = format("/offender/%s/event/%s/document", crn, 2500029015L);
-
     @BeforeEach
     public void setup() {
         RestAssured.port = port;
@@ -54,8 +51,10 @@ public class DeliusDocumentsAPITest extends IntegrationTestBase {
     @Test
     @DisplayName("Will reject request without correct role")
     void willRejectRequestWithoutCorrectRole() {
-        final var token = createJwt("ROLE_COMMUNITY");
+        String crn = "X320741";
+        String url = format("/offender/%s/event/%s/document", crn, 2500029015L);
 
+        final var token = createJwt("ROLE_COMMUNITY");
         given()
             .auth().oauth2(token)
             .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -73,6 +72,8 @@ public class DeliusDocumentsAPITest extends IntegrationTestBase {
         deliusApiMockServer.stubPostNewDocumentToDeliusApi();
 
         final var token = createJwt("bob", Collections.singletonList("ROLE_PROBATION"));
+        String crn = "X320741";
+        String url = format("/offender/%s/event/%s/document", crn, 2500029015L);
 
         given()
             .when()
@@ -87,6 +88,26 @@ public class DeliusDocumentsAPITest extends IntegrationTestBase {
                 "documentName", equalTo("upwDocument.pdf"),
                 "crn", equalTo(crn)
             );
+    }
+
+    @Test
+    @DisplayName("Returns Not Found when no Active Offender Manager is found for CRN")
+    public void returnsNotFoundWhenNoActiveOffenderManagerForCrn() {
+        deliusApiMockServer.stubPostContactToDeliusApi();
+
+        final var token = createJwt("bob", Collections.singletonList("ROLE_PROBATION"));
+
+        String crn = "X00000A";
+        String url = format("/offender/%s/event/%s/document", crn, 2500029015L);
+        given()
+            .when()
+            .auth().oauth2(token)
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+            .multiPart(getFile())
+            .post(url)
+            .then()
+            .assertThat()
+            .statusCode(404);
     }
 
     private MultiPartSpecification getFile() {
