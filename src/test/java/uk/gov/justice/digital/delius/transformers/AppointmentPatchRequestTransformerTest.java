@@ -78,6 +78,31 @@ class AppointmentPatchRequestTransformerTest {
     }
 
     @Test
+    public void transformsJsonPatchNotPopulatingOutcomeWhenAttendedIsNull() throws JsonProcessingException {
+
+        final var notifyPPOfAttendanceBehaviourValue = true;
+        final var request = buildRequest(null, notifyPPOfAttendanceBehaviourValue);
+
+        final var patch = mapAttendanceFieldsToOutcomeOf(request, integrationContext);
+
+        assertThat(objectMapper.writeValueAsString(patch))
+            .isEqualTo("[{\"op\":\"replace\",\"path\":\"/notes\",\"value\":\"some notes\"}," +
+                "{\"op\":\"replace\",\"path\":\"/enforcement\",\"value\":\"ROM\"}]");
+    }
+
+    @Test
+    public void transformsJsonPatchNotPopulatingOutcomeAndEnforcementWhenNotifyPPIsNull() throws JsonProcessingException {
+
+        final var attendedValue = "LATE";
+        final var request = buildRequest(attendedValue, null);
+
+        final var patch = mapAttendanceFieldsToOutcomeOf(request, integrationContext);
+
+        assertThat(objectMapper.writeValueAsString(patch))
+            .isEqualTo("[{\"op\":\"replace\",\"path\":\"/notes\",\"value\":\"some notes\"}]");
+    }
+
+    @Test
     public void throwsExceptionWhenNoMapping() {
         final var attendedValue = "UnknownValue";
         final var request = buildRequest(attendedValue, true);

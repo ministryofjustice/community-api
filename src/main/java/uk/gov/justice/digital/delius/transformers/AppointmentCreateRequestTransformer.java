@@ -7,7 +7,11 @@ import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.data.api.Requirement;
 
+import java.util.Optional;
+
 import static java.util.Optional.ofNullable;
+import static uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer.getEnforcementReferToOffenderManager;
+import static uk.gov.justice.digital.delius.transformers.AppointmentPatchRequestTransformer.getOutcomeType;
 
 /*
     Activity can count towards RAR    Sentence has RAR requirement    RAR Activity    Contact Type
@@ -24,6 +28,9 @@ public class AppointmentCreateRequestTransformer {
         final var contactMapping = context.getContactMapping();
         final var nsiContainsRarRequirement = isRarRequirement(nsi.getRequirement(), context.getRequirementRehabilitationActivityType());
 
+        final Optional<String> outcomeType = getOutcomeType(context, request.getAttended(), request.getNotifyPPOfAttendanceBehaviour());
+        final Optional<String> enforcement = getEnforcementReferToOffenderManager(context, request.getNotifyPPOfAttendanceBehaviour());
+
         return AppointmentCreateRequest.builder()
                 .nsiId(nsi.getNsiId())
                 .contactType(request.getCountsTowardsRarDays() ?
@@ -37,6 +44,8 @@ public class AppointmentCreateRequestTransformer {
                 .staffCode(context.getStaffCode())
                 .teamCode(context.getTeamCode())
                 .rarActivity(isRarActivity(nsiContainsRarRequirement, request.getCountsTowardsRarDays()))
+                .outcome(outcomeType.orElse(null))
+                .enforcement(enforcement.orElse(null))
                 .build();
     }
 

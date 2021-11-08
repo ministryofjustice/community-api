@@ -47,4 +47,10 @@ public class ContextlessAppointmentCreateRequest {
     @NotNull
     @ApiModelProperty(required = true)
     private Boolean countsTowardsRarDays;
+
+    @ApiModelProperty
+    private String attended;
+
+    @ApiModelProperty
+    private Boolean notifyPPOfAttendanceBehaviour;
 }
