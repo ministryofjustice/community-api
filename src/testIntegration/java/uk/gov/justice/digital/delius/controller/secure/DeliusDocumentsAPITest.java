@@ -1,5 +1,8 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.anyRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import io.restassured.RestAssured;
 import static io.restassured.RestAssured.given;
 import io.restassured.builder.MultiPartSpecBuilder;
@@ -52,7 +55,7 @@ public class DeliusDocumentsAPITest extends IntegrationTestBase {
     @DisplayName("Will reject request without correct role")
     void willRejectRequestWithoutCorrectRole() {
         String crn = "X320741";
-        String url = format("/offender/%s/event/%s/document", crn, 2500029015L);
+        String url = format("/offenders/%s/convictions/%s/document", crn, 2500029015L);
 
         final var token = createJwt("ROLE_COMMUNITY");
         given()
@@ -73,7 +76,7 @@ public class DeliusDocumentsAPITest extends IntegrationTestBase {
 
         final var token = createJwt("bob", Collections.singletonList("ROLE_PROBATION"));
         String crn = "X320741";
-        String url = format("/offender/%s/event/%s/document", crn, 2500029015L);
+        String url = format("/offenders/%s/convictions/%s/document", crn, 2500029015L);
 
         given()
             .when()
@@ -98,7 +101,7 @@ public class DeliusDocumentsAPITest extends IntegrationTestBase {
         final var token = createJwt("bob", Collections.singletonList("ROLE_PROBATION"));
 
         String crn = "X00000A";
-        String url = format("/offender/%s/event/%s/document", crn, 2500029015L);
+        String url = format("/offenders/%s/convictions/%s/document", crn, 2500029015L);
         given()
             .when()
             .auth().oauth2(token)

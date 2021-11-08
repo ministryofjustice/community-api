@@ -64,7 +64,7 @@ class DeliusDocumentsServiceTest {
 
     @Test
     public void shouldThrowExceptionIfContactTypeIsNotCompletedUnpaidWork() {
-        String incorrect = "INCORRECT";
+        final String incorrect = "INCORRECT";
         ContactType incorrectContactType = new ContactType();
         incorrectContactType.setCode(incorrect);
         when(contactTypeRepository.findByCode(incorrect)).thenReturn(Optional.of(incorrectContactType));
@@ -77,7 +77,7 @@ class DeliusDocumentsServiceTest {
 
     @Test
     public void shouldThrowExceptionIfContactTypeIsNotFound() {
-        String invalid = "INVALID";
+        final String invalid = "INVALID";
         when(contactTypeRepository.findByCode(invalid)).thenReturn(Optional.empty());
 
         BadRequestException exception = assertThrows(BadRequestException.class, () ->

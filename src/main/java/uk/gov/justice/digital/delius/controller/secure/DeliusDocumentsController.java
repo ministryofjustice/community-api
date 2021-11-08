@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
@@ -25,7 +26,7 @@ public class DeliusDocumentsController {
     private DeliusDocumentsService deliusDocumentsService;
     private final static String CONTACT_TYPE = "EASU";
 
-    @PostMapping(path = "/offender/{crn}/conviction/{convictionId}/document", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(path = "/offenders/{crn}/convictions/{convictionId}/document", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiResponses(
         value = {
             @ApiResponse(code = 201, message = "Created", response = String.class),
@@ -34,13 +35,13 @@ public class DeliusDocumentsController {
             @ApiResponse(code = 404, message = "Active Offender Manager could not be found", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
         })
+    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ROLE_PROBATION')")
-    public ResponseEntity<UploadedDocumentCreateResponse> createUPWDocumentInDelius(
+    public UploadedDocumentCreateResponse createUPWDocumentInDelius(
         @RequestPart MultipartFile file,
         @PathVariable String crn,
         @PathVariable Long convictionId
     ) {
-        UploadedDocumentCreateResponse response = deliusDocumentsService.createUPWDocument(crn, convictionId, CONTACT_TYPE, file);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        return deliusDocumentsService.createUPWDocument(crn, convictionId, CONTACT_TYPE, file);
     }
 }
