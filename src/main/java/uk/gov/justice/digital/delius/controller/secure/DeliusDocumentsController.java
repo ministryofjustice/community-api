@@ -32,12 +32,12 @@ public class DeliusDocumentsController {
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
         })
 
-    public ResponseEntity<UploadedDocumentCreateResponse> createDocumentInDelius(
+    public ResponseEntity<UploadedDocumentCreateResponse> createUPWDocumentInDelius(
         @RequestPart MultipartFile file,
         @PathVariable String crn,
         @PathVariable Long eventId
     ) {
-        UploadedDocumentCreateResponse response = deliusDocumentsService.createDocument(crn, eventId, CONTACT_TYPE, file);
+        UploadedDocumentCreateResponse response = deliusDocumentsService.createUPWDocument(crn, eventId, CONTACT_TYPE, file);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

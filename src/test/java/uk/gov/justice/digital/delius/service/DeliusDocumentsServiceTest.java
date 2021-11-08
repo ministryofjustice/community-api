@@ -70,7 +70,7 @@ class DeliusDocumentsServiceTest {
         when(contactTypeRepository.findByCode(incorrect)).thenReturn(Optional.of(incorrectContactType));
 
         BadRequestException exception = assertThrows(BadRequestException.class, () ->
-            deliusDocumentsService.createDocument(crn, eventId, incorrect, file));
+            deliusDocumentsService.createUPWDocument(crn, eventId, incorrect, file));
 
         assertThat(exception.getMessage()).isEqualTo(format("contact type '%s' is not a completed UPW assessment type", incorrect));
     }
@@ -81,7 +81,7 @@ class DeliusDocumentsServiceTest {
         when(contactTypeRepository.findByCode(invalid)).thenReturn(Optional.empty());
 
         BadRequestException exception = assertThrows(BadRequestException.class, () ->
-            deliusDocumentsService.createDocument(crn, eventId, invalid, file));
+            deliusDocumentsService.createUPWDocument(crn, eventId, invalid, file));
         assertThat(exception.getMessage()).isEqualTo(format("contact type '%s' does not exist", invalid));
     }
 
@@ -105,7 +105,7 @@ class DeliusDocumentsServiceTest {
                 .build()
         );
 
-        UploadedDocumentCreateResponse response = deliusDocumentsService.createDocument(crn, eventId, EASU, file);
+        UploadedDocumentCreateResponse response = deliusDocumentsService.createUPWDocument(crn, eventId, EASU, file);
 
         assertThat(response.getCrn()).isEqualTo(crn);
         assertThat(response.getAuthor()).isEqualTo(authorName);
@@ -132,7 +132,7 @@ class DeliusDocumentsServiceTest {
                 .build()
         );
 
-        deliusDocumentsService.createDocument(crn, eventId, EASU, file);
+        deliusDocumentsService.createUPWDocument(crn, eventId, EASU, file);
 
         NewContact newContact = newContactArgumentCaptor.getValue();
         assertThat(newContact.getType()).isEqualTo(EASU);
@@ -152,7 +152,7 @@ class DeliusDocumentsServiceTest {
         when(offenderManagerService.getAllOffenderManagersForCrn(crn, true)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(NotFoundException.class, ()
-            -> deliusDocumentsService.createDocument(crn, eventId, EASU, file));
+            -> deliusDocumentsService.createUPWDocument(crn, eventId, EASU, file));
 
         assertThat(exception.getMessage()).isEqualTo("Offender Managers not found for crn %s", crn);
     }
@@ -168,7 +168,7 @@ class DeliusDocumentsServiceTest {
         );
 
         Exception exception = assertThrows(NotFoundException.class, ()
-            -> deliusDocumentsService.createDocument(crn, eventId, EASU, file));
+            -> deliusDocumentsService.createUPWDocument(crn, eventId, EASU, file));
 
         assertThat(exception.getMessage()).isEqualTo("No active Offender Manager found for crn %s", crn);
     }
