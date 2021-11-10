@@ -43,7 +43,7 @@ public class DeliusApiClient {
 
     public UploadedDocumentDto uploadDocument(final String crn, final Long contactId, final MultipartFile document) {
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
-        builder.part("file", document.getResource());
+        builder.part("fileData", document.getResource());
         return webClient.post()
             .uri("/v1/offenders/" + crn + "/contacts/" + contactId + "/documents")
             .header(HttpHeaders.CONTENT_TYPE, MediaType.MULTIPART_FORM_DATA_VALUE)

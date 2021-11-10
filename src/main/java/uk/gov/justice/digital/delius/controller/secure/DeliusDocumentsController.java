@@ -23,7 +23,6 @@ import uk.gov.justice.digital.delius.service.DeliusDocumentsService;
 public class DeliusDocumentsController {
 
     private DeliusDocumentsService deliusDocumentsService;
-    private final static String CONTACT_TYPE = "EASU";
 
     @PostMapping(path = "/offenders/{crn}/convictions/{convictionId}/document", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiResponses(
@@ -37,10 +36,10 @@ public class DeliusDocumentsController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ROLE_PROBATION')")
     public UploadedDocumentCreateResponse createUPWDocumentInDelius(
-        @RequestPart MultipartFile file,
+        @RequestPart MultipartFile fileData,
         @PathVariable String crn,
         @PathVariable Long convictionId
     ) {
-        return deliusDocumentsService.createUPWDocument(crn, convictionId, CONTACT_TYPE, file);
+        return deliusDocumentsService.createUPWDocument(crn, convictionId, fileData);
     }
 }

@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.ProbationArea;
@@ -24,7 +22,6 @@ import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
 import uk.gov.justice.digital.delius.data.api.deliusapi.UploadedDocumentDto;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
-import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,8 +33,6 @@ class DeliusDocumentsServiceTest {
 
     @Mock
     private DeliusApiClient deliusApiClient;
-    @Mock
-    private ContactTypeRepository contactTypeRepository;
     @Mock
     private OffenderManagerService offenderManagerService;
     @Captor
@@ -55,43 +50,15 @@ class DeliusDocumentsServiceTest {
     private final ContactType contactType = new ContactType();
     private final MultipartFile file = multiPartFile();
 
-
     @BeforeEach
     private void setup() {
-        deliusDocumentsService = new DeliusDocumentsService(deliusApiClient, contactTypeRepository, offenderManagerService);
+        deliusDocumentsService = new DeliusDocumentsService(deliusApiClient, offenderManagerService);
         contactType.setCode(EASU);
-    }
-
-    @Test
-    public void shouldThrowExceptionIfContactTypeIsNotCompletedUnpaidWork() {
-        final String incorrect = "INCORRECT";
-        ContactType incorrectContactType = new ContactType();
-        incorrectContactType.setCode(incorrect);
-        when(contactTypeRepository.findByCode(incorrect)).thenReturn(Optional.of(incorrectContactType));
-
-        BadRequestException exception = assertThrows(BadRequestException.class, () ->
-            deliusDocumentsService.createUPWDocument(crn, eventId, incorrect, file));
-
-        assertThat(exception.getMessage()).isEqualTo(format("contact type '%s' is not a completed UPW assessment type", incorrect));
-    }
-
-    @Test
-    public void shouldThrowExceptionIfContactTypeIsNotFound() {
-        final String invalid = "INVALID";
-        when(contactTypeRepository.findByCode(invalid)).thenReturn(Optional.empty());
-
-        BadRequestException exception = assertThrows(BadRequestException.class, () ->
-            deliusDocumentsService.createUPWDocument(crn, eventId, invalid, file));
-        assertThat(exception.getMessage()).isEqualTo(format("contact type '%s' does not exist", invalid));
     }
 
     @Test
     public void shouldCreateANewDocumentInDelius() {
 
-        ContactType contactType = new ContactType();
-        contactType.setCode(EASU);
-
-        when(contactTypeRepository.findByCode(EASU)).thenReturn(Optional.of(contactType));
         when(offenderManagerService.getAllOffenderManagersForCrn(crn, true)).thenReturn(offenderManagers());
         when(deliusApiClient.createNewContact(newContactArgumentCaptor.capture())).thenReturn(contactDto());
         when(deliusApiClient.uploadDocument(crn, contactId, file)).thenReturn(
@@ -105,7 +72,7 @@ class DeliusDocumentsServiceTest {
                 .build()
         );
 
-        UploadedDocumentCreateResponse response = deliusDocumentsService.createUPWDocument(crn, eventId, EASU, file);
+        UploadedDocumentCreateResponse response = deliusDocumentsService.createUPWDocument(crn, eventId, file);
 
         assertThat(response.getCrn()).isEqualTo(crn);
         assertThat(response.getDocumentName()).isEqualTo(documentName);
@@ -117,7 +84,6 @@ class DeliusDocumentsServiceTest {
     @Test
     public void shouldCreateContactWithActiveOffenderManager() {
 
-        when(contactTypeRepository.findByCode(EASU)).thenReturn(Optional.of(contactType));
         when(offenderManagerService.getAllOffenderManagersForCrn(crn, true)).thenReturn(offenderManagers());
         when(deliusApiClient.createNewContact(newContactArgumentCaptor.capture())).thenReturn(contactDto());
         when(deliusApiClient.uploadDocument(crn, contactId, file)).thenReturn(
@@ -131,7 +97,7 @@ class DeliusDocumentsServiceTest {
                 .build()
         );
 
-        deliusDocumentsService.createUPWDocument(crn, eventId, EASU, file);
+        deliusDocumentsService.createUPWDocument(crn, eventId, file);
 
         NewContact newContact = newContactArgumentCaptor.getValue();
         assertThat(newContact.getType()).isEqualTo(EASU);
@@ -147,11 +113,10 @@ class DeliusDocumentsServiceTest {
         ContactType contactType = new ContactType();
         contactType.setCode(EASU);
 
-        when(contactTypeRepository.findByCode(EASU)).thenReturn(Optional.of(contactType));
         when(offenderManagerService.getAllOffenderManagersForCrn(crn, true)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(NotFoundException.class, ()
-            -> deliusDocumentsService.createUPWDocument(crn, eventId, EASU, file));
+            -> deliusDocumentsService.createUPWDocument(crn, eventId, file));
 
         assertThat(exception.getMessage()).isEqualTo("Offender Managers not found for crn %s", crn);
     }
@@ -161,13 +126,12 @@ class DeliusDocumentsServiceTest {
         ContactType contactType = new ContactType();
         contactType.setCode(EASU);
 
-        when(contactTypeRepository.findByCode(EASU)).thenReturn(Optional.of(contactType));
         when(offenderManagerService.getAllOffenderManagersForCrn(crn, true)).thenReturn(
             Optional.of(List.of(CommunityOrPrisonOffenderManager.builder().isResponsibleOfficer(false).build()))
         );
 
         Exception exception = assertThrows(NotFoundException.class, ()
-            -> deliusDocumentsService.createUPWDocument(crn, eventId, EASU, file));
+            -> deliusDocumentsService.createUPWDocument(crn, eventId, file));
 
         assertThat(exception.getMessage()).isEqualTo("No active Offender Manager found for crn %s", crn);
     }

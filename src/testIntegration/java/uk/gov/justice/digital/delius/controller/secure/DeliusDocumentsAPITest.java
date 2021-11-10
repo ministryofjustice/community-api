@@ -125,7 +125,7 @@ public class DeliusDocumentsAPITest extends IntegrationTestBase {
     private MultiPartSpecification getFile() {
         return new MultiPartSpecBuilder("Test-Content-In-File".getBytes()).
             fileName("upwDocument.pdf").
-            controlName("file").
+            controlName("fileData").
             mimeType("text/plain").
             build();
     }

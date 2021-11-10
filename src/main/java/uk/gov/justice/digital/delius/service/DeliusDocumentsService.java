@@ -4,13 +4,11 @@ import static java.lang.String.format;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.UploadedDocumentCreateResponse;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
 import uk.gov.justice.digital.delius.data.api.deliusapi.UploadedDocumentDto;
-import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -19,27 +17,20 @@ import java.util.List;
 @Service
 public class DeliusDocumentsService {
     private static final String EASU = "EASU";
-
     private final DeliusApiClient deliusApiClient;
-    private final ContactTypeRepository contactTypeRepository;
     private final OffenderManagerService offenderManagerService;
 
     @Autowired
     public DeliusDocumentsService(
         DeliusApiClient deliusApiClient,
-        ContactTypeRepository contactTypeRepository,
         OffenderManagerService offenderManagerService) {
         this.deliusApiClient = deliusApiClient;
-        this.contactTypeRepository = contactTypeRepository;
         this.offenderManagerService = offenderManagerService;
     }
 
-    public UploadedDocumentCreateResponse createUPWDocument(String crn, Long convictionId, String contactTypeCode, MultipartFile document) {
-        assertCompletedUPWAssessmentContactType(contactTypeCode);
-
-        final var newContact= makeNewContact(crn, convictionId, contactTypeCode);
+    public UploadedDocumentCreateResponse createUPWDocument(String crn, Long convictionId, MultipartFile document) {
+        final var newContact= makeNewUPWContact(crn, convictionId);
         final var contactDto= deliusApiClient.createNewContact(newContact);
-
         UploadedDocumentDto uploadedDocumentDto = deliusApiClient.uploadDocument(crn, contactDto.getId(), document);
         return makeResponse(uploadedDocumentDto);
     }
@@ -55,20 +46,11 @@ public class DeliusDocumentsService {
         );
     }
 
-    private void assertCompletedUPWAssessmentContactType(String contactTypeCode) {
-        final var type = this.contactTypeRepository.findByCode(contactTypeCode)
-            .orElseThrow(() -> new BadRequestException(format("contact type '%s' does not exist", contactTypeCode)));
-
-        if (!type.getCode().equals(EASU)) {
-            throw new BadRequestException(format("contact type '%s' is not a completed UPW assessment type", contactTypeCode));
-        }
-    }
-
-    private NewContact makeNewContact(String crn, Long convictionId, String contactType) {
+    private NewContact makeNewUPWContact(String crn, Long convictionId) {
         CommunityOrPrisonOffenderManager offenderManager = getActiveOffenderManager(crn);
         return NewContact.builder()
             .offenderCrn(crn)
-            .type(contactType)
+            .type(EASU)
             .provider(offenderManager.getProbationArea().getCode())
             .team(offenderManager.getTeam().getCode())
             .staff(offenderManager.getStaffCode())
