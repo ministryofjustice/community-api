@@ -6,13 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewNsi;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NsiDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ReplaceContact;
+import uk.gov.justice.digital.delius.data.api.deliusapi.UploadedDocumentDto;
 
 import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 
@@ -34,6 +38,19 @@ public class DeliusApiClient {
             .bodyValue(newNsiRequest)
             .retrieve()
             .bodyToMono(NsiDto.class)
+            .block();
+    }
+
+    public UploadedDocumentDto uploadDocument(final String crn, final Long contactId, final MultipartFile document) {
+        MultipartBodyBuilder builder = new MultipartBodyBuilder();
+        builder.part("fileData", document.getResource());
+        return webClient.post()
+            .uri("/v1/offenders/" + crn + "/contacts/" + contactId + "/documents")
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.MULTIPART_FORM_DATA_VALUE)
+            .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+            .body(BodyInserters.fromMultipartData(builder.build()))
+            .retrieve()
+            .bodyToMono(UploadedDocumentDto.class)
             .block();
     }
 

@@ -49,6 +49,36 @@ public class DeliusApiMockServer extends WireMockServer {
         ));
     }
 
+    public void stubPostNewDocumentToDeliusApi() {
+        stubFor(post(urlPathMatching("/v1/offenders/X320741/contacts/2500029015/documents"))
+            .willReturn(aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withStatus(201)
+            .withBody("""
+                {
+                    "author": "Author name",
+                    "authorProvider": "Author Provider",
+                    "createdProvider": "Created Provider",
+                    "creationDate": "2021-10-28T13:50:36.787Z",
+                    "crn": "X320741",
+                    "dateLastModified": "2021-10-28T13:50:36.787Z",
+                    "docRenamed": true,
+                    "documentName": "upwDocument.pdf",
+                    "documentType": "DOCUMENT",
+                    "entityId": 12882882,
+                    "entityType": "CONTACT",
+                    "id": 272732,
+                    "lastModifiedUser": "last user",
+                    "lockOwner": "Firstname Lastname",
+                    "locked": true,
+                    "remoteDocumentId": "bc1cea0f-93bd-44f2-8f35-16859da49e71",
+                    "reservationOwner": "owner lastname",
+                    "reserved": true
+                }
+                """)
+        ));
+    }
+
 
     public void stubPatchNsiToDeliusApi() {
         stubFor(patch(urlPathMatching("/v1/nsi/2500018596")).willReturn(aResponse()
