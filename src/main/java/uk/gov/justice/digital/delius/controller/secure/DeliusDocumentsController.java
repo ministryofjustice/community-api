@@ -24,7 +24,7 @@ public class DeliusDocumentsController {
 
     private DeliusDocumentsService deliusDocumentsService;
 
-    @PostMapping(path = "/offenders/{crn}/convictions/{convictionId}/document", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/document", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiResponses(
         value = {
             @ApiResponse(code = 201, message = "Created", response = String.class),
@@ -34,7 +34,7 @@ public class DeliusDocumentsController {
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
         })
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ROLE_PROBATION')")
+    @PreAuthorize("hasRole('ROLE_COMMUNITY')")
     public UploadedDocumentCreateResponse createUPWDocumentInDelius(
         @RequestPart MultipartFile fileData,
         @PathVariable String crn,

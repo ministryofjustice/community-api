@@ -55,9 +55,9 @@ public class DeliusDocumentsAPITest extends IntegrationTestBase {
     @DisplayName("Will reject request without correct role")
     void willRejectRequestWithoutCorrectRole() {
         String crn = "X320741";
-        String url = format("/offenders/%s/convictions/%s/document", crn, 2500029015L);
+        String url = format("/offenders/crn/%s/convictions/%s/document", crn, 2500029015L);
 
-        final var token = createJwt("ROLE_COMMUNITY");
+        final var token = createJwt("ROLE_DUMMY");
         given()
             .auth().oauth2(token)
             .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -77,9 +77,9 @@ public class DeliusDocumentsAPITest extends IntegrationTestBase {
         deliusApiMockServer.stubPostContactToDeliusApi();
         deliusApiMockServer.stubPostNewDocumentToDeliusApi();
 
-        final var token = createJwt("bob", Collections.singletonList("ROLE_PROBATION"));
+        final var token = createJwt("bob", Collections.singletonList("ROLE_COMMUNITY"));
         String crn = "X320741";
-        String url = format("/offenders/%s/convictions/%s/document", crn, 2500029015L);
+        String url = format("/offenders/crn/%s/convictions/%s/document", crn, 2500029015L);
 
         given()
             .when()
@@ -104,10 +104,10 @@ public class DeliusDocumentsAPITest extends IntegrationTestBase {
     public void returnsNotFoundWhenNoActiveOffenderManagerForCrn() {
         deliusApiMockServer.stubPostContactToDeliusApi();
 
-        final var token = createJwt("bob", Collections.singletonList("ROLE_PROBATION"));
+        final var token = createJwt("bob", Collections.singletonList("ROLE_COMMUNITY"));
 
         String crn = "X00000A";
-        String url = format("/offenders/%s/convictions/%s/document", crn, 2500029015L);
+        String url = format("/offenders/crn/%s/convictions/%s/document", crn, 2500029015L);
         given()
             .when()
             .auth().oauth2(token)
