@@ -48,4 +48,18 @@ public interface ContactRepository extends JpaRepository<Contact, Long>, JpaSpec
     Optional<Contact> findByContactIdAndOffenderIdAndContactTypeAttendanceContactIsTrueAndSoftDeletedIsFalse(Long contactId, Long offenderId);
 
     Optional<Contact> findByContactIdAndOffenderIdAndSoftDeletedIsFalse(Long contactId, Long offenderId);
+
+    @Query("""
+           SELECT contact FROM Contact contact
+            INNER JOIN ContactType ct ON ct = contact.contactType AND ct.code = :contactType
+            WHERE contact.offenderId = :offenderId
+            AND contact.nsi.nsiId = :nsiId
+            AND contact.contactDate = :contactDate
+            AND contact.softDeleted = false"""
+    )
+    List<Contact> findByOffenderAndNsiIdAndContactTypeAndContactDateAndSoftDeletedIsFalse(
+        @Param("offenderId") Long offenderId,
+        @Param("nsiId") Long nsiId,
+        @Param("contactType") String contactType,
+        @Param("contactDate") LocalDate contactDate);
 }

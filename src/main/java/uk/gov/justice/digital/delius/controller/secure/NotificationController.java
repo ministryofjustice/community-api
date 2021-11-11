@@ -45,6 +45,6 @@ public class NotificationController {
                                                                       final @ApiParam(value = "Name identifying preprocessing applied to the request", example = "commissioned-rehabilitation-services")
                                                                            @PathVariable("contextName") String contextName,
                                                                       final @RequestBody ContextlessNotificationCreateRequest contextlessNotificationCreateRequest) {
-        return notificationService.notifyContact(crn, sentenceId, contextName, contextlessNotificationCreateRequest);
+        return notificationService.notifyCRSContact(crn, sentenceId, contextName, contextlessNotificationCreateRequest);
     }
 }

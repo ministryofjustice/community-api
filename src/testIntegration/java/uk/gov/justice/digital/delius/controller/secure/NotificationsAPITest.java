@@ -76,6 +76,32 @@ public class NotificationsAPITest extends IntegrationTestBase {
     }
 
     @Test
+    public void shouldReturnOKAfterRequestingANewContactThatAlreadyExists() {
+
+        // No call to deliusApi required as contact already exists with Id 2592720451
+
+        final var token = createJwt("bob", Collections.singletonList("ROLE_COMMUNITY_INTERVENTIONS_UPDATE"));
+
+        OffsetDateTime contactDateTime = OffsetDateTime.of(2019, 9, 3, 2, 1, 3, 4, ZoneOffset.UTC);
+
+        given()
+            .when()
+            .auth().oauth2(token)
+            .contentType(String.valueOf(ContentType.APPLICATION_JSON))
+            .body(writeValueAsString(ContextlessNotificationCreateRequest.builder()
+                .contractType("ACC")
+                .referralStart(OffsetDateTime.of(2019, 9, 2, 0, 0, 0, 0, ZoneOffset.UTC))
+                .contactDateTime(contactDateTime)
+                .notes("Contact notes plus link http://url")
+                .build()))
+            .post("offenders/crn/X320741/sentences/2500295345/notifications/context/commissioned-rehabilitation-services")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("contactId", equalTo(2592720451L));
+    }
+
+    @Test
     public void shouldReturnBadRequestWhenNotFindingNsiUsingContextlessClientEndpoint() {
 
         deliusApiMockServer.stubPostContactToDeliusApi();
