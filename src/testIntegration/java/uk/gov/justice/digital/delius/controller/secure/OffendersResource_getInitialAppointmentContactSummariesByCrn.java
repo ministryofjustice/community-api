@@ -14,9 +14,8 @@ import org.springframework.data.domain.Pageable;
 import uk.gov.justice.digital.delius.FlywayRestoreExtension;
 import uk.gov.justice.digital.delius.data.api.ContactSummary;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import static org.assertj.core.api.Assertions.as;
+import static org.assertj.core.api.Assertions.assertThat;
 import static io.restassured.RestAssured.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -25,44 +24,19 @@ public class OffendersResource_getInitialAppointmentContactSummariesByCrn extend
 
     @Test
     void getsInitialAppointmentsByCrn() {
-        Page<ContactSummary> response = given()
+        ContactSummary[] appointments = given()
             .auth()
             .oauth2(tokenWithRoleCommunity())
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get("/offenders/crn/X320741/contact-summary")
+            .get("/offenders/crn/X320741/contact-summary/inductions")
             .then()
             .statusCode(200)
             .extract()
             .body()
-            .as(new TypeRef<RestResponsePage<ContactSummary>>() {
-            });
-        System.out.println(response);
+            .as(ContactSummary[].class);
+        assertThat(appointments[0].getType().getCode()).isEqualTo("COAI");
+
+
     }
-}
-
-class RestResponsePage<T> extends PageImpl<T> {
-
-    private static final long serialVersionUID = 3248189030448292002L;
-
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public RestResponsePage(@JsonProperty("content") List<T> content, @JsonProperty("number") int number, @JsonProperty("size") int size,
-                            @JsonProperty("totalElements") Long totalElements, @JsonProperty("pageable") JsonNode pageable, @JsonProperty("last") boolean last,
-                            @JsonProperty("totalPages") int totalPages, @JsonProperty("sort") JsonNode sort, @JsonProperty("first") boolean first,
-                            @JsonProperty("numberOfElements") int numberOfElements) {
-        super(content, PageRequest.of(number, size), totalElements);
-    }
-
-    public RestResponsePage(List<T> content, Pageable pageable, long total) {
-        super(content, pageable, total);
-    }
-
-    public RestResponsePage(List<T> content) {
-        super(content);
-    }
-
-    public RestResponsePage() {
-        super(new ArrayList<T>());
-    }
-
 }

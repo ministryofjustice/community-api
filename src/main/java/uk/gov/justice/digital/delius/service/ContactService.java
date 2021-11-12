@@ -36,8 +36,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static uk.gov.justice.digital.delius.jpa.standard.entity.Contact.*;
 
@@ -60,6 +62,11 @@ public class ContactService {
     public List<Contact> contactsFor(final Long offenderId, final ContactFilter filter) {
         return ContactTransformer.contactsOf(contactRepository.findAll(filter.toBuilder().offenderId(offenderId).build()));
     }
+
+public List<ContactSummary> contactSummariesFor(final Long offenderId, final ContactFilter filter){
+    return contactRepository.findAll(filter.toBuilder().offenderId(offenderId).build())
+        .stream().map(ContactTransformer::contactSummaryOf).collect(toUnmodifiableList());
+}
 
     public Page<ContactSummary> contactSummariesFor(final Long offenderId, final ContactFilter filter, final int page, final int pageSize) {
         final var pagination = PageRequest.of(page, pageSize, Sort.by(DESC, "contactDate", "contactStartTime", "contactEndTime"));
