@@ -34,7 +34,6 @@ public class ContactMetaControllerApiTest extends IntegrationTestBase {
             .then()
             .assertThat()
             .statusCode(HttpStatus.OK.value())
-            .body("size()", equalTo(929))
             .root("find { it.code == '%s' }")
             .body("description", officeVisit, equalTo("Planned Office Visit (NS)"))
             .body("appointment", officeVisit, equalTo(true));
