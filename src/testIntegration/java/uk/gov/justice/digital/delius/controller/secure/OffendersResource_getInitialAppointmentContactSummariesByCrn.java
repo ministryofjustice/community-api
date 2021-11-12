@@ -45,4 +45,17 @@ public class OffendersResource_getInitialAppointmentContactSummariesByCrn extend
         assertThat(appointments.length).isEqualTo(1);
 
     }
+
+    @Test
+    void getsInitialAppointmentsByCrnNotFound() {
+        given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get("/offenders/crn/1111111/contact-summary/inductions")
+            .then()
+            .statusCode(404);
+    }
+
 }

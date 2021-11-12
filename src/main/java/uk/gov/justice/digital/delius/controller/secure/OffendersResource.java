@@ -262,7 +262,7 @@ public class OffendersResource {
         final @ApiParam(name = "contactdateFrom", value = "Show contacts from this date", example = "2013-01-21", required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "contactDateFrom", required = false) Optional<LocalDate> contactDateFrom)
         {
             final var contactFilter = ContactFilter.builder()
-                .contactTypes(Optional.of(Arrays.asList("COAI")))
+                .contactTypes(Optional.of(Arrays.asList("COAI","COVI","CODI")))
                 .contactDateFrom(contactDateFrom)
                 .build();
 
