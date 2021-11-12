@@ -63,10 +63,10 @@ public class ContactService {
         return ContactTransformer.contactsOf(contactRepository.findAll(filter.toBuilder().offenderId(offenderId).build()));
     }
 
-public List<ContactSummary> contactSummariesFor(final Long offenderId, final ContactFilter filter){
-    return contactRepository.findAll(filter.toBuilder().offenderId(offenderId).build())
-        .stream().map(ContactTransformer::contactSummaryOf).collect(toUnmodifiableList());
-}
+    public List<ContactSummary> contactSummariesFor(final Long offenderId, final ContactFilter filter) {
+        return contactRepository.findAll(filter.toBuilder().offenderId(offenderId).build())
+            .stream().map(ContactTransformer::contactSummaryOf).toList();
+    }
 
     public Page<ContactSummary> contactSummariesFor(final Long offenderId, final ContactFilter filter, final int page, final int pageSize) {
         final var pagination = PageRequest.of(page, pageSize, Sort.by(DESC, "contactDate", "contactStartTime", "contactEndTime"));
