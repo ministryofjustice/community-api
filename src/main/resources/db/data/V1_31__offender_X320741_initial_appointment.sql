@@ -65,4 +65,33 @@ values (2503719240,
         1500001001, -- PROBATION_AREA_ID
         2500031218, -- TRUST_PROVIDER_TEAM_ID
         null -- ENFORCEMENT
-        );
+        ),
+        (2503719241,
+                to_date('04-11-21','DD-MM-RR'),
+                2500343964,
+                'The notes field',
+                'N', -- VISOR_CONTACT
+                2500038545, -- STAFF_ID
+                2500031218, -- TEAM_ID
+                0, -- SOFT_DELETED
+                'N', -- VISOR_EXPORTED
+                0, -- PARTITION_AREA_ID
+                null, -- OFFICE_LOCATION_ID
+                3, -- ROW_VERSION
+                null, -- ALERT_ACTIVE
+                'Y', -- ATTENDED
+                to_date('13-09-19','DD-MM-RR'),
+                null,
+                to_date('13-09-19','DD-MM-RR'), -- LAST_UPDATED_DATETIME
+                2500295343, -- EVENT_ID
+                2500038043, -- CONTACT_TYPE_ID
+                null, -- PROVIDER_TEAM_ID
+                19, -- CONTACT_OUTCOME_TYPE_ID
+                2500040507, -- CREATED_BY_USER_ID
+                2500040507, -- LAST_UPDATED_USER_ID
+                0, -- TRUST_PROVIDER_FLAG
+                2500038545, -- STAFF_EMPLOYEE_ID
+                1500001001, -- PROBATION_AREA_ID
+                2500031218, -- TRUST_PROVIDER_TEAM_ID
+                null -- ENFORCEMENT
+                );
