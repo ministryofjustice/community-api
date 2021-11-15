@@ -78,6 +78,7 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -95,6 +96,9 @@ import static uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeM
 @Validated
 public class OffendersResource {
 
+    public static final String INITIAL_APPOINTMENT_CONTACT_TYPE = "COAI";
+    public static final String INITIAL_APPOINTMENT_VIDEO_CONTACT_TYPE = "COVI";
+    public static final String INITIAL_APPOINTMENT_DOORSTEP_CONTACT_TYPE = "CODI";
     private final OffenderService offenderService;
     private final ContactService contactService;
     private final ConvictionService convictionService;
@@ -247,6 +251,28 @@ public class OffendersResource {
                 .map(offenderId -> new ResponseEntity<>(contactService.contactsFor(offenderId, contactFilter), HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
+    @ApiOperation(value = "Returns the induction appointments for an offender by CRN", tags = "Contact and attendance")
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+            @ApiResponse(code = 404, message = "Offender does not exist"),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+    @GetMapping(value = "/offenders/crn/{crn}/contact-summary/inductions")
+    public List<ContactSummary> getOffenderInitialAppointmentsByCrn(
+        final @ApiParam(name = "crn", value = "CRN of the offender", example = "X123456", required = true) @NotNull @PathVariable("crn") String crn,
+        final @ApiParam(name = "contactDateFrom", value = "Show contacts from this date", example = "2013-01-21") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "contactDateFrom", required = false) Optional<LocalDate> contactDateFrom)
+        {
+            final var contactFilter = ContactFilter.builder()
+                .contactTypes(Optional.of(Arrays.asList(INITIAL_APPOINTMENT_CONTACT_TYPE, INITIAL_APPOINTMENT_VIDEO_CONTACT_TYPE, INITIAL_APPOINTMENT_DOORSTEP_CONTACT_TYPE)))
+                .contactDateFrom(contactDateFrom)
+                .build();
+
+            return offenderService.offenderIdOfCrn(crn)
+                .map(offenderId -> contactService.contactSummariesFor(offenderId, contactFilter))
+                .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN '%s' does not exist", crn)));
+        }
 
     @ApiOperation(value = "Returns the contact summaries for an offender by CRN", tags = "Contact and attendance")
     @ApiResponses(

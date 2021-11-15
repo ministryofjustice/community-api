@@ -138,10 +138,10 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("first", equalTo(true))
             .body("last", equalTo(true))
             .body("totalPages", equalTo(1))
-            .body("totalElements", equalTo(1))
+            .body("totalElements", equalTo(3))
             .body("size", equalTo(1000))
-            .body("numberOfElements", equalTo(1))
-            .body("content.size()", equalTo(1))
+            .body("numberOfElements", equalTo(3))
+            .body("content.size()", equalTo(3))
             .root("content.find { it.contactId == %d }")
 
             .body("", registration, equalTo(null))
@@ -319,10 +319,10 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("first", equalTo(true))
             .body("last", equalTo(true))
             .body("totalPages", equalTo(1))
-            .body("totalElements", equalTo(3))
+            .body("totalElements", equalTo(5))
             .body("size", equalTo(1000))
-            .body("numberOfElements", equalTo(3))
-            .body("content.size()", equalTo(3))
+            .body("numberOfElements", equalTo(5))
+            .body("content.size()", equalTo(5))
             .root("content.find { it.contactId == %d }")
 
             .body("", withArgs(2502719244L), notNullValue());
