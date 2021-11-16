@@ -96,9 +96,11 @@ import static uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeM
 @Validated
 public class OffendersResource {
 
-    public static final String INITIAL_APPOINTMENT_CONTACT_TYPE = "COAI";
-    public static final String INITIAL_APPOINTMENT_VIDEO_CONTACT_TYPE = "COVI";
-    public static final String INITIAL_APPOINTMENT_DOORSTEP_CONTACT_TYPE = "CODI";
+    private static final String INITIAL_APPOINTMENT_CONTACT_TYPE = "COAI";
+    private static final String INITIAL_APPOINTMENT_VIDEO_CONTACT_TYPE = "COVI";
+    private static final String INITIAL_APPOINTMENT_DOORSTEP_CONTACT_TYPE = "CODI";
+    private static final String INITIAL_APPOINTMENT_HOME_VISIT_CONTACT_TYPE = "COHV";
+    private static final List<String> INITIAL_APPOINTMENT_CONTACT_TYPES = Arrays.asList(INITIAL_APPOINTMENT_CONTACT_TYPE, INITIAL_APPOINTMENT_VIDEO_CONTACT_TYPE, INITIAL_APPOINTMENT_DOORSTEP_CONTACT_TYPE,INITIAL_APPOINTMENT_HOME_VISIT_CONTACT_TYPE);
     private final OffenderService offenderService;
     private final ContactService contactService;
     private final ConvictionService convictionService;
@@ -265,7 +267,7 @@ public class OffendersResource {
         final @ApiParam(name = "contactDateFrom", value = "Show contacts from this date", example = "2013-01-21") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "contactDateFrom", required = false) Optional<LocalDate> contactDateFrom)
         {
             final var contactFilter = ContactFilter.builder()
-                .contactTypes(Optional.of(Arrays.asList(INITIAL_APPOINTMENT_CONTACT_TYPE, INITIAL_APPOINTMENT_VIDEO_CONTACT_TYPE, INITIAL_APPOINTMENT_DOORSTEP_CONTACT_TYPE)))
+                .contactTypes(Optional.of(INITIAL_APPOINTMENT_CONTACT_TYPES))
                 .contactDateFrom(contactDateFrom)
                 .build();
 
