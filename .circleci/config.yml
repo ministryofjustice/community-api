@@ -11,7 +11,7 @@ jobs:
   validate-unit:
     executor:
       name: hmpps/java
-      tag: "16.0"
+      tag: "17.0"
     environment:
       _JAVA_OPTIONS: -Xmx1024m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false
     steps:
@@ -21,7 +21,7 @@ jobs:
             - gradle-{{ checksum "build.gradle" }}
             - gradle-
       - run:
-          command: ./gradlew -Dorg.gradle.jvmargs="--illegal-access=permit" -Dkotlin.daemon.jvm.options="--illegal-access=permit" check --exclude-task testIntegration
+          command: ./gradlew check --exclude-task testIntegration
       - save_cache:
           paths:
             - ~/.gradle
@@ -33,7 +33,7 @@ jobs:
   validate-integration:
     executor:
       name: hmpps/java
-      tag: "16.0"
+      tag: "17.0"
     parallelism: 4
     environment:
       _JAVA_OPTIONS: -Xmx1024m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false
@@ -47,7 +47,7 @@ jobs:
           command: |
             circleci tests glob "src/testIntegration/**/*.java" | circleci tests split | xargs -n 1 echo
       - run:
-          command: ./gradlew -Dorg.gradle.jvmargs="--illegal-access=permit" -Dkotlin.daemon.jvm.options="--illegal-access=permit" testIntegration -PtestFilter="`circleci tests glob "src/testIntegration/**/*.java" | circleci tests split`"
+          command: ./gradlew testIntegration -PtestFilter="`circleci tests glob "src/testIntegration/**/*.java" | circleci tests split`"
       - save_cache:
           paths:
             - ~/.gradle
