@@ -11,12 +11,10 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     Optional<Team> findByCode(String code);
 
     @Query("""
-SELECT DISTINCT team FROM Team team
-LEFT JOIN FETCH team.officeLocations location
-WHERE team.code = :code
-  AND team.startDate <= CURRENT_DATE
-  AND (team.endDate IS NULL OR team.endDate > CURRENT_DATE)
-  AND (location.endDate IS NULL OR location.endDate > CURRENT_DATE)
-""")
-    Optional<Team> findActiveWithActiveOfficeLocationByCode(@Param("code") String code);
+        SELECT team FROM Team team
+        WHERE team.code = :code
+        AND team.startDate <= CURRENT_DATE
+        AND (team.endDate IS NULL OR team.endDate > CURRENT_DATE)
+        """)
+    Optional<Team> findActiveByCode(@Param("code") String code);
 }

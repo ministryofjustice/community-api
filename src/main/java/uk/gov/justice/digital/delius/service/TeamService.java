@@ -18,6 +18,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import uk.gov.justice.digital.delius.jpa.standard.repository.BoroughRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.DistrictRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.LocalDeliveryUnitRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OfficeLocationRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffTeamRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.TeamRepository;
@@ -46,6 +47,7 @@ public class TeamService {
     private final BoroughRepository boroughRepository;
     private final StaffTeamRepository staffTeamRepository;
     private final ProbationAreaRepository probationAreaRepository;
+    private final OfficeLocationRepository officeLocationRepository;
     private final TelemetryClient telemetryClient;
     private final StaffService staffService;
 
@@ -57,10 +59,10 @@ public class TeamService {
     }
 
     public List<OfficeLocation> getAllOfficeLocations(String teamCode) {
-        final var team = teamRepository.findActiveWithActiveOfficeLocationByCode(teamCode)
+        teamRepository.findActiveByCode(teamCode)
             .orElseThrow(() -> new NotFoundException(format("team '%s' does not exist", teamCode)));
 
-        return team.getOfficeLocations()
+        return officeLocationRepository.findActiveOfficeLocationsForTeam(teamCode)
             .stream()
             .map(OfficeLocationTransformer::officeLocationOf)
             .collect(Collectors.toList());

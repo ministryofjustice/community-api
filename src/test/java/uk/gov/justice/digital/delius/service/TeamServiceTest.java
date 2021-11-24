@@ -11,7 +11,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
-import uk.gov.justice.digital.delius.data.api.OfficeLocation;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
@@ -21,6 +20,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import uk.gov.justice.digital.delius.jpa.standard.repository.BoroughRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.DistrictRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.LocalDeliveryUnitRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OfficeLocationRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffTeamRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.TeamRepository;
@@ -55,6 +55,8 @@ public class TeamServiceTest {
     @Mock
     private ProbationAreaRepository probationAreaRepository;
     @Mock
+    private OfficeLocationRepository officeLocationRepository;
+    @Mock
     private TelemetryClient telemetryClient;
     @Mock
     private StaffService staffService;
@@ -73,7 +75,7 @@ public class TeamServiceTest {
 
     @BeforeEach
     public void setup() {
-        teamService = new TeamService(teamRepository, localDeliveryUnitRepository, districtRepository, boroughRepository, staffTeamRepository, probationAreaRepository, telemetryClient, staffService);
+        teamService = new TeamService(teamRepository, localDeliveryUnitRepository, districtRepository, boroughRepository, staffTeamRepository, probationAreaRepository, officeLocationRepository, telemetryClient, staffService);
     }
 
     @Test
@@ -324,11 +326,13 @@ public class TeamServiceTest {
     @Test
     public void gettingTeamOfficeLocations() {
         final var CODE = "some-code";
-        final var officeLocation = anOfficeLocation();
+        final var officeLocations = List.of(anOfficeLocation());
         final var team = aTeam(CODE);
-        team.setOfficeLocations(List.of(officeLocation));
-        when(teamRepository.findActiveWithActiveOfficeLocationByCode(CODE))
-            .thenReturn(Optional.of(team));
+
+        when (teamRepository.findActiveByCode(CODE)).thenReturn(Optional.of(team));
+
+        when(officeLocationRepository.findActiveOfficeLocationsForTeam(CODE))
+            .thenReturn(officeLocations);
 
         final var observed = teamService.getAllOfficeLocations(CODE);
 
@@ -336,13 +340,13 @@ public class TeamServiceTest {
             .hasSize(1)
             .element(0)
             .usingRecursiveComparison()
-            .isEqualTo(officeLocation);
+            .isEqualTo(officeLocations.get(0));
     }
 
     @Test
     public void attemptingToGetTeamOfficeLocationsButMissingTeam() {
         final var CODE = "some-code";
-        when(teamRepository.findActiveWithActiveOfficeLocationByCode(CODE))
+        when(teamRepository.findActiveByCode(CODE))
             .thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> teamService.getAllOfficeLocations(CODE));
     }
