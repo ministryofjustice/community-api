@@ -2,7 +2,6 @@ package uk.gov.justice.digital.delius.transformers;
 
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
-import uk.gov.justice.digital.delius.data.api.OffenderManagerGrade;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
