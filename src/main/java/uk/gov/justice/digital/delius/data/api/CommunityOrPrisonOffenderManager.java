@@ -32,5 +32,5 @@ public class CommunityOrPrisonOffenderManager {
     @ApiModelProperty(value = "Date since the offender manager was assigned", example = "2019-12-04")
     private LocalDate fromDate;
     @ApiModelProperty(value = "Grade details for this offender manager")
-    private OffenderManagerGrade grade;
+    private KeyValue grade;
 }
