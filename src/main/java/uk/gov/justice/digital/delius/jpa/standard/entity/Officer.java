@@ -41,7 +41,4 @@ public class Officer {
     @Column(name = "FORENAME2")
     private String forename2;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "STAFF_GRADE_ID")
-    private StandardReference grade;
 }

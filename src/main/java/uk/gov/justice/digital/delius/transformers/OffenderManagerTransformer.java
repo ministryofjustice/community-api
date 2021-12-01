@@ -114,7 +114,7 @@ public class OffenderManagerTransformer {
     }
 
     private static KeyValue offenderManagerGradeOf(final OffenderManager offenderManager) {
-        return Optional.ofNullable(offenderManager.getOfficer().getGrade())
+        return Optional.ofNullable(offenderManager.getStaff().getGrade())
             .map(grade -> KeyValue.builder()
                 .code(grade.getCodeValue())
                 .description(grade.getCodeDescription())

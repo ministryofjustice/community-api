@@ -101,6 +101,10 @@ public class Staff {
     @LastModifiedDate
     private LocalDateTime lastUpdatedDatetime;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "STAFF_GRADE_ID")
+    private StandardReference grade;
+
     public boolean isUnallocated() {
         return officerCode.endsWith("U") && !isInActive();
     }
