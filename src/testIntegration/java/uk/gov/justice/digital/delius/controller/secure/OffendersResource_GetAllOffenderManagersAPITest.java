@@ -46,6 +46,8 @@ class OffendersResource_GetAllOffenderManagersAPITest extends IntegrationTestBas
             assertThat(communityOffenderManager.getStaff()).isNotNull();
             assertThat(communityOffenderManager.getTeam()).isNotNull();
             assertThat(communityOffenderManager.getStaffCode()).isEqualTo("N02AAMU");
+            assertThat(communityOffenderManager.getGrade()).isNull();
+
 
             assertThat(prisonOffenderManager.getIsResponsibleOfficer()).isTrue();
             assertThat(prisonOffenderManager.getIsUnallocated()).isFalse();
@@ -55,6 +57,7 @@ class OffendersResource_GetAllOffenderManagersAPITest extends IntegrationTestBas
             assertThat(prisonOffenderManager.getTeam()).isNotNull();
             assertThat(prisonOffenderManager.getStaffCode()).isEqualTo("BWIA010");
             assertThat(prisonOffenderManager.getStaffId()).isEqualTo(2500057541L);
+            assertThat(prisonOffenderManager.getGrade()).isNull();
         }
 
         @Test
@@ -132,6 +135,9 @@ class OffendersResource_GetAllOffenderManagersAPITest extends IntegrationTestBas
             assertThat(communityOffenderManager.getTeam()).isNotNull();
             assertThat(communityOffenderManager.getStaffCode()).isEqualTo("SH0007");
             assertThat(communityOffenderManager.getFromDate()).isEqualTo(LocalDate.of(2018, Month.MAY, 4));
+            assertThat(communityOffenderManager.getGrade()).isNotNull();
+            assertThat(communityOffenderManager.getGrade().getDescription()).isEqualTo("Accepted");
+            assertThat(communityOffenderManager.getGrade().getCode()).isEqualTo("A");
 
             assertThat(prisonOffenderManager.getStaffCode()).isEqualTo("BEDUATU");
             assertThat(prisonOffenderManager.getIsResponsibleOfficer()).isFalse();

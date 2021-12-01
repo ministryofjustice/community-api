@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
+import uk.gov.justice.digital.delius.data.api.OffenderManagerGrade;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
@@ -42,6 +43,7 @@ public class OffenderManagerTransformer {
                         .orElse(null))
                 .isResponsibleOfficer(Objects.nonNull(offenderManager.getActiveResponsibleOfficer()))
                 .fromDate(offenderManager.getAllocationDate())
+                .grade(offenderManagerGradeOf(offenderManager))
                 .build();
     }
 
@@ -109,6 +111,15 @@ public class OffenderManagerTransformer {
         return Optional.ofNullable(OffenderManagerTransformer.staffCodeOf(offenderManager))
                 .map(staffCode -> staffCode.endsWith(UNALLOCATED_STAFF_CODE_SUFFIX))
                 .orElse(false);
+    }
+
+    private static OffenderManagerGrade offenderManagerGradeOf(final OffenderManager offenderManager) {
+        return Optional.ofNullable(offenderManager.getOfficer().getGrade())
+            .map(grade -> OffenderManagerGrade.builder()
+                .code(grade.getCodeValue())
+                .description(grade.getCodeDescription())
+                .build())
+            .orElse(null);
     }
 
 }
