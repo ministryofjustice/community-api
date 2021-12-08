@@ -78,7 +78,7 @@ public class PersonalCircumstanceServiceTest {
         assertThat(personalCircumstanceService.personalCircumstancesFor(1L)
                 .stream().map(uk.gov.justice.digital.delius.data.api.PersonalCircumstance::getActiveFlag)
                 .collect(Collectors.toList()))
-                .containsSequence(false, true, false);
+                .containsSequence(false, true, true);
 
     }
 

@@ -51,11 +51,13 @@ public class PersonalCircumstanceTransformer {
     }
 
     private static Boolean activeFlagOf(LocalDate startDate, LocalDate endDate) {
-        if (endDate == null){
+        LocalDate today = LocalDate.now();
+        if (startDate.isAfter(today)) {
             return false;
         } else {
-            LocalDate today = LocalDate.now();
-            return endDate.isAfter(today) && (startDate.isEqual(today) || startDate.isBefore(today));
+            if (endDate == null) {
+                return true;
+            } else return endDate.isAfter(today);
         }
     }
 }

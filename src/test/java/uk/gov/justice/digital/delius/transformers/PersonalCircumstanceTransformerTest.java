@@ -61,13 +61,24 @@ public class PersonalCircumstanceTransformerTest {
     }
 
     @Test
-    public void activeFlagIsTrueWhenStartDateTodayOrPastAndEndDateInFuture() {
+    public void activeFlagIsTrueWhenStartDateTodayAndEndDateInFuture() {
         final var source = aPersonalCircumstance(LocalDate.now(), LocalDate.now().plusDays(1));
         final var observed = PersonalCircumstanceTransformer.personalCircumstanceOf(source);
         assertThat(observed)
             .hasFieldOrPropertyWithValue("personalCircumstanceId", 1000L)
             .hasFieldOrPropertyWithValue("startDate", LocalDate.now())
             .hasFieldOrPropertyWithValue("endDate", LocalDate.now().plusDays(1))
+            .hasFieldOrPropertyWithValue("activeFlag", true);
+    }
+
+    @Test
+    public void activeFlagIsTrueWhenEndDateIsNull() {
+        final var source = aPersonalCircumstance(LocalDate.now().minusDays(1), null);
+        final var observed = PersonalCircumstanceTransformer.personalCircumstanceOf(source);
+        assertThat(observed)
+            .hasFieldOrPropertyWithValue("personalCircumstanceId", 1000L)
+            .hasFieldOrPropertyWithValue("startDate", LocalDate.now().minusDays(1))
+            .hasFieldOrPropertyWithValue("endDate", null)
             .hasFieldOrPropertyWithValue("activeFlag", true);
     }
 
@@ -79,17 +90,6 @@ public class PersonalCircumstanceTransformerTest {
             .hasFieldOrPropertyWithValue("personalCircumstanceId", 1000L)
             .hasFieldOrPropertyWithValue("startDate", LocalDate.now().minusDays(1))
             .hasFieldOrPropertyWithValue("endDate", LocalDate.now())
-            .hasFieldOrPropertyWithValue("activeFlag", false);
-    }
-
-    @Test
-    public void activeFlagIsFalseWhenEndDateIsNull() {
-        final var source = aPersonalCircumstance(LocalDate.now(), null);
-        final var observed = PersonalCircumstanceTransformer.personalCircumstanceOf(source);
-        assertThat(observed)
-            .hasFieldOrPropertyWithValue("personalCircumstanceId", 1000L)
-            .hasFieldOrPropertyWithValue("startDate", LocalDate.now())
-            .hasFieldOrPropertyWithValue("endDate", null)
             .hasFieldOrPropertyWithValue("activeFlag", false);
     }
 
