@@ -6,6 +6,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.CircumstanceSubType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CircumstanceType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
@@ -24,6 +25,7 @@ public class PersonalCircumstanceTransformer {
                 .evidenced(ynToBoolean(personalCircumstance.getEvidenced()))
                 .createdDatetime(personalCircumstance.getCreatedDatetime())
                 .lastUpdatedDatetime(personalCircumstance.getLastUpdatedDatetime())
+                .activeFlag(activeFlagOf(personalCircumstance.getStartDate(), personalCircumstance.getEndDate()))
             .build();
     }
 
@@ -48,5 +50,12 @@ public class PersonalCircumstanceTransformer {
                 .build();
     }
 
-
+    private static Boolean activeFlagOf(LocalDate startDate, LocalDate endDate) {
+        if (endDate == null){
+            return false;
+        } else {
+            LocalDate today = LocalDate.now();
+            return endDate.isAfter(today) && (startDate.isEqual(today) || startDate.isBefore(today));
+        }
+    }
 }

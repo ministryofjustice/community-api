@@ -12,6 +12,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.CircumstanceType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalCircumstance;
 import uk.gov.justice.digital.delius.jpa.standard.repository.PersonalCircumstanceRepository;
 
+import java.time.LocalDate;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,9 +34,9 @@ public class PersonalCircumstanceServiceTest {
     public void personalCircumstancesOrderedNaturallyByPrimaryKeyReversed() {
         Mockito.when(personalCircumstanceRepository.findByOffenderId(1L))
                 .thenReturn(ImmutableList.of(
-                        aPersonalCircumstance().toBuilder().personalCircumstanceId(99L).build(),
-                        aPersonalCircumstance().toBuilder().personalCircumstanceId(9L).build(),
-                        aPersonalCircumstance().toBuilder().personalCircumstanceId(999L).build()
+                        aPersonalCircumstance().toBuilder().personalCircumstanceId(99L).startDate(LocalDate.now()).build(),
+                        aPersonalCircumstance().toBuilder().personalCircumstanceId(9L).startDate(LocalDate.now()).build(),
+                        aPersonalCircumstance().toBuilder().personalCircumstanceId(999L).startDate(LocalDate.now()).build()
                 ));
 
         assertThat(personalCircumstanceService.personalCircumstancesFor(1L)
@@ -49,9 +50,9 @@ public class PersonalCircumstanceServiceTest {
     public void deletedRecordsIgnored() {
         Mockito.when(personalCircumstanceRepository.findByOffenderId(1L))
                 .thenReturn(ImmutableList.of(
-                        aPersonalCircumstance().toBuilder().personalCircumstanceId(1L).build(),
-                        aPersonalCircumstance().toBuilder().personalCircumstanceId(2L).softDeleted(1L).build(),
-                        aPersonalCircumstance().toBuilder().personalCircumstanceId(3L).build()
+                        aPersonalCircumstance().toBuilder().personalCircumstanceId(1L).startDate(LocalDate.now()).build(),
+                        aPersonalCircumstance().toBuilder().personalCircumstanceId(2L).startDate(LocalDate.now()).softDeleted(1L).build(),
+                        aPersonalCircumstance().toBuilder().personalCircumstanceId(3L).startDate(LocalDate.now()).build()
                 ));
 
         assertThat(personalCircumstanceService.personalCircumstancesFor(1L)
@@ -59,6 +60,25 @@ public class PersonalCircumstanceServiceTest {
                 .collect(Collectors.toList()))
                 .contains(1L, 3L);
 
+    }
+
+    @Test
+    public void personalCircumstancesHaveActiveFlag() {
+        LocalDate today = LocalDate.now();
+        LocalDate futureDate = LocalDate.now().plusDays(1);
+        LocalDate pastDate = LocalDate.now().minusDays(1);
+
+        Mockito.when(personalCircumstanceRepository.findByOffenderId(1L))
+                .thenReturn(ImmutableList.of(
+                        aPersonalCircumstance().toBuilder().personalCircumstanceId(1L).startDate(pastDate).endDate(today).build(),
+                        aPersonalCircumstance().toBuilder().personalCircumstanceId(2L).startDate(pastDate).endDate(futureDate).build(),
+                        aPersonalCircumstance().toBuilder().personalCircumstanceId(3L).startDate(pastDate).build()
+                ));
+
+        assertThat(personalCircumstanceService.personalCircumstancesFor(1L)
+                .stream().map(uk.gov.justice.digital.delius.data.api.PersonalCircumstance::getActiveFlag)
+                .collect(Collectors.toList()))
+                .containsSequence(false, true, false);
 
     }
 

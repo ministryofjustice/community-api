@@ -554,6 +554,21 @@ public class EntityHelper {
             .build();
     }
 
+    public static PersonalCircumstance aPersonalCircumstance(final LocalDate startDate, final LocalDate endDate) {
+        return PersonalCircumstance.builder()
+            .personalCircumstanceId(1000L)
+            .offenderId(1001L)
+            .notes("Some notes")
+            .evidenced("Y")
+            .startDate(startDate)
+            .endDate(endDate)
+            .circumstanceType(CircumstanceType.builder().codeValue("CT").codeDescription("AP - Medication in Posession - Assessment").build())
+            .circumstanceSubType(CircumstanceSubType.builder().codeValue("CST").codeDescription("MiP approved").build())
+            .createdDatetime(LocalDateTime.of(2021, 7, 9, 9, 12))
+            .lastUpdatedDatetime(LocalDateTime.of(2021, 7, 9, 9, 32))
+            .build();
+    }
+
     public static UPWAppointmentDocument aUPWAppointmentDocument(final Long eventId) {
         final var document = new UPWAppointmentDocument();
         populateBasics(document);

@@ -60,4 +60,47 @@ public class PersonalCircumstanceTransformerTest {
             .hasFieldOrPropertyWithValue("lastUpdatedDatetime", LocalDateTime.of(2021, 7, 9, 9, 32));
     }
 
+    @Test
+    public void activeFlagIsTrueWhenStartDateTodayOrPastAndEndDateInFuture() {
+        final var source = aPersonalCircumstance(LocalDate.now(), LocalDate.now().plusDays(1));
+        final var observed = PersonalCircumstanceTransformer.personalCircumstanceOf(source);
+        assertThat(observed)
+            .hasFieldOrPropertyWithValue("personalCircumstanceId", 1000L)
+            .hasFieldOrPropertyWithValue("startDate", LocalDate.now())
+            .hasFieldOrPropertyWithValue("endDate", LocalDate.now().plusDays(1))
+            .hasFieldOrPropertyWithValue("activeFlag", true);
+    }
+
+    @Test
+    public void activeFlagIsFalseWhenEndDateIsToday() {
+        final var source = aPersonalCircumstance(LocalDate.now().minusDays(1), LocalDate.now());
+        final var observed = PersonalCircumstanceTransformer.personalCircumstanceOf(source);
+        assertThat(observed)
+            .hasFieldOrPropertyWithValue("personalCircumstanceId", 1000L)
+            .hasFieldOrPropertyWithValue("startDate", LocalDate.now().minusDays(1))
+            .hasFieldOrPropertyWithValue("endDate", LocalDate.now())
+            .hasFieldOrPropertyWithValue("activeFlag", false);
+    }
+
+    @Test
+    public void activeFlagIsFalseWhenEndDateIsNull() {
+        final var source = aPersonalCircumstance(LocalDate.now(), null);
+        final var observed = PersonalCircumstanceTransformer.personalCircumstanceOf(source);
+        assertThat(observed)
+            .hasFieldOrPropertyWithValue("personalCircumstanceId", 1000L)
+            .hasFieldOrPropertyWithValue("startDate", LocalDate.now())
+            .hasFieldOrPropertyWithValue("endDate", null)
+            .hasFieldOrPropertyWithValue("activeFlag", false);
+    }
+
+    @Test
+    public void activeFlagIsFalseWhenStartDateInFuture() {
+        final var source = aPersonalCircumstance(LocalDate.now().plusDays(1), LocalDate.now().plusDays(2));
+        final var observed = PersonalCircumstanceTransformer.personalCircumstanceOf(source);
+        assertThat(observed)
+            .hasFieldOrPropertyWithValue("personalCircumstanceId", 1000L)
+            .hasFieldOrPropertyWithValue("startDate", LocalDate.now().plusDays(1))
+            .hasFieldOrPropertyWithValue("endDate", LocalDate.now().plusDays(2))
+            .hasFieldOrPropertyWithValue("activeFlag", false);
+    }
 }
