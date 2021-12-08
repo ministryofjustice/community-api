@@ -13,6 +13,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalCircumstance;
 import uk.gov.justice.digital.delius.jpa.standard.repository.PersonalCircumstanceRepository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,10 +76,15 @@ public class PersonalCircumstanceServiceTest {
                         aPersonalCircumstance().toBuilder().personalCircumstanceId(3L).startDate(pastDate).build()
                 ));
 
-        assertThat(personalCircumstanceService.personalCircumstancesFor(1L)
-                .stream().map(uk.gov.justice.digital.delius.data.api.PersonalCircumstance::getActiveFlag)
-                .collect(Collectors.toList()))
-                .containsSequence(false, true, true);
+        List<uk.gov.justice.digital.delius.data.api.PersonalCircumstance> personalCircumstances =
+            personalCircumstanceService.personalCircumstancesFor(1L);
+
+        assertThat(personalCircumstances.stream().filter(c -> c.getPersonalCircumstanceId().equals(1L))
+            .findFirst().get().getActiveFlag()).isEqualTo(false);
+        assertThat(personalCircumstances.stream().filter(c -> c.getPersonalCircumstanceId().equals(2L))
+            .findFirst().get().getActiveFlag()).isEqualTo(true);
+        assertThat(personalCircumstances.stream().filter(c -> c.getPersonalCircumstanceId().equals(3L))
+            .findFirst().get().getActiveFlag()).isEqualTo(true);
 
     }
 
