@@ -39,6 +39,6 @@ public class PersonalCircumstance {
     private LocalDateTime createdDatetime;
     @ApiModelProperty(name = "Date and time that this personal circumstance was last updated", example = "2021-06-11T14:00:00")
     private LocalDateTime lastUpdatedDatetime;
-    @ApiModelProperty(value = "The active status of this personal circumstance, if the start date is before today or on and the end date is after today", example = "true")
+    @ApiModelProperty(value = "The active status of this personal circumstance, if the start date is before or on today and the end date is after today", example = "true")
     private Boolean activeFlag;
 }
