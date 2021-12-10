@@ -617,4 +617,86 @@ public class OffenderTransformerTest {
             .hasFieldOrPropertyWithValue("offenderProfile.selfDescribedGender", "Jedi");
     }
 
+
+    @Test
+    public void isActiveIsTrueWhenStartDateTodayAndEndDateInFuture() {
+        assertThat(OffenderTransformer.fullOffenderOf(anOffender()
+                .toBuilder()
+                .disabilities(ImmutableList.of(
+                    Disability
+                        .builder()
+                        .softDeleted(0L)
+                        .disabilityId(2L)
+                        .startDate(LocalDate.now())
+                        .finishDate(LocalDate.now().plusDays(1))
+                        .disabilityType(StandardReference.builder().build())
+                        .build()
+                ))
+                .build())
+            .getOffenderProfile()
+            .getDisabilities())
+            .extracting("isActive")
+            .containsExactly(true);
+    }
+
+    @Test
+    public void isActiveIsTrueWhenEndDateIsNull() {
+        assertThat(OffenderTransformer.fullOffenderOf(anOffender()
+                .toBuilder()
+                .disabilities(ImmutableList.of(
+                    Disability
+                        .builder()
+                        .softDeleted(0L)
+                        .disabilityId(3L)
+                        .startDate(LocalDate.now())
+                        .disabilityType(StandardReference.builder().build())
+                        .build()
+                ))
+                .build())
+            .getOffenderProfile()
+            .getDisabilities())
+            .extracting("isActive")
+            .containsExactly(true);
+    }
+
+    @Test
+    public void isActiveIsFalseWhenEndDateIsToday() {
+        assertThat(OffenderTransformer.fullOffenderOf(anOffender()
+                .toBuilder()
+                .disabilities(ImmutableList.of(
+                    Disability
+                        .builder()
+                        .softDeleted(0L)
+                        .disabilityId(4L)
+                        .startDate(LocalDate.now())
+                        .finishDate(LocalDate.now())
+                        .disabilityType(StandardReference.builder().build())
+                        .build()
+                ))
+                .build())
+            .getOffenderProfile()
+            .getDisabilities())
+            .extracting("isActive")
+            .containsExactly(false);
+    }
+
+    @Test
+    public void isActiveIsFalseWhenStartDateInFuture() {
+        assertThat(OffenderTransformer.fullOffenderOf(anOffender()
+                .toBuilder()
+                .disabilities(ImmutableList.of(
+                    Disability
+                        .builder()
+                        .softDeleted(0L)
+                        .disabilityId(1L)
+                        .startDate(LocalDate.now().plusDays(1))
+                        .disabilityType(StandardReference.builder().build())
+                        .build()
+                ))
+                .build())
+            .getOffenderProfile()
+            .getDisabilities())
+            .extracting("isActive")
+            .containsExactly(false);
+    }
 }
