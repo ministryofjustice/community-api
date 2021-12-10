@@ -540,18 +540,7 @@ public class EntityHelper {
     }
 
     public static PersonalCircumstance aPersonalCircumstance() {
-        return PersonalCircumstance.builder()
-            .personalCircumstanceId(1000L)
-            .offenderId(1001L)
-            .notes("Some notes")
-            .evidenced("Y")
-            .startDate(LocalDate.of(2021, 7, 9))
-            .endDate(LocalDate.of(2021, 7, 10))
-            .circumstanceType(CircumstanceType.builder().codeValue("CT").codeDescription("AP - Medication in Posession - Assessment").build())
-            .circumstanceSubType(CircumstanceSubType.builder().codeValue("CST").codeDescription("MiP approved").build())
-            .createdDatetime(LocalDateTime.of(2021, 7, 9, 9, 12))
-            .lastUpdatedDatetime(LocalDateTime.of(2021, 7, 9, 9, 32))
-            .build();
+        return aPersonalCircumstance(LocalDate.of(2021, 7, 9), LocalDate.of(2021, 7, 10));
     }
 
     public static PersonalCircumstance aPersonalCircumstance(final LocalDate startDate, final LocalDate endDate) {

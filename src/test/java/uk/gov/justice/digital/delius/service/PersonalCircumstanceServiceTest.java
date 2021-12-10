@@ -64,10 +64,10 @@ public class PersonalCircumstanceServiceTest {
     }
 
     @Test
-    public void personalCircumstancesHaveActiveFlag() {
-        LocalDate today = LocalDate.now();
-        LocalDate futureDate = LocalDate.now().plusDays(1);
-        LocalDate pastDate = LocalDate.now().minusDays(1);
+    public void personalCircumstancesHaveIsActiveFlag() {
+        final LocalDate today = LocalDate.now();
+        final LocalDate futureDate = LocalDate.now().plusDays(1);
+        final LocalDate pastDate = LocalDate.now().minusDays(1);
 
         Mockito.when(personalCircumstanceRepository.findByOffenderId(1L))
                 .thenReturn(ImmutableList.of(
@@ -80,11 +80,11 @@ public class PersonalCircumstanceServiceTest {
             personalCircumstanceService.personalCircumstancesFor(1L);
 
         assertThat(personalCircumstances.stream().filter(c -> c.getPersonalCircumstanceId().equals(1L))
-            .findFirst().get().getActiveFlag()).isEqualTo(false);
+            .findFirst().get().getIsActive()).isEqualTo(false);
         assertThat(personalCircumstances.stream().filter(c -> c.getPersonalCircumstanceId().equals(2L))
-            .findFirst().get().getActiveFlag()).isEqualTo(true);
+            .findFirst().get().getIsActive()).isEqualTo(true);
         assertThat(personalCircumstances.stream().filter(c -> c.getPersonalCircumstanceId().equals(3L))
-            .findFirst().get().getActiveFlag()).isEqualTo(true);
+            .findFirst().get().getIsActive()).isEqualTo(true);
 
     }
 

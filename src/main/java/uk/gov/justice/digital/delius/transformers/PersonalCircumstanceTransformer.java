@@ -25,7 +25,7 @@ public class PersonalCircumstanceTransformer {
                 .evidenced(ynToBoolean(personalCircumstance.getEvidenced()))
                 .createdDatetime(personalCircumstance.getCreatedDatetime())
                 .lastUpdatedDatetime(personalCircumstance.getLastUpdatedDatetime())
-                .activeFlag(activeFlagOf(personalCircumstance.getStartDate(), personalCircumstance.getEndDate()))
+                .isActive(isActive(personalCircumstance, LocalDate.now()))
             .build();
     }
 
@@ -50,14 +50,12 @@ public class PersonalCircumstanceTransformer {
                 .build();
     }
 
-    private static Boolean activeFlagOf(LocalDate startDate, LocalDate endDate) {
-        LocalDate today = LocalDate.now();
-        if (startDate.isAfter(today)) {
+    private static Boolean isActive(uk.gov.justice.digital.delius.jpa.standard.entity.PersonalCircumstance personalCircumstance, LocalDate dateToCompare) {
+        if (personalCircumstance.getStartDate().isAfter(dateToCompare)) {
             return false;
-        } else {
-            if (endDate == null) {
-                return true;
-            } else return endDate.isAfter(today);
         }
+        return Optional.ofNullable(personalCircumstance.getEndDate()).map(
+            end -> personalCircumstance.getEndDate().isAfter(dateToCompare)
+        ).orElse(true);
     }
 }
