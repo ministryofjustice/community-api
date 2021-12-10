@@ -65,9 +65,9 @@ public class PersonalCircumstanceServiceTest {
 
     @Test
     public void personalCircumstancesHaveIsActiveFlag() {
-        final LocalDate today = LocalDate.now();
-        final LocalDate futureDate = LocalDate.now().plusDays(1);
-        final LocalDate pastDate = LocalDate.now().minusDays(1);
+        final var today = LocalDate.now();
+        final var futureDate = LocalDate.now().plusDays(1);
+        final var pastDate = LocalDate.now().minusDays(1);
 
         Mockito.when(personalCircumstanceRepository.findByOffenderId(1L))
                 .thenReturn(ImmutableList.of(
