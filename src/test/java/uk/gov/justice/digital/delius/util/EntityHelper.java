@@ -431,11 +431,15 @@ public class EntityHelper {
     }
 
     public static PersonalContact aPersonalContact() {
+        return aPersonalContact(LocalDateTime.of(2019, 9, 13, 0, 0), LocalDateTime.of(2020, 9, 13, 0, 0));
+    }
+
+    public static PersonalContact aPersonalContact(LocalDateTime startDate, LocalDateTime endDate) {
         return PersonalContact.builder()
             .personalContactId(2500058493L)
             .relationship("Father")
-            .startDate(LocalDateTime.of(2019, 9, 13, 0, 0))
-            .endDate(LocalDateTime.of(2020, 9, 13, 0, 0))
+            .startDate(startDate)
+            .endDate(endDate)
             .firstName("Smile")
             .otherNames("Danger")
             .surname("Barry")
