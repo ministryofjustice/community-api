@@ -4,6 +4,7 @@ import uk.gov.justice.digital.delius.data.api.AddressSummary;
 import uk.gov.justice.digital.delius.data.api.PersonalContact;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class PersonalContactTransformer {
@@ -13,6 +14,7 @@ public class PersonalContactTransformer {
             .relationship(personalContact.getRelationship())
             .startDate(personalContact.getStartDate())
             .endDate(personalContact.getEndDate())
+            .isActive(isActiveOf(personalContact, LocalDateTime.now()))
             .title(Optional.ofNullable(personalContact.getTitle()).map(StandardReference::getCodeDescription).orElse(null))
             .firstName(personalContact.getFirstName())
             .otherNames(personalContact.getOtherNames())
@@ -38,5 +40,14 @@ public class PersonalContactTransformer {
                     .build())
                 .orElse(null))
             .build();
+    }
+
+    private static Boolean isActiveOf(uk.gov.justice.digital.delius.jpa.standard.entity.PersonalContact personalCircumstance, LocalDateTime dateToCompare) {
+        if (personalCircumstance.getStartDate().isAfter(dateToCompare)) {
+            return false;
+        }
+        return Optional.ofNullable(personalCircumstance.getEndDate()).map(
+            end -> personalCircumstance.getEndDate().isAfter(dateToCompare)
+        ).orElse(true);
     }
 }
