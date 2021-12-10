@@ -6,6 +6,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.CircumstanceSubType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CircumstanceType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
@@ -24,6 +25,7 @@ public class PersonalCircumstanceTransformer {
                 .evidenced(ynToBoolean(personalCircumstance.getEvidenced()))
                 .createdDatetime(personalCircumstance.getCreatedDatetime())
                 .lastUpdatedDatetime(personalCircumstance.getLastUpdatedDatetime())
+                .isActive(isActive(personalCircumstance, LocalDate.now()))
             .build();
     }
 
@@ -48,5 +50,12 @@ public class PersonalCircumstanceTransformer {
                 .build();
     }
 
-
+    private static Boolean isActive(uk.gov.justice.digital.delius.jpa.standard.entity.PersonalCircumstance personalCircumstance, LocalDate dateToCompare) {
+        if (personalCircumstance.getStartDate().isAfter(dateToCompare)) {
+            return false;
+        }
+        return Optional.ofNullable(personalCircumstance.getEndDate()).map(
+            end -> personalCircumstance.getEndDate().isAfter(dateToCompare)
+        ).orElse(true);
+    }
 }
