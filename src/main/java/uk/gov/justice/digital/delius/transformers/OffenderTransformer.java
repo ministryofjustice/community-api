@@ -33,7 +33,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderTeam;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Provision;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
-import uk.gov.justice.digital.delius.utils.DateConverter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -86,7 +85,7 @@ public class OffenderTransformer {
                 .sexualOrientation(Optional.ofNullable(offender.getSexualOrientation()).map(StandardReference::getCodeDescription).orElse(null))
                 .riskColour(Optional.ofNullable(offender.getCurrentHighestRiskColour()).orElse(null))
                 .offenderDetails(offender.getOffenderDetails())
-                .disabilities(disabilitiesOf(offender.getDisabilities()))
+                .disabilities(disabilitiesOf(offender.getDisabilities(), LocalDate.now()))
                 .genderIdentity(Optional.ofNullable(offender.getGenderIdentity()).map(StandardReference::getCodeDescription).orElse(null))
                 .selfDescribedGender(offender.getSelfDescribedGender())
                 .build();
@@ -345,15 +344,15 @@ public class OffenderTransformer {
                 .build();
     }
 
-    private static List<uk.gov.justice.digital.delius.data.api.Disability> disabilitiesOf(List<Disability> disabilities) {
+    private static List<uk.gov.justice.digital.delius.data.api.Disability> disabilitiesOf(List<Disability> disabilities, LocalDate dateToCompare) {
         return disabilities.stream()
                 .filter(disability -> disability.getSoftDeleted() == 0)
                 .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Disability::getStartDate)
                         .reversed())
-                .map(OffenderTransformer::disabilityOf).collect(toList());
+                .map(disability -> disabilityOf(disability, dateToCompare)).collect(toList());
     }
 
-    private static uk.gov.justice.digital.delius.data.api.Disability disabilityOf(Disability disability) {
+    private static uk.gov.justice.digital.delius.data.api.Disability disabilityOf(Disability disability, LocalDate dateToCompare) {
         return uk.gov.justice.digital.delius.data.api.Disability
                 .builder()
                 .disabilityId(disability.getDisabilityId())
@@ -367,6 +366,7 @@ public class OffenderTransformer {
                 .provisions(provisionsOf(disability.getProvisions()))
                 .lastUpdatedDateTime(Optional.ofNullable(disability.getLastUpdatedDatetime())
                     .orElse(null))
+                .isActive(isActiveOf(disability, dateToCompare))
                 .build();
     }
 
@@ -392,6 +392,15 @@ public class OffenderTransformer {
             .provisionType(KeyValue.builder().code(provision.getProvisionType().getCodeValue())
                 .description(provision.getProvisionType().getCodeDescription()).build())
             .build();
+    }
+
+    private static Boolean isActiveOf(uk.gov.justice.digital.delius.jpa.standard.entity.Disability disability, LocalDate dateToCompare) {
+        if (disability.getStartDate().isAfter(dateToCompare)) {
+            return false;
+        }
+        return Optional.ofNullable(disability.getFinishDate()).map(
+            end -> disability.getFinishDate().isAfter(dateToCompare)
+        ).orElse(true);
     }
 
     private static ResponsibleOfficer convertToResponsibleOfficer(uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager om, Offender offender) {
