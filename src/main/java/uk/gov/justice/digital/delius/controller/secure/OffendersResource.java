@@ -700,7 +700,7 @@ public class OffendersResource {
         return offenderService.getOffenderByCrn(crn)
                 .map((offender) -> convictionService.convictionFor(offender.getOffenderId(), convictionId)
                     .orElseThrow(() -> new NotFoundException(String.format("Conviction with convictionId %s not found for offender with crn %s", convictionId, crn)))
-                ).map(conviction -> nsiService.getNsiById(nsiId))
+                ).map(c onviction -> nsiService.getNsiById(nsiId))
                 .orElseThrow(() -> new NotFoundException(String.format("NSI with id %s not found", nsiId)))
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
