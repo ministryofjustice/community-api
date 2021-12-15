@@ -63,4 +63,7 @@ public class PersonalContact {
 
     @ApiModelProperty(name = "The personal contact address")
     private AddressSummary address;
+
+    @ApiModelProperty(value = "The active status of this record, if the start date is before or on today and the end date is after today or null", example = "true")
+    private Boolean isActive;
 }

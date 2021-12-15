@@ -25,4 +25,6 @@ public class Disability {
 
     @ApiModelProperty(name = "Date time when disability was last updated", example = "2020-09-20T11:00:00+01:00")
     private LocalDateTime lastUpdatedDateTime;
+    @ApiModelProperty(value = "The active status of this disability, if the start date is before or on today and the end date is after today or null", example = "true")
+    private Boolean isActive;
 }
