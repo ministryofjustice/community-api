@@ -24,7 +24,7 @@ dependencies {
 
     implementation 'com.unboundid:unboundid-ldapsdk:6.0.2'
     implementation("io.springfox:springfox-boot-starter:3.0.0")
-    implementation 'org.flywaydb:flyway-core:8.0.5'
+    implementation 'org.flywaydb:flyway-core:8.3.0'
     implementation 'com.zaxxer:HikariCP:5.0.0'
     implementation 'commons-io:commons-io:2.11.0'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
@@ -43,7 +43,7 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     compileOnly 'org.projectlombok:lombok:1.18.22'
 
-    runtimeOnly 'com.h2database:h2:1.4.200'
+    runtimeOnly 'com.h2database:h2:2.0.204'
     testRuntimeOnly 'com.h2database:h2:1.4.200'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
     testCompileOnly 'org.projectlombok:lombok:1.18.22'
@@ -78,4 +78,8 @@ testIntegration {
     minHeapSize = "128m"
     maxHeapSize = "1536m"
     jvmArgs = ["--add-opens", "java.naming/com.sun.jndi.ldap=ALL-UNNAMED"]
+}
+
+repositories {
+    mavenCentral()
 }
