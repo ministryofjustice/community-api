@@ -1256,7 +1256,7 @@ create table TEAM
     TEAM_ID                  NUMBER           not null
         constraint XPKTEAM
             primary key,
-    CODE                     CHAR(6)          not null,
+    CODE                     VARCHAR2(6)          not null,
     DESCRIPTION              VARCHAR2(50)     not null,
     DISTRICT_ID              NUMBER           not null
         references DISTRICT,
@@ -1855,7 +1855,7 @@ create table R_INSTITUTION
     ESTABLISHMENT              CHAR             not null
         constraint YES_OR_NO_ONLY30
             check (ESTABLISHMENT IN ('Y', 'N')),
-    CODE                       CHAR(6)          not null,
+    CODE                       VARCHAR2(6)          not null,
     DESCRIPTION                VARCHAR2(100)    not null,
     SELECTABLE                 CHAR             not null
         constraint YES_OR_NO10
@@ -2072,10 +2072,10 @@ create table R_OFFENCE
     OFFENCE_ID                 NUMBER           not null
         constraint XPKR_OFFENCE
             primary key,
-    CODE                       CHAR(5)          not null,
+    CODE                       VARCHAR2(5)          not null,
     DESCRIPTION                VARCHAR2(300)    not null,
     ABBREVIATION               VARCHAR2(50),
-    MAIN_CATEGORY_CODE         CHAR(3)          not null,
+    MAIN_CATEGORY_CODE         VARCHAR2(3)          not null,
     SELECTABLE                 CHAR             not null
         constraint YES_OR_NO12
             check (SELECTABLE IN ('N', 'Y')),
@@ -2084,7 +2084,7 @@ create table R_OFFENCE
     MAIN_CATEGORY_ABBREVIATION VARCHAR2(50)     not null,
     OGRS_OFFENCE_CATEGORY_ID   NUMBER           not null
         references R_STANDARD_REFERENCE_LIST,
-    SUB_CATEGORY_CODE          CHAR(2)          not null,
+    SUB_CATEGORY_CODE          VARCHAR2(2)          not null,
     SUB_CATEGORY_DESCRIPTION   VARCHAR2(200)    not null,
     FORM_20_CODE               VARCHAR2(50),
     SUB_CATEGORY_ABBREVIATION  VARCHAR2(50),
@@ -2414,7 +2414,7 @@ create table R_LIC_COND_REJECTION_REASON
     REJECTION_REASON_ID       NUMBER(22)         not null
         constraint R_996
             references R_STANDARD_REFERENCE_LIST,
-    ROW_VERSION               CHAR(18) default 0 not null,
+    ROW_VERSION               VARCHAR2(18) default 0 not null,
     constraint XPKR_LIC_COND_REJECTION_REASON
         primary key (LIC_COND_TYPE_MAIN_CAT_ID, REJECTION_REASON_ID)
 )
@@ -2607,7 +2607,7 @@ create table PROBATION_AREA
     PROBATION_AREA_ID            NUMBER           not null
         constraint XPKPROBATION_AREA
             primary key,
-    CODE                         CHAR(3)          not null,
+    CODE                         VARCHAR2(3)          not null,
     DESCRIPTION                  VARCHAR2(60)     not null,
     SELECTABLE                   CHAR             not null
         constraint YES_OR_NO13
@@ -2622,7 +2622,7 @@ create table PROBATION_AREA
     LAST_UPDATED_DATETIME        DATE             not null,
     TRAINING_SESSION_ID          NUMBER
         references TRAINING_SESSION,
-    TRUST_CODE                   CHAR(3),
+    TRUST_CODE                   VARCHAR2(3),
     TRUST_DIVISION_ID            NUMBER,
     TRUST_CPA_ID                 NUMBER,
     PRIVATE                      NUMBER           not null
@@ -2713,7 +2713,7 @@ create table PROVIDER_TEAM
     PROVIDER_TEAM_ID      NUMBER           not null
         constraint XPKPROVIDER_TEAM
             primary key,
-    CODE                  CHAR(6)          not null,
+    CODE                  VARCHAR2(6)          not null,
     NAME                  VARCHAR2(50)     not null,
     EXTERNAL_PROVIDER_ID  NUMBER           not null
         references EXTERNAL_PROVIDER,
@@ -2846,7 +2846,7 @@ create table COURT
     COURT_ID              NUMBER           not null
         constraint XPKCOURT
             primary key,
-    CODE                  CHAR(6)          not null,
+    CODE                  VARCHAR2(6)          not null,
     SELECTABLE            CHAR             not null
         constraint YES_OR_NO
             check (SELECTABLE IN ('N', 'Y')),
@@ -2888,7 +2888,7 @@ create table IAPS_MESSAGE_LOG
     RECEIVED_DATETIME         DATE   not null,
     SENT_DATETIME             DATE,
     RECORD_ID                 NUMBER,
-    CRN                       CHAR(7),
+    CRN                       VARCHAR2(7),
     PROBATION_AREA_ID         NUMBER
         references PROBATION_AREA,
     IAPS_BUSINES_OPERATION_ID NUMBER not null
@@ -2930,7 +2930,7 @@ create table PROVIDER_EMPLOYEE
     PROVIDER_EMPLOYEE_ID  NUMBER           not null
         constraint XPKPROVIDER_EMPLOYEE
             primary key,
-    CODE                  CHAR(7)          not null,
+    CODE                  VARCHAR2(7)          not null,
     SURNAME               VARCHAR2(35)     not null,
     START_DATE            DATE             not null,
     FORENAME              VARCHAR2(35)     not null,
@@ -3590,7 +3590,7 @@ create table PROVIDER_LOCATION
     PROVIDER_LOCATION_ID  NUMBER           not null
         constraint XPKPROVIDER_LOCATION
             primary key,
-    CODE                  CHAR(7)          not null,
+    CODE                  VARCHAR2(7)          not null,
     DESCRIPTION           VARCHAR2(50)     not null,
     FAX_NUMBER            VARCHAR2(35),
     EXTERNAL_PROVIDER_ID  NUMBER           not null
@@ -3779,7 +3779,7 @@ create table OFFICE_LOCATION
     OFFICE_LOCATION_ID    NUMBER           not null
         constraint XPKOFFICE_LOCATION
             primary key,
-    CODE                  CHAR(7)          not null,
+    CODE                  VARCHAR2(7)          not null,
     DESCRIPTION           VARCHAR2(50)     not null,
     DISTRICT_ID           NUMBER           not null
         references DISTRICT,
@@ -3890,23 +3890,20 @@ create table OFFENDER
         constraint XPKOFFENDER
             primary key,
     FIRST_NAME                     VARCHAR2(35)     not null,
-    CRN                            CHAR(7)          not null,
+    CRN                            VARCHAR2(7)          not null,
     SECOND_NAME                    VARCHAR2(35),
-    PNC_NUMBER                     CHAR(13),
+    PNC_NUMBER                     VARCHAR2(13),
     THIRD_NAME                     VARCHAR2(35),
     CRO_NUMBER                     VARCHAR2(12),
     SURNAME                        VARCHAR2(35)     not null,
-    NOMS_NUMBER                    CHAR(7)
--- in production this constraint is disabled there are real duplicates
---        constraint XAK2OFFENDER
---           unique
+    NOMS_NUMBER                    VARCHAR2(7)
     ,
     PREVIOUS_SURNAME               VARCHAR2(35),
     ALLOW_SMS                      CHAR
         constraint YES_OR_NO_OR_UNKNOWN9
             check (ALLOW_SMS IN ('N', 'Y', 'U')),
     DATE_OF_BIRTH_DATE             DATE             not null,
-    NI_NUMBER                      CHAR(9),
+    NI_NUMBER                      VARCHAR2(9),
     NOTES                          CLOB,
     LANGUAGE_CONCERNS              VARCHAR2(4000),
     DECEASED_DATE                  DATE,
@@ -3969,7 +3966,7 @@ create table OFFENDER
     ESTABLISHMENT                  CHAR
         constraint YES_OR_NO_ONLY32
             check (ESTABLISHMENT IN ('Y', 'N')),
-    ORGANISATIONS                  ARRAY,
+    ORGANISATIONS                  VARCHAR2(512) ARRAY,
     CURRENT_TIER                   NUMBER
         references R_STANDARD_REFERENCE_LIST,
     PENDING_TRANSFER               NUMBER           not null
@@ -4216,7 +4213,7 @@ create table DISABILITY
         references R_STANDARD_REFERENCE_LIST,
     TRAINING_SESSION_ID   NUMBER
         references TRAINING_SESSION,
-    ORGANISATIONS         ARRAY,
+    ORGANISATIONS         VARCHAR2(512) ARRAY,
     CREATED_BY_USER_ID    NUMBER           not null,
     LAST_UPDATED_USER_ID  NUMBER           not null,
     CREATED_DATETIME      DATE             not null,
@@ -4254,7 +4251,7 @@ create table EVENT
     LAST_UPDATED_DATETIME         DATE             not null,
     TRAINING_SESSION_ID           NUMBER
         references TRAINING_SESSION,
-    ORGANISATIONS                 ARRAY,
+    ORGANISATIONS                 VARCHAR2(512) ARRAY,
     IN_BREACH                     NUMBER           not null
         constraint TRUE_OR_FALSE53
             check (IN_BREACH IN (0, 1)),
@@ -4362,7 +4359,7 @@ create table DISPOSAL
         constraint XPKDISPOSAL
             primary key,
     DISPOSAL_DATE                  DATE             not null,
-    VALUE                          NUMBER(16, 2),
+    `VALUE`                          NUMBER(16, 2),
     LENGTH                         NUMBER,
     PUNISHMENT                     CHAR
         constraint YES_OR_NO_ONLY
@@ -4407,7 +4404,7 @@ create table DISPOSAL
     LENGTH_2                       NUMBER,
     OFFENDER_ID                    NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS                  ARRAY,
+    ORGANISATIONS                  VARCHAR2(512) ARRAY,
     ACTIVE_FLAG                    NUMBER           not null,
     UPW                            NUMBER           not null
         constraint TRUE_OR_FALSE10
@@ -4461,7 +4458,7 @@ create table MAIN_OFFENCE
         references TRAINING_SESSION,
     OFFENDER_ID           NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS         ARRAY,
+    ORGANISATIONS         VARCHAR2(512) ARRAY,
     CREATED_BY_USER_ID    NUMBER(22)       not null,
     CREATED_DATETIME      DATE             not null,
     LAST_UPDATED_USER_ID  NUMBER(22)       not null,
@@ -4509,7 +4506,7 @@ create table RQMNT
         references TRAINING_SESSION,
     OFFENDER_ID                    NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS                  ARRAY,
+    ORGANISATIONS                  VARCHAR2(512) ARRAY,
     ACTIVE_FLAG                    NUMBER           not null,
     PENDING_TRANSFER               NUMBER           not null
         constraint TRUE_OR_FALSE_1549722321
@@ -4565,7 +4562,7 @@ create table OFFENDER_ADDRESS
     LAST_UPDATED_USER_ID  NUMBER           not null,
     TRAINING_SESSION_ID   NUMBER
         references TRAINING_SESSION,
-    ORGANISATIONS         ARRAY,
+    ORGANISATIONS         VARCHAR2(512) ARRAY,
     AWAITING_ASSESSMENT   NUMBER default 0
         constraint TRUE_OR_FALSE_1316444769
             check (AWAITING_ASSESSMENT IN (0, 1)),
@@ -4601,7 +4598,7 @@ create table ALIAS
     SURNAME_SOUNDEX       VARCHAR2(50)     not null,
     TRAINING_SESSION_ID   NUMBER
         references TRAINING_SESSION,
-    ORGANISATIONS         ARRAY,
+    ORGANISATIONS         VARCHAR2(512) ARRAY,
     CREATED_BY_USER_ID    NUMBER           not null,
     LAST_UPDATED_USER_ID  NUMBER           not null,
     CREATED_DATETIME      DATE             not null,
@@ -4633,7 +4630,7 @@ create table ADDITIONAL_SENTENCE
     LAST_UPDATED_DATETIME       DATE             not null,
     TRAINING_SESSION_ID         NUMBER
         references TRAINING_SESSION,
-    ORGANISATIONS               ARRAY,
+    ORGANISATIONS               VARCHAR2(512) ARRAY,
     OFFENDER_ID                 NUMBER           not null
         references OFFENDER
 )
@@ -4657,7 +4654,7 @@ create table ADDITIONAL_IDENTIFIER
         references R_STANDARD_REFERENCE_LIST,
     TRAINING_SESSION_ID      NUMBER
         references TRAINING_SESSION,
-    ORGANISATIONS            ARRAY,
+    ORGANISATIONS            VARCHAR2(512) ARRAY,
     CREATED_BY_USER_ID       NUMBER(22)       not null,
     CREATED_DATETIME         DATE             not null,
     LAST_UPDATED_USER_ID     NUMBER(22)       not null,
@@ -4707,7 +4704,7 @@ create table LIC_CONDITION
         references TRAINING_SESSION,
     OFFENDER_ID               NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS             ARRAY,
+    ORGANISATIONS             VARCHAR2(512) ARRAY,
     ACTIVE_FLAG               NUMBER           not null,
     PENDING_TRANSFER          NUMBER           not null
         constraint TRUE_OR_FALSE_368876692
@@ -4810,7 +4807,7 @@ create table NSI
     LAST_UPDATED_DATETIME     DATE             not null,
     ACTIVE_FLAG               NUMBER           not null,
     ROW_VERSION               NUMBER default 0 not null,
-    ORGANISATIONS             ARRAY,
+    ORGANISATIONS             VARCHAR2(512) ARRAY,
     PENDING_TRANSFER          NUMBER           not null
         constraint TRUE_OR_FALSE_1566803328
             check (PENDING_TRANSFER IN (0, 1)),
@@ -4894,7 +4891,7 @@ create table STAFF
         references R_STANDARD_REFERENCE_LIST,
     TITLE_ID              NUMBER
         references R_STANDARD_REFERENCE_LIST,
-    OFFICER_CODE          CHAR(7),
+    OFFICER_CODE          VARCHAR2(7),
     CREATED_BY_USER_ID    NUMBER           not null,
     LAST_UPDATED_USER_ID  NUMBER           not null,
     CREATED_DATETIME      DATE             not null,
@@ -4995,7 +4992,7 @@ create table COURT_APPEARANCE
         references TRAINING_SESSION,
     OFFENDER_ID                 NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS               ARRAY
+    ORGANISATIONS               VARCHAR2(512) ARRAY
 )
     ;
 
@@ -5044,7 +5041,7 @@ create table COHORT
     CREATED_DATETIME          DATE                 not null,
     LAST_UPDATED_USER_ID      NUMBER(22)           not null,
     LAST_UPDATED_DATETIME     DATE                 not null,
-    ORGANISATIONS             ARRAY,
+    ORGANISATIONS             VARCHAR2(512) ARRAY,
     RECORDED_COHORT_FLAG      CHAR
         constraint RECORDED_COHORT_FLA_2066116776
             check (RECORDED_COHORT_FLAG IN ('S', 'R', 'T')),
@@ -5088,7 +5085,7 @@ create table UPW_DETAILS
     PROVIDER_EMPLOYEE_ID  NUMBER
         references PROVIDER_EMPLOYEE,
     ALLOCATION_DATE       DATE             not null,
-    ORGANISATIONS         ARRAY,
+    ORGANISATIONS         VARCHAR2(512) ARRAY,
     MINUTES_YEAR1         NUMBER(10, 2),
     CREATED_BY_USER_ID    NUMBER           not null,
     CREATED_DATETIME      DATE             not null,
@@ -5187,7 +5184,7 @@ create table COHORT_HISTORY
     CREATED_DATETIME          DATE                 not null,
     LAST_UPDATED_USER_ID      NUMBER(22)           not null,
     LAST_UPDATED_DATETIME     DATE                 not null,
-    ORGANISATIONS             ARRAY,
+    ORGANISATIONS             VARCHAR2(512) ARRAY,
     RECORDED_COHORT_FLAG      CHAR
         constraint RECORDED_COHORT_FLAG_784206933
             check (RECORDED_COHORT_FLAG IN ('S', 'R', 'T'))
@@ -5226,7 +5223,7 @@ create table DRUG_TEST_PROFILE
         references TRAINING_SESSION,
     OFFENDER_ID           NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS         ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     constraint OFFENDER_MANAGER_TEAM_XOR1
         check ( (
                 (TEAM_ID IS NOT NULL AND PROVIDER_TEAM_ID IS NULL)
@@ -5328,7 +5325,7 @@ create table ADDRESS_ASSESSMENT
         references OFFENDER_ADDRESS,
     TRAINING_SESSION_ID   NUMBER
         references TRAINING_SESSION,
-    ORGANISATIONS         ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     CREATED_BY_USER_ID    NUMBER           not null,
     LAST_UPDATED_USER_ID  NUMBER           not null,
     CREATED_DATETIME      DATE             not null,
@@ -5424,7 +5421,7 @@ create table APPROVED_PREMISES_REFERRAL
         references OFFENDER,
     ORIGINAL_APPROVED_PREMISES_ID NUMBER
         references R_APPROVED_PREMISES,
-    ORGANISATIONS                 ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     RESERVATION_START_DATE        DATE,
     RESERVATION_LENGTH            NUMBER,
     REASON_FOR_REFERRAL           VARCHAR2(400),
@@ -5529,7 +5526,7 @@ create table APPROVED_PREMISES_RESIDENCE
         references TRAINING_SESSION,
     OFFENDER_ID                    NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS                  ARRAY
+    ORGANISATIONS                  VARCHAR2(512) ARRAY
 )
     ;
 
@@ -5570,7 +5567,7 @@ create table PERSONAL_CONTACT
     LAST_UPDATED_DATETIME DATE             not null,
     TRAINING_SESSION_ID   NUMBER
         references TRAINING_SESSION,
-    ORGANISATIONS         ARRAY
+    ORGANISATIONS         VARCHAR2(512) ARRAY
 )
     ;
 
@@ -5608,7 +5605,7 @@ create table CUSTODY
         references TRAINING_SESSION,
     OFFENDER_ID           NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS         ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     PSS_START_DATE        DATE,
     foreign key (INSTITUTION_ID, ESTABLISHMENT) references R_INSTITUTION
 )
@@ -5701,7 +5698,7 @@ create table INSTITUTIONAL_REPORT
         references TRAINING_SESSION,
     OFFENDER_ID                NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS              ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     DATE_ABANDONED             DATE,
     DATE_SENT                  DATE,
     PENDING_TRANSFER           NUMBER(22)       not null
@@ -5736,7 +5733,7 @@ create table RELEASE
         references TRAINING_SESSION,
     OFFENDER_ID           NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS         ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     LENGTH                NUMBER,
     INSTITUTION_ID        NUMBER,
     ESTABLISHMENT         CHAR,
@@ -5769,7 +5766,7 @@ create table RECALL
         references RELEASE,
     OFFENDER_ID           NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS         ARRAY
+    ORGANISATIONS         VARCHAR2(512) ARRAY
 )
     ;
 
@@ -5793,7 +5790,7 @@ create table PROVISION
         references TRAINING_SESSION,
     OFFENDER_ID           NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS         ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     CREATED_BY_USER_ID    NUMBER           not null,
     LAST_UPDATED_USER_ID  NUMBER           not null,
     CREATED_DATETIME      DATE             not null,
@@ -5835,7 +5832,7 @@ create table PSS_RQMNT
     OFFENDER_ID                NUMBER(22)           not null
         constraint R_942
             references OFFENDER,
-    ORGANISATIONS              ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     ACTIVE_FLAG                NUMBER(22)           not null
         constraint TRUE_OR_FALSE_1801363653
             check (ACTIVE_FLAG IN (0, 1)),
@@ -6080,7 +6077,7 @@ create table OASYS_ASSESSMENT
         references TRAINING_SESSION,
     TIER_CODE_ID                 NUMBER
         references R_STANDARD_REFERENCE_LIST,
-    ORGANISATIONS                ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     CREATED_BY_USER_ID           NUMBER(22)       not null,
     CREATED_DATETIME             DATE             not null,
     LAST_UPDATED_USER_ID         NUMBER(22)       not null,
@@ -6128,7 +6125,7 @@ create table OASYS_SENTENCE_PLAN
         references TRAINING_SESSION,
     OFFENDER_ID            NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS          ARRAY
+    ORGANISATIONS         VARCHAR2(512) ARRAY
 )
     ;
 
@@ -6148,7 +6145,7 @@ create table OASYS_SP_WORK_SUMMARY
         references TRAINING_SESSION,
     OFFENDER_ID            NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS          ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     constraint XPKOASYS_SP_WORK_SUMMARY
         primary key (OASYS_SENTENCE_PLAN_ID, LEVEL_)
 )
@@ -6170,7 +6167,7 @@ create table OASYS_SP_TEXT
         references TRAINING_SESSION,
     OFFENDER_ID            NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS          ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     constraint XPKOASYS_SP_TEXT
         primary key (OASYS_SENTENCE_PLAN_ID, LEVEL_)
 )
@@ -6192,7 +6189,7 @@ create table OASYS_SP_NEED
         references TRAINING_SESSION,
     OFFENDER_ID            NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS          ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     constraint XPKOASYS_SP_NEED
         primary key (OASYS_SENTENCE_PLAN_ID, LEVEL_)
 )
@@ -6256,7 +6253,7 @@ create table UPW_APPOINTMENT
         references TRAINING_SESSION,
     OFFENDER_ID             NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS           ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     PROJECT_NAME            VARCHAR2(60),
     PROJECT_TYPE_ID         NUMBER
         constraint R_1051
@@ -6352,7 +6349,7 @@ create table REGISTRATION
     DEREGISTERED          NUMBER           not null
         constraint TRUE_OR_FALSE35
             check (DEREGISTERED IN (0, 1)),
-    ORGANISATIONS         ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     constraint REGISTRATION
         check ( (
                 (REGISTRATION_DATE <= NEXT_REVIEW_DATE) OR (NEXT_REVIEW_DATE IS NULL)
@@ -6389,7 +6386,7 @@ create table DEREGISTRATION
         references TRAINING_SESSION,
     OFFENDER_ID            NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS          ARRAY
+    ORGANISATIONS         VARCHAR2(512) ARRAY
 )
     ;
 
@@ -6426,7 +6423,7 @@ create table REGISTRATION_REVIEW
         references TRAINING_SESSION,
     OFFENDER_ID            NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS          ARRAY
+    ORGANISATIONS         VARCHAR2(512) ARRAY
 )
     ;
 
@@ -6541,7 +6538,7 @@ create table REFERRAL
         references TRAINING_SESSION,
     OFFENDER_ID                 NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS               ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     DOCUMENT_LINKED             CHAR
         constraint YES_OR_NO_ONLY_1079849424
             check (DOCUMENT_LINKED IN ('Y', 'N')),
@@ -6602,7 +6599,7 @@ create table ASSESSMENT
         references TRAINING_SESSION,
     OFFENDER_ID                 NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS               ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     DOCUMENT_LINKED             CHAR
         constraint YES_OR_NO_ONLY_1291962580
             check (DOCUMENT_LINKED IN ('Y', 'N')),
@@ -6646,7 +6643,7 @@ create table DRUGS_TEST
         references OFFENDER,
     EVENT_ID              NUMBER           not null
         references EVENT,
-    ORGANISATIONS         ARRAY
+    ORGANISATIONS         VARCHAR2(512) ARRAY
 )
     ;
 
@@ -6689,7 +6686,7 @@ create table DRUG_TEST_RESULT
         references TRAINING_SESSION,
     OFFENDER_ID           NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS         ARRAY
+    ORGANISATIONS         VARCHAR2(512) ARRAY
 )
     ;
 
@@ -6940,7 +6937,7 @@ create table DOCUMENT
         references USER_,
     TRAINING_SESSION_ID         NUMBER
         references TRAINING_SESSION,
-    ORGANISATIONS               ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     TEMPLATE_NAME               VARCHAR2(200),
     DOCUMENT_NAME               VARCHAR2(200),
     LAST_UPD_AUTHOR_PROVIDER_ID NUMBER
@@ -7018,7 +7015,7 @@ create table COURT_REPORT
         references TRAINING_SESSION,
     OFFENDER_ID                    NUMBER           not null
         references OFFENDER,
-    ORGANISATIONS                  ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     REQUIRED_BY_COURT_ID           NUMBER
         constraint R_787
             references COURT,
@@ -7389,7 +7386,7 @@ create table COURT_REPORT_TRANSFER
     CREATED_DATETIME         DATE             not null,
     LAST_UPDATED_USER_ID     NUMBER           not null,
     LAST_UPDATED_DATETIME    DATE             not null,
-    ORGANISATIONS            ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     WITHDRAWAL_REASON_ID     NUMBER
         constraint R_1059
             references R_STANDARD_REFERENCE_LIST,
@@ -7448,7 +7445,7 @@ create table PSS_RQMNT_TRANSFER
     CREATED_DATETIME      DATE                 not null,
     LAST_UPDATED_USER_ID  NUMBER(22)           not null,
     LAST_UPDATED_DATETIME DATE                 not null,
-    ORGANISATIONS         ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     WITHDRAWAL_REASON_ID  NUMBER
         constraint R_1058
             references R_STANDARD_REFERENCE_LIST,
@@ -7565,7 +7562,7 @@ create table INSTITUTIONAL_REPORT_TRANSFER
     CREATED_DATETIME              DATE                 not null,
     LAST_UPDATED_USER_ID          NUMBER(22)           not null,
     LAST_UPDATED_DATETIME         DATE                 not null,
-    ORGANISATIONS                 ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     WITHDRAWAL_REASON_ID          NUMBER
         constraint R_1060
             references R_STANDARD_REFERENCE_LIST,
@@ -7738,7 +7735,7 @@ create table RQMNT_TRANSFER
     CREATED_DATETIME               DATE             not null,
     LAST_UPDATED_USER_ID           NUMBER           not null,
     LAST_UPDATED_DATETIME          DATE             not null,
-    ORGANISATIONS                  ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     TRAINING_SESSION_ID            NUMBER
         constraint R_882
             references TRAINING_SESSION,
@@ -7910,7 +7907,7 @@ create table NSI_TRANSFER
     CREATED_DATETIME      DATE             not null,
     LAST_UPDATED_USER_ID  NUMBER           not null,
     LAST_UPDATED_DATETIME DATE             not null,
-    ORGANISATIONS         ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     TRAINING_SESSION_ID   NUMBER
         constraint R_836
             references TRAINING_SESSION,
@@ -8022,7 +8019,7 @@ create table OFFENDER_TRANSFER
     LAST_UPDATED_USER_ID           NUMBER           not null,
     TRAINING_SESSION_ID            NUMBER
         references TRAINING_SESSION,
-    ORGANISATIONS                  ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     WITHDRAWAL_REASON_ID           NUMBER
         constraint R_1054
             references R_STANDARD_REFERENCE_LIST,
@@ -8273,7 +8270,7 @@ create table LIC_CONDITION_TRANSFER
     CREATED_DATETIME               DATE             not null,
     LAST_UPDATED_USER_ID           NUMBER           not null,
     LAST_UPDATED_DATETIME          DATE             not null,
-    ORGANISATIONS                  ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     TRAINING_SESSION_ID            NUMBER
         constraint R_870
             references TRAINING_SESSION,
@@ -8459,7 +8456,7 @@ create table ORDER_TRANSFER
     CREATED_DATETIME               DATE             not null,
     LAST_UPDATED_USER_ID           NUMBER           not null,
     LAST_UPDATED_DATETIME          DATE             not null,
-    ORGANISATIONS                  ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     TRAINING_SESSION_ID            NUMBER
         constraint R_858
             references TRAINING_SESSION,
@@ -8676,11 +8673,11 @@ create table SPG_SEARCH_REQUEST
     GENDER_ID             NUMBER
         constraint R_1114
             references R_STANDARD_REFERENCE_LIST,
-    CRN                   CHAR(7),
-    PNC_NUMBER            CHAR(13),
+    CRN                   VARCHAR2(7),
+    PNC_NUMBER            VARCHAR2(13),
     CRO_NUMBER            VARCHAR2(12),
-    NOMS_NUMBER           CHAR(7),
-    NI_NUMBER             CHAR(9),
+    NOMS_NUMBER           VARCHAR2(7),
+    NI_NUMBER             VARCHAR2(9),
     LAST_UPDATED_USER_ID  NUMBER not null,
     SPG_SEARCH_NIL        CHAR
         constraint YES_OR_NO_ONLY_1919921875
@@ -8718,7 +8715,7 @@ create table DSS_SEARCH_REQUEST
         constraint R_1117
             references OFFENDER,
     CRC_SEARCH_ID         NUMBER,
-    CRN                   CHAR(7),
+    CRN                   VARCHAR2(7),
     DSS_SEARCH_NIL        CHAR
         constraint YES_OR_NO_ONLY_1869786070
             check (DSS_SEARCH_NIL IN ('Y', 'N')),
@@ -9099,7 +9096,7 @@ create table CASELOAD
         references R_DISPOSAL_TYPE,
     LIC_COND_TYPE_MAIN_CAT_ID      NUMBER
         references R_LIC_COND_TYPE_MAIN_CAT,
-    CRN                            CHAR(7)          not null,
+    CRN                            VARCHAR2(7)          not null,
     RQMNT_TYPE_MAIN_CATEGORY_ID    NUMBER
         references R_RQMNT_TYPE_MAIN_CATEGORY,
     AD_RQMNT_TYPE_MAIN_CATEGORY_ID NUMBER
@@ -9122,7 +9119,7 @@ create table CASELOAD
     ROW_VERSION                    NUMBER default 0 not null,
     PARTITION_AREA_ID              NUMBER           not null
         references PARTITION_AREA,
-    ORGANISATIONS                  ARRAY,
+    ORGANISATIONS  VARCHAR2(512) ARRAY,
     TRAINING_SESSION_ID            NUMBER
         references TRAINING_SESSION,
     ALLOCATION_DATE                DATE,
@@ -9205,8 +9202,8 @@ create table PRECON_HISTORY
         constraint XPKPRECON_HISTORY
             primary key,
     PRECON_TRANSACTION_ID          NUMBER           not null,
-    SOURCE_OFFENDER_CRN            CHAR(7),
-    TARGET_OFFENDER_CRN            CHAR(7),
+    SOURCE_OFFENDER_CRN            VARCHAR2(7),
+    TARGET_OFFENDER_CRN            VARCHAR2(7),
     MERGE_DATE                     DATE,
     ALFRESCO_DOCUMENT_ID           VARCHAR2(36),
     IN_TRASHCAN                    NUMBER
@@ -9537,7 +9534,7 @@ create table SPG_ERROR
     SPG_ERROR_CATEGORY_ID NUMBER           not null
         constraint R_1139
             references R_STANDARD_REFERENCE_LIST,
-    MESSAGE_CRN           CHAR(7)          not null,
+    MESSAGE_CRN           VARCHAR2(7)          not null,
     NOTES                 CLOB,
     RESOLUTION_STATUS_ID  NUMBER
         constraint R_1140
@@ -9668,7 +9665,7 @@ create table PROCESSING_CRN
     PROCESSING_CRN_ID NUMBER  not null
         constraint XPKPROCESSING_CRN
             primary key,
-    CRN               CHAR(7) not null
+    CRN               VARCHAR2(7) not null
         constraint XAKPROCESSING_CRN
             unique,
     DATE_COMMENCED    DATE    not null
