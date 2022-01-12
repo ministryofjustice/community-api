@@ -121,6 +121,9 @@ delius-integration-context:
           ETE: CRS02
           PWB: CRS05
           WOS: CRS06
+          DNR: CRS04
+          MTR: CRS03
+          WSM: CRS07
       contact-mapping:
         notification-contact-type: CRSNOTE
         appointment-rar-contact-type: CRSAPT
