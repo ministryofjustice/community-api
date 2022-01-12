@@ -40,8 +40,8 @@ public class StandardDatasourceConfig {
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("hibernate.hbm2ddl.auto",
                 env.getProperty("hibernate.hbm2ddl.auto"));
-        properties.put("hibernate.dialect",
-                env.getProperty("hibernate.dialect"));
+        final var dialect = env.getProperty("hibernate.dialect", "org.hibernate.dialect.Oracle12cDialect");
+        properties.put("hibernate.dialect", dialect);
         em.setJpaPropertyMap(properties);
 
         return em;
