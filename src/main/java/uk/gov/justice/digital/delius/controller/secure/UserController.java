@@ -40,7 +40,7 @@ public class UserController {
             @ApiResponse(code = 403, message = "Requires any of ROLE_COMMUNITY_AUTH_INT,ROLE_COMMUNITY_USERS,ROLE_COMMUNITY_USERS_ROLES"),
             @ApiResponse(code = 404, message = "Not Found", response = ErrorResponse.class)
         })
-    @PreAuthorize("hasAnyRole('ROLE_COMMUNITY_AUTH_INT,ROLE_COMMUNITY_USERS,ROLE_COMMUNITY_USERS_ROLES')")
+    @PreAuthorize("hasAnyRole('ROLE_COMMUNITY_AUTH_INT','ROLE_COMMUNITY_USERS','ROLE_COMMUNITY_USERS_ROLES')")
     @RequestMapping(value = "/users/{username}/details", method = RequestMethod.GET)
     public UserDetails findUser(@ApiParam(name = "username", value = "LDAP username", example = "TESTUSERNPS", required = true) @NotNull final @PathVariable("username") String username) {
         return userService.getUserDetails(username)
@@ -55,7 +55,7 @@ public class UserController {
             @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
             @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_USERS"),
         })
-    @PreAuthorize("hasAnyRole('ROLE_COMMUNITY_AUTH_INT,ROLE_COMMUNITY_USERS')")
+    @PreAuthorize("hasAnyRole('ROLE_COMMUNITY_AUTH_INT','ROLE_COMMUNITY_USERS')")
     @RequestMapping(value = "/users/search/email/{email}/details", method = RequestMethod.GET)
     public List<UserDetails> findUserByEmail(@ApiParam(name = "email", value = "LDAP email address", example = "sheila.hancock@justice.gov.uk", required = true) @NotNull final @PathVariable("email") String email) {
         return userService.getUserDetailsByEmail(email);
