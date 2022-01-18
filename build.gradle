@@ -7,6 +7,14 @@ plugins {
 
 group = 'uk.gov.justice.digital.delius'
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+        vendor.set(JvmVendorSpec.ADOPTOPENJDK)
+    }
+}
+
+
 testSets {
     testIntegration
 }
