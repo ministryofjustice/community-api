@@ -65,11 +65,12 @@ public class DeliusApiClient {
             .block();
     }
 
-    public ContactDto createNewContact(NewContact newContact) {
+    public ContactDto createNewContact(NewContact newContact, String ignoreFutureDateClash) {
         return webClient.post()
             .uri("/v1/contact")
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+            .header("ignore-clash", ignoreFutureDateClash)
             .bodyValue(newContact)
             .retrieve()
             .bodyToMono(ContactDto.class)

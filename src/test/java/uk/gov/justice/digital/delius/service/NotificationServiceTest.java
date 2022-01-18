@@ -98,7 +98,7 @@ class NotificationServiceTest {
 
             final var deliusNewContactRequest = aDeliusNewContactRequest(contactDateTime, 99L, 100L);
             final var createdContact = ContactDto.builder().id(3L).build();
-            when(deliusApiClient.createNewContact(deliusNewContactRequest)).thenReturn(createdContact);
+            when(deliusApiClient.createNewContact(deliusNewContactRequest,"false")).thenReturn(createdContact);
 
             // When
             final var appointmentCreateRequest = aContextlessNotificationCreateRequest(referralStart, contactDateTime, CONTRACT_TYPE, referralId);
@@ -122,7 +122,7 @@ class NotificationServiceTest {
 
             final var deliusNewContactRequest = aDeliusNewContactRequest(contactDateTime, 99L, 100L);
             final var createdContact = ContactDto.builder().id(3L).build();
-            when(deliusApiClient.createNewContact(deliusNewContactRequest)).thenReturn(createdContact);
+            when(deliusApiClient.createNewContact(deliusNewContactRequest,"false")).thenReturn(createdContact);
 
             // When
             final var appointmentCreateRequest = aContextlessNotificationCreateRequest(referralStart, contactDateTime, CONTRACT_TYPE, referralId);

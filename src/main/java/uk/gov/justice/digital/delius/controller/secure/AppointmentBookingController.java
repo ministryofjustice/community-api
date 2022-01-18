@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,9 +52,12 @@ public class AppointmentBookingController {
     @ApiOperation(value = "Creates an Contact appointment")
     public ResponseEntity<AppointmentCreateResponse> createAppointment(final @PathVariable("crn") String crn,
                                                                        final @PathVariable("sentenceId") Long sentenceId,
-                                                                       final @RequestBody AppointmentCreateRequest appointmentCreateRequest) {
+                                                                       final @RequestBody AppointmentCreateRequest appointmentCreateRequest,
+                                                                       final @RequestHeader String ignoreFutureDateClash) {
 
-        AppointmentCreateResponse response = appointmentService.createAppointment(crn, sentenceId, appointmentCreateRequest);
+        AppointmentCreateResponse response = appointmentService.createAppointment(crn, sentenceId,
+            appointmentCreateRequest, ignoreFutureDateClash);
+
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -74,9 +78,10 @@ public class AppointmentBookingController {
                                                                                       final @PathVariable("sentenceId") Long sentenceId,
                                                                                       final @ApiParam(value = "Name identifying preprocessing applied to the request", example = "commissioned-rehabilitation-services")
                                                                                           @PathVariable("contextName") String contextName,
-                                                                                      final @RequestBody ContextlessAppointmentCreateRequest contextlessAppointmentCreateRequest) {
+                                                                                      final @RequestBody ContextlessAppointmentCreateRequest contextlessAppointmentCreateRequest ,
+                                                                                      final @RequestHeader("ignore-clash") String ignoreFutureDateClash){
 
-        AppointmentCreateResponse response = appointmentService.createAppointment(crn, sentenceId, contextName, contextlessAppointmentCreateRequest);
+        AppointmentCreateResponse response = appointmentService.createAppointment(crn, sentenceId, contextName, contextlessAppointmentCreateRequest, ignoreFutureDateClash);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

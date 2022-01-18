@@ -213,11 +213,11 @@ public class AppointmentServiceTest {
                 .startTime(LocalTime.of(10, 0))
                 .endTime(LocalTime.of(11, 0))
                 .build();
-            when(deliusApiClient.createNewContact(deliusNewContactRequest)).thenReturn(createdContact);
+            when(deliusApiClient.createNewContact(deliusNewContactRequest,"false")).thenReturn(createdContact);
 
             // When
             final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, null, true, true);
-            final var response = service.createAppointment("X007", 1L, appointmentCreateRequest);
+            final var response = service.createAppointment("X007", 1L, appointmentCreateRequest,"false");
 
             // Then
             assertThat(response.getAppointmentId()).isEqualTo(3L);
@@ -234,7 +234,7 @@ public class AppointmentServiceTest {
             // When
             final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, NSI_ID, false, null);
             assertThrows(BadRequestException.class,
-                () -> service.createAppointment("X007", 1L, appointmentCreateRequest),
+                () -> service.createAppointment("X007", 1L, appointmentCreateRequest,"false"),
                 "contact type 'X007' does not exist");
         }
 
@@ -249,7 +249,7 @@ public class AppointmentServiceTest {
             // When
             final var appointmentCreateRequest = aAppointmentCreateRequest(startTime, endTime, NSI_ID, false, null);
             assertThrows(BadRequestException.class,
-                () -> service.createAppointment("X007", 1L, appointmentCreateRequest),
+                () -> service.createAppointment("X007", 1L, appointmentCreateRequest,"false"),
                 "contact type 'X007' is not an appointment type");
         }
 
@@ -273,11 +273,11 @@ public class AppointmentServiceTest {
                 .startTime(LocalTime.of(10, 0))
                 .endTime(LocalTime.of(11, 0))
                 .build();
-            when(deliusApiClient.createNewContact(deliusNewContactRequest)).thenReturn(createdContact);
+            when(deliusApiClient.createNewContact(deliusNewContactRequest,"false")).thenReturn(createdContact);
 
             // When
             final var appointmentCreateRequest = aContextlessAppointmentCreateRequest(referralStart, startTime, endTime, CONTRACT_TYPE, referralId);
-            final var response = service.createAppointment("X007", 1L, CONTEXT, appointmentCreateRequest);
+            final var response = service.createAppointment("X007", 1L, CONTEXT, appointmentCreateRequest,"false");
 
             // Then
             assertThat(response.getAppointmentId()).isEqualTo(3L);
@@ -304,11 +304,11 @@ public class AppointmentServiceTest {
                 .startTime(LocalTime.of(10, 0))
                 .endTime(LocalTime.of(11, 0))
                 .build();
-            when(deliusApiClient.createNewContact(deliusNewContactRequest)).thenReturn(createdContact);
+            when(deliusApiClient.createNewContact(deliusNewContactRequest,"false")).thenReturn(createdContact);
 
             // When
             final var appointmentCreateRequest = aContextlessAppointmentCreateRequest(referralStart, startTime, endTime, CONTRACT_TYPE, referralId, "LATE", true);
-            final var response = service.createAppointment("X007", 1L, CONTEXT, appointmentCreateRequest);
+            final var response = service.createAppointment("X007", 1L, CONTEXT, appointmentCreateRequest,"false");
 
             // Then
             assertThat(response.getAppointmentId()).isEqualTo(3L);
@@ -326,7 +326,7 @@ public class AppointmentServiceTest {
             // When/Then
             final var appointmentCreateRequest = aContextlessAppointmentCreateRequest(referralStart, startTime, endTime, CONTRACT_TYPE, null);
             final var exception = assertThrows(BadRequestException.class,
-                () -> service.createAppointment("X007", 1L, CONTEXT, appointmentCreateRequest));
+                () -> service.createAppointment("X007", 1L, CONTEXT, appointmentCreateRequest,"false"));
             assertThat(exception.getMessage()).isEqualTo("Cannot find NSI for CRN: X007 Sentence: 1 and ContractType ACC");
         }
     }

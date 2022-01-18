@@ -43,7 +43,7 @@ public class NotificationService {
         assertAppointmentType(request.getContactType());
 
         final var newContact = makeNewCRSContact(crn, sentenceId, request);
-        final var contactDto = deliusApiClient.createNewContact(newContact);
+        final var contactDto = deliusApiClient.createNewContact(newContact,"false");
         return NotificationResponse.builder().contactId(contactDto.getId()).build();
     }
 

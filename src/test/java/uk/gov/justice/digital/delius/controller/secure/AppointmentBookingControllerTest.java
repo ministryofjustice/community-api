@@ -66,10 +66,10 @@ public class AppointmentBookingControllerTest {
             .staffCode("CRSUAT")
             .teamCode("CRSUATU")
             .build();
-        when(appointmentService.createAppointment("1", 2L, appointmentCreateRequest))
+        when(appointmentService.createAppointment("1", 2L, appointmentCreateRequest, "false"))
             .thenReturn(AppointmentCreateResponse.builder().appointmentId(3L).build());
 
-        Long appointmentIdResponse = given()
+        Long appointmentIdResponse = given().header("ignore-clash", "false")
             .contentType(APPLICATION_JSON_VALUE)
             .body(appointmentCreateRequest)
             .when()
@@ -96,7 +96,7 @@ public class AppointmentBookingControllerTest {
             .notes("http://url")
             .countsTowardsRarDays(false)
             .build();
-        when(appointmentService.createAppointment("1", 2L, "commissioned-rehabilitation-services", appointmentCreateRequest))
+        when(appointmentService.createAppointment("1", 2L, "commissioned-rehabilitation-services", appointmentCreateRequest,"false"))
             .thenReturn(AppointmentCreateResponse.builder().appointmentId(3L).build());
 
         Long appointmentIdResponse = given()

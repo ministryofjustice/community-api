@@ -60,7 +60,7 @@ class DeliusDocumentsServiceTest {
     public void shouldCreateANewDocumentInDelius() {
 
         when(offenderManagerService.getAllOffenderManagersForCrn(crn, true)).thenReturn(offenderManagers());
-        when(deliusApiClient.createNewContact(newContactArgumentCaptor.capture())).thenReturn(contactDto());
+        when(deliusApiClient.createNewContact(newContactArgumentCaptor.capture(),"false")).thenReturn(contactDto());
         when(deliusApiClient.uploadDocument(crn, contactId, file)).thenReturn(
             UploadedDocumentDto.builder()
                 .crn(crn)
@@ -85,7 +85,7 @@ class DeliusDocumentsServiceTest {
     public void shouldCreateContactWithActiveOffenderManager() {
 
         when(offenderManagerService.getAllOffenderManagersForCrn(crn, true)).thenReturn(offenderManagers());
-        when(deliusApiClient.createNewContact(newContactArgumentCaptor.capture())).thenReturn(contactDto());
+        when(deliusApiClient.createNewContact(newContactArgumentCaptor.capture(),"false")).thenReturn(contactDto());
         when(deliusApiClient.uploadDocument(crn, contactId, file)).thenReturn(
             UploadedDocumentDto.builder()
                 .crn(crn)

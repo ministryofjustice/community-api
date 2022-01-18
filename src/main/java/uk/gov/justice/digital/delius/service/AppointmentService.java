@@ -80,24 +80,27 @@ public class AppointmentService {
     }
 
     @Transactional
-    public AppointmentCreateResponse createAppointment(String crn, Long sentenceId, AppointmentCreateRequest request) {
+    public AppointmentCreateResponse createAppointment(String crn, Long sentenceId, AppointmentCreateRequest request,
+                                                       String ignoreFutureDateClash) {
         this.assertAppointmentType(request.getContactType());
 
         final var newContact = makeNewContact(crn, sentenceId, request);
-        final var contactDto = deliusApiClient.createNewContact(newContact);
+        final var contactDto = deliusApiClient.createNewContact(newContact, ignoreFutureDateClash);
 
         return makeResponse(contactDto);
     }
 
     @Transactional
-    public AppointmentCreateResponse createAppointment(String crn, Long sentenceId, String contextName, ContextlessAppointmentCreateRequest contextlessRequest) {
+    public AppointmentCreateResponse createAppointment(String crn, Long sentenceId, String contextName,
+                                                       ContextlessAppointmentCreateRequest contextlessRequest,
+                                                       String ignoreFutureDateClash) {
 
         final var context = getContext(contextName);
         final var request = referralService.getExistingMatchingNsi(crn, contextName, sentenceId, contextlessRequest.getContractType(), contextlessRequest.getReferralStart(), contextlessRequest.getReferralId())
             .map(existingNsi -> appointmentOf(contextlessRequest, existingNsi, context))
             .orElseThrow(() -> new BadRequestException(format("Cannot find NSI for CRN: %s Sentence: %d and ContractType %s", crn, sentenceId, contextlessRequest.getContractType())));
 
-        return createAppointment(crn, sentenceId, request);
+        return createAppointment(crn, sentenceId, request, ignoreFutureDateClash);
     }
 
     @Transactional
@@ -171,7 +174,7 @@ public class AppointmentService {
 
     private void assertAppointmentTypeIfExists(JsonPatch jsonPatch) {
         jsonPatchSupport.getAsText("/contactType", jsonPatch).ifPresent(
-            contactTypeCode -> assertAppointmentType(contactTypeCode));
+            this::assertAppointmentType);
     }
 
     private NewContact makeNewContact(String crn, Long sentenceId, AppointmentCreateRequest request) {

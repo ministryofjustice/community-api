@@ -30,7 +30,7 @@ public class DeliusDocumentsService {
 
     public UploadedDocumentCreateResponse createUPWDocument(String crn, Long convictionId, MultipartFile document) {
         final var newContact= makeNewUPWContact(crn, convictionId);
-        final var contactDto= deliusApiClient.createNewContact(newContact);
+        final var contactDto= deliusApiClient.createNewContact(newContact,"false");
         UploadedDocumentDto uploadedDocumentDto = deliusApiClient.uploadDocument(crn, contactDto.getId(), document);
         return makeResponse(uploadedDocumentDto);
     }
