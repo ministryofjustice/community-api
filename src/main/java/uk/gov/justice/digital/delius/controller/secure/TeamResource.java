@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.OfficeLocation;
 import uk.gov.justice.digital.delius.data.api.TeamCreationResult;
+import uk.gov.justice.digital.delius.data.api.TeamManagedOffender;
 import uk.gov.justice.digital.delius.service.TeamService;
 
 import java.util.List;
@@ -72,5 +74,26 @@ public class TeamResource {
         String teamCode
     ) {
         return teamService.getAllOfficeLocations(teamCode);
+    }
+
+    @GetMapping("/teams/managedOffenders")
+    @PreAuthorize("hasRole('ROLE_COMMUNITY')")
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 200, message = "All active office locations for the specified team", response = OfficeLocation.class, responseContainer = "List"),
+            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY"),
+            @ApiResponse(code = 404, message = "The specified team does not exist or is not active"),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+    @ApiOperation(
+        value = "EXPERIMENTAL: Given a list of team codes find the offenders being managed and details of the staff who are managing them.",
+        tags = {"Teams"},
+        authorizations = {@Authorization("ROLE_COMMUNITY")}
+    )
+    public List<TeamManagedOffender> getManagedOffendersForTeams(
+        @RequestParam(name = "teamCode") List<String> teamCodes,
+        @RequestParam(name = "current", required = false, defaultValue = "true") boolean current
+    ) {
+        return teamService.getManagedOffendersForTeams(teamCodes, current);
     }
 }

@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.microsoft.applicationinsights.TelemetryClient;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -8,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.data.api.OfficeLocation;
+import uk.gov.justice.digital.delius.data.api.TeamManagedOffender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
@@ -119,6 +122,44 @@ public class TeamService {
             .filter(this::isPOMTeamMissingUnallocatedStaff)
             .map(team -> StaffTransformer.staffOf(createUnallocatedStaffInTeam(team)))
             .collect(Collectors.toList());
+    }
+
+    public List<TeamManagedOffender> getManagedOffendersForTeams(List<String> teamCodes, boolean current) {
+        final var uppercaseTeamCodes = teamCodes.stream().map(String::toUpperCase).collect(Collectors.toSet());
+
+        // TODO: Requires domain knowledge of entity relationships here - from caseload repository?
+        // The response can be altered to split into Area, PDU, LDU, Team, Offender and Staff objects, if required?
+        // There is probably no need for the current parameter - we are only interested in the current view, not historical or planned.
+
+       // Stubbed response
+       List<TeamManagedOffender> response = new ArrayList<>();
+       response.add(
+           TeamManagedOffender.builder()
+               .probationAreaCode("N55")
+               .probationAreaDescription("Yorkshire and Humberside")
+               .pduCode("N55A")
+               .pduDescription("Hull")
+               .lduCode("N55A01")
+               .lduDescription("Hull North Unit")
+               .teamCode("N55A01AA")
+               .teamDescription("Hull North AA")
+               .teamId(12345L)
+               .crnNumber("X12345")
+               .offenderId(12345L)
+               .nomsNumber("A1234AA")
+               .offenderForename("James")
+               .offenderMiddleNames("Malcolm")
+               .offenderSurname("Smith")
+               .offenderDob(LocalDate.of(1987, 2, 27))
+               .staffCode("NA556222")
+               .staffIdentifier(23456L)
+               .staffForename("Margaret")
+               .staffSurname("Brody")
+               .staffUsername("X09098")
+               .allocated(true)
+               .build()
+       );
+       return response;
     }
 
     private Team createPOMTeamInArea(String code, ProbationArea probationArea) {
