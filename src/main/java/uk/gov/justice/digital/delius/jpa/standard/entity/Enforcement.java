@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -36,6 +37,7 @@ import static javax.persistence.GenerationType.AUTO;
 @Entity
 @Table(name = "ENFORCEMENT")
 @Where(clause = "SOFT_DELETED = 0")
+@EqualsAndHashCode(callSuper=false)
 public class Enforcement extends AuditableEntity{
 
     @Id
