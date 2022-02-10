@@ -58,4 +58,8 @@ public class Conviction {
 
     @ApiModelProperty(name = "Sentencing court appearance or the latest court appearance otherwise")
     private CourtAppearanceBasic courtAppearance;
+
+    @ApiModelProperty(name = "Offender manager supervising the order")
+    private List<OrderManager> orderManagers;
+
 }

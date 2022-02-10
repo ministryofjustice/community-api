@@ -11,6 +11,10 @@ testSets {
     testIntegration
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_16
+    targetCompatibility = JavaVersion.VERSION_16
+}
 check.dependsOn(testIntegration)
 
 dependencies {
