@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import com.google.common.collect.ImmutableList;
+import org.jetbrains.annotations.NotNull;
 import uk.gov.justice.digital.delius.data.api.AdditionalSentence;
 import uk.gov.justice.digital.delius.data.api.Appointments;
 import uk.gov.justice.digital.delius.data.api.Conviction;
@@ -22,6 +23,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.UpwAppointment;
 import uk.gov.justice.digital.delius.jpa.standard.entity.UpwDetails;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -59,17 +61,17 @@ public class ConvictionTransformer {
         }
         public static List<String> custodyRelatedKeyDates() {
             return Stream
-                .of(values())
-                .map(KeyDateTypes::getCode)
-                .collect(toList());
+                    .of(values())
+                    .map(KeyDateTypes::getCode)
+                    .collect(toList());
         }
 
         static KeyDateTypes of(String code) {
             return Stream
-                .of(values())
-                .filter(keyDate -> keyDate.code.equals(code))
-                .findAny()
-                .orElseThrow();
+                    .of(values())
+                    .filter(keyDate -> keyDate.code.equals(code))
+                    .findAny()
+                    .orElseThrow();
         }
 
         public String getCode() {
@@ -145,8 +147,8 @@ public class ConvictionTransformer {
             .build();
     }
 
-    private static List<OrderManager> orderManagersOf(Event event){
-        return event.getOrderManagers().stream().map(OrderManagerTransformer::orderManagerOf).collect(Collectors.toList());
+    private static List<OrderManager> orderManagersOf(@NotNull Event event){
+        return Optional.ofNullable(event.getOrderManagers()).map(x->x.stream().map(OrderManagerTransformer::orderManagerOf).collect(Collectors.toList())).orElse(Collections.emptyList());
     }
 
 
