@@ -125,26 +125,26 @@ public class ConvictionTransformer {
 
     private static KeyValue latestOutcomeOf(List<CourtAppearance> courtAppearances) {
         return courtAppearances
-            .stream()
-            .filter(courtAppearance -> courtAppearance.getOutcome() != null).max(Comparator.comparing(CourtAppearance::getAppearanceDate))
-            .map(courtAppearance -> outcomeOf(courtAppearance.getOutcome()))
-            .orElse(null);
+                .stream()
+                .filter(courtAppearance -> courtAppearance.getOutcome() != null).max(Comparator.comparing(CourtAppearance::getAppearanceDate))
+                .map(courtAppearance -> outcomeOf(courtAppearance.getOutcome()))
+                .orElse(null);
     }
     private static KeyValue outcomeOf(StandardReference outcome) {
         return KeyValue
-            .builder()
-            .description(outcome.getCodeDescription())
-            .code(outcome.getCodeValue())
-            .build();
+                .builder()
+                .description(outcome.getCodeDescription())
+                .code(outcome.getCodeValue())
+                .build();
     }
 
 
     private static List<Offence> offencesOf(Event event) {
         return ImmutableList.<Offence>builder()
-            .addAll(Optional.ofNullable(event.getMainOffence()).map(mainOffence -> ImmutableList.of(OffenceTransformer
-                .offenceOf(mainOffence))).orElse(ImmutableList.of()) )
-            .addAll(OffenceTransformer.offencesOf(event.getAdditionalOffences()))
-            .build();
+                .addAll(Optional.ofNullable(event.getMainOffence()).map(mainOffence -> ImmutableList.of(OffenceTransformer
+                        .offenceOf(mainOffence))).orElse(ImmutableList.of()) )
+                .addAll(OffenceTransformer.offencesOf(event.getAdditionalOffences()))
+                .build();
     }
 
     private static List<OrderManager> orderManagersOf(@NotNull Event event){
@@ -155,45 +155,45 @@ public class ConvictionTransformer {
 
     private static Sentence sentenceOf(Disposal disposal, List<uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalSentence> additionalSentences) {
         return Sentence.builder()
-            .sentenceId(disposal.getDisposalId())
-            .defaultLength(disposal.getLength())
-            .effectiveLength(disposal.getEffectiveLength())
-            .lengthInDays(disposal.getLengthInDays())
-            .originalLength(disposal.getEntryLength())
-            .originalLengthUnits(Optional.ofNullable(disposal.getEntryLengthUnits())
-                .map(StandardReference::getCodeDescription)
-                .orElse(null))
-            .secondLength(disposal.getLength2())
-            .secondLengthUnits(Optional.ofNullable(disposal.getEntryLength2Units())
-                .map(StandardReference::getCodeDescription)
-                .orElse(null))
-            .description(Optional.ofNullable(disposal.getDisposalType())
-                .map(DisposalType::getDescription)
-                .orElse(null))
-            .unpaidWork(Optional.ofNullable(disposal.getUnpaidWorkDetails())
-                .map(ConvictionTransformer::unpaidWorkOf)
-                .orElse(null))
-            .startDate(disposal.getStartDate())
-            .terminationDate(disposal.getTerminationDate())
-            .terminationReason(Optional.ofNullable(disposal.getTerminationReason())
-                .map(StandardReference::getCodeDescription)
-                .orElse(null))
-            .expectedSentenceEndDate(Optional.ofNullable(disposal.getEnteredSentenceEndDate())
-                .orElse(disposal.getExpectedSentenceEndDate()))
-            .sentenceType(sentenceTypeOf(disposal.getDisposalType()))
-            .additionalSentences(Optional.ofNullable(additionalSentences)
-                .map(x -> x.stream().map(ConvictionTransformer::additionalSentenceOf).collect(toList()))
-                .orElse(null))
-            .failureToComplyLimit(Optional.ofNullable(disposal.getDisposalType())
-                .map(DisposalType::getFailureToComplyLimit)
-                .orElse(null))
-            .cja2003Order(Optional.ofNullable(disposal.getDisposalType())
-                .map(DisposalType::getCja2003Order)
-                .orElse(null))
-            .legacyOrder(Optional.ofNullable(disposal.getDisposalType())
-                .map(DisposalType::getLegacyOrder)
-                .orElse(null))
-            .build();
+                .sentenceId(disposal.getDisposalId())
+                .defaultLength(disposal.getLength())
+                .effectiveLength(disposal.getEffectiveLength())
+                .lengthInDays(disposal.getLengthInDays())
+                .originalLength(disposal.getEntryLength())
+                .originalLengthUnits(Optional.ofNullable(disposal.getEntryLengthUnits())
+                        .map(StandardReference::getCodeDescription)
+                        .orElse(null))
+                .secondLength(disposal.getLength2())
+                .secondLengthUnits(Optional.ofNullable(disposal.getEntryLength2Units())
+                        .map(StandardReference::getCodeDescription)
+                        .orElse(null))
+                .description(Optional.ofNullable(disposal.getDisposalType())
+                        .map(DisposalType::getDescription)
+                        .orElse(null))
+                .unpaidWork(Optional.ofNullable(disposal.getUnpaidWorkDetails())
+                        .map(ConvictionTransformer::unpaidWorkOf)
+                        .orElse(null))
+                .startDate(disposal.getStartDate())
+                .terminationDate(disposal.getTerminationDate())
+                .terminationReason(Optional.ofNullable(disposal.getTerminationReason())
+                        .map(StandardReference::getCodeDescription)
+                        .orElse(null))
+                .expectedSentenceEndDate(Optional.ofNullable(disposal.getEnteredSentenceEndDate())
+                        .orElse(disposal.getExpectedSentenceEndDate()))
+                .sentenceType(sentenceTypeOf(disposal.getDisposalType()))
+                .additionalSentences(Optional.ofNullable(additionalSentences)
+                    .map(x -> x.stream().map(ConvictionTransformer::additionalSentenceOf).collect(toList()))
+                    .orElse(null))
+                .failureToComplyLimit(Optional.ofNullable(disposal.getDisposalType())
+                    .map(DisposalType::getFailureToComplyLimit)
+                    .orElse(null))
+                .cja2003Order(Optional.ofNullable(disposal.getDisposalType())
+                    .map(DisposalType::getCja2003Order)
+                    .orElse(null))
+                .legacyOrder(Optional.ofNullable(disposal.getDisposalType())
+                    .map(DisposalType::getLegacyOrder)
+                    .orElse(null))
+                .build();
 
     }
 
@@ -203,45 +203,45 @@ public class ConvictionTransformer {
 
     private static UnpaidWork unpaidWorkOf(UpwDetails upwDetails) {
         return UnpaidWork.builder()
-            .minutesOrdered(upwDetails.getUpwLengthMinutes())
-            .minutesCompleted(upwDetails.getAppointments().stream()
-                .filter(l -> Objects.nonNull(l.getMinutesCredited()))
-                .mapToLong(UpwAppointment::getMinutesCredited)
-                .sum()
-            )
-            .appointments(appointmentsOf(upwDetails.getAppointments()))
-            .status(Optional.ofNullable(upwDetails.getStatus())
-                .map(StandardReference::getCodeDescription)
-                .orElse(null))
-            .build();
+                .minutesOrdered(upwDetails.getUpwLengthMinutes())
+                .minutesCompleted(upwDetails.getAppointments().stream()
+                        .filter(l -> Objects.nonNull(l.getMinutesCredited()))
+                        .mapToLong(UpwAppointment::getMinutesCredited)
+                        .sum()
+                )
+                .appointments(appointmentsOf(upwDetails.getAppointments()))
+                .status(Optional.ofNullable(upwDetails.getStatus())
+                    .map(StandardReference::getCodeDescription)
+                    .orElse(null))
+                .build();
     }
 
     private static Appointments appointmentsOf(List<UpwAppointment> appointments) {
         return Appointments.builder()
-            .total((long) appointments.size())
-            .attended(appointments.stream()
-                .filter(upwAppointment -> "Y".equals(upwAppointment.getAttended()))
-                .count())
-            .acceptableAbsences(appointments.stream()
-                .filter(upwAppointment -> "N".equals(upwAppointment.getAttended()) && "Y".equals(upwAppointment.getComplied()))
-                .count())
-            .unacceptableAbsences(appointments.stream()
-                .filter(upwAppointment -> "N".equals(upwAppointment.getAttended()) && "N".equals(upwAppointment.getComplied()))
-                .count())
-            .noOutcomeRecorded(appointments.stream()
-                .filter(upwAppointment -> isNull(upwAppointment.getAttended()) && isNull(upwAppointment.getComplied()))
-                .count())
-            .build();
+                .total((long) appointments.size())
+                .attended(appointments.stream()
+                        .filter(upwAppointment -> "Y".equals(upwAppointment.getAttended()))
+                        .count())
+                .acceptableAbsences(appointments.stream()
+                        .filter(upwAppointment -> "N".equals(upwAppointment.getAttended()) && "Y".equals(upwAppointment.getComplied()))
+                        .count())
+                .unacceptableAbsences(appointments.stream()
+                        .filter(upwAppointment -> "N".equals(upwAppointment.getAttended()) && "N".equals(upwAppointment.getComplied()))
+                        .count())
+                .noOutcomeRecorded(appointments.stream()
+                        .filter(upwAppointment -> isNull(upwAppointment.getAttended()) && isNull(upwAppointment.getComplied()))
+                        .count())
+                .build();
     }
 
     public static Custody custodyOf(uk.gov.justice.digital.delius.jpa.standard.entity.Custody custody) {
         return Custody.builder().bookingNumber(custody.getPrisonerNumber())
-            .institution(Optional.ofNullable(custody.getInstitution()).map(InstitutionTransformer::institutionOf)
-                .orElse(null))
-            .status(KeyValueTransformer.keyValueOf(custody.getCustodialStatus()))
-            .sentenceStartDate(custody.getDisposal().getStartDate())
-            .keyDates(Optional.ofNullable(custody.getKeyDates()).map(ConvictionTransformer::custodyRelatedKeyDatesOf)
-                .orElse(CustodyRelatedKeyDates.builder().build())).build();
+                .institution(Optional.ofNullable(custody.getInstitution()).map(InstitutionTransformer::institutionOf)
+                    .orElse(null))
+                .status(KeyValueTransformer.keyValueOf(custody.getCustodialStatus()))
+                .sentenceStartDate(custody.getDisposal().getStartDate())
+                .keyDates(Optional.ofNullable(custody.getKeyDates()).map(ConvictionTransformer::custodyRelatedKeyDatesOf)
+                    .orElse(CustodyRelatedKeyDates.builder().build())).build();
     }
 
     private static CustodyRelatedKeyDates custodyRelatedKeyDatesOf(List<KeyDate> keyDates) {
@@ -249,16 +249,16 @@ public class ConvictionTransformer {
         final var custodyRelatedKeyDates = CustodyRelatedKeyDates.builder();
 
         keyDates
-            .stream()
-            .filter(keyDate -> allCustodyRelatedKeyDates.contains(keyDate
-                .getKeyDateType()
-                .getCodeValue()))
-            .forEach(keyDate -> {
-                var keyDateType = KeyDateTypes.of(keyDate
-                    .getKeyDateType()
-                    .getCodeValue());
-                keyDateType.set(custodyRelatedKeyDates, keyDate.getKeyDate());
-            });
+                .stream()
+                .filter(keyDate -> allCustodyRelatedKeyDates.contains(keyDate
+                        .getKeyDateType()
+                        .getCodeValue()))
+                .forEach(keyDate -> {
+                    var keyDateType = KeyDateTypes.of(keyDate
+                            .getKeyDateType()
+                            .getCodeValue());
+                    keyDateType.set(custodyRelatedKeyDates, keyDate.getKeyDate());
+                });
         return custodyRelatedKeyDates.build();
     }
 
