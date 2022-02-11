@@ -10,7 +10,7 @@ public class OrderManagerTransformer {
         return OrderManager.builder().
             name(Optional.ofNullable(entity.getStaff().getForename()).orElse("").
                 concat(" "+Optional.ofNullable(entity.getStaff().getSurname()).orElse(""))).
-            staffCode(Optional.ofNullable(entity.getStaff().getStaffId()).map(x->x.toString()).orElse("")).
+            staffCode(Optional.ofNullable(entity.getStaff().getStaffId()).map(staffId->staffId.toString()).orElse("")).
             dateStartOfAllocation(entity.getTeam().getStartDate()).
             dateEndOfAllocation(entity.getTeam().getEndDate()).
             officerId(entity.getOrderManagerId()).
