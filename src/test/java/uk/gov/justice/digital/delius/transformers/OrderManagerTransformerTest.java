@@ -13,7 +13,7 @@ class OrderManagerTransformerTest {
     @Test
     void orderManagerOf() {
         assertThat(OrderManagerTransformer.orderManagerOf(aOrderManagerEntity())).isNotNull();
-        assertThat(OrderManagerTransformer.orderManagerOf(aOrderManagerEntity()).getName()).isEqualTo("forename surname");
+        assertThat(OrderManagerTransformer.orderManagerOf(aOrderManagerEntity()).getName()).isEqualTo("forename forename2 surname");
         assertThat(OrderManagerTransformer.orderManagerOf(aOrderManagerEntity()).getStaffCode()).isEqualTo("10001");
         assertThat(OrderManagerTransformer.orderManagerOf(aOrderManagerEntity()).getOfficerId()).isEqualTo(10002);
         assertThat(OrderManagerTransformer.orderManagerOf(aOrderManagerEntity()).getTeamId()).isEqualTo(10003);
@@ -24,7 +24,8 @@ class OrderManagerTransformerTest {
 
     private OrderManager aOrderManagerEntity(){
         return OrderManager.builder()
-            .staff(Staff.builder().staffId(10001L).forename("forename").surname("surname").build())
+
+            .staff(Staff.builder().staffId(10001L).forename("forename").surname("surname").forname2("forename2").officerCode("10001").build())
             .orderManagerId(10002L)
             .team(Team.builder()
                 .startDate(LocalDate.of(2021, 4,1))
