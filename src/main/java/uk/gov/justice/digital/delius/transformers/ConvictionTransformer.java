@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import com.google.common.collect.ImmutableList;
+import org.jetbrains.annotations.NotNull;
 import uk.gov.justice.digital.delius.data.api.AdditionalSentence;
 import uk.gov.justice.digital.delius.data.api.Appointments;
 import uk.gov.justice.digital.delius.data.api.Conviction;
@@ -9,6 +10,7 @@ import uk.gov.justice.digital.delius.data.api.CustodyRelatedKeyDates;
 import uk.gov.justice.digital.delius.data.api.CustodyRelatedKeyDates.CustodyRelatedKeyDatesBuilder;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.Offence;
+import uk.gov.justice.digital.delius.data.api.OrderManager;
 import uk.gov.justice.digital.delius.data.api.Sentence;
 import uk.gov.justice.digital.delius.data.api.UnpaidWork;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance;
@@ -21,11 +23,13 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.UpwAppointment;
 import uk.gov.justice.digital.delius.jpa.standard.entity.UpwDetails;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
@@ -81,27 +85,28 @@ public class ConvictionTransformer {
     public static Conviction convictionOf(Event event) {
         final var courtAppearances = Optional.ofNullable(event.getCourtAppearances());
         return Conviction.builder()
-                .active(event.isActiveFlag())
-                .convictionDate(event.getConvictionDate())
-                .referralDate(event.getReferralDate())
-                .convictionId(event.getEventId())
-                .index(event.getEventNumber())
-                .offences(offencesOf(event))
-                .sentence(Optional.ofNullable(event.getDisposal())
-                    .map(disposal -> sentenceOf(disposal, event.getAdditionalSentences()))
-                    .orElse(null))
-                .custody(Optional
-                        .ofNullable(event.getDisposal())
-                        .flatMap(disposal -> Optional.ofNullable(disposal.getCustody()).map(ConvictionTransformer::custodyOf))
-                        .orElse(null))
-                .inBreach(event.isInBreach())
-                .failureToComplyCount(event.getFailureToComplyCount())
-                .breachEnd(event.getBreachEnd())
-                .latestCourtAppearanceOutcome(courtAppearances.map(ConvictionTransformer::latestOutcomeOf).orElse(null))
-                .responsibleCourt(Optional.ofNullable(event.getCourt()).map(CourtTransformer::courtOf).orElse(null))
-                .courtAppearance(courtAppearances.map(CourtAppearanceBasicTransformer::latestOrSentencingCourtAppearanceOf).orElse(null))
-                .awaitingPsr(isAwaitingPsr(event.getDisposal(), courtAppearances))
-                .build();
+            .orderManagers(orderManagersOf(event))
+            .active(event.isActiveFlag())
+            .convictionDate(event.getConvictionDate())
+            .referralDate(event.getReferralDate())
+            .convictionId(event.getEventId())
+            .index(event.getEventNumber())
+            .offences(offencesOf(event))
+            .sentence(Optional.ofNullable(event.getDisposal())
+                .map(disposal -> sentenceOf(disposal, event.getAdditionalSentences()))
+                .orElse(null))
+            .custody(Optional
+                .ofNullable(event.getDisposal())
+                .flatMap(disposal -> Optional.ofNullable(disposal.getCustody()).map(ConvictionTransformer::custodyOf))
+                .orElse(null))
+            .inBreach(event.isInBreach())
+            .failureToComplyCount(event.getFailureToComplyCount())
+            .breachEnd(event.getBreachEnd())
+            .latestCourtAppearanceOutcome(courtAppearances.map(ConvictionTransformer::latestOutcomeOf).orElse(null))
+            .responsibleCourt(Optional.ofNullable(event.getCourt()).map(CourtTransformer::courtOf).orElse(null))
+            .courtAppearance(courtAppearances.map(CourtAppearanceBasicTransformer::latestOrSentencingCourtAppearanceOf).orElse(null))
+            .awaitingPsr(isAwaitingPsr(event.getDisposal(), courtAppearances))
+            .build();
     }
 
     private static boolean isAwaitingPsr(Disposal disposal, Optional<List<CourtAppearance>> courtAppearances) {
@@ -141,6 +146,12 @@ public class ConvictionTransformer {
                 .addAll(OffenceTransformer.offencesOf(event.getAdditionalOffences()))
                 .build();
     }
+
+    private static List<OrderManager> orderManagersOf(@NotNull Event event){
+        return Optional.ofNullable(event.getOrderManagers()).map(x->x.stream().map(OrderManagerTransformer::orderManagerOf).collect(Collectors.toList())).orElse(Collections.emptyList());
+    }
+
+
 
     private static Sentence sentenceOf(Disposal disposal, List<uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalSentence> additionalSentences) {
         return Sentence.builder()
