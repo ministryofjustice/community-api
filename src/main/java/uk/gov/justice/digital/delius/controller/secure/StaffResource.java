@@ -32,9 +32,9 @@ import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.service.CaseloadService;
 import uk.gov.justice.digital.delius.service.StaffService;
+import uk.gov.justice.digital.delius.validation.StaffCode;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.util.List;
 import java.util.Set;
 
@@ -159,7 +159,7 @@ public class StaffResource {
     @GetMapping(path = "/staff/staffCode/{staffCode}/caseload")
     public Caseload getCaseloadForStaff(
         @ApiParam(name = "staffCode", value = "Delius staff/officer code", example = "N01A123", required = true)
-        @NotNull @Pattern(regexp = "^[A-Z0-9]{7}$", message = "must be 7 alphanumeric characters") @PathVariable(value = "staffCode") final String staffCode) {
+        @NotNull @StaffCode @PathVariable(value = "staffCode") final String staffCode) {
         return getCaseloadForStaff(staffService.getStaffIdByStaffCode(staffCode)
             .orElseThrow(() -> new NotFoundException(String.format("Staff member with code %s", staffCode))));
     }
@@ -168,7 +168,7 @@ public class StaffResource {
     @GetMapping(path = "/staff/staffCode/{staffCode}/caseload/managedOffenders")
     public Set<ManagedOffenderCrn> getCaseloadOffendersForStaff(
         @ApiParam(name = "staffCode", value = "Delius staff/officer code", example = "N01A123", required = true)
-        @NotNull @Pattern(regexp = "^[A-Z0-9]{7}$", message = "must be 7 alphanumeric characters") @PathVariable(value = "staffCode") final String staffCode) {
+        @NotNull @StaffCode @PathVariable(value = "staffCode") final String staffCode) {
         return getCaseloadOffendersForStaff(staffService.getStaffIdByStaffCode(staffCode)
             .orElseThrow(() -> new NotFoundException(String.format("Staff member with code %s", staffCode))));
     }
@@ -177,7 +177,7 @@ public class StaffResource {
     @GetMapping(path = "/staff/staffCode/{staffCode}/caseload/supervisedOrders")
     public Set<ManagedEventId> getCaseloadOrdersForStaff(
         @ApiParam(name = "staffCode", value = "Delius staff/officer code", example = "N01A123", required = true)
-        @NotNull @Pattern(regexp = "^[A-Z0-9]{7}$", message = "must be 7 alphanumeric characters") @PathVariable(value = "staffCode") final String staffCode) {
+        @NotNull @StaffCode @PathVariable(value = "staffCode") final String staffCode) {
         return getCaseloadOrdersForStaff(staffService.getStaffIdByStaffCode(staffCode)
             .orElseThrow(() -> new NotFoundException(String.format("Staff member with code %s", staffCode))));
     }
