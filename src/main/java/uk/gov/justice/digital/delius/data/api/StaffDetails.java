@@ -1,13 +1,12 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import java.util.List;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 
 @Data
 @Builder(toBuilder = true)
@@ -20,7 +19,7 @@ public class StaffDetails {
     private String email;
     @ApiModelProperty(value = "the optional telephone number of this staff member, will be absent if the staff member is not a user of Delius", example = "020 1111 2222")
     private String telephoneNumber;
-    @ApiModelProperty(value = "staff code AKA officer code", example = "SH0001")
+    @ApiModelProperty(value = "staff code AKA officer code", example = "SH00001")
     private String staffCode;
     @ApiModelProperty(value = "staff identifier", example = "123456")
     private Long staffIdentifier;

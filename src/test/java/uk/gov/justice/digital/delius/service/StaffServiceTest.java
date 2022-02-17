@@ -12,8 +12,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
 import uk.gov.justice.digital.delius.data.api.ContactableHuman;
+import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
@@ -388,5 +388,14 @@ public class StaffServiceTest {
 
         assertThat(cases).containsExactly(StaffCaseloadEntry.builder().crn("X12345").firstName("Brian").middleNames(ImmutableList.of("Simon")).surname("Friar").build(),
             StaffCaseloadEntry.builder().crn("X45521").firstName("Tyler").middleNames(ImmutableList.of("Argyll")).surname("Adams").build());
+    }
+
+    @Test
+    public void getStaffIdByOfficerCode() {
+        when(staffRepository.findStaffIdByOfficerCode("ABC1234")).thenReturn(Optional.of(123L));
+
+        var staffId = staffService.getStaffIdByStaffCode("ABC1234");
+
+        assertThat(staffId).isEqualTo(Optional.of(123L));
     }
 }
