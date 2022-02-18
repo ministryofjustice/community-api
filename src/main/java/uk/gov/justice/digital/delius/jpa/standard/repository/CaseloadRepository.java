@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface CaseloadRepository extends JpaRepository<Caseload, Long> {
     List<Caseload> findByStaffStaffIdAndRoleCodeIn(Long staffId, Collection<String> roles);
+    List<Caseload> findByTeamCodeAndRoleCodeIn(String teamCode, Collection<String> roles);
 }
