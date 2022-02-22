@@ -10,6 +10,7 @@ public class OrderManagerTransformer {
 
     public static OrderManager orderManagerOf(uk.gov.justice.digital.delius.jpa.standard.entity.OrderManager entity){
         return OrderManager.builder()
+            .gradeCode(Optional.ofNullable(entity.getStaff().getGrade().getCodeValue()).orElse(""))
                 .name(Stream.of(Optional.ofNullable(entity.getStaff().getForename()),
                 (Optional.ofNullable(entity.getStaff().getForname2())),
                 (Optional.ofNullable(entity.getStaff().getSurname())))
