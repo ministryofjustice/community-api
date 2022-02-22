@@ -25,4 +25,7 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
 
     @Query("select staff from Staff staff, StaffTeam staffTeam, Team team where staff.officerCode like '%U' and staffTeam.staffId = staff.staffId and staffTeam.teamId = :teamId" )
     Optional<Staff> findByUnallocatedByTeam(@Param("teamId") Long teamId);
+
+    @Query("select s.staffId from Staff s where s.officerCode = :officerCode")
+    Optional<Long> findStaffIdByOfficerCode(String officerCode);
 }

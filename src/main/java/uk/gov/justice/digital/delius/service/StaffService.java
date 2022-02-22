@@ -5,9 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
 import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.ManagedOffender;
+import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
@@ -36,12 +36,16 @@ public class StaffService {
     private final StaffHelperRepository staffHelperRepository;
     private final OffenderRepository offenderRepository;
 
+    @Transactional(readOnly = true)
+    public Optional<Long> getStaffIdByStaffCode(final String staffCode) {
+        return staffRepository.findStaffIdByOfficerCode(staffCode);
+    }
 
     @Transactional(readOnly = true)
     public Optional<List<ManagedOffender>> getManagedOffendersByStaffCode(final String staffCode, final boolean current) {
 
         return staffRepository.findByOfficerCode(staffCode).map(
-                staff -> OffenderTransformer.managedOffenderOf(staff, current)
+            staff -> OffenderTransformer.managedOffenderOf(staff, current)
         );
     }
 
@@ -49,29 +53,29 @@ public class StaffService {
     public Optional<List<ManagedOffender>> getManagedOffendersByStaffIdentifier(final long staffIdentifier, final boolean current) {
 
         return staffRepository.findByStaffId(staffIdentifier).map(
-                staff -> OffenderTransformer.managedOffenderOf(staff, current)
+            staff -> OffenderTransformer.managedOffenderOf(staff, current)
         );
     }
 
     @Transactional(readOnly = true)
     public Optional<StaffDetails> getStaffDetailsByStaffIdentifier(final long staffIdentifier) {
         return staffRepository
-                .findByStaffId(staffIdentifier)
-                .map(StaffTransformer::staffDetailsOf)
-                .map(staffDetails ->
-                        Optional.ofNullable(staffDetails.getUsername())
-                                .map(username -> staffDetails
-                                        .toBuilder()
-                                        .email(ldapRepository.getEmail(username))
-                                        .build())
-                                .orElse(staffDetails));
+            .findByStaffId(staffIdentifier)
+            .map(StaffTransformer::staffDetailsOf)
+            .map(staffDetails ->
+                Optional.ofNullable(staffDetails.getUsername())
+                    .map(username -> staffDetails
+                        .toBuilder()
+                        .email(ldapRepository.getEmail(username))
+                        .build())
+                    .orElse(staffDetails));
     }
 
     @Transactional(readOnly = true)
     public Optional<StaffDetails> getStaffDetailsByUsername(final String username) {
         return staffRepository.findByUsername(username)
-                .map(StaffTransformer::staffDetailsOf)
-                .map(addFieldsFromLdap());
+            .map(StaffTransformer::staffDetailsOf)
+            .map(addFieldsFromLdap());
     }
 
     @Transactional(readOnly = true)
@@ -79,16 +83,16 @@ public class StaffService {
         final var capitalisedUsernames = usernames.stream().map(String::toUpperCase).collect(Collectors.toSet());
 
         return staffRepository.findByUsernames(capitalisedUsernames)
-                .stream()
-                .map(StaffTransformer::staffDetailsOf)
-                .map(addFieldsFromLdap())
-                .collect(Collectors.toList());
+            .stream()
+            .map(StaffTransformer::staffDetailsOf)
+            .map(addFieldsFromLdap())
+            .collect(Collectors.toList());
     }
 
     @Transactional
     public Staff findOrCreateStaffInArea(final ContactableHuman staff, final ProbationArea probationArea) {
         return staffRepository.findFirstBySurnameIgnoreCaseAndForenameIgnoreCaseAndProbationArea(staff.getSurname(), firstNameIn(staff.getForenames()), probationArea)
-                .orElseGet(() -> createStaffInArea(staff.getSurname(), firstNameIn(staff.getForenames()), probationArea));
+            .orElseGet(() -> createStaffInArea(staff.getSurname(), firstNameIn(staff.getForenames()), probationArea));
     }
 
     @Transactional
@@ -118,10 +122,10 @@ public class StaffService {
 
     private Function<StaffDetails, StaffDetails> addEmailFromLdap() {
         return staffDetails ->
-                staffDetails
-                        .toBuilder()
-                        .email(ldapRepository.getEmail(staffDetails.getUsername()))
-                        .build();
+            staffDetails
+                .toBuilder()
+                .email(ldapRepository.getEmail(staffDetails.getUsername()))
+                .build();
     }
 
     private Function<StaffDetails, StaffDetails> addFieldsFromLdap() {
@@ -137,15 +141,15 @@ public class StaffService {
 
     private Staff createStaffInArea(final String surname, final String forename, final ProbationArea probationArea) {
         return staffRepository.save(
-                Staff
-                        .builder()
-                        .officerCode(generateStaffCodeFor(probationArea))
-                        .forename(forename)
-                        .surname(surname)
-                        .privateSector(probationArea.getPrivateSector())
-                        .probationArea(probationArea)
-                        .teams(List.of())
-                        .build()
+            Staff
+                .builder()
+                .officerCode(generateStaffCodeFor(probationArea))
+                .forename(forename)
+                .surname(surname)
+                .privateSector(probationArea.getPrivateSector())
+                .probationArea(probationArea)
+                .teams(List.of())
+                .build()
         );
     }
 
