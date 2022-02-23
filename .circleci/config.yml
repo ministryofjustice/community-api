@@ -6,6 +6,7 @@ orbs:
   aws-ecs: circleci/aws-ecs@2.0.0
   mem: circleci/rememborb@0.0.1
   queue: eddiewebb/queue@1.5.0
+  slack: circleci/slack@4.8.2
 
 jobs:
   validate-unit:
@@ -86,6 +87,38 @@ jobs:
           container-image-name-updates: container=community-api,tag=$APP_VERSION
           container-env-var-updates: << parameters.env-vars >>
           verify-revision-is-deployed: true
+      - slack/notify:
+          event: always
+          channel: probation-integration-notifications
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "mrkdwn",
+                      "text": ":circleci-${CCI_STATUS}: CircleCI deploy ${CCI_STATUS}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*${CIRCLE_PROJECT_REPONAME}* version `${APP_VERSION}` deploy to *${AWS_ECS_ENV_NAME}*"
+                  },
+                  "accessory": {
+                    "type": "button",
+                    "text": {
+                      "type": "plain_text",
+                      "text": "View job"
+                    },
+                    "url": "${CIRCLE_BUILD_URL}"
+                  }
+                }
+              ]
+            }
 
 workflows:
   version: 2
@@ -103,7 +136,9 @@ workflows:
           name: build_docker
       - deploy:
           name: deploy_to_dev
-          context: hmpps-delius-deploy-to-ecs-dev
+          context:
+            - hmpps-common-vars
+            - hmpps-delius-deploy-to-ecs-dev
           env-vars: >-
             container=community-api,name=SPRING_PROFILES_ACTIVE,                                value=oracle,
             container=community-api,name=SPRING_DATASOURCE_USERNAME,                            value=delius_pool,
@@ -116,7 +151,9 @@ workflows:
             - build_docker
       - deploy:
           name: deploy_to_test
-          context: hmpps-delius-deploy-to-ecs-test
+          context:
+            - hmpps-common-vars
+            - hmpps-delius-deploy-to-ecs-test
           env-vars: >-
             container=community-api,name=SPRING_PROFILES_ACTIVE,                                      value=oracle,
             container=community-api,name=SPRING_DATASOURCE_USERNAME,                                  value=delius_pool,
@@ -143,7 +180,9 @@ workflows:
             - deploy_to_test
       - deploy:
           name: deploy_to_stage
-          context: hmpps-delius-deploy-to-ecs-stage
+          context:
+            - hmpps-common-vars
+            - hmpps-delius-deploy-to-ecs-stage
           env-vars: >-
             container=community-api,name=SPRING_PROFILES_ACTIVE,                                      value=oracle,
             container=community-api,name=SPRING_DATASOURCE_USERNAME,                                  value=delius_pool,
@@ -163,7 +202,9 @@ workflows:
             - request-pre-prod-approval
       - deploy:
           name: deploy_to_perf
-          context: hmpps-delius-deploy-to-ecs-perf
+          context:
+            - hmpps-common-vars
+            - hmpps-delius-deploy-to-ecs-perf
           env-vars: >-
             container=community-api,name=SPRING_PROFILES_ACTIVE,                                      value=oracle,
             container=community-api,name=SPRING_DATASOURCE_USERNAME,                                  value=delius_pool,
@@ -183,7 +224,9 @@ workflows:
             - request-pre-prod-approval
       - deploy:
           name: deploy_to_pre_prod
-          context: hmpps-delius-deploy-to-ecs-pre-prod
+          context:
+            - hmpps-common-vars
+            - hmpps-delius-deploy-to-ecs-pre-prod
           env-vars: >-
             container=community-api,name=SPRING_PROFILES_ACTIVE,                                      value=oracle,
             container=community-api,name=SPRING_DATASOURCE_USERNAME,                                  value=delius_pool,
@@ -208,7 +251,9 @@ workflows:
             - deploy_to_pre_prod
       - deploy:
           name: deploy_to_production
-          context: hmpps-delius-deploy-to-ecs-prod
+          context:
+            - hmpps-common-vars
+            - hmpps-delius-deploy-to-ecs-prod
           env-vars: >-
             container=community-api,name=SPRING_PROFILES_ACTIVE,                                      value=oracle,
             container=community-api,name=SPRING_DATASOURCE_USERNAME,                                  value=delius_pool,
@@ -237,12 +282,15 @@ workflows:
                 - main
     jobs:
       - hmpps/gradle_owasp_dependency_check:
+          slack_channel: probation-integration-notifications
           context:
             - hmpps-common-vars
       - hmpps/trivy_latest_scan:
+          slack_channel: probation-integration-notifications
           context:
             - hmpps-common-vars
       - hmpps/veracode_pipeline_scan:
+          slack_channel: probation-integration-notifications
           context:
             - hmpps-common-vars
             - veracode-credentials
@@ -256,6 +304,7 @@ workflows:
                 - main
     jobs:
       - hmpps/veracode_policy_scan:
+          slack_channel: probation-integration-notifications
           context:
             - veracode-credentials
             - hmpps-common-vars
