@@ -133,7 +133,7 @@ class OffendersResource_GetAllOffenderManagersAPITest extends IntegrationTestBas
             assertThat(communityOffenderManager.getProbationArea().getTeams()).isNull();
             assertThat(communityOffenderManager.getStaff()).isNotNull();
             assertThat(communityOffenderManager.getTeam()).isNotNull();
-            assertThat(communityOffenderManager.getStaffCode()).isEqualTo("SH0007");
+            assertThat(communityOffenderManager.getStaffCode()).isEqualTo("SH00007");
             assertThat(communityOffenderManager.getFromDate()).isEqualTo(LocalDate.of(2018, Month.MAY, 4));
             assertThat(communityOffenderManager.getGrade()).isNotNull();
             assertThat(communityOffenderManager.getGrade().getDescription()).isEqualTo("PO");
