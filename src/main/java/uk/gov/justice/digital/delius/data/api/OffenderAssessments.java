@@ -20,5 +20,5 @@ public class OffenderAssessments {
     @ApiModelProperty(value = "Offender Group Reconviction Scale")
     private Integer ogrsScore;
     @ApiModelProperty(example = "1982-10-24")
-    private LocalDateTime dateLastUpdates;
+    private LocalDate orgsLastUpdate;
 }

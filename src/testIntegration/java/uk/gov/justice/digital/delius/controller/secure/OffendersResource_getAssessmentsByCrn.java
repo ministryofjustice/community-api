@@ -3,6 +3,7 @@ package uk.gov.justice.digital.delius.controller.secure;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.OffenderAssessments;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static io.restassured.RestAssured.given;
@@ -26,7 +27,7 @@ public class OffendersResource_getAssessmentsByCrn extends IntegrationTestBase {
                 .as(OffenderAssessments.class);
 
       OffenderAssessments expectedAssessments = OffenderAssessments.builder()
-          .rsrScore(1D).ogrsScore(27).dateLastUpdates(LocalDateTime.parse("2019-09-27T00:00")).build();
+          .rsrScore(1D).ogrsScore(27).orgsLastUpdate(LocalDate.parse("2019-09-27T00:00")).build();
       assertThat(offenderAssessments).isEqualTo(expectedAssessments);
     }
 
@@ -45,7 +46,7 @@ public class OffendersResource_getAssessmentsByCrn extends IntegrationTestBase {
                 .as(OffenderAssessments.class);
 
       OffenderAssessments expectedAssessments = OffenderAssessments.builder()
-          .rsrScore(1D).ogrsScore(2).dateLastUpdates(LocalDateTime.parse("2019-09-27T00:00")).build();
+          .rsrScore(1D).ogrsScore(2).orgsLastUpdate(LocalDate.parse("2019-09-27T00:00")).build();
       assertThat(offenderAssessments).isEqualTo(expectedAssessments);
     }
     

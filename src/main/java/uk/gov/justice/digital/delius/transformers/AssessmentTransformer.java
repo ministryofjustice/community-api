@@ -10,34 +10,34 @@ import java.util.Optional;
 
 public class AssessmentTransformer {
 
-    public static OffenderAssessments assessmentsOf(Offender offender, Optional<OGRSAssessment> OGRSAssessment, Optional<OASYSAssessment> OASYSAssessment) {
+    public static OffenderAssessments assessmentsOf(Offender offender, Optional<OGRSAssessment> ogrsAssessment, Optional<OASYSAssessment> OASYSAssessment) {
         return OffenderAssessments
             .builder()
             .rsrScore(offender.getDynamicRsrScore())
-            .ogrsScore(getOGRSScore(OGRSAssessment, OASYSAssessment))
-            .dateLastUpdates(offender.getLastUpdatedDateTime())
+            .ogrsScore(getOGRSScore(ogrsAssessment, OASYSAssessment))
+            .orgsLastUpdate(ogrsAssessment.map(OGRSAssessment::getLastUpdatedDate).orElse(null))
             .build();
     }
 
-    private static Integer getOGRSScore(Optional<OGRSAssessment> OGRSAssessment, Optional<OASYSAssessment> OASYSAssessment) {
+    private static Integer getOGRSScore(Optional<OGRSAssessment> oGRSAssessment, Optional<OASYSAssessment> oASYSAssessment) {
 
-        Integer OASYSAssessmentScore = OASYSAssessment.map(o -> o.getOGRSScore2()).orElse(null);
-        LocalDate OASYSAssessmentDate = OASYSAssessment.map(o -> o.getAssessmentDate()).orElse(null);;
+        Integer oASYSAssessmentScore = oASYSAssessment.map(OASYSAssessment::getOGRSScore2).orElse(null);
+        LocalDate oASYSAssessmentDate = oASYSAssessment.map(OASYSAssessment::getAssessmentDate).orElse(null);
 
-        return OGRSAssessment.map(OGRS -> {
-            final var OGRSAssessmentScore = OGRS.getOGRS3Score2();
-            if (null == OASYSAssessmentScore) {
-                return OGRSAssessmentScore;
+
+        return oGRSAssessment.map(OGRS -> {
+            var ogrsassessmentscore = OGRS.getOGRS3Score2();
+
+            if (null == oASYSAssessmentScore) {
+                return ogrsassessmentscore;
             }
-
-            if (null != OGRSAssessmentScore) {
-                final var OGRSAssessmentDate = OGRS.getAssessmentDate();
-                if (OGRSAssessmentDate.isAfter(OASYSAssessmentDate)) {
-                    return OGRSAssessmentScore;
+            if (null != ogrsassessmentscore) {
+                if (OGRS.getAssessmentDate().isAfter(oASYSAssessmentDate)) {
+                    return ogrsassessmentscore;
                 }
             }
             return null;
-        }).orElse(OASYSAssessmentScore);
+        }).orElse(oASYSAssessmentScore);
 
 
     }
