@@ -15,6 +15,7 @@ public class AssessmentTransformer {
             .builder()
             .rsrScore(offender.getDynamicRsrScore())
             .ogrsScore(getOGRSScore(OGRSAssessment, OASYSAssessment))
+            .dateLastUpdates(offender.getLastUpdatedDateTime())
             .build();
     }
 

@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -16,5 +19,6 @@ public class OffenderAssessments {
     private Double rsrScore;
     @ApiModelProperty(value = "Offender Group Reconviction Scale")
     private Integer ogrsScore;
-
+    @ApiModelProperty(example = "1982-10-24")
+    private LocalDateTime dateLastUpdates;
 }
