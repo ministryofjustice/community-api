@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import uk.gov.justice.digital.delius.data.api.OrderManager;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,6 +21,7 @@ public class OrderManagerTransformer {
                 .dateEndOfAllocation(entity.getTeam().getEndDate())
                 .officerId(entity.getOrderManagerId())
                 .probationAreaId(entity.getProbationArea().getProbationAreaId())
+                .gradeCode(Optional.ofNullable(entity.getStaff().getGrade()).map(StandardReference::getCodeValue).orElse(""))
                 .teamId(entity.getTeam().getTeamId()).build();
     }
 
