@@ -19,5 +19,6 @@ public class OrderManager {
     private String staffCode;
     private LocalDate dateStartOfAllocation;
     private LocalDate dateEndOfAllocation;
+    private String gradeCode;
 
 }
