@@ -1,0 +1,88 @@
+-- Caseload entries to match offender_manager in V1_4__offenders_licences_data.sql
+insert into caseload (caseload_id, offender_id, offender_manager_id, event_id, order_manager_id, disposal_id,
+                      lic_condition_id, lic_condition_manager_id, rqmnt_id, rqmnt_manager_id, trust_provider_flag,
+                      trust_provider_team_id, staff_employee_id, disposal_type_id, lic_cond_type_main_cat_id, crn,
+                      rqmnt_type_main_category_id, ad_rqmnt_type_main_category_id, first_name, gender_id, second_name,
+                      third_name, date_of_birth, current_highest_risk_colour, surname, current_exclusion, current_tier,
+                      current_restriction, length_value, start_date, role_code, row_version, partition_area_id,
+                      organisations, training_session_id, allocation_date, pss_rqmnt_id, pss_rqmnt_manager_id,
+                      pss_rqmnt_type_main_cat_id, length_in_days, entry_length_units_id, notional_end_date,
+                      entry_length, nsi_id, nsi_manager_id, prison_offender_manager_id, report_manager_id,
+                      court_report_id, institutional_report_id)
+values (2502094560, 11, 11, null, null, null, null, null, null, null, 0, 2500002140, 11, null, null, 'CRN001', null,
+        null, 'Joe', 545, null, null, to_date('19-JUL-88', 'DD-MON-RR'), null, 'Bloggs', 0, 2500031092, 0, null,
+        to_date('13-DEC-18', 'DD-MON-RR'), 'OM', 0, 0, null, null, to_date('04-MAY-18', 'DD-MON-RR'), null, null, null,
+        null, null, null, null, null, null, null, null, null, null);
+insert into caseload (caseload_id, offender_id, offender_manager_id, event_id, order_manager_id, disposal_id,
+                      lic_condition_id, lic_condition_manager_id, rqmnt_id, rqmnt_manager_id, trust_provider_flag,
+                      trust_provider_team_id, staff_employee_id, disposal_type_id, lic_cond_type_main_cat_id, crn,
+                      rqmnt_type_main_category_id, ad_rqmnt_type_main_category_id, first_name, gender_id, second_name,
+                      third_name, date_of_birth, current_highest_risk_colour, surname, current_exclusion, current_tier,
+                      current_restriction, length_value, start_date, role_code, row_version, partition_area_id,
+                      organisations, training_session_id, allocation_date, pss_rqmnt_id, pss_rqmnt_manager_id,
+                      pss_rqmnt_type_main_cat_id, length_in_days, entry_length_units_id, notional_end_date,
+                      entry_length, nsi_id, nsi_manager_id, prison_offender_manager_id, report_manager_id,
+                      court_report_id, institutional_report_id)
+values (2502094561, 12, 11, null, null, null, null, null, null, null, 0, 2500002140, 11, null, null, 'CRN002', null,
+        null, 'Joe', 545, null, null, to_date('19-JUL-88', 'DD-MON-RR'), null, 'Bloggs', 0, 2500031092, 0, null,
+        to_date('13-DEC-18', 'DD-MON-RR'), 'OM', 0, 0, null, null, to_date('04-MAY-18', 'DD-MON-RR'), null, null, null,
+        null, null, null, null, null, null, null, null, null, null);
+insert into caseload (caseload_id, offender_id, offender_manager_id, event_id, order_manager_id, disposal_id,
+                      lic_condition_id, lic_condition_manager_id, rqmnt_id, rqmnt_manager_id, trust_provider_flag,
+                      trust_provider_team_id, staff_employee_id, disposal_type_id, lic_cond_type_main_cat_id, crn,
+                      rqmnt_type_main_category_id, ad_rqmnt_type_main_category_id, first_name, gender_id, second_name,
+                      third_name, date_of_birth, current_highest_risk_colour, surname, current_exclusion, current_tier,
+                      current_restriction, length_value, start_date, role_code, row_version, partition_area_id,
+                      organisations, training_session_id, allocation_date, pss_rqmnt_id, pss_rqmnt_manager_id,
+                      pss_rqmnt_type_main_cat_id, length_in_days, entry_length_units_id, notional_end_date,
+                      entry_length, nsi_id, nsi_manager_id, prison_offender_manager_id, report_manager_id,
+                      court_report_id, institutional_report_id)
+values (2502094562, 13, 11, null, null, null, null, null, null, null, 0, 2500002140, 11, null, null, 'CRN003', null,
+        null, 'Joe', 545, null, null, to_date('19-JUL-88', 'DD-MON-RR'), null, 'Bloggs', 0, 2500031092, 0, null,
+        to_date('13-DEC-18', 'DD-MON-RR'), 'OM', 0, 0, null, null, to_date('04-MAY-18', 'DD-MON-RR'), null, null, null,
+        null, null, null, null, null, null, null, null, null, null);
+
+
+-- Order supervisor records
+insert into caseload (caseload_id, offender_id, offender_manager_id, event_id, order_manager_id, disposal_id,
+                      lic_condition_id, lic_condition_manager_id, rqmnt_id, rqmnt_manager_id, trust_provider_flag,
+                      trust_provider_team_id, staff_employee_id, disposal_type_id, lic_cond_type_main_cat_id, crn,
+                      rqmnt_type_main_category_id, ad_rqmnt_type_main_category_id, first_name, gender_id, second_name,
+                      third_name, date_of_birth, current_highest_risk_colour, surname, current_exclusion, current_tier,
+                      current_restriction, length_value, start_date, role_code, row_version, partition_area_id,
+                      organisations, training_session_id, allocation_date, pss_rqmnt_id, pss_rqmnt_manager_id,
+                      pss_rqmnt_type_main_cat_id, length_in_days, entry_length_units_id, notional_end_date,
+                      entry_length, nsi_id, nsi_manager_id, prison_offender_manager_id, report_manager_id,
+                      court_report_id, institutional_report_id)
+values (2502094563, 13, 11, 1, 1, 1, null, null, null, null, 0, 2500002140, 11, null, null, 'CRN003', null, null,
+        'Joe', 545, null, null, to_date('19-JUL-88', 'DD-MON-RR'), null, 'Bloggs', 0, 2500031092, 0, null,
+        to_date('13-DEC-18', 'DD-MON-RR'), 'OS', 0, 0, null, null, to_date('04-MAY-18', 'DD-MON-RR'), null, null, null,
+        null, null, null, null, null, null, null, null, null, null);
+insert into caseload (caseload_id, offender_id, offender_manager_id, event_id, order_manager_id, disposal_id,
+                      lic_condition_id, lic_condition_manager_id, rqmnt_id, rqmnt_manager_id, trust_provider_flag,
+                      trust_provider_team_id, staff_employee_id, disposal_type_id, lic_cond_type_main_cat_id, crn,
+                      rqmnt_type_main_category_id, ad_rqmnt_type_main_category_id, first_name, gender_id, second_name,
+                      third_name, date_of_birth, current_highest_risk_colour, surname, current_exclusion, current_tier,
+                      current_restriction, length_value, start_date, role_code, row_version, partition_area_id,
+                      organisations, training_session_id, allocation_date, pss_rqmnt_id, pss_rqmnt_manager_id,
+                      pss_rqmnt_type_main_cat_id, length_in_days, entry_length_units_id, notional_end_date,
+                      entry_length, nsi_id, nsi_manager_id, prison_offender_manager_id, report_manager_id,
+                      court_report_id, institutional_report_id)
+values (2502094564, 14, 11, 2, 1, 1, null, null, null, null, 0, 2500002141, 11, null, null, 'CRN004', null, null, 'Joe',
+        545, null, null, to_date('19-JUL-88', 'DD-MON-RR'), null, 'Bloggs', 0, 2500031092, 0, null,
+        to_date('13-DEC-18', 'DD-MON-RR'), 'OS', 0, 0, null, null, to_date('04-MAY-18', 'DD-MON-RR'), null, null, null,
+        null, null, null, null, null, null, null, null, null, null);
+insert into caseload (caseload_id, offender_id, offender_manager_id, event_id, order_manager_id, disposal_id,
+                      lic_condition_id, lic_condition_manager_id, rqmnt_id, rqmnt_manager_id, trust_provider_flag,
+                      trust_provider_team_id, staff_employee_id, disposal_type_id, lic_cond_type_main_cat_id, crn,
+                      rqmnt_type_main_category_id, ad_rqmnt_type_main_category_id, first_name, gender_id, second_name,
+                      third_name, date_of_birth, current_highest_risk_colour, surname, current_exclusion, current_tier,
+                      current_restriction, length_value, start_date, role_code, row_version, partition_area_id,
+                      organisations, training_session_id, allocation_date, pss_rqmnt_id, pss_rqmnt_manager_id,
+                      pss_rqmnt_type_main_cat_id, length_in_days, entry_length_units_id, notional_end_date,
+                      entry_length, nsi_id, nsi_manager_id, prison_offender_manager_id, report_manager_id,
+                      court_report_id, institutional_report_id)
+values (2502094565, 14, 11, 3, 1, 1, null, null, null, null, 0, 2500002140, 13, null, null, 'CRN005', null, null, 'Joe',
+        545, null, null, to_date('19-JUL-88', 'DD-MON-RR'), null, 'Bloggs', 0, 2500031092, 0, null,
+        to_date('13-DEC-18', 'DD-MON-RR'), 'OS', 0, 0, null, null, to_date('04-MAY-18', 'DD-MON-RR'), null, null, null,
+        null, null, null, null, null, null, null, null, null, null);
