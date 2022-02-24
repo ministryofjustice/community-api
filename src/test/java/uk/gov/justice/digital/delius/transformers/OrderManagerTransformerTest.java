@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OrderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,12 +21,17 @@ class OrderManagerTransformerTest {
         assertThat(OrderManagerTransformer.orderManagerOf(aOrderManagerEntity()).getProbationAreaId()).isEqualTo(10004);
         assertThat(OrderManagerTransformer.orderManagerOf(aOrderManagerEntity()).getDateStartOfAllocation()).isEqualTo(LocalDate.of(2021,4,1));
         assertThat(OrderManagerTransformer.orderManagerOf(aOrderManagerEntity()).getDateEndOfAllocation()).isEqualTo(LocalDate.of(2021,5,1));
+        assertThat(OrderManagerTransformer.orderManagerOf(aOrderManagerEntity()).getGradeCode()).isEqualTo("123");
+
     }
 
     private OrderManager aOrderManagerEntity(){
         return OrderManager.builder()
 
-            .staff(Staff.builder().staffId(10001L).forename("forename").surname("surname").forname2("forename2").officerCode("10001").build())
+            .staff(Staff.builder().staffId(10001L).forename("forename").surname("surname")
+                .forname2("forename2").officerCode("10001")
+                .grade(StandardReference.builder()
+                    .codeValue("123").build()).build())
             .orderManagerId(10002L)
             .team(Team.builder()
                 .startDate(LocalDate.of(2021, 4,1))
