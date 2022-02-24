@@ -196,6 +196,7 @@ workflows:
       - hmpps/build_docker:
           name: build_docker
           jira_update: true
+          context: hmpps-common-vars
       - deploy:
           name: deploy_to_dev
           environment_type: development
