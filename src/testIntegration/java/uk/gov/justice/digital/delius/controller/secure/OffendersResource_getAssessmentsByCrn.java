@@ -45,7 +45,7 @@ public class OffendersResource_getAssessmentsByCrn extends IntegrationTestBase {
                 .as(OffenderAssessments.class);
 
       OffenderAssessments expectedAssessments = OffenderAssessments.builder()
-          .rsrScore(1D).ogrsScore(2).orgsLastUpdate(null).build();
+          .rsrScore(1D).ogrsScore(2).orgsLastUpdate(LocalDate.parse("2020-11-11")).build();
       assertThat(offenderAssessments).isEqualTo(expectedAssessments);
     }
     
