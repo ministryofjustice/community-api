@@ -242,6 +242,7 @@ workflows:
       - slack-approval:
           name: slack-approval-preprod
           environment: PreProd
+          context: hmpps-common-vars
           requires:
             - deploy_to_test
       - request-pre-prod-approval:
@@ -319,6 +320,7 @@ workflows:
             - request-pre-prod-approval
       - slack-approval:
           name: slack-approval-prod
+          context: hmpps-common-vars
           environment: Production
           requires:
             - deploy_to_stage
