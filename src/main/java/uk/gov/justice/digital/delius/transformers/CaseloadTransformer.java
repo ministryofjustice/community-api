@@ -44,6 +44,7 @@ public class CaseloadTransformer {
 
     public static ManagedEventId managedEventIdOf(final uk.gov.justice.digital.delius.jpa.standard.entity.Caseload caseload) {
         return ManagedEventId.builder()
+            .offenderCrn(caseload.getCrn())
             .eventId(caseload.getEventId())
             .allocationDate(caseload.getAllocationDate())
             .staff(StaffTransformer.staffOf(caseload.getStaff()))

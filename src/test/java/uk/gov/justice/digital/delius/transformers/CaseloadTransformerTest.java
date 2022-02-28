@@ -44,6 +44,7 @@ public class CaseloadTransformerTest {
         Random random = new Random();
         Caseload source = Caseload.builder()
             .caseloadId(random.nextLong())
+            .crn(UUID.randomUUID().toString())
             .eventId(random.nextLong())
             .roleCode("OS")
             .allocationDate(LocalDate.now())
@@ -53,6 +54,7 @@ public class CaseloadTransformerTest {
 
         assertThat(CaseloadTransformer.managedEventIdOf(source))
             .isEqualTo(ManagedEventId.builder()
+                .offenderCrn(source.getCrn())
                 .eventId(source.getEventId())
                 .allocationDate(LocalDate.now())
                 .staffIdentifier(source.getStaff().getStaffId())
@@ -76,6 +78,7 @@ public class CaseloadTransformerTest {
             .build();
         Caseload orderSupervisor = Caseload.builder()
             .caseloadId(random.nextLong())
+            .crn(UUID.randomUUID().toString())
             .eventId(random.nextLong())
             .roleCode("OS")
             .allocationDate(LocalDate.now())
