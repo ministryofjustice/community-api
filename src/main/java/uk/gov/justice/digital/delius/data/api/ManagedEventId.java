@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ManagedEventId {
+    private String offenderCrn;
     private Long eventId;
 
     private LocalDate allocationDate;
