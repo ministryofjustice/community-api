@@ -7,6 +7,8 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class OrderManagerTransformerTest {
@@ -19,8 +21,8 @@ class OrderManagerTransformerTest {
         assertThat(OrderManagerTransformer.orderManagerOf(aOrderManagerEntity()).getOfficerId()).isEqualTo(10002);
         assertThat(OrderManagerTransformer.orderManagerOf(aOrderManagerEntity()).getTeamId()).isEqualTo(10003);
         assertThat(OrderManagerTransformer.orderManagerOf(aOrderManagerEntity()).getProbationAreaId()).isEqualTo(10004);
-        assertThat(OrderManagerTransformer.orderManagerOf(aOrderManagerEntity()).getDateStartOfAllocation()).isEqualTo(LocalDate.of(2021,4,1));
-        assertThat(OrderManagerTransformer.orderManagerOf(aOrderManagerEntity()).getDateEndOfAllocation()).isEqualTo(LocalDate.of(2021,5,1));
+        assertThat(OrderManagerTransformer.orderManagerOf(aOrderManagerEntity()).getDateStartOfAllocation()).isEqualTo(LocalDate.of(2021,4,1).atStartOfDay());
+        assertThat(OrderManagerTransformer.orderManagerOf(aOrderManagerEntity()).getDateEndOfAllocation()).isEqualTo(LocalDate.of(2021,5,1).atStartOfDay());
         assertThat(OrderManagerTransformer.orderManagerOf(aOrderManagerEntity()).getGradeCode()).isEqualTo("123");
 
     }
@@ -33,6 +35,8 @@ class OrderManagerTransformerTest {
                 .grade(StandardReference.builder()
                     .codeValue("123").build()).build())
             .orderManagerId(10002L)
+            .allocationDate(LocalDate.of(2021, 4,1).atStartOfDay())
+            .endDate(LocalDate.of(2021,5,1).atStartOfDay())
             .team(Team.builder()
                 .startDate(LocalDate.of(2021, 4,1))
                 .endDate(LocalDate.of(2021,5,1)).teamId(10003L).build())
