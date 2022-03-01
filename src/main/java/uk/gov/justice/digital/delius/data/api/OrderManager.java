@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -17,8 +18,8 @@ public class OrderManager {
     private Long officerId;
     private String name;
     private String staffCode;
-    private LocalDate dateStartOfAllocation;
-    private LocalDate dateEndOfAllocation;
+    private LocalDateTime dateStartOfAllocation;
+    private LocalDateTime dateEndOfAllocation;
     private String gradeCode;
 
 }
