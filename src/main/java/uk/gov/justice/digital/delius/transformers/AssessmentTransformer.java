@@ -6,9 +6,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.OGRSAssessment;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -19,7 +16,7 @@ public class AssessmentTransformer {
             .builder()
             .rsrScore(offender.getDynamicRsrScore())
             .ogrsScore(getOGRSScore(ogrsAssessment, oasysAssessment))
-            .orgsLastUpdate(getLastUpdateDate(ogrsAssessment,oasysAssessment ))
+            .ogrsLastUpdate(getLastUpdateDate(ogrsAssessment,oasysAssessment ))
             .build();
     }
     private static LocalDate getLastUpdateDate( Optional<OGRSAssessment> ogrsAssessment, Optional<OASYSAssessment> oasysAssessment){
