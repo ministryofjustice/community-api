@@ -53,7 +53,7 @@ import static uk.gov.justice.digital.delius.service.CustodyService.PrisonLocatio
 @Service
 @Slf4j
 public class CustodyService {
-    public static final String CONTEXT = "prison-to-probation";
+    private static final String CONTEXT = "prison-to-probation";
     private final Boolean updateCustodyFeatureSwitch;
     private final Boolean updateBookingNumberFeatureSwitch;
     private final TelemetryClient telemetryClient;
