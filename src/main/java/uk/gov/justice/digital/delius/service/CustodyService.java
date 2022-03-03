@@ -294,7 +294,11 @@ public class CustodyService {
             () -> new BadRequestException("Release Type mapping from reason does not exist for: " + releasedNotification.getReason())
         );
 
-        val newRelease = new NewRelease(releasedNotification.getReleaseDate(), deliusReleaseType, releasedNotification.getNomsPrisonInstitutionCode());
+        val newRelease = NewRelease.builder()
+                .releaseType(deliusReleaseType)
+                .actualReleaseDate(releasedNotification.getReleaseDate())
+                .institution(releasedNotification.getNomsPrisonInstitutionCode())
+                .build();
         deliusApiClient.createNewRelease(crn, eventId, newRelease);
     }
 
