@@ -149,6 +149,12 @@ delius-integration-context:
           "no":
             true: AFTA
             false: AFTA
+    prison-to-probation:
+      release-type-mapping:
+        reason-to-release-type:
+          RELEASED: ADL
+          TEMPORARY_ABSENCE_RELEASE: ROTL
+          RELEASED_TO_HOSPITAL: TBC
 
 smoke:
   test:
