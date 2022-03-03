@@ -295,10 +295,10 @@ public class CustodyService {
         );
 
         val newRelease = NewRelease.builder()
-                .releaseType(deliusReleaseType)
-                .actualReleaseDate(releasedNotification.getReleaseDate())
-                .institution(releasedNotification.getNomsPrisonInstitutionCode())
-                .build();
+            .releaseType(deliusReleaseType)
+            .actualReleaseDate(releasedNotification.getReleaseDate())
+            .institution(releasedNotification.getNomsPrisonInstitutionCode())
+            .build();
         deliusApiClient.createNewRelease(crn, eventId, newRelease);
     }
 
@@ -493,7 +493,7 @@ public class CustodyService {
     IntegrationContext getContext(String contextName) {
         var context = deliusIntegrationContextConfig.getIntegrationContexts().get(contextName);
         return ofNullable(context).orElseThrow(
-            () -> new BadRequestException("IntegrationContext does not exist for: " + contextName)
+            () -> new IllegalStateException("IntegrationContext does not exist for: " + contextName)
         );
     }
 }
