@@ -1334,6 +1334,7 @@ public class CustodyServiceTest {
             @Test
             @DisplayName("then the custody record will be returned")
             void willReturnCustody() {
+                when(institutionRepository.findCodeByNomisCdeCode("MDI")).thenReturn("MDIHMP");
                 final var custody = custodyService.offenderReleased("G9542VP",
                     OffenderReleasedNotification.builder()
                         .nomsPrisonInstitutionCode("MDI")

@@ -294,10 +294,15 @@ public class CustodyService {
             () -> new BadRequestException("Release Type mapping from reason does not exist for: " + releasedNotification.getReason())
         );
 
+        var deliusInstitutionCode = institutionRepository.findCodeByNomisCdeCode(releasedNotification.getNomsPrisonInstitutionCode());
+        if(deliusInstitutionCode==null){
+            throw new BadRequestException("Delius institution code does not exist for NOMIS CDE code: " + releasedNotification.getNomsPrisonInstitutionCode());
+        }
+
         val newRelease = NewRelease.builder()
             .releaseType(deliusReleaseType)
             .actualReleaseDate(releasedNotification.getReleaseDate())
-            .institution(releasedNotification.getNomsPrisonInstitutionCode())
+            .institution(deliusInstitutionCode)
             .build();
         deliusApiClient.createNewRelease(crn, eventId, newRelease);
     }
