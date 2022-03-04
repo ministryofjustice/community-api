@@ -25,6 +25,7 @@ import uk.gov.justice.digital.delius.data.api.UpdateCustodyBookingNumber;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CustodyHistory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.RInstitution;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CustodyHistoryRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionRepository;
@@ -1334,7 +1335,9 @@ public class CustodyServiceTest {
             @Test
             @DisplayName("then the custody record will be returned")
             void willReturnCustody() {
-                when(institutionRepository.findCodeByNomisCdeCode("MDI")).thenReturn("MDIHMP");
+                RInstitution institution = new RInstitution();
+                institution.setCode("MDIHMP");
+                when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(institution));
                 final var custody = custodyService.offenderReleased("G9542VP",
                     OffenderReleasedNotification.builder()
                         .nomsPrisonInstitutionCode("MDI")
