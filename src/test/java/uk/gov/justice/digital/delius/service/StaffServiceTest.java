@@ -98,43 +98,46 @@ public class StaffServiceTest {
 
         staffService.getStaffDetailsByStaffIdentifier(10L);
 
-        verify(ldapRepository).getEmail("username");
+        verify(ldapRepository).getDeliusUserNoRoles("username");
     }
 
     @Test
     public void willCopyEmailWhenUserFoundInLDAP_getStaffDetailsByStaffIdentifier() {
         when(staffRepository.findByStaffId(10L))
-                .thenReturn(
-                        Optional.of(
-                                aStaff()
-                                        .toBuilder()
-                                        .user(
-                                                aUser()
-                                                        .toBuilder()
-                                                        .distinguishedName("username")
-                                                        .build())
-                                        .build()));
+            .thenReturn(
+                Optional.of(
+                    aStaff()
+                        .toBuilder()
+                        .user(
+                            aUser()
+                                .toBuilder()
+                                .distinguishedName("sandrasmith")
+                                .build())
+                        .build()));
 
-        when(ldapRepository.getEmail("username")).thenReturn("user@service.com");
+        var nDeliusUser = NDeliusUser.builder().mail("user@service.com").build();
+        when(ldapRepository.getDeliusUserNoRoles("sandrasmith")).thenReturn(Optional.of(nDeliusUser));
 
-        assertThat(staffService.getStaffDetailsByStaffIdentifier(10L)).get().extracting(StaffDetails::getEmail).isEqualTo("user@service.com");
+        var staffDetails = staffService.getStaffDetailsByStaffIdentifier(10L).get();
+        assertThat(staffDetails.getEmail()).isEqualTo("user@service.com");
+        assertThat(staffDetails.getTelephoneNumber()).isNull();
     }
 
     @Test
     public void willSetNullEmailWhenUserNotFoundInLDAP_getStaffDetailsByStaffIdentifier() {
         when(staffRepository.findByStaffId(10L))
-                .thenReturn(
-                        Optional.of(
-                                aStaff()
-                                        .toBuilder()
-                                        .user(
-                                                aUser()
-                                                        .toBuilder()
-                                                        .distinguishedName("username")
-                                                        .build())
-                                        .build()));
+            .thenReturn(
+                Optional.of(
+                    aStaff()
+                        .toBuilder()
+                        .user(
+                            aUser()
+                                .toBuilder()
+                                .distinguishedName("sandrasmith")
+                                .build())
+                        .build()));
 
-        when(ldapRepository.getEmail("username")).thenReturn(null);
+        when(ldapRepository.getDeliusUserNoRoles("sandrasmith")).thenReturn(Optional.empty());
 
         assertThat(staffService.getStaffDetailsByStaffIdentifier(10L)).get().extracting(StaffDetails::getEmail).isNull();
     }
