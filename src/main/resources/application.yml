@@ -98,6 +98,7 @@ features:
   noms:
     update:
       custody: false
+      release: false
       booking.number: false
       keydates: false
       noms.number: false

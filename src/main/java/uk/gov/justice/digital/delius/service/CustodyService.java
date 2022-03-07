@@ -269,7 +269,8 @@ public class CustodyService {
             .map(offender -> {
                 final var telemetryProperties = Map.of("offenderNo", nomsNumber,
                     "releaseDate", releasedNotification.getReleaseDate().format(DateTimeFormatter.ISO_DATE),
-                    "institution", releasedNotification.getNomsPrisonInstitutionCode());
+                    "institution", releasedNotification.getNomsPrisonInstitutionCode(),
+                    "reason", releasedNotification.getReason());
                 try {
                     final var event = convictionService.getActiveCustodialEvent(offender.getOffenderId());
                     telemetryClient.trackEvent("P2POffenderReleased", telemetryProperties, null);
@@ -288,21 +289,26 @@ public class CustodyService {
     }
 
     private void addRelease(OffenderReleasedNotification releasedNotification, Long eventId, String crn) {
-        var context = getContext(CONTEXT);
-        var releaseMapping = context.getReleaseTypeMapping();
-        var deliusReleaseType = ofNullable(releaseMapping.getReasonToReleaseType().get(releasedNotification.getReason())).orElseThrow(
-            () -> new BadRequestException("Release Type mapping from reason does not exist for: " + releasedNotification.getReason())
-        );
+        if(featureSwitches.getNoms().getUpdate().isRelease()) {
+            var context = getContext(CONTEXT);
+            var releaseMapping = context.getReleaseTypeMapping();
+            var deliusReleaseType = ofNullable(releaseMapping.getReasonToReleaseType().get(releasedNotification.getReason())).orElseThrow(
+                () -> new BadRequestException("Release Type mapping from reason does not exist for: " + releasedNotification.getReason())
+            );
 
-        var deliusInstitution = institutionRepository.findByNomisCdeCode(releasedNotification.getNomsPrisonInstitutionCode())
-            .orElseThrow(() -> new BadRequestException("Delius institution code does not exist for NOMIS CDE code: " + releasedNotification.getNomsPrisonInstitutionCode()));
+            var deliusInstitution = institutionRepository.findByNomisCdeCode(releasedNotification.getNomsPrisonInstitutionCode())
+                .orElseThrow(() -> new BadRequestException("Delius institution code does not exist for NOMIS CDE code: " + releasedNotification.getNomsPrisonInstitutionCode()));
 
-        val newRelease = NewRelease.builder()
-            .releaseType(deliusReleaseType)
-            .actualReleaseDate(releasedNotification.getReleaseDate())
-            .institution(deliusInstitution.getCode())
-            .build();
-        deliusApiClient.createNewRelease(crn, eventId, newRelease);
+            val newRelease = NewRelease.builder()
+                .releaseType(deliusReleaseType)
+                .actualReleaseDate(releasedNotification.getReleaseDate())
+                .institution(deliusInstitution.getCode())
+                .build();
+            deliusApiClient.createNewRelease(crn, eventId, newRelease);
+        }
+        else {
+            log.warn("Offender release for CRN: " + crn + " will be ignored, this feature is switched off ");
+        }
     }
 
     private Event updateBookingNumberFor(final Offender offender, final Event event, final String bookingNumber) {

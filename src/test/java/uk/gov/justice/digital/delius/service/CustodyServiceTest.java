@@ -92,6 +92,7 @@ public class CustodyServiceTest {
         final var featureSwitches = new FeatureSwitches();
         featureSwitches.getNoms().getUpdate().setCustody(true);
         featureSwitches.getNoms().getUpdate().getBooking().setNumber(true);
+        featureSwitches.getNoms().getUpdate().setRelease(true);
         custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches, deliusApiClient, integrationContextConfig);
         when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
         when(offenderRepository.findMostLikelyByNomsNumber(anyString())).thenReturn(Either.right(Optional.of(Offender.builder().offenderId(99L).build())));
@@ -1278,6 +1279,7 @@ public class CustodyServiceTest {
                     OffenderReleasedNotification.builder()
                         .nomsPrisonInstitutionCode("MDI")
                         .releaseDate(LocalDate.of(2020, 11, 22))
+                        .reason("RELEASED")
                         .build()))
                     .isInstanceOf(ConflictingRequestException.class);
             }
@@ -1299,6 +1301,7 @@ public class CustodyServiceTest {
                     OffenderReleasedNotification.builder()
                         .nomsPrisonInstitutionCode("MDI")
                         .releaseDate(LocalDate.of(2020, 11, 22))
+                        .reason("RELEASED")
                         .build()))
                     .isInstanceOf(ConflictingRequestException.class);
             }
