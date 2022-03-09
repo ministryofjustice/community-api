@@ -190,4 +190,30 @@ public class DeliusApiMockServer extends WireMockServer {
             .withStatus(200)
         ));
     }
+
+    public void stubPostReleaseDeliusApi() {
+        stubFor(post(urlPathMatching("/v1/offenders/X320741/events/2500295345/releases")).willReturn(aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withStatus(201)
+            .withBody("""
+                {
+                    \"nomsPrisonInstitutionCode\" : \"MDI\", 
+                    \"releaseDate\" : \"2020-12-22\", 
+                    \"reason\" : \"RELEASED\"
+                }""")
+        ));
+    }
+
+    public void stubPostReleaseDuplicateOffenderSingleActiveDeliusApi() {
+        stubFor(post(urlPathMatching("/v1/offenders/CRN35/events/135/releases")).willReturn(aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withStatus(201)
+            .withBody("""
+                {
+                    \"nomsPrisonInstitutionCode\" : \"MDI\", 
+                    \"releaseDate\" : \"2020-12-22\", 
+                    \"reason\" : \"RELEASED\"
+                }""")
+        ));
+    }
 }

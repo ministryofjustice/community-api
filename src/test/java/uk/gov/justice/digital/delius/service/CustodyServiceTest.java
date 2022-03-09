@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
+import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
+import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
+import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.ReleaseTypeMapping;
 import uk.gov.justice.digital.delius.config.FeatureSwitches;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
@@ -30,6 +33,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository.
 import uk.gov.justice.digital.delius.util.EntityHelper;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -69,13 +73,26 @@ public class CustodyServiceTest {
     private final OffenderManagerService offenderManagerService = mock(OffenderManagerService.class);
     private final ContactService contactService = mock(ContactService.class);
     private final OffenderPrisonerService offenderPrisonerService = mock(OffenderPrisonerService.class);
+    private final DeliusApiClient deliusApiClient = mock(DeliusApiClient.class);
+    private final DeliusIntegrationContextConfig deliusIntegrationContextConfig = mock(DeliusIntegrationContextConfig.class);
 
     @BeforeEach
     public void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
+
+        final var integrationContextConfig = new DeliusIntegrationContextConfig();
+        ReleaseTypeMapping releaseTypeMapping = new ReleaseTypeMapping();
+        var reasonToReleaseTypeMap = new HashMap<String,String>();
+        reasonToReleaseTypeMap.put("RELEASED","ADL");
+        releaseTypeMapping.setReasonToReleaseType(reasonToReleaseTypeMap);
+        IntegrationContext integrationContext = new IntegrationContext();
+        integrationContext.setReleaseTypeMapping(releaseTypeMapping);
+        integrationContextConfig.getIntegrationContexts().put("prison-to-probation", integrationContext);
+
         final var featureSwitches = new FeatureSwitches();
         featureSwitches.getNoms().getUpdate().setCustody(true);
         featureSwitches.getNoms().getUpdate().getBooking().setNumber(true);
-        custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches);
+        featureSwitches.getNoms().getUpdate().setRelease(true);
+        custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches, deliusApiClient, integrationContextConfig);
         when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
         when(offenderRepository.findMostLikelyByNomsNumber(anyString())).thenReturn(Either.right(Optional.of(Offender.builder().offenderId(99L).build())));
         when(convictionService.getAllActiveCustodialEvents(anyLong()))
@@ -176,7 +193,7 @@ public class CustodyServiceTest {
                     final var featureSwitches = new FeatureSwitches();
                     featureSwitches.getNoms().getUpdate().setCustody(true);
                     featureSwitches.getNoms().getUpdate().getMultipleEvents().setUpdatePrisonLocation(true);
-                    custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches);
+                    custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches, deliusApiClient, deliusIntegrationContextConfig);
                 }
 
                 @Test
@@ -260,7 +277,7 @@ public class CustodyServiceTest {
                     final var featureSwitches = new FeatureSwitches();
                     featureSwitches.getNoms().getUpdate().setCustody(true);
                     featureSwitches.getNoms().getUpdate().getMultipleEvents().setUpdatePrisonLocation(false);
-                    custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches);
+                    custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches, deliusApiClient, deliusIntegrationContextConfig);
                 }
 
                 @Test
@@ -484,7 +501,7 @@ public class CustodyServiceTest {
             featureSwitches.getNoms().getUpdate().setCustody(true);
             featureSwitches.getNoms().getUpdate().getBooking().setNumber(true);
 
-            custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches);
+            custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches, deliusApiClient, deliusIntegrationContextConfig);
 
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
 
@@ -498,7 +515,7 @@ public class CustodyServiceTest {
             final var featureSwitches = new FeatureSwitches();
             featureSwitches.getNoms().getUpdate().setCustody(false);
             featureSwitches.getNoms().getUpdate().getBooking().setNumber(true);
-            custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches);
+            custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches, deliusApiClient, deliusIntegrationContextConfig);
 
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution().toBuilder().description("HMP Highland").build()));
 
@@ -606,7 +623,7 @@ public class CustodyServiceTest {
                     final var featureSwitches = new FeatureSwitches();
                     featureSwitches.getNoms().getUpdate().setCustody(true);
                     featureSwitches.getNoms().getUpdate().getMultipleEvents().setUpdatePrisonLocation(true);
-                    custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches);
+                    custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches, deliusApiClient, deliusIntegrationContextConfig);
 
                     final var event1 = EntityHelper.aCustodyEvent();
                     event1.getDisposal().getCustody().setInstitution(aPrisonInstitution().toBuilder().nomisCdeCode("MDI").build());
@@ -655,7 +672,7 @@ public class CustodyServiceTest {
                     final var featureSwitches = new FeatureSwitches();
                     featureSwitches.getNoms().getUpdate().setCustody(true);
                     featureSwitches.getNoms().getUpdate().getMultipleEvents().setUpdatePrisonLocation(false);
-                    custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches);
+                    custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches, deliusApiClient, deliusIntegrationContextConfig);
 
                     final var event1 = EntityHelper.aCustodyEvent();
                     event1.getDisposal().getCustody().setInstitution(aPrisonInstitution().toBuilder().nomisCdeCode("MDI").build());
@@ -917,7 +934,7 @@ public class CustodyServiceTest {
                     final var featureSwitches = new FeatureSwitches();
                     featureSwitches.getNoms().getUpdate().setCustody(true);
                     featureSwitches.getNoms().getUpdate().getBooking().setNumber(false);
-                    custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches);
+                    custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches, deliusApiClient, deliusIntegrationContextConfig);
                 }
 
                 @Test
@@ -1261,6 +1278,7 @@ public class CustodyServiceTest {
                     OffenderReleasedNotification.builder()
                         .nomsPrisonInstitutionCode("MDI")
                         .releaseDate(LocalDate.of(2020, 11, 22))
+                        .reason("RELEASED")
                         .build()))
                     .isInstanceOf(ConflictingRequestException.class);
             }
@@ -1282,6 +1300,7 @@ public class CustodyServiceTest {
                     OffenderReleasedNotification.builder()
                         .nomsPrisonInstitutionCode("MDI")
                         .releaseDate(LocalDate.of(2020, 11, 22))
+                        .reason("RELEASED")
                         .build()))
                     .isInstanceOf(ConflictingRequestException.class);
             }
@@ -1308,10 +1327,57 @@ public class CustodyServiceTest {
         }
 
         @Nested
+        @DisplayName("and there is no matching institution")
+        class WhenHasNoMatchingInstitution {
+            @BeforeEach
+            void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
+                when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.empty());
+                when(convictionService.getActiveCustodialEvent(anyLong())).thenReturn(aCustodyEvent());
+            }
+
+            @Test
+            @DisplayName("then a BadRequestException will be thrown")
+            void willThrowBadRequest() {
+                assertThatThrownBy(() -> custodyService.offenderReleased("G9542VP",
+                    OffenderReleasedNotification.builder()
+                        .nomsPrisonInstitutionCode("MDI")
+                        .releaseDate(LocalDate.of(2020, 11, 22))
+                        .reason("RELEASED")
+                        .build()))
+                    .isInstanceOf(BadRequestException.class)
+                    .hasMessage("Delius institution code does not exist for NOMIS CDE code: MDI");
+            }
+        }
+
+        @Nested
+        @DisplayName("and there is no matching reason code")
+        class WhenHasNoMatchingReason {
+            @BeforeEach
+            void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
+                when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution()));
+                when(convictionService.getActiveCustodialEvent(anyLong())).thenReturn(aCustodyEvent());
+            }
+
+            @Test
+            @DisplayName("then a BadRequestException will be thrown")
+            void willThrowBadRequest() {
+                assertThatThrownBy(() -> custodyService.offenderReleased("G9542VP",
+                    OffenderReleasedNotification.builder()
+                        .nomsPrisonInstitutionCode("MDI")
+                        .releaseDate(LocalDate.of(2020, 11, 22))
+                        .reason("INVALID")
+                        .build()))
+                    .isInstanceOf(BadRequestException.class)
+                    .hasMessage("Release Type mapping from reason does not exist for: INVALID");
+            }
+        }
+
+        @Nested
         @DisplayName("and there is one active event for the offender")
         class WhenHasSingleActiveEvent {
             @BeforeEach
             void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
+                when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution()));
                 when(convictionService.getActiveCustodialEvent(anyLong())).thenReturn(aCustodyEvent());
             }
 
@@ -1322,6 +1388,7 @@ public class CustodyServiceTest {
                     OffenderReleasedNotification.builder()
                         .nomsPrisonInstitutionCode("MDI")
                         .releaseDate(LocalDate.of(2020, 11, 22))
+                        .reason("RELEASED")
                         .build());
                 assertThat(custody.getStatus().getDescription()).isEqualTo("In Custody");
             }

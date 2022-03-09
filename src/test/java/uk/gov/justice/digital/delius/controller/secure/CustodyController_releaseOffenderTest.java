@@ -132,6 +132,7 @@ public class CustodyController_releaseOffenderTest {
             .builder()
             .nomsPrisonInstitutionCode("MDI")
             .releaseDate(LocalDate.of(2020, 11, 22))
+            .reason("RELEASED")
             .build();
     }
 

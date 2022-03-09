@@ -1,12 +1,18 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
 import com.microsoft.applicationinsights.TelemetryClient;
+import io.restassured.RestAssured;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import uk.gov.justice.digital.delius.FlywayRestoreExtension;
+import uk.gov.justice.digital.delius.controller.wiremock.DeliusApiExtension;
+import uk.gov.justice.digital.delius.controller.wiremock.DeliusApiMockServer;
 import uk.gov.justice.digital.delius.data.api.Custody;
 
 import static io.restassured.RestAssured.given;
@@ -21,8 +27,23 @@ import static org.mockito.Mockito.verifyNoInteractions;
 @ExtendWith(FlywayRestoreExtension.class)
 public class CustodyResource_releaseOffenderAPITest extends IntegrationTestBase {
 
+    private static final DeliusApiMockServer deliusApiMockServer = new DeliusApiMockServer(7999);
+
+    @RegisterExtension
+    static DeliusApiExtension deliusExtension = new DeliusApiExtension(deliusApiMockServer);
+
+    @LocalServerPort
+    int port;
+
+    public static final String BODY = "{\"nomsPrisonInstitutionCode\" : \"MDI\", \"releaseDate\" : \"2020-12-22\", \"reason\" : \"RELEASED\"}";
     @SpyBean
     private TelemetryClient telemetryClient;
+
+    @BeforeEach
+    public void setup() {
+        RestAssured.port = port;
+        RestAssured.basePath = "/secure";
+    }
 
     @Test
     @DisplayName("Will return 403 without the correct role")
@@ -32,7 +53,7 @@ public class CustodyResource_releaseOffenderAPITest extends IntegrationTestBase 
         given()
             .auth().oauth2(token)
             .contentType("application/json")
-            .body("{\"nomsPrisonInstitutionCode\" : \"MDI\", \"releaseDate\" : \"2020-12-22\"}")
+            .body(BODY)
             .when()
             .put("/offenders/nomsNumber/G0560UO/released")
             .then()
@@ -47,7 +68,7 @@ public class CustodyResource_releaseOffenderAPITest extends IntegrationTestBase 
         given()
             .auth().oauth2(token)
             .contentType("application/json")
-            .body("{\"nomsPrisonInstitutionCode\" : \"MDI\", \"releaseDate\" : \"2020-12-22\"}")
+            .body(BODY)
             .when()
             .put("/offenders/nomsNumber/g4106un/released")
             .then()
@@ -66,7 +87,7 @@ public class CustodyResource_releaseOffenderAPITest extends IntegrationTestBase 
         given()
             .auth().oauth2(token)
             .contentType("application/json")
-            .body("{\"nomsPrisonInstitutionCode\" : \"MDI\", \"releaseDate\" : \"2020-12-22\"}")
+            .body(BODY)
             .when()
             .put("/offenders/nomsNumber/X1235YZ/released")
             .then()
@@ -85,7 +106,7 @@ public class CustodyResource_releaseOffenderAPITest extends IntegrationTestBase 
         given()
             .auth().oauth2(token)
             .contentType("application/json")
-            .body("{\"nomsPrisonInstitutionCode\" : \"MDI\", \"releaseDate\" : \"2020-12-22\"}")
+            .body(BODY)
             .when()
             .put("/offenders/nomsNumber/G3636DD/released")
             .then()
@@ -99,12 +120,13 @@ public class CustodyResource_releaseOffenderAPITest extends IntegrationTestBase 
     @Test
     @DisplayName("Will succeed for an offender that has multiple nomis records where one is on an active sentence and the other is not")
     public void duplicateOffenderSingleActive() {
+        deliusApiMockServer.stubPostReleaseDuplicateOffenderSingleActiveDeliusApi();
         final var token = tokenWithRoleCommunityAndCustodyUpdate();
 
         final var custody = given()
             .auth().oauth2(token)
             .contentType("application/json")
-            .body("{\"nomsPrisonInstitutionCode\" : \"MDI\", \"releaseDate\" : \"2020-12-22\"}")
+            .body(BODY)
             .when()
             .put("/offenders/nomsNumber/G3232DD/released")
             .then()
@@ -121,12 +143,13 @@ public class CustodyResource_releaseOffenderAPITest extends IntegrationTestBase 
     @Test
     @DisplayName("Successfully update the released offender")
     public void processesOffenderReleased() {
+        deliusApiMockServer.stubPostReleaseDeliusApi();
         final var token = tokenWithRoleCommunityAndCustodyUpdate();
 
         final var custody = given()
             .auth().oauth2(token)
             .contentType("application/json")
-            .body("{\"nomsPrisonInstitutionCode\" : \"MDI\", \"releaseDate\" : \"2020-12-22\"}")
+            .body(BODY)
             .when()
             .put("/offenders/nomsNumber/G9542VP/released")
             .then()

@@ -26,4 +26,6 @@ public class Custody {
     @ApiModelProperty(value = "Date when related sentence started")
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate sentenceStartDate;
+
+
 }
