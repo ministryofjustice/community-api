@@ -103,6 +103,43 @@ public class StaffResource_StaffDetailsAPITest extends IntegrationTestBase {
     }
 
     @Test
+    public void canRetrieveStaffDetailsByStaffCode() {
+        val staffDetails = given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get("staff/staffCode/SH00001")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(StaffDetails.class);
+
+        assertThat(staffDetails).isNotNull();
+
+        assertThat(staffDetails.getProbationArea()).isEqualTo((ProbationArea.builder()
+            .probationAreaId(11L)
+            .code("ESX")
+            .description("Essex")
+            .organisation(KeyValue.builder().code("EA").description("Eastern").build())
+            .build()));
+    }
+
+    @Test
+    public void retrievingStaffDetailsByStaffCodeReturn404WhenUserExistsButStaffDoesNot() {
+
+        given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get("staff/staffCode/noCode123")
+            .then()
+            .statusCode(404);
+    }
+
+    @Test
     public void retrieveStaffDetailsForMultipleUsers() {
 
         val staffDetails = given()
