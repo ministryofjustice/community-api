@@ -62,13 +62,7 @@ public class StaffService {
         return staffRepository
             .findByStaffId(staffIdentifier)
             .map(StaffTransformer::staffDetailsOf)
-            .map(staffDetails ->
-                Optional.ofNullable(staffDetails.getUsername())
-                    .map(username -> staffDetails
-                        .toBuilder()
-                        .email(ldapRepository.getEmail(username))
-                        .build())
-                    .orElse(staffDetails));
+            .map(addFieldsFromLdap());
     }
 
     @Transactional(readOnly = true)
