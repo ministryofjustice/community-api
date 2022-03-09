@@ -692,6 +692,7 @@ public class EntityHelper {
                 .surname("Smith")
                 .teams(List.of())
                 .probationArea(aProbationArea())
+                .grade(aStandardReference("SPO", "Senior Probation Officer"))
                 .build();
     }
 
@@ -927,6 +928,8 @@ public class EntityHelper {
                 .staff(aStaff())
                 .activeFlag(1L)
                 .probationArea(aProbationArea())
+                .allocationDate(LocalDate.of(2021, 4, 1).atStartOfDay())
+                .endDate(LocalDate.of(2021, 5, 1).atStartOfDay())
                 .build();
     }
 
