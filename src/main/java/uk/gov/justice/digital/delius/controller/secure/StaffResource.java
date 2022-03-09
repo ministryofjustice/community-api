@@ -122,6 +122,17 @@ public class StaffResource {
         return staffService.getStaffDetailsByUsernames(usernames);
     }
 
+    @ApiOperation(value = "Returns a list of staff details for supplied staffCodes - POST version to allow large user lists.", notes = "staff details for supplied staffCodes", nickname = "getStaffDetailsByStaffCodeList")
+    @ApiResponses(value = {
+        @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+        @ApiResponse(code = 404, message = "Not found", response = ErrorResponse.class),
+        @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
+    @PostMapping(path = "/staff/list/staffCodes", consumes = "application/json")
+    public List<StaffDetails> getStaffDetailsByStaffCodeList(final @RequestBody Set<String> staffCodes) {
+        log.info("getStaffDetailsByStaffCodeList called with {}", staffCodes);
+        return staffService.getStaffDetailsByStaffCodes(staffCodes);
+    }
+
     @ApiOperation(value = "EXPERIMENTAL: Return list of of currently managed offenders, with RAR requirement and only a single active sentence",
         notes = "Accepts a Delius Username. No backward compatibility guaranteed - intended for the use of the Manage a Supervision service, behaviour or responses may be modified in the future.")
     @ApiResponses(value = {

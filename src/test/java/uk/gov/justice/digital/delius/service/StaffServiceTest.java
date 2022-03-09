@@ -302,6 +302,47 @@ public class StaffServiceTest {
     }
 
     @Test
+    public void willReturnCorrectDetailsForMultipleStaffCodes_getStaffDetailsByStaffCodes() {
+        Set<String> staffCodes = Set.of("X1234", "A4321");
+
+        when(staffRepository.findByOfficerCodeIn(any()))
+            .thenReturn(ImmutableList.of(
+                aStaff()
+                    .toBuilder()
+                    .user(
+                        aUser()
+                            .toBuilder()
+                            .distinguishedName("joefrazier")
+                            .build())
+                    .build(),
+                aStaff()
+                    .toBuilder()
+                    .user(
+                        aUser()
+                            .toBuilder()
+                            .distinguishedName("georgeforeman")
+                            .build())
+                    .build()
+            ));
+
+        var frazierNDelius = NDeliusUser.builder().telephoneNumber("111 222").mail("joefrazier@service.com").build();
+        var foremanNDelius = NDeliusUser.builder().telephoneNumber("333 444").mail("georgeforeman@service.com").build();
+        when(ldapRepository.getDeliusUserNoRoles("joefrazier")).thenReturn(Optional.of(frazierNDelius));
+        when(ldapRepository.getDeliusUserNoRoles("georgeforeman")).thenReturn(Optional.of(foremanNDelius));
+
+        List<StaffDetails> staffDetailsList = staffService.getStaffDetailsByStaffCodes(staffCodes);
+
+        var frazierUserDetails = staffDetailsList.stream().filter(s -> s.getUsername().equals("joefrazier")).findFirst().orElseThrow();
+        var foremanUserDetails = staffDetailsList.stream().filter(s -> s.getUsername().equals("georgeforeman")).findFirst().orElseThrow();
+
+        assertThat(staffDetailsList.size()).isEqualTo(2);
+        assertThat(frazierUserDetails.getEmail()).isEqualTo("joefrazier@service.com");
+        assertThat(foremanUserDetails.getEmail()).isEqualTo("georgeforeman@service.com");
+        assertThat(frazierUserDetails.getUsername()).isEqualTo("joefrazier");
+        assertThat(foremanUserDetails.getUsername()).isEqualTo("georgeforeman");
+    }
+
+    @Test
     public void willReturnStaffIfFoundWithoutCreatingANewOne() {
         when(staffRepository
                 .findFirstBySurnameIgnoreCaseAndForenameIgnoreCaseAndProbationArea(any(), any(), any(ProbationArea.class)))

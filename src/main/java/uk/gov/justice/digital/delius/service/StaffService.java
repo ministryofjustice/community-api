@@ -90,6 +90,15 @@ public class StaffService {
             .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<StaffDetails> getStaffDetailsByStaffCodes(final Set<String> staffCodes) {
+        return staffRepository.findByOfficerCodeIn(staffCodes)
+            .stream()
+            .map(StaffTransformer::staffDetailsOf)
+            .map(addFieldsFromLdap())
+            .collect(Collectors.toList());
+    }
+
     @Transactional
     public Staff findOrCreateStaffInArea(final ContactableHuman staff, final ProbationArea probationArea) {
         return staffRepository.findFirstBySurnameIgnoreCaseAndForenameIgnoreCaseAndProbationArea(staff.getSurname(), firstNameIn(staff.getForenames()), probationArea)
