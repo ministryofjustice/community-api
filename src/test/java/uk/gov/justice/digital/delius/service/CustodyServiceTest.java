@@ -25,7 +25,6 @@ import uk.gov.justice.digital.delius.data.api.UpdateCustodyBookingNumber;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CustodyHistory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
-import uk.gov.justice.digital.delius.jpa.standard.entity.RInstitution;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CustodyHistoryRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionRepository;
@@ -1328,19 +1327,63 @@ public class CustodyServiceTest {
         }
 
         @Nested
+        @DisplayName("and there is no matching institution")
+        class WhenHasNoMatchingInstitution {
+            @BeforeEach
+            void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
+                when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.empty());
+                when(convictionService.getActiveCustodialEvent(anyLong())).thenReturn(aCustodyEvent());
+            }
+
+            @Test
+            @DisplayName("then a BadRequestException will be thrown")
+            void willThrowBadRequest() {
+                assertThatThrownBy(() -> custodyService.offenderReleased("G9542VP",
+                    OffenderReleasedNotification.builder()
+                        .nomsPrisonInstitutionCode("MDI")
+                        .releaseDate(LocalDate.of(2020, 11, 22))
+                        .reason("RELEASED")
+                        .build()))
+                    .isInstanceOf(BadRequestException.class)
+                    .hasMessage("Delius institution code does not exist for NOMIS CDE code: MDI");
+            }
+        }
+
+        @Nested
+        @DisplayName("and there is no matching reason code")
+        class WhenHasNoMatchingReason {
+            @BeforeEach
+            void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
+                when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution()));
+                when(convictionService.getActiveCustodialEvent(anyLong())).thenReturn(aCustodyEvent());
+            }
+
+            @Test
+            @DisplayName("then a BadRequestException will be thrown")
+            void willThrowBadRequest() {
+                assertThatThrownBy(() -> custodyService.offenderReleased("G9542VP",
+                    OffenderReleasedNotification.builder()
+                        .nomsPrisonInstitutionCode("MDI")
+                        .releaseDate(LocalDate.of(2020, 11, 22))
+                        .reason("INVALID")
+                        .build()))
+                    .isInstanceOf(BadRequestException.class)
+                    .hasMessage("Release Type mapping from reason does not exist for: INVALID");
+            }
+        }
+
+        @Nested
         @DisplayName("and there is one active event for the offender")
         class WhenHasSingleActiveEvent {
             @BeforeEach
             void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
+                when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution()));
                 when(convictionService.getActiveCustodialEvent(anyLong())).thenReturn(aCustodyEvent());
             }
 
             @Test
             @DisplayName("then the custody record will be returned")
             void willReturnCustody() {
-                RInstitution institution = new RInstitution();
-                institution.setCode("MDIHMP");
-                when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(institution));
                 final var custody = custodyService.offenderReleased("G9542VP",
                     OffenderReleasedNotification.builder()
                         .nomsPrisonInstitutionCode("MDI")

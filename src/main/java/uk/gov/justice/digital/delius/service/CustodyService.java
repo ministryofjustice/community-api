@@ -292,10 +292,8 @@ public class CustodyService {
         if(featureSwitches.getNoms().getUpdate().isRelease()) {
             var context = getContext(CONTEXT);
             var releaseMapping = context.getReleaseTypeMapping();
-            var deliusReleaseType = ofNullable(releaseMapping.getReasonToReleaseType().get(releasedNotification.getReason())).orElseThrow(
-                () -> new BadRequestException("Release Type mapping from reason does not exist for: " + releasedNotification.getReason())
-            );
-
+            var deliusReleaseType = ofNullable(releaseMapping.getReasonToReleaseType().get(releasedNotification.getReason()))
+                .orElseThrow(() -> new BadRequestException("Release Type mapping from reason does not exist for: " + releasedNotification.getReason()));
             var deliusInstitution = institutionRepository.findByNomisCdeCode(releasedNotification.getNomsPrisonInstitutionCode())
                 .orElseThrow(() -> new BadRequestException("Delius institution code does not exist for NOMIS CDE code: " + releasedNotification.getNomsPrisonInstitutionCode()));
 
