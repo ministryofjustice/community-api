@@ -15,6 +15,8 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
 
     Optional<Staff> findByOfficerCode(String officerCode);
 
+    List<Staff> findByOfficerCodeIn(Set<String> officerCodes);
+
     @Query("select u.staff from User u where upper(u.distinguishedName) = upper(:username)")
     Optional<Staff> findByUsername(@Param("username") String username);
 

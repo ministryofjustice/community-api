@@ -73,10 +73,26 @@ public class StaffService {
     }
 
     @Transactional(readOnly = true)
+    public Optional<StaffDetails> getStaffDetailsByStaffCode(final String staffCode) {
+        return staffRepository.findByOfficerCode(staffCode)
+            .map(StaffTransformer::staffDetailsOf)
+            .map(addFieldsFromLdap());
+    }
+
+    @Transactional(readOnly = true)
     public List<StaffDetails> getStaffDetailsByUsernames(final Set<String> usernames) {
         final var capitalisedUsernames = usernames.stream().map(String::toUpperCase).collect(Collectors.toSet());
 
         return staffRepository.findByUsernames(capitalisedUsernames)
+            .stream()
+            .map(StaffTransformer::staffDetailsOf)
+            .map(addFieldsFromLdap())
+            .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<StaffDetails> getStaffDetailsByStaffCodes(final Set<String> staffCodes) {
+        return staffRepository.findByOfficerCodeIn(staffCodes)
             .stream()
             .map(StaffTransformer::staffDetailsOf)
             .map(addFieldsFromLdap())
