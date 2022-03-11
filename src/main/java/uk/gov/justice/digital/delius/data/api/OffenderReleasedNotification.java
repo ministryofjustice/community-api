@@ -10,9 +10,9 @@ import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
 public class OffenderReleasedNotification {
     @NotBlank(message = "Missing a NOMS prison institution code in nomsPrisonInstitutionCode")
     @ApiModelProperty(value = "The Prison institution code in NOMIS the offender was released from", required = true, example = "MDI")

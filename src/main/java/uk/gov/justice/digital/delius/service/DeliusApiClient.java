@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ContactDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewContact;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewNsi;
+import uk.gov.justice.digital.delius.data.api.deliusapi.NewRecall;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewRelease;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NsiDto;
 import uk.gov.justice.digital.delius.data.api.deliusapi.ReplaceContact;
@@ -115,6 +116,17 @@ public class DeliusApiClient {
             .bodyValue(newRelease)
             .retrieve()
             .bodyToMono(NewRelease.class)
+            .block();
+    }
+
+    public NewRecall createNewRecall(String crn, Long eventId, NewRecall newRelease){
+        return webClient.post()
+            .uri(fromPath("/v1/offenders/{crn}/events/{eventId}/recalls").buildAndExpand(crn, eventId).toUriString())
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+            .bodyValue(newRelease)
+            .retrieve()
+            .bodyToMono(NewRecall.class)
             .block();
     }
 }
