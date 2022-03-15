@@ -30,7 +30,6 @@ import uk.gov.justice.digital.delius.data.api.ManagedOffender;
 import uk.gov.justice.digital.delius.data.api.ManagedOffenderCrn;
 import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.service.CaseloadService;
 import uk.gov.justice.digital.delius.service.StaffService;
 import uk.gov.justice.digital.delius.validation.StaffCode;
@@ -183,9 +182,10 @@ public class StaffResource {
             .orElseThrow(() -> new NotFoundException(String.format("Staff member with code %s", staffCode))));
     }
 
-    @ApiOperation(value = "Return the list of heads of a specific probation area based oon a pdu code")
-    @GetMapping(path = "/staff/pduHeads/probationAreas/code/{areaCode}/pdus/code/{pduCode}")
-    public List<StaffDetails> getProbationPduHeads( @NotNull @PathVariable String areaCode,@NotNull @PathVariable String pduCode) {
-        return staffService.getProbationDeliveryUnitHeads(areaCode, pduCode);
+    @ApiOperation(value = "Return the list of heads of a specific probation delivery unit (aka borough)")
+    @GetMapping(path = "/staff/pduHeads/{pduCode}")
+    public List<StaffDetails> getProbationPduHeads(@NotNull @PathVariable String pduCode) {
+        return staffService.getProbationDeliveryUnitHeads(pduCode)
+            .orElseThrow(() -> new NotFoundException(String.format("Probation delivery unit with code %s", pduCode)));
     }
 }
