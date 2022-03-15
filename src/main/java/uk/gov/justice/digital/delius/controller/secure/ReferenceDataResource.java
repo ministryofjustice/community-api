@@ -64,8 +64,6 @@ public class ReferenceDataResource {
     @GetMapping("/probationAreas/localDeliveryUnits")
     public List<ProbationAreaWithLocalDeliveryUnits> getProbationAreasAndLocalDeliveryUnits(
             @ApiParam(name = "active", value = "Restricts to active areas only", example = "true") final @RequestParam(name = "active", required = false) boolean restrictActive) {
-
-        log.info("Call to getProbationAreasAndLocalDeliveryUnits");
         return referenceDataService.getProbationAreasAndLocalDeliveryUnits(restrictActive);
     }
 
@@ -81,8 +79,6 @@ public class ReferenceDataResource {
     @GetMapping(value = "/probationAreas/code/{code}/localDeliveryUnits")
     public Page<KeyValue> getLdusForProbationCode(
             @ApiParam(name = "code", value = "Probation area code", example = "NO2", required = true) final @PathVariable String code) {
-
-        log.info("Call to getLdusForProbationCode");
         return referenceDataService.getLocalDeliveryUnitsForProbationArea(code);
     }
 

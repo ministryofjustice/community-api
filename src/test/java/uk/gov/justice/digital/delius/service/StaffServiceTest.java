@@ -18,12 +18,14 @@ import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
+import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffHelperRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
 import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusUser;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -398,4 +400,16 @@ public class StaffServiceTest {
 
         assertThat(staffId).isEqualTo(Optional.of(123L));
     }
+
+
+    @Test
+    public void getHeadsOfDeliveryUnit(){
+        var staff = Staff.builder()
+            .surname("name").surname("surname").grade(StandardReference.builder().codeValue("NPSB").build()).build();
+        var expectedResult = List.of(staff);
+        when(staffRepository.findStaffByProbationAreaAndPduCodeAndGrade("N0711","N07NPS1", "NPSB")).thenReturn(expectedResult);
+        var actusalresult = staffService.getProbationDeliveryUnitHeads("N0711","N07NPS1");
+        assertThat(actusalresult.size() == expectedResult.size());
+    }
+
 }

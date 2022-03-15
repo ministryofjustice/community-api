@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -118,6 +119,20 @@ public class StaffService {
 
     Optional<Staff> findUnallocatedForTeam(final Team team) {
         return staffRepository.findByUnallocatedByTeam(team.getTeamId());
+    }
+
+    @Value("${delius.staff.head.grade}")
+    private String staffHeadGrade;
+
+    public List<StaffDetails> getProbationDeliveryUnitHeads(String probationAreaCode, String boroughCode){
+        var result =  staffRepository.findStaffByProbationAreaAndPduCodeAndGrade(probationAreaCode, boroughCode, "${delius.staff.head.grade}");
+
+        return result
+            .stream()
+            .map(StaffTransformer::staffDetailsOf)
+            .map(addFieldsFromLdap())
+            .collect(Collectors.toList());
+
     }
 
     private Function<StaffDetails, StaffDetails> addEmailFromLdap() {

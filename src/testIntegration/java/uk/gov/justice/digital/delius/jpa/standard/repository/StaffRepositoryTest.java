@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.jpa.standard.repository;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,6 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,4 +32,17 @@ public class StaffRepositoryTest {
             assertThat(maybeStaff.get().getSurname()).isEqualTo("HANCOCK");
         }
     }
+
+   @Test
+    public void findHeadsOfPDU(){
+       var result =  staffRepository.findStaffByProbationAreaAndPduCodeAndGrade("N07","N07NPS1", "NPSB");
+        assertThat(result.size() == 2);
+    }
+
+    @Test
+    public void ShouldReturnEmptyCollectionWhenNotFound(){
+        var result =  staffRepository.findStaffByProbationAreaAndPduCodeAndGrade("N0711","N07NPS1", "NPSB");
+        assertThat(result.size() == 0);
+    }
+
 }
