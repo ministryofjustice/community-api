@@ -90,6 +90,9 @@ delius:
   baseurl: 'http://localhost:8999'
   username: 'default'
   password: 'default'
+  staff:
+    head:
+      - grade: NPSB
 
 deliusApi:
   baseurl: 'http://localhost:7999'
