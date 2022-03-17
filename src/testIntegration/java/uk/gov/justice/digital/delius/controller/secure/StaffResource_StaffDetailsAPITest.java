@@ -176,7 +176,7 @@ public class StaffResource_StaffDetailsAPITest extends IntegrationTestBase {
 
 
     @Test
-    public void retrieveProbationAreaHeadsIsEmpty() {
+    public void retrieveProbationAreaHeadsWherePDUDoesNotExist() {
 
         val staffDetails = given()
             .auth()
@@ -184,14 +184,9 @@ public class StaffResource_StaffDetailsAPITest extends IntegrationTestBase {
             .contentType(APPLICATION_JSON_VALUE)
             .body(getUsernames(Set.of("xxxppp1ps", "dddiiiyyyLdap")))
             .when()
-            .get("/staff/pduHeads/probationAreas/code/123/pdus/code/123")
+            .get("/staff/pduHeads/N07123")
             .then()
-            .statusCode(200)
-            .extract()
-            .body()
-            .as(StaffDetails[].class);
-
-        assertThat(staffDetails).isEmpty();
+            .statusCode(404);
     }
 
 
@@ -201,9 +196,26 @@ public class StaffResource_StaffDetailsAPITest extends IntegrationTestBase {
             .auth()
             .oauth2(tokenWithRoleCommunity())
             .contentType(APPLICATION_JSON_VALUE)
-            .body(getUsernames(Set.of("xxxppp1ps", "dddiiiyyyLdap")))
             .when()
-            .get("/staff/pduHeads/probationAreas/code/N07/pdus/code/N07NPS1")
+            .get("/staff/pduHeads/N01ALL")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(Staff[].class);
+
+        assertThat(staffDetails).hasSize(1);
+    }
+
+
+    @Test
+    public void retrieveProbationAreaHeadsHasNoValues() {
+        val staffDetails = given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get("/staff/pduHeads/N02ALL")
             .then()
             .statusCode(200)
             .extract()
@@ -212,5 +224,4 @@ public class StaffResource_StaffDetailsAPITest extends IntegrationTestBase {
 
         assertThat(staffDetails).isEmpty();
     }
-
 }

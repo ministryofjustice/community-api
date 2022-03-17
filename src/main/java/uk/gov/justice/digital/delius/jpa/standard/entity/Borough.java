@@ -85,7 +85,7 @@ public class Borough {
 
     @ManyToMany
     @JoinTable(name = "R_LEVEL_2_HEAD_OF_LEVEL_2",
-        joinColumns = @JoinColumn(name = "STAFF_ID"),
-        inverseJoinColumns = @JoinColumn(name = "BOROUGH_ID"))
+        joinColumns = @JoinColumn(name = "BOROUGH_ID"),
+        inverseJoinColumns = @JoinColumn(name = "STAFF_ID"))
     private List<Staff> headsOfProbationDeliveryUnit;
 }
