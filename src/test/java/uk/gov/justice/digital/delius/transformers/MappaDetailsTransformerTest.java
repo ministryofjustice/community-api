@@ -85,6 +85,7 @@ public class MappaDetailsTransformerTest {
         assertThat(MappaCategory.toCommunityCategory("M1")).isEqualTo(1);
         assertThat(MappaCategory.toCommunityCategory("M2")).isEqualTo(2);
         assertThat(MappaCategory.toCommunityCategory("M3")).isEqualTo(3);
+        assertThat(MappaCategory.toCommunityCategory("M4")).isEqualTo(4);
         assertThat(MappaCategory.toCommunityCategory("UNKNOWN")).isEqualTo(0);
         assertThat(MappaCategory.toCommunityCategory("M0")).isEqualTo(0);
     }

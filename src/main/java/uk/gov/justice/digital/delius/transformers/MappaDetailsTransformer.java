@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import org.jetbrains.annotations.NotNull;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.MappaDetails;
 import uk.gov.justice.digital.delius.data.api.StaffHuman;
@@ -82,7 +81,8 @@ public class MappaDetailsTransformer {
         NOMINAL(0, "X9"),
         ONE(1, "M1"),
         TWO(2, "M2"),
-        THREE(3, "M3");
+        THREE(3, "M3"),
+        FOUR(4, "M4");
 
         private final Integer communityValue;
         private final String deliusValue;
