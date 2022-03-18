@@ -368,6 +368,7 @@ workflows:
                 - main
     jobs:
       - hmpps/gradle_owasp_dependency_check:
+          cache_key: v2_0
           slack_channel: probation-integration-notifications
           context:
             - hmpps-common-vars
