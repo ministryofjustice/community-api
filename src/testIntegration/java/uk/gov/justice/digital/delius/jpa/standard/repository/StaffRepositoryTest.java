@@ -32,17 +32,4 @@ public class StaffRepositoryTest {
             assertThat(maybeStaff.get().getSurname()).isEqualTo("HANCOCK");
         }
     }
-
-   @Test
-    public void findHeadsOfPDU(){
-       var result =  staffRepository.findStaffByProbationAreaAndPduCodeAndGrade("N07","N07NPS1", "NPSB");
-        assertThat(result.size() == 2);
-    }
-
-    @Test
-    public void ShouldReturnEmptyCollectionWhenNotFound(){
-        var result =  staffRepository.findStaffByProbationAreaAndPduCodeAndGrade("N0711","N07NPS1", "NPSB");
-        assertThat(result.size() == 0);
-    }
-
 }
