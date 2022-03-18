@@ -4,9 +4,12 @@ import com.microsoft.applicationinsights.TelemetryClient;
 import io.vavr.control.Either;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
+import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
 import uk.gov.justice.digital.delius.config.FeatureSwitches;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
@@ -16,6 +19,7 @@ import uk.gov.justice.digital.delius.data.api.OffenderRecalledNotification;
 import uk.gov.justice.digital.delius.data.api.OffenderReleasedNotification;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustodyBookingNumber;
+import uk.gov.justice.digital.delius.data.api.deliusapi.NewRelease;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CustodyHistory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
@@ -39,6 +43,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.service.CustodyService.PrisonLocationUpdateError.Reason.ConvictionNotFound;
 import static uk.gov.justice.digital.delius.service.CustodyService.PrisonLocationUpdateError.Reason.MultipleCustodialSentences;
@@ -48,6 +53,7 @@ import static uk.gov.justice.digital.delius.service.CustodyService.PrisonLocatio
 @Service
 @Slf4j
 public class CustodyService {
+    private static final String CONTEXT = "prison-to-probation";
     private final Boolean updateCustodyFeatureSwitch;
     private final Boolean updateBookingNumberFeatureSwitch;
     private final TelemetryClient telemetryClient;
@@ -61,6 +67,9 @@ public class CustodyService {
     private final ContactService contactService;
     private final OffenderPrisonerService offenderPrisonerService;
     private final FeatureSwitches featureSwitches;
+    private final DeliusApiClient deliusApiClient;
+    private final DeliusIntegrationContextConfig deliusIntegrationContextConfig;
+
 
     public CustodyService(
             final TelemetryClient telemetryClient,
@@ -73,7 +82,9 @@ public class CustodyService {
             final OffenderManagerService offenderManagerService,
             final ContactService contactService,
             final OffenderPrisonerService offenderPrisonerService,
-            final FeatureSwitches featureSwitches) {
+            final FeatureSwitches featureSwitches,
+            final DeliusApiClient deliusApiClient,
+            final DeliusIntegrationContextConfig deliusIntegrationContextConfig) {
         this.updateCustodyFeatureSwitch = featureSwitches.getNoms().getUpdate().isCustody();
         this.updateBookingNumberFeatureSwitch = featureSwitches.getNoms().getUpdate().getBooking().isNumber();
         this.telemetryClient = telemetryClient;
@@ -87,6 +98,8 @@ public class CustodyService {
         this.contactService = contactService;
         this.offenderPrisonerService = offenderPrisonerService;
         this.featureSwitches = featureSwitches;
+        this.deliusApiClient = deliusApiClient;
+        this.deliusIntegrationContextConfig = deliusIntegrationContextConfig;
     }
 
     @Transactional
@@ -256,10 +269,12 @@ public class CustodyService {
             .map(offender -> {
                 final var telemetryProperties = Map.of("offenderNo", nomsNumber,
                     "releaseDate", releasedNotification.getReleaseDate().format(DateTimeFormatter.ISO_DATE),
-                    "institution", releasedNotification.getNomsPrisonInstitutionCode());
+                    "institution", releasedNotification.getNomsPrisonInstitutionCode(),
+                    "reason", releasedNotification.getReason());
                 try {
                     final var event = convictionService.getActiveCustodialEvent(offender.getOffenderId());
                     telemetryClient.trackEvent("P2POffenderReleased", telemetryProperties, null);
+                    addRelease(releasedNotification, event.getEventId(), offender.getCrn());
                     return ConvictionTransformer.custodyOf(event.getDisposal().getCustody());
                 } catch (final SingleActiveCustodyConvictionNotFoundException e) {
                     telemetryClient.trackEvent("P2POffenderReleasedNoSingleConviction", telemetryProperties, null);
@@ -271,6 +286,27 @@ public class CustodyService {
                 }
                 return new NotFoundException(error.getMessage());
             });
+    }
+
+    private void addRelease(OffenderReleasedNotification releasedNotification, Long eventId, String crn) {
+        if(featureSwitches.getNoms().getUpdate().isRelease()) {
+            var context = getContext(CONTEXT);
+            var releaseMapping = context.getReleaseTypeMapping();
+            var deliusReleaseType = ofNullable(releaseMapping.getReasonToReleaseType().get(releasedNotification.getReason()))
+                .orElseThrow(() -> new BadRequestException("Release Type mapping from reason does not exist for: " + releasedNotification.getReason()));
+            var deliusInstitution = institutionRepository.findByNomisCdeCode(releasedNotification.getNomsPrisonInstitutionCode())
+                .orElseThrow(() -> new BadRequestException("Delius institution code does not exist for NOMIS CDE code: " + releasedNotification.getNomsPrisonInstitutionCode()));
+
+            val newRelease = NewRelease.builder()
+                .releaseType(deliusReleaseType)
+                .actualReleaseDate(releasedNotification.getReleaseDate())
+                .institution(deliusInstitution.getCode())
+                .build();
+            deliusApiClient.createNewRelease(crn, eventId, newRelease);
+        }
+        else {
+            log.warn("Offender release for CRN: " + crn + " will be ignored, this feature is switched off ");
+        }
     }
 
     private Event updateBookingNumberFor(final Offender offender, final Event event, final String bookingNumber) {
@@ -459,5 +495,12 @@ public class CustodyService {
         final var all = new HashMap<>(map1);
         all.putAll(map2);
         return Map.copyOf(all);
+    }
+
+    IntegrationContext getContext(String contextName) {
+        var context = deliusIntegrationContextConfig.getIntegrationContexts().get(contextName);
+        return ofNullable(context).orElseThrow(
+            () -> new IllegalStateException("IntegrationContext does not exist for: " + contextName)
+        );
     }
 }

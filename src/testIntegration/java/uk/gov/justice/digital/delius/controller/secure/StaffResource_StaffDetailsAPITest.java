@@ -104,6 +104,43 @@ public class StaffResource_StaffDetailsAPITest extends IntegrationTestBase {
     }
 
     @Test
+    public void canRetrieveStaffDetailsByStaffCode() {
+        val staffDetails = given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get("staff/staffCode/SH00001")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(StaffDetails.class);
+
+        assertThat(staffDetails).isNotNull();
+
+        assertThat(staffDetails.getProbationArea()).isEqualTo((ProbationArea.builder()
+            .probationAreaId(11L)
+            .code("ESX")
+            .description("Essex")
+            .organisation(KeyValue.builder().code("EA").description("Eastern").build())
+            .build()));
+    }
+
+    @Test
+    public void retrievingStaffDetailsByStaffCodeReturn404WhenUserExistsButStaffDoesNot() {
+
+        given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get("staff/staffCode/noCode123")
+            .then()
+            .statusCode(404);
+    }
+
+    @Test
     public void retrieveStaffDetailsForMultipleUsers() {
 
         val staffDetails = given()
@@ -168,6 +205,67 @@ public class StaffResource_StaffDetailsAPITest extends IntegrationTestBase {
                 .then()
                 .statusCode(400);
     }
+
+    @Test
+    public void retrieveStaffDetailsForMultipleStaffCodes() {
+
+        val staffDetails = given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(getUsernames(Set.of("SH00001")))
+            .when()
+            .post("staff/list/staffCodes")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(StaffDetails[].class);
+
+        var sheilaHancockUserDetails = Arrays.stream(staffDetails).filter(s -> s.getUsername().equals("SheilaHancockNPS")).findFirst().get();
+
+        assertThat(staffDetails.length).isEqualTo(1);
+
+        assertThat(sheilaHancockUserDetails.getEmail()).isEqualTo("sheila.hancock@justice.gov.uk");
+        assertThat(sheilaHancockUserDetails.getStaff().getForenames()).isEqualTo("SHEILA LINDA");
+        assertThat(sheilaHancockUserDetails.getStaff().getSurname()).isEqualTo("HANCOCK");
+        assertThat(sheilaHancockUserDetails.getTeams().stream().findFirst().get().getEmailAddress()).isEqualTo("Sheila.HancockNPS@moj.gov.uk");
+        assertThat(sheilaHancockUserDetails.getTeams().stream().findFirst().get().getStartDate()).isEqualTo(LocalDate.of(2014, 8,29));
+        assertThat(sheilaHancockUserDetails.getTeams().stream().findFirst().get().getEndDate()).isEqualTo(LocalDate.of(2025, 6, 30));
+    }
+
+    @Test
+    public void retrieveDetailsWhenStaffCodesDoNotExist() {
+
+        val staffDetails = given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(getUsernames(Set.of("xxxppp1ps", "dddiiiyyyLdap")))
+            .when()
+            .post("staff/list/staffCodes")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(StaffDetails[].class);
+
+        assertThat(staffDetails).isEmpty();
+    }
+
+    @Test
+    public void retrieveMultipleUserDetailsByStaffCodesWithNoBodyContentReturn400() {
+
+        given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .post("staff/list/staffCodes")
+            .then()
+            .statusCode(400);
+    }
+
 
     private String getUsernames(Set <String> usernames) {
         return writeValueAsString(usernames);

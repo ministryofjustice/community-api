@@ -25,6 +25,7 @@ public class DeliusIntegrationContextConfig {
         private String requirementRehabilitationActivityType;
         private NsiMapping nsiMapping = new NsiMapping();
         private ContactMapping contactMapping = new ContactMapping();
+        private ReleaseTypeMapping releaseTypeMapping = new ReleaseTypeMapping();
     }
 
 
@@ -48,6 +49,11 @@ public class DeliusIntegrationContextConfig {
         public List<String> getAllAppointmentContactTypes() {
             return List.of(appointmentRarContactType, appointmentNonRarContactType);
         }
+    }
+
+    @Data
+    public static class ReleaseTypeMapping {
+        private Map<String, String> reasonToReleaseType;
     }
 
     private Map<String, IntegrationContext> integrationContexts = new HashMap<>();

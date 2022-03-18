@@ -96,6 +96,21 @@ public class StaffResource {
             .orElseThrow(() -> new NotFoundException(String.format("Staff member with username %s", username)));
     }
 
+    @ApiOperation(value = "Return details of a staff member including user details", notes = "Accepts a Delius staff code")
+    @ApiResponses(value = {
+        @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+        @ApiResponse(code = 404, message = "Not found", response = ErrorResponse.class),
+        @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
+    @GetMapping(path = "/staff/staffCode/{staffCode}")
+    public StaffDetails getStaffDetailsForStaffCode(
+        @ApiParam(name = "staffCode", value = "Delius staff code", example = "X12345", required = true)
+        @NotNull
+        @PathVariable(value = "staffCode") final String staffCode) {
+        log.info("getStaffDetailsByStaffCode called with {}", staffCode);
+        return staffService.getStaffDetailsByStaffCode(staffCode)
+            .orElseThrow(() -> new NotFoundException(String.format("Staff member with staffCode %s", staffCode)));
+    }
+
     @ApiOperation(value = "Returns a list of staff details for supplied usernames - POST version to allow large user lists.", notes = "staff details for supplied usernames", nickname = "getStaffDetailsList")
     @ApiResponses(value = {
         @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
@@ -105,6 +120,17 @@ public class StaffResource {
     public List<StaffDetails> getStaffDetailsList(final @RequestBody Set<String> usernames) {
         log.info("getStaffDetailsList called with {}", usernames);
         return staffService.getStaffDetailsByUsernames(usernames);
+    }
+
+    @ApiOperation(value = "Returns a list of staff details for supplied staffCodes - POST version to allow large user lists.", notes = "staff details for supplied staffCodes", nickname = "getStaffDetailsByStaffCodeList")
+    @ApiResponses(value = {
+        @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
+        @ApiResponse(code = 404, message = "Not found", response = ErrorResponse.class),
+        @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
+    @PostMapping(path = "/staff/list/staffCodes", consumes = "application/json")
+    public List<StaffDetails> getStaffDetailsByStaffCodeList(final @RequestBody Set<String> staffCodes) {
+        log.info("getStaffDetailsByStaffCodeList called with {}", staffCodes);
+        return staffService.getStaffDetailsByStaffCodes(staffCodes);
     }
 
     @ApiOperation(value = "EXPERIMENTAL: Return list of of currently managed offenders, with RAR requirement and only a single active sentence",
