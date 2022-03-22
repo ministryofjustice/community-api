@@ -9,6 +9,7 @@ import uk.gov.justice.digital.delius.data.api.Caseload;
 import uk.gov.justice.digital.delius.data.api.ManagedEventId;
 import uk.gov.justice.digital.delius.data.api.ManagedOffenderCrn;
 import uk.gov.justice.digital.delius.data.api.OfficeLocation;
+import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.service.CaseloadService;
 import uk.gov.justice.digital.delius.service.TeamService;
 
@@ -41,6 +42,19 @@ public class TeamResourceTest {
         final var observed = subject.getAllOfficeLocations(CODE);
 
         assertThat(observed).isSameAs(locations);
+    }
+
+    @Test
+    public void gettingStaffByTeamCode() {
+        final var CODE = "some-team";
+        StaffHuman staff1 = new StaffHuman();
+        StaffHuman staff2 = new StaffHuman();
+        final var staffHumanList = List.of(staff1,staff2);
+        when(service.getAllStaff(CODE)).thenReturn(staffHumanList);
+
+        final var observed = subject.getAllStaff(CODE);
+
+        assertThat(observed).isSameAs(staffHumanList);
     }
 
     @Test

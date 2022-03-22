@@ -42,7 +42,8 @@ public class StaffTransformer {
     static Human humanOf(Staff staff) {
         return Human.builder()
                 .forenames(combinedMiddleNamesOf(staff.getForename(), staff.getForname2()))
-                .surname(staff.getSurname()).build();
+                .surname(staff.getSurname())
+                .build();
     }
     static ContactableHuman contactableHumanOf(Staff staff, Optional<String> email, Optional<String> phoneNumber) {
         return ContactableHuman.builder()
@@ -58,6 +59,7 @@ public class StaffTransformer {
             .forenames(combinedMiddleNamesOf(staff.getForename(), staff.getForname2()))
             .surname(staff.getSurname())
             .code(staff.getOfficerCode())
+            .staffGrade(staff.getGrade()!=null?staff.getGrade().getCodeValue():null)
             .build();
     }
 }

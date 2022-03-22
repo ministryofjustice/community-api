@@ -715,6 +715,7 @@ public class EntityHelper {
                 .builder()
                 .code(teamCode)
                 .description("Team 1")
+                .teamId(1L)
                 .district(aDistrict())
                 .localDeliveryUnit(LocalDeliveryUnit.builder()
                         .code("LL")

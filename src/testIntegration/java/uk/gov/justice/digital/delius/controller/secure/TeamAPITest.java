@@ -192,4 +192,80 @@ public class TeamAPITest extends IntegrationTestBase {
                 new ColumnMapRowMapper()).get(0).get("count");
     }
 
+
+    @Test
+    public void gettingAllStaffForTeam() {
+        final var token = createJwt("ROLE_COMMUNITY");
+
+        final var staff = withArgs("C00P002");
+
+        given()
+            .auth().oauth2(token)
+            .when()
+            .get("/teams/C00T01/staff")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("size()", greaterThan(0))
+            .root("find { it.code == '%s' }")
+
+            .body("code", staff, Matchers.equalTo("C00P002"))
+            .body("forenames", staff, Matchers.equalTo("Nolan ZZ"))
+            .body("surname", staff, Matchers.equalTo("Murders"))
+            .body("staffGrade", staff, Matchers.equalTo("CRCM"));
+    }
+
+    @Test
+    public void attemptingToGetAllStaffForInactiveTeam() {
+        final var token = createJwt("ROLE_COMMUNITY");
+
+        given()
+            .auth().oauth2(token)
+            .when()
+            .get("/teams/C19T01/staff")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    public void attemptingToAllStaffForMissingTeam() {
+        final var token = createJwt("ROLE_COMMUNITY");
+
+        given()
+            .auth().oauth2(token)
+            .when()
+            .get("/teams/some-missing-team/staff")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    public void attemptingToGetAllStaffForTeamWithNoStaff() {
+        final var token = createJwt("ROLE_COMMUNITY");
+
+        given()
+            .auth().oauth2(token)
+            .when()
+            .get("/teams/CRSUAT/staff")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("size()", equalTo(0));
+    }
+
+    @Test
+    public void attemptingAllStaffForWithoutRequiredRole() {
+        final var token = createJwt("SOME_OTHER_ROLE");
+
+        given()
+            .auth().oauth2(token)
+            .when()
+            .get("/teams/any-team-code/staff")
+            .then()
+            .assertThat()
+            .statusCode(HttpStatus.FORBIDDEN.value());
+    }
+
 }

@@ -11,10 +11,12 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
+import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StaffTeam;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import uk.gov.justice.digital.delius.jpa.standard.repository.BoroughRepository;
@@ -349,5 +351,22 @@ public class TeamServiceTest {
         when(teamRepository.findActiveByCode(CODE))
             .thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> teamService.getAllOfficeLocations(CODE));
+    }
+
+    @Test
+    public void getAllStaff() {
+        final var CODE = "TEAM_CODE";
+        final var team = aTeam(CODE);
+        StaffHuman staff1 = new StaffHuman();
+        StaffHuman staff2 = new StaffHuman();
+        final var staffHumanList = List.of(staff1,staff2);
+
+        when(teamRepository.findActiveByCode(CODE)).thenReturn(Optional.of(team));
+        when(staffService.findStaffByTeam(1L)).thenReturn(staffHumanList);
+
+        final var allStaff = teamService.getAllStaff(CODE);
+
+        assertThat(allStaff)
+            .hasSize(2);
     }
 }
