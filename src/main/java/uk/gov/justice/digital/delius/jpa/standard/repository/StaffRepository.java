@@ -34,6 +34,7 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
     @Query("select staff " +
         "from Staff staff, StaffTeam staffTeam " +
         "where staffTeam.staffId = staff.staffId " +
-        "and staffTeam.teamId = :teamId ")
+        "and staffTeam.teamId = :teamId " +
+        "and (staff.endDate is null or staff.endDate > sysdate) ")
     List<Staff> findStaffByTeamId(Long teamId);
 }

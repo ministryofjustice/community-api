@@ -67,6 +67,9 @@ public class Staff {
     @Builder.Default
     private LocalDate startDate = LocalDate.now();
 
+    @Column(name = "END_DATE")
+    private LocalDate endDate;
+
     @Column(name = "PRIVATE")
     private Long privateSector;
 
