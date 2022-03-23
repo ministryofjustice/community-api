@@ -181,6 +181,6 @@ public class StaffService {
         return staffRepository.findStaffByTeamId(teamId)
             .stream()
             .map(StaffTransformer::staffOf)
-            .collect(Collectors.toList());
+            .toList();
     }
 }

@@ -59,7 +59,8 @@ public class StaffTransformer {
             .forenames(combinedMiddleNamesOf(staff.getForename(), staff.getForname2()))
             .surname(staff.getSurname())
             .code(staff.getOfficerCode())
-            .staffGrade(staff.getGrade()!=null?staff.getGrade().getCodeValue():null)
+            .staffGrade(staff.getGrade() != null ? staff.getGrade().getCodeValue() : null)
+            .staffIdentifier(staff.getStaffId())
             .build();
     }
 }

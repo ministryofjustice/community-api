@@ -35,6 +35,6 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
         "from Staff staff, StaffTeam staffTeam " +
         "where staffTeam.staffId = staff.staffId " +
         "and staffTeam.teamId = :teamId " +
-        "and (staff.endDate is null or staff.endDate > sysdate) ")
+        "and (staff.endDate is null or staff.endDate > CURRENT_DATE) ")
     List<Staff> findStaffByTeamId(Long teamId);
 }

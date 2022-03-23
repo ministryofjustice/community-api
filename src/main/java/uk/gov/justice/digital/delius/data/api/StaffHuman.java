@@ -23,6 +23,8 @@ public class StaffHuman {
     private String surname;
     @ApiModelProperty(value = "Staff Grade", example = "PO")
     private String staffGrade;
+    @ApiModelProperty(value = "staff identifier", example = "123456")
+    private Long staffIdentifier;
 
     @JsonProperty(access = Access.READ_ONLY)
     public boolean isUnallocated() {

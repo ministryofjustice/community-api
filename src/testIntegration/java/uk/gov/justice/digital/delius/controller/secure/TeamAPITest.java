@@ -212,7 +212,8 @@ public class TeamAPITest extends IntegrationTestBase {
             .body("code", staff, Matchers.equalTo("C00P002"))
             .body("forenames", staff, Matchers.equalTo("Nolan ZZ"))
             .body("surname", staff, Matchers.equalTo("Murders"))
-            .body("staffGrade", staff, Matchers.equalTo("CRCM"));
+            .body("staffGrade", staff, Matchers.equalTo("CRCM"))
+            .body("staffIdentifier", staff, Matchers.equalTo(2500000012L));
     }
 
     @Test
