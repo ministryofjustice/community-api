@@ -517,7 +517,7 @@ public class StaffServiceTest {
 
         when(staffRepository.findStaffByTeamId(teamId)).thenReturn(staffList);
 
-        List<StaffHuman> staffHumanList = staffService.findStaffByTeam(teamId);
+        List<StaffDetails> staffHumanList = staffService.findStaffByTeam(teamId);
 
         assertThat(staffHumanList).hasSize(2);
 

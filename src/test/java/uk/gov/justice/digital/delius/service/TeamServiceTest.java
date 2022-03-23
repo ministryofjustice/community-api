@@ -11,6 +11,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
+import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
@@ -357,8 +358,8 @@ public class TeamServiceTest {
     public void getAllStaff() {
         final var CODE = "TEAM_CODE";
         final var team = aTeam(CODE);
-        StaffHuman staff1 = new StaffHuman();
-        StaffHuman staff2 = new StaffHuman();
+        StaffDetails staff1 = new StaffDetails();
+        StaffDetails staff2 = new StaffDetails();
         final var staffHumanList = List.of(staff1,staff2);
 
         when(teamRepository.findActiveByCode(CODE)).thenReturn(Optional.of(team));

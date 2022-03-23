@@ -207,12 +207,13 @@ public class TeamAPITest extends IntegrationTestBase {
             .assertThat()
             .statusCode(HttpStatus.OK.value())
             .body("size()", greaterThan(0))
-            .root("find { it.code == '%s' }")
+            .root("find { it.staffCode == '%s' }")
 
-            .body("code", staff, Matchers.equalTo("C00P002"))
-            .body("forenames", staff, Matchers.equalTo("Nolan ZZ"))
-            .body("surname", staff, Matchers.equalTo("Murders"))
-            .body("staffGrade", staff, Matchers.equalTo("CRCM"))
+            .body("staffCode", staff, Matchers.equalTo("C00P002"))
+            .body("staff.forenames", staff, Matchers.equalTo("Nolan ZZ"))
+            .body("staff.surname", staff, Matchers.equalTo("Murders"))
+            .body("staffGrade.code", staff, Matchers.equalTo("CRCM"))
+            .body("staffGrade.description", staff, Matchers.equalTo("CRC - PO"))
             .body("staffIdentifier", staff, Matchers.equalTo(2500000012L));
     }
 

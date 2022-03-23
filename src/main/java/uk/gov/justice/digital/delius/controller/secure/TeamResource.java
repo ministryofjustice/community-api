@@ -22,6 +22,7 @@ import uk.gov.justice.digital.delius.data.api.Caseload;
 import uk.gov.justice.digital.delius.data.api.ManagedEventId;
 import uk.gov.justice.digital.delius.data.api.ManagedOffenderCrn;
 import uk.gov.justice.digital.delius.data.api.OfficeLocation;
+import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.data.api.TeamCreationResult;
 import uk.gov.justice.digital.delius.service.CaseloadService;
@@ -98,7 +99,7 @@ public class TeamResource {
         value = "Determines all staff for the specified team",
         authorizations = {@Authorization("ROLE_COMMUNITY")}
     )
-    public List<StaffHuman> getAllStaff(
+    public List<StaffDetails> getAllStaff(
         @PathVariable("teamCode")
         @ApiParam(value = "Team code", example = "N07T01")
             String teamCode

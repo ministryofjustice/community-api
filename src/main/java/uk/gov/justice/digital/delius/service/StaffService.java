@@ -177,10 +177,10 @@ public class StaffService {
             .map(OffenderTransformer::caseOf);
     }
 
-    public List<StaffHuman> findStaffByTeam(Long teamId) {
+    public List<StaffDetails> findStaffByTeam(Long teamId) {
         return staffRepository.findStaffByTeamId(teamId)
             .stream()
-            .map(StaffTransformer::staffOf)
+            .map(StaffTransformer::staffDetailsOnlyOf)
             .toList();
     }
 }
