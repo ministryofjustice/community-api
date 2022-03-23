@@ -377,7 +377,9 @@ public class DocumentTransformer {
                         .description(document.getInstitutionalReport().getInstitutionalReportType().getCodeDescription())
                         .build())
                 .reportDocumentDates(ReportDocumentDates.builder()
-                    .requestedDate(document.getInstitutionalReport().getDateRequested().toLocalDate())
+                    .requestedDate(document.getInstitutionalReport().getDateRequested())
+                    .requiredDate(document.getInstitutionalReport().getDateRequired())
+                    .completedDate(Optional.ofNullable(document.getInstitutionalReport().getDateCompleted()).map(LocalDate::atStartOfDay).orElse(null))
                     .build())
                 .build();
     }
