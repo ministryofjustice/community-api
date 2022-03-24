@@ -9,6 +9,7 @@ import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.ManagedOffender;
 import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
+import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
@@ -174,5 +175,12 @@ public class StaffService {
     public Page<StaffCaseloadEntry> getManageSupervisionsEligibleOffendersByUsername(final String username, final Pageable pageable) {
         return offenderRepository.getOffendersWithOneActiveEventCommunitySentenceAndRarRequirementForStaff(username, pageable)
             .map(OffenderTransformer::caseOf);
+    }
+
+    public List<StaffDetails> findStaffByTeam(Long teamId) {
+        return staffRepository.findStaffByTeamId(teamId)
+            .stream()
+            .map(StaffTransformer::staffDetailsOnlyOf)
+            .toList();
     }
 }

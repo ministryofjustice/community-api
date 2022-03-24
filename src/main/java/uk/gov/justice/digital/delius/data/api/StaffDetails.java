@@ -29,4 +29,6 @@ public class StaffDetails {
     private List<Team> teams;
     @ApiModelProperty(value = "provider this staff member is associated with")
     private ProbationArea probationArea;
+    @ApiModelProperty(value = "Staff Grade", example = "PO,CRC - PO")
+    private KeyValue staffGrade;
 }
