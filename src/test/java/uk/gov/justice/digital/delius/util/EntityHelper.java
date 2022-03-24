@@ -107,7 +107,9 @@ public class EntityHelper {
                                 .event(anEvent())
                                 .build())
                         .build())
-                .dateRequested(LocalDateTime.now())
+                .dateRequested(LocalDate.now().minusDays(1))
+                .dateRequired(LocalDate.now().plusDays(1))
+                .dateCompleted(LocalDate.now())
                 .institutionalReportType(StandardReference
                         .builder()
                         .codeValue("PAR")
