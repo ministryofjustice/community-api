@@ -21,7 +21,6 @@ public class StaffHuman {
     private String forenames;
     @ApiModelProperty(value = "Family name", example = "Hancock")
     private String surname;
-
     @JsonProperty(access = Access.READ_ONLY)
     public boolean isUnallocated() {
         return Optional.ofNullable(code).map(c -> c.endsWith("U")).orElse(false);
