@@ -73,7 +73,7 @@ jobs:
           - development
           - unmapped
     docker:
-      - image: circleci/python
+      - image: cimg/python:3.9
     steps:
       - mem/recall:
           env_var: APP_VERSION
@@ -143,7 +143,7 @@ jobs:
       environment:
         type: string
     docker:
-      - image: circleci/python
+      - image: cimg/python:3.9
     steps:
       - mem/recall:
           env_var: APP_VERSION
