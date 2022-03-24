@@ -10,7 +10,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig;
 import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.IntegrationContext;
-import uk.gov.justice.digital.delius.config.DeliusIntegrationContextConfig.ReleaseTypeMapping;
 import uk.gov.justice.digital.delius.config.FeatureSwitches;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
@@ -22,6 +21,8 @@ import uk.gov.justice.digital.delius.data.api.OffenderRecalledNotification;
 import uk.gov.justice.digital.delius.data.api.OffenderReleasedNotification;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustodyBookingNumber;
+import uk.gov.justice.digital.delius.data.api.deliusapi.NewRecall;
+import uk.gov.justice.digital.delius.data.api.deliusapi.NewRelease;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CustodyHistory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
@@ -33,7 +34,6 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository.
 import uk.gov.justice.digital.delius.util.EntityHelper;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -70,6 +70,8 @@ public class CustodyServiceTest {
     private final ReferenceDataService referenceDataService = mock(ReferenceDataService.class);
     private final SpgNotificationService spgNotificationService = mock(SpgNotificationService.class);
     private final ArgumentCaptor<CustodyHistory> custodyHistoryArgumentCaptor = ArgumentCaptor.forClass(CustodyHistory.class);
+    private final ArgumentCaptor<NewRecall> newRecallArgumentCaptor = ArgumentCaptor.forClass(NewRecall.class);
+    private final ArgumentCaptor<NewRelease> newReleaseArgumentCaptor = ArgumentCaptor.forClass(NewRelease.class);
     private final OffenderManagerService offenderManagerService = mock(OffenderManagerService.class);
     private final ContactService contactService = mock(ContactService.class);
     private final OffenderPrisonerService offenderPrisonerService = mock(OffenderPrisonerService.class);
@@ -78,23 +80,19 @@ public class CustodyServiceTest {
 
     @BeforeEach
     public void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
-
         final var integrationContextConfig = new DeliusIntegrationContextConfig();
-        ReleaseTypeMapping releaseTypeMapping = new ReleaseTypeMapping();
-        var reasonToReleaseTypeMap = new HashMap<String,String>();
-        reasonToReleaseTypeMap.put("RELEASED","ADL");
-        releaseTypeMapping.setReasonToReleaseType(reasonToReleaseTypeMap);
         IntegrationContext integrationContext = new IntegrationContext();
-        integrationContext.setReleaseTypeMapping(releaseTypeMapping);
+        integrationContext.setReleaseTypeMapping(Map.of("RELEASED", "ADL"));
+        integrationContext.setRecallReasonMapping(Map.of("ADMISSION", "NN"));
         integrationContextConfig.getIntegrationContexts().put("prison-to-probation", integrationContext);
 
         final var featureSwitches = new FeatureSwitches();
         featureSwitches.getNoms().getUpdate().setCustody(true);
         featureSwitches.getNoms().getUpdate().getBooking().setNumber(true);
-        featureSwitches.getNoms().getUpdate().setRelease(true);
+        featureSwitches.getNoms().getUpdate().setReleaseRecall(true);
         custodyService = new CustodyService(telemetryClient, offenderRepository, convictionService, institutionRepository, custodyHistoryRepository, referenceDataService, spgNotificationService, offenderManagerService, contactService, offenderPrisonerService, featureSwitches, deliusApiClient, integrationContextConfig);
-        when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
-        when(offenderRepository.findMostLikelyByNomsNumber(anyString())).thenReturn(Either.right(Optional.of(Offender.builder().offenderId(99L).build())));
+        when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(anOffender()));
+        when(offenderRepository.findMostLikelyByNomsNumber(anyString())).thenReturn(Either.right(Optional.of(anOffender())));
         when(convictionService.getAllActiveCustodialEvents(anyLong()))
                 .thenReturn(List.of(EntityHelper.aCustodyEvent()));
     }
@@ -1176,6 +1174,19 @@ public class CustodyServiceTest {
     @Nested
     @DisplayName("when calling offenderRecalled")
     class WhenOffenderRecalled {
+        OffenderRecalledNotification validRecall = OffenderRecalledNotification.builder()
+            .nomsPrisonInstitutionCode("MDI")
+            .recallDate(LocalDate.of(2020, 11, 22))
+            .reason("ADMISSION")
+            .probableCause("RECALL")
+            .build();
+
+        @BeforeEach
+        void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
+            when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution()));
+            when(convictionService.getActiveCustodialEvent(anyLong())).thenReturn(aCustodyEvent());
+        }
+
         @Nested
         @DisplayName("and there is more than one event for the offender")
         class WhenHasMultipleActiveEvents {
@@ -1188,11 +1199,7 @@ public class CustodyServiceTest {
             @Test
             @DisplayName("then a ConflictingRequestException will be thrown")
             void willThrowNotFound() {
-                assertThatThrownBy(() -> custodyService.offenderRecalled("X12345",
-                    OffenderRecalledNotification.builder()
-                        .nomsPrisonInstitutionCode("MDI")
-                        .recallDate(LocalDate.of(2020, 11, 22))
-                        .build()))
+                assertThatThrownBy(() -> custodyService.offenderRecalled("NOMS1234", validRecall))
                     .isInstanceOf(ConflictingRequestException.class);
             }
         }
@@ -1209,11 +1216,7 @@ public class CustodyServiceTest {
             @Test
             @DisplayName("then a ConflictingRequestException will be thrown")
             void willThrowNotFound() {
-                assertThatThrownBy(() -> custodyService.offenderRecalled("X12345",
-                    OffenderRecalledNotification.builder()
-                        .nomsPrisonInstitutionCode("MDI")
-                        .recallDate(LocalDate.of(2020, 11, 22))
-                        .build()))
+                assertThatThrownBy(() -> custodyService.offenderRecalled("NOMS1234", validRecall))
                     .isInstanceOf(ConflictingRequestException.class);
             }
         }
@@ -1229,99 +1232,7 @@ public class CustodyServiceTest {
             @Test
             @DisplayName("then a NotFoundException will be thrown")
             void willThrowNotFound() {
-                assertThatThrownBy(() -> custodyService.offenderRecalled("X12345",
-                    OffenderRecalledNotification.builder()
-                        .nomsPrisonInstitutionCode("MDI")
-                        .recallDate(LocalDate.of(2020, 11, 22))
-                        .build()))
-                    .isInstanceOf(NotFoundException.class);
-            }
-        }
-
-        @Nested
-        @DisplayName("and there is one active event for the offender")
-        class WhenHasSingleActiveEvent {
-            @BeforeEach
-            void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
-                when(convictionService.getActiveCustodialEvent(anyLong())).thenReturn(aCustodyEvent());
-            }
-
-            @Test
-            @DisplayName("then the custody record will be returned")
-            void willReturnCustody() {
-                final var custody = custodyService.offenderRecalled("G9542VP",
-                    OffenderRecalledNotification.builder()
-                        .nomsPrisonInstitutionCode("MDI")
-                        .recallDate(LocalDate.of(2020, 11, 22))
-                        .build());
-                assertThat(custody.getStatus().getDescription()).isEqualTo("In Custody");
-            }
-        }
-    }
-
-    @Nested
-    @DisplayName("when calling offenderReleased")
-    class WhenOffenderReleased {
-        @Nested
-        @DisplayName("and there is more than one event for the offender")
-        class WhenHasMultipleActiveEvents {
-            @BeforeEach
-            void setup() throws ConvictionService.SingleActiveCustodyConvictionNotFoundException {
-                when(convictionService.getActiveCustodialEvent(anyLong()))
-                    .thenThrow(new ConvictionService.SingleActiveCustodyConvictionNotFoundException(99L, 2));
-            }
-
-            @Test
-            @DisplayName("then a ConflictingRequestException will be thrown")
-            void willThrowNotFound() {
-                assertThatThrownBy(() -> custodyService.offenderReleased("X12345",
-                    OffenderReleasedNotification.builder()
-                        .nomsPrisonInstitutionCode("MDI")
-                        .releaseDate(LocalDate.of(2020, 11, 22))
-                        .reason("RELEASED")
-                        .build()))
-                    .isInstanceOf(ConflictingRequestException.class);
-            }
-        }
-
-        @Nested
-        @DisplayName("and there are no active events for the offender")
-        class WhenNoActiveEvents {
-            @BeforeEach
-            void setup() throws ConvictionService.SingleActiveCustodyConvictionNotFoundException {
-                when(convictionService.getActiveCustodialEvent(anyLong()))
-                    .thenThrow(new ConvictionService.SingleActiveCustodyConvictionNotFoundException(99L, 0));
-            }
-
-            @Test
-            @DisplayName("then a ConflictingRequestException will be thrown")
-            void willThrowNotFound() {
-                assertThatThrownBy(() -> custodyService.offenderReleased("X12345",
-                    OffenderReleasedNotification.builder()
-                        .nomsPrisonInstitutionCode("MDI")
-                        .releaseDate(LocalDate.of(2020, 11, 22))
-                        .reason("RELEASED")
-                        .build()))
-                    .isInstanceOf(ConflictingRequestException.class);
-            }
-        }
-
-        @Nested
-        @DisplayName("and the offender is not found")
-        class WhenNoOffenderFound {
-            @BeforeEach
-            void setup() {
-                when(offenderRepository.findMostLikelyByNomsNumber(anyString())).thenReturn(Either.right(Optional.empty()));
-            }
-
-            @Test
-            @DisplayName("then a NotFoundException will be thrown")
-            void willThrowNotFound() {
-                assertThatThrownBy(() -> custodyService.offenderReleased("X12345",
-                    OffenderReleasedNotification.builder()
-                        .nomsPrisonInstitutionCode("MDI")
-                        .releaseDate(LocalDate.of(2020, 11, 22))
-                        .build()))
+                assertThatThrownBy(() -> custodyService.offenderRecalled("NOMS1234", validRecall))
                     .isInstanceOf(NotFoundException.class);
             }
         }
@@ -1329,42 +1240,138 @@ public class CustodyServiceTest {
         @Nested
         @DisplayName("and there is no matching institution")
         class WhenHasNoMatchingInstitution {
-            @BeforeEach
-            void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
-                when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.empty());
-                when(convictionService.getActiveCustodialEvent(anyLong())).thenReturn(aCustodyEvent());
-            }
-
             @Test
             @DisplayName("then a BadRequestException will be thrown")
             void willThrowBadRequest() {
-                assertThatThrownBy(() -> custodyService.offenderReleased("G9542VP",
-                    OffenderReleasedNotification.builder()
-                        .nomsPrisonInstitutionCode("MDI")
-                        .releaseDate(LocalDate.of(2020, 11, 22))
-                        .reason("RELEASED")
+                assertThatThrownBy(() -> custodyService
+                    .offenderRecalled("NOMS1234", validRecall.toBuilder()
+                        .nomsPrisonInstitutionCode("INVALID")
                         .build()))
                     .isInstanceOf(BadRequestException.class)
-                    .hasMessage("Delius institution code does not exist for NOMIS CDE code: MDI");
+                    .hasMessage("Delius institution code does not exist for NOMIS CDE code: INVALID");
             }
         }
 
         @Nested
         @DisplayName("and there is no matching reason code")
         class WhenHasNoMatchingReason {
-            @BeforeEach
-            void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
-                when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution()));
-                when(convictionService.getActiveCustodialEvent(anyLong())).thenReturn(aCustodyEvent());
-            }
-
             @Test
             @DisplayName("then a BadRequestException will be thrown")
             void willThrowBadRequest() {
-                assertThatThrownBy(() -> custodyService.offenderReleased("G9542VP",
-                    OffenderReleasedNotification.builder()
-                        .nomsPrisonInstitutionCode("MDI")
-                        .releaseDate(LocalDate.of(2020, 11, 22))
+                assertThatThrownBy(() -> custodyService
+                    .offenderRecalled("NOMS1234", validRecall.toBuilder()
+                        .reason("INVALID")
+                        .build()))
+                    .isInstanceOf(BadRequestException.class)
+                    .hasMessage("Recall reason mapping does not exist for: INVALID");
+            }
+        }
+
+        @Nested
+        @DisplayName("and validation succeeds")
+        class WhenValidationSucceeds {
+            @Test
+            @DisplayName("then the request will be mapped and sent to Delius API")
+            void willCallDeliusAPI() {
+                custodyService.offenderRecalled("NOMS1234", validRecall);
+
+                verify(deliusApiClient).createNewRecall(eq("crn123"), eq(100L), newRecallArgumentCaptor.capture());
+                final var newRecall = newRecallArgumentCaptor.getValue();
+                assertThat(newRecall.getRecallReason()).isEqualTo("NN");
+                assertThat(newRecall.getInstitution()).isEqualTo("MDIHMP");
+                assertThat(newRecall.getRecallDate()).isEqualTo(validRecall.getRecallDate());
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("when calling offenderReleased")
+    class WhenOffenderReleased {
+        OffenderReleasedNotification validRelease = OffenderReleasedNotification.builder()
+            .nomsPrisonInstitutionCode("MDI")
+            .releaseDate(LocalDate.of(2020, 11, 22))
+            .reason("RELEASED")
+            .build();
+
+        @BeforeEach
+        void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
+            when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution()));
+            when(convictionService.getActiveCustodialEvent(anyLong())).thenReturn(aCustodyEvent());
+        }
+
+        @Nested
+        @DisplayName("and there is more than one event for the offender")
+        class WhenHasMultipleActiveEvents {
+            @BeforeEach
+            void setup() throws ConvictionService.SingleActiveCustodyConvictionNotFoundException {
+                when(convictionService.getActiveCustodialEvent(anyLong()))
+                    .thenThrow(new ConvictionService.SingleActiveCustodyConvictionNotFoundException(99L, 2));
+            }
+
+            @Test
+            @DisplayName("then a ConflictingRequestException will be thrown")
+            void willThrowNotFound() {
+                assertThatThrownBy(() -> custodyService.offenderReleased("NOMS1234", validRelease))
+                    .isInstanceOf(ConflictingRequestException.class);
+            }
+        }
+
+        @Nested
+        @DisplayName("and there are no active events for the offender")
+        class WhenNoActiveEvents {
+            @BeforeEach
+            void setup() throws ConvictionService.SingleActiveCustodyConvictionNotFoundException {
+                when(convictionService.getActiveCustodialEvent(anyLong()))
+                    .thenThrow(new ConvictionService.SingleActiveCustodyConvictionNotFoundException(99L, 0));
+            }
+
+            @Test
+            @DisplayName("then a ConflictingRequestException will be thrown")
+            void willThrowNotFound() {
+                assertThatThrownBy(() -> custodyService.offenderReleased("NOMS1234", validRelease))
+                    .isInstanceOf(ConflictingRequestException.class);
+            }
+        }
+
+        @Nested
+        @DisplayName("and the offender is not found")
+        class WhenNoOffenderFound {
+            @BeforeEach
+            void setup() {
+                when(offenderRepository.findMostLikelyByNomsNumber(anyString())).thenReturn(Either.right(Optional.empty()));
+            }
+
+            @Test
+            @DisplayName("then a NotFoundException will be thrown")
+            void willThrowNotFound() {
+                assertThatThrownBy(() -> custodyService.offenderReleased("NOMS1234", validRelease))
+                    .isInstanceOf(NotFoundException.class);
+            }
+        }
+
+        @Nested
+        @DisplayName("and there is no matching institution")
+        class WhenHasNoMatchingInstitution {
+            @Test
+            @DisplayName("then a BadRequestException will be thrown")
+            void willThrowBadRequest() {
+                assertThatThrownBy(() -> custodyService
+                    .offenderReleased("NOMS1234", validRelease.toBuilder()
+                        .nomsPrisonInstitutionCode("INVALID")
+                        .build()))
+                    .isInstanceOf(BadRequestException.class)
+                    .hasMessage("Delius institution code does not exist for NOMIS CDE code: INVALID");
+            }
+        }
+
+        @Nested
+        @DisplayName("and there is no matching reason code")
+        class WhenHasNoMatchingReason {
+            @Test
+            @DisplayName("then a BadRequestException will be thrown")
+            void willThrowBadRequest() {
+                assertThatThrownBy(() -> custodyService
+                    .offenderReleased("NOMS1234", validRelease.toBuilder()
                         .reason("INVALID")
                         .build()))
                     .isInstanceOf(BadRequestException.class)
@@ -1373,24 +1380,19 @@ public class CustodyServiceTest {
         }
 
         @Nested
-        @DisplayName("and there is one active event for the offender")
-        class WhenHasSingleActiveEvent {
-            @BeforeEach
-            void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
-                when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(anInstitution()));
-                when(convictionService.getActiveCustodialEvent(anyLong())).thenReturn(aCustodyEvent());
-            }
+        @DisplayName("and validation succeeds")
+        class WhenValidationSucceeds {
 
             @Test
-            @DisplayName("then the custody record will be returned")
-            void willReturnCustody() {
-                final var custody = custodyService.offenderReleased("G9542VP",
-                    OffenderReleasedNotification.builder()
-                        .nomsPrisonInstitutionCode("MDI")
-                        .releaseDate(LocalDate.of(2020, 11, 22))
-                        .reason("RELEASED")
-                        .build());
-                assertThat(custody.getStatus().getDescription()).isEqualTo("In Custody");
+            @DisplayName("then the request will be mapped and sent to Delius API")
+            void willCallDeliusAPI() {
+                custodyService.offenderReleased("NOMS1234", validRelease);
+
+                verify(deliusApiClient).createNewRelease(eq("crn123"), eq(100L), newReleaseArgumentCaptor.capture());
+                final var newRelease = newReleaseArgumentCaptor.getValue();
+                assertThat(newRelease.getReleaseType()).isEqualTo("ADL");
+                assertThat(newRelease.getInstitution()).isEqualTo("MDIHMP");
+                assertThat(newRelease.getActualReleaseDate()).isEqualTo(validRelease.getReleaseDate());
             }
         }
     }
