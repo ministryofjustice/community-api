@@ -3,9 +3,11 @@ package uk.gov.justice.digital.delius.service;
 import com.microsoft.applicationinsights.TelemetryClient;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
+import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.data.api.OfficeLocation;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
@@ -198,5 +200,12 @@ public class TeamService {
                         .probationArea(probationArea)
                         .build()
         );
+    }
+
+    public List<StaffDetails> getAllStaff(String teamCode) {
+        val team = teamRepository.findActiveByCode(teamCode)
+            .orElseThrow(() -> new NotFoundException(format("team '%s' does not exist", teamCode)));
+
+        return staffService.findStaffByTeam(team.getTeamId());
     }
 }

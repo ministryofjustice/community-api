@@ -30,4 +30,13 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
 
     @Query("select s.staffId from Staff s where s.officerCode = :officerCode")
     Optional<Long> findStaffIdByOfficerCode(String officerCode);
+
+    @Query("""
+        select staff
+         from Staff staff, StaffTeam staffTeam
+         where staffTeam.staffId = staff.staffId
+         and staffTeam.teamId = :teamId
+         and (staff.endDate is null or staff.endDate > CURRENT_DATE)
+        """)
+    List<Staff> findStaffByTeamId(Long teamId);
 }

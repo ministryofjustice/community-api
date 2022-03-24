@@ -1,18 +1,46 @@
 package uk.gov.justice.digital.delius.transformers;
 
 import com.google.common.collect.ImmutableList;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
+import uk.gov.justice.digital.delius.jpa.standard.entity.AddressAssessmentDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ApprovedPremisesReferralDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.AssessmentDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.CaseAllocationDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ContactDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.CourtReportDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
+import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReportDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.NsiDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalCircumstanceDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalContactDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ReferralDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.UPWAppointmentDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.User;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static uk.gov.justice.digital.delius.util.EntityHelper.*;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aCaseAllocationDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aContactDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aCourtReportDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aNsiDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aPersonalCircumstanceDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aPersonalContactDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aReferralDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aUPWAppointmentDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anAddressAssessmentDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anApprovedPremisesReferralDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anAssessmentDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anEvent;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anInstitutionalReportDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anOffenderDocument;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anOffenderWithPreviousConvictionsDocument;
 
 public class DocumentTransformerTest {
     private DocumentTransformer documentTransformer;
@@ -172,7 +200,9 @@ public class DocumentTransformerTest {
     @Test
     public void institutionReportDescriptionsSet() {
         final InstitutionalReportDocument document = anInstitutionalReportDocument();
-        document.getInstitutionalReport().setDateRequested(LocalDateTime.of(1965, 7, 19, 0, 0));
+        document.getInstitutionalReport().setDateRequested(LocalDate.of(1965, 7, 19));
+        document.getInstitutionalReport().setDateRequired(LocalDate.of(1965, 7, 20));
+        document.getInstitutionalReport().setDateCompleted(LocalDate.of(1965, 7, 21));
         document.getInstitutionalReport().getInstitution().setInstitutionName("Sheffield jail");
 
         assertThat(DocumentTransformer
@@ -187,6 +217,8 @@ public class DocumentTransformerTest {
         assertThat(offenderDocumentDetail.getSubType().getCode()).isEqualTo("PAR");
         assertThat(offenderDocumentDetail.getSubType().getDescription()).isEqualTo("Parole Assessment Report");
         assertNotNull(offenderDocumentDetail.getReportDocumentDates().getRequestedDate());
+        assertNotNull(offenderDocumentDetail.getReportDocumentDates().getRequiredDate());
+        assertNotNull(offenderDocumentDetail.getReportDocumentDates().getCompletedDate());
     }
 
     @Test
