@@ -28,7 +28,7 @@ public class StaffTransformer {
                         .map(TeamTransformer::teamOf)
                         .collect(Collectors.toList()))
                 .probationArea(probationAreaOf(staff.getProbationArea(), false))
-                .staffGrade(new KeyValue(staff.getGrade() != null ? staff.getGrade().getCodeValue() : null,staff.getGrade() != null ? staff.getGrade().getCodeDescription() : null))
+                .staffGrade(KeyValueTransformer.keyValueOf(staff.getGrade()))
                 .build();
     }
 
@@ -39,7 +39,7 @@ public class StaffTransformer {
             .staffIdentifier(staff.getStaffId())
             .username(
                 Optional.ofNullable(staff.getUser()).map(User::getDistinguishedName).orElse(null))
-            .staffGrade(new KeyValue(staff.getGrade() != null ? staff.getGrade().getCodeValue() : null,staff.getGrade() != null ? staff.getGrade().getCodeDescription() : null))
+            .staffGrade(KeyValueTransformer.keyValueOf(staff.getGrade()))
             .build();
     }
 
