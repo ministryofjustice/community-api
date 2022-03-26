@@ -90,7 +90,7 @@ public class TeamResource {
     @PreAuthorize("hasRole('ROLE_COMMUNITY')")
     @ApiResponses(
         value = {
-            @ApiResponse(code = 200, message = "All staff for the specified team", response = StaffHuman.class, responseContainer = "List"),
+            @ApiResponse(code = 200, message = "All staff for the specified team", response = StaffDetails.class, responseContainer = "List"),
             @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY"),
             @ApiResponse(code = 404, message = "The specified team does not exist or is not active"),
             @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
