@@ -79,7 +79,7 @@ jobs:
           env_var: APP_VERSION
       - queue/until_front_of_line:
           consider-branch: false
-          time: '10'
+          time: '30'
       - aws-cli/setup
       - run:
           name: Assume IAM role
