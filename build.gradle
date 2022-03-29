@@ -49,13 +49,11 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok'
 
     testImplementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
-    testImplementation ('io.rest-assured:rest-assured:4.4.0'){
-        exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
-    }
-    testImplementation("au.com.dius.pact.provider:junit5spring:4.3.6")
-    testImplementation 'io.rest-assured:spring-mock-mvc:4.4.0'
-    testIntegrationImplementation "com.github.tomakehurst:wiremock:2.27.2"
+    testImplementation 'io.rest-assured:rest-assured'
+    testImplementation 'io.rest-assured:spring-mock-mvc'
+    testImplementation 'au.com.dius.pact.provider:junit5spring:4.3.6'
     testImplementation 'io.swagger.parser.v3:swagger-parser-v2-converter:2.0.25'
+    testIntegrationImplementation 'com.github.tomakehurst:wiremock:2.27.2'
 }
 
 testIntegration {
