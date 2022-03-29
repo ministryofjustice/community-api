@@ -17,6 +17,8 @@ java {
 }
 check.dependsOn(testIntegration)
 
+ext["jackson.version.databind"] = "2.13.2.2" // Overriding Jackson databind version to fix CVE-2020-36518
+
 dependencies {
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
