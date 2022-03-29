@@ -49,7 +49,7 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok'
 
     testImplementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
-    testImplementation ('io.rest-assured:rest-assured:4.4.0'){
+    testImplementation ('io.rest-assured:rest-assured:4.5.1'){
         exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
     }
     testImplementation("au.com.dius.pact.provider:junit5spring:4.3.6")
