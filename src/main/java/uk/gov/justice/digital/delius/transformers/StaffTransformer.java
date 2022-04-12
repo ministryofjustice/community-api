@@ -2,6 +2,7 @@ package uk.gov.justice.digital.delius.transformers;
 
 import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.Human;
+import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
@@ -27,7 +28,19 @@ public class StaffTransformer {
                         .map(TeamTransformer::teamOf)
                         .collect(Collectors.toList()))
                 .probationArea(probationAreaOf(staff.getProbationArea(), false))
+                .staffGrade(KeyValueTransformer.keyValueOf(staff.getGrade()))
                 .build();
+    }
+
+    public static StaffDetails staffDetailsOnlyOf(Staff staff) {
+        return StaffDetails.builder()
+            .staff(humanOf(staff))
+            .staffCode(staff.getOfficerCode())
+            .staffIdentifier(staff.getStaffId())
+            .username(
+                Optional.ofNullable(staff.getUser()).map(User::getDistinguishedName).orElse(null))
+            .staffGrade(KeyValueTransformer.keyValueOf(staff.getGrade()))
+            .build();
     }
 
     public static String combinedMiddleNamesOf(String secondName, String thirdName) {
@@ -42,7 +55,8 @@ public class StaffTransformer {
     static Human humanOf(Staff staff) {
         return Human.builder()
                 .forenames(combinedMiddleNamesOf(staff.getForename(), staff.getForname2()))
-                .surname(staff.getSurname()).build();
+                .surname(staff.getSurname())
+                .build();
     }
     static ContactableHuman contactableHumanOf(Staff staff, Optional<String> email, Optional<String> phoneNumber) {
         return ContactableHuman.builder()

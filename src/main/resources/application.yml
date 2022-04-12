@@ -152,10 +152,12 @@ delius-integration-context:
             false: AFTA
     prison-to-probation:
       release-type-mapping:
-        reason-to-release-type:
-          RELEASED: ADL
-          TEMPORARY_ABSENCE_RELEASE: ROTL
-          RELEASED_TO_HOSPITAL: TBC
+        RELEASED: ADL # Adult Licence
+        #TEMPORARY_ABSENCE_RELEASE: ROTL # Release on Temporary Licence. Note: this is not yet supported by Delius API
+        #RELEASED_TO_HOSPITAL: TBC # Note: this is not yet supported by Delius API, and the Delius reference data has not been created yet
+      recall-reason-mapping:
+        ADMISSION: NN # Notified by Custodial Establishment
+        #TEMPORARY_ABSENCE_RETURN: EOTL # End of Temporary Licence. Note: this is not yet supported by Delius API
 
 smoke:
   test:

@@ -19,6 +19,7 @@ import uk.gov.justice.digital.delius.data.api.OffenderRecalledNotification;
 import uk.gov.justice.digital.delius.data.api.OffenderReleasedNotification;
 import uk.gov.justice.digital.delius.data.api.UpdateCustody;
 import uk.gov.justice.digital.delius.data.api.UpdateCustodyBookingNumber;
+import uk.gov.justice.digital.delius.data.api.deliusapi.NewRecall;
 import uk.gov.justice.digital.delius.data.api.deliusapi.NewRelease;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CustodyHistory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
@@ -244,12 +245,16 @@ public class CustodyService {
     public Custody offenderRecalled(final String nomsNumber, final OffenderRecalledNotification recalledNotification) {
         return findByNomsNumber(nomsNumber)
             .map(offender -> {
-                final var telemetryProperties = Map.of("offenderNo", nomsNumber,
-                    "recallDate", recalledNotification.getRecallDate().format(DateTimeFormatter.ISO_DATE),
-                    "institution", recalledNotification.getNomsPrisonInstitutionCode());
+                final var telemetryProperties = new HashMap<String, String>(); // instead of Map.of, to handle null values
+                telemetryProperties.put("offenderNo", nomsNumber);
+                telemetryProperties.put("recallDate", recalledNotification.getRecallDate().format(DateTimeFormatter.ISO_DATE));
+                telemetryProperties.put("institution", recalledNotification.getNomsPrisonInstitutionCode());
+                telemetryProperties.put("reason", recalledNotification.getReason());
+                telemetryProperties.put("probableCause", recalledNotification.getProbableCause());
                 try {
                     final var event = convictionService.getActiveCustodialEvent(offender.getOffenderId());
                     telemetryClient.trackEvent("P2POffenderRecalled", telemetryProperties, null);
+                    addRecall(recalledNotification, event.getEventId(), offender.getCrn());
                     return ConvictionTransformer.custodyOf(event.getDisposal().getCustody());
                 } catch (final SingleActiveCustodyConvictionNotFoundException e) {
                     telemetryClient.trackEvent("P2POffenderRecalledNoSingleConviction", telemetryProperties, null);
@@ -288,11 +293,30 @@ public class CustodyService {
             });
     }
 
-    private void addRelease(OffenderReleasedNotification releasedNotification, Long eventId, String crn) {
-        if(featureSwitches.getNoms().getUpdate().isRelease()) {
+    private void addRecall(OffenderRecalledNotification recalledNotification, Long eventId, String crn) {
+        if (featureSwitches.getNoms().getUpdate().isReleaseRecall()) {
             var context = getContext(CONTEXT);
-            var releaseMapping = context.getReleaseTypeMapping();
-            var deliusReleaseType = ofNullable(releaseMapping.getReasonToReleaseType().get(releasedNotification.getReason()))
+            var deliusRecallReason = ofNullable(context.getRecallReasonMapping().get(recalledNotification.getReason()))
+                .orElseThrow(() -> new BadRequestException("Recall reason mapping does not exist for: " + recalledNotification.getReason()));
+            var deliusInstitution = institutionRepository.findByNomisCdeCode(recalledNotification.getNomsPrisonInstitutionCode())
+                .orElseThrow(() -> new BadRequestException("Delius institution code does not exist for NOMIS CDE code: " + recalledNotification.getNomsPrisonInstitutionCode()));
+
+            val newRecall = NewRecall.builder()
+                .recallReason(deliusRecallReason)
+                .recallDate(recalledNotification.getRecallDate())
+                .institution(deliusInstitution.getCode())
+                .build();
+            deliusApiClient.createNewRecall(crn, eventId, newRecall);
+        }
+        else {
+            log.warn("Offender recall for CRN: " + crn + " will be ignored, this feature is switched off ");
+        }
+    }
+
+    private void addRelease(OffenderReleasedNotification releasedNotification, Long eventId, String crn) {
+        if (featureSwitches.getNoms().getUpdate().isReleaseRecall()) {
+            var context = getContext(CONTEXT);
+            var deliusReleaseType = ofNullable(context.getReleaseTypeMapping().get(releasedNotification.getReason()))
                 .orElseThrow(() -> new BadRequestException("Release Type mapping from reason does not exist for: " + releasedNotification.getReason()));
             var deliusInstitution = institutionRepository.findByNomisCdeCode(releasedNotification.getNomsPrisonInstitutionCode())
                 .orElseThrow(() -> new BadRequestException("Delius institution code does not exist for NOMIS CDE code: " + releasedNotification.getNomsPrisonInstitutionCode()));

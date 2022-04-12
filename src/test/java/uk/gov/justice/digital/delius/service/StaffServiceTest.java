@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
+import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
@@ -25,6 +26,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
 import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusUser;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -512,6 +514,22 @@ public class StaffServiceTest {
     }
 
     @Test
+    public void getStaffByTeamId() {
+
+        Long teamId = 1L;
+        Staff staff1 = new Staff();
+        Staff staff2 = new Staff();
+        List<Staff> staffList = List.of(staff1,staff2);
+
+        when(staffRepository.findStaffByTeamId(teamId)).thenReturn(staffList);
+
+        List<StaffDetails> staffHumanList = staffService.findStaffByTeam(teamId);
+
+        assertThat(staffHumanList).hasSize(2);
+
+    }
+
+    @Test
     public void getHeadsOfDeliveryUnit(){
         var staff = aStaff("TEST");
         var borough = aBorough("N07NPS1").toBuilder()
@@ -525,5 +543,4 @@ public class StaffServiceTest {
         assertThat(result.get()).hasSize(1);
         assertThat(result.get().get(0).getStaffCode()).isEqualTo("TEST");
     }
-
 }

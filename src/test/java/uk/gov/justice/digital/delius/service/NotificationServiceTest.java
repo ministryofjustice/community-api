@@ -148,8 +148,8 @@ class NotificationServiceTest {
             when(offenderRepository.findByCrn("X007"))
                 .thenReturn(Optional.of(Offender.builder().offenderId(111L).build()));
             when(contactRepository.findByOffenderAndNsiIdAndContactTypeAndContactDateAndSoftDeletedIsFalse(
-                111L, 99L, NOTIFICATION_CONTACT_TYPE, contactDateTime.toLocalDate()))
-                .thenReturn(Collections.singletonList(Contact.builder().contactId(3L).contactStartTime(contactDateTime.toLocalTime()).build()));
+                111L, 99L, NOTIFICATION_CONTACT_TYPE, toLondonLocalDate(contactDateTime)))
+                .thenReturn(Collections.singletonList(Contact.builder().contactId(3L).contactStartTime(toLondonLocalTime(contactDateTime)).build()));
 
             // When
             final var appointmentCreateRequest = aContextlessNotificationCreateRequest(referralStart, contactDateTime, CONTRACT_TYPE, referralId);

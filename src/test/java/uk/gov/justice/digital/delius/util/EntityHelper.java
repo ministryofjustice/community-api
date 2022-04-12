@@ -107,7 +107,9 @@ public class EntityHelper {
                                 .event(anEvent())
                                 .build())
                         .build())
-                .dateRequested(LocalDateTime.now())
+                .dateRequested(LocalDate.now().minusDays(1))
+                .dateRequired(LocalDate.now().plusDays(1))
+                .dateCompleted(LocalDate.now())
                 .institutionalReportType(StandardReference
                         .builder()
                         .codeValue("PAR")
@@ -715,6 +717,7 @@ public class EntityHelper {
                 .builder()
                 .code(teamCode)
                 .description("Team 1")
+                .teamId(1L)
                 .district(aDistrict())
                 .localDeliveryUnit(LocalDeliveryUnit.builder()
                         .code("LL")

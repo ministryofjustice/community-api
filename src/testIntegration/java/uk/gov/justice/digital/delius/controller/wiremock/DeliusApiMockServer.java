@@ -3,9 +3,11 @@ package uk.gov.justice.digital.delius.controller.wiremock;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 
-import java.time.LocalTime;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.delete;
+import static com.github.tomakehurst.wiremock.client.WireMock.patch;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 
 public class DeliusApiMockServer extends WireMockServer {
 
@@ -214,6 +216,21 @@ public class DeliusApiMockServer extends WireMockServer {
                     \"releaseDate\" : \"2020-12-22\", 
                     \"reason\" : \"RELEASED\"
                 }""")
+        ));
+    }
+
+    public void stubPostRecallDeliusApi() {
+        stubFor(post(urlPathMatching("/v1/offenders/X320741/events/2500295345/recalls")).willReturn(aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withStatus(201)
+        ));
+    }
+
+
+    public void stubPostRecallDuplicateOffenderSingleActiveDeliusApi() {
+        stubFor(post(urlPathMatching("/v1/offenders/CRN35/events/135/recalls")).willReturn(aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withStatus(201)
         ));
     }
 }

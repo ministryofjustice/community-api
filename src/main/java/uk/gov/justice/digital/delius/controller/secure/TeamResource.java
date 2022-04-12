@@ -22,6 +22,8 @@ import uk.gov.justice.digital.delius.data.api.Caseload;
 import uk.gov.justice.digital.delius.data.api.ManagedEventId;
 import uk.gov.justice.digital.delius.data.api.ManagedOffenderCrn;
 import uk.gov.justice.digital.delius.data.api.OfficeLocation;
+import uk.gov.justice.digital.delius.data.api.StaffDetails;
+import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.data.api.TeamCreationResult;
 import uk.gov.justice.digital.delius.service.CaseloadService;
 import uk.gov.justice.digital.delius.service.TeamService;
@@ -82,6 +84,27 @@ public class TeamResource {
         String teamCode
     ) {
         return teamService.getAllOfficeLocations(teamCode);
+    }
+
+    @GetMapping("/teams/{teamCode}/staff")
+    @PreAuthorize("hasRole('ROLE_COMMUNITY')")
+    @ApiResponses(
+        value = {
+            @ApiResponse(code = 200, message = "All staff for the specified team", response = StaffDetails.class, responseContainer = "List"),
+            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY"),
+            @ApiResponse(code = 404, message = "The specified team does not exist or is not active"),
+            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+        })
+    @ApiOperation(
+        value = "Determines all staff for the specified team",
+        authorizations = {@Authorization("ROLE_COMMUNITY")}
+    )
+    public List<StaffDetails> getAllStaff(
+        @PathVariable("teamCode")
+        @ApiParam(value = "Team code", example = "N07T01")
+            String teamCode
+    ) {
+        return teamService.getAllStaff(teamCode);
     }
 
     @ApiOperation(

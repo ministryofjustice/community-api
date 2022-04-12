@@ -24,7 +24,7 @@ public class FeatureSwitches {
         private boolean keyDates;
         private OffenderNumber noms = new OffenderNumber();
         private MultipleEvents multipleEvents = new MultipleEvents();
-        private boolean release;
+        private boolean releaseRecall;
     }
 
     @Data
