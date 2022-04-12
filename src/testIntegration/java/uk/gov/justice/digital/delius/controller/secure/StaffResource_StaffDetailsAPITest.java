@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.ProbationArea;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -268,5 +269,57 @@ public class StaffResource_StaffDetailsAPITest extends IntegrationTestBase {
 
     private String getUsernames(Set <String> usernames) {
         return writeValueAsString(usernames);
+    }
+
+
+
+    @Test
+    public void retrieveProbationAreaHeadsWherePDUDoesNotExist() {
+
+        val staffDetails = given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(getUsernames(Set.of("xxxppp1ps", "dddiiiyyyLdap")))
+            .when()
+            .get("/staff/pduHeads/N07123")
+            .then()
+            .statusCode(404);
+    }
+
+
+    @Test
+    public void retrieveProbationAreaHeadsHasValues() {
+        val staffDetails = given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get("/staff/pduHeads/N01ALL")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(Staff[].class);
+
+        assertThat(staffDetails).hasSize(1);
+    }
+
+
+    @Test
+    public void retrieveProbationAreaHeadsHasNoValues() {
+        val staffDetails = given()
+            .auth()
+            .oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get("/staff/pduHeads/N02ALL")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(Staff[].class);
+
+        assertThat(staffDetails).isEmpty();
     }
 }

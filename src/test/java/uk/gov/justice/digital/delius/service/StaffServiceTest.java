@@ -19,6 +19,7 @@ import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
+import uk.gov.justice.digital.delius.jpa.standard.repository.BoroughRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffHelperRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
@@ -37,6 +38,7 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aBorough;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aProbationArea;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aStaff;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aUser;
@@ -58,16 +60,20 @@ public class StaffServiceTest {
     @Mock
     private OffenderRepository offenderRepository;
 
+    @Mock
+    private BoroughRepository boroughRepository;
+
     @Captor
     private ArgumentCaptor<Staff> staffCaptor;
 
     @BeforeEach
     public void setup() {
         staffService = new StaffService(
-                staffRepository,
-                ldapRepository,
-                staffHelperRepository,
-                offenderRepository);
+            staffRepository,
+            ldapRepository,
+            staffHelperRepository,
+            offenderRepository,
+            boroughRepository);
     }
 
     @Test
@@ -523,5 +529,18 @@ public class StaffServiceTest {
 
     }
 
+    @Test
+    public void getHeadsOfDeliveryUnit(){
+        var staff = aStaff("TEST");
+        var borough = aBorough("N07NPS1").toBuilder()
+            .headsOfProbationDeliveryUnit(List.of(staff)).build();
 
+        when(boroughRepository.findByCode("N07NPS1"))
+            .thenReturn(Optional.of(borough));
+
+        var result = staffService.getProbationDeliveryUnitHeads("N07NPS1");
+        assertThat(result).isPresent();
+        assertThat(result.get()).hasSize(1);
+        assertThat(result.get().get(0).getStaffCode()).isEqualTo("TEST");
+    }
 }

@@ -208,4 +208,10 @@ public class StaffResource {
             .orElseThrow(() -> new NotFoundException(String.format("Staff member with code %s", staffCode))));
     }
 
+    @ApiOperation(value = "Return the list of heads of a specific probation delivery unit (aka borough)")
+    @GetMapping(path = "/staff/pduHeads/{pduCode}")
+    public List<StaffDetails> getProbationPduHeads(@NotNull @PathVariable String pduCode) {
+        return staffService.getProbationDeliveryUnitHeads(pduCode)
+            .orElseThrow(() -> new NotFoundException(String.format("Probation delivery unit with code %s", pduCode)));
+    }
 }

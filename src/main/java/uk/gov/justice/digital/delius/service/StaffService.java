@@ -10,9 +10,11 @@ import uk.gov.justice.digital.delius.data.api.ManagedOffender;
 import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.data.api.StaffHuman;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
+import uk.gov.justice.digital.delius.jpa.standard.repository.BoroughRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffHelperRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
@@ -36,6 +38,7 @@ public class StaffService {
     private final LdapRepository ldapRepository;
     private final StaffHelperRepository staffHelperRepository;
     private final OffenderRepository offenderRepository;
+    private final BoroughRepository boroughRepository;
 
     @Transactional(readOnly = true)
     public Optional<Long> getStaffIdByStaffCode(final String staffCode) {
@@ -129,6 +132,15 @@ public class StaffService {
 
     Optional<Staff> findUnallocatedForTeam(final Team team) {
         return staffRepository.findByUnallocatedByTeam(team.getTeamId());
+    }
+
+    public Optional<List<StaffDetails>> getProbationDeliveryUnitHeads(String boroughCode) {
+        return boroughRepository.findByCode(boroughCode)
+            .map(Borough::getHeadsOfProbationDeliveryUnit)
+            .map(list -> list.stream()
+                .map(StaffTransformer::staffDetailsOf)
+                .map(addFieldsFromLdap())
+                .collect(Collectors.toList()));
     }
 
     private Function<StaffDetails, StaffDetails> addEmailFromLdap() {
