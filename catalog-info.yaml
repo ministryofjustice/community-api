@@ -1,0 +1,36 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: hmpps-community-api
+  title: Community API service
+  description: API service over the NDelius DB used by HMPPS Digital team applications and services
+  tags:
+    - java
+    - spring-boot
+spec:
+  type: service
+  lifecycle: production
+  owner: group:delius-api
+  system: system:hmpps-delius
+  providesApis:
+    - api:hmpps-community
+  consumesApis:
+    - api:hmpps-delius
+  dependsOn:
+    - resource:hmpps-delius-database
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: hmpps-community
+  title: Community API
+  description: API over the NDelius DB used by HMPPS Digital team applications and services
+spec:
+  type: openapi
+  lifecycle: production
+  owner: group:delius-api
+  system: system:hmpps-delius
+  definition:
+    $text: https://community-api-public.test.probation.service.justice.gov.uk/v2/api-docs?group=Community%20API
