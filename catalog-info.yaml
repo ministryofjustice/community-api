@@ -11,7 +11,7 @@ metadata:
 spec:
   type: service
   lifecycle: production
-  owner: group:delius-api
+  owner: group:probation-integration
   system: system:hmpps-delius
   providesApis:
     - api:hmpps-community
@@ -30,7 +30,7 @@ metadata:
 spec:
   type: openapi
   lifecycle: production
-  owner: group:delius-api
+  owner: group:probation-integration
   system: system:hmpps-delius
   definition:
     $text: https://community-api-public.test.probation.service.justice.gov.uk/v2/api-docs?group=Community%20API
