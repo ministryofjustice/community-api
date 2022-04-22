@@ -30,7 +30,7 @@ dependencies {
     implementation 'com.oracle.database.jdbc:ojdbc11'
     implementation 'com.unboundid:unboundid-ldapsdk'
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
-    implementation 'org.flywaydb:flyway-core:8.5.7'
+    implementation 'org.flywaydb:flyway-core:8.5.9'
     implementation 'com.zaxxer:HikariCP'
     implementation 'commons-io:commons-io:2.11.0'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
