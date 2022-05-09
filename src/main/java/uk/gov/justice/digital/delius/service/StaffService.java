@@ -9,7 +9,6 @@ import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.ManagedOffender;
 import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
-import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
@@ -135,12 +134,12 @@ public class StaffService {
     }
 
     public Optional<List<StaffDetails>> getProbationDeliveryUnitHeads(String boroughCode) {
-        return boroughRepository.findByCode(boroughCode)
+        return boroughRepository.findActiveByCode(boroughCode)
             .map(Borough::getHeadsOfProbationDeliveryUnit)
             .map(list -> list.stream()
                 .map(StaffTransformer::staffDetailsOf)
                 .map(addFieldsFromLdap())
-                .collect(Collectors.toList()));
+                .toList());
     }
 
     private Function<StaffDetails, StaffDetails> addEmailFromLdap() {
