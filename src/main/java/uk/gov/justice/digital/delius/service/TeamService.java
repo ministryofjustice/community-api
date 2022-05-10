@@ -7,9 +7,9 @@ import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
+import uk.gov.justice.digital.delius.data.api.OfficeLocation;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.data.api.StaffHuman;
-import uk.gov.justice.digital.delius.data.api.OfficeLocation;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
@@ -185,7 +185,7 @@ public class TeamService {
     }
 
     private Borough findOrCreatePOMBoroughInArea(String code, ProbationArea probationArea) {
-        return boroughRepository.findByCode(code)
+        return boroughRepository.findActiveByCode(code)
                 .orElseGet(() -> createPOMBoroughInArea(code, probationArea));
     }
 

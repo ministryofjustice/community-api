@@ -322,4 +322,15 @@ public class StaffResource_StaffDetailsAPITest extends IntegrationTestBase {
 
         assertThat(staffDetails).isEmpty();
     }
+
+    @Test
+    public void ignoresPdusThatAreLinkedToInactiveProbationAreas() {
+        given()
+            .auth().oauth2(tokenWithRoleCommunity())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .get("/staff/pduHeads/WPTNWS")
+            .then()
+            .statusCode(200);
+    }
 }

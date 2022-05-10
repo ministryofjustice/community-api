@@ -12,12 +12,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
-import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StaffTeam;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import uk.gov.justice.digital.delius.jpa.standard.repository.BoroughRepository;
@@ -41,7 +39,12 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.digital.delius.util.EntityHelper.*;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aDistrict;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aLocalDeliveryUnit;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aProbationArea;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aStaff;
+import static uk.gov.justice.digital.delius.util.EntityHelper.aTeam;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anOfficeLocation;
 
 @ExtendWith(MockitoExtension.class)
 public class TeamServiceTest {
@@ -151,7 +154,7 @@ public class TeamServiceTest {
         when(teamRepository.findByCode(any())).thenReturn(Optional.empty());
         when(districtRepository.findByCode(any())).thenReturn(Optional.empty());
         when(localDeliveryUnitRepository.findByCode(any())).thenReturn(Optional.empty());
-        when(boroughRepository.findByCode(any())).thenReturn(Optional.empty());
+        when(boroughRepository.findActiveByCode(any())).thenReturn(Optional.empty());
 
         final var probationArea = aProbationArea()
                 .toBuilder()
@@ -179,7 +182,7 @@ public class TeamServiceTest {
         when(teamRepository.findByCode(any())).thenReturn(Optional.empty());
         when(districtRepository.findByCode(any())).thenReturn(Optional.empty());
         when(localDeliveryUnitRepository.findByCode(any())).thenReturn(Optional.empty());
-        when(boroughRepository.findByCode(any())).thenReturn(Optional.empty());
+        when(boroughRepository.findActiveByCode(any())).thenReturn(Optional.empty());
 
         final var probationArea = aProbationArea()
                 .toBuilder()
@@ -237,7 +240,7 @@ public class TeamServiceTest {
             when(teamRepository.findByCode("A01POM")).thenReturn(Optional.of(EntityHelper.aTeam("A01POM")));
             when(teamRepository.findByCode("Z01POM")).thenReturn(Optional.empty());
             when(districtRepository.findByCode("Z01POM")).thenReturn(Optional.empty());
-            when(boroughRepository.findByCode("Z01POM")).thenReturn(Optional.empty());
+            when(boroughRepository.findActiveByCode("Z01POM")).thenReturn(Optional.empty());
             when(localDeliveryUnitRepository.findByCode("Z01POM")).thenReturn(Optional.empty());
 
             when(teamRepository.save(any())).thenAnswer(args -> args.getArgument(0));

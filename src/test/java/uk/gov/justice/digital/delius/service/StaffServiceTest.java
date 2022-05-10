@@ -15,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
-import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
@@ -26,7 +25,6 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
 import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusUser;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -535,7 +533,7 @@ public class StaffServiceTest {
         var borough = aBorough("N07NPS1").toBuilder()
             .headsOfProbationDeliveryUnit(List.of(staff)).build();
 
-        when(boroughRepository.findByCode("N07NPS1"))
+        when(boroughRepository.findActiveByCode("N07NPS1"))
             .thenReturn(Optional.of(borough));
 
         var result = staffService.getProbationDeliveryUnitHeads("N07NPS1");
