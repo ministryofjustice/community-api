@@ -14,6 +14,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.justice.digital.delius.data.api.alfresco.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.alfresco.SearchResult;
+import uk.gov.justice.digital.delius.utils.ContentDispositionHeader;
 
 import java.util.Optional;
 
@@ -64,14 +65,16 @@ public class AlfrescoService {
 
     private ResponseEntity<Resource> getDocument(String documentId, Optional<String> filename) {
         return webClient.get().uri(format("/fetch/%s", documentId))
-                .headers(httpHeaders -> httpHeaders.addAll(headers))
-                .retrieve()
-                .toEntity(Resource.class)
-                .map(resource -> new ResponseEntity<>(
-                        resource.getBody(),
-                        collectDocumentResourceHeaders(resource.getHeaders(), documentId, filename),
-                        resource.getStatusCode()))
-                .block();
+            .headers(httpHeaders -> httpHeaders.addAll(headers))
+            .exchangeToMono(response -> {
+                response.mutate().headers(h -> h.remove(HttpHeaders.CONTENT_DISPOSITION));
+                return response.toEntity(Resource.class);
+            })
+            .map(resource -> new ResponseEntity<>(
+                resource.getBody(),
+                collectDocumentResourceHeaders(resource.getHeaders(), documentId, filename),
+                resource.getStatusCode()))
+            .block();
     }
 
     private HttpHeaders collectDocumentResourceHeaders(final HttpHeaders responseHeaders, final String documentId, final Optional<String> filename) {
@@ -81,7 +84,7 @@ public class AlfrescoService {
         newHeaders.add(HttpHeaders.CONTENT_TYPE, responseHeaders.getFirst(HttpHeaders.CONTENT_TYPE));
         newHeaders.add(HttpHeaders.ETAG, responseHeaders.getFirst(HttpHeaders.ETAG));
         newHeaders.add(HttpHeaders.LAST_MODIFIED, responseHeaders.getFirst(HttpHeaders.LAST_MODIFIED));
-        newHeaders.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename.orElse(documentId) + "\"");
+        newHeaders.add(HttpHeaders.CONTENT_DISPOSITION, ContentDispositionHeader.of(filename.orElse(documentId)).getValue());
         return newHeaders;
     }
 

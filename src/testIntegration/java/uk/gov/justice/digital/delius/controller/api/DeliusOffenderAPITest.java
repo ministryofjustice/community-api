@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusExtension;
@@ -36,6 +37,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.user.UserData;
+import uk.gov.justice.digital.delius.utils.ContentDispositionHeader;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -468,12 +470,14 @@ public class DeliusOffenderAPITest {
     @Test
     public void canRetrieveOffenderDocument() {
 
+        String filename = "TS2 Trg Template Letter_03012018_132035_Pickett_K_D002384.DOC";
+
         given()
                 .header("Authorization", aValidToken())
                 .when()
                 .get("/offenders/crn/crn123/documents/fa63c379-8b31-4e36-a152-2a57dfe251c4")
                 .then()
-                .header("Content-Disposition", "attachment; filename=\"TS2 Trg Template Letter_03012018_132035_Pickett_K_D002384.DOC\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDispositionHeader.of(filename).getValue())
                 .statusCode(200);
     }
 

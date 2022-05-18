@@ -2,7 +2,6 @@ package uk.gov.justice.digital.delius.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,7 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import uk.gov.justice.digital.delius.config.AlfrescoConfig;
 import uk.gov.justice.digital.delius.controller.wiremock.AlfrescoExtension;
-import uk.gov.justice.digital.delius.controller.wiremock.AlfrescoMockServer;
+import uk.gov.justice.digital.delius.utils.ContentDispositionHeader;
 
 import java.io.IOException;
 
@@ -37,6 +36,9 @@ public class AlfrescoServiceTest {
 
     @Test
     public void shouldReturnResourceWhenFound() throws IOException {
+
+        String filename = "document.pdf";
+
         AlfrescoExtension.alfrescoMockServer.stubDetailsSuccess("123", "T1234", "document.pdf");
         AlfrescoExtension.alfrescoMockServer.stubFetchDocument("123", new byte[]{'a', 'b', 'c'});
 
@@ -44,7 +46,7 @@ public class AlfrescoServiceTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().contentLength()).isEqualTo(3);
-        assertThat(response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION)).isEqualTo("attachment; filename=\"document.pdf\"");
+        assertThat(response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION)).isEqualTo(ContentDispositionHeader.of(filename).getValue());
     }
 
 }
