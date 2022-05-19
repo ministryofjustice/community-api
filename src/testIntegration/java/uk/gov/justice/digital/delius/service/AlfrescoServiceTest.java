@@ -5,13 +5,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import uk.gov.justice.digital.delius.config.AlfrescoConfig;
 import uk.gov.justice.digital.delius.controller.wiremock.AlfrescoExtension;
-import uk.gov.justice.digital.delius.utils.ContentDispositionHeader;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,16 +38,17 @@ public class AlfrescoServiceTest {
     @Test
     public void shouldReturnResourceWhenFound() throws IOException {
 
-        String filename = "document.pdf";
+        String filename = "document (1).pdf";
 
-        AlfrescoExtension.alfrescoMockServer.stubDetailsSuccess("123", "T1234", "document.pdf");
+        AlfrescoExtension.alfrescoMockServer.stubDetailsSuccess("123", "T1234", filename);
         AlfrescoExtension.alfrescoMockServer.stubFetchDocument("123", new byte[]{'a', 'b', 'c'});
 
         final var response = alfrescoService.getDocument("123", "T1234");
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().contentLength()).isEqualTo(3);
-        assertThat(response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION)).isEqualTo(ContentDispositionHeader.of(filename).getValue());
+        assertThat(response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION)).isEqualTo(ContentDisposition.attachment()
+            .filename(filename, StandardCharsets.UTF_8).build().toString());
     }
 
 }

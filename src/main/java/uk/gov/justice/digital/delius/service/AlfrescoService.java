@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +15,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import uk.gov.justice.digital.delius.data.api.alfresco.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.alfresco.SearchResult;
-import uk.gov.justice.digital.delius.utils.ContentDispositionHeader;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -84,7 +85,9 @@ public class AlfrescoService {
         newHeaders.add(HttpHeaders.CONTENT_TYPE, responseHeaders.getFirst(HttpHeaders.CONTENT_TYPE));
         newHeaders.add(HttpHeaders.ETAG, responseHeaders.getFirst(HttpHeaders.ETAG));
         newHeaders.add(HttpHeaders.LAST_MODIFIED, responseHeaders.getFirst(HttpHeaders.LAST_MODIFIED));
-        newHeaders.add(HttpHeaders.CONTENT_DISPOSITION, ContentDispositionHeader.of(filename.orElse(documentId)).getValue());
+        newHeaders.add(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
+            .filename(filename.orElse(documentId), StandardCharsets.UTF_8).build().toString());
+
         return newHeaders;
     }
 
