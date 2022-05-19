@@ -47,8 +47,8 @@ public class AlfrescoServiceTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().contentLength()).isEqualTo(3);
-        assertThat(response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION)).isEqualTo(ContentDisposition.attachment()
-            .filename(filename, StandardCharsets.UTF_8).build().toString());
+        assertThat(response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION))
+            .isEqualTo("attachment; filename*=UTF-8''document%20%281%29.pdf");
     }
 
 }
