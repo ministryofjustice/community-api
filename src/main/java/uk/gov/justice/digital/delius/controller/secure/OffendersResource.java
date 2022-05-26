@@ -635,7 +635,7 @@ public class OffendersResource {
             })
     @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/nsis")
     public NsiWrapper getNsiForOffenderByCrnAndConvictionId(
-            @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
+            @ApiParam(name = "crn", value = "CRN for the offender", example = "X320741", required = true)
             @NotNull @PathVariable(value = "crn") final String crn,
             @ApiParam(name = "convictionId", value = "ID for the conviction / event", example = "2500295345", required = true)
             @NotNull @PathVariable(value = "convictionId") final Long convictionId,

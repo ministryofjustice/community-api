@@ -2,11 +2,13 @@ package uk.gov.justice.digital.delius.data.api;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
 
 @Getter
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class ProbationStatusDetail {
     private final ProbationStatus status;
