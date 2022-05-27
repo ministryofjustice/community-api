@@ -186,20 +186,6 @@ jobs:
                 root: ~/app
                 paths:
                   - docker_cache
-
-      - when:
-          condition: << parameters.snyk-scan >>
-          steps:
-            - snyk/scan:
-                project: "${CIRCLE_PROJECT_REPONAME}-docker"
-                organization: << parameters.snyk-org >>
-                docker-image-name: "${IMAGE_NAME}:${APP_VERSION}"
-                target-file: << parameters.dockerfile_dir >>/<< parameters.snyk-target-file >>
-                severity-threshold: << parameters.snyk-threshold >>
-                fail-on-issues: << parameters.snyk-fail-build >>
-                additional-arguments: << parameters.snyk-args >>
-                monitor-on-build: << parameters.publish >>
-
       - when:
           condition: <<parameters.publish>>
           steps:
