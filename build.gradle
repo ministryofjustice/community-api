@@ -85,7 +85,7 @@ jib {
         paths {
             path {
                 setFrom("${project.buildDir}")
-                includes = ["applicationinsights-agent*.jar"]
+                includes = ["libs/applicationinsights-agent*.jar"]
             }
         }
     }
