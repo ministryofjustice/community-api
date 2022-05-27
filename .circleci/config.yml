@@ -193,7 +193,7 @@ workflows:
           filters:
             tags:
               ignore: /.*/
-      - build_jib:
+      - /build_jib:
           name: build_docker
           jira_update: true
           context: hmpps-common-vars
