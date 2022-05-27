@@ -3,6 +3,7 @@ plugins {
     id 'groovy'
     id 'org.unbroken-dome.test-sets' version '4.0.0'
     id "au.com.dius.pact" version "4.3.6"
+    id "com.google.cloud.tools.jib" version "3.2.1"
 }
 
 group = 'uk.gov.justice.digital.delius'
@@ -80,4 +81,18 @@ testIntegration {
 
 repositories {
     mavenCentral()
+}
+
+jib {
+    container.creationTime = "USE_CURRENT_TIMESTAMP"
+    container.mainClass = "uk.gov.justice.digital.delius.DeliusOffenderAPI"
+    from.image = "eclipse-temurin:17-jre-alpine"
+    extraDirectories {
+        paths {
+            path {
+                setFrom("${project.buildDir}/libs")
+                includes = ["applicationinsights-agent*.jar"]
+            }
+        }
+    }
 }

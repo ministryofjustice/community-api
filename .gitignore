@@ -69,3 +69,4 @@ ecr.repo
 
 # Local H2 database
 *.db
+.trivyignore
