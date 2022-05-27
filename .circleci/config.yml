@@ -139,7 +139,17 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
           version: << parameters.docker_version >>
-      - create_app_version
+      - run:
+          name: Create app version string
+          command: |
+            DATE=$(date '+%Y-%m-%d')
+            SHORT_SHA1=$(echo $CIRCLE_SHA1 | cut -c1-7)
+            VERSION=${DATE}.${CIRCLE_BUILD_NUM}.${SHORT_SHA1}
+            echo "Created version string: ${VERSION}"
+            echo "export VERSION=$VERSION" >> $BASH_ENV
+      - mem/remember:
+          env_var: APP_VERSION
+          value: "${VERSION}"
       - run:
           name: Create IMAGE_NAME env var
           command: |
