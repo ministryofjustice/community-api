@@ -82,7 +82,7 @@ jobs:
 #      - jira/notify
   jib-docker:
     executor:
-      name: default
+      name: hmpps/default
       tag: "3.10"
     parameters:
       image_name:
