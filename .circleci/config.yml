@@ -228,7 +228,7 @@ workflows:
             container=community-api,name=SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI, value=https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json,
             container=community-api,name=APPLICATIONINSIGHTS_CONFIGURATION_FILE,                value=applicationinsights.dev.json
           requires:
-            - build_docker
+            - jib-docker
       - deploy:
           name: deploy_to_test
           environment_type: testing
