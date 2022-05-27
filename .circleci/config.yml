@@ -135,10 +135,6 @@ jobs:
         default: false
         description: When true, updates any referenced Jira tickets with build status. Note that Jira integration must be enabled in your CircleCI project settings.
     steps:
-      - when:
-          condition: << parameters.git-lfs >>
-          steps:
-            - install_git_lfs
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
