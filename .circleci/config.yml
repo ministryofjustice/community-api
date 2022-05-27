@@ -60,26 +60,6 @@ jobs:
       - store_artifacts:
           path: build/reports/tests
       - jira/notify
-#  jib-docker:
-#    executor:
-#      name: hmpps/java
-#      tag: "17.0"
-#    parallelism: 4
-#    environment:
-#      _JAVA_OPTIONS: -Xmx1536m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false
-#    steps:
-#      - checkout
-#      - restore_cache:
-#          keys:
-#            - gradle-{{ checksum "build.gradle" }}
-#            - gradle-
-#      - run:
-#          command: ./gradlew jibDockerBuild --image="quay.io/hmpps/${CIRCLE_PROJECT_REPONAME}"
-#      - save_cache:
-#          paths:
-#            - ~/.gradle
-#          key: gradle-{{ checksum "build.gradle" }}
-#      - jira/notify
   jib-docker:
     executor:
       name: hmpps/java
@@ -136,20 +116,7 @@ jobs:
           name: Build container image
           no_output_timeout: << parameters.no_output_timeout >>
           command: |
-            ./gradlew jibDockerBuild --image="${IMAGE_NAME}:${APP_VERSION}"
-#          command: |
-#            docker build --pull \
-#              --rm=false << parameters.dockerfile_dir >> \
-#              --build-arg BUILD_NUMBER=$APP_VERSION \
-#              --build-arg GIT_REF=$CIRCLE_SHA1 \
-#              --tag "${IMAGE_NAME}:${APP_VERSION}" \
-#              --label "maintainer=dps-hmpps@digital.justice.gov.uk" \
-#              --label "app.version=${APP_VERSION}" \
-#              --label "build.version=${APP_VERSION}" \
-#              --label "build.number=${CIRCLE_BUILD_NUM}" \
-#              --label "build.url=${CIRCLE_BUILD_URL}" \
-#              --label "build.gitref=${CIRCLE_SHA1}" \
-#              << parameters.additional_docker_build_args >>
+            ./gradlew assemble jibDockerBuild --image="${IMAGE_NAME}:${APP_VERSION}"
       - when:
           condition: << parameters.persist_container_image >>
           steps:
@@ -329,7 +296,7 @@ workflows:
             container=community-api,name=SMOKE_TEST_AWARE,                                      value=true,
             container=community-api,name=SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI, value=https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json,
             container=community-api,name=APPLICATIONINSIGHTS_CONFIGURATION_FILE,                value=applicationinsights.dev.json,
-            container=community-api,name=JDK_JAVA_OPTIONS,                                      value=javaagent:/libs/applicationinsights-agent-3.2.5.jar
+            container=community-api,name=JDK_JAVA_OPTIONS,                                      value=javaagent:/agent/applicationinsights-agent*.jar
 
           requires:
             - jib-docker
@@ -355,7 +322,7 @@ workflows:
             container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=true,
             container=community-api,name=FEATURES_REGISTERS_COURT_CODE_ALLOWED_PATTERN,               value=XXXX[A-Z]{2},
             container=community-api,name=APPLICATIONINSIGHTS_CONFIGURATION_FILE,                      value=applicationinsights.dev.json,
-            container=community-api,name=JDK_JAVA_OPTIONS,                                            value=javaagent:/libs/applicationinsights-agent-3.2.5.jar
+            container=community-api,name=JDK_JAVA_OPTIONS,                                            value=javaagent:/agent/applicationinsights-agent*.jar
           requires:
             - deploy_to_dev
           filters:
@@ -393,7 +360,7 @@ workflows:
             container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=false,
             container=community-api,name=FEATURES_REGISTERS_COURT_CODE_ALLOWED_PATTERN,               value=,
             container=community-api,name=APPLICATIONINSIGHTS_CONFIGURATION_FILE,                      value=applicationinsights.dev.json,
-            container=community-api,name=JDK_JAVA_OPTIONS,                                            value=javaagent:/libs/applicationinsights-agent-3.2.5.jar
+            container=community-api,name=JDK_JAVA_OPTIONS,                                            value=javaagent:/agent/applicationinsights-agent*.jar
           requires:
             - request-pre-prod-approval
       - deploy:
@@ -418,7 +385,7 @@ workflows:
             container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=false,
             container=community-api,name=FEATURES_REGISTERS_COURT_CODE_ALLOWED_PATTERN,               value=,
             container=community-api,name=APPLICATIONINSIGHTS_CONFIGURATION_FILE,                      value=applicationinsights.dev.json,
-            container=community-api,name=JDK_JAVA_OPTIONS,                                            value=javaagent:/libs/applicationinsights-agent-3.2.5.jar
+            container=community-api,name=JDK_JAVA_OPTIONS,                                            value=javaagent:/agent/applicationinsights-agent*.jar
           requires:
             - request-pre-prod-approval
       - deploy:
@@ -443,7 +410,7 @@ workflows:
             container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=true,
             container=community-api,name=FEATURES_REGISTERS_COURT_CODE_ALLOWED_PATTERN,               value=,
             container=community-api,name=APPLICATIONINSIGHTS_CONFIGURATION_FILE,                      value=applicationinsights.json,
-            container=community-api,name=JDK_JAVA_OPTIONS,                                            value=javaagent:/libs/applicationinsights-agent-3.2.5.jar
+            container=community-api,name=JDK_JAVA_OPTIONS,                                            value=javaagent:/agent/applicationinsights-agent*.jar
           requires:
             - request-pre-prod-approval
       - slack-approval:
@@ -479,7 +446,7 @@ workflows:
             container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=false,
             container=community-api,name=FEATURES_REGISTERS_COURT_CODE_ALLOWED_PATTERN,               value=,
             container=community-api,name=APPLICATIONINSIGHTS_CONFIGURATION_FILE,                      value=applicationinsights.json,
-            container=community-api,name=JDK_JAVA_OPTIONS,                                            value=javaagent:/libs/applicationinsights-agent-3.2.5.jar
+            container=community-api,name=JDK_JAVA_OPTIONS,                                            value=javaagent:/agent/applicationinsights-agent*.jar
           requires:
             - request-prod-approval
 
