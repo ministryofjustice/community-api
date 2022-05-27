@@ -25,18 +25,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'com.fasterxml.jackson.core:jackson-core'
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations'
     implementation 'com.oracle.database.jdbc:ojdbc11'
     implementation 'com.unboundid:unboundid-ldapsdk'
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
     implementation 'org.flywaydb:flyway-core:8.5.10'
     implementation 'com.zaxxer:HikariCP'
-    implementation 'commons-io:commons-io:2.11.0'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.apache.commons:commons-text:1.9'
-    implementation 'io.swagger:swagger-core:1.6.2'
+    implementation 'io.swagger:swagger-core:1.6.6'
     implementation 'io.vavr:vavr:0.10.4'
     implementation 'com.github.java-json-tools:json-patch:1.13'
 
@@ -49,11 +45,9 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
     testCompileOnly 'org.projectlombok:lombok'
 
-    testImplementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
     testImplementation 'io.rest-assured:rest-assured'
     testImplementation 'io.rest-assured:spring-mock-mvc'
-    testImplementation 'au.com.dius.pact.provider:junit5spring:4.3.6'
-    testImplementation 'io.swagger.parser.v3:swagger-parser-v2-converter:2.0.25'
+    testImplementation 'au.com.dius.pact.provider:junit5spring:4.3.7'
     testIntegrationImplementation 'com.github.tomakehurst:wiremock:2.27.2'
 }
 
