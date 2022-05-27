@@ -60,6 +60,26 @@ jobs:
       - store_artifacts:
           path: build/reports/tests
       - jira/notify
+  jib-docker:
+    executor:
+      name: hmpps/java
+      tag: "17.0"
+    parallelism: 4
+    environment:
+      _JAVA_OPTIONS: -Xmx1536m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle" }}
+            - gradle-
+      - run:
+          command: ./gradlew jibDockerBuild --image="quay.io/hmpps/${CIRCLE_PROJECT_REPONAME}"
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradle-{{ checksum "build.gradle" }}
+      - jira/notify
   deploy:
     parameters:
       env-vars:
