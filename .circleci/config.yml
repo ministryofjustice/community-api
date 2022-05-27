@@ -83,9 +83,9 @@ jobs:
   jib-docker:
     executor:
       name: hmpps/java
-        tag: "17.0"
-        environment:
-          _JAVA_OPTIONS: -Xmx1024m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false
+      tag: "17.0"
+    environment:
+      _JAVA_OPTIONS: -Xmx1024m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false
     parameters:
       image_name:
         type: string
