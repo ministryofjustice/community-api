@@ -82,18 +82,14 @@ jobs:
 #      - jira/notify
   jib-docker:
     executor:
-      name: hmpps/default
-      tag: "3.10"
+      name: hmpps/java
+        tag: "17.0"
+        environment:
+          _JAVA_OPTIONS: -Xmx1024m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false
     parameters:
       image_name:
         type: string
         default: "quay.io/hmpps/${CIRCLE_PROJECT_REPONAME}"
-      dockerfile_dir:
-        type: string
-        default: "."
-      additional_docker_build_args:
-        type: string
-        default: ""
       docker_version:
         type: string
         default: "20.10.14"
