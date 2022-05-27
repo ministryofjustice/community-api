@@ -77,6 +77,14 @@ repositories {
     mavenCentral()
 }
 
+tasks.register('copyAgentJar', Copy) {
+    from("${project.buildDir}/libs")
+    include("applicationinsights-agent*.jar")
+    into("${project.buildDir}/agent")
+    rename("applicationinsights-agent(.+).jar", "agent.jar")
+}
+copyAgentJar.dependsOn(assemble)
+
 jib {
     container.creationTime = "USE_CURRENT_TIMESTAMP"
     container.mainClass = "uk.gov.justice.digital.delius.DeliusOffenderAPI"
@@ -84,10 +92,11 @@ jib {
     extraDirectories {
         paths {
             path {
-                setFrom("${project.buildDir}/libs")
-                includes = ["applicationinsights-agent*.jar"]
+                setFrom("${project.buildDir}/agent")
+                includes = ["agent.jar"]
                 setInto("/agent")
             }
         }
     }
 }
+jibDockerBuild.dependsOn(copyAgentJar)
