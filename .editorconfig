@@ -19,7 +19,6 @@ ij_java_names_count_to_use_import_on_demand = 99
 ij_java_use_single_class_imports = true
 ij_java_insert_inner_class_imports = true
 indent_size = 4
-indent_style = space
 
 [*.html]
 indent_size = 2
