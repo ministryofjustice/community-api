@@ -60,7 +60,7 @@ jobs:
       - store_artifacts:
           path: build/reports/tests
       - jira/notify
-  jib-docker:
+  jib-build:
     executor:
       name: hmpps/java
       tag: "17.0"
@@ -70,29 +70,12 @@ jobs:
       image_name:
         type: string
         default: "quay.io/hmpps/${CIRCLE_PROJECT_REPONAME}"
-      docker_version:
-        type: string
-        default: "20.10.14"
-      publish:
-        type: boolean
-        default: true
-      persist_container_image:
-        type: boolean
-        default: false
-        description: Make the built container image available for subsequent jobs
-      no_output_timeout:
-        type: string
-        default: 30m
-        description: Configure the no_output_timeout setting for the container build step
       jira_update:
         type: boolean
         default: false
         description: When true, updates any referenced Jira tickets with build status. Note that Jira integration must be enabled in your CircleCI project settings.
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-          version: << parameters.docker_version >>
       - run:
           name: Create app version string
           command: |
@@ -113,33 +96,10 @@ jobs:
           env_var: IMAGE_NAME
           value: "${IMAGE_NAME}"
       - run:
-          name: Build container image
+          name: Build container image and publish
           no_output_timeout: << parameters.no_output_timeout >>
           command: |
-            ./gradlew assemble jibDockerBuild --image="${IMAGE_NAME}:${APP_VERSION}"
-      - when:
-          condition: << parameters.persist_container_image >>
-          steps:
-            - run:
-                name: Persist container image to workspace
-                command: |
-                  mkdir -p docker_cache
-                  docker save ${IMAGE_NAME}:${APP_VERSION} -o docker_cache/build_image.tar
-            - persist_to_workspace:
-                root: ~/app
-                paths:
-                  - docker_cache
-      - when:
-          condition: <<parameters.publish>>
-          steps:
-            - run:
-                name: Publish image to repository
-                command: |
-                  #push to quay.io
-                  docker login -u="${QUAYIO_USERNAME}" -p="${QUAYIO_PASSWORD}" quay.io
-                  docker tag "<< parameters.image_name >>:${APP_VERSION}" "<< parameters.image_name >>:latest"
-                  docker push "<< parameters.image_name >>:${APP_VERSION}"
-                  docker push "<< parameters.image_name >>:latest"
+            ./gradlew jib --image="${IMAGE_NAME}:${APP_VERSION}" -Djib.from.auth.username=${QUAYIO_USERNAME} -Djib.from.auth.password=${QUAYIO_PASSWORD}
       - when:
           condition: << parameters.jira_update >>
           steps:
@@ -277,7 +237,7 @@ workflows:
           filters:
             tags:
               ignore: /.*/
-      - jib-docker:
+      - jib-build:
           context: hmpps-common-vars
           filters:
             tags:
@@ -298,7 +258,7 @@ workflows:
             container=community-api,name=APPLICATIONINSIGHTS_CONFIGURATION_FILE,                value=applicationinsights.dev.json,
             container=community-api,name=JDK_JAVA_OPTIONS,                                      value="-javaagent:/agent/agent.jar"
           requires:
-            - jib-docker
+            - jib-build
       - deploy:
           name: deploy_to_test
           environment_type: testing

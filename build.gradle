@@ -92,11 +92,13 @@ jib {
     extraDirectories {
         paths {
             path {
-                setFrom("${project.buildDir}/agent")
-                includes = ["agent.jar"]
-                setInto("/agent")
+                setFrom("${project.buildDir}")
+                includes = ["agent/agent.jar"]
             }
         }
     }
 }
+
+tasks.getByName("jib").dependsOn(copyAgentJar)
+jibBuildTar.dependsOn(copyAgentJar)
 jibDockerBuild.dependsOn(copyAgentJar)
