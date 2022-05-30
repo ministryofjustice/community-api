@@ -72,7 +72,7 @@ jobs:
         default: "quay.io/hmpps/${CIRCLE_PROJECT_REPONAME}"
       no_output_timeout:
         type: string
-        default: 30m
+        default: 5m
         description: Configure the no_output_timeout setting for the container build step
       jira_update:
         type: boolean
