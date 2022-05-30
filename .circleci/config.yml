@@ -103,7 +103,7 @@ jobs:
           name: Build container image and publish
           no_output_timeout: << parameters.no_output_timeout >>
           command: |
-            ./gradlew jib --image="${IMAGE_NAME}:${APP_VERSION}" -Djib.from.auth.username=${QUAYIO_USERNAME} -Djib.from.auth.password=${QUAYIO_PASSWORD}
+            ./gradlew jib --image="${IMAGE_NAME}:${APP_VERSION}" -Djib.to.auth.username=${QUAYIO_USERNAME} -Djib.to.auth.password=${QUAYIO_PASSWORD}
       - when:
           condition: << parameters.jira_update >>
           steps:
