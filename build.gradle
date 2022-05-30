@@ -1,8 +1,8 @@
 plugins {
-    id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.1.7"
+    id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.2.0"
     id 'groovy'
     id 'org.unbroken-dome.test-sets' version '4.0.0'
-    id "au.com.dius.pact" version "4.3.6"
+    id "au.com.dius.pact" version "4.3.8"
     id "com.google.cloud.tools.jib" version "3.2.1"
 }
 
@@ -28,7 +28,7 @@ dependencies {
     implementation 'com.oracle.database.jdbc:ojdbc11'
     implementation 'com.unboundid:unboundid-ldapsdk'
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
-    implementation 'org.flywaydb:flyway-core:8.5.10'
+    implementation 'org.flywaydb:flyway-core:8.5.11'
     implementation 'com.zaxxer:HikariCP'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.apache.commons:commons-text:1.9'
@@ -47,7 +47,7 @@ dependencies {
 
     testImplementation 'io.rest-assured:rest-assured'
     testImplementation 'io.rest-assured:spring-mock-mvc'
-    testImplementation 'au.com.dius.pact.provider:junit5spring:4.3.7'
+    testImplementation 'au.com.dius.pact.provider:junit5spring:4.3.8'
     testIntegrationImplementation 'com.github.tomakehurst:wiremock:2.27.2'
 }
 
