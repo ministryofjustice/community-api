@@ -89,7 +89,7 @@ jib {
     container.creationTime = "USE_CURRENT_TIMESTAMP"
     container.mainClass = "uk.gov.justice.digital.delius.DeliusOffenderAPI"
     from.image = "eclipse-temurin:17-jre-alpine"
-    container.jvmFlags = mutableListOf("-Duser.timezone=Europe/London")
+    container.jvmFlags = ["-Duser.timezone=Europe/London"]
     extraDirectories {
         paths {
             path {
