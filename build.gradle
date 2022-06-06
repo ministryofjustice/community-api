@@ -98,6 +98,15 @@ jib {
             }
         }
     }
+    extraDirectories {
+        paths {
+            path {
+                setFrom("${project.rootDir}")
+                includes = ["applicationinsights*.json"]
+                into = "/app"
+            }
+        }
+    }
 }
 
 tasks.getByName("jib").dependsOn(copyAgentJar)
