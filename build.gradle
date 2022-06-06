@@ -90,6 +90,7 @@ jib {
     container.mainClass = "uk.gov.justice.digital.delius.DeliusOffenderAPI"
     from.image = "eclipse-temurin:17-jre-alpine"
     container.jvmFlags = ["-Duser.timezone=Europe/London"]
+    container.user("2000:2000")
     extraDirectories {
         paths {
             path {
