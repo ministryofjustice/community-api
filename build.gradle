@@ -99,7 +99,7 @@ jib {
             path {
                 setFrom("${project.rootDir}")
                 includes = ["applicationinsights*.json"]
-                into = "/app"
+                into = "/agent"
             }
         }
     }
