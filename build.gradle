@@ -96,6 +96,11 @@ jib {
                 setFrom("${project.buildDir}")
                 includes = ["agent/agent.jar"]
             }
+            path {
+                setFrom("${project.rootDir}")
+                includes = ["applicationinsights*.json"]
+                into = "/app"
+            }
         }
     }
 }
