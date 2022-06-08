@@ -67,10 +67,6 @@ jobs:
     environment:
       _JAVA_OPTIONS: -Xmx1024m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false
     parameters:
-      tags:
-        type: string
-        default: ""
-        description: Should be comma separated list of tags to add
       image_name:
         type: string
         default: "quay.io/hmpps/${CIRCLE_PROJECT_REPONAME}"
@@ -101,9 +97,11 @@ jobs:
           value: "${IMAGE_NAME}"
       - run:
           name: Build container image and publish
-          tags: << parameters.tags >>
-          command: |            
-            [ -z "${tags}" ] || TAGS="-Djib.to.tags=${tags}"
+          command: |
+            TAGS=""
+            if [ "$CIRCLE_BRANCH" = "main" ]; then
+              TAGS="-Djib.to.tags=latest"
+            fi
             ./gradlew jib --image="${IMAGE_NAME}:${APP_VERSION}" -Djib.to.auth.username=${QUAYIO_USERNAME} -Djib.to.auth.password=${QUAYIO_PASSWORD} $TAGS
       - when:
           condition: << parameters.jira_update >>
@@ -245,17 +243,8 @@ workflows:
       - jib-build:
           context: hmpps-common-vars
           filters:
-            branches:
-              only:
-                - main
-          tags: 'latest'
-          jira_update: true
-      - jib-build:
-          context: hmpps-common-vars
-          filters:
-            branches:
-              ignore:
-                - main
+            tags:
+              ignore: /.*/
       - deploy:
           name: deploy_to_dev
           environment_type: development
