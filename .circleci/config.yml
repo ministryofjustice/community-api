@@ -69,7 +69,7 @@ jobs:
     parameters:
       tags:
         type: string
-        default: false
+        default: ""
         description: Should be comma separated list of tags to add
       image_name:
         type: string
