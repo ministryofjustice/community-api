@@ -67,13 +67,13 @@ jobs:
     environment:
       _JAVA_OPTIONS: -Xmx1024m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false
     parameters:
+      tags:
+        type: string
+        default: false
+        description: Should be comma separated list of tags to add
       image_name:
         type: string
         default: "quay.io/hmpps/${CIRCLE_PROJECT_REPONAME}"
-      no_output_timeout:
-        type: string
-        default: 5m
-        description: Configure the no_output_timeout setting for the container build step
       jira_update:
         type: boolean
         default: false
@@ -101,9 +101,10 @@ jobs:
           value: "${IMAGE_NAME}"
       - run:
           name: Build container image and publish
-          no_output_timeout: << parameters.no_output_timeout >>
-          command: |
-            ./gradlew jib --image="${IMAGE_NAME}:${APP_VERSION}" -Djib.to.auth.username=${QUAYIO_USERNAME} -Djib.to.auth.password=${QUAYIO_PASSWORD}
+          tags: << parameters.tags >>
+          command: |            
+            [ -z "${tags}" ] || TAGS="-Djib.to.tags=${tags}"
+            ./gradlew jib --image="${IMAGE_NAME}:${APP_VERSION}" -Djib.to.auth.username=${QUAYIO_USERNAME} -Djib.to.auth.password=${QUAYIO_PASSWORD} $TAGS
       - when:
           condition: << parameters.jira_update >>
           steps:
@@ -244,8 +245,17 @@ workflows:
       - jib-build:
           context: hmpps-common-vars
           filters:
-            tags:
-              ignore: /.*/
+            branches:
+              only:
+                - main
+          add_latest_tag: true
+          jira_update: true
+      - jib-build:
+          context: hmpps-common-vars
+          filters:
+            branches:
+              ignore:
+                - main
       - deploy:
           name: deploy_to_dev
           environment_type: development

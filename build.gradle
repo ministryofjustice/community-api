@@ -60,7 +60,7 @@ testIntegration {
         }
     }
     timeout = Duration.ofMinutes(15)
-    useJUnitPlatform ()
+    useJUnitPlatform()
     testLogging {
         events "started", "passed", "skipped", "failed", "standardError"
         exceptionFormat "short"
@@ -86,11 +86,15 @@ tasks.register('copyAgentJar', Copy) {
 copyAgentJar.dependsOn(assemble)
 
 jib {
-    container.creationTime = "USE_CURRENT_TIMESTAMP"
-    container.mainClass = "uk.gov.justice.digital.delius.DeliusOffenderAPI"
-    from.image = "eclipse-temurin:17-jre-alpine"
-    container.jvmFlags = ["-Duser.timezone=Europe/London"]
-    container.user = "2000:2000"
+    container {
+        creationTime = "USE_CURRENT_TIMESTAMP"
+        mainClass = "uk.gov.justice.digital.delius.DeliusOffenderAPI"
+        jvmFlags = ["-Duser.timezone=Europe/London"]
+        user = "2000:2000"
+    }
+    from {
+        image = "eclipse-temurin:17-jre-alpine"
+    }
     extraDirectories {
         paths {
             path {
