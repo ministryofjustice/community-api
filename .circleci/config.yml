@@ -248,7 +248,7 @@ workflows:
             branches:
               only:
                 - main
-          add_latest_tag: true
+          tags: 'latest'
           jira_update: true
       - jib-build:
           context: hmpps-common-vars
