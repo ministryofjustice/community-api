@@ -65,6 +65,7 @@ public class ContactTransformer {
             .enforcement(Optional.ofNullable(contact.getEnforcement()).map(ContactTransformer::enforcementOf).orElse(null))
             .lastUpdatedDateTime(Optional.ofNullable(contact.getLastUpdatedDateTime()).map(DateConverter::toOffsetDateTime).orElse(null))
             .lastUpdatedByUser(humanOf(contact.getLastUpdatedByUser()))
+            .description(contact.getDescription())
             .build();
     }
 

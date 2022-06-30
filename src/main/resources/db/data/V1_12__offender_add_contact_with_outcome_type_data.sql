@@ -26,7 +26,8 @@ Insert into CONTACT (CONTACT_ID,
                      STAFF_EMPLOYEE_ID,
                      PROBATION_AREA_ID,
                      TRUST_PROVIDER_TEAM_ID,
-                     ENFORCEMENT)
+                     ENFORCEMENT,
+                     DESCRIPTION)
 values (2502719240,
         to_date('04-09-20','DD-MM-RR'),
         2500343964,
@@ -54,7 +55,8 @@ values (2502719240,
         2500038545, -- STAFF_EMPLOYEE_ID
         1500001001, -- PROBATION_AREA_ID
         2500031218, -- TRUST_PROVIDER_TEAM_ID
-        null -- ENFORCEMENT
+        null, -- ENFORCEMENT
+        'Contact Description'
         );
 
 

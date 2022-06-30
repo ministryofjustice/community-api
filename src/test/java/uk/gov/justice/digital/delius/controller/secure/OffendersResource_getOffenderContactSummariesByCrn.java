@@ -37,6 +37,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
+import static io.restassured.RestAssured.withArgs;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -86,7 +87,9 @@ public class OffendersResource_getOffenderContactSummariesByCrn {
             .body("size", equalTo(20))
             .body("content.size()", equalTo(2))
             .body("content.find { it.contactId == 1 }", notNullValue())
-            .body("content.find { it.contactId == 2 }", notNullValue());
+            .body("content.find { it.contactId == 2 }", notNullValue())
+            .rootPath("content.find { it.contactId == %d }")
+            .body("description", withArgs(1L), equalTo("Contact description"));
 
         assertThat(filterCaptor.getValue())
             .isEqualTo(ContactFilter.builder()
@@ -135,6 +138,7 @@ public class OffendersResource_getOffenderContactSummariesByCrn {
                 .complied(true)
                 .hoursCredited(1.5)
                 .build())
+            .description("Contact description")
             .build();
     }
 }
