@@ -71,4 +71,7 @@ public class ContactSummary {
 
     @ApiModelProperty(name = "Enforcement details of this contact")
     private Enforcement enforcement;
+
+    @ApiModelProperty(name = "Description")
+    private String description;
 }

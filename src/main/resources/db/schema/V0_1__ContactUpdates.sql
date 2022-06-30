@@ -1,0 +1,1 @@
+Alter table contact ADD DESCRIPTION varchar2(200);

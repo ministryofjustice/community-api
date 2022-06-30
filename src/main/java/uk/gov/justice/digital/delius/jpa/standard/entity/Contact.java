@@ -193,6 +193,9 @@ public class Contact {
     @OneToOne(mappedBy = "contact")
     private Enforcement enforcement;
 
+    @Column(name = "DESCRIPTION")
+    private String description;
+
     /**
      * Determines whether this contact has the RAR activity flag set.
      * NOTE: this does NOT mean that this contact counts towards RAR.

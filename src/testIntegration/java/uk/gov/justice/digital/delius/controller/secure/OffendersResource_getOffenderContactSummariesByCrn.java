@@ -372,6 +372,7 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             // appointments
             .body("type.code", withArgs(2502719240L), equalTo("C084"))
             .body("type.appointment", withArgs(2502719240L), equalTo(true))
+            .body("description", withArgs(2502719240L), equalTo("Contact Description"))
 
             .body("type.code", withArgs(2502719245L), equalTo("C084"))
             .body("type.appointment", withArgs(2502719245L), equalTo(true))
