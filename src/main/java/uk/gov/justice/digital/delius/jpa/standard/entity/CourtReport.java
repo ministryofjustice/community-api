@@ -132,7 +132,7 @@ public class CourtReport {
     @Column(name = "PENDING_TRANSFER")
     private Long pendingTransfer;
 
-    @JoinColumn(name = "DELIVERED_REPORT_REASON_ID", referencedColumnName = "STANDARD_REFERENCE_LIST_ID")
+    @JoinColumn(name = "DELIVERED_REPORT_REASON_ID", referencedColumnName = "STANDARD_REFERENCE_LIST_ID", insertable = false, updatable = false)
     @OneToOne
     private StandardReference deliveredCourtReportType;
 }
