@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -61,7 +60,13 @@ public class CourtReportTransformer {
                                                                         .build())
                                                     .orElse(null))
             .reportManagers(reportManagersOf(report.getReportManagers()))
+            .deliveredCourtReportType(getDeliveredCourtReportType(report))
             .build();
+    }
+
+    private static KeyValue getDeliveredCourtReportType(uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport report) {
+        return Optional.ofNullable(report.getDeliveredCourtReportType()).map(standardReference ->
+            KeyValue.builder().code(standardReference.getCodeValue()).description(standardReference.getCodeDescription()).build()).orElse(null);
     }
 
     private static List<ReportManager> reportManagersOf(final List<uk.gov.justice.digital.delius.jpa.standard.entity.ReportManager> reportManagers) {

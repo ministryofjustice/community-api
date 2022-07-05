@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.jpa.standard.entity.RCourtReportType;
 import uk.gov.justice.digital.delius.util.EntityHelper;
 
@@ -44,6 +45,7 @@ class CourtReportTransformerTest {
         assertThat(courtReport.getReportManagers().get(0).getStaff().getForenames()).isEqualTo("John");
         assertThat(courtReport.getReportManagers().get(0).getStaff().getForenames()).isEqualTo("John");
         assertThat(courtReport.getReportManagers()).extracting("active").contains(true, false);
+        assertThat(courtReport.getDeliveredCourtReportType()).isEqualTo(KeyValue.builder().code("DEL_CODE").description("Delivery description").build());
     }
 
     @DisplayName("Mapping of court report entity with no type ensuring null proof")
