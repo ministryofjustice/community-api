@@ -66,7 +66,7 @@ public class CourtReportTransformer {
 
     private static KeyValue getDeliveredCourtReportType(uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport report) {
         return Optional.ofNullable(report.getDeliveredCourtReportType()).map(standardReference ->
-            KeyValue.builder().code(standardReference.getCodeValue()).description(standardReference.getCodeDescription()).build()).orElse(null);
+            KeyValue.builder().code(standardReference.getCode()).description(standardReference.getDescription()).build()).orElse(null);
     }
 
     private static List<ReportManager> reportManagersOf(final List<uk.gov.justice.digital.delius.jpa.standard.entity.ReportManager> reportManagers) {

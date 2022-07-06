@@ -94,8 +94,8 @@ class CourtReportResourceAPITest extends IntegrationTestBase {
             .body("[0].requiredDate", equalTo(standardDateTimeOf(2019, SEPTEMBER, 4)))
             .body("[0].courtReportType.code", equalTo("CJF"))
             .body("[0].courtReportType.description", equalTo("Pre-Sentence Report - Fast"))
-            .body("[0].deliveredCourtReportType.code", equalTo("AS03"))
-            .body("[0].deliveredCourtReportType.description", equalTo("Abandoned - Author Sick"))
+            .body("[0].deliveredCourtReportType.code", equalTo("NIL"))
+            .body("[0].deliveredCourtReportType.description", equalTo("Abandoned/Nil Report"))
             .body("[0].reportManagers.size", is(2))
             .body("[0].reportManagers[0].active", is(true))
             .body("[0].reportManagers[0].staff.forenames", equalTo("Unallocated Staff(N02)"))
@@ -104,8 +104,8 @@ class CourtReportResourceAPITest extends IntegrationTestBase {
             .body("[1].reportManagers.size", is(1))
             .body("[1].courtReportType.code", equalTo("ADR"))
             .body("[1].courtReportType.description", equalTo("Assessment - DRR"))
-            .body("[1].deliveredCourtReportType.code", equalTo("101"))
-            .body("[1].deliveredCourtReportType.description", equalTo("Adjourned - Pre-Sentence Report"))
+            .body("[1].deliveredCourtReportType.code", equalTo("PSR"))
+            .body("[1].deliveredCourtReportType.description", equalTo("Pre-Sentence Report"))
         ;
     }
 
