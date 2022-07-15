@@ -186,7 +186,7 @@ public class ContactService {
     public List<uk.gov.justice.digital.delius.data.api.ContactType> getContactTypes(final List<String> categories) {
         return (CollectionUtils.isEmpty(categories) ? contactTypeRepository.findAllBySelectableTrue()
             : contactTypeRepository.findAllByContactCategoriesCodeValueInAndSelectableTrue(categories))
-            .stream().map(ContactTransformer::contactTypeOf).collect(toList());
+            .stream().map(type -> ContactTransformer.contactTypeOf(type, true)).toList();
     }
 
     public AvailableContactOutcomeTypes getContactOutcomes(final String contactTypeCode) {
