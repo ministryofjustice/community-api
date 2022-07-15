@@ -21,5 +21,7 @@ public class OrderManager {
     private LocalDateTime dateStartOfAllocation;
     private LocalDateTime dateEndOfAllocation;
     private String gradeCode;
+    private String teamCode;
+    private String probationAreaCode;
 
 }
