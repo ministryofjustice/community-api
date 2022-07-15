@@ -20,7 +20,9 @@ class OrderManagerTransformerTest {
         assertThat(observed.getGradeCode()).isEqualTo("SPO");
         assertThat(observed.getOfficerId()).isEqualTo(entity.getOrderManagerId());
         assertThat(observed.getTeamId()).isEqualTo(entity.getTeam().getTeamId());
+        assertThat(observed.getTeamCode()).isEqualTo(entity.getTeam().getCode());
         assertThat(observed.getProbationAreaId()).isEqualTo(entity.getProbationArea().getProbationAreaId());
+        assertThat(observed.getProbationAreaCode()).isEqualTo(entity.getProbationArea().getCode());
         assertThat(observed.getDateStartOfAllocation()).isEqualTo(LocalDate.of(2021,4,1).atStartOfDay());
         assertThat(observed.getDateEndOfAllocation()).isEqualTo(LocalDate.of(2021,5,1).atStartOfDay());
     }
@@ -41,5 +43,6 @@ class OrderManagerTransformerTest {
         val observed = OrderManagerTransformer.orderManagerOf(entity);
         assertThat(observed).isNotNull();
         assertThat(observed.getTeamId()).isNull();
+        assertThat(observed.getTeamCode()).isNull();
     }
 }

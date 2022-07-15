@@ -23,10 +23,12 @@ public class OrderManagerTransformer {
                 .staffCode(ofNullable(entity.getStaff()).map(Staff::getOfficerCode).orElse(null))
                 .gradeCode(ofNullable(entity.getStaff()).map(Staff::getGrade).map(StandardReference::getCodeValue).orElse(null))
                 .teamId(ofNullable(entity.getTeam()).map(Team::getTeamId).orElse(null))
+                .teamCode(ofNullable(entity.getTeam()).map(Team::getCode).orElse(null))
                 .dateStartOfAllocation(entity.getAllocationDate())
                 .dateEndOfAllocation(entity.getEndDate())
                 .officerId(entity.getOrderManagerId())
                 .probationAreaId(entity.getProbationArea().getProbationAreaId())
+                .probationAreaCode(entity.getProbationArea().getCode())
                 .build();
     }
 }
