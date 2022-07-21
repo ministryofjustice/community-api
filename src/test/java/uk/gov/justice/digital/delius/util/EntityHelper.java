@@ -302,6 +302,7 @@ public class EntityHelper {
                     .build())
                 .build())
             .reportManagers(reportManagers)
+            .deliveredCourtReportType(RCourtReportType.builder().code("DEL_CODE").description("Delivery description").build())
             .build();
     }
 

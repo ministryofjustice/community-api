@@ -131,4 +131,8 @@ public class CourtReport {
 
     @Column(name = "PENDING_TRANSFER")
     private Long pendingTransfer;
+
+    @JoinColumn(name = "DELIVERED_COURT_REPORT_TYPE_ID", referencedColumnName = "COURT_REPORT_TYPE_ID", insertable = false, updatable = false)
+    @OneToOne
+    private RCourtReportType deliveredCourtReportType;
 }

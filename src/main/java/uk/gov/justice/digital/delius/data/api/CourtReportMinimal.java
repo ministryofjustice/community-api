@@ -23,4 +23,5 @@ public class CourtReportMinimal {
     private final LocalDateTime receivedByCourtDate;
     private final KeyValue courtReportType;
     private final List<ReportManager> reportManagers;
+    private final KeyValue deliveredCourtReportType;
 }
