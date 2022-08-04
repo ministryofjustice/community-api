@@ -73,11 +73,10 @@ public class RequirementsResource {
             @PathVariable(value = "crn") String crn,
             @PathVariable(value = "convictionId") Long convictionId,
             @ApiParam(name = "activeOnly", value = "retrieve only active requirements", example = "true")
-            @RequestParam(name = "activeOnly", required = false, defaultValue = "false") final boolean activeOnly
+            @RequestParam(name = "activeOnly", required = false, defaultValue = "false") final boolean activeOnly,
+            @ApiParam(name = "activeOnly", value = "retrieve only active requirements", example = "true")
+            @RequestParam(name = "excludeSoftDeleted", required = false, defaultValue = "false") final boolean excludeSoftDeleted
     ) {
-        if(activeOnly){
-            return requirementsService.getActiveRequirementsByConvictionId(crn, convictionId);
-        }
-        return requirementsService.getRequirementsByConvictionId(crn, convictionId);
+        return requirementsService.getRequirementsByConvictionId(crn, convictionId, !activeOnly, !excludeSoftDeleted);
     }
 }

@@ -51,11 +51,10 @@ public class RequirementsResource_getRequirements extends IntegrationTestBase {
             .oauth2(tokenWithRoleCommunity())
             .contentType(APPLICATION_JSON_VALUE)
             .when()
-            .get(format(REQUIREMENTS_PATH, "X320811", "2600295124") + "?activeOnly=true")
+            .get(format(REQUIREMENTS_PATH, KNOWN_OFFENDER_CRN, "2500295343") + "?activeOnly=true")
             .then()
             .statusCode(200)
-            .body("requirements", hasSize(2));
-
+            .body("requirements", hasSize(1));
     }
 
 }
