@@ -36,14 +36,6 @@ public class RequirementService {
     @Autowired
     private EventRepository eventRepository;
 
-    public ConvictionRequirements getActiveRequirementsByConvictionId(
-        String crn,
-        Long convictionId,
-        boolean includeDeleted
-    ) {
-        return getConvictionRequirements(getActiveEvent(crn, convictionId), false, includeDeleted);
-    }
-
     private ConvictionRequirements getConvictionRequirements(
         Event conviction, boolean includeInactive, boolean includeDeleted
     ) {
@@ -84,12 +76,6 @@ public class RequirementService {
                 .filter(event -> convictionId.equals(event.getEventId()))
                 .findAny()
                 .orElseThrow(() ->  new NotFoundException(format("Conviction with convictionId '%s' not found", convictionId)));
-    }
-
-    private Event getActiveEvent(String crn, Long convictionId) {
-        var offenderId = getOffenderId(crn);
-        return eventRepository.findByOffenderIdAndEventIdAndActiveFlagTrue(offenderId, convictionId)
-            .orElseThrow(() ->  new NotFoundException(format("Active conviction with convictionId '%s' not found", convictionId)));
     }
 
     private Long getOffenderId(String crn) {
