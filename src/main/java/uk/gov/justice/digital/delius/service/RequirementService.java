@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.ConvictionRequirements;
 import uk.gov.justice.digital.delius.data.api.LicenceConditions;
@@ -20,7 +19,6 @@ import uk.gov.justice.digital.delius.transformers.RequirementTransformer;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import static java.lang.String.format;
 import static java.util.Comparator.comparing;
@@ -38,35 +36,23 @@ public class RequirementService {
     @Autowired
     private EventRepository eventRepository;
 
-    public ConvictionRequirements getActiveRequirementsByConvictionId(String crn, Long convictionId) {
-        return getConvictionRequirements(getActiveEvent(crn, convictionId), true);
-    }
-
-    private ConvictionRequirements getConvictionRequirements(Event conviction, boolean activeOnly) {
-        Predicate<Requirement> activeFilter = activeFilter(activeOnly);
-
+    private ConvictionRequirements getConvictionRequirements(
+        Event conviction, boolean includeInactive, boolean includeDeleted
+    ) {
         var requirements = Optional.of(conviction)
             .map(Event::getDisposal)
             .map(Disposal::getRequirements)
             .stream()
             .flatMap(Collection::stream)
             .map(RequirementTransformer::requirementOf)
-            .filter(activeFilter)
-            .collect(toList());
+            .filter(r -> (includeInactive || r.getActive()) && (includeDeleted || !r.getSoftDeleted()))
+            .toList();
 
         return new ConvictionRequirements(requirements);
     }
 
-
-    private Predicate<Requirement> activeFilter(boolean activeOnly) {
-        if(activeOnly) {
-            return Requirement::getActive;
-        }
-        return r -> true;
-    }
-
-    public ConvictionRequirements getRequirementsByConvictionId(String crn, Long convictionId) {
-        return getConvictionRequirements(getEvent(crn, convictionId), false);
+    public ConvictionRequirements getRequirementsByConvictionId(String crn, Long convictionId, boolean includeInactive, boolean includeDeleted) {
+        return getConvictionRequirements(getEvent(crn, convictionId), includeInactive, includeDeleted);
     }
 
     public PssRequirements getPssRequirementsByConvictionId(String crn, Long convictionId) {
@@ -90,12 +76,6 @@ public class RequirementService {
                 .filter(event -> convictionId.equals(event.getEventId()))
                 .findAny()
                 .orElseThrow(() ->  new NotFoundException(format("Conviction with convictionId '%s' not found", convictionId)));
-    }
-
-    private Event getActiveEvent(String crn, Long convictionId) {
-        var offenderId = getOffenderId(crn);
-        return eventRepository.findByOffenderIdAndEventIdAndActiveFlagTrue(offenderId, convictionId)
-            .orElseThrow(() ->  new NotFoundException(format("Active conviction with convictionId '%s' not found", convictionId)));
     }
 
     private Long getOffenderId(String crn) {
@@ -124,10 +104,8 @@ public class RequirementService {
     // and perhaps should have been named getRequirementsByEventId
     public Optional<Requirement> getActiveRequirement(String crn, Long eventId, String requirementTypeCode) {
 
-        return getRequirementsByConvictionId(crn, eventId)
+        return getRequirementsByConvictionId(crn, eventId, false, false)
             .getRequirements().stream()
-            .filter(Requirement::getActive)
-            .filter(requirement -> !requirement.getSoftDeleted())
             .filter(requirement ->
                 ofNullable(requirement.getRequirementTypeMainCategory())
                     .map(cat -> requirementTypeCode.equals(cat.getCode()))

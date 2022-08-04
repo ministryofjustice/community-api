@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.LicenceConditions;
 import uk.gov.justice.digital.delius.data.api.PssRequirements;
@@ -31,7 +30,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.when;
@@ -219,7 +217,7 @@ public class RequirementServiceTest {
                 .builder()
                 .requirementId(99L)
                 .build()));
-            var requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID);
+            var requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID, true, true);
             assertThat(requirements.getRequirements()).hasSize(1);
             assertThat(requirements.getRequirements().get(0).getRequirementId()).isEqualTo(99L);
         }
@@ -309,7 +307,7 @@ public class RequirementServiceTest {
                 .build()));
             when(eventRepository.findByOffenderId(OFFENDER_ID)).thenReturn(Arrays.asList(event, badEvent));
 
-            var requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID);
+            var requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID, true, true);
             assertThat(requirements.getRequirements()).hasSize(1);
             assertThat(requirements.getRequirements().get(0).getRequirementId()).isEqualTo(99L);
         }
@@ -319,7 +317,7 @@ public class RequirementServiceTest {
             when(event.getDisposal()).thenReturn(null);
             when(eventRepository.findByOffenderId(OFFENDER_ID)).thenReturn(Arrays.asList(event, badEvent));
 
-            var requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID);
+            var requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID, true, true);
             assertThat(requirements.getRequirements()).isEmpty();
         }
 
@@ -328,7 +326,7 @@ public class RequirementServiceTest {
             when(disposal.getRequirements()).thenReturn(null);
             when(eventRepository.findByOffenderId(OFFENDER_ID)).thenReturn(Arrays.asList(event, badEvent));
 
-            var requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID);
+            var requirements = requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID, true, true);
             assertThat(requirements.getRequirements()).isEmpty();
         }
     }
@@ -353,7 +351,7 @@ public class RequirementServiceTest {
         public void givenOffenderDoesNotExist_whenGetRequirementsByConvictionId_thenThrowException() {
 
             assertThatExceptionOfType(NotFoundException.class)
-                .isThrownBy(() -> requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID))
+                .isThrownBy(() -> requirementService.getRequirementsByConvictionId(CRN, CONVICTION_ID, true, true))
                 .withMessage("Offender with CRN 'CRN' not found");
         }
 
