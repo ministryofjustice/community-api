@@ -74,7 +74,7 @@ public class RequirementsResource {
             @PathVariable(value = "convictionId") Long convictionId,
             @ApiParam(name = "activeOnly", value = "retrieve only active requirements", example = "true")
             @RequestParam(name = "activeOnly", required = false, defaultValue = "false") final boolean activeOnly,
-            @ApiParam(name = "activeOnly", value = "retrieve only active requirements", example = "true")
+            @ApiParam(name = "excludeSoftDeleted", value = "retrieve only requirements that have not been soft-deleted", example = "true")
             @RequestParam(name = "excludeSoftDeleted", required = false, defaultValue = "false") final boolean excludeSoftDeleted
     ) {
         return requirementsService.getRequirementsByConvictionId(crn, convictionId, !activeOnly, !excludeSoftDeleted);
