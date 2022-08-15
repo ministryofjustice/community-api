@@ -6,9 +6,16 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
+import io.swagger.annotations.Example;
+import io.swagger.annotations.ExampleProperty;
+import io.swagger.annotations.ResponseHeader;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +34,9 @@ import uk.gov.justice.digital.delius.service.DocumentService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
 import javax.validation.constraints.NotNull;
+import java.io.File;
+import java.io.InputStream;
+import java.net.URI;
 import java.util.Optional;
 
 @Api(tags = "Documents", authorizations = {@Authorization("ROLE_COMMUNITY")})
@@ -121,7 +131,9 @@ public class DocumentResource {
     }
 
     @ApiOperation(value = "Returns the document contents meta data for a given document associated with an offender", tags = "Documents")
-    @GetMapping(value = "/offenders/nomsNumber/{nomsNumber}/documents/{documentId}")
+    @ApiResponse(response = InputStream.class, code = 200,
+        message = "Returns the binary document data with an encoded filename in the content disposition header. ")
+    @GetMapping(value = "/offenders/nomsNumber/{nomsNumber}/documents/{documentId}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public HttpEntity<Resource> getOffenderDocument(
         @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true) @NotNull final @PathVariable("nomsNumber") String nomsNumber,
         @ApiParam(name = "documentId", value = "Document Id", example = "12312322", required = true) @NotNull final @PathVariable("documentId") String documentId) {
@@ -131,8 +143,10 @@ public class DocumentResource {
             .orElseThrow(() -> new NotFoundException(String.format("document with id %s not found", documentId)));
     }
 
-    @ApiOperation(value = "Returns the document contents meta data for a given document associated with an offender", tags = "Documents")
-    @GetMapping(value = "/offenders/crn/{crn}/documents/{documentId}")
+    @ApiOperation(value = "Returns the document for a given document id associated with an offender", tags = "Documents")
+    @ApiResponse(response = InputStream.class, code = 200,
+        message = "Returns the binary document data with an encoded filename in the content disposition header. ")
+    @GetMapping(value = "/offenders/crn/{crn}/documents/{documentId}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public HttpEntity<Resource> getOffenderDocumentByCrn(
         @ApiParam(name = "crn", value = "CRN for the offender", example = "X12345", required = true) @NotNull final @PathVariable("crn") String crn,
         @ApiParam(name = "documentId", value = "Document Id", example = "12312322", required = true) @NotNull final @PathVariable("documentId") String documentId) {
