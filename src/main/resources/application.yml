@@ -127,6 +127,10 @@ delius-integration-context:
           DNR: CRS04
           MTR: CRS03
           WSM: CRS07
+          FBD-EM: CRS08
+          FBD-WM: CRS08
+          FBD-L: CRS08
+          FBD-SC: CRS08
       contact-mapping:
         notification-contact-type: CRSNOTE
         appointment-rar-contact-type: CRSAPT
