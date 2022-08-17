@@ -5,6 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import uk.gov.justice.digital.delius.data.api.ManagedEventId;
 import uk.gov.justice.digital.delius.data.api.ManagedOffenderCrn;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Caseload;
@@ -14,6 +16,8 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.TeamRepository;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.data.api.CaseloadRole.OFFENDER_MANAGER;
 import static uk.gov.justice.digital.delius.data.api.CaseloadRole.ORDER_SUPERVISOR;
@@ -64,13 +68,13 @@ public class CaseloadServiceTest {
     @Test
     public void whenTeamCaseloadIsReturnedFromRepository_thenMapAndReturnIt() {
         when(teamRepository.existsByCode("TEST")).thenReturn(true);
-        when(caseloadRepository.findByTeamCodeAndRoleCodeIn("TEST", asList("OM", "OS")))
+        when(caseloadRepository.findByTeamCodeAndRoleCodeIn(eq("TEST"), eq(asList("OM", "OS")), any(Pageable.class)))
             .thenReturn(asList(
                 Caseload.builder().roleCode("OM").team(aTeam()).staff(aStaff().toBuilder().staffId(2L).build()).build(),
                 Caseload.builder().roleCode("OS").team(aTeam()).staff(aStaff().toBuilder().staffId(3L).build()).build()
             ));
 
-        var caseload = caseloadService.getCaseloadByTeamCode("TEST", OFFENDER_MANAGER, ORDER_SUPERVISOR);
+        var caseload = caseloadService.getCaseloadByTeamCode("TEST", PageRequest.of(0, 100), OFFENDER_MANAGER, ORDER_SUPERVISOR);
 
         assertThat(caseload).isPresent();
         assertThat(caseload.get().getManagedOffenders())

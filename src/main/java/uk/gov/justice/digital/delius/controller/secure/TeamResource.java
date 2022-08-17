@@ -8,6 +8,8 @@ import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
@@ -23,7 +26,6 @@ import uk.gov.justice.digital.delius.data.api.ManagedEventId;
 import uk.gov.justice.digital.delius.data.api.ManagedOffenderCrn;
 import uk.gov.justice.digital.delius.data.api.OfficeLocation;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
-import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.data.api.TeamCreationResult;
 import uk.gov.justice.digital.delius.service.CaseloadService;
 import uk.gov.justice.digital.delius.service.TeamService;
@@ -43,6 +45,7 @@ import static uk.gov.justice.digital.delius.data.api.CaseloadRole.ORDER_SUPERVIS
 @Api(tags = "Teams")
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TeamResource {
+    public static final Sort CASELOAD_DEFAULT_SORT = Sort.by("allocationDate").descending();
     private final TeamService teamService;
     private final CaseloadService caseloadService;
 
@@ -115,9 +118,16 @@ public class TeamResource {
     @PreAuthorize("hasRole('ROLE_COMMUNITY')")
     public Caseload getCaseloadForTeam(
         @ApiParam(name = "teamCode", example = "N07T01")
-        @NotNull @TeamCode @PathVariable(value = "teamCode") final String teamCode) {
-        return caseloadService.getCaseloadByTeamCode(teamCode, OFFENDER_MANAGER, ORDER_SUPERVISOR)
-            .orElseThrow(() -> new NotFoundException(String.format("Team with code %s", teamCode)));
+        @NotNull @TeamCode @PathVariable(value = "teamCode") final String teamCode,
+        @ApiParam(defaultValue = "1000")
+        @RequestParam(required = false, defaultValue = "0") int page,
+        @RequestParam(required = false, defaultValue = "100") int pageSize
+    ) {
+        return caseloadService.getCaseloadByTeamCode(
+            teamCode,
+            PageRequest.of(page, pageSize, CASELOAD_DEFAULT_SORT),
+            OFFENDER_MANAGER, ORDER_SUPERVISOR
+        ).orElseThrow(() -> teamNotFound(teamCode));
     }
 
     @ApiOperation(
@@ -127,10 +137,16 @@ public class TeamResource {
     @PreAuthorize("hasRole('ROLE_COMMUNITY')")
     public Set<ManagedOffenderCrn> getCaseloadOffendersForTeam(
         @ApiParam(name = "teamCode", example = "N07T01")
-        @NotNull @TeamCode @PathVariable(value = "teamCode") final String teamCode) {
-        return caseloadService.getCaseloadByTeamCode(teamCode, OFFENDER_MANAGER)
-            .map(Caseload::getManagedOffenders)
-            .orElseThrow(() -> new NotFoundException(String.format("Team with code %s", teamCode)));
+        @NotNull @TeamCode @PathVariable(value = "teamCode") final String teamCode,
+        @RequestParam(required = false, defaultValue = "0") int page,
+        @RequestParam(required = false, defaultValue = "100") int pageSize
+    ) {
+        return caseloadService.getCaseloadByTeamCode(
+                teamCode,
+                PageRequest.of(page, pageSize, CASELOAD_DEFAULT_SORT),
+                OFFENDER_MANAGER
+            ).map(Caseload::getManagedOffenders)
+            .orElseThrow(() -> teamNotFound(teamCode));
     }
 
     @ApiOperation(
@@ -140,10 +156,19 @@ public class TeamResource {
     @PreAuthorize("hasRole('ROLE_COMMUNITY')")
     public Set<ManagedEventId> getCaseloadOrdersForTeam(
         @ApiParam(name = "teamCode", example = "N07T01")
-        @NotNull @TeamCode @PathVariable(value = "teamCode") final String teamCode) {
-        return caseloadService.getCaseloadByTeamCode(teamCode, ORDER_SUPERVISOR)
-            .map(Caseload::getSupervisedOrders)
-            .orElseThrow(() -> new NotFoundException(String.format("Team with code %s", teamCode)));
+        @NotNull @TeamCode @PathVariable(value = "teamCode") final String teamCode,
+        @RequestParam(required = false, defaultValue = "0") int page,
+        @RequestParam(required = false, defaultValue = "100") int pageSize
+    ) {
+        return caseloadService.getCaseloadByTeamCode(
+                teamCode,
+                PageRequest.of(page, pageSize, CASELOAD_DEFAULT_SORT),
+                ORDER_SUPERVISOR
+            ).map(Caseload::getSupervisedOrders)
+            .orElseThrow(() -> teamNotFound(teamCode));
     }
 
+    private NotFoundException teamNotFound(String teamCode) {
+        return new NotFoundException(String.format("Team with code %s", teamCode));
+    }
 }
