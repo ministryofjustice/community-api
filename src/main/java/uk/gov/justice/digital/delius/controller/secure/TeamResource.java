@@ -119,7 +119,6 @@ public class TeamResource {
     public Caseload getCaseloadForTeam(
         @ApiParam(name = "teamCode", example = "N07T01")
         @NotNull @TeamCode @PathVariable(value = "teamCode") final String teamCode,
-        @ApiParam(defaultValue = "1000")
         @RequestParam(required = false, defaultValue = "0") int page,
         @RequestParam(required = false, defaultValue = "100") int pageSize
     ) {
