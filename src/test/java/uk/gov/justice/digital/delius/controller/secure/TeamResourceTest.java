@@ -5,12 +5,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 import uk.gov.justice.digital.delius.data.api.Caseload;
 import uk.gov.justice.digital.delius.data.api.ManagedEventId;
 import uk.gov.justice.digital.delius.data.api.ManagedOffenderCrn;
 import uk.gov.justice.digital.delius.data.api.OfficeLocation;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
-import uk.gov.justice.digital.delius.data.api.StaffHuman;
 import uk.gov.justice.digital.delius.service.CaseloadService;
 import uk.gov.justice.digital.delius.service.TeamService;
 
@@ -65,9 +65,9 @@ public class TeamResourceTest {
             .managedOffenders(Set.of(ManagedOffenderCrn.builder().offenderCrn("A123456").build()))
             .supervisedOrders(Set.of(ManagedEventId.builder().eventId(123L).build()))
             .build();
-        when(caseloadService.getCaseloadByTeamCode(eq(code), any())).thenReturn(Optional.of(caseload));
+        when(caseloadService.getCaseloadByTeamCode(eq(code), any(Pageable.class), any())).thenReturn(Optional.of(caseload));
 
-        final var observed = subject.getCaseloadForTeam(code);
+        final var observed = subject.getCaseloadForTeam(code, 0, 100);
 
         assertThat(observed).isSameAs(caseload);
     }

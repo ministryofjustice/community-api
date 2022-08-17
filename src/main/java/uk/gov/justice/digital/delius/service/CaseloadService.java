@@ -2,6 +2,8 @@ package uk.gov.justice.digital.delius.service;
 
 import lombok.AllArgsConstructor;
 import lombok.val;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.data.api.Caseload;
@@ -34,11 +36,13 @@ public class CaseloadService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Caseload> getCaseloadByTeamCode(final String teamCode, final CaseloadRole... roles) {
+    public Optional<Caseload> getCaseloadByTeamCode(
+        final String teamCode, final Pageable pageable, final CaseloadRole... roles
+    ) {
         if (!teamRepository.existsByCode(teamCode)) return Optional.empty();
 
-        val roleCodes = Arrays.stream(roles).map(CaseloadRole::getRoleCode).collect(toList());
-        val caseload = caseloadRepository.findByTeamCodeAndRoleCodeIn(teamCode, roleCodes);
+        val roleCodes = Arrays.stream(roles).map(CaseloadRole::getRoleCode).toList();
+        val caseload = caseloadRepository.findByTeamCodeAndRoleCodeIn(teamCode, roleCodes, pageable);
 
         return Optional.of(CaseloadTransformer.caseloadOf(caseload));
     }
