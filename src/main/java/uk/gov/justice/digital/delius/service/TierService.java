@@ -42,13 +42,16 @@ public class TierService {
         final var offender = getOffender(crn, telemetryProperties);
         final var offenderId = offender.getOffenderId();
         final var changeReason = getChangeReason(telemetryProperties);
+        final var currentTier = managementTierRepository.findFirstByIdOffenderIdOrderByIdDateChangedDesc(offenderId);
         final var updatedTier = getUpdatedTier(tier, tierWithUPrefix, telemetryProperties);
 
-        writeTierUpdate(updatedTier, offenderId, changeReason);
-        writeContact(offender, changeReason, updatedTier, telemetryProperties);
-        spgNotificationService.notifyUpdateOfOffender(offender);
+        if(updatedTier != currentTier.getId().getTier()) {
+            writeTierUpdate(updatedTier, offenderId, changeReason);
+            writeContact(offender, changeReason, updatedTier, telemetryProperties);
+            spgNotificationService.notifyUpdateOfOffender(offender);
 
-        telemetryClient.trackEvent("TierUpdateSuccess", telemetryProperties, null);
+            telemetryClient.trackEvent("TierUpdateSuccess", telemetryProperties, null);
+        }
     }
 
     private void writeContact(Offender offender, StandardReference changeReason, StandardReference updatedTier, Map<String, String> telemetryProperties) {

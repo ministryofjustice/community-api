@@ -7,6 +7,7 @@ import uk.gov.justice.digital.delius.FlywayRestoreExtension;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ManagementTier;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ManagementTierRepository;
 import uk.gov.justice.digital.delius.service.ContactService;
 
@@ -56,6 +57,28 @@ public class OffendersResource_updateTier extends IntegrationTestBase {
         List<Contact> updatedContacts = contactService.contactsFor(2500343964L, contactFilter);
 
         assertThat(updatedContacts.stream().anyMatch(c ->  c.getNotes().contains("Tier: B-1"))).isTrue();
+        managementTierRepository.deleteById(tierB1.getId());
+    }
+
+
+    @Test
+    public void noTierInsertedWhenTierIsSame() {
+
+        given()
+            .auth()
+            .oauth2(tokenWithRoleManagementTierUpdate())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .post("/offenders/crn/X320741/tier/A2")
+            .then()
+            .statusCode(200);
+
+        List<ManagementTier> updatedTiers = managementTierRepository.findAll();
+        assertThat(updatedTiers.size()).isEqualTo(1);
+        ManagementTier tierA2 = updatedTiers.get(0);
+        assertThat(tierA2.getId().getTier().getCodeValue()).isEqualTo("UA2");
+        assertThat(tierA2.getTierChangeReason().getCodeValue()).isEqualTo("ATS");
+
     }
 
     @Test

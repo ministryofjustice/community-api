@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.fail;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -70,6 +71,7 @@ public class TierServiceTest {
             when(referenceDataService.getAtsTierChangeReason()).thenReturn(Optional.of(new StandardReference()));
             when(staffRepository.findByOfficerCode(anyString())).thenReturn(Optional.of(aStaff()));
             when(teamRepository.findByCode(anyString())).thenReturn(Optional.of(aTeam()));
+            when(managementTierRepository.findFirstByIdOffenderIdOrderByIdDateChangedDesc(offender.get().getOffenderId())).thenReturn(aManagementTier());
             service.updateTier(crn, tier);
             verify(telemetryClient).trackEvent("TierUpdateSuccess", telemetryProperties, null);
         }
@@ -87,6 +89,7 @@ public class TierServiceTest {
             when(referenceDataService.getAtsTierChangeReason()).thenReturn(Optional.of(new StandardReference()));
             when(staffRepository.findByOfficerCode(anyString())).thenReturn(Optional.of(aStaff()));
             when(teamRepository.findByCode(anyString())).thenReturn(Optional.of(aTeam()));
+            when(managementTierRepository.findFirstByIdOffenderIdOrderByIdDateChangedDesc(offender.get().getOffenderId())).thenReturn(aManagementTier());
             service.updateTier(crn, tier);
             verify(spgNotificationService).notifyUpdateOfOffender(offender.get());
         }
@@ -103,6 +106,7 @@ public class TierServiceTest {
             when(referenceDataService.getAtsTierChangeReason()).thenReturn(Optional.of(new StandardReference()));
 
             when(referenceDataService.getTier(String.format("U%s", tier))).thenReturn(Optional.ofNullable(null));
+            when(managementTierRepository.findFirstByIdOffenderIdOrderByIdDateChangedDesc(offender.get().getOffenderId())).thenReturn(aManagementTier());
             try {
                 service.updateTier(crn, tier);
                 fail("Should have thrown a NotFoundException");
@@ -151,10 +155,11 @@ public class TierServiceTest {
             String tier = "A1";
             final var telemetryProperties = Map.of(
                 "tier", "U" + tier, "crn", crn);
-            when(offenderRepository.findByCrnAndSoftDeletedFalse(crn)).thenReturn(Optional.of(Offender.builder().offenderManagers(List.of(anInactiveOffenderManager("somecode"))).build()));
+            Optional<Offender> offender = Optional.of(Offender.builder().offenderId(656246L).offenderManagers(List.of(anInactiveOffenderManager("somecode"))).build());
+            when(offenderRepository.findByCrnAndSoftDeletedFalse(crn)).thenReturn(offender);
             when(referenceDataService.getTier(String.format("U%s", tier))).thenReturn(Optional.of(new StandardReference()));
             when(referenceDataService.getAtsTierChangeReason()).thenReturn(Optional.of(new StandardReference()));
-
+            when(managementTierRepository.findFirstByIdOffenderIdOrderByIdDateChangedDesc(offender.get().getOffenderId())).thenReturn(aManagementTier());
             try {
                 service.updateTier(crn, tier);
                 fail("Should have thrown a NotFoundException");
@@ -177,7 +182,7 @@ public class TierServiceTest {
                 when(offenderRepository.findByCrnAndSoftDeletedFalse(crn)).thenReturn(offender);
                 when(referenceDataService.getAtsTierChangeReason()).thenReturn(Optional.of(new StandardReference()));
                 when(referenceDataService.getTier(String.format("U%s", tier))).thenReturn(Optional.ofNullable(new StandardReference()));
-
+                when(managementTierRepository.findFirstByIdOffenderIdOrderByIdDateChangedDesc(offender.get().getOffenderId())).thenReturn(aManagementTier());
                 try {
                     service.updateTier(crn, tier);
                     fail("Should have thrown a NotFoundException");
@@ -198,6 +203,7 @@ public class TierServiceTest {
                 when(referenceDataService.getAtsTierChangeReason()).thenReturn(Optional.of(new StandardReference()));
                 when(referenceDataService.getTier(String.format("U%s", tier))).thenReturn(Optional.ofNullable(new StandardReference()));
                 when(staffRepository.findByOfficerCode(anyString())).thenReturn(Optional.of(aStaff()));
+                when(managementTierRepository.findFirstByIdOffenderIdOrderByIdDateChangedDesc(offender.get().getOffenderId())).thenReturn(aManagementTier());
                 try {
                     service.updateTier(crn, tier);
                     fail("Should have thrown a NotFoundException");

@@ -7,4 +7,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.ManagementTierId;
 
 @Repository
 public interface ManagementTierRepository extends JpaRepository<ManagementTier, ManagementTierId> {
+
+    ManagementTier findFirstByIdOffenderIdOrderByIdDateChangedDesc(Long offenderId);
 }
