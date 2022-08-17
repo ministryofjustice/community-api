@@ -46,6 +46,7 @@ import static uk.gov.justice.digital.delius.data.api.CaseloadRole.ORDER_SUPERVIS
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TeamResource {
     public static final Sort CASELOAD_DEFAULT_SORT = Sort.by("allocationDate").descending();
+    public static final String DEFAULT_PAGE_SIZE = "2147483647"; // Integer.MAX_VALUE
     private final TeamService teamService;
     private final CaseloadService caseloadService;
 
@@ -120,7 +121,7 @@ public class TeamResource {
         @ApiParam(name = "teamCode", example = "N07T01")
         @NotNull @TeamCode @PathVariable(value = "teamCode") final String teamCode,
         @RequestParam(required = false, defaultValue = "0") int page,
-        @RequestParam(required = false, defaultValue = "100") int pageSize
+        @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int pageSize
     ) {
         return caseloadService.getCaseloadByTeamCode(
             teamCode,
@@ -138,7 +139,7 @@ public class TeamResource {
         @ApiParam(name = "teamCode", example = "N07T01")
         @NotNull @TeamCode @PathVariable(value = "teamCode") final String teamCode,
         @RequestParam(required = false, defaultValue = "0") int page,
-        @RequestParam(required = false, defaultValue = "100") int pageSize
+        @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int pageSize
     ) {
         return caseloadService.getCaseloadByTeamCode(
                 teamCode,
@@ -157,7 +158,7 @@ public class TeamResource {
         @ApiParam(name = "teamCode", example = "N07T01")
         @NotNull @TeamCode @PathVariable(value = "teamCode") final String teamCode,
         @RequestParam(required = false, defaultValue = "0") int page,
-        @RequestParam(required = false, defaultValue = "100") int pageSize
+        @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int pageSize
     ) {
         return caseloadService.getCaseloadByTeamCode(
                 teamCode,
