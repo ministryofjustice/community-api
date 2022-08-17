@@ -45,7 +45,7 @@ public class TierService {
         final var currentTier = managementTierRepository.findFirstByIdOffenderIdOrderByIdDateChangedDesc(offenderId);
         final var updatedTier = getUpdatedTier(tier, tierWithUPrefix, telemetryProperties);
 
-        if(updatedTier != currentTier.getId().getTier()) {
+        if(currentTier.filter(currentTierO -> currentTierO.getId().getTier() == updatedTier).isEmpty()) {
             writeTierUpdate(updatedTier, offenderId, changeReason);
             writeContact(offender, changeReason, updatedTier, telemetryProperties);
             spgNotificationService.notifyUpdateOfOffender(offender);

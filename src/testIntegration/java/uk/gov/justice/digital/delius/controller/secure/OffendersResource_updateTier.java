@@ -60,6 +60,24 @@ public class OffendersResource_updateTier extends IntegrationTestBase {
         managementTierRepository.deleteById(tierB1.getId());
     }
 
+    @Test
+    public void createsTierWhenNoTierExists() {
+        given()
+            .auth()
+            .oauth2(tokenWithRoleManagementTierUpdate())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .post("/offenders/crn/X330899/tier/B1")
+            .then()
+            .statusCode(200);
+
+        List<ManagementTier> updatedTiers = managementTierRepository.findAll();
+
+        ManagementTier tierB1 = updatedTiers.get(1);
+        assertThat(tierB1.getId().getTier().getCodeValue()).isEqualTo("UB1");
+        assertThat(tierB1.getTierChangeReason().getCodeValue()).isEqualTo("ATS");
+    }
+
 
     @Test
     public void noTierInsertedWhenTierIsSame() {

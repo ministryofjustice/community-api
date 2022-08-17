@@ -5,8 +5,10 @@ import org.springframework.stereotype.Repository;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ManagementTier;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ManagementTierId;
 
+import java.util.Optional;
+
 @Repository
 public interface ManagementTierRepository extends JpaRepository<ManagementTier, ManagementTierId> {
 
-    ManagementTier findFirstByIdOffenderIdOrderByIdDateChangedDesc(Long offenderId);
+    Optional<ManagementTier> findFirstByIdOffenderIdOrderByIdDateChangedDesc(Long offenderId);
 }
