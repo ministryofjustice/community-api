@@ -35,6 +35,8 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReport;
 import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReportDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.KeyDate;
 import uk.gov.justice.digital.delius.jpa.standard.entity.LocalDeliveryUnit;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ManagementTier;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ManagementTierId;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Nsi;
 import uk.gov.justice.digital.delius.jpa.standard.entity.NsiDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.NsiManager;
@@ -276,6 +278,19 @@ public class EntityHelper {
 
     public static Court aCourt(final String code) {
         return Court.builder().code(code).courtId(99L).courtName("Sheffield Crown Court").build();
+    }
+
+    public static ManagementTier aManagementTier() {
+        return ManagementTier.builder()
+            .id(ManagementTierId.builder()
+                .offenderId(12345L)
+                .tier(StandardReference.builder()
+                    .codeDescription("B-1")
+                    .codeValue("UB1")
+                    .build())
+                .dateChanged(LocalDateTime.now())
+                .build())
+            .build();
     }
 
     public static CourtReport aCourtReport(LocalDateTime requestedDate, LocalDateTime requiredDate, LocalDateTime completedDate, RCourtReportType courtReportType, List<ReportManager> reportManagers) {

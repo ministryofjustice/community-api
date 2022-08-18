@@ -56,6 +56,46 @@ public class OffendersResource_updateTier extends IntegrationTestBase {
         List<Contact> updatedContacts = contactService.contactsFor(2500343964L, contactFilter);
 
         assertThat(updatedContacts.stream().anyMatch(c ->  c.getNotes().contains("Tier: B-1"))).isTrue();
+        managementTierRepository.deleteById(tierB1.getId());
+    }
+
+    @Test
+    public void createsTierWhenNoTierExists() {
+        given()
+            .auth()
+            .oauth2(tokenWithRoleManagementTierUpdate())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .post("/offenders/crn/X330899/tier/B1")
+            .then()
+            .statusCode(200);
+
+        List<ManagementTier> updatedTiers = managementTierRepository.findAll();
+
+        ManagementTier tierB1 = updatedTiers.get(1);
+        assertThat(tierB1.getId().getTier().getCodeValue()).isEqualTo("UB1");
+        assertThat(tierB1.getTierChangeReason().getCodeValue()).isEqualTo("ATS");
+    }
+
+
+    @Test
+    public void noTierInsertedWhenTierIsSame() {
+
+        given()
+            .auth()
+            .oauth2(tokenWithRoleManagementTierUpdate())
+            .contentType(APPLICATION_JSON_VALUE)
+            .when()
+            .post("/offenders/crn/X320741/tier/A2")
+            .then()
+            .statusCode(200);
+
+        List<ManagementTier> updatedTiers = managementTierRepository.findAll();
+        assertThat(updatedTiers.size()).isEqualTo(1);
+        ManagementTier tierA2 = updatedTiers.get(0);
+        assertThat(tierA2.getId().getTier().getCodeValue()).isEqualTo("UA2");
+        assertThat(tierA2.getTierChangeReason().getCodeValue()).isEqualTo("ATS");
+
     }
 
     @Test

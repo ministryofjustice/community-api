@@ -33,7 +33,6 @@ public class TierService {
     private final ContactService contactService;
     private final StaffRepository staffRepository;
     private final TeamRepository teamRepository;
-    private final SpgNotificationService spgNotificationService;
 
     @Transactional
     public void updateTier(String crn, String tier) {
@@ -42,13 +41,14 @@ public class TierService {
         final var offender = getOffender(crn, telemetryProperties);
         final var offenderId = offender.getOffenderId();
         final var changeReason = getChangeReason(telemetryProperties);
+        final var currentTier = managementTierRepository.findFirstByIdOffenderIdOrderByIdDateChangedDesc(offenderId);
         final var updatedTier = getUpdatedTier(tier, tierWithUPrefix, telemetryProperties);
 
-        writeTierUpdate(updatedTier, offenderId, changeReason);
-        writeContact(offender, changeReason, updatedTier, telemetryProperties);
-        spgNotificationService.notifyUpdateOfOffender(offender);
-
-        telemetryClient.trackEvent("TierUpdateSuccess", telemetryProperties, null);
+        if(currentTier == null || !currentTier.getId().getTier().equals(updatedTier)) {
+            writeTierUpdate(updatedTier, offenderId, changeReason);
+            writeContact(offender, changeReason, updatedTier, telemetryProperties);
+            telemetryClient.trackEvent("TierUpdateSuccess", telemetryProperties, null);
+        }
     }
 
     private void writeContact(Offender offender, StandardReference changeReason, StandardReference updatedTier, Map<String, String> telemetryProperties) {
