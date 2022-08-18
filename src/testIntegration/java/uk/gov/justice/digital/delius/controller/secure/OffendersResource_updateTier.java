@@ -7,7 +7,6 @@ import uk.gov.justice.digital.delius.FlywayRestoreExtension;
 import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ManagementTier;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ManagementTierRepository;
 import uk.gov.justice.digital.delius.service.ContactService;
 

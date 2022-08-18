@@ -33,7 +33,6 @@ public class TierService {
     private final ContactService contactService;
     private final StaffRepository staffRepository;
     private final TeamRepository teamRepository;
-    private final SpgNotificationService spgNotificationService;
 
     @Transactional
     public void updateTier(String crn, String tier) {
@@ -45,11 +44,9 @@ public class TierService {
         final var currentTier = managementTierRepository.findFirstByIdOffenderIdOrderByIdDateChangedDesc(offenderId);
         final var updatedTier = getUpdatedTier(tier, tierWithUPrefix, telemetryProperties);
 
-        if(currentTier == null || updatedTier != currentTier.getId().getTier()) {
+        if(currentTier == null || !currentTier.getId().getTier().equals(updatedTier)) {
             writeTierUpdate(updatedTier, offenderId, changeReason);
             writeContact(offender, changeReason, updatedTier, telemetryProperties);
-            spgNotificationService.notifyUpdateOfOffender(offender);
-
             telemetryClient.trackEvent("TierUpdateSuccess", telemetryProperties, null);
         }
     }
