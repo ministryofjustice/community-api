@@ -47,7 +47,7 @@ dependencies {
 
     testImplementation 'io.rest-assured:rest-assured'
     testImplementation 'io.rest-assured:spring-mock-mvc'
-    testImplementation 'au.com.dius.pact.provider:junit5spring:4.3.13'
+    testImplementation 'au.com.dius.pact.provider:junit5spring:4.3.14'
     testIntegrationImplementation 'com.github.tomakehurst:wiremock:2.27.2'
 }
 
