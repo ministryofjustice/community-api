@@ -50,7 +50,7 @@ public class OffenderDetail {
     private Boolean currentExclusion;
     @ApiModelProperty(value = "Message to show staff who have been excluded from viewing this record")
     private String exclusionMessage;
-    @ApiModelProperty(value = "current tier", example = "D2")
+    @ApiModelProperty(value = "current tier", example = "D_2")
     private String currentTier;
     @ApiModelProperty(value = "identifies if this person is on an active sentence of interest to probation", notes = "this is an alias of currentDisposal but in Boolean form")
     public boolean isActiveProbationManagedSentence() {
