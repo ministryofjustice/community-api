@@ -27,6 +27,31 @@ import static java.lang.String.format;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "CONTACT")
+@NamedEntityGraph(name = "Contact.summary",
+    attributeNodes = {
+        @NamedAttributeNode("contactOutcomeType"),
+        @NamedAttributeNode(value = "contactType", subgraph = "ContactType.contactCategory"),
+        @NamedAttributeNode("enforcement"),
+        @NamedAttributeNode("lastUpdatedByUser"),
+        @NamedAttributeNode("nsi"),
+        @NamedAttributeNode("officeLocation"),
+        @NamedAttributeNode("probationArea"),
+        @NamedAttributeNode("requirement"),
+        @NamedAttributeNode("staff"),
+        @NamedAttributeNode("team")
+    },
+    subgraphs = {
+        @NamedSubgraph(name = "ContactType.contactCategory", attributeNodes = {
+            @NamedAttributeNode("code"),
+            @NamedAttributeNode("description"),
+            @NamedAttributeNode("shortDescription"),
+            @NamedAttributeNode("attendanceContact"),
+            @NamedAttributeNode("nationalStandardsContact"),
+            @NamedAttributeNode("systemGenerated"),
+            @NamedAttributeNode("contactCategories")
+        })
+    }
+)
 public class Contact {
 
     @Id
