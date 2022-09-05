@@ -3,6 +3,11 @@ package uk.gov.justice.digital.delius.jpa.standard.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +15,15 @@ import org.springframework.data.repository.query.Param;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 
 public interface ContactRepository extends JpaRepository<Contact, Long>, JpaSpecificationExecutor<Contact> {
+
+
+    @Override
+    @EntityGraph(value = "Contact.summary")
+    List<Contact> findAll(Specification<Contact> spec);
+
+    @Override
+    @EntityGraph(value = "Contact.summary")
+    Page<Contact> findAll(Specification<Contact> spec, Pageable pageable);
 
     @Query("SELECT contact FROM Contact contact "
         + "WHERE contact.offenderId = :offenderId "
