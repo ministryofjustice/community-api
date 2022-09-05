@@ -36,6 +36,7 @@ import static java.lang.String.format;
         @NamedAttributeNode("nsi"),
         @NamedAttributeNode("officeLocation"),
         @NamedAttributeNode("probationArea"),
+        @NamedAttributeNode("partitionArea"),
         @NamedAttributeNode("requirement"),
         @NamedAttributeNode("staff"),
         @NamedAttributeNode("team")
