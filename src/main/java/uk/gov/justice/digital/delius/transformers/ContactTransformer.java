@@ -108,7 +108,7 @@ public class ContactTransformer {
 
     public static uk.gov.justice.digital.delius.data.api.Contact contactOf(uk.gov.justice.digital.delius.jpa.standard.entity.Contact contact) {
         return uk.gov.justice.digital.delius.data.api.Contact.builder()
-                .eventId(eventIdOf(contact.getEvent()))
+                .eventId(contact.getEventId())
                 .alertActive(ynToBoolean(contact.getAlertActive()))
                 .contactEndTime(contact.getContactEndTime())
                 .contactId(contact.getContactId())

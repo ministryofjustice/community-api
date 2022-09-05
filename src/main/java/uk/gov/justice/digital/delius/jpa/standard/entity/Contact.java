@@ -15,10 +15,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Optional;
-
-import static java.lang.String.format;
 
 @Data
 @NoArgsConstructor
@@ -32,6 +29,7 @@ import static java.lang.String.format;
         @NamedAttributeNode("contactOutcomeType"),
         @NamedAttributeNode(value = "contactType", subgraph = "ContactType.contactCategory"),
         @NamedAttributeNode("enforcement"),
+        @NamedAttributeNode("licenceCondition"),
         @NamedAttributeNode("lastUpdatedByUser"),
         @NamedAttributeNode("nsi"),
         @NamedAttributeNode("officeLocation"),
@@ -39,7 +37,10 @@ import static java.lang.String.format;
         @NamedAttributeNode("partitionArea"),
         @NamedAttributeNode("requirement"),
         @NamedAttributeNode("staff"),
-        @NamedAttributeNode("team")
+        @NamedAttributeNode("team"),
+        @NamedAttributeNode("providerLocation"),
+        @NamedAttributeNode("providerEmployee"),
+        @NamedAttributeNode("providerTeam")
     },
     subgraphs = {
         @NamedSubgraph(name = "ContactType.contactCategory", attributeNodes = {
@@ -52,6 +53,7 @@ import static java.lang.String.format;
             @NamedAttributeNode("contactCategories")
         })
     }
+
 )
 public class Contact {
 
@@ -159,6 +161,9 @@ public class Contact {
     @JoinColumn(name = "EVENT_ID")
     @ManyToOne
     private Event event;
+
+    @Column(name = "EVENT_ID", updatable = false, insertable = false)
+    private Long eventId;
 
     @Column(name = "HOURS_CREDITED")
     private Double hoursCredited;
