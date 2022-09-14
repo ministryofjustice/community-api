@@ -107,26 +107,4 @@ public class DeliusApiClient {
             .bodyToMono(Void.class)
             .block();
     }
-
-    public NewRelease createNewRelease(String crn, Long eventId, NewRelease newRelease){
-        return webClient.post()
-            .uri(fromPath("/v1/offenders/{crn}/events/{eventId}/releases").buildAndExpand(crn, eventId).toUriString())
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-            .bodyValue(newRelease)
-            .retrieve()
-            .bodyToMono(NewRelease.class)
-            .block();
-    }
-
-    public NewRecall createNewRecall(String crn, Long eventId, NewRecall newRelease){
-        return webClient.post()
-            .uri(fromPath("/v1/offenders/{crn}/events/{eventId}/recalls").buildAndExpand(crn, eventId).toUriString())
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-            .bodyValue(newRelease)
-            .retrieve()
-            .bodyToMono(NewRecall.class)
-            .block();
-    }
 }
