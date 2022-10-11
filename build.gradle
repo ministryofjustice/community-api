@@ -93,7 +93,17 @@ jib {
         user = "2000:2000"
     }
     from {
-        image = "ghcr.io/ministryofjustice/hmpps-probation-integration-services/eclipse-temurin:17-jre-alpine"
+        image = "ghcr.io/ministryofjustice/hmpps-probation-integration-services/eclipse-temurin:19-jre-jammy"
+        platforms {
+            platform {
+                architecture = 'amd64'
+                os = 'linux'
+            }
+            platform {
+                architecture = 'arm64'
+                os = 'linux'
+            }
+        }
     }
     extraDirectories {
         paths {
