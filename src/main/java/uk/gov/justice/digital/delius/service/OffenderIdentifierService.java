@@ -22,17 +22,14 @@ import java.util.stream.Collectors;
 public class OffenderIdentifierService {
     private final boolean updateNomsNumberFeatureSwitch;
     private final OffenderRepository offenderRepository;
-    private final SpgNotificationService spgNotificationService;
     private final ReferenceDataService referenceDataService;
 
     public OffenderIdentifierService(
             @Value("${features.noms.update.noms.number}") Boolean updateNomsNumberFeatureSwitch,
             OffenderRepository offenderRepository,
-            SpgNotificationService spgNotificationService,
             ReferenceDataService referenceDataService) {
         this.updateNomsNumberFeatureSwitch = updateNomsNumberFeatureSwitch;
         this.offenderRepository = offenderRepository;
-        this.spgNotificationService = spgNotificationService;
         this.referenceDataService = referenceDataService;
         log.info("NOMIS update NOMS number feature is {}", this.updateNomsNumberFeatureSwitch ? "ON" : "OFF");
     }
@@ -88,8 +85,6 @@ public class OffenderIdentifierService {
             duplicateOffender.getAdditionalIdentifiers().add(additionalIdentifier);
             // required to force order of updates that could break NOMS_NUMBER unique constraint
             offenderRepository.flush();
-            spgNotificationService.notifyUpdateOfOffender(duplicateOffender);
-            spgNotificationService.notifyInsertOfOffenderAdditionalIdentifier(duplicateOffender, additionalIdentifier);
         });
 
         var maybeExistingNomsNumber = Optional.ofNullable(offender.getNomsNumber());
@@ -105,11 +100,8 @@ public class OffenderIdentifierService {
                     offender.getAdditionalIdentifiers().add(additionalIdentifier);
                     // force additional identifier to generate ID
                     offenderRepository.flush();
-                    spgNotificationService
-                            .notifyInsertOfOffenderAdditionalIdentifier(offender, additionalIdentifier);
                 }
 
         );
-        spgNotificationService.notifyUpdateOfOffender(offender);
     }
 }

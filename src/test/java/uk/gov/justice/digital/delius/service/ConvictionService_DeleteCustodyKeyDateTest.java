@@ -57,9 +57,6 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
     private EventEntityBuilder eventEntityBuilder;
 
     @Mock
-    private SpgNotificationService spgNotificationService;
-
-    @Mock
     private LookupSupplier lookupSupplier;
 
     @Captor
@@ -79,7 +76,7 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
     public void setUp() {
         final var featureSwitches = new FeatureSwitches();
         featureSwitches.getNoms().getUpdate().setKeyDates(true);
-        convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient, featureSwitches);
+        convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient, featureSwitches);
     }
 
 
@@ -100,21 +97,6 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
 
         assertThat(eventArgumentCaptor.getValue().getDisposal().getCustody().getKeyDates()).hasSize(1);
         assertThat(eventArgumentCaptor.getValue().getDisposal().getCustody().getKeyDates().get(0).getKeyDateType().getCodeValue()).isEqualTo("POM2");
-    }
-
-    @Test
-    public void spgIsNotifiedOfDeletedCustodyKeyDateByOffenderId() throws SingleActiveCustodyConvictionNotFoundException {
-        val event = aCustodyEvent(1L, new ArrayList<>());
-        val keyDateToBeRemoved = aKeyDate("POM1", "POM Handover expected start date", LocalDate.now());
-        event.getDisposal().getCustody().getKeyDates().add(keyDateToBeRemoved);
-
-        when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(event));
-
-        convictionService.deleteCustodyKeyDateByOffenderId(
-                999L,
-                "POM1");
-
-        verify(spgNotificationService).notifyDeletedCustodyKeyDate(keyDateToBeRemoved, event);
     }
 
     @Test
@@ -207,21 +189,6 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
     }
 
     @Test
-    public void spgIsNotifiedOfDeletedCustodyKeyDateByConvictionId() {
-        val event = aCustodyEvent(1L, new ArrayList<>());
-        val keyDateToBeRemoved = aKeyDate("POM1", "POM Handover expected start date", LocalDate.now());
-        event.getDisposal().getCustody().getKeyDates().add(keyDateToBeRemoved);
-
-        when(eventRepository.getOne(999L)).thenReturn(event);
-
-        convictionService.deleteCustodyKeyDateByConvictionId(
-                999L,
-                "POM1");
-
-        verify(spgNotificationService).notifyDeletedCustodyKeyDate(keyDateToBeRemoved, event);
-    }
-
-    @Test
     public void iapsIsNotNotifiedOfDeleteByConvictionIdAndWhenSentenceExpiryNotAffected() {
         val event = aCustodyEvent(
                 1L,
@@ -292,7 +259,7 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
                 final var featureSwitches = new FeatureSwitches();
                 featureSwitches.getNoms().getUpdate().setCustody(true);
                 featureSwitches.getNoms().getUpdate().getMultipleEvents().setUpdateKeyDates(true);
-                convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient, featureSwitches);
+                convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient, featureSwitches);
             }
 
             @Test
@@ -307,10 +274,6 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
 
                 verify(eventRepository).save(activeCustodyEvent1);
                 verify(eventRepository).save(activeCustodyEvent2);
-
-                verify(spgNotificationService).notifyDeletedCustodyKeyDate(any(), eq(activeCustodyEvent1));
-                verify(spgNotificationService).notifyDeletedCustodyKeyDate(any(), eq(activeCustodyEvent2));
-
                 verify(telemetryClient, times(2)).trackEvent(eq("KeyDateDeleted"), any(), isNull());
             }
         }
@@ -321,7 +284,7 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
             void setUp() {
                 final var featureSwitches = new FeatureSwitches();
                 featureSwitches.getNoms().getUpdate().getMultipleEvents().setUpdateKeyDates(false);
-                convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient, featureSwitches);
+                convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient, featureSwitches);
             }
 
             @Test
@@ -335,7 +298,6 @@ public class ConvictionService_DeleteCustodyKeyDateTest {
                 assertThatThrownBy(() -> convictionService.deleteCustodyKeyDateByOffenderId(999L, "POM1")).isInstanceOf(SingleActiveCustodyConvictionNotFoundException.class);
 
                 verify(eventRepository, never()).save(any());
-                verifyNoInteractions(spgNotificationService);
                 verifyNoInteractions(telemetryClient);
             }
         }

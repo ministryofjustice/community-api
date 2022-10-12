@@ -48,7 +48,6 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory.REHABILITATION_ACTIVITY_REQUIREMENT_CODE;
 
@@ -74,9 +73,6 @@ class ConvictionServiceTest {
     private LookupSupplier lookupSupplier;
 
     @Mock
-    private SpgNotificationService spgNotificationService;
-
-    @Mock
     private KeyDateEntityBuilder keyDateEntityBuilder;
 
     @Mock
@@ -95,7 +91,7 @@ class ConvictionServiceTest {
         );
         final var featureSwitches = new FeatureSwitches();
         featureSwitches.getNoms().getUpdate().setKeyDates(true);
-        convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, keyDateEntityBuilder, iapsNotificationService, contactService, telemetryClient, featureSwitches);
+        convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, lookupSupplier, keyDateEntityBuilder, iapsNotificationService, contactService, telemetryClient, featureSwitches);
     }
 
     @Test
@@ -198,8 +194,6 @@ class ConvictionServiceTest {
 
         assertThat(conviction).isNotNull();
         assertThat(conviction.getIndex()).isEqualTo("3");
-
-        verify(spgNotificationService).notifyNewCourtCaseCreated(any(Event.class));
     }
 
     @Nested

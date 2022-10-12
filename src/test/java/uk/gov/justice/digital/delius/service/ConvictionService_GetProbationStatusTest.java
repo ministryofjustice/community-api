@@ -1,9 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +15,11 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
+
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
@@ -41,9 +42,6 @@ public class ConvictionService_GetProbationStatusTest {
 
     @Mock
     private EventEntityBuilder eventEntityBuilder;
-
-    @Mock
-    private SpgNotificationService spgNotificationService;
 
     @Mock
     private LookupSupplier lookupSupplier;
@@ -72,7 +70,7 @@ public class ConvictionService_GetProbationStatusTest {
     @BeforeEach
     public void setUp(){
         final var featureSwitches = new FeatureSwitches();
-        convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient, featureSwitches);
+        convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient, featureSwitches);
     }
 
     @Test

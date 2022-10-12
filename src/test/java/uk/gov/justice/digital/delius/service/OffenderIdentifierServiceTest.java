@@ -30,7 +30,6 @@ import static org.mockito.Mockito.when;
 class OffenderIdentifierServiceTest {
     private OffenderIdentifierService service;
     private OffenderRepository offenderRepository = mock(OffenderRepository.class);
-    private SpgNotificationService spgNotificationService = mock(SpgNotificationService.class);
     private ArgumentCaptor<Offender> offenderCaptor = ArgumentCaptor.forClass(Offender.class);
     private ArgumentCaptor<AdditionalIdentifier> additionalIdentifierCaptor = ArgumentCaptor.forClass(AdditionalIdentifier.class);
     private ReferenceDataService referenceDataService = mock(ReferenceDataService.class);
@@ -39,7 +38,7 @@ class OffenderIdentifierServiceTest {
     class FeatureSwitchedOff {
         @BeforeEach
         void setUp() {
-            service = new OffenderIdentifierService(false, offenderRepository, spgNotificationService, referenceDataService);
+            service = new OffenderIdentifierService(false, offenderRepository, referenceDataService);
         }
 
         @Test
@@ -83,7 +82,7 @@ class OffenderIdentifierServiceTest {
     class FeatureSwitchedOn {
         @BeforeEach
         void setUp() {
-            service = new OffenderIdentifierService(true, offenderRepository, spgNotificationService, referenceDataService);
+            service = new OffenderIdentifierService(true, offenderRepository, referenceDataService);
             when(offenderRepository.findByNomsNumber(any())).thenReturn(Optional.empty());
         }
 
@@ -126,44 +125,6 @@ class OffenderIdentifierServiceTest {
                     assertThat(iDs.getNomsNumber()).isEqualTo("G5555TT");
                     assertThat(iDs.getPncNumber()).isEqualTo("2018/0012345X");
                 }
-
-                @Test
-                void willNotifySPGOfOffenderChanges() {
-                    final var offender = Offender
-                            .builder()
-                            .crn("X12345")
-                            .pncNumber("2018/0012345X")
-                            .build();
-                    when(offenderRepository.findByCrn("X12345")).thenReturn(Optional.of(offender));
-                    service.updateNomsNumber("X12345", UpdateOffenderNomsNumber.builder().nomsNumber("G5555TT")
-                            .build());
-
-                    verify(spgNotificationService).notifyUpdateOfOffender(offender);
-                }
-            }
-
-            @Nested
-            class NewNOMSNumberAlreadySet {
-                @BeforeEach
-                void setUp() {
-                    when(offenderRepository.findAllByNomsNumber(any())).thenReturn(List.of());
-                }
-
-                @Test
-                void willNotNotifySPG() {
-                    final var offender = Offender
-                            .builder()
-                            .crn("X12345")
-                            .pncNumber("2018/0012345X")
-                            .nomsNumber("G5555TT")
-                            .build();
-                    when(offenderRepository.findByCrn("X12345")).thenReturn(Optional.of(offender));
-                    service.updateNomsNumber("X12345", UpdateOffenderNomsNumber.builder().nomsNumber("G5555TT")
-                            .build());
-
-                    verify(spgNotificationService, never()).notifyUpdateOfOffender(offender);
-                }
-
             }
 
             @Nested
@@ -202,36 +163,6 @@ class OffenderIdentifierServiceTest {
                     assertThat(iDs.getNomsNumber()).isEqualTo("G5555TT");
                 }
 
-                @Test
-                void willUpdateDuplicateOffender() {
-                    verify(spgNotificationService, times(2)).notifyUpdateOfOffender(offenderCaptor.capture());
-
-                    // can only test this via spg call since this is a side affect
-                    final var duplicateOffender = offenderCaptor.getAllValues().get(0);
-                    assertThat(duplicateOffender.getOffenderId()).isEqualTo(88L);
-                    assertThat(duplicateOffender.getNomsNumber()).isNull();
-                    assertThat(duplicateOffender.getAdditionalIdentifiers()).hasSize(1);
-                    assertThat(duplicateOffender.getAdditionalIdentifiers().get(0).getIdentifierName().getCodeValue())
-                            .isEqualTo("DNOMS");
-                }
-
-                @Test
-                void willNotifySPGForDuplicateOffender() {
-                    verify(spgNotificationService, times(2)).notifyUpdateOfOffender(offenderCaptor.capture());
-                    final var duplicateOffender = offenderCaptor.getAllValues().get(0);
-                    assertThat(duplicateOffender.getOffenderId()).isEqualTo(88L);
-                }
-
-                @Test
-                void willNotifySPGForDuplicateOffenderAdditionalIdentifier() {
-                    verify(spgNotificationService).notifyInsertOfOffenderAdditionalIdentifier(offenderCaptor
-                            .capture(), additionalIdentifierCaptor.capture());
-
-                    assertThat(offenderCaptor.getValue().getOffenderId()).isEqualTo(88L);
-                    assertThat(additionalIdentifierCaptor.getValue().getIdentifierName().getCodeValue())
-                            .isEqualTo("DNOMS");
-                }
-
             }
 
             @Nested
@@ -263,31 +194,6 @@ class OffenderIdentifierServiceTest {
                 void willUpdateOffender() {
                     assertThat(iDs.getNomsNumber()).isEqualTo("G5555TT");
                 }
-
-                @Test
-                void willAddAdditionalIdentifier() {
-                    verify(spgNotificationService).notifyUpdateOfOffender(offenderCaptor.capture());
-
-                    // can only test this via spg call since this is a side affect
-                    final var offender = offenderCaptor.getAllValues().get(0);
-                    assertThat(offender.getOffenderId()).isEqualTo(99L);
-                    assertThat(offender.getNomsNumber()).isEqualTo("G5555TT");
-                    assertThat(offender.getAdditionalIdentifiers()).hasSize(1);
-                    assertThat(offender.getAdditionalIdentifiers().get(0).getIdentifierName().getCodeValue())
-                            .isEqualTo("XNOMS");
-                    assertThat(offender.getAdditionalIdentifiers().get(0).getIdentifier()).isEqualTo("A7777TT");
-                }
-
-                @Test
-                void willNotifySPGForOffenderAdditionalIdentifier() {
-                    verify(spgNotificationService).notifyInsertOfOffenderAdditionalIdentifier(offenderCaptor
-                            .capture(), additionalIdentifierCaptor.capture());
-
-                    assertThat(offenderCaptor.getValue().getOffenderId()).isEqualTo(99L);
-                    assertThat(additionalIdentifierCaptor.getValue().getIdentifierName().getCodeValue())
-                            .isEqualTo("XNOMS");
-                }
-
             }
         }
         @Nested
@@ -337,32 +243,6 @@ class OffenderIdentifierServiceTest {
                     assertThat(iDs.getNomsNumber()).isEqualTo("G5555TT");
                     assertThat(iDs.getCrn()).isEqualTo("X12345");
                 }
-
-                @Test
-                void willAddAdditionalIdentifier() {
-                    verify(spgNotificationService).notifyUpdateOfOffender(offenderCaptor.capture());
-
-                    // can only test this via spg call since this is a side affect
-                    final var offender = offenderCaptor.getAllValues().get(0);
-                    assertThat(offender.getOffenderId()).isEqualTo(99L);
-                    assertThat(offender.getNomsNumber()).isEqualTo("G5555TT");
-                    assertThat(offender.getAdditionalIdentifiers()).hasSize(1);
-                    assertThat(offender.getAdditionalIdentifiers().get(0).getIdentifierName().getCodeValue())
-                            .isEqualTo("XNOMS");
-                    assertThat(offender.getAdditionalIdentifiers().get(0).getIdentifier()).isEqualTo("A9999XX");
-                }
-
-                @Test
-                void willNotifySPGForOffenderAdditionalIdentifier() {
-                    verify(spgNotificationService)
-                            .notifyInsertOfOffenderAdditionalIdentifier(offenderCaptor
-                                    .capture(), additionalIdentifierCaptor
-                                    .capture());
-
-                    assertThat(offenderCaptor.getValue().getOffenderId()).isEqualTo(99L);
-                    assertThat(additionalIdentifierCaptor.getValue().getIdentifierName().getCodeValue())
-                            .isEqualTo("XNOMS");
-                }
             }
             @Nested
             class MultipleOffendersFound {
@@ -404,19 +284,6 @@ class OffenderIdentifierServiceTest {
                     assertThat(iDs.get(1).getNomsNumber()).isEqualTo("G5555TT");
                     assertThat(iDs.get(1).getCrn()).isEqualTo("X34567");
                 }
-
-                @Test
-                void willAddAdditionalIdentifiers() {
-                    verify(spgNotificationService, times(2)).notifyUpdateOfOffender(offenderCaptor.capture());
-                }
-
-                @Test
-                void willNotifySPGForOffenderAdditionalIdentifier() {
-                    verify(spgNotificationService, times(2))
-                            .notifyInsertOfOffenderAdditionalIdentifier(offenderCaptor
-                                    .capture(), additionalIdentifierCaptor
-                                    .capture());
-                }
             }
 
             @Nested
@@ -448,9 +315,6 @@ class OffenderIdentifierServiceTest {
                     assertThatThrownBy(() -> service
                             .replaceNomsNumber("A9999XX", UpdateOffenderNomsNumber.builder().nomsNumber("G5555TT")
                                     .build()));
-
-                    // tested via SPG since this is teh side affect of updating
-                    verify(spgNotificationService, never()).notifyUpdateOfOffender(offenderCaptor.capture());
                 }
             }
         }

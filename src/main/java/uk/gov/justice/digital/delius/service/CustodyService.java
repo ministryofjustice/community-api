@@ -44,7 +44,6 @@ import static uk.gov.justice.digital.delius.service.CustodyService.PrisonLocatio
 @Service
 @Slf4j
 public class CustodyService {
-    private static final String CONTEXT = "prison-to-probation";
     private final Boolean updateCustodyFeatureSwitch;
     private final Boolean updateBookingNumberFeatureSwitch;
     private final TelemetryClient telemetryClient;
@@ -53,7 +52,6 @@ public class CustodyService {
     private final InstitutionRepository institutionRepository;
     private final CustodyHistoryRepository custodyHistoryRepository;
     private final ReferenceDataService referenceDataService;
-    private final SpgNotificationService spgNotificationService;
     private final OffenderManagerService offenderManagerService;
     private final ContactService contactService;
     private final OffenderPrisonerService offenderPrisonerService;
@@ -67,7 +65,6 @@ public class CustodyService {
             final InstitutionRepository institutionRepository,
             final CustodyHistoryRepository custodyHistoryRepository,
             final ReferenceDataService referenceDataService,
-            final SpgNotificationService spgNotificationService,
             final OffenderManagerService offenderManagerService,
             final ContactService contactService,
             final OffenderPrisonerService offenderPrisonerService,
@@ -81,7 +78,6 @@ public class CustodyService {
         this.institutionRepository = institutionRepository;
         this.custodyHistoryRepository = custodyHistoryRepository;
         this.referenceDataService = referenceDataService;
-        this.spgNotificationService = spgNotificationService;
         this.offenderManagerService = offenderManagerService;
         this.contactService = contactService;
         this.offenderPrisonerService = offenderPrisonerService;
@@ -230,7 +226,6 @@ public class CustodyService {
         if (updateBookingNumberFeatureSwitch) {
             event.getDisposal().getCustody().setPrisonerNumber(bookingNumber);
             offenderPrisonerService.refreshOffenderPrisonersFor(offender);
-            spgNotificationService.notifyUpdateOfCustody(offender, event);
             contactService.addContactForBookingNumberUpdate(offender, event);
         } else {
             log.warn("Update booking number will be ignored, this feature is switched off ");
@@ -260,8 +255,6 @@ public class CustodyService {
                 custody.setCustodialStatus(referenceDataService.getInCustodyCustodyStatus());
                 saveCustodyStatusChangeCustodyHistoryEvent(offender, custody);
             }
-            spgNotificationService.notifyUpdateOfCustodyLocationChange(offender, event);
-            spgNotificationService.notifyUpdateOfCustody(offender, event);
             updatePrisonOffenderManager(offender, institution);
             contactService.addContactForPrisonLocationChange(offender, event);
         } else {
