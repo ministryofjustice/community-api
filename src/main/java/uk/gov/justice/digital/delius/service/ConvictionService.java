@@ -61,7 +61,6 @@ public class ConvictionService {
     private final EventEntityBuilder eventEntityBuilder;
     private final KeyDateEntityBuilder keyDateEntityBuilder;
     private final IAPSNotificationService iapsNotificationService;
-    private final SpgNotificationService spgNotificationService;
     private final LookupSupplier lookupSupplier;
     private final ContactService contactService;
     private final TelemetryClient telemetryClient;
@@ -110,7 +109,6 @@ public class ConvictionService {
         EventRepository eventRepository,
         OffenderRepository offenderRepository,
         EventEntityBuilder eventEntityBuilder,
-        SpgNotificationService spgNotificationService,
         LookupSupplier lookupSupplier,
         KeyDateEntityBuilder keyDateEntityBuilder,
         IAPSNotificationService iapsNotificationService,
@@ -120,7 +118,6 @@ public class ConvictionService {
         this.offenderRepository = offenderRepository;
         this.eventEntityBuilder = eventEntityBuilder;
         this.keyDateEntityBuilder = keyDateEntityBuilder;
-        this.spgNotificationService = spgNotificationService;
         this.lookupSupplier = lookupSupplier;
         this.iapsNotificationService = iapsNotificationService;
         this.contactService = contactService;
@@ -184,9 +181,7 @@ public class ConvictionService {
             courtCase,
             calculateNextEventNumber(offenderId));
 
-        final var conviction = ConvictionTransformer.convictionOf(eventRepository.save(event));
-        spgNotificationService.notifyNewCourtCaseCreated(event);
-        return conviction;
+        return ConvictionTransformer.convictionOf(eventRepository.save(event));
     }
 
     @Transactional(readOnly = true)
@@ -620,7 +615,6 @@ public class ConvictionService {
             existingKeyDate.setLastUpdatedDatetime(LocalDateTime.now());
             existingKeyDate.setLastUpdatedUserId(lookupSupplier.userSupplier().get().getUserId());
             eventRepository.save(event);
-            spgNotificationService.notifyUpdateOfCustodyKeyDate(typeCode, event);
             telemetryClient.trackEvent("KeyDateUpdated", telemetryProperties, null);
         });
 
@@ -632,7 +626,6 @@ public class ConvictionService {
                 .add(keyDate);
 
             eventRepository.saveAndFlush(event);
-            spgNotificationService.notifyNewCustodyKeyDate(typeCode, event);
             telemetryClient.trackEvent("KeyDateAdded", telemetryProperties, null);
         }
 
@@ -666,7 +659,6 @@ public class ConvictionService {
         maybeKeyDateToRemove.ifPresent(keyDateToRemove -> {
             keyDates.remove(keyDateToRemove);
             eventRepository.save(event);
-            spgNotificationService.notifyDeletedCustodyKeyDate(keyDateToRemove, event);
             if (shouldNotifyIAPS && KeyDate.isSentenceExpiryKeyDate(typeCode)) {
                 iapsNotificationService.notifyEventUpdated(event);
             }

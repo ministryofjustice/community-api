@@ -43,9 +43,6 @@ public class ConvictionService_GetCustodyKeyDateTest {
     private EventEntityBuilder eventEntityBuilder;
 
     @Mock
-    private SpgNotificationService spgNotificationService;
-
-    @Mock
     private LookupSupplier lookupSupplier;
 
     @Mock
@@ -62,7 +59,7 @@ public class ConvictionService_GetCustodyKeyDateTest {
         public void setUp() {
             final var featureSwitches = new FeatureSwitches();
             featureSwitches.getNoms().getUpdate().setKeyDates(true);
-            convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient, featureSwitches);
+            convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient, featureSwitches);
             when(eventRepository.findActiveByOffenderIdWithCustody(anyLong())).thenReturn(ImmutableList.of(aCustodyEvent()));
         }
 
@@ -252,7 +249,7 @@ public class ConvictionService_GetCustodyKeyDateTest {
         public void setUp() {
             final var featureSwitches = new FeatureSwitches();
             featureSwitches.getNoms().getUpdate().setKeyDates(true);
-            convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient, featureSwitches);
+            convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient, featureSwitches);
         }
 
         @Test

@@ -55,9 +55,6 @@ public class ConvictionService_AddOrReplaceOrDeleteCustodyKeyDatesTest {
     private EventEntityBuilder eventEntityBuilder;
 
     @Mock
-    private SpgNotificationService spgNotificationService;
-
-    @Mock
     private IAPSNotificationService iapsNotificationService;
 
     @Mock
@@ -78,7 +75,7 @@ public class ConvictionService_AddOrReplaceOrDeleteCustodyKeyDatesTest {
     public void setUp() {
         final var featureSwitches = new FeatureSwitches();
         featureSwitches.getNoms().getUpdate().setKeyDates(true);
-        convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, spgNotificationService, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient, featureSwitches);
+        convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, lookupSupplier, new KeyDateEntityBuilder(lookupSupplier), iapsNotificationService, contactService, telemetryClient, featureSwitches);
         when(lookupSupplier.userSupplier()).thenReturn(() -> User.builder().userId(88L).build());
         when(lookupSupplier.custodyKeyDateTypeSupplier()).thenReturn(code -> Optional.of(StandardReference
                 .builder()
