@@ -193,6 +193,7 @@ public class DocumentService {
                                                 .offenderDocumentsDetailsOfAssessmentDocuments(
                                                         assessmentDocuments
                                                                 .stream()
+                                                                .filter(d -> d.getAssessment().getReferral() != null)
                                                                 .filter(document -> eventId(document).equals(eventId))
                                                                 .collect(toList()))
                                         )
