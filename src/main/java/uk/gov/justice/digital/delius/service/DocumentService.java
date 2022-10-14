@@ -16,8 +16,38 @@ import uk.gov.justice.digital.delius.data.filters.DocumentFilter;
 import uk.gov.justice.digital.delius.jpa.filters.CourtReportDocumentFilterTransformer;
 import uk.gov.justice.digital.delius.jpa.national.repository.DocumentRepository;
 import uk.gov.justice.digital.delius.jpa.oracle.annotations.NationalUserOverride;
-import uk.gov.justice.digital.delius.jpa.standard.entity.*;
-import uk.gov.justice.digital.delius.jpa.standard.repository.*;
+import uk.gov.justice.digital.delius.jpa.standard.entity.AddressAssessmentDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ApprovedPremisesReferralDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.AssessmentDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.CaseAllocationDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ContactDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.CourtReportDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
+import uk.gov.justice.digital.delius.jpa.standard.entity.EventDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReportDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.NsiDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalCircumstanceDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalContactDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.ReferralDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.UPWAppointmentDocument;
+import uk.gov.justice.digital.delius.jpa.standard.repository.AddressAssessmentDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ApprovedPremisesReferralDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.AssessmentDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.CaseAllocationDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ContactDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.CourtReportDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.EventDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionReportDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.NsiDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.PersonalCircumstanceDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.PersonalContactDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.ReferralDocumentRepository;
+import uk.gov.justice.digital.delius.jpa.standard.repository.UPWAppointmentDocumentRepository;
 import uk.gov.justice.digital.delius.transformers.DocumentTransformer;
 
 import java.time.LocalDateTime;
@@ -108,7 +138,7 @@ public class DocumentService {
                 .addAll(courtReportDocuments.stream().map(this::eventId).collect(toList()))
                 .addAll(institutionReportDocuments.stream().map(this::eventId).collect(toList()))
                 .addAll(approvedPremisesReferralDocuments.stream().map(this::eventId).collect(toList()))
-                .addAll(assessmentDocuments.stream().map(this::eventId).collect(toList()))
+                .addAll(assessmentDocuments.stream().filter(d -> d.getAssessment().getReferral() != null).map(this::eventId).collect(toList()))
                 .addAll(caseAllocationDocuments.stream().map(this::eventId).collect(toList()))
                 .addAll(referralDocuments.stream().map(this::eventId).collect(toList()))
                 .addAll(nsiEventDocuments.stream().map(this::eventId).collect(toList()))
