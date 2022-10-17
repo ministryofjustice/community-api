@@ -11,10 +11,8 @@ import uk.gov.justice.digital.delius.data.api.LocalDeliveryUnit;
 import uk.gov.justice.digital.delius.data.api.ProbationArea;
 import uk.gov.justice.digital.delius.data.api.ProbationAreaWithLocalDeliveryUnits;
 import uk.gov.justice.digital.delius.data.api.ReferenceData;
-import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.jpa.filters.ProbationAreaFilter;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ReferenceDataMasterRepository;
@@ -188,14 +186,6 @@ public class ReferenceDataService {
 
                 }
         ).collect(toList());
-    }
-
-    public Optional<StandardReference> getAtsTierChangeReason() {
-        return standardReferenceRepository.findByCodeAndCodeSetName("ATS", "TIER CHANGE REASON");
-    }
-
-    public Optional<StandardReference> getTier(String tier) {
-        return standardReferenceRepository.findByCodeAndCodeSetName(tier, "TIER");
     }
 
     private boolean getPossibleActiveLdus(District district) {

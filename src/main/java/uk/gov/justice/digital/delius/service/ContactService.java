@@ -30,16 +30,12 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeReposito
 import uk.gov.justice.digital.delius.transformers.ContactTransformer;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static uk.gov.justice.digital.delius.jpa.standard.entity.Contact.*;
 
@@ -53,7 +49,6 @@ public class ContactService {
     private static final String RESPONSIBLE_OFFICER_CHANGE_CONTACT_TYPE = "ROC";
     private static final String PRISON_LOCATION_CHANGE_CONTACT_TYPE = "ETCP";
     private static final String CUSTODY_AUTO_UPDATE_CONTACT_TYPE = "EDSS";
-    private static final String TIER_UPDATE_CONTACT_TYPE = "ETCH20";
     public static final String DELIUS_DATE_FORMAT = "E MMM dd yyyy"; // e.g. "Tue Nov 24 2020"
     private final ContactRepository contactRepository;
     private final ContactDateRepository contactDateRepository;
@@ -163,24 +158,6 @@ public class ContactService {
                 event,
                 contactTypeForCustodyAutoUpdate(),
                 notesForKeyDatesUpdate(datesAmendedOrUpdated, datesRemoved));
-    }
-
-    @Transactional
-    public void addContactForTierUpdate(final Long offenderId, final LocalDateTime date, final String tier, final String reason, final Staff staff, final Team team){
-        contactRepository.save(builder()
-            .contactDate(LocalDate.now())
-            .offenderId(offenderId)
-            .contactStartTime(LocalTime.now())
-            .notes(String.format(
-                "Tier Change Date: %s\n" +
-                "Tier: %s\n" + "Tier Change Reason: %s",DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").format(date),tier,reason))
-            .staff(staff)
-            .staffEmployeeId(staff.getStaffId())
-            .teamProviderId(team.getTeamId())
-            .probationArea(team.getProbationArea())
-            .team(team)
-            .contactType(contactTypeRepository.findByCode(TIER_UPDATE_CONTACT_TYPE).orElseThrow(() -> new NotFoundException("Cannot find contact type for tier update")))
-            .build());
     }
 
     public List<uk.gov.justice.digital.delius.data.api.ContactType> getContactTypes(final List<String> categories) {
