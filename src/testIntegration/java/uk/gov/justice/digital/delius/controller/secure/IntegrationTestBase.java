@@ -74,10 +74,6 @@ public class IntegrationTestBase {
         return createJwt("ROLE_COMMUNITY");
     }
 
-    protected String tokenWithRoleManagementTierUpdate() {
-        return createJwt("ROLE_MANAGEMENT_TIER_UPDATE");
-    }
-
     protected String tokenWithRoleCommunityAndCustodyUpdate() {
         return createJwt("ROLE_COMMUNITY", "ROLE_COMMUNITY_CUSTODY_UPDATE");
     }
