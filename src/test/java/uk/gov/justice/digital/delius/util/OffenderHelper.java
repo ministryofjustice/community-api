@@ -51,6 +51,8 @@ public interface OffenderHelper {
                 AddressAssessment.builder().assessmentDate(LocalDateTime.of(2010, 6, 10, 12, 0)).build(),
                 AddressAssessment.builder().assessmentDate(LocalDateTime.of(2010, 6, 11, 12, 0)).build()
             ))
+            .addressType(StandardReference.builder().codeValue("ATAP01").codeDescription("Approved Premises Type").build())
+            .typeVerified("Y")
             .build();
     }
 

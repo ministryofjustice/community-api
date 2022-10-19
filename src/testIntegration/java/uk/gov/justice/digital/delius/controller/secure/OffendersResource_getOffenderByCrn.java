@@ -71,8 +71,8 @@ public class OffendersResource_getOffenderByCrn extends IntegrationTestBase {
             .hasFieldOrPropertyWithValue("postcode", "S10 2NA")
             .hasFieldOrPropertyWithValue("status.code", "M")
             .hasFieldOrPropertyWithValue("status.description", "Main")
-            .hasFieldOrPropertyWithValue("type.code", "APMP1")
-            .hasFieldOrPropertyWithValue("type.description", "MiP approved")
+            .hasFieldOrPropertyWithValue("type.code", "A02")
+            .hasFieldOrPropertyWithValue("type.description", "Approved Premises")
             .hasFieldOrPropertyWithValue("typeVerified", true);
 
     }

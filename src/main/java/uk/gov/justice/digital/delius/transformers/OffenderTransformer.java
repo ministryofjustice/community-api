@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import uk.gov.justice.digital.delius.data.api.AdditionalIdentifier;
 import uk.gov.justice.digital.delius.data.api.Address;
-import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
 import uk.gov.justice.digital.delius.data.api.ContactDetails;
 import uk.gov.justice.digital.delius.data.api.ContactDetailsSummary;
 import uk.gov.justice.digital.delius.data.api.Human;
@@ -19,6 +18,7 @@ import uk.gov.justice.digital.delius.data.api.OffenderProfile;
 import uk.gov.justice.digital.delius.data.api.PhoneNumber;
 import uk.gov.justice.digital.delius.data.api.PreviousConviction;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
+import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
 import uk.gov.justice.digital.delius.data.api.Team;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AddressAssessment;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disability;
@@ -104,11 +104,6 @@ public class OffenderTransformer {
     }
 
     private static Address addressOf(OffenderAddress address) {
-        final var personalCircumstance = Optional.ofNullable(address.getPersonalCircumstances())
-            .flatMap(personalCircumstances -> personalCircumstances.stream()
-                .filter(x -> x.getEndDate() == null || x.getEndDate().isAfter(LocalDate.now()))
-                .max(Comparator.comparing(PersonalCircumstance::getStartDate)));
-
         return Address.builder()
             .addressNumber(address.getAddressNumber())
             .buildingName(address.getBuildingName())
@@ -127,17 +122,11 @@ public class OffenderTransformer {
                         .code(status.getCodeValue())
                         .description(status.getCodeDescription()).build())
                 .orElse(null))
-            .type(personalCircumstance
-                .map(PersonalCircumstance::getCircumstanceSubType)
-                .map(x -> KeyValue.builder()
-                    .code(x.getCodeValue())
-                    .description(x.getCodeDescription())
-                    .build())
-                .orElse(null))
-            .typeVerified(personalCircumstance
-                .map(PersonalCircumstance::getEvidenced)
-                .map(TypesTransformer::ynToBoolean)
-                .orElse(false))
+            .type(Optional.ofNullable(address.getAddressType())
+                .map(at -> KeyValue.builder().code(at.getCodeValue()).description(at.getCodeDescription()).build())
+                .orElse(null)
+            )
+            .typeVerified(Optional.ofNullable(address.getTypeVerified()).map(v -> v.equals("Y")).orElse(null))
             .latestAssessmentDate(Optional.ofNullable(address.getAddressAssessments())
                 .flatMap(assessments -> assessments.stream()
                     .map(AddressAssessment::getAssessmentDate)
