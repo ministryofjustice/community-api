@@ -126,7 +126,7 @@ public class OffenderTransformer {
                 .map(at -> KeyValue.builder().code(at.getCodeValue()).description(at.getCodeDescription()).build())
                 .orElse(null)
             )
-            .typeVerified(Optional.ofNullable(address.getTypeVerified()).map(v -> v.equals("Y")).orElse(null))
+            .typeVerified(Optional.ofNullable(address.getTypeVerified()).map(v -> v.equals("Y")).orElse(false))
             .latestAssessmentDate(Optional.ofNullable(address.getAddressAssessments())
                 .flatMap(assessments -> assessments.stream()
                     .map(AddressAssessment::getAssessmentDate)
