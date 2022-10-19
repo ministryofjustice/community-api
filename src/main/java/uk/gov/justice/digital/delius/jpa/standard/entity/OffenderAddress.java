@@ -79,6 +79,13 @@ public class OffenderAddress {
     @Column(name = "TOWN_CITY")
     private String townCity;
 
+    @ManyToOne
+    @JoinColumn(name = "ADDRESS_TYPE_ID")
+    private StandardReference addressType;
+
+    @Column(name = "TYPE_VERIFIED")
+    private String typeVerified;
+
     @Column(name = "CREATED_DATETIME")
     private LocalDateTime createdDatetime;
 
