@@ -60,6 +60,7 @@ public class ReferralService {
 
         var context = getContext(contextName);
         var nsiMapping = context.getNsiMapping();
+        var urn = ReferralTransformer.transformReferralIdToUrn(referralStart.getReferralId());
 
         Optional<Long> requirementId = getRequirement(crn, referralStart.getSentenceId(), context);
 
@@ -72,6 +73,7 @@ public class ReferralService {
             .startDate(toLondonLocalDate(referralStart.getStartedAt()))
             .status(nsiMapping.getNsiStatus())
             .statusDate(toLondonLocalDateTime(referralStart.getStartedAt()))
+            .externalReference(urn)
             .notes(ReferralTransformer.prefixReferralStartNotesWithUrn(referralStart.getNotes(), referralStart.getReferralId()))
             .intendedProvider(context.getProviderCode())
             .manager(NewNsiManager.builder()
