@@ -29,4 +29,5 @@ public class NewNsi {
     private String notes;
     private String intendedProvider;
     private NewNsiManager manager;
+    private String externalReference;
 }

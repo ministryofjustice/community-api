@@ -15,6 +15,9 @@ public class ReferralTransformer {
     }
 
     public static String transformReferralIdToUrn(final UUID referralId) {
-        return "urn:hmpps:interventions-referral:" + referralId.toString();
+        if (referralId == null) {
+            return null;
+        }
+        return "urn:hmpps:interventions-referral:" + referralId;
     }
 }
