@@ -380,24 +380,6 @@ public class OffendersResource {
 
     @ApiOperation(
             value = "Returns the latest recall and release details for an offender",
-            notes = "Accepts a NOMIS offender nomsNumber in the format A9999AA",
-            tags = "Convictions")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
-            })
-    @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/release")
-    public OffenderLatestRecall getLatestRecallAndReleaseForOffender(
-            @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
-            @NotNull
-            @PathVariable(value = "nomsNumber") final String nomsNumber) {
-
-        return getOffenderLatestRecall(offenderService.offenderIdOfNomsNumber(nomsNumber));
-    }
-
-    @ApiOperation(
-            value = "Returns the latest recall and release details for an offender",
             notes = "Accepts an offender CRN in the format A999999",
             tags = "Convictions")
     @ApiResponses(

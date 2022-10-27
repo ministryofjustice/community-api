@@ -14,51 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class OffendersResource_GetLatestRecallAndReleaseForOffenderTest extends IntegrationTestBase {
-    @Test
-    public void getLatestRecallAndReleaseForOffender_offenderFound_returnsOk() {
-        given()
-                .auth()
-                .oauth2(tokenWithRoleCommunity())
-                .contentType(APPLICATION_JSON_VALUE)
-                .when()
-                .get("/offenders/nomsNumber/G9542VP/release")
-                .then()
-                .statusCode(200);
-
-    }
-
-    @Test
-    public void getLatestRecallAndReleaseForOffender_offenderFound_recallDataOk() {
-        final var expectedOffenderRecall = OffenderLatestRecall.builder()
-                .lastRecall(expectedOffenderRecall())
-                .lastRelease(expectedOffenderRelease())
-                .build();
-
-        final var offenderLatestRecall = given()
-                .auth()
-                .oauth2(tokenWithRoleCommunity())
-                .contentType(APPLICATION_JSON_VALUE)
-                .when()
-                .get("/offenders/nomsNumber/G9542VP/release")
-                .then()
-                .extract()
-                .body()
-                .as(OffenderLatestRecall.class);
-
-        assertThat(offenderLatestRecall).isEqualTo(expectedOffenderRecall);
-    }
-
-    @Test
-    public void getLatestRecallAndReleaseForOffender_offenderNotFound_returnsNotFound() {
-        given()
-                .auth()
-                .oauth2(tokenWithRoleCommunity())
-                .contentType(APPLICATION_JSON_VALUE)
-                .when()
-                .get("/offenders/nomsNumber/NOMS_NOT_FOUND/release")
-                .then()
-                .statusCode(404);
-    }
 
     @Test
     public void getLatestRecallAndReleaseForOffenderByCrn_offenderFound_returnsOk() {
