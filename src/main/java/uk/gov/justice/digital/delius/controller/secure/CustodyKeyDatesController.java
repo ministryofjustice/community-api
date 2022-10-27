@@ -57,7 +57,6 @@ public class CustodyKeyDatesController {
     public CustodyKeyDate putCustodyKeyDateByCrn(final @PathVariable String crn,
                                                  final @PathVariable String typeCode,
                                                  final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
-        log.info("Call to putCustodyKeyDateByCrn for {} code {}", crn, typeCode);
         return addOrReplaceCustodyKeyDate(offenderService.offenderIdOfCrn(crn), typeCode, custodyKeyDate);
     }
 
@@ -72,7 +71,6 @@ public class CustodyKeyDatesController {
     public CustodyKeyDate putCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber,
                                                         final @PathVariable String typeCode,
                                                         final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
-        log.info("Call to putCustodyKeyDateByNomsNumber for {} code {}", nomsNumber, typeCode);
         return addOrReplaceCustodyKeyDate(offenderService.mostLikelyOffenderIdOfNomsNumber(nomsNumber).getOrElseThrow(e -> new ConflictingRequestException(e.getMessage())), typeCode, custodyKeyDate);
     }
 
@@ -86,8 +84,6 @@ public class CustodyKeyDatesController {
     public Custody replaceAllCustodyKeyDateByNomsNumberAndBookingNumber(final @PathVariable String nomsNumber,
                                                                         final @PathVariable String bookingNumber,
                                                                         final @RequestBody ReplaceCustodyKeyDates replaceCustodyKeyDates) {
-        log.info("Call to replaceAllCustodyKeyDateByNomsNumberAndBookingNumber for {} booking {} with dates {}", nomsNumber, bookingNumber, replaceCustodyKeyDates);
-
         final var offenderId = offenderService.mostLikelyOffenderIdOfNomsNumber(nomsNumber)
             .getOrElseThrow((e) -> e)
             .orElseThrow(() -> new NotFoundException(String.format("Offender with NOMS number %s not found", nomsNumber)));
@@ -120,7 +116,6 @@ public class CustodyKeyDatesController {
     public CustodyKeyDate putCustodyKeyDateByOffenderId(final @PathVariable Long offenderId,
                                                         final @PathVariable String typeCode,
                                                         final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
-        log.info("Call to putCustodyKeyDateByOffenderId for {} code {}", offenderId, typeCode);
         return addOrReplaceCustodyKeyDate(offenderService.getOffenderByOffenderId(offenderId).map(OffenderDetail::getOffenderId), typeCode, custodyKeyDate);
     }
 
@@ -135,7 +130,6 @@ public class CustodyKeyDatesController {
     public CustodyKeyDate putCustodyKeyDateByPrisonBookingNumber(final @PathVariable String prisonBookingNumber,
                                                                  final @PathVariable String typeCode,
                                                                  final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
-        log.info("Call to putCustodyKeyDateByPrisonBookingNumber for {} code {}", prisonBookingNumber, typeCode);
         try {
             return addOrReplaceCustodyKeyDateByConvictionId(convictionService.getConvictionIdByPrisonBookingNumber(prisonBookingNumber), typeCode, custodyKeyDate);
         } catch (final DuplicateActiveCustodialConvictionsException e) {
@@ -153,7 +147,6 @@ public class CustodyKeyDatesController {
     @ApiOperation(value = "Gets a custody key date for the active custodial conviction")
     public CustodyKeyDate getCustodyKeyDateByCrn(final @PathVariable String crn,
                                                  final @PathVariable String typeCode) {
-        log.info("Call to getCustodyKeyDateByCrn for {} code {}", crn, typeCode);
         return getCustodyKeyDate(offenderService.offenderIdOfCrn(crn), typeCode);
     }
 
@@ -165,7 +158,6 @@ public class CustodyKeyDatesController {
     @ApiOperation(value = "Gets a custody key date for the active custodial conviction")
     public CustodyKeyDate getCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber,
                                                         final @PathVariable String typeCode) {
-        log.info("Call to getCustodyKeyDateByNomsNumber for {} code {}", nomsNumber, typeCode);
         return getCustodyKeyDate(offenderService.mostLikelyOffenderIdOfNomsNumber(nomsNumber).getOrElseThrow(e -> new ConflictingRequestException(e.getMessage())), typeCode);
     }
 
@@ -177,7 +169,6 @@ public class CustodyKeyDatesController {
     @ApiOperation(value = "Gets a custody key date for the active custodial conviction")
     public CustodyKeyDate getCustodyKeyDateByOffenderId(final @PathVariable Long offenderId,
                                                         final @PathVariable String typeCode) {
-        log.info("Call to getCustodyKeyDateByOffenderId for {} code {}", offenderId, typeCode);
         return getCustodyKeyDate(offenderService.getOffenderByOffenderId(offenderId).map(OffenderDetail::getOffenderId), typeCode);
     }
 
@@ -189,7 +180,6 @@ public class CustodyKeyDatesController {
     @ApiOperation(value = "Gets a custody key date for the related custodial conviction with the matching prison booking")
     public CustodyKeyDate getCustodyKeyDateByPrisonBookingNumber(final @PathVariable String prisonBookingNumber,
                                                                  final @PathVariable String typeCode) {
-        log.info("Call to getCustodyKeyDateByPrisonBookingNumber for {} code {}", prisonBookingNumber, typeCode);
         try {
             return getCustodyKeyDateByConvictionId(convictionService.getConvictionIdByPrisonBookingNumber(prisonBookingNumber), typeCode);
         } catch (final DuplicateActiveCustodialConvictionsException e) {
@@ -206,7 +196,6 @@ public class CustodyKeyDatesController {
     })
     @ApiOperation(value = "Gets a all custody key dates for the active custodial conviction")
     public List<CustodyKeyDate> getAllCustodyKeyDateByCrn(final @PathVariable String crn) {
-        log.info("Call to getAllCustodyKeyDateByCrn for {}", crn);
         return getCustodyKeyDates(offenderService.offenderIdOfCrn(crn));
     }
 
@@ -217,7 +206,6 @@ public class CustodyKeyDatesController {
     })
     @ApiOperation(value = "Gets all custody key dates for the active custodial conviction")
     public List<CustodyKeyDate> getAllCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber) {
-        log.info("Call to getAllCustodyKeyDateByNomsNumber for {}", nomsNumber);
         return getCustodyKeyDates(offenderService.mostLikelyOffenderIdOfNomsNumber(nomsNumber).getOrElseThrow(e -> new ConflictingRequestException(e.getMessage())));
     }
 
@@ -229,7 +217,6 @@ public class CustodyKeyDatesController {
     @ApiOperation(value = "Gets a all custody key dates for the active custodial conviction")
 
     public List<CustodyKeyDate> getAllCustodyKeyDateByOffenderId(final @PathVariable Long offenderId) {
-        log.info("Call to getAllCustodyKeyDateByOffenderId for {}", offenderId);
         return getCustodyKeyDates(offenderService.getOffenderByOffenderId(offenderId).map(OffenderDetail::getOffenderId));
     }
 
@@ -259,7 +246,6 @@ public class CustodyKeyDatesController {
     @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public void deleteCustodyKeyDateByCrn(final @PathVariable String crn,
                                           final @PathVariable String typeCode) {
-        log.info("Call to deleteCustodyKeyDateByCrn for {} code {}", crn, typeCode);
         deleteCustodyKeyDate(offenderService.offenderIdOfCrn(crn), typeCode);
     }
 
@@ -274,7 +260,6 @@ public class CustodyKeyDatesController {
     @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public void deleteCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber,
                                                  final @PathVariable String typeCode) {
-        log.info("Call to deleteCustodyKeyDateByNomsNumber for {} code {}", nomsNumber, typeCode);
         deleteCustodyKeyDate(offenderService.mostLikelyOffenderIdOfNomsNumber(nomsNumber).getOrElseThrow(e -> new ConflictingRequestException(e.getMessage())), typeCode);
     }
 
@@ -289,7 +274,6 @@ public class CustodyKeyDatesController {
     @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public void deleteCustodyKeyDateByOffenderId(final @PathVariable Long offenderId,
                                                  final @PathVariable String typeCode) {
-        log.info("Call to deleteCustodyKeyDateByOffenderId for {} code {}", offenderId, typeCode);
         deleteCustodyKeyDate(offenderService.getOffenderByOffenderId(offenderId).map(OffenderDetail::getOffenderId), typeCode);
     }
 

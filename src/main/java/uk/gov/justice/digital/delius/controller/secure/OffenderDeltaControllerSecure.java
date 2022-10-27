@@ -62,7 +62,6 @@ public class OffenderDeltaControllerSecure {
     @ResponseStatus(HttpStatus.OK)
     public void deleteOffenderDeltas(@ApiParam(name = "before", value = "Delete records before the date time provided", example = "2019-03-02T16:45:00.000Z", required = true)
                                      final @RequestParam("before") @NotNull @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime before) {
-        log.info("Call to deleteOffenderDeltas before {}", before.toString());
         offenderDeltaService.deleteBefore(before);
     }
 }

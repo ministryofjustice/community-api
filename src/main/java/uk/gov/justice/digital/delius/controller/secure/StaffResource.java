@@ -91,7 +91,6 @@ public class StaffResource {
         @ApiParam(name = "username", value = "Delius username", example = "SheliaHancockNPS", required = true)
         @NotNull
         @PathVariable(value = "username") final String username) {
-        log.info("getStaffDetailsByUsername called with {}", username);
         return staffService.getStaffDetailsByUsername(username)
             .orElseThrow(() -> new NotFoundException(String.format("Staff member with username %s", username)));
     }
@@ -106,7 +105,6 @@ public class StaffResource {
         @ApiParam(name = "staffCode", value = "Delius staff code", example = "X12345", required = true)
         @NotNull
         @PathVariable(value = "staffCode") final String staffCode) {
-        log.info("getStaffDetailsByStaffCode called with {}", staffCode);
         return staffService.getStaffDetailsByStaffCode(staffCode)
             .orElseThrow(() -> new NotFoundException(String.format("Staff member with staffCode %s", staffCode)));
     }
@@ -118,7 +116,6 @@ public class StaffResource {
         @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
     @PostMapping(path = "/staff/list", consumes = "application/json")
     public List<StaffDetails> getStaffDetailsList(final @RequestBody Set<String> usernames) {
-        log.info("getStaffDetailsList called with {}", usernames);
         return staffService.getStaffDetailsByUsernames(usernames);
     }
 
@@ -129,7 +126,6 @@ public class StaffResource {
         @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
     @PostMapping(path = "/staff/list/staffCodes", consumes = "application/json")
     public List<StaffDetails> getStaffDetailsByStaffCodeList(final @RequestBody Set<String> staffCodes) {
-        log.info("getStaffDetailsByStaffCodeList called with {}", staffCodes);
         return staffService.getStaffDetailsByStaffCodes(staffCodes);
     }
 
