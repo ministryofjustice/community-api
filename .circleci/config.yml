@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.14
+  hmpps: ministryofjustice/hmpps@6
   aws-cli: circleci/aws-cli@1.4.0
   aws-ecs: circleci/aws-ecs@2.0.0
   mem: circleci/rememborb@0.0.1
@@ -390,37 +390,17 @@ workflows:
   security:
     triggers:
       - schedule:
-          cron: "22 5 * * 1-5"
+          cron: "30 5 * * 1-5" # Every weekday at 05:30 UTC
           filters:
             branches:
               only:
                 - main
     jobs:
-      - hmpps/gradle_owasp_dependency_check:
-          cache_key: v2_0
-          slack_channel: probation-integration-notifications
-          context:
-            - hmpps-common-vars
       - hmpps/trivy_latest_scan:
           slack_channel: probation-integration-notifications
           context:
             - hmpps-common-vars
-      - hmpps/veracode_pipeline_scan:
-          slack_channel: probation-integration-notifications
-          context:
-            - hmpps-common-vars
-            - veracode-credentials
-  security-weekly:
-    triggers:
-      - schedule:
-          cron: "32 5 * * 1"
-          filters:
-            branches:
-              only:
-                - main
-    jobs:
       - hmpps/veracode_policy_scan:
-          slack_channel: probation-integration-notifications
           context:
             - veracode-credentials
             - hmpps-common-vars
