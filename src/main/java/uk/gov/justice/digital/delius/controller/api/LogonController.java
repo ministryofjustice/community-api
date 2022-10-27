@@ -54,9 +54,6 @@ public class LogonController {
     })
     @Transactional
     public ResponseEntity<String> getToken(final @RequestBody String distinguishedName) {
-
-        log.info("Legacy login request for {}", distinguishedName);
-
         Optional<String> maybeUid = SYSTEM_USERS.contains(distinguishedName) ? Optional.of(distinguishedName) : ldapRepository.getDeliusUid(distinguishedName);
 
         return maybeUid.map(uid ->

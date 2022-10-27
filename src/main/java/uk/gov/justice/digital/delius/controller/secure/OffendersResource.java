@@ -413,8 +413,6 @@ public class OffendersResource {
     @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public CommunityOrPrisonOffenderManager allocatePrisonOffenderManagerByNomsNumber(final @PathVariable String nomsNumber,
                                                                                       final @RequestBody CreatePrisonOffenderManager prisonOffenderManager) {
-        log.info("Request to allocate a prison offender manager to {} at prison with code {}", nomsNumber, prisonOffenderManager.getNomsPrisonInstitutionCode());
-
         prisonOffenderManager.validate().ifPresent((errorMessage) -> {
             throw new InvalidAllocatePOMRequestException(prisonOffenderManager, errorMessage);
         });

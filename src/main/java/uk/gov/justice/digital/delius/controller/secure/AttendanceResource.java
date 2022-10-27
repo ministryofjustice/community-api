@@ -53,8 +53,6 @@ public class AttendanceResource {
     public Attendances getAttendances(final @RequestHeader HttpHeaders httpHeaders,
                                     final @PathVariable("crn") String crn,
                                     final @PathVariable("convictionId") Long convictionId) {
-
-        log.info("Call to getAttendances for CRN {} and conviction ID {}", crn, convictionId);
         final Long offenderId = getOffenderId(crn);
 
         return new Attendances(AttendanceService.attendancesFor(attendanceService.getContactsForEventEnforcement(offenderId, convictionId, LocalDate.now())));
@@ -69,8 +67,6 @@ public class AttendanceResource {
         })
     public Attendances getAttendancesByConviction(final @PathVariable("crn") String crn,
                                                 final @PathVariable("convictionId") Long convictionId) {
-
-        log.info("Call to getAttendances for CRN {} and conviction ID {}", crn, convictionId);
         final Long offenderId = getOffenderId(crn);
         return new Attendances(AttendanceService.attendancesFor(attendanceService.getContactsForEvent(offenderId, convictionId, LocalDate.now())));
     }

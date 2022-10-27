@@ -48,8 +48,6 @@ public class CustodyResource {
     public Custody updateCustody(final @PathVariable String nomsNumber,
                                  final @PathVariable String bookingNumber,
                                  final @RequestBody @Valid UpdateCustody updateCustody) {
-        log.info("Call to updateCustody for {} booking {}", nomsNumber, bookingNumber);
-
         return custodyService.updateCustodyPrisonLocation(nomsNumber, bookingNumber, updateCustody);
     }
 
@@ -63,8 +61,6 @@ public class CustodyResource {
     @ApiOperation(value = "Updates the associated custody record with booking number in UpdateCustodyBookingNumber")
     public Custody updateCustodyBookingNumber(final @PathVariable String nomsNumber,
                                               final @RequestBody @Valid UpdateCustodyBookingNumber updateCustodyBookingNumber) {
-        log.info("Call to updateCustodyBookingNumber for {}", nomsNumber);
-
         return custodyService.updateCustodyBookingNumber(nomsNumber, updateCustodyBookingNumber);
     }
 
@@ -76,8 +72,6 @@ public class CustodyResource {
     @ApiOperation(value = "Updates the offender record with the NOMS number in UpdateOffenderNomsNumber")
     public IDs updateOffenderNomsNumber(final @PathVariable String crn,
                                               final @RequestBody @Valid UpdateOffenderNomsNumber updateOffenderNomsNumber) {
-        log.info("Call to updateOffenderNomsNumber for {}", crn);
-
         return offenderIdentifierService.updateNomsNumber(crn, updateOffenderNomsNumber);
     }
 
@@ -92,8 +86,6 @@ public class CustodyResource {
             notes = "In the very rare circumstances more than one offender is found with matching noms number, all will be updated and their identifiers returned.")
     public List<IDs> replaceOffenderNomsNumber(final @PathVariable String originalNomsNumber,
                                                final @RequestBody @Valid UpdateOffenderNomsNumber updateOffenderNomsNumber) {
-        log.info("Call to replaceOffenderNomsNumber for {}", originalNomsNumber);
-
         return offenderIdentifierService.replaceNomsNumber(originalNomsNumber, updateOffenderNomsNumber);
     }
 
