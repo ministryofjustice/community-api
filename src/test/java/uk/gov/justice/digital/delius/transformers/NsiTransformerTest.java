@@ -80,6 +80,7 @@ class NsiTransformerTest {
         assertThat(nsi.getNotes()).isEqualTo("Some notes");
         assertThat(nsi.getActive()).isEqualTo(true);
         assertThat(nsi.getSoftDeleted()).isEqualTo(false);
+        assertThat(nsi.getExternalReference()).isEqualTo("urn:test:hello:123");
 
         assertThat(nsi.getNsiManagers()).isNotNull();
         assertThat(nsi.getNsiManagers()).hasSize(2);
@@ -124,6 +125,7 @@ class NsiTransformerTest {
                 .notes("Some notes")
                 .activeFlag(1L)
                 .softDeleted(false)
+                .externalReference("urn:test:hello:123")
                 .nsiManagers(List.of(EntityHelper.aNsiManager(), EntityHelper.aNsiManager()))
                 .rqmnt(Requirement.builder().activeFlag(true).build()).build();
     }
