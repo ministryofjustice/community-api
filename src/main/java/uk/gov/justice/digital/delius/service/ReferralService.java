@@ -134,9 +134,10 @@ public class ReferralService {
     private List<Nsi> findReferralNSIByFuzzyMatching(String crn, String contextName, Long sentenceId, String contractType, OffsetDateTime startedAt, UUID referralId, Long offenderId) {
         // 2022-10-26: external_reference URNs rollout should mean this branch will not be needed in about ~90 days
         // measure by the below event having 0 occurrences
+        var referralIdString = Optional.ofNullable(referralId).map(UUID::toString).orElse("missing");
         telemetryClient.trackEvent(
             "community_api.get_existing_matching_nsi.fuzzy_match_fallback",
-            Map.of("crn", crn, "contextName", contextName, "startedAt", startedAt.toString(), "referralId", referralId.toString()),
+            Map.of("crn", crn, "contextName", contextName, "startedAt", startedAt.toString(), "referralId", referralIdString),
             null
         );
 
