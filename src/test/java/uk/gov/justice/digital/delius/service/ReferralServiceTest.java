@@ -442,6 +442,27 @@ public class ReferralServiceTest {
         }
 
         @Test
+        public void emits_custom_event_for_usage_tracking_when_NSI_with_URN_cannot_be_found() {
+            when(offenderService.offenderIdOfCrn(OFFENDER_CRN)).thenReturn(of(OFFENDER_ID));
+            when(nsiService.getNsisInAnyStateByExternalReferenceURN(eq(OFFENDER_ID), eq(REFERRAL_URN)))
+                .thenReturn(List.of());
+            when(nsiService.getNsiByCodes(eq(OFFENDER_ID), eq(REFERRAL_START_REQUEST.getSentenceId()), any()))
+                .thenReturn(of(NsiWrapper.builder().nsis(List.of(MATCHING_NSI)).build()));
+
+            callExistingMatchingNsi(REFERRAL_START_REQUEST);
+            verify(telemetryClient).trackEvent(
+                "community_api.get_existing_matching_nsi.fuzzy_match_fallback",
+                Map.of(
+                    "crn", "X123456",
+                    "contextName", "commissioned-rehabilitation-services",
+                    "startedAt", "2021-01-20T12:00Z",
+                    "referralId", REFERRAL_ID.toString()
+                ),
+                null
+            );
+        }
+
+        @Test
         public void throws_BadRequestException_if_multiple_NSIs_are_found_with_the_fuzzy_lookup() {
             when(offenderService.offenderIdOfCrn(OFFENDER_CRN)).thenReturn(of(OFFENDER_ID));
             when(nsiService.getNsisInAnyStateByExternalReferenceURN(OFFENDER_ID, REFERRAL_URN))
