@@ -432,9 +432,9 @@ public class ReferralServiceTest {
         @MethodSource("nsiExamples")
         public void finds_NSI_by_fuzzy_matching_if_NSI_with_URN_cannot_be_found(final ContextlessReferralStartRequest nsiRequest, final Nsi existingNsi, final boolean exists) {
             when(offenderService.offenderIdOfCrn(OFFENDER_CRN)).thenReturn(of(OFFENDER_ID));
-            when(nsiService.getNsisInAnyStateByExternalReferenceURN(OFFENDER_ID, REFERRAL_URN))
+            when(nsiService.getNsisInAnyStateByExternalReferenceURN(eq(OFFENDER_ID), any()))
                 .thenReturn(List.of());
-            when(nsiService.getNsiByCodes(eq(OFFENDER_ID), eq(REFERRAL_START_REQUEST.getSentenceId()), any()))
+            when(nsiService.getNsiByCodes(eq(OFFENDER_ID), eq(nsiRequest.getSentenceId()), any()))
                 .thenReturn(of(NsiWrapper.builder().nsis(singletonList(existingNsi)).build()));
 
             var response = callExistingMatchingNsi(nsiRequest);
