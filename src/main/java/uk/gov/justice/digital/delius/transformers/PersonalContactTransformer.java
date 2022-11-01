@@ -43,7 +43,7 @@ public class PersonalContactTransformer {
     }
 
     private static Boolean isActiveOf(uk.gov.justice.digital.delius.jpa.standard.entity.PersonalContact personalCircumstance, LocalDateTime dateToCompare) {
-        if (personalCircumstance.getStartDate().isAfter(dateToCompare)) {
+        if (personalCircumstance.getStartDate() != null && personalCircumstance.getStartDate().isAfter(dateToCompare)) {
             return false;
         }
         return Optional.ofNullable(personalCircumstance.getEndDate()).map(
