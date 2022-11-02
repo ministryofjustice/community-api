@@ -23,7 +23,6 @@ import uk.gov.justice.digital.delius.transformers.ReferralTransformer;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -33,7 +32,6 @@ import javax.validation.constraints.NotNull;
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static uk.gov.justice.digital.delius.transformers.ReferralTransformer.transformReferralIdToUrn;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDate;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDateTime;
 
@@ -114,24 +112,23 @@ public class ReferralService {
         // determine if there is an existing suitable NSI
         var offenderId = offenderService.offenderIdOfCrn(crn).orElseThrow(() -> new BadRequestException("Offender CRN not found"));
 
-        var existingNsis = findReferralNSIByURN(referralId, offenderId);
-        if (existingNsis.isEmpty()) {
-            existingNsis = findReferralNSIByFuzzyMatching(crn, contextName, sentenceId, contractType, startedAt, referralId, offenderId);
-        }
-
-        return existingNsis.stream().findFirst();
+        return findReferralNSIByURN(referralId, offenderId)
+            .or(() -> findReferralNSIByFuzzyMatching(crn, contextName, sentenceId, contractType, startedAt, referralId, offenderId));
     }
 
-    private List<Nsi> findReferralNSIByURN(UUID referralId, Long offenderId) {
+    private Optional<Nsi> findReferralNSIByURN(UUID referralId, Long offenderId) {
         var urn = ReferralTransformer.transformReferralIdToUrn(referralId);
         var existingNsis = nsiService.getNsisInAnyStateByExternalReferenceURN(offenderId, urn);
         if (existingNsis.size() > 1) {
             throw new BadRequestException(format("Multiple existing URN NSIs found for referral: %s, NSI IDs: %s", referralId, existingNsis.stream().map(Nsi::getNsiId).toList()));
         }
-        return existingNsis;
+        if (existingNsis.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(existingNsis.get(0));
     }
 
-    private List<Nsi> findReferralNSIByFuzzyMatching(String crn, String contextName, Long sentenceId, String contractType, OffsetDateTime startedAt, UUID referralId, Long offenderId) {
+    private Optional<Nsi> findReferralNSIByFuzzyMatching(String crn, String contextName, Long sentenceId, String contractType, OffsetDateTime startedAt, UUID referralId, Long offenderId) {
         // 2022-10-26: external_reference URNs rollout should mean this branch will not be needed in about ~90 days
         // measure by the below event having 0 occurrences
         var referralIdString = Optional.ofNullable(referralId).map(UUID::toString).orElse("missing");
@@ -163,7 +160,10 @@ public class ReferralService {
         if (existingNsis.size() > 1) {
             throw new BadRequestException(format("Multiple existing matching NSIs found for referral: %s, NSI IDs: %s", referralId, existingNsis.stream().map(Nsi::getNsiId).toList()));
         }
-        return existingNsis;
+        if (existingNsis.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(existingNsis.get(0));
     }
 
     void deleteFutureAppointments(Long offenderId, String contextName, Nsi nsi) {
