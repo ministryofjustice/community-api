@@ -38,7 +38,6 @@ public class NsiService {
         return nsiRepository.findByOffenderIdAndExternalReference(offenderId, urn)
             .stream()
             .map(NsiTransformer::nsiOf)
-            .sorted(Comparator.comparing(Nsi::getNsiId))
             .toList();
     }
 
