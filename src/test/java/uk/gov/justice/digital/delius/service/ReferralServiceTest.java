@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.delius.service;
 
 import com.github.fge.jsonpatch.JsonPatch;
+import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -37,11 +38,12 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
@@ -62,6 +64,7 @@ public class ReferralServiceTest {
     private static final Long SENTENCE_ID = 2500295343L;
     private static final Long REQUIREMENT_ID = 2500083652L;
     private static final UUID REFERRAL_ID = UUID.randomUUID();
+    private static final String REFERRAL_URN = "urn:hmpps:interventions-referral:" + REFERRAL_ID;
     private static final String CONTRACT_TYPE = "ACC";
     private static final String NSI_TYPE = "CR01";
     private static final String PROVIDER_CODE = "CRS";
@@ -91,7 +94,8 @@ public class ReferralServiceTest {
                 .team(Team.builder().code(TEAM_CODE).build())
                 .probationArea(ProbationArea.builder().code(PROVIDER_CODE).build())
                 .build()))
-        .notes("urn:hmpps:interventions-referral:" + REFERRAL_ID + "\nA test note")
+        .externalReference(REFERRAL_URN)
+        .notes(REFERRAL_URN + "\nA test note")
         .build();
 
     private static final ContextlessReferralStartRequest REFERRAL_START_REQUEST = ContextlessReferralStartRequest
@@ -132,6 +136,9 @@ public class ReferralServiceTest {
     @Mock
     NsiPatchRequestTransformer nsiPatchRequestTransformer;
 
+    @Mock
+    TelemetryClient telemetryClient;
+
     IntegrationContext integrationContext;
 
     ReferralService referralService;
@@ -150,7 +157,7 @@ public class ReferralServiceTest {
         integrationContext.getContactMapping().setAppointmentRarContactType(RAR_CONTRACT_TYPE);
         integrationContext.getContactMapping().setAppointmentNonRarContactType(NON_RAR_CONTRACT_TYPE);
 
-        referralService = new ReferralService(deliusApiClient, nsiService, offenderService, requirementService, nsiPatchRequestTransformer, contactRepository, integrationContextConfig);
+        referralService = new ReferralService(telemetryClient, deliusApiClient, nsiService, offenderService, requirementService, nsiPatchRequestTransformer, contactRepository, integrationContextConfig);
     }
 
     @Nested
@@ -181,8 +188,8 @@ public class ReferralServiceTest {
                 .status(NSI_STATUS)
                 .statusDate(LocalDateTime.of(2021, 1, 20, 12, 0))
                 .outcome(null)
-                .externalReference("urn:hmpps:interventions-referral:" + REFERRAL_ID)
-                .notes("urn:hmpps:interventions-referral:" + REFERRAL_ID + "\nA test note")
+                .externalReference(REFERRAL_URN)
+                .notes(REFERRAL_URN + "\nA test note")
                 .intendedProvider(PROVIDER_CODE)
                 .manager(NewNsiManager.builder().staff(STAFF_CODE).team(TEAM_CODE).provider(PROVIDER_CODE).build())
                 .build()));
@@ -248,8 +255,8 @@ public class ReferralServiceTest {
                 .status(NSI_STATUS)
                 .statusDate(LocalDateTime.of(2021, 1, 20, 12, 0))
                 .outcome(null)
-                .externalReference("urn:hmpps:interventions-referral:" + REFERRAL_ID)
-                .notes("urn:hmpps:interventions-referral:" + REFERRAL_ID + "\nA test note")
+                .externalReference(REFERRAL_URN)
+                .notes(REFERRAL_URN + "\nA test note")
                 .intendedProvider(PROVIDER_CODE)
                 .manager(NewNsiManager.builder().staff(STAFF_CODE).team(TEAM_CODE).provider(PROVIDER_CODE).build())
                 .build()));
@@ -397,59 +404,86 @@ public class ReferralServiceTest {
         }
     }
 
-    @ParameterizedTest
-    @MethodSource("nsis")
-    public void noNsisAreReturnedWhenNotExactMatch(final ContextlessReferralStartRequest nsiRequest, final Nsi existingNsi, final boolean exists) {
-
-        when(offenderService.offenderIdOfCrn(OFFENDER_CRN)).thenReturn(of(OFFENDER_ID));
-        when(nsiService.getNsiByCodes(any(), any(), any())).thenReturn(of(NsiWrapper.builder().nsis(singletonList(existingNsi)).build()));
-
-        var response = referralService.getExistingMatchingNsi(OFFENDER_CRN, INTEGRATION_CONTEXT,
-            nsiRequest.getSentenceId(), nsiRequest.getContractType(), nsiRequest.getStartedAt(), nsiRequest.getReferralId());
-
-        assertThat(response.isPresent()).isEqualTo(exists);
-    }
-
     @Nested
-    class ReferralUrnMatching {
-
+    class GetExistingMatchingNsi {
         @Test
-        public void doesNotCompareReferralUrnWhenPrimaryAttributesFindSingleNsis() {
-
+        public void finds_NSI_with_matching_URN_external_reference() {
             when(offenderService.offenderIdOfCrn(OFFENDER_CRN)).thenReturn(of(OFFENDER_ID));
-            when(nsiService.getNsiByCodes(any(), any(), any())).thenReturn(
-                of(NsiWrapper.builder().nsis(asList(MATCHING_NSI.withNotes("No urn"))).build()));
+            when(nsiService.getNsisInAnyStateByExternalReferenceURN(eq(OFFENDER_ID), eq(REFERRAL_URN)))
+                .thenReturn(List.of(MATCHING_NSI));
 
-            final var response = referralService.getExistingMatchingNsi(OFFENDER_CRN, INTEGRATION_CONTEXT,
-                REFERRAL_START_REQUEST.getSentenceId(), REFERRAL_START_REQUEST.getContractType(), REFERRAL_START_REQUEST.getStartedAt(), REFERRAL_START_REQUEST.getReferralId());
-
+            var response = callExistingMatchingNsi(REFERRAL_START_REQUEST);
             assertThat(response.isPresent()).isTrue();
         }
 
         @Test
-        public void comparesReferralUrnWhenPrimaryAttributesFindMultipleNsis() {
-
+        public void throws_BadRequestException_if_multiple_NSIs_found_with_same_URN() {
             when(offenderService.offenderIdOfCrn(OFFENDER_CRN)).thenReturn(of(OFFENDER_ID));
-            when(nsiService.getNsiByCodes(any(), any(), any())).thenReturn(
-                of(NsiWrapper.builder().nsis(asList(MATCHING_NSI.withNotes("urn:hmpps:interventions-referral:uuid2"), MATCHING_NSI)).build()));
-
-            final var response = referralService.getExistingMatchingNsi(OFFENDER_CRN, INTEGRATION_CONTEXT,
-                REFERRAL_START_REQUEST.getSentenceId(), REFERRAL_START_REQUEST.getContractType(), REFERRAL_START_REQUEST.getStartedAt(), REFERRAL_START_REQUEST.getReferralId());
-
-            assertThat(response.isPresent()).isTrue();
-        }
-
-        @Test
-        public void throwsExceptionWhenAfterComparingReferralUrnFindingMultipleNsis() {
-
-            when(offenderService.offenderIdOfCrn(OFFENDER_CRN)).thenReturn(of(OFFENDER_ID));
-            when(nsiService.getNsiByCodes(any(), any(), any())).thenReturn(
-                of(NsiWrapper.builder().nsis(asList(MATCHING_NSI, MATCHING_NSI)).build()));
+            when(nsiService.getNsisInAnyStateByExternalReferenceURN(eq(OFFENDER_ID), eq(REFERRAL_URN)))
+                .thenReturn(List.of(MATCHING_NSI, MATCHING_NSI.withNsiId(23456L)));
 
             final var exception = assertThrows(BadRequestException.class,
-                () -> referralService.getExistingMatchingNsi(OFFENDER_CRN, INTEGRATION_CONTEXT, REFERRAL_START_REQUEST.getSentenceId(), REFERRAL_START_REQUEST.getContractType(), REFERRAL_START_REQUEST.getStartedAt(), REFERRAL_START_REQUEST.getReferralId()));
+                () -> callExistingMatchingNsi(REFERRAL_START_REQUEST));
+            assertThat(exception.getMessage())
+                .startsWith("Multiple existing URN NSIs found for referral: " + REFERRAL_START_REQUEST.getReferralId());
+        }
 
-            assertThat(exception.getMessage()).isEqualTo("Multiple existing matching NSIs found");
+        @ParameterizedTest
+        @MethodSource("nsiExamples")
+        public void finds_NSI_by_fuzzy_matching_if_NSI_with_URN_cannot_be_found(final ContextlessReferralStartRequest nsiRequest, final Nsi existingNsi, final boolean exists) {
+            when(offenderService.offenderIdOfCrn(OFFENDER_CRN)).thenReturn(of(OFFENDER_ID));
+            when(nsiService.getNsisInAnyStateByExternalReferenceURN(eq(OFFENDER_ID), any()))
+                .thenReturn(List.of());
+            when(nsiService.getNsiByCodes(eq(OFFENDER_ID), eq(nsiRequest.getSentenceId()), any()))
+                .thenReturn(of(NsiWrapper.builder().nsis(singletonList(existingNsi)).build()));
+
+            var response = callExistingMatchingNsi(nsiRequest);
+            assertThat(response.isPresent()).isEqualTo(exists);
+        }
+
+        @Test
+        public void emits_custom_event_for_usage_tracking_when_NSI_with_URN_cannot_be_found() {
+            when(offenderService.offenderIdOfCrn(OFFENDER_CRN)).thenReturn(of(OFFENDER_ID));
+            when(nsiService.getNsisInAnyStateByExternalReferenceURN(eq(OFFENDER_ID), eq(REFERRAL_URN)))
+                .thenReturn(List.of());
+            when(nsiService.getNsiByCodes(eq(OFFENDER_ID), eq(REFERRAL_START_REQUEST.getSentenceId()), any()))
+                .thenReturn(of(NsiWrapper.builder().nsis(List.of(MATCHING_NSI)).build()));
+
+            callExistingMatchingNsi(REFERRAL_START_REQUEST);
+            verify(telemetryClient).trackEvent(
+                "community_api.get_existing_matching_nsi.fuzzy_match_fallback",
+                Map.of(
+                    "crn", "X123456",
+                    "contextName", "commissioned-rehabilitation-services",
+                    "startedAt", "2021-01-20T12:00Z",
+                    "referralId", REFERRAL_ID.toString()
+                ),
+                null
+            );
+        }
+
+        @Test
+        public void throws_BadRequestException_if_multiple_NSIs_are_found_with_the_fuzzy_lookup() {
+            when(offenderService.offenderIdOfCrn(OFFENDER_CRN)).thenReturn(of(OFFENDER_ID));
+            when(nsiService.getNsisInAnyStateByExternalReferenceURN(OFFENDER_ID, REFERRAL_URN))
+                .thenReturn(List.of());
+            when(nsiService.getNsiByCodes(eq(OFFENDER_ID), eq(REFERRAL_START_REQUEST.getSentenceId()), any()))
+                .thenReturn(of(NsiWrapper.builder().nsis(List.of(MATCHING_NSI, MATCHING_NSI.withNsiId(23456L))).build()));
+
+            final var exception = assertThrows(BadRequestException.class,
+                () -> callExistingMatchingNsi(REFERRAL_START_REQUEST));
+            assertThat(exception.getMessage())
+                .startsWith("Multiple existing matching NSIs found for referral: " + REFERRAL_START_REQUEST.getReferralId());
+        }
+
+        private static Stream<Arguments> nsiExamples() {
+            return Stream.of(
+                Arguments.of(REFERRAL_START_REQUEST, MATCHING_NSI, true),
+                Arguments.of(REFERRAL_START_REQUEST, MATCHING_NSI.withNsiOutcome(KeyValue.builder().code("CANCELLED").build()), false),
+                Arguments.of(REFERRAL_START_REQUEST, MATCHING_NSI.withSoftDeleted(false), true),
+                Arguments.of(REFERRAL_START_REQUEST, MATCHING_NSI.withSoftDeleted(true), false),
+                Arguments.of(REFERRAL_START_REQUEST.withStartedAt(OffsetDateTime.of(2017, 1, 1, 12, 0, 0, 0, ZoneOffset.UTC)), MATCHING_NSI, false)
+            );
         }
     }
 
@@ -467,13 +501,13 @@ public class ReferralServiceTest {
         assertThrows(BadRequestException.class, () -> referralService.startNsiReferral(OFFENDER_CRN, INTEGRATION_CONTEXT, nsiRequest));
     }
 
-    private static Stream<Arguments> nsis() {
-        return Stream.of(
-            Arguments.of(REFERRAL_START_REQUEST, MATCHING_NSI, true),
-            Arguments.of(REFERRAL_START_REQUEST, MATCHING_NSI.withNsiOutcome(KeyValue.builder().code("CANCELLED").build()), false),
-            Arguments.of(REFERRAL_START_REQUEST, MATCHING_NSI.withSoftDeleted(false), true),
-            Arguments.of(REFERRAL_START_REQUEST, MATCHING_NSI.withSoftDeleted(true), false),
-            Arguments.of(REFERRAL_START_REQUEST.withStartedAt(OffsetDateTime.of(2017, 1, 1, 12, 0, 0, 0, ZoneOffset.UTC)), MATCHING_NSI, false)
+    private Optional<Nsi> callExistingMatchingNsi(ContextlessReferralStartRequest referralStartRequest) {
+        return referralService.getExistingMatchingNsi(
+            OFFENDER_CRN, INTEGRATION_CONTEXT,
+            referralStartRequest.getSentenceId(),
+            referralStartRequest.getContractType(),
+            referralStartRequest.getStartedAt(),
+            referralStartRequest.getReferralId()
         );
     }
 }

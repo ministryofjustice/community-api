@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.service;
 
+import com.microsoft.applicationinsights.TelemetryClient;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,13 +33,13 @@ import javax.validation.constraints.NotNull;
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
-import static uk.gov.justice.digital.delius.transformers.ReferralTransformer.transformReferralIdToUrn;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDate;
 import static uk.gov.justice.digital.delius.utils.DateConverter.toLondonLocalDateTime;
 
 @Service
 @AllArgsConstructor
 public class ReferralService {
+    private final TelemetryClient telemetryClient;
 
     private final DeliusApiClient deliusApiClient;
 
@@ -111,9 +113,28 @@ public class ReferralService {
         // determine if there is an existing suitable NSI
         var offenderId = offenderService.offenderIdOfCrn(crn).orElseThrow(() -> new BadRequestException("Offender CRN not found"));
 
+        return findReferralNSIByURN(referralId, offenderId)
+            .or(() -> findReferralNSIByFuzzyMatching(crn, contextName, sentenceId, contractType, startedAt, referralId, offenderId));
+    }
+
+    private Optional<Nsi> findReferralNSIByURN(UUID referralId, Long offenderId) {
+        var urn = ReferralTransformer.transformReferralIdToUrn(referralId);
+        var existingNsis = nsiService.getNsisInAnyStateByExternalReferenceURN(offenderId, urn);
+        return ensureZeroOrOneNsi(existingNsis, referralId, "Multiple existing URN NSIs found");
+    }
+
+    private Optional<Nsi> findReferralNSIByFuzzyMatching(String crn, String contextName, Long sentenceId, String contractType, OffsetDateTime startedAt, UUID referralId, Long offenderId) {
+        // 2022-10-26: external_reference URNs rollout should mean this branch will not be needed in about ~90 days
+        // measure by the below event having 0 occurrences
+        var referralIdString = Optional.ofNullable(referralId).map(UUID::toString).orElse("missing");
+        telemetryClient.trackEvent(
+            "community_api.get_existing_matching_nsi.fuzzy_match_fallback",
+            Map.of("crn", crn, "contextName", contextName, "startedAt", startedAt.toString(), "referralId", referralIdString),
+            null
+        );
+
         var context = getContext(contextName);
         var nsiMapping = context.getNsiMapping();
-
         var existingNsis = nsiService.getNsiByCodes(offenderId, sentenceId, Collections.singletonList(getNsiType(nsiMapping, contractType)))
             .map(wrapper -> wrapper.getNsis().stream()
                 // eventID, offenderID, nsi type are handled in the NSI service
@@ -131,44 +152,18 @@ public class ReferralService {
                 .collect(toList())
             ).orElse(Collections.emptyList());
 
-        if (existingNsis.size() > 1) {
-            existingNsis = findExistingNsiByReferralUrnIfSupplied(existingNsis, referralId);
-        }
-        return existingNsis.stream().findFirst();
+        return ensureZeroOrOneNsi(existingNsis, referralId, "Multiple existing matching NSIs found");
     }
 
-    /**
-     * There is an edge case when more that one Referral may be created in R&M that appear to cover the same Intervention,
-     * i.e. are for the same CRN and Sentence, cover the same Contract Type (e.g. Personal Wellbeing) and start on the same date.
-     * It is suspected that this is a rare scenario but can arise.
-     * This method comes into play when that situation arises and uses the referral id (in the form of a URN) to carry out a
-     * further level of filtering. This is only as a last resort when the normal filtering criteria doesn't identify a unique
-     * match and when the request provides a referral id.
-     * If after this level of filtering there are still duplicates an exception is thrown.
-     */
-    @NotNull
-    List<Nsi> findExistingNsiByReferralUrnIfSupplied(@NotNull final List<Nsi> existingNsis, final UUID referralId) {
-        final var filteredNsis = ofNullable(referralId)
-            .map(id -> filterExistingNsisByReferralUrn(existingNsis, id))
-            .orElse(existingNsis);
-
-        if (filteredNsis.size() > 1) {
-            throw new BadRequestException("Multiple existing matching NSIs found");
+    private Optional<Nsi> ensureZeroOrOneNsi(List<Nsi> nsis, UUID referralId, String errorMessageForMultiples) {
+        if (nsis.size() > 1) {
+            throw new BadRequestException(format("%s for referral: %s, NSI IDs: %s", errorMessageForMultiples, referralId, nsis.stream().map(Nsi::getNsiId).toList()));
         }
-        return filteredNsis;
+        if (nsis.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(nsis.get(0));
     }
-
-    /**
-     * The URN is held as the first entry in the notes field. This may seem unsafe, however there is no other place to store it
-     * in Delius, and it is guaranteed that the notes field in Delius is only ever appended to and existing state never changed.
-     */
-    @NotNull
-    List<Nsi> filterExistingNsisByReferralUrn(@NotNull final List<Nsi> existingNsis, @NotNull final UUID referralId) {
-        final var referralUrn = transformReferralIdToUrn(referralId).toLowerCase();
-        return existingNsis.stream()
-            .filter(nsi -> nsi.getNotes().toLowerCase().startsWith(referralUrn))
-            .toList();
-   }
 
     void deleteFutureAppointments(Long offenderId, String contextName, Nsi nsi) {
 

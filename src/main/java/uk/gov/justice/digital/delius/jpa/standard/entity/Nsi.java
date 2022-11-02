@@ -95,6 +95,9 @@ public class Nsi {
     @Builder.Default()
     private Long activeFlag = 0L;
 
+    @Column(name = "EXTERNAL_REFERENCE")
+    private String externalReference;
+
     public boolean isActive() { return this.activeFlag != 0L; }
 
     public boolean isRarNsi() {
