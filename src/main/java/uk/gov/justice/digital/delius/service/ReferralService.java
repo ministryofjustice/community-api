@@ -23,6 +23,7 @@ import uk.gov.justice.digital.delius.transformers.ReferralTransformer;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -119,13 +120,7 @@ public class ReferralService {
     private Optional<Nsi> findReferralNSIByURN(UUID referralId, Long offenderId) {
         var urn = ReferralTransformer.transformReferralIdToUrn(referralId);
         var existingNsis = nsiService.getNsisInAnyStateByExternalReferenceURN(offenderId, urn);
-        if (existingNsis.size() > 1) {
-            throw new BadRequestException(format("Multiple existing URN NSIs found for referral: %s, NSI IDs: %s", referralId, existingNsis.stream().map(Nsi::getNsiId).toList()));
-        }
-        if (existingNsis.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(existingNsis.get(0));
+        return ensureZeroOrOneNsi(existingNsis, referralId, "Multiple existing URN NSIs found");
     }
 
     private Optional<Nsi> findReferralNSIByFuzzyMatching(String crn, String contextName, Long sentenceId, String contractType, OffsetDateTime startedAt, UUID referralId, Long offenderId) {
@@ -157,13 +152,17 @@ public class ReferralService {
                 .collect(toList())
             ).orElse(Collections.emptyList());
 
-        if (existingNsis.size() > 1) {
-            throw new BadRequestException(format("Multiple existing matching NSIs found for referral: %s, NSI IDs: %s", referralId, existingNsis.stream().map(Nsi::getNsiId).toList()));
+        return ensureZeroOrOneNsi(existingNsis, referralId, "Multiple existing matching NSIs found");
+    }
+
+    private Optional<Nsi> ensureZeroOrOneNsi(List<Nsi> nsis, UUID referralId, String errorMessageForMultiples) {
+        if (nsis.size() > 1) {
+            throw new BadRequestException(format("%s for referral: %s, NSI IDs: %s", errorMessageForMultiples, referralId, nsis.stream().map(Nsi::getNsiId).toList()));
         }
-        if (existingNsis.isEmpty()) {
+        if (nsis.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(existingNsis.get(0));
+        return Optional.of(nsis.get(0));
     }
 
     void deleteFutureAppointments(Long offenderId, String contextName, Nsi nsi) {
