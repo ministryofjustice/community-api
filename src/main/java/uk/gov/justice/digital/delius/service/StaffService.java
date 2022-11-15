@@ -192,6 +192,7 @@ public class StaffService {
         return staffRepository.findStaffByTeamId(teamId)
             .stream()
             .map(StaffTransformer::staffDetailsOnlyOf)
+            .map(addFieldsFromLdap())
             .toList();
     }
 }
