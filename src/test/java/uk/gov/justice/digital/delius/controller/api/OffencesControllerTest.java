@@ -59,28 +59,6 @@ public class OffencesControllerTest {
     }
 
     @Test
-    public void canGetOffencesByNoms() {
-        when(offenderService.offenderIdOfNomsNumber("noms1")).thenReturn(Optional.of(1L));
-        when(offenceService.offencesFor(1L))
-                .thenReturn(ImmutableList.of(anOffence(1L, "Fraud"), anOffence(2L, "Perjury")));
-
-        Offence[] offences = given()
-            .when()
-            .get("/api/offenders/nomsNumber/noms1/offences")
-            .then()
-            .statusCode(200)
-            .extract()
-            .body()
-            .as(Offence[].class);
-
-        assertThat(offences).hasSize(2);
-        assertThat(offences[0].getOffenceId()).isEqualTo("1");
-        assertThat(offences[1].getOffenceId()).isEqualTo("2");
-        assertThat(offences[0].getDetail().getDescription()).isEqualTo("Fraud");
-        assertThat(offences[1].getDetail().getDescription()).isEqualTo("Perjury");
-    }
-
-    @Test
     public void canGetOffencesByOffenderId() {
         when(offenderService.getOffenderByOffenderId(1L))
                 .thenReturn(Optional.of(OffenderDetail.builder().offenderId(1L).build()));
@@ -114,19 +92,6 @@ public class OffencesControllerTest {
             .statusCode(404);
 
         verify(offenderService).offenderIdOfCrn("notFoundCrn");
-    }
-
-    @Test
-    public void getOffencesForUnknownNomsNumberReturnsNotFound() {
-        when(offenderService.offenderIdOfNomsNumber("notFoundNomsNumber")).thenReturn(Optional.empty());
-
-        given()
-            .when()
-            .get("/api/offenders/nomsNumber/notFoundNomsNumber/offences")
-            .then()
-            .statusCode(404);
-
-        verify(offenderService).offenderIdOfNomsNumber("notFoundNomsNumber");
     }
 
     @Test

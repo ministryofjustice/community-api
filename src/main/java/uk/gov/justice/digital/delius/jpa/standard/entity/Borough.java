@@ -28,7 +28,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-@ToString(exclude = {"probationArea"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
@@ -77,15 +76,18 @@ public class Borough {
 
     @JoinColumn(name = "PROBATION_AREA_ID")
     @OneToOne
+    @ToString.Exclude
     private ProbationArea probationArea;
 
     @OneToMany
     @JoinColumn(name = "BOROUGH_ID")
+    @ToString.Exclude
     private List<District> districts;
 
     @ManyToMany
     @JoinTable(name = "R_LEVEL_2_HEAD_OF_LEVEL_2",
         joinColumns = @JoinColumn(name = "BOROUGH_ID"),
         inverseJoinColumns = @JoinColumn(name = "STAFF_ID"))
+    @ToString.Exclude
     private List<Staff> headsOfProbationDeliveryUnit;
 }

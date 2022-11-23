@@ -50,14 +50,14 @@ public class ProbationAreaTransformer {
                 .isPrivate(zeroOneToBoolean(team.getPrivateFlag()))
                 .scProvider(scProviderOf(team))
                 .teamId(team.getTeamId())
-                .build()).collect(Collectors.toList());
+                .build()).toList();
 
         List<AllTeam> providerTeams = probationArea.getProviderTeams().stream().map(providerTeam -> AllTeam.builder()
                 .providerTeamId(providerTeam.getProviderTeamId())
                 .code(providerTeam.getCode())
                 .name(providerTeam.getName())
                 .externalProvider(externalProviderOf(providerTeam.getExternalProvider()))
-                .build()).collect(Collectors.toList());
+                .build()).toList();
 
         return Stream.concat(teams.stream(), providerTeams.stream()).collect(Collectors.toList());
     }

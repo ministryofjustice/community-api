@@ -7,12 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import uk.gov.justice.digital.delius.FlywayRestoreExtension;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
-import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -247,41 +245,6 @@ public class OffendersResource_AllocatePrisonOffenderManagerTest extends Integra
 
     }
 
-    @Test
-    public void willAddAContactWhenAllocatingPrisonOffenderManager() {
-        final var justBeforeAllocation = LocalDateTime.now().minusHours(1);
-
-        final var newPrisonOffenderManager = given()
-                .auth()
-                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
-                .contentType(APPLICATION_JSON_VALUE)
-                .contentType("application/json")
-                .body(createPrisonOffenderManagerOf(2500057541L, "BWI"))
-                .when()
-                .put("/offenders/nomsNumber/G4106UN/prisonOffenderManager")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(CommunityOrPrisonOffenderManager.class);
-
-        assertThat(newPrisonOffenderManager.getStaffId()).isEqualTo(2500057541L);
-
-        final var contacts = given()
-                .when()
-                .header("Authorization", legacyToken())
-                .queryParam("from", justBeforeAllocation.toString())
-                .basePath("/api")
-                .get("/offenders/nomsNumber/G4106UN/contacts")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(Contact[].class);
-
-        assertThat(contacts).hasSize(1);
-        assertThat(contacts[0].getContactType().getDescription()).isEqualTo("Prison Offender Manager - Automatic Transfer");
-    }
     @Test
     @DisplayName("Case is normalized when adding a new staff member, but existing staff members with names in a non standard case will be honoured")
     public void shouldIgnoreCaseWhenAddingAPOM() {

@@ -5,10 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.ToString.Exclude;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -22,7 +22,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "DISPOSAL")
-@ToString(exclude = {"custody", "event"})
 public class Disposal {
     @Id
     @Column(name = "DISPOSAL_ID")
@@ -30,6 +29,7 @@ public class Disposal {
 
     @JoinColumn(name = "EVENT_ID", referencedColumnName = "EVENT_ID")
     @OneToOne
+    @ToString.Exclude
     private Event event;
 
     @Column(name = "SOFT_DELETED")
@@ -66,6 +66,7 @@ public class Disposal {
     private DisposalType disposalType;
 
     @OneToOne(mappedBy = "disposal")
+    @ToString.Exclude
     private Custody custody;
 
     @ManyToOne
@@ -79,9 +80,10 @@ public class Disposal {
     private LocalDate startDate;
 
     @OneToMany(targetEntity = Requirement.class, mappedBy = "disposal")
+    @Exclude
     private List<Requirement> requirements;
 
-    @OneToOne(mappedBy = "disposal", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "disposal")
     private UpwDetails unpaidWorkDetails;
 
     @Column(name = "NOTIONAL_END_DATE")
@@ -91,6 +93,7 @@ public class Disposal {
     private LocalDate enteredSentenceEndDate;
 
     @OneToMany(mappedBy = "disposal")
+    @Exclude
     private List<LicenceCondition> licenceConditions;
 
     public boolean isSoftDeleted() {

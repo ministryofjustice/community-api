@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @EqualsAndHashCode(of = "staffId")
-@ToString(exclude = {"offenderManagers", "prisonOffenderManagers"})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -46,18 +45,21 @@ public class Staff {
     @JoinColumn(name = "ALLOCATION_STAFF_ID")
     // Only select rows from OFFENDER_MANAGER where they have ACTIVE = 1 and SOFT_DELETED != 1
     @Where(clause = "ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
+    @ToString.Exclude
     List<OffenderManager> offenderManagers;
 
     @OneToMany
     @JoinColumn(name = "ALLOCATION_STAFF_ID")
     // Only select rows from PRISON_OFFENDER_MANAGER where they have ACTIVE = 1 AND SOFT_DELETED != 1
     @Where(clause = "ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
+    @ToString.Exclude
     List<PrisonOffenderManager> prisonOffenderManagers;
 
     @ManyToMany
     @JoinTable(name = "STAFF_TEAM",
             joinColumns = { @JoinColumn(name="STAFF_ID", referencedColumnName="STAFF_ID")},
             inverseJoinColumns = {@JoinColumn(name="TEAM_ID", referencedColumnName="TEAM_ID")})
+    @ToString.Exclude
     private List<Team> teams;
 
     @OneToOne(mappedBy = "staff")
@@ -106,6 +108,7 @@ public class Staff {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "STAFF_GRADE_ID")
+    @ToString.Exclude
     private StandardReference grade;
 
     public boolean isUnallocated() {

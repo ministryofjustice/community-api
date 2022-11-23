@@ -7,8 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @ApiModel(description = "Offender primary identifiers")
 @Data
 @Builder

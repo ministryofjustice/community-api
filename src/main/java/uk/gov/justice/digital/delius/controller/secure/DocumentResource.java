@@ -6,16 +6,9 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
-import io.swagger.annotations.Example;
-import io.swagger.annotations.ExampleProperty;
-import io.swagger.annotations.ResponseHeader;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,9 +27,7 @@ import uk.gov.justice.digital.delius.service.DocumentService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
 import javax.validation.constraints.NotNull;
-import java.io.File;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.Optional;
 
 @Api(tags = "Documents", authorizations = {@Authorization("ROLE_COMMUNITY")})

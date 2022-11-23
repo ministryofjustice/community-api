@@ -14,7 +14,6 @@ import java.util.List;
 @EqualsAndHashCode(of = "districtId")
 @Data
 @NoArgsConstructor
-@ToString(exclude = {"teams"})
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Entity
@@ -67,5 +66,6 @@ public class District {
 
     @OneToMany
     @JoinColumn(name = "DISTRICT_ID")
+    @ToString.Exclude
     private List<Team> teams;
 }

@@ -128,7 +128,7 @@ class OffendersResource_getOffenderConvictionsByCrn extends IntegrationTestBase 
             .body()
             .as(Conviction[].class);
 
-        final var inactiveConviction = Stream.of(convictions).filter(c -> c.getActive() == false).findAny();
+        final var inactiveConviction = Stream.of(convictions).filter(c -> !c.getActive()).findAny();
         assertThat(inactiveConviction.isPresent()).isFalse();
     }
 }

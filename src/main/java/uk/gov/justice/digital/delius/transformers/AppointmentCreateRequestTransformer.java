@@ -52,7 +52,7 @@ public class AppointmentCreateRequestTransformer {
     private static Boolean isRarActivity(final Boolean nsiContainsRarRequirement, final Boolean canCountTowardsRarDays) {
         if ( !nsiContainsRarRequirement )
             return null;
-        return canCountTowardsRarDays ? true : false;
+        return canCountTowardsRarDays;
     }
 
     private static Boolean isRarRequirement(final Requirement requirement, final String requirementRehabilitationActivityType) {

@@ -5,18 +5,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import uk.gov.justice.digital.delius.FlywayRestoreExtension;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
-import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.ResponsibleOfficerSwitch;
 
-import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
 import static java.util.function.Predicate.not;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SuppressWarnings("SameParameterValue")
@@ -65,84 +61,6 @@ public class OffendersResource_SwitchResponsibleOfficerTest extends IntegrationT
                 .put("/offenders/nomsNumber//responsibleOfficer/switch")
                 .then()
                 .statusCode(400);
-    }
-
-    @Test
-    @DisplayName("Will switch Responsible officer from COM to POM and back again")
-    public void canSwitchResponsibleOfficerToPrisonOffenderManager() {
-        // Given an offender has no prison offender manager
-        assertThat(getOffenderManagers("G0560UO")).hasSize(1);
-
-        // Then the responsible officer can not be assigned to a POM
-        given()
-                .auth()
-                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
-                .contentType(APPLICATION_JSON_VALUE)
-                .contentType("application/json")
-                .body(createResponsibleOfficerSwitchOf(false))
-                .when()
-                .put("/offenders/nomsNumber/G0560UO/responsibleOfficer/switch")
-                .then()
-                .statusCode(409);
-
-        // Given an offender has Prisoner Offender Manager
-        allocatePrisonerOffenderManager("G0560UO");
-
-        // AND the COM is currently the Responsible Officer
-        final var offenderManagersBeforeSwitch = getOffenderManagers("G0560UO");
-
-        assertThat(offenderManagersBeforeSwitch).hasSize(2);
-        assertThat(isCommunityOffenderManagerTheRO(offenderManagersBeforeSwitch)).isTrue();
-        assertThat(isPrisonOffenderManagerTheRO(offenderManagersBeforeSwitch)).isFalse();
-
-        // WHEN I request responsible officer is switched to the POM
-        given()
-                .auth()
-                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
-                .contentType(APPLICATION_JSON_VALUE)
-                .contentType("application/json")
-                .body(createResponsibleOfficerSwitchOf(false))
-                .when()
-                .put("/offenders/nomsNumber/G0560UO/responsibleOfficer/switch")
-                .then()
-                .statusCode(200);
-
-        // AND when I check who is current Responsible officer currently is
-        final var offenderManagersAfterSwitch = getOffenderManagers("G0560UO");
-
-        // THEN the responsible officer is now set to Prison Offender Manager
-        assertThat(offenderManagersBeforeSwitch).hasSize(2);
-        assertThat(isPrisonOffenderManagerTheRO(offenderManagersAfterSwitch)).isTrue();
-        assertThat(isCommunityOffenderManagerTheRO(offenderManagersAfterSwitch)).isFalse();
-
-        // AND a CONTACT has been added to show responsible officer has changed
-        final var contacts = getRecentContacts("G0560UO");
-
-        assertThat(Arrays
-                .stream(contacts)
-                .anyMatch(contact -> contact.getContactType().getDescription().equals("Responsible Officer Change"))
-        ).isTrue();
-
-        // AND when I request a switch back to the COM
-        given()
-                .auth()
-                .oauth2(tokenWithRoleCommunityAndCustodyUpdate())
-                .contentType(APPLICATION_JSON_VALUE)
-                .contentType("application/json")
-                .body(createResponsibleOfficerSwitchOf(true))
-                .when()
-                .put("/offenders/nomsNumber/G0560UO/responsibleOfficer/switch")
-                .then()
-                .statusCode(200);
-
-        // AND I check who is current Responsible officer is
-        final var offenderManagersAfterSecondSwitch = getOffenderManagers("G0560UO");
-
-        // THEN the responsible officer is now the Community Offender Manager
-        assertThat(offenderManagersAfterSecondSwitch).hasSize(2);
-        assertThat(isCommunityOffenderManagerTheRO(offenderManagersAfterSecondSwitch)).isTrue();
-        assertThat(isPrisonOffenderManagerTheRO(offenderManagersAfterSecondSwitch)).isFalse();
-
     }
 
     @Test
@@ -214,20 +132,6 @@ public class OffendersResource_SwitchResponsibleOfficerTest extends IntegrationT
                 .extract()
                 .body()
                 .as(CommunityOrPrisonOffenderManager[].class);
-    }
-
-    private Contact[] getRecentContacts(String nomsNumber) {
-        return given()
-                .when()
-                .header("Authorization", legacyToken())
-                .queryParam("from", LocalDate.now().atStartOfDay().toString())
-                .basePath("/api")
-                .get(String.format("/offenders/nomsNumber/%s/contacts", nomsNumber))
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(Contact[].class);
     }
 
     private Boolean isPrisonOffenderManagerTheRO(CommunityOrPrisonOffenderManager[] offenderManagersAfterSecondSwitch) {

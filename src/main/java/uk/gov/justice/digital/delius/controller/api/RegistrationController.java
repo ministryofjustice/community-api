@@ -41,15 +41,6 @@ public class RegistrationController {
         return registrationsResponseEntityOf(maybeOffender.map(OffenderDetail::getOffenderId));
     }
 
-    @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/registrations", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<List<Registration>> getOffenderRegistrationsByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                         final @PathVariable("nomsNumber") String nomsNumber) {
-
-        log.info("Call to getOffenderRegistrationsByNomsNumber");
-        return registrationsResponseEntityOf(offenderService.offenderIdOfNomsNumber(nomsNumber));
-    }
-
     @RequestMapping(value = "offenders/crn/{crn}/registrations", method = RequestMethod.GET)
     @JwtValidation
     public ResponseEntity<List<Registration>> getOffenderRegistrationsByCrn(final @RequestHeader HttpHeaders httpHeaders,

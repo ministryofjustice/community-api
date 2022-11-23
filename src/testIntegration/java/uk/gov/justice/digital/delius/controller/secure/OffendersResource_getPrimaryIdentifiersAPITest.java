@@ -176,22 +176,6 @@ public class OffendersResource_getPrimaryIdentifiersAPITest extends IntegrationT
                     .body("content.find { it.offenderId == 2500343964 }.crn", is("X320741"));
         }
 
-        @Nested
-        class ActiveDateFilter {
-            @BeforeEach
-            void setUp() {
-            /*
-                Offender has following sentences - as shown by seed data
-                Sentence : 01-JUN-17 to 01-DEC-17
-                Sentence : 01-JAN-18 to 31-JAN-18 (10001)- deleted
-                Sentence : 01-FEB-18 to 01-MAR-18 (10002)
-                Sentence : 02-FEB-18 to 22-FEB-18 (10003)
-                Sentence : 16-SEP-19 to 17-SEP-19
-                Sentence : 20-SEP-19 to still active
-             */
-            }
-        }
-
         @Test
         @DisplayName("Not included if no events on that data")
         void notIncludedIfNoSentencesOnThatDate() {

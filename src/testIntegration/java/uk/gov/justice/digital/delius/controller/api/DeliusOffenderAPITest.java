@@ -107,25 +107,6 @@ public class DeliusOffenderAPITest {
     }
 
     @Test
-    public void lookupKnownOffenderNomsNumberGivesBasicOffender() {
-
-        Mockito.when(offenderRepository.findByNomsNumber(eq("A12345"))).thenReturn(Optional.of(anOffender()));
-
-        OffenderDetailSummary offenderDetail =
-                given()
-                        .header("Authorization", aValidToken())
-                        .when()
-                        .get("/offenders/nomsNumber/A12345")
-                        .then()
-                        .statusCode(200)
-                        .extract()
-                        .body()
-                        .as(OffenderDetailSummary.class);
-
-        assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
-    }
-
-    @Test
     public void lookupKnownOffenderCrnGivesBasicOffender() {
 
         Mockito.when(offenderRepository.findByCrn(eq("CRN123"))).thenReturn(Optional.of(anOffender()));
@@ -184,26 +165,6 @@ public class DeliusOffenderAPITest {
 
         assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
         assertThat(offenderDetail.getOffenderAliases()).isNotEmpty();
-        assertThat(offenderDetail.getContactDetails().getAddresses()).isNotEmpty();
-    }
-
-    @Test
-    public void lookupKnownOffenderNomsNumberDetailGivesFullFatOffender() {
-
-        Mockito.when(offenderRepository.findByNomsNumber(eq("A12345"))).thenReturn(Optional.of(anOffender()));
-
-        OffenderDetail offenderDetail =
-                given()
-                        .header("Authorization", aValidToken())
-                        .when()
-                        .get("/offenders/nomsNumber/A12345/all")
-                        .then()
-                        .statusCode(200)
-                        .extract()
-                        .body()
-                        .as(OffenderDetail.class);
-
-        assertThat(offenderDetail.getSurname()).isEqualTo("Sykes");
         assertThat(offenderDetail.getContactDetails().getAddresses()).isNotEmpty();
     }
 
@@ -349,25 +310,6 @@ public class DeliusOffenderAPITest {
         assertThat(Arrays.asList(documentList)).containsOnly(expectedDoc);
     }
 
-    @Test
-    public void canListOffenderDocumentsByNomsNumber() throws IOException {
-        Mockito.when(offenderRepository.findByNomsNumber(eq("A12345"))).thenReturn(Optional.of(anOffender()));
-
-        DocumentMeta[] documentList = given()
-                .header("Authorization", aValidToken())
-                .when()
-                .get("/offenders/nomsNumber/A12345/documents")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(DocumentMeta[].class);
-
-        DocumentMeta expectedDoc = aDocumentMeta();
-
-        assertThat(Arrays.asList(documentList)).containsOnly(expectedDoc);
-    }
-
     private DocumentMeta aDocumentMeta() throws IOException {
         return DocumentMeta.builder()
                 .docType("DOCUMENT")
@@ -417,26 +359,6 @@ public class DeliusOffenderAPITest {
                 .header("Authorization", aValidToken())
                 .when()
                 .get("/offenders/offenderId/1/documents/fa63c379-8b31-4e36-a152-2a57dfe251c4/detail")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(DocumentMeta.class);
-
-        DocumentMeta expectedDoc = aDocumentMeta();
-
-        assertThat(documentMeta).isEqualTo(expectedDoc);
-    }
-
-    @Test
-    public void canGetOffenderDocumentDetailsByOffenderNomsNumberAndDocumentId() throws IOException {
-        Mockito.when(offenderRepository.findByNomsNumber(eq("A12345"))).thenReturn(Optional.of(anOffender()));
-
-
-        DocumentMeta documentMeta = given()
-                .header("Authorization", aValidToken())
-                .when()
-                .get("/offenders/nomsNumber/A12345/documents/fa63c379-8b31-4e36-a152-2a57dfe251c4/detail")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -588,22 +510,6 @@ public class DeliusOffenderAPITest {
     }
 
     @Test
-    public void userAccessForOffenderNomsNumberWithNoAccessLimitationsReturnsAppropriate() {
-        Mockito.when(offenderRepository.findByNomsNumber(eq("NOMS123"))).thenReturn(Optional.of(anOffender()));
-
-        AccessLimitation accessLimitation = given()
-                .header("Authorization", aValidToken())
-                .when()
-                .get("/offenders/nomsNumber/NOMS123/userAccess")
-                .then()
-                .statusCode(200)
-                .extract().body().as(AccessLimitation.class);
-
-        assertThat(accessLimitation.isUserExcluded()).isFalse();
-        assertThat(accessLimitation.isUserRestricted()).isFalse();
-    }
-
-    @Test
     public void userAccessForOffenderIdWithExclusionForUserReturnsAppropriate() {
         Offender offender = anOffender().toBuilder().currentExclusion(1L).build();
         Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(offender));
@@ -701,24 +607,6 @@ public class DeliusOffenderAPITest {
 
         assertThat(accessLimitation.isUserExcluded()).isFalse();
         assertThat(accessLimitation.isUserRestricted()).isTrue();
-    }
-
-    @Test
-    public void canGetOffenderManagersByOffenderNomsNumber() {
-        Mockito.when(offenderRepository.findByNomsNumber(eq("A12345"))).thenReturn(Optional.of(anOffender()));
-
-
-        OffenderManager[] offenderManagers = given()
-                .header("Authorization", aValidToken())
-                .when()
-                .get("/offenders/nomsNumber/A12345/offenderManagers")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(OffenderManager[].class);
-
-        assertThat(offenderManagers).hasSize(1);
     }
 
     @Test

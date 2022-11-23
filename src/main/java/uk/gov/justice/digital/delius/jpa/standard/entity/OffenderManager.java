@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @EqualsAndHashCode(of = {"offenderManagerId", "offenderId" , "allocationDate"})
-@ToString(exclude = {"team","staff","partitionArea","providerTeam","probationArea", "responsibleOfficers","managedOffender" ,"officer"})
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,14 +27,17 @@ public class OffenderManager implements Serializable {
 
     @OneToOne
     @JoinColumn(name = "TEAM_ID")
+    @ToString.Exclude
     private Team team;
 
     @OneToOne
     @JoinColumn(name = "ALLOCATION_STAFF_ID")
+    @ToString.Exclude
     private Staff staff;
 
     @OneToOne
     @JoinColumn(name = "PARTITION_AREA_ID")
+    @ToString.Exclude
     private PartitionArea partitionArea;
 
     @Column(name = "OFFENDER_ID")
@@ -49,6 +52,7 @@ public class OffenderManager implements Serializable {
 
     @OneToOne
     @JoinColumn(name = "PROVIDER_TEAM_ID")
+    @ToString.Exclude
     private ProviderTeam providerTeam;
 
     @OneToOne
@@ -56,10 +60,12 @@ public class OffenderManager implements Serializable {
             @JoinColumn(name = "STAFF_EMPLOYEE_ID", referencedColumnName = "STAFF_EMPLOYEE_ID", insertable = false, updatable = false),
             @JoinColumn(name = "TRUST_PROVIDER_FLAG", referencedColumnName = "TRUST_PROVIDER_FLAG", insertable = false, updatable = false)
     })
+    @ToString.Exclude
     private Officer officer;
 
     @OneToOne
     @JoinColumn(name = "PROBATION_AREA_ID")
+    @ToString.Exclude
     private ProbationArea probationArea;
 
     @OneToOne
@@ -67,6 +73,7 @@ public class OffenderManager implements Serializable {
             @JoinColumn(name = "TRUST_PROVIDER_TEAM_ID", referencedColumnName = "TRUST_PROVIDER_TEAM_ID", insertable = false, updatable = false),
             @JoinColumn(name = "TRUST_PROVIDER_FLAG", referencedColumnName = "TRUST_PROVIDER_FLAG", insertable = false, updatable = false)
     })
+    @ToString.Exclude
     private AllTeam trustProviderTeam;
 
     @Column(name = "ACTIVE_FLAG")
@@ -89,12 +96,14 @@ public class OffenderManager implements Serializable {
                     referencedColumnName = "OFFENDER_ID", insertable = false, updatable = false)
     })
     @Builder.Default
+    @ToString.Exclude
     private List<ResponsibleOfficer> responsibleOfficers = new ArrayList<>();
 
     @OneToOne
     @JoinColumn(name = "OFFENDER_ID", referencedColumnName = "OFFENDER_ID", insertable = false, updatable = false)
     // Only select OFFENDER rows that have SOFT_DELETED != 1
     @Where(clause = "SOFT_DELETED != 1")
+    @ToString.Exclude
     private Offender managedOffender;
 
     @Transient

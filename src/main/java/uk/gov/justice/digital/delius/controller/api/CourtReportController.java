@@ -42,15 +42,6 @@ public class CourtReportController {
         return courtReportsResponseEntityOf(Optional.of(offenderId));
     }
 
-    @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/courtReports", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<List<CourtReport>> getOffenderCourtReportsByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                             final @PathVariable("nomsNumber") String nomsNumber) {
-
-        log.info("Call to getOffenderCourtReportsByNomsNumber");
-        return courtReportsResponseEntityOf(offenderService.offenderIdOfNomsNumber(nomsNumber));
-    }
-
     @RequestMapping(value = "offenders/crn/{crn}/courtReports", method = RequestMethod.GET)
     @JwtValidation
     public ResponseEntity<List<CourtReport>> getOffenderCourtReportsByCrn(final @RequestHeader HttpHeaders httpHeaders,
@@ -68,16 +59,6 @@ public class CourtReportController {
 
         log.info("Call to getOffenderCourtReportByOffenderIdAndCourtReportId");
         return courtReportResponseEntityOf(Optional.of(offenderId), courtReportId);
-    }
-
-    @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/courtReports/{courtReportId}", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<CourtReport> getOffenderCourtReportByNomsNumberAndCourtReportId(final @RequestHeader HttpHeaders httpHeaders,
-                                                                                                     final @PathVariable("nomsNumber") String nomsNumber,
-                                                                                                     final @PathVariable Long courtReportId) {
-
-        log.info("Call to getOffenderCourtReportByNomsNumberAndCourtReportId");
-        return courtReportResponseEntityOf(offenderService.offenderIdOfNomsNumber(nomsNumber), courtReportId);
     }
 
     @RequestMapping(value = "offenders/crn/{crn}/courtReports/{courtReportId}", method = RequestMethod.GET)

@@ -2,15 +2,10 @@ package uk.gov.justice.digital.delius.controller.secure;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import uk.gov.justice.digital.delius.data.api.NsiWrapper;
-
-import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.withArgs;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 

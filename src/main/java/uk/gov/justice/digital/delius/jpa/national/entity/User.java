@@ -12,7 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.sql.Clob;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -41,7 +40,7 @@ public class User {
     private LocalDate endDate;
 
     @Column(name = "NOTES")
-    private Clob notes;
+    private String notes;
 
     @Column(name = "SURNAME")
     private String surname;

@@ -5,8 +5,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.stream.IntStream;
 
-import static java.util.stream.Collectors.toList;
-
 @Repository
 @Profile("!oracle")
 public class StaffHelperNoProceduresRepositoryImpl implements StaffHelperRepository {
@@ -20,10 +18,9 @@ public class StaffHelperNoProceduresRepositoryImpl implements StaffHelperReposit
     public String getNextStaffCode(String probationAreaCode) {
         final var possibleCodes = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 .chars()
-                .mapToObj(letter -> String.valueOf((char)letter))
+                .mapToObj(letter -> String.valueOf((char) letter))
                 .flatMap(prefix -> IntStream.range(1, 999)
-                        .mapToObj(number -> String.format("%s%s%03d", probationAreaCode, prefix, number)))
-                .collect(toList());
+                        .mapToObj(number -> String.format("%s%s%03d", probationAreaCode, prefix, number))).toList();
 
 
         for (String possibleCode : possibleCodes) {

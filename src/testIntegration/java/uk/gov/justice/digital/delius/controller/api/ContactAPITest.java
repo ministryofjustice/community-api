@@ -68,17 +68,6 @@ public class ContactAPITest {
 
     }
 
-    @Test
-    public void contactsByNomsNumberMustHaveVaidJwt() {
-        given()
-                .when()
-                .queryParam("to", now.toString())
-                .get("/offenders/nomsNumber/noms1/contacts")
-                .then()
-                .statusCode(401);
-
-    }
-
     private String aValidToken() {
         return aValidTokenFor(UUID.randomUUID().toString());
     }

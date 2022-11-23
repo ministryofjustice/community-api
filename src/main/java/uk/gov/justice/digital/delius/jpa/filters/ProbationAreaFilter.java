@@ -44,6 +44,6 @@ public class ProbationAreaFilter implements Specification<ProbationArea> {
 
         ImmutableList<Predicate> predicates = predicateBuilder.build();
 
-        return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        return cb.and(predicates.toArray(new Predicate[0]));
     }
 }

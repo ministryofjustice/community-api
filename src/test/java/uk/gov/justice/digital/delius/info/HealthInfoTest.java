@@ -9,12 +9,12 @@ public class HealthInfoTest {
     private HealthInfo healthInfo;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         healthInfo = new HealthInfo();
     }
 
     @Test
-    public void shouldIncludeVersionInfo() throws Exception {
+    public void shouldIncludeVersionInfo() {
         Assertions.assertThat(healthInfo.health().getDetails()).containsKey("version");
     }
 }

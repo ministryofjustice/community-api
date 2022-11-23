@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "MAIN_OFFENCE")
-@ToString(exclude = {"event"})
 public class MainOffence {
 
     @Id
@@ -32,6 +31,7 @@ public class MainOffence {
 
     @JoinColumn(name = "EVENT_ID")
     @OneToOne
+    @ToString.Exclude
     private Event event;
 
     @Column(name = "TICS")

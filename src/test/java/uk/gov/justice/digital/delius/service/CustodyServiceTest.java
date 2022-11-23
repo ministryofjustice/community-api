@@ -69,7 +69,7 @@ public class CustodyServiceTest {
     private final OffenderPrisonerService offenderPrisonerService = mock(OffenderPrisonerService.class);
 
     @BeforeEach
-    public void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
+    public void setup() {
         final var integrationContextConfig = new DeliusIntegrationContextConfig();
         IntegrationContext integrationContext = new IntegrationContext();
         integrationContext.setReleaseTypeMapping(Map.of("RELEASED", "ADL"));

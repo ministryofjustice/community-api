@@ -42,15 +42,6 @@ public class CourtController {
         return courtAppearancesResponseEntityOf(maybeOffender.map(OffenderDetail::getOffenderId));
     }
 
-    @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/courtAppearances", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<List<CourtAppearance>> getOffenderCourtAppearancesByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                             final @PathVariable("nomsNumber") String nomsNumber) {
-
-        log.info("Call to getOffenderCourtAppearancesByNomsNumber");
-        return courtAppearancesResponseEntityOf(offenderService.offenderIdOfNomsNumber(nomsNumber));
-    }
-
     @RequestMapping(value = "offenders/crn/{crn}/courtAppearances", method = RequestMethod.GET)
     @JwtValidation
     public ResponseEntity<List<CourtAppearance>> getOffenderCourtAppearancesByCrn(final @RequestHeader HttpHeaders httpHeaders,
