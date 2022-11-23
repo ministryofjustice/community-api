@@ -41,15 +41,6 @@ public class ConvictionController {
         return convictionsResponseEntityOf(maybeOffender.map(OffenderDetail::getOffenderId));
     }
 
-    @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/convictions", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<List<Conviction>> getOffenderConvictionsByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                         final @PathVariable("nomsNumber") String nomsNumber) {
-
-        log.info("Call to getOffenderConvictionsByNomsNumber");
-        return convictionsResponseEntityOf(offenderService.offenderIdOfNomsNumber(nomsNumber));
-    }
-
     @RequestMapping(value = "offenders/crn/{crn}/convictions", method = RequestMethod.GET)
     @JwtValidation
     public ResponseEntity<List<Conviction>> getOffenderConvictionsByCrn(final @RequestHeader HttpHeaders httpHeaders,

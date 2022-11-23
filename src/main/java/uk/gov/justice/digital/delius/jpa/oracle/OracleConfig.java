@@ -19,7 +19,7 @@ public class OracleConfig {
         advisor.setExpression("execution (* java.sql.Connection.close(..))");
         advisor.setAdvice((MethodBeforeAdvice) (method, args, target) -> {
             if (method.getName().equals("close")) {
-                final PreparedStatement stmt = (Connection.class.cast(target)).prepareStatement("call PKG_VPD_CTX.CLEAR_CLIENT_IDENTIFIER()");
+                final PreparedStatement stmt = ((Connection) target).prepareStatement("call PKG_VPD_CTX.CLEAR_CLIENT_IDENTIFIER()");
                 stmt.execute();
                 stmt.close();
             }

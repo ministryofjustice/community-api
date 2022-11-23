@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 
-@ToString(exclude = {"providerTeams", "teams", "institution", "boroughs"})
+
 @EqualsAndHashCode(of = "probationAreaId")
 @Data
 @NoArgsConstructor
@@ -34,18 +34,22 @@ public class ProbationArea {
     @JoinColumns({
             @JoinColumn(name = "INSTITUTION_ID"),
             @JoinColumn(name = "ESTABLISHMENT")})
+    @ToString.Exclude
     private RInstitution institution;
 
     @OneToMany
     @JoinColumn(name = "PROBATION_AREA_ID")
+    @ToString.Exclude
     private List<Team> teams;
 
     @OneToMany
     @JoinColumn(name = "PROBATION_AREA_ID")
+    @ToString.Exclude
     private List<Borough> boroughs;
 
     @OneToMany
     @JoinColumn(name = "PROBATION_AREA_ID", referencedColumnName = "PROBATION_AREA_ID")
+    @ToString.Exclude
     private List<ProviderTeam> providerTeams;
 
     @Column(name = "END_DATE")

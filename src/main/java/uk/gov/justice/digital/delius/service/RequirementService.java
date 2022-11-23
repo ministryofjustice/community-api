@@ -105,12 +105,13 @@ public class RequirementService {
     public Optional<Requirement> getActiveRequirement(String crn, Long eventId, String requirementTypeCode) {
 
         return getRequirementsByConvictionId(crn, eventId, false, false)
-            .getRequirements().stream()
-            .filter(requirement ->
-                ofNullable(requirement.getRequirementTypeMainCategory())
-                    .map(cat -> requirementTypeCode.equals(cat.getCode()))
-                    .orElse(false))
-            .sorted(comparing(Requirement::getStartDate, reverseOrder()).thenComparing(Requirement::getCreatedDatetime, reverseOrder()))
-            .findFirst();
+                .getRequirements().stream()
+                .filter(requirement ->
+                        ofNullable(requirement.getRequirementTypeMainCategory())
+                                .map(cat -> requirementTypeCode.equals(cat.getCode()))
+                                .orElse(false)).min(comparing(Requirement::getStartDate, reverseOrder()).thenComparing(
+                        Requirement::getCreatedDatetime,
+                        reverseOrder()
+                ));
     }
 }

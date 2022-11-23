@@ -90,23 +90,6 @@ public class CourtReportAPITest {
                 .statusCode(HttpStatus.UNAUTHORIZED.value());
     }
 
-
-    @Test
-    public void cannotGetReportForOffenderByNomsNumberAndReportIdWithoutJwtAuthorizationHeader() {
-        RestAssured.when()
-                .get("offenders/nomsNumber/NOMS1/courtReports/4")
-                .then()
-                .statusCode(HttpStatus.UNAUTHORIZED.value());
-    }
-
-    @Test
-    public void cannotGetReportsForOffenderByNomsNumberWithoutJwtAuthorizationHeader() {
-        RestAssured.when()
-                .get("offenders/nomsNumber/NOMS1/courtReports")
-                .then()
-                .statusCode(HttpStatus.UNAUTHORIZED.value());
-    }
-
     private String aValidToken() {
         return aValidTokenFor(UUID.randomUUID().toString());
     }

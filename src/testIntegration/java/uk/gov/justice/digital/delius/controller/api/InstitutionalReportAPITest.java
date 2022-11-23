@@ -11,12 +11,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.InstitutionalReport;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.user.UserData;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
@@ -91,22 +89,6 @@ public class InstitutionalReportAPITest {
                 .statusCode(HttpStatus.UNAUTHORIZED.value());
     }
 
-    @Test
-    public void cannotGetReportForOffenderByNomsNumberAndReportIdWithoutJwtAuthorizationHeader() {
-        RestAssured.when()
-                .get("offenders/nomsNumber/NOMS1/institutionalReports/4")
-                .then()
-                .statusCode(HttpStatus.UNAUTHORIZED.value());
-    }
-
-    @Test
-    public void cannotGetReportsForOffenderByNomsNumberWithoutJwtAuthorizationHeader() {
-        RestAssured.when()
-                .get("offenders/nomsNumber/NOMS1/institutionalReports")
-                .then()
-                .statusCode(HttpStatus.UNAUTHORIZED.value());
-    }
-
     private String aValidToken() {
         return aValidTokenFor(UUID.randomUUID().toString());
     }
@@ -115,13 +97,5 @@ public class InstitutionalReportAPITest {
         return "Bearer " + jwt.buildToken(UserData.builder()
                 .distinguishedName(distinguishedName)
                 .uid("bobby.davro").build());
-    }
-
-    private Conviction aConviction(Long id) {
-        return Conviction.builder()
-            .convictionId(id)
-            .convictionDate(LocalDate.now())
-            .active(true)
-            .build();
     }
 }

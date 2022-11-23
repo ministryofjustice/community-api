@@ -14,7 +14,6 @@ import javax.persistence.*;
 @Builder
 @Entity
 @Table(name = "R_STANDARD_REFERENCE_LIST")
-@ToString(exclude = "referenceDataMaster")
 public class StandardReference {
     @Id
     @Column(name = "STANDARD_REFERENCE_LIST_ID")
@@ -31,6 +30,7 @@ public class StandardReference {
 
     @ManyToOne
     @JoinColumn(name = "REFERENCE_DATA_MASTER_ID")
+    @ToString.Exclude
     private ReferenceDataMaster referenceDataMaster;
 
     public boolean isActive() {

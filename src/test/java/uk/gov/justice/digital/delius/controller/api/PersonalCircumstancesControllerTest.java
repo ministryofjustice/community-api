@@ -59,28 +59,6 @@ public class PersonalCircumstancesControllerTest {
     }
 
     @Test
-    public void canGetPersonalCircumstancesByNoms() {
-        when(offenderService.offenderIdOfNomsNumber("NOMS1")).thenReturn(Optional.of(1L));
-        when(personalCircumstanceService.personalCircumstancesFor(1L))
-                .thenReturn(ImmutableList.of(aPersonalCircumstance(2L, "Benefit", "Universal Benefit"), aPersonalCircumstance(1L, "Accommodation", "Approved Premises")));
-
-        PersonalCircumstance[] personalCircumstances = given()
-            .when()
-            .get("/api/offenders/nomsNumber/NOMS1/personalCircumstances")
-            .then()
-            .statusCode(200)
-            .extract()
-            .body()
-            .as(PersonalCircumstance[].class);
-
-        assertThat(personalCircumstances).hasSize(2);
-        assertThat(personalCircumstances[0].getPersonalCircumstanceType().getDescription()).isEqualTo("Benefit");
-        assertThat(personalCircumstances[0].getPersonalCircumstanceSubType().getDescription()).isEqualTo("Universal Benefit");
-        assertThat(personalCircumstances[1].getPersonalCircumstanceType().getDescription()).isEqualTo("Accommodation");
-        assertThat(personalCircumstances[1].getPersonalCircumstanceSubType().getDescription()).isEqualTo("Approved Premises");
-    }
-
-    @Test
     public void canGetPersonalCircumstancesByOffenderId() {
         when(offenderService.getOffenderByOffenderId(1L))
                 .thenReturn(Optional.of(OffenderDetail.builder().offenderId(1L).build()));
@@ -114,19 +92,6 @@ public class PersonalCircumstancesControllerTest {
             .statusCode(404);
 
         verify(offenderService).offenderIdOfCrn("notFoundCrn");
-    }
-
-    @Test
-    public void getPersonalCircumstancesForUnknownNomsNumberReturnsNotFound() {
-        when(offenderService.offenderIdOfNomsNumber("notFoundNomsNumber")).thenReturn(Optional.empty());
-
-        given()
-            .when()
-            .get("/api/offenders/nomsNumber/notFoundNomsNumber/personalCircumstances")
-            .then()
-            .statusCode(404);
-
-        verify(offenderService).offenderIdOfNomsNumber("notFoundNomsNumber");
     }
 
     @Test

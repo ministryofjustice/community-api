@@ -27,7 +27,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAddress;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAlias;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PartitionArea;
-import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalCircumstance;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderTeam;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Provision;
@@ -60,7 +59,7 @@ public class OffenderTransformer {
     private static OffenderLanguages languagesOf(Offender offender) {
         return OffenderLanguages.builder()
                 .primaryLanguage(Optional.ofNullable(offender.getLanguage()).map(StandardReference::getCodeDescription).orElse(null))
-                .languageConcerns(Optional.ofNullable(offender.getLanguageConcerns()).orElse(null))
+                .languageConcerns(offender.getLanguageConcerns())
                 .requiresInterpreter(ynToBoolean(offender.getInterpreterRequired()))
                 .build();
     }
@@ -80,10 +79,10 @@ public class OffenderTransformer {
                 .offenderLanguages(languagesOf(offender))
                 .previousConviction(previousConvictionOf(offender))
                 .religion(Optional.ofNullable(offender.getReligion()).map(StandardReference::getCodeDescription).orElse(null))
-                .remandStatus(Optional.ofNullable(offender.getCurrentRemandStatus()).orElse(null))
+                .remandStatus(offender.getCurrentRemandStatus())
                 .secondaryNationality(Optional.ofNullable(offender.getSecondNationality()).map(StandardReference::getCodeDescription).orElse(null))
                 .sexualOrientation(Optional.ofNullable(offender.getSexualOrientation()).map(StandardReference::getCodeDescription).orElse(null))
-                .riskColour(Optional.ofNullable(offender.getCurrentHighestRiskColour()).orElse(null))
+                .riskColour(offender.getCurrentHighestRiskColour())
                 .offenderDetails(offender.getOffenderDetails())
                 .disabilities(disabilitiesOf(offender.getDisabilities(), LocalDate.now()))
                 .genderIdentity(Optional.ofNullable(offender.getGenderIdentity()).map(StandardReference::getCodeDescription).orElse(null))
@@ -353,8 +352,7 @@ public class OffenderTransformer {
                         .code(disability.getDisabilityType().getCodeValue())
                         .description(disability.getDisabilityType().getCodeDescription()).build())
                 .provisions(provisionsOf(disability.getProvisions()))
-                .lastUpdatedDateTime(Optional.ofNullable(disability.getLastUpdatedDatetime())
-                    .orElse(null))
+                .lastUpdatedDateTime(disability.getLastUpdatedDatetime())
                 .isActive(isActiveOf(disability, dateToCompare))
                 .build();
     }
@@ -449,17 +447,15 @@ public class OffenderTransformer {
 
         if (offender.getOffenderManagers() != null && !offender.getOffenderManagers().isEmpty()) {
             responsibleOfficers.addAll(
-                    offender.getOffenderManagers().stream()
-                            .map(offMgr -> OffenderTransformer.convertToResponsibleOfficer(offMgr, offender))
-                            .collect(toList()));
+                offender.getOffenderManagers().stream()
+                    .map(offMgr -> OffenderTransformer.convertToResponsibleOfficer(offMgr, offender)).toList());
         }
 
         if (offender.getPrisonOffenderManagers() != null && !offender.getPrisonOffenderManagers().isEmpty()) {
             responsibleOfficers.addAll(
-                    offender.getPrisonOffenderManagers().stream()
-                            .map(prisonOffenderManager -> OffenderTransformer
-                                    .convertToResponsibleOfficer(prisonOffenderManager, offender))
-                            .collect(toList()));
+                offender.getPrisonOffenderManagers().stream()
+                    .map(prisonOffenderManager -> OffenderTransformer
+                        .convertToResponsibleOfficer(prisonOffenderManager, offender)).toList());
         }
 
         if (current && !responsibleOfficers.isEmpty()) {
@@ -513,16 +509,14 @@ public class OffenderTransformer {
 
         if (staff.getOffenderManagers() != null && !staff.getOffenderManagers().isEmpty()) {
             managedOffenders.addAll(
-                    staff.getOffenderManagers().stream()
-                            .map(offenderManager -> convertToManagedOffender(offenderManager, staff))
-                            .collect(toList()));
+                staff.getOffenderManagers().stream()
+                    .map(offenderManager -> convertToManagedOffender(offenderManager, staff)).toList());
         }
 
         if (staff.getPrisonOffenderManagers() != null && !staff.getPrisonOffenderManagers().isEmpty()) {
             managedOffenders.addAll(
-                    staff.getPrisonOffenderManagers().stream()
-                            .map(prisonOffenderManager -> convertToManagedOffender(prisonOffenderManager, staff))
-                            .collect(toList()));
+                staff.getPrisonOffenderManagers().stream()
+                    .map(prisonOffenderManager -> convertToManagedOffender(prisonOffenderManager, staff)).toList());
         }
 
         if (current && !managedOffenders.isEmpty()) {
@@ -565,10 +559,7 @@ public class OffenderTransformer {
     }
 
     private static boolean isCurrentManager(Long activeFlag, LocalDate endDate) {
-        boolean result = false;
-        if (activeFlag.intValue() == 1 && endDate == null) {
-            result = true;
-        }
+        boolean result = activeFlag.intValue() == 1 && endDate == null;
         return result;
     }
 

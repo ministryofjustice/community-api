@@ -24,7 +24,6 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "COURT_REPORT")
-@ToString(exclude="courtAppearance")
 public class CourtReport {
     @Id
     @Column(name = "COURT_REPORT_ID")
@@ -32,6 +31,7 @@ public class CourtReport {
 
     @ManyToOne
     @JoinColumn(name = "COURT_APPEARANCE_ID", referencedColumnName="COURT_APPEARANCE_ID")
+    @ToString.Exclude
     private CourtAppearance courtAppearance;
 
     @Column(name = "DATE_REQUESTED")

@@ -118,7 +118,7 @@ public class DocumentTransformerTest {
                         .build()
         );
 
-        assertThat(documentTransformer.offenderDocumentDetailsOfCpsPack(event)
+        assertThat(DocumentTransformer.offenderDocumentDetailsOfCpsPack(event)
                 .getAuthor()).isEqualTo("Bobby Bread");
     }
     @Test
@@ -126,7 +126,7 @@ public class DocumentTransformerTest {
         final Event event = anEvent();
         event.setCpsCreatedByUser(null);
 
-        assertThat(documentTransformer.offenderDocumentDetailsOfCpsPack(event)
+        assertThat(DocumentTransformer.offenderDocumentDetailsOfCpsPack(event)
                 .getAuthor()).isNull();
     }
 
@@ -141,7 +141,7 @@ public class DocumentTransformerTest {
                         .build()
         );
 
-        assertThat(documentTransformer.offenderDocumentDetailsOfPreviousConvictions(offender)
+        assertThat(DocumentTransformer.offenderDocumentDetailsOfPreviousConvictions(offender)
                 .getAuthor()).isEqualTo("Bobby Bread");
     }
 
@@ -150,7 +150,7 @@ public class DocumentTransformerTest {
         final Offender offender = anOffenderWithPreviousConvictionsDocument();
         offender.setPreviousConvictionsCreatedByUser(null);
 
-        assertThat(documentTransformer.offenderDocumentDetailsOfPreviousConvictions(offender)
+        assertThat(DocumentTransformer.offenderDocumentDetailsOfPreviousConvictions(offender)
                 .getAuthor()).isNull();
     }
 
@@ -159,7 +159,7 @@ public class DocumentTransformerTest {
         final Event event = anEvent();
         event.setCpsDate(LocalDate.of(1965, 7, 19));
 
-        final OffenderDocumentDetail offenderDocumentDetail = documentTransformer.offenderDocumentDetailsOfCpsPack(event);
+        final OffenderDocumentDetail offenderDocumentDetail = DocumentTransformer.offenderDocumentDetailsOfCpsPack(event);
 
         assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("CPSPACK_DOCUMENT");
         assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Crown Prosecution Service case pack");
@@ -171,7 +171,7 @@ public class DocumentTransformerTest {
         final Offender offender = anOffenderWithPreviousConvictionsDocument();
         offender.setPreviousConvictionDate(LocalDate.of(1965, 7, 19));
 
-        final OffenderDocumentDetail offenderDocumentDetail = documentTransformer.offenderDocumentDetailsOfPreviousConvictions(offender);
+        final OffenderDocumentDetail offenderDocumentDetail = DocumentTransformer.offenderDocumentDetailsOfPreviousConvictions(offender);
 
         assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("PRECONS_DOCUMENT");
         assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("PNC previous convictions");

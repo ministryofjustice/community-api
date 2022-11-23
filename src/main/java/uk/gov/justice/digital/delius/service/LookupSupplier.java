@@ -79,7 +79,7 @@ public class LookupSupplier {
 
     public Function<uk.gov.justice.digital.delius.data.api.OrderManager, ProbationArea> probationAreaSupplier() {
         return orderManager -> probationAreaRepository.findById(orderManager.getProbationAreaId())
-                        .orElseThrow(() -> new RuntimeException(String.format("No probation area found for %s", orderManager.toString())));
+                        .orElseThrow(() -> new RuntimeException(String.format("No probation area found for %s", orderManager)));
     }
     public Function<uk.gov.justice.digital.delius.data.api.OrderManager, Team> teamSupplier() {
         return orderManager ->

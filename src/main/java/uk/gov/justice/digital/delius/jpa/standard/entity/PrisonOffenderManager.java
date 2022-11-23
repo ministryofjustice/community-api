@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @EqualsAndHashCode(of = "prisonOffenderManagerId")
-@ToString(exclude = {"team","staff","probationArea", "responsibleOfficers" ,"managedOffender"})
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -74,6 +74,7 @@ public class PrisonOffenderManager implements Serializable {
             @JoinColumn(name = "OFFENDER_ID", referencedColumnName = "OFFENDER_ID", insertable = false, updatable = false)
     })
     @Builder.Default
+    @ToString.Exclude
     private List<ResponsibleOfficer> responsibleOfficers = new ArrayList<>();
 
     @OneToOne

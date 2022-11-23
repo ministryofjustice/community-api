@@ -9,7 +9,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
-import uk.gov.justice.digital.delius.jpa.standard.repository.ContactDateRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
 

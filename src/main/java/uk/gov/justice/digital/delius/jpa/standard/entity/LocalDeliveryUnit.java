@@ -15,7 +15,6 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
-@ToString(exclude = {"probationArea"})
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "LOCAL_DELIVERY_UNIT")
@@ -60,6 +59,7 @@ public class LocalDeliveryUnit {
 
     @JoinColumn(name = "PROBATION_AREA_ID")
     @OneToOne
+    @ToString.Exclude
     private ProbationArea probationArea;
 
     @Column(name = "TRAINING_SESSION_ID")

@@ -65,14 +65,6 @@ public class OffenderService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<OffenderDetail> getOffenderByNomsNumber(String nomsNumber) {
-
-        Optional<Offender> maybeOffender = offenderRepository.findByNomsNumber(nomsNumber);
-
-        return maybeOffender.map(OffenderTransformer::fullOffenderOf);
-    }
-
-    @Transactional(readOnly = true)
     public Optional<OffenderDetailSummary> getOffenderSummaryByOffenderId(Long offenderId) {
 
         Optional<Offender> maybeOffender = offenderRepository.findByOffenderId(offenderId);
@@ -84,14 +76,6 @@ public class OffenderService {
     public Optional<OffenderDetailSummary> getOffenderSummaryByCrn(String crn) {
 
         Optional<Offender> maybeOffender = offenderRepository.findByCrn(crn);
-
-        return maybeOffender.map(OffenderTransformer::offenderSummaryOf);
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<OffenderDetailSummary> getOffenderSummaryByNomsNumber(String nomsNumber) {
-
-        Optional<Offender> maybeOffender = offenderRepository.findByNomsNumber(nomsNumber);
 
         return maybeOffender.map(OffenderTransformer::offenderSummaryOf);
     }

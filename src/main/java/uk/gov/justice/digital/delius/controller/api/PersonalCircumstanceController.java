@@ -41,15 +41,6 @@ public class PersonalCircumstanceController {
         return personalCircumstancesResponseEntityOf(maybeOffender.map(OffenderDetail::getOffenderId));
     }
 
-    @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/personalCircumstances", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<List<PersonalCircumstance>> getOffenderPersonalCircumstancesByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                         final @PathVariable("nomsNumber") String nomsNumber) {
-
-        log.info("Call to getOffenderPersonalCircumstancesByNomsNumber");
-        return personalCircumstancesResponseEntityOf(offenderService.offenderIdOfNomsNumber(nomsNumber));
-    }
-
     @RequestMapping(value = "offenders/crn/{crn}/personalCircumstances", method = RequestMethod.GET)
     @JwtValidation
     public ResponseEntity<List<PersonalCircumstance>> getOffenderPersonalCircumstancesByCrn(final @RequestHeader HttpHeaders httpHeaders,

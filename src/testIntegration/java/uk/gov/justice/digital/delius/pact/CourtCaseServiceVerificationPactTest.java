@@ -33,9 +33,4 @@ class CourtCaseServiceVerificationPactTest extends IntegrationTestBase {
         request.addHeader("Authorization", "Bearer " + tokenWithRoleCommunity());
         context.verifyInteraction();
     }
-
-    @State({"an NSI exists for CRN X320741 and conviction id 2500295345", "probation status detail is available for CRN X320741", "probation status detail is available for CRN CRN40"})
-    void getState() {
-    }
-
 }

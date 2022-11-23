@@ -18,7 +18,6 @@ import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
 import uk.gov.justice.digital.delius.data.api.Custody;
 import uk.gov.justice.digital.delius.data.api.CustodyRelatedKeyDates;
 import uk.gov.justice.digital.delius.data.api.ReplaceCustodyKeyDates;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.OffenderService;
@@ -32,7 +31,6 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.config.RestAssuredMockMvcConfig.newConfig;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -66,7 +64,7 @@ class CustodyKeyDatesControllerTest {
     @Nested
     class ReplaceAllCustodyKeyDateByNomsNumberAndBookingNumber {
         @BeforeEach
-        void setUp() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
+        void setUp() {
             when(offenderService.mostLikelyOffenderIdOfNomsNumber(any())).thenReturn(Either.right(Optional.of(99L)));
             when(convictionService.getAllActiveCustodialEventsWithBookingNumber(any(), any())).thenReturn(List.of(aCustodyEvent(88L, LocalDate
                 .now())));

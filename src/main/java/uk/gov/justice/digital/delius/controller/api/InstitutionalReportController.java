@@ -43,15 +43,6 @@ public class InstitutionalReportController {
         return institutionalReportsResponseEntityOf(Optional.of(offenderId));
     }
 
-    @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/institutionalReports", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<List<InstitutionalReport>> getOffenderInstitutionalReportsByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                             final @PathVariable("nomsNumber") String nomsNumber) {
-
-        log.info("Call to getOffenderInstitutionalReportsByNomsNumber");
-        return institutionalReportsResponseEntityOf(offenderService.offenderIdOfNomsNumber(nomsNumber));
-    }
-
     @RequestMapping(value = "offenders/crn/{crn}/institutionalReports", method = RequestMethod.GET)
     @JwtValidation
     public ResponseEntity<List<InstitutionalReport>> getOffenderInstitutionalReportsByCrn(final @RequestHeader HttpHeaders httpHeaders,
@@ -69,16 +60,6 @@ public class InstitutionalReportController {
 
         log.info("Call to getOffenderInstitutionalReportByOffenderIdAndInstitutionalReportId");
         return institutionalReportResponseEntityOf(Optional.of(offenderId), institutionalReportId);
-    }
-
-    @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/institutionalReports/{institutionalReportId}", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<InstitutionalReport> getOffenderInstitutionalReportByNomsNumberAndInstitutionalReportId(final @RequestHeader HttpHeaders httpHeaders,
-                                                                                                     final @PathVariable("nomsNumber") String nomsNumber,
-                                                                                                     final @PathVariable Long institutionalReportId) {
-
-        log.info("Call to getOffenderInstitutionalReportByNomsNumberAndInstitutionalReportId");
-        return institutionalReportResponseEntityOf(offenderService.offenderIdOfNomsNumber(nomsNumber), institutionalReportId);
     }
 
     @RequestMapping(value = "offenders/crn/{crn}/institutionalReports/{institutionalReportId}", method = RequestMethod.GET)

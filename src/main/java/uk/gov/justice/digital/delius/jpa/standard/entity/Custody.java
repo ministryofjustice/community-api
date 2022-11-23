@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.ToString.Exclude;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -29,7 +30,6 @@ import static java.util.function.Predicate.not;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "CUSTODY")
-@ToString(exclude = "disposal")
 public class Custody extends AuditableEntity {
     enum CustodialStatus {
         SENTENCED_IN_CUSTODY("A"),
@@ -59,6 +59,7 @@ public class Custody extends AuditableEntity {
 
     @JoinColumn(name = "DISPOSAL_ID", referencedColumnName = "DISPOSAL_ID")
     @OneToOne
+    @ToString.Exclude
     private Disposal disposal;
 
     @Column(name = "SOFT_DELETED")
@@ -77,10 +78,12 @@ public class Custody extends AuditableEntity {
     private RInstitution institution;
 
     @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval=true, mappedBy = "custody")
+    @Exclude
     private List<KeyDate> keyDates;
 
     @OneToMany
     @JoinColumn(name = "CUSTODY_ID")
+    @Exclude
     private List<Release> releases;
 
     @Column(name = "STATUS_CHANGE_DATE")
@@ -93,6 +96,7 @@ public class Custody extends AuditableEntity {
     private LocalDate pssStartDate;
 
     @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval=true, mappedBy = "custody")
+    @Exclude
     private List<PssRequirement> pssRequirements;
 
     @JoinColumn(name = "CUSTODIAL_STATUS_ID")

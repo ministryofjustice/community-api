@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.ToString.Exclude;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Where;
 
@@ -31,7 +32,6 @@ import java.util.List;
 @Builder(toBuilder = true)
 @Entity
 @Table(name = "EVENT")
-@ToString(exclude = {"mainOffence", "additionalOffences", "courtAppearances", "orderManagers"})
 public class Event {
 
     @Id
@@ -84,21 +84,25 @@ public class Event {
     private Long postSentenceSupervisionRequirementFlag;
 
     @OneToOne(mappedBy = "event", cascade = {CascadeType.ALL})
+    @ToString.Exclude
     private MainOffence mainOffence;
 
     @OneToMany(mappedBy = "event", cascade = {CascadeType.ALL})
+    @Exclude
     private List<AdditionalOffence> additionalOffences;
 
-    @OneToOne(mappedBy = "event", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "event", cascade = {CascadeType.ALL})
     private Disposal disposal;
 
     @OneToOne(mappedBy = "event", cascade = {CascadeType.ALL})
     private OGRSAssessment OGRSAssessment;
 
     @OneToMany(mappedBy = "event", cascade = {CascadeType.ALL})
+    @Exclude
     private List<CourtAppearance> courtAppearances;
 
     @OneToMany(mappedBy = "event", cascade = {CascadeType.ALL})
+    @Exclude
     private List<OrderManager> orderManagers;
 
     @Column(name = "CREATED_BY_USER_ID")
@@ -134,11 +138,13 @@ public class Event {
 
     @JoinColumn(name = "COURT_ID")
     @ManyToOne(fetch = FetchType.LAZY)
+    @Exclude
     private Court court;
 
     @JoinColumn(name = "EVENT_ID")
     @OneToMany(fetch = FetchType.LAZY)
     @Where(clause = "SOFT_DELETED != 1")
+    @Exclude
     private List<AdditionalSentence> additionalSentences;
 
     public boolean hasCpsPack() {

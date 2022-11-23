@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ADDITIONAL_OFFENCE")
-@ToString(exclude = {"event"})
 public class AdditionalOffence {
 
     @Id
@@ -30,6 +29,7 @@ public class AdditionalOffence {
     @Column(name = "OFFENCE_COUNT")
     private Long offenceCount;
 
+    @ToString.Exclude
     @JoinColumn(name = "EVENT_ID")
     @ManyToOne
     private Event event;

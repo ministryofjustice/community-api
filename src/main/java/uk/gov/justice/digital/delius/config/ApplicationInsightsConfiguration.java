@@ -2,10 +2,8 @@ package uk.gov.justice.digital.delius.config;
 
 import com.microsoft.applicationinsights.TelemetryClient;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.*;
-import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * Application insights now controlled by the spring-boot-starter dependency.  However when the key is not specified

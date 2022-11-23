@@ -5,7 +5,6 @@ import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderManager;
-import uk.gov.justice.digital.delius.utils.DateConverter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

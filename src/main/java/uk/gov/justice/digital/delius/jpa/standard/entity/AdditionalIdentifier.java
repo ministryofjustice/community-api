@@ -19,7 +19,6 @@ import javax.persistence.Table;
 
 @Data
 @EqualsAndHashCode(exclude = {"offender"}, callSuper = true)
-@ToString(exclude = {"offender"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
@@ -33,6 +32,7 @@ public class AdditionalIdentifier extends AuditableEntity {
     private Long additionalIdentifierId;
     @Column(name = "IDENTIFIER")
     private String identifier;
+    @ToString.Exclude
     @JoinColumn(name = "OFFENDER_ID")
     @ManyToOne
     private Offender offender;

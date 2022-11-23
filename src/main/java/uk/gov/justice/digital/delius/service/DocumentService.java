@@ -122,10 +122,10 @@ public class DocumentService {
         final var caseAllocationDocuments = caseAllocationDocumentsFor(offenderId, filter);
         final var referralDocuments = referralDocumentsFor(offenderId, filter);
         final var allNsiDocuments = nsiDocumentsFor(offenderId, filter);
-        final var nsiEventDocuments = allNsiDocuments.stream().filter(this::isEventRelated).collect(toList());
+        final var nsiEventDocuments = allNsiDocuments.stream().filter(this::isEventRelated).toList();
         final var upwAppointmentDocuments = upwAppointmentDocumentsFor(offenderId, filter);
         final var allContactDocuments = contactDocumentsFor(offenderId, filter);
-        final var contactEventDocuments = allContactDocuments.stream().filter(this::isEventRelated).collect(toList());
+        final var contactEventDocuments = allContactDocuments.stream().filter(this::isEventRelated).toList();
         final var events = eventRepository.findByOffenderId(offenderId);
         final var offender = offenderRepository
                 .findByOffenderId(offenderId)

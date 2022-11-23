@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @EqualsAndHashCode(of = "teamId")
-@ToString(exclude = {"district", "probationArea"})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,6 +36,7 @@ public class Team {
 
     @OneToOne
     @JoinColumn(name = "DISTRICT_ID")
+    @ToString.Exclude
     private District district;
 
     @OneToOne
@@ -45,6 +45,7 @@ public class Team {
 
     @JoinColumn(name = "PROBATION_AREA_ID")
     @OneToOne
+    @ToString.Exclude
     private ProbationArea probationArea;
 
     @OneToOne
@@ -99,5 +100,6 @@ public class Team {
         joinColumns = {@JoinColumn(name = "TEAM_ID", referencedColumnName = "TEAM_ID")},
         inverseJoinColumns = {@JoinColumn(name = "OFFICE_LOCATION_ID", referencedColumnName = "OFFICE_LOCATION_ID")}
     )
+    @ToString.Exclude
     private List<OfficeLocation> officeLocations;
 }

@@ -1,19 +1,15 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.justice.digital.delius.data.api.KeyValue;
 
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.withArgs;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 
