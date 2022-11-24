@@ -159,6 +159,7 @@ public class OffenderManagerService {
                     .ifPresent(activeRo -> {
                         // deactivate old RO and add a new one
                         activeRo.setEndDateTime(LocalDateTime.now());
+                        responsibleOfficerRepository.saveAndFlush(activeRo);
                         newPrisonOffenderManager.addResponsibleOfficer(responsibleOfficerRepository.save(responsibleOfficerOf(offender, newPrisonOffenderManager)));
                         contactService.addContactForResponsibleOfficerChange(newPrisonOffenderManager, existingPOM);
                         telemetryClient.trackEvent("POMResponsibleOfficerSet", telemetryProperties, null);

@@ -56,7 +56,6 @@ import java.util.UUID;
 import java.util.function.UnaryOperator;
 
 import static com.fasterxml.jackson.databind.node.TextNode.valueOf;
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
@@ -339,7 +338,7 @@ public class AppointmentServiceTest {
             // Given
             final var crn = "X123456";
             final var appointmentId = 123456L;
-            final var jsonPatch = new JsonPatch(asList(
+            final var jsonPatch = new JsonPatch(List.of(
                 new ReplaceOperation(JsonPointer.of("contactType"), valueOf(RAR_CONTACT_TYPE))));
             when(jsonPatchSupport.getAsText("/contactType", jsonPatch)).thenReturn(of(RAR_CONTACT_TYPE));
 
@@ -356,7 +355,7 @@ public class AppointmentServiceTest {
             // Given
             final var crn = "X123456";
             final var appointmentId = 123456L;
-            final var jsonPatch = new JsonPatch(asList(
+            final var jsonPatch = new JsonPatch(List.of(
                 new ReplaceOperation(JsonPointer.of("contactType"), valueOf(RAR_CONTACT_TYPE))));
             when(jsonPatchSupport.getAsText("/contactType", jsonPatch)).thenReturn(of(RAR_CONTACT_TYPE));
 
@@ -373,7 +372,7 @@ public class AppointmentServiceTest {
             // Given
             final var crn = "X123456";
             final var appointmentId = 123456L;
-            final var jsonPatch = new JsonPatch(asList(
+            final var jsonPatch = new JsonPatch(List.of(
                 new ReplaceOperation(JsonPointer.of("contactType"), valueOf(RAR_CONTACT_TYPE))));
             when(jsonPatchSupport.getAsText("/contactType", jsonPatch)).thenReturn(of(RAR_CONTACT_TYPE));
 

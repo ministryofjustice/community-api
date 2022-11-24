@@ -19,7 +19,7 @@ public class UpwDetails {
     @Id@Column(name = "UPW_DETAILS_ID")
     private Long upwDetailsId;
     @JoinColumn(name = "DISPOSAL_ID")
-    @ManyToOne
+    @OneToOne
     private Disposal disposal;
     @Column(name = "UPW_LENGTH_MINUTES")
     private Long upwLengthMinutes;

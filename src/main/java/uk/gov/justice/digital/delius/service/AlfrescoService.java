@@ -90,8 +90,4 @@ public class AlfrescoService {
 
         return newHeaders;
     }
-
-    public ResponseEntity<Resource> getDocument(String documentId) {
-        return getDocument(documentId, Optional.empty());
-    }
 }

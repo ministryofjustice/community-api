@@ -98,7 +98,7 @@ public class ContactControllerTest {
 
         Contact[] contacts = given()
                 .when()
-                .get(format("/api/offenders/offenderId/1/contacts?from=%s", now.toString()))
+                .get(format("/api/offenders/offenderId/1/contacts?from=%s", now))
                 .then()
                 .statusCode(200)
                 .extract()
@@ -115,7 +115,7 @@ public class ContactControllerTest {
 
         Contact[] contacts = given()
                 .when()
-                .get(format("/api/offenders/offenderId/1/contacts?to=%s", now.toString()))
+                .get(format("/api/offenders/offenderId/1/contacts?to=%s", now))
                 .then()
                 .statusCode(200)
                 .extract()
@@ -166,7 +166,7 @@ public class ContactControllerTest {
 
         Contact[] contacts = given()
                 .when()
-                .get(format("/api/offenders/crn/crn1/contacts?from=%s", now.toString()))
+                .get(format("/api/offenders/crn/crn1/contacts?from=%s", now))
                 .then()
                 .statusCode(200)
                 .extract()
@@ -183,75 +183,7 @@ public class ContactControllerTest {
 
         Contact[] contacts = given()
                 .when()
-                .get(format("/api/offenders/crn/crn1/contacts?to=%s", now.toString()))
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(Contact[].class);
-
-        assertThat(contacts).extracting("contactId").containsOnly(4L);
-    }
-
-    @Test
-    public void canGetAllContactsByNomsNumber() {
-        when(offenderService.offenderIdOfNomsNumber("noms1")).thenReturn(Optional.of(1L));
-        when(contactService.contactsFor(1L, noFilter)).thenReturn(ImmutableList.of(contact1, contact2, contact3, contact4));
-
-        Contact[] contacts = given()
-                .when()
-                .get("/api/offenders/nomsNumber/noms1/contacts")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(Contact[].class);
-
-        assertThat(contacts).extracting("contactId").containsOnly(1L, 2L, 3L, 4L);
-    }
-
-    @Test
-    public void canFilterContactsByNomsNumberAndContactType() {
-        when(offenderService.offenderIdOfNomsNumber("noms1")).thenReturn(Optional.of(1L));
-        when(contactService.contactsFor(1L, typeFilter)).thenReturn(ImmutableList.of(contact3, contact4));
-
-        Contact[] contacts = given()
-                .when()
-                .get("/api/offenders/nomsNumber/noms1/contacts?contactTypes=AAAA")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(Contact[].class);
-
-        assertThat(contacts).extracting("contactId").containsOnly(3L, 4L);
-    }
-
-    @Test
-    public void canFilterContactsByNomsNumberAndFromDateTime() {
-        when(offenderService.offenderIdOfNomsNumber("noms1")).thenReturn(Optional.of(1L));
-        when(contactService.contactsFor(1L, fromFilter)).thenReturn(ImmutableList.of(contact2, contact3, contact4));
-
-        Contact[] contacts = given()
-                .when()
-                .get(format("/api/offenders/nomsNumber/noms1/contacts?from=%s", now.toString()))
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(Contact[].class);
-
-        assertThat(contacts).extracting("contactId").containsOnly(2L, 3L, 4L);
-    }
-
-    @Test
-    public void canFilterContactsByNomsNumberAndToDateTime() {
-        when(offenderService.offenderIdOfNomsNumber("noms1")).thenReturn(Optional.of(1L));
-        when(contactService.contactsFor(1L, toFilter)).thenReturn(ImmutableList.of(contact4));
-
-        Contact[] contacts = given()
-                .when()
-                .get(format("/api/offenders/nomsNumber/noms1/contacts?to=%s", now.toString()))
+                .get(format("/api/offenders/crn/crn1/contacts?to=%s", now))
                 .then()
                 .statusCode(200)
                 .extract()

@@ -10,10 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.constraints.AssertTrue;
-import java.util.Optional;
-
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Data
 @Builder

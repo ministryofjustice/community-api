@@ -88,7 +88,7 @@ public class ContactTransformer {
         var builder = uk.gov.justice.digital.delius.data.api.ContactType.builder()
             .code(contactType.getCode())
             .description(contactType.getDescription())
-            .shortDescription(Optional.ofNullable(contactType.getShortDescription()).orElse(null))
+            .shortDescription(contactType.getShortDescription())
             .appointment(contactType.getAttendanceContact())
             .nationalStandard(contactType.getNationalStandardsContact())
             .systemGenerated(contactType.getSystemGenerated());
@@ -339,7 +339,7 @@ public class ContactTransformer {
 
     public static RequiredOptional toRequiredOptional(YesNoBlank value) {
         if (value == null) {
-            throw new RuntimeException(String.format("Invalid null Yes/No/Blank flag value"));
+            throw new RuntimeException("Invalid null Yes/No/Blank flag value");
         }
         return switch (value) {
             case Y -> RequiredOptional.REQUIRED;

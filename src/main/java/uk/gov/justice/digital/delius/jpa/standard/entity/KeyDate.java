@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Data
-@ToString(exclude = {"custody"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -36,6 +35,7 @@ public class KeyDate {
     private Long keyDateId;
     @ManyToOne
     @JoinColumn(name = "CUSTODY_ID", nullable = false)
+    @ToString.Exclude
     private Custody custody;
     @ManyToOne
     @JoinColumn(name = "KEY_DATE_TYPE_ID")

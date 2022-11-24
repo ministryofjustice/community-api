@@ -106,8 +106,7 @@ public class ReferenceDataService {
     public Page<KeyValue> getTeamsForLocalDeliveryUnit(String code, String lduCode) {
         var ldus = getSelectableLdusForProbationArea(code)
                 // ldu code is not primary key so duplicates can exist - this returns all teams that are linked to LDUs with the provided code
-                .filter(ldu -> ldu.getCode().equals(lduCode))
-                .collect(toList());
+                .filter(ldu -> ldu.getCode().equals(lduCode)).toList();
 
         if (ldus.isEmpty()) {
             throw new NotFoundException(format("Could not find local delivery unit in probation area: '%s', with code: '%s'", code, lduCode));

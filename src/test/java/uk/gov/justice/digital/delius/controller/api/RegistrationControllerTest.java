@@ -62,30 +62,6 @@ public class RegistrationControllerTest {
     }
 
     @Test
-    public void canGetRegistrationsByNoms() {
-        when(offenderService.offenderIdOfNomsNumber("NOMS1")).thenReturn(Optional.of(1L));
-        when(registrationService.registrationsFor(1L))
-                .thenReturn(ImmutableList.of(
-                        aRegistration(2L, "Very High RoSH", "RoSH"),
-                        aRegistration(1L, "Risk to Public", "Public Protection")));
-
-        Registration[] registrations = given()
-            .when()
-            .get("/api/offenders/nomsNumber/NOMS1/registrations")
-            .then()
-            .statusCode(200)
-            .extract()
-            .body()
-            .as(Registration[].class);
-
-        assertThat(registrations).hasSize(2);
-        assertThat(registrations[0].getType().getDescription()).isEqualTo("Very High RoSH");
-        assertThat(registrations[0].getRegister().getDescription()).isEqualTo("RoSH");
-        assertThat(registrations[1].getType().getDescription()).isEqualTo("Risk to Public");
-        assertThat(registrations[1].getRegister().getDescription()).isEqualTo("Public Protection");
-    }
-
-    @Test
     public void canGetRegistrationsByOffenderId() {
         when(offenderService.getOffenderByOffenderId(1L))
                 .thenReturn(Optional.of(OffenderDetail.builder().offenderId(1L).build()));
@@ -121,19 +97,6 @@ public class RegistrationControllerTest {
             .statusCode(404);
 
         verify(offenderService).offenderIdOfCrn("notFoundCrn");
-    }
-
-    @Test
-    public void getRegistrationsForUnknownNomsNumberReturnsNotFound() {
-        when(offenderService.offenderIdOfNomsNumber("notFoundNomsNumber")).thenReturn(Optional.empty());
-
-        given()
-            .when()
-            .get("/api/offenders/nomsNumber/notFoundNomsNumber/registrations")
-            .then()
-            .statusCode(404);
-
-        verify(offenderService).offenderIdOfNomsNumber("notFoundNomsNumber");
     }
 
     @Test

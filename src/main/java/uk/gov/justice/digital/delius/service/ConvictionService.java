@@ -49,7 +49,6 @@ import static uk.gov.justice.digital.delius.service.CustodyKeyDatesMapper.custod
 import static uk.gov.justice.digital.delius.service.CustodyKeyDatesMapper.descriptionOf;
 import static uk.gov.justice.digital.delius.service.CustodyKeyDatesMapper.keyDatesOf;
 import static uk.gov.justice.digital.delius.service.CustodyKeyDatesMapper.missingKeyDateTypesCodes;
-import static uk.gov.justice.digital.delius.transformers.TypesTransformer.convertToBoolean;
 
 @Service
 @Slf4j
@@ -226,8 +225,7 @@ public class ConvictionService {
     public Result<Optional<Event>, DuplicateConvictionsForSentenceDateException> getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(Long offenderId, LocalDate sentenceStartDate) {
         final var events = activeCustodyEvents(offenderId)
             .stream()
-            .filter(event -> didSentenceStartAroundDate(event, sentenceStartDate))
-            .collect(toList());
+            .filter(event -> didSentenceStartAroundDate(event, sentenceStartDate)).toList();
 
         switch (events.size()) {
             case 0:

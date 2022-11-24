@@ -185,6 +185,5 @@ public class UserAPITest extends IntegrationTestBase {
             .status(404)
             .developerMessage("Could not find user with username: 'usernoexist'")
             .build());
-        ;
     }
 }

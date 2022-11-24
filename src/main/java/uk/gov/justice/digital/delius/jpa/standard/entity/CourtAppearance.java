@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.ToString.Exclude;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -28,7 +28,6 @@ import java.util.Optional;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "COURT_APPEARANCE")
-@ToString(exclude = {"event"})
 public class CourtAppearance {
     enum CourtAppearanceType {
         SENTENCING("S");
@@ -63,6 +62,7 @@ public class CourtAppearance {
 
     @JoinColumn(name = "EVENT_ID")
     @ManyToOne(fetch = FetchType.LAZY)
+    @Exclude
     private Event event;
 
     @Column(name = "TEAM_ID")
@@ -92,6 +92,7 @@ public class CourtAppearance {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "OUTCOME_ID")
+    @Exclude
     private StandardReference outcome;
 
     @Column(name = "REMAND_STATUS_ID")
@@ -116,14 +117,17 @@ public class CourtAppearance {
     private Long offenderId;
 
     @OneToMany(mappedBy = "courtAppearance", cascade = {CascadeType.ALL})
+    @Exclude
     private List<CourtReport> courtReports;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "APPEARANCE_TYPE_ID", insertable = false, updatable = false)
+    @Exclude
     private StandardReference appearanceType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "OFFENDER_ID", insertable = false, updatable = false)
+    @Exclude
     private Offender offender;
 
     public boolean isSentencing() {

@@ -48,7 +48,7 @@ public class ContactController {
                 .build();
 
         Optional<OffenderDetail> maybeOffender = offenderService.getOffenderByOffenderId(offenderId);
-        return contactsResponseEntityOf(maybeOffender.map(offenderDetail -> Optional.of(offenderDetail.getOffenderId())).orElse(Optional.empty()), contactFilter);
+        return contactsResponseEntityOf(maybeOffender.map(OffenderDetail::getOffenderId), contactFilter);
     }
 
     private ResponseEntity<List<Contact>> notFound() {
@@ -70,24 +70,6 @@ public class ContactController {
                 .build();
 
         return contactsResponseEntityOf(offenderService.offenderIdOfCrn(crn), contactFilter);
-
-    }
-
-    @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/contacts", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<List<Contact>> getOffenderContactReportByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                              final @PathVariable("nomsNumber") String nomsNumber,
-                                                                              final @RequestParam("contactTypes") Optional<List<String>> contactTypes,
-                                                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final @RequestParam("from") Optional<LocalDateTime> from,
-                                                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final @RequestParam("to") Optional<LocalDateTime> to) {
-
-        ContactFilter contactFilter = ContactFilter.builder()
-                .contactTypes(contactTypes)
-                .from(from)
-                .to(to)
-                .build();
-
-        return contactsResponseEntityOf(offenderService.offenderIdOfNomsNumber(nomsNumber), contactFilter);
 
     }
 

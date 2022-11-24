@@ -91,21 +91,19 @@ public class MappaDetailsTransformerTest {
     }
 
     private Registration aRegistration() {
-        Registration registration =
-            Registration.builder()
-            .registrationId(2500155758L)
-            .offenderId(2500343964L)
-            .registerType(RegisterType.builder().code("MAPP").description("MAPPA").build())
-            .registrationDate(LocalDate.of(2021, 2, 1))
-            .nextReviewDate(LocalDate.of(2021, 5, 1))
-            .registrationNotes("X320741 registering MAPPA cat 2 level 2")
-            .registeringTeam(Team.builder().code("N02AAM").description("OMIC OMU A").probationArea(ProbationArea.builder().code("NPS").description("NPS North East").build()).build())
-            .registeringStaff(Staff.builder().officerCode("N02AAMU").forename("Unallocated").surname("Staff").build())
-            .registerLevel(StandardReference.builder().codeValue("M2").codeDescription("MAPPA Level 2").build())
-            .registerCategory(StandardReference.builder().codeValue("M2").codeDescription("MAPPA Cat 2").build())
-            .registrationNotes("X320741 registering MAPPA cat 2 level 2")
-            .softDeleted(0L)
-            .build();
-        return registration;
+        return Registration.builder()
+        .registrationId(2500155758L)
+        .offenderId(2500343964L)
+        .registerType(RegisterType.builder().code("MAPP").description("MAPPA").build())
+        .registrationDate(LocalDate.of(2021, 2, 1))
+        .nextReviewDate(LocalDate.of(2021, 5, 1))
+        .registrationNotes("X320741 registering MAPPA cat 2 level 2")
+        .registeringTeam(Team.builder().code("N02AAM").description("OMIC OMU A").probationArea(ProbationArea.builder().code("NPS").description("NPS North East").build()).build())
+        .registeringStaff(Staff.builder().officerCode("N02AAMU").forename("Unallocated").surname("Staff").build())
+        .registerLevel(StandardReference.builder().codeValue("M2").codeDescription("MAPPA Level 2").build())
+        .registerCategory(StandardReference.builder().codeValue("M2").codeDescription("MAPPA Cat 2").build())
+        .registrationNotes("X320741 registering MAPPA cat 2 level 2")
+        .softDeleted(0L)
+        .build();
     }
 }

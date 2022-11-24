@@ -75,24 +75,6 @@ public class AppointmentController {
 
     }
 
-    @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/appointments", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<List<Appointment>> getOffenderAppointmentReportByNomsNumber(final @RequestHeader HttpHeaders httpHeaders,
-                                                                                      final @PathVariable("nomsNumber") String nomsNumber,
-                                                                                      final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam("from") @ApiParam(value = "date of the earliest appointment") Optional<LocalDate> from,
-                                                                                      final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam("to") @ApiParam(value = "date of the latest appointment") Optional<LocalDate> to,
-                                                                                      final @RequestParam("attended") Optional<Attended> attended) {
-
-        AppointmentFilter appointmentFilter = AppointmentFilter.builder()
-                .from(from)
-                .to(to)
-                .attended(attended)
-                .build();
-
-        return appointmentsResponseEntityOf(offenderService.offenderIdOfNomsNumber(nomsNumber), appointmentFilter);
-
-    }
-
     private ResponseEntity<List<Appointment>> appointmentsResponseEntityOf(Optional<Long> maybeOffenderId, AppointmentFilter filter) {
         return maybeOffenderId
                 .map(offenderId -> new ResponseEntity<>(appointmentService.appointmentsFor(offenderId, filter), HttpStatus.OK))

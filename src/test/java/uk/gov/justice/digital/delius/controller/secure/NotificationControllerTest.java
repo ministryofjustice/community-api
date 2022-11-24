@@ -6,10 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
 import uk.gov.justice.digital.delius.data.api.ContextlessNotificationCreateRequest;
-import uk.gov.justice.digital.delius.data.api.ContextlessReferralStartRequest;
 import uk.gov.justice.digital.delius.service.NotificationService;
-
-import java.time.OffsetDateTime;
 
 import static io.restassured.config.EncoderConfig.encoderConfig;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
@@ -17,7 +14,6 @@ import static io.restassured.module.mockmvc.config.RestAssuredMockMvcConfig.newC
 import static java.lang.String.format;
 import static java.time.OffsetDateTime.now;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class NotificationControllerTest {

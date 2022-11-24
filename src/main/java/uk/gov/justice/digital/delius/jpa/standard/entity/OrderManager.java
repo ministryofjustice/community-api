@@ -16,7 +16,6 @@ import java.util.Optional;
 @Builder(toBuilder = true)
 @Entity
 @Table(name = "ORDER_MANAGER")
-@ToString(exclude = {"event"})
 public class OrderManager {
 
     @Column(name = "ORDER_MANAGER_ID")
@@ -51,6 +50,7 @@ public class OrderManager {
 
     @JoinColumn(name = "EVENT_ID")
     @ManyToOne
+    @ToString.Exclude
     private Event event;
 
     @JoinColumn(name = "ALLOCATION_REASON_ID")

@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.ToString.Exclude;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.CascadeType;
@@ -30,7 +30,6 @@ import java.util.Optional;
 @Builder(toBuilder = true)
 @Entity
 @Table(name = "OFFENDER")
-@ToString(exclude = {"events", "previousConvictionsCreatedByUser", "offenderManagers", "prisonOffenderManagers"})
 public class Offender {
 
     @Id
@@ -108,10 +107,12 @@ public class Offender {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TITLE_ID")
+    @Exclude
     private StandardReference title;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "GENDER_ID")
+    @Exclude
     private StandardReference gender;
 
     @Column(name = "PREFERRED_NAME")
@@ -126,22 +127,27 @@ public class Offender {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ETHNICITY_ID")
+    @Exclude
     private StandardReference ethnicity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "NATIONALITY_ID")
+    @Exclude
     private StandardReference nationality;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "IMMIGRATION_STATUS_ID")
+    @Exclude
     private StandardReference immigrationStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "LANGUAGE_ID")
+    @Exclude
     private StandardReference language;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "RELIGION_ID")
+    @Exclude
     private StandardReference religion;
 
     @Column(name = "MOST_RECENT_PRISONER_NUMBER")
@@ -155,24 +161,29 @@ public class Offender {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SECOND_NATIONALITY_ID")
+    @Exclude
     private StandardReference secondNationality;
 
     @OneToMany
     @JoinColumn(name = "OFFENDER_ID")
     // Only select OFFENDER_ADDRESS rows where SOFT_DELETED != 1
     @Where(clause="SOFT_DELETED != 1")
+    @Exclude
     private List<OffenderAddress> offenderAddresses;
 
     @OneToMany
     @JoinColumn(name = "OFFENDER_ID")
+    @Exclude
     private List<OffenderAlias> offenderAliases;
 
     @OneToMany
     @JoinColumn(name = "OFFENDER_ID")
+    @Exclude
     private List<Disability> disabilities;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SEXUAL_ORIENTATION_ID")
+    @Exclude
     private StandardReference sexualOrientation;
 
     @Column(name = "CURRENT_EXCLUSION")
@@ -210,6 +221,7 @@ public class Offender {
 
     @JoinColumn(name = "PREV_CON_CREATED_BY_USER_ID", referencedColumnName = "USER_ID")
     @ManyToOne(fetch = FetchType.LAZY)
+    @Exclude
     private User previousConvictionsCreatedByUser;
 
     @Column(name = "PREV_CON_CREATED_DATETIME")
@@ -223,36 +235,44 @@ public class Offender {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARTITION_AREA_ID")
+    @Exclude
     private PartitionArea partitionArea;
 
     @OneToMany(mappedBy = "offenderId")
     // Only select OFFENDER_MANAGER rows where the ACTIVE_FLAG = 1 AND SOFT_DELETED != 1
     @Where(clause = "ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
+    @Exclude
     private List<OffenderManager> offenderManagers;
 
     @OneToMany(mappedBy = "offenderId")
     // Only select PRISON_OFFENDER_MANAGER rows where the ACTIVE_FLAG = 1 AND SOFT_DELETED= != 1
     @Where(clause = "ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
+    @Exclude
     private List<PrisonOffenderManager> prisonOffenderManagers;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "OFFENDER_ID")
+    @Exclude
     private List<AdditionalIdentifier> additionalIdentifiers;
 
     @OneToMany(mappedBy = "offenderId")
+    @Exclude
     private List<Event> events;
 
     @OneToMany(mappedBy = "offenderId")
     @Where(clause = "ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
+    @Exclude
     private List<Event> activeEvents;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CURRENT_TIER")
+    @Exclude
     private StandardReference currentTier;
 
     @OneToMany
     @JoinColumn(name = "OFFENDER_ID")
     @Where(clause = "SOFT_DELETED != 1")
+    @Exclude
     private List<PersonalContact> personalContacts;
 
     public Optional<PrisonOffenderManager> getResponsibleOfficerWhoIsPrisonOffenderManager() {

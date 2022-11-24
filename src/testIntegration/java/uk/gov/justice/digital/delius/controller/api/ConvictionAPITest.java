@@ -59,7 +59,7 @@ public class ConvictionAPITest {
         assertThat(convictions).filteredOn("convictionId", 2500295343L).extracting("sentence.expectedSentenceEndDate")
                 .containsExactly(LocalDate.of(2019, 10, 15));
         assertThat(convictions).filteredOn("convictionId", 2500295345L).extracting("sentence.expectedSentenceEndDate")
-                .containsExactly(LocalDate.of(2024, 9, 03));
+                .containsExactly(LocalDate.of(2024, 9, 3));
     }
 
     @Test
