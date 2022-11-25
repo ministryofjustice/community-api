@@ -36,26 +36,6 @@ public class ConvictionControllerTest {
     }
 
     @Test
-    public void canGetConvictionsByCrn() {
-        when(offenderService.offenderIdOfCrn("CRN1")).thenReturn(Optional.of(1L));
-        when(convictionService.convictionsFor(1L, false))
-                .thenReturn(ImmutableList.of(aConviction(2L), aConviction(1L)));
-
-        Conviction[] convictions = given()
-            .when()
-            .get("/api/offenders/crn/CRN1/convictions")
-            .then()
-            .statusCode(200)
-            .extract()
-            .body()
-            .as(Conviction[].class);
-
-        assertThat(convictions).hasSize(2);
-        assertThat(convictions[0].getConvictionId()).isEqualTo(2L);
-        assertThat(convictions[1].getConvictionId()).isEqualTo(1L);
-    }
-
-    @Test
     public void canGetConvictionsByOffenderId() {
         when(offenderService.getOffenderByOffenderId(1L))
                 .thenReturn(Optional.of(OffenderDetail.builder().offenderId(1L).build()));
@@ -74,19 +54,6 @@ public class ConvictionControllerTest {
         assertThat(convictions).hasSize(2);
         assertThat(convictions[0].getConvictionId()).isEqualTo(2L);
         assertThat(convictions[1].getConvictionId()).isEqualTo(1L);
-    }
-
-    @Test
-    public void getConvictionsForUnknownCrnReturnsNotFound() {
-        when(offenderService.offenderIdOfCrn("notFoundCrn")).thenReturn(Optional.empty());
-
-        given()
-            .when()
-            .get("/api/offenders/crn/notFoundCrn/convictions")
-            .then()
-            .statusCode(404);
-
-        verify(offenderService).offenderIdOfCrn("notFoundCrn");
     }
 
     @Test

@@ -272,24 +272,6 @@ public class DeliusOffenderAPITest {
                 .uid("bobby.davro").build());
     }
 
-
-    @Test
-    public void canListOffenderDocumentsByOffenderCRN() throws IOException {
-        DocumentMeta[] documentList = given()
-                .header("Authorization", aValidToken())
-                .when()
-                .get("/offenders/crn/crn123/documents")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(DocumentMeta[].class);
-
-        DocumentMeta expectedDoc = aDocumentMeta();
-
-        assertThat(Arrays.asList(documentList)).containsOnly(expectedDoc);
-    }
-
     @Test
     public void canListOffenderDocumentsByOffenderId() throws IOException {
         Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(anOffender()));
@@ -324,33 +306,6 @@ public class DeliusOffenderAPITest {
     }
 
     @Test
-    public void listOffenderDocumentsForUnknownOffenderCRNGives404() {
-        given()
-                .header("Authorization", aValidToken())
-                .when()
-                .get("/offenders/crn/D002385/documents")
-                .then()
-                .statusCode(404);
-    }
-
-    @Test
-    public void canGetOffenderDocumentDetailsByOffenderCrnAndDocumentId() throws IOException {
-        DocumentMeta documentMeta = given()
-                .header("Authorization", aValidToken())
-                .when()
-                .get("/offenders/crn/crn123/documents/fa63c379-8b31-4e36-a152-2a57dfe251c4/detail")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(DocumentMeta.class);
-
-        DocumentMeta expectedDoc = aDocumentMeta();
-
-        assertThat(documentMeta).isEqualTo(expectedDoc);
-    }
-
-    @Test
     public void canGetOffenderDocumentDetailsByOffenderIdAndDocumentId() throws IOException {
         Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(anOffender()));
 
@@ -368,61 +323,6 @@ public class DeliusOffenderAPITest {
         DocumentMeta expectedDoc = aDocumentMeta();
 
         assertThat(documentMeta).isEqualTo(expectedDoc);
-    }
-
-    @Test
-    public void getOffenderDocumentDetailsForUnknownOffenderCRNGives404() {
-        given()
-                .header("Authorization", aValidToken())
-                .when()
-                .get("/offenders/crn/D002385/documents/fa63c379-8b31-4e36-a152-2a57dfe251c4/detail")
-                .then()
-                .statusCode(404);
-    }
-
-    @Test
-    public void getOffenderDocumentDetailsForKnownOffenderCRNButUnknownDocumentGives404() {
-        given()
-                .header("Authorization", aValidToken())
-                .when()
-                .get("/offenders/crn/D002384/documents/fa63c379-8b31-4e36-a152-2a57dfe251c5/detail")
-                .then()
-                .statusCode(404);
-    }
-
-    @Test
-    public void canRetrieveOffenderDocument() {
-
-        String filename = "TS2 Trg Template Letter_03012018_132035_Pickett_K_D002384.DOC";
-
-        given()
-                .header("Authorization", aValidToken())
-                .when()
-                .get("/offenders/crn/crn123/documents/fa63c379-8b31-4e36-a152-2a57dfe251c4")
-                .then()
-                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
-                    .filename(filename, StandardCharsets.UTF_8).build().toString())
-                .statusCode(200);
-    }
-
-    @Test
-    public void retrieveDocumentForUnknownOffenderCRNGives404() {
-        given()
-                .header("Authorization", aValidToken())
-                .when()
-                .get("/offenders/crn/D002385/documents/fa63c379-8b31-4e36-a152-2a57dfe251c4")
-                .then()
-                .statusCode(404);
-    }
-
-    @Test
-    public void retrieveDocumentForKnownOffenderButUnknownDocumentGives404() {
-        given()
-                .header("Authorization", aValidToken())
-                .when()
-                .get("/offenders/crn/crn123/documents/fa63c379-8b31-4e36-a152-2a57dfe251c5")
-                .then()
-                .statusCode(404);
     }
 
     @Test
@@ -485,22 +385,6 @@ public class DeliusOffenderAPITest {
                 .header("Authorization", aValidToken())
                 .when()
                 .get("/offenders/offenderId/1/userAccess")
-                .then()
-                .statusCode(200)
-                .extract().body().as(AccessLimitation.class);
-
-        assertThat(accessLimitation.isUserExcluded()).isFalse();
-        assertThat(accessLimitation.isUserRestricted()).isFalse();
-    }
-
-    @Test
-    public void userAccessForOffenderCrnWithNoAccessLimitationsReturnsAppropriate() {
-        Mockito.when(offenderRepository.findByCrn(eq("123"))).thenReturn(Optional.of(anOffender()));
-
-        AccessLimitation accessLimitation = given()
-                .header("Authorization", aValidToken())
-                .when()
-                .get("/offenders/crn/123/userAccess")
                 .then()
                 .statusCode(200)
                 .extract().body().as(AccessLimitation.class);
@@ -615,34 +499,15 @@ public class DeliusOffenderAPITest {
 
 
         OffenderManager[] offenderManagers = given()
-                .header("Authorization", aValidToken())
-                .when()
-                .get("/offenders/offenderId/1/offenderManagers")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(OffenderManager[].class);
+            .header("Authorization", aValidToken())
+            .when()
+            .get("/offenders/offenderId/1/offenderManagers")
+            .then()
+            .statusCode(200)
+            .extract()
+            .body()
+            .as(OffenderManager[].class);
 
         assertThat(offenderManagers).hasSize(1);
     }
-
-    @Test
-    public void canGetOffenderManagersByOffenderCrn() {
-        Mockito.when(offenderRepository.findByCrn(eq("A123"))).thenReturn(Optional.of(anOffender()));
-
-
-        OffenderManager[] offenderManagers = given()
-                .header("Authorization", aValidToken())
-                .when()
-                .get("/offenders/crn/A123/offenderManagers")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(OffenderManager[].class);
-
-        assertThat(offenderManagers).hasSize(1);
-    }
-
 }
