@@ -101,19 +101,6 @@ public class OffenderController {
 
     }
 
-    @RequestMapping(value = "/offenders/crn/{crn}/documents", method = RequestMethod.GET)
-    @ApiOperation(
-            value = "Returns all offender related documents as a flat list given CRN",
-            notes = "This uses Alfresco as it's source of information",
-            nickname = "getOffenderDocumentListByNomsNumber")
-    @JwtValidation
-    public ResponseEntity<List<DocumentMeta>> getOffenderDocumentListByCrn(final @RequestHeader HttpHeaders httpHeaders,
-                                                                           final @PathVariable("crn") String crn) {
-        List<DocumentMeta> documentMetas = alfrescoService.listDocuments(crn).getDocuments().stream().map(this::documentMetaOf).collect(Collectors.toList());
-
-        return new ResponseEntity<>(documentMetas, OK);
-    }
-
     @RequestMapping(value = "/offenders/offenderId/{offenderId}/documents", method = RequestMethod.GET)
     @ApiOperation(
             value = "Returns all offender related documents as a flat list given offenderId",
@@ -152,14 +139,6 @@ public class OffenderController {
                 .build();
     }
 
-    @RequestMapping(value = "/offenders/crn/{crn}/documents/{documentId}/detail", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<DocumentMeta> getOffenderDocumentDetailByCrn(final @RequestHeader HttpHeaders httpHeaders,
-                                                                       final @PathVariable("crn") String crn,
-                                                                       final @PathVariable("documentId") String documentId) {
-        return documentMetaResponseEntityOf(crn, documentId);
-    }
-
     private ResponseEntity<DocumentMeta> documentMetaResponseEntityOf(String crn, String documentId) {
         return alfrescoService.getDocumentDetail(documentId, crn).map(detail -> new ResponseEntity<>(documentMetaOf(detail), OK)).orElse(new ResponseEntity<>(NOT_FOUND));
     }
@@ -176,14 +155,6 @@ public class OffenderController {
 
     private Optional<ResponseEntity<DocumentMeta>> documentMetaResponseEntityOf(String documentId, Optional<String> maybeCrn) {
         return maybeCrn.map(crn -> documentMetaResponseEntityOf(crn, documentId));
-    }
-
-    @RequestMapping(value = "/offenders/crn/{crn}/documents/{documentId}", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<Resource> getOffenderDocumentByCrn(final @RequestHeader HttpHeaders httpHeaders,
-                                                             final @PathVariable("crn") String crn,
-                                                             final @PathVariable("documentId") String documentId) {
-        return alfrescoService.getDocument(documentId, crn);
     }
 
     @RequestMapping(value = "/offenders/offenderId/{offenderId}/documents/{documentId}", method = RequestMethod.GET)
@@ -252,31 +223,6 @@ public class OffenderController {
             return FORBIDDEN;
         }
         return OK;
-    }
-
-    @RequestMapping(value = "/offenders/crn/{crn}/userAccess", method = RequestMethod.GET)
-    @JwtValidation
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "User has unrestricted access to offender"),
-            @ApiResponse(code = 401, message = "Request is missing Authorization header (no JWT)"),
-            @ApiResponse(code = 403, message = "User is restricted from access to offender", response = AccessLimitation.class),
-            @ApiResponse(code = 404, message = "No such offender, or no such User (see body for detail)")
-    })
-    public ResponseEntity<AccessLimitation> checkUserAccessByCrn(final @RequestHeader HttpHeaders httpHeaders,
-                                                                 final @PathVariable("crn") String crn) {
-        Optional<OffenderDetail> maybeOffender = offenderService.getOffenderByCrn(crn);
-
-        return accessLimitationResponseEntityOf(httpHeaders, maybeOffender);
-    }
-
-    @RequestMapping(value = "/offenders/crn/{crn}/offenderManagers", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<List<OffenderManager>> getOffenderManagerByCrn(final @RequestHeader HttpHeaders httpHeaders,
-                                                                         final @PathVariable("crn") String crn) {
-        return offenderService.getOffenderManagersForCrn(crn)
-                .map(offenderManager -> new ResponseEntity<>(offenderManager, OK))
-                .orElse(new ResponseEntity<>(NOT_FOUND));
-
     }
 
     @RequestMapping(value = "/offenders/offenderId/{offenderId}/offenderManagers", method = RequestMethod.GET)

@@ -47,39 +47,6 @@ public class AppointmentControllerTest {
     }
 
     @Test
-    public void canGetAppointmentsByCrn() {
-        when(offenderService.offenderIdOfCrn("CRN1")).thenReturn(Optional.of(1L));
-        when(appointmentService.appointmentsFor(eq(1L), any(AppointmentFilter.class)))
-                .thenReturn(ImmutableList.of(aAppointment(2L, "Drugs Checkup"), aAppointment(1L, "Accommodation")));
-
-        Appointment[] appointments = given()
-            .when()
-            .get("/api/offenders/crn/CRN1/appointments")
-            .then()
-            .statusCode(200)
-            .extract()
-            .body()
-            .as(Appointment[].class);
-
-        assertThat(appointments).hasSize(2);
-        assertThat(appointments[0].getAppointmentType().getDescription()).isEqualTo("Drugs Checkup");
-        assertThat(appointments[1].getAppointmentType().getDescription()).isEqualTo("Accommodation");
-    }
-
-    @Test
-    public void getAppointmentsForUnknownCrnReturnsNotFound() {
-        when(offenderService.offenderIdOfCrn("notFoundCrn")).thenReturn(Optional.empty());
-
-        given()
-            .when()
-            .get("/api/offenders/crn/notFoundCrn/appointments")
-            .then()
-            .statusCode(404);
-
-        verify(offenderService).offenderIdOfCrn("notFoundCrn");
-    }
-
-    @Test
     public void getAppointmentsForUnknownOffenderIdReturnsNotFound() {
         when(offenderService.getOffenderByOffenderId(99L)).thenReturn(Optional.empty());
 
@@ -90,53 +57,6 @@ public class AppointmentControllerTest {
             .statusCode(404);
 
         verify(offenderService).getOffenderByOffenderId(99L);
-    }
-
-    @Test
-    public void filterIsPopulatedWhenSuppliedWithCrn() {
-        when(offenderService.offenderIdOfCrn("CRN1")).thenReturn(Optional.of(1L));
-        when(appointmentService.appointmentsFor(eq(1L), any(AppointmentFilter.class)))
-                .thenReturn(ImmutableList.of(aAppointment(2L, "Drugs Checkup"), aAppointment(1L, "Accommodation")));
-
-        given()
-                .params(ImmutableMap.of("from", "2018-11-02", "to", "2018-12-25", "attended", "NOT_RECORDED"))
-                .when()
-                .get("/api/offenders/crn/CRN1/appointments")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(Appointment[].class);
-
-        verify(appointmentService).appointmentsFor(eq(1L), appointmentFilterArgumentCaptor.capture());
-
-        assertThat(appointmentFilterArgumentCaptor.getValue().getAttended().orElse(null)).isEqualTo(Appointment.Attended.NOT_RECORDED);
-        assertThat(appointmentFilterArgumentCaptor.getValue().getFrom().orElse(null)).isEqualTo(LocalDate.of(2018, 11, 2));
-        assertThat(appointmentFilterArgumentCaptor.getValue().getTo().orElse(null)).isEqualTo(LocalDate.of(2018, 12, 25));
-
-
-    }
-
-    @Test
-    public void filterIsOptionalWhenSuppliedWithCrn() {
-        when(offenderService.offenderIdOfCrn("CRN1")).thenReturn(Optional.of(1L));
-        when(appointmentService.appointmentsFor(eq(1L), any(AppointmentFilter.class)))
-                .thenReturn(ImmutableList.of(aAppointment(2L, "Drugs Checkup"), aAppointment(1L, "Accommodation")));
-
-        given()
-                .when()
-                .get("/api/offenders/crn/CRN1/appointments")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(Appointment[].class);
-
-        verify(appointmentService).appointmentsFor(eq(1L), appointmentFilterArgumentCaptor.capture());
-
-        assertThat(appointmentFilterArgumentCaptor.getValue().getAttended().isPresent()).isFalse();
-        assertThat(appointmentFilterArgumentCaptor.getValue().getFrom().isPresent()).isFalse();
-        assertThat(appointmentFilterArgumentCaptor.getValue().getTo().isPresent()).isFalse();
     }
 
     @Test

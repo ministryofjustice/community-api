@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@Api(description = "Offender appointment resources", tags = "Offender Appointments")
 @RequestMapping(value = "api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AppointmentController {
 
@@ -55,24 +54,6 @@ public class AppointmentController {
 
     private ResponseEntity<List<Appointment>> notFound() {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    @RequestMapping(value = "/offenders/crn/{crn}/appointments", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<List<Appointment>> getOffenderReportAppointmentByCrn(final @RequestHeader HttpHeaders httpHeaders,
-                                                                               final @PathVariable("crn") String crn,
-                                                                               final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam("from") @ApiParam(value = "date of the earliest appointment") Optional<LocalDate> from,
-                                                                               final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam("to") @ApiParam(value = "date of the latest appointment") Optional<LocalDate> to,
-                                                                               final @RequestParam("attended") Optional<Attended> attended) {
-
-        AppointmentFilter appointmentFilter = AppointmentFilter.builder()
-                .from(from)
-                .to(to)
-                .attended(attended)
-                .build();
-
-        return appointmentsResponseEntityOf(offenderService.offenderIdOfCrn(crn), appointmentFilter);
-
     }
 
     private ResponseEntity<List<Appointment>> appointmentsResponseEntityOf(Optional<Long> maybeOffenderId, AppointmentFilter filter) {

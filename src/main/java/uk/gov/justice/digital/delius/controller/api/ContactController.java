@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@Api(description = "Offender contact resources", tags = "Offender Contacts")
 @RequestMapping(value = "api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ContactController {
 
@@ -53,24 +52,6 @@ public class ContactController {
 
     private ResponseEntity<List<Contact>> notFound() {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    @RequestMapping(value = "/offenders/crn/{crn}/contacts", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<List<Contact>> getOffenderReportContactByCrn(final @RequestHeader HttpHeaders httpHeaders,
-                                                                       final @PathVariable("crn") String crn,
-                                                                       final @RequestParam("contactTypes") Optional<List<String>> contactTypes,
-                                                                       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final @RequestParam("from") Optional<LocalDateTime> from,
-                                                                       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final @RequestParam("to") Optional<LocalDateTime> to) {
-
-        ContactFilter contactFilter = ContactFilter.builder()
-                .contactTypes(contactTypes)
-                .from(from)
-                .to(to)
-                .build();
-
-        return contactsResponseEntityOf(offenderService.offenderIdOfCrn(crn), contactFilter);
-
     }
 
     private ResponseEntity<List<Contact>> contactsResponseEntityOf(Optional<Long> maybeOffenderId, ContactFilter filter) {
