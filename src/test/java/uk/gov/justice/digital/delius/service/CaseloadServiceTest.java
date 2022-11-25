@@ -10,9 +10,12 @@ import org.springframework.data.domain.Pageable;
 import uk.gov.justice.digital.delius.data.api.ManagedEventId;
 import uk.gov.justice.digital.delius.data.api.ManagedOffenderCrn;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Caseload;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import uk.gov.justice.digital.delius.jpa.standard.repository.CaseloadRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StaffRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.TeamRepository;
+
+import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,14 +70,18 @@ public class CaseloadServiceTest {
 
     @Test
     public void whenTeamCaseloadIsReturnedFromRepository_thenMapAndReturnIt() {
-        when(teamRepository.existsByCode("TEST")).thenReturn(true);
-        when(caseloadRepository.findByTeamCodeAndRoleCodeIn(eq("TEST"), eq(asList("OM", "OS")), any(Pageable.class)))
+        final Team team = new Team();
+        team.setTeamId(37L);
+
+        when(teamRepository.findByCode("TEST")).thenReturn(Optional.of(team));
+        when(caseloadRepository.findByTeamTeamIdAndRoleCodeIn(eq(team.getTeamId()), eq(asList("OM", "OS")), any(Pageable.class)))
             .thenReturn(asList(
                 Caseload.builder().roleCode("OM").team(aTeam()).staff(aStaff().toBuilder().staffId(2L).build()).build(),
                 Caseload.builder().roleCode("OS").team(aTeam()).staff(aStaff().toBuilder().staffId(3L).build()).build()
             ));
 
-        var caseload = caseloadService.getCaseloadByTeamCode("TEST", PageRequest.of(0, 100), OFFENDER_MANAGER, ORDER_SUPERVISOR);
+        var caseload =
+            caseloadService.getCaseloadByTeamCode("TEST", PageRequest.of(0, 100), OFFENDER_MANAGER, ORDER_SUPERVISOR);
 
         assertThat(caseload).isPresent();
         assertThat(caseload.get().getManagedOffenders())
