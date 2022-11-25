@@ -19,7 +19,6 @@ import java.util.Optional;
 
 @RestController
 @Slf4j
-@Api(description = "Offender alert registrations resources", tags = "Offender registrations")
 @RequestMapping(value = "api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RegistrationController {
     private final OffenderService offenderService;
@@ -39,15 +38,6 @@ public class RegistrationController {
         log.info("Call to getOffenderRegistrationsByOffenderId");
         Optional<OffenderDetail> maybeOffender = offenderService.getOffenderByOffenderId(offenderId);
         return registrationsResponseEntityOf(maybeOffender.map(OffenderDetail::getOffenderId));
-    }
-
-    @RequestMapping(value = "offenders/crn/{crn}/registrations", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<List<Registration>> getOffenderRegistrationsByCrn(final @RequestHeader HttpHeaders httpHeaders,
-                                                                  final @PathVariable("crn") String crn) {
-
-        log.info("Call to getOffenderRegistrationsByCrn");
-        return registrationsResponseEntityOf(offenderService.offenderIdOfCrn(crn));
     }
 
     private ResponseEntity<List<Registration>> registrationsResponseEntityOf(Optional<Long> maybeOffenderId) {
