@@ -14,6 +14,7 @@ import uk.gov.justice.digital.delius.transformers.CaseloadTransformer;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -38,11 +39,11 @@ public class CaseloadService {
     public Optional<Caseload> getCaseloadByTeamCode(
         final String teamCode, final Pageable pageable, final CaseloadRole... roles
     ) {
-        if (!teamRepository.existsByCode(teamCode)) return Optional.empty();
-
-        val roleCodes = Arrays.stream(roles).map(CaseloadRole::getRoleCode).toList();
-        val caseload = caseloadRepository.findByTeamCodeAndRoleCodeIn(teamCode, roleCodes, pageable);
-
-        return Optional.of(CaseloadTransformer.caseloadOf(caseload));
+        return teamRepository.findByCode(teamCode)
+            .map(t -> caseloadRepository.findByTeamTeamIdAndRoleCodeIn(
+                t.getTeamId(),
+                Stream.of(roles).map(CaseloadRole::getRoleCode).toList(),
+                pageable
+            )).map(CaseloadTransformer::caseloadOf);
     }
 }
