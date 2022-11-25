@@ -273,59 +273,6 @@ public class DeliusOffenderAPITest {
     }
 
     @Test
-    public void canListOffenderDocumentsByOffenderId() throws IOException {
-        Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(anOffender()));
-
-
-        DocumentMeta[] documentList = given()
-                .header("Authorization", aValidToken())
-                .when()
-                .get("/offenders/offenderId/1/documents")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(DocumentMeta[].class);
-
-        DocumentMeta expectedDoc = aDocumentMeta();
-
-        assertThat(Arrays.asList(documentList)).containsOnly(expectedDoc);
-    }
-
-    private DocumentMeta aDocumentMeta() throws IOException {
-        return DocumentMeta.builder()
-                .docType("DOCUMENT")
-                .entityType("CONTACT")
-                .createdAt(OffsetDateTime.parse("2018-01-03T13:20:35Z"))
-                .lastModifiedAt(OffsetDateTime.parse("2018-01-03T13:20:35Z"))
-                .id("fa63c379-8b31-4e36-a152-2a57dfe251c4")
-                .documentName("TS2 Trg Template Letter_03012018_132035_Pickett_K_D002384.DOC")
-                .author("NDelius02,NDelius02")
-                .userData(objectMapper.readValue("{\"templateName\":\"shortFormatPreSentenceReport\",\"values\":{\"issueBehaviourDetails\":\"\",\"oasysAssessmentsInformationSource\":false,\"issueFinanceDetails\":\"\",\"pageNumber\":2,\"issueSubstanceMisuse\":false,\"office\":\"\",\"riskOfSeriousHarm\":\"\",\"counterSignature\":\"\",\"feedback\":\"Really great service. Saves me so much time\",\"jumpNumber\":2,\"issueOther\":false,\"reportAuthor\":\"\",\"reportDate\":\"08/12/2017\",\"additionalPreviousSupervision\":\"\",\"likelihoodOfReOffending\":\"\",\"otherOffences\":\"\",\"issueEmploymentDetails\":\"\",\"cpsSummaryInformationSource\":false,\"proposal\":\"\",\"watermark\":\"DRAFT\",\"pnc\":\"\",\"childrenServicesInformationSource\":false,\"court\":\"Mansfield  Magistrates Court\",\"issueSubstanceMisuseDetails\":\"\",\"mainOffence\":\"\",\"offenceSummary\":\"\",\"issueAccommodationDetails\":\"\",\"name\":\"Johnny PDF\",\"issueBehaviour\":false,\"interviewInformationSource\":false,\"startDate\":\"08/12/2017\",\"issueAccommodation\":false,\"issueRelationshipsDetails\":\"\",\"onBehalfOfUser\":\"andy.marke,andy.marke\",\"courtOfficePhoneNumber\":\"\",\"pncSupplied\":false,\"sentencingGuidelinesInformationSource\":false,\"otherInformationDetails\":\"\",\"issueFinance\":false,\"policeInformationSource\":false,\"otherInformationSource\":false,\"previousSupervisionResponse\":\"\",\"dateOfHearing\":\"27/07/2017\",\"previousConvictionsInformationSource\":false,\"crn\":\"X087946\",\"issueRelationships\":false,\"address\":\"123\\nFake St\\n\",\"issueEmployment\":false,\"localJusticeArea\":\"\",\"dateOfBirth\":\"26/07/1977\",\"entityId\":2500032066,\"serviceRecordsInformationSource\":false,\"visitedPages\":\"[1,2,10]\",\"addressSupplied\":true,\"patternOfOffending\":\"\",\"issueHealth\":false,\"offenceAnalysis\":\"\",\"issueHealthDetails\":\"\",\"issueOtherDetails\":\"\",\"documentId\":\"bc4796ce-09d6-4f04-b715-a3bc8173ac35\",\"age\":40,\"victimStatementInformationSource\":false}}", ObjectNode.class))
-                .build();
-    }
-
-    @Test
-    public void canGetOffenderDocumentDetailsByOffenderIdAndDocumentId() throws IOException {
-        Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(anOffender()));
-
-
-        DocumentMeta documentMeta = given()
-                .header("Authorization", aValidToken())
-                .when()
-                .get("/offenders/offenderId/1/documents/fa63c379-8b31-4e36-a152-2a57dfe251c4/detail")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(DocumentMeta.class);
-
-        DocumentMeta expectedDoc = aDocumentMeta();
-
-        assertThat(documentMeta).isEqualTo(expectedDoc);
-    }
-
-    @Test
     @SuppressWarnings("unchecked")
     public void canRetrieveOffenderIdsWithDefaultPageSizeAndPage() {
 
@@ -491,23 +438,5 @@ public class DeliusOffenderAPITest {
 
         assertThat(accessLimitation.isUserExcluded()).isFalse();
         assertThat(accessLimitation.isUserRestricted()).isTrue();
-    }
-
-    @Test
-    public void canGetOffenderManagersByOffenderId() {
-        Mockito.when(offenderRepository.findByOffenderId(eq(1L))).thenReturn(Optional.of(anOffender()));
-
-
-        OffenderManager[] offenderManagers = given()
-            .header("Authorization", aValidToken())
-            .when()
-            .get("/offenders/offenderId/1/offenderManagers")
-            .then()
-            .statusCode(200)
-            .extract()
-            .body()
-            .as(OffenderManager[].class);
-
-        assertThat(offenderManagers).hasSize(1);
     }
 }

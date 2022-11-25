@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.controller.api;
 
-import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -9,7 +8,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.digital.delius.data.api.CourtAppearance;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.jwt.JwtValidation;
 import uk.gov.justice.digital.delius.service.CourtAppearanceService;
 import uk.gov.justice.digital.delius.service.OffenderService;
@@ -19,7 +17,6 @@ import java.util.Optional;
 
 @RestController
 @Slf4j
-@Api(description = "Offender court appearance resources", tags = "Offender Court Appearances")
 @RequestMapping(value = "api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CourtController {
 
@@ -30,16 +27,6 @@ public class CourtController {
     public CourtController(OffenderService offenderService, CourtAppearanceService courtAppearanceService) {
         this.offenderService = offenderService;
         this.courtAppearanceService = courtAppearanceService;
-    }
-
-    @RequestMapping(value = "offenders/offenderId/{offenderId}/courtAppearances", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<List<CourtAppearance>> getOffenderCourtAppearancesByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
-                                                                             final @PathVariable("offenderId") Long offenderId) {
-
-        log.info("Call to getOffenderCourtAppearancesByOffenderId");
-        Optional<OffenderDetail> maybeOffender = offenderService.getOffenderByOffenderId(offenderId);
-        return courtAppearancesResponseEntityOf(maybeOffender.map(OffenderDetail::getOffenderId));
     }
 
     @RequestMapping(value = "offenders/crn/{crn}/courtAppearances", method = RequestMethod.GET)

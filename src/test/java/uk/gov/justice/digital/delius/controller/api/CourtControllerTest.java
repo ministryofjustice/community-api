@@ -60,29 +60,6 @@ public class CourtControllerTest {
     }
 
     @Test
-    public void canGetCourtAppearancesByOffenderId() {
-        when(offenderService.getOffenderByOffenderId(1L))
-                .thenReturn(Optional.of(OffenderDetail.builder().offenderId(1L).build()));
-        when(courtAppearanceService.courtAppearancesFor(1L))
-                .thenReturn(ImmutableList.of(aCourtAppearance(1L), aCourtAppearance(2L)));
-
-        CourtAppearance[] courtAppearances = given()
-            .when()
-            .get("/api/offenders/offenderId/1/courtAppearances")
-            .then()
-            .statusCode(200)
-            .extract()
-            .body()
-            .as(CourtAppearance[].class);
-
-        assertThat(courtAppearances).hasSize(2);
-        assertThat(courtAppearances[0].getCourt()).isNotNull();
-        assertThat(courtAppearances[1].getCourt()).isNotNull();
-        assertThat(courtAppearances[0].getCourtReports()).isNotNull();
-        assertThat(courtAppearances[1].getCourtReports()).isNotNull();
-    }
-
-    @Test
     public void getCourtAppearancesForUnknownCrnReturnsNotFound() {
         when(offenderService.offenderIdOfCrn("notFoundCrn")).thenReturn(Optional.empty());
 
@@ -93,19 +70,6 @@ public class CourtControllerTest {
             .statusCode(404);
 
         verify(offenderService).offenderIdOfCrn("notFoundCrn");
-    }
-
-    @Test
-    public void getCourtAppearancesForUnknownOffenderIdReturnsNotFound() {
-        when(offenderService.getOffenderByOffenderId(99L)).thenReturn(Optional.empty());
-
-        given()
-            .when()
-            .get("/api/offenders/offenderId/99/courtAppearances")
-            .then()
-            .statusCode(404);
-
-        verify(offenderService).getOffenderByOffenderId(99L);
     }
 
     private CourtAppearance aCourtAppearance(Long id) {

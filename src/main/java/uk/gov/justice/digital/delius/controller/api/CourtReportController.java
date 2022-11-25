@@ -33,15 +33,6 @@ public class CourtReportController {
         this.courtReportService = courtReportService;
     }
 
-    @RequestMapping(value = "offenders/offenderId/{offenderId}/courtReports", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<List<CourtReport>> getOffenderCourtReportsByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
-                                                                                     final @PathVariable("offenderId") Long offenderId) {
-
-        log.info("Call to getOffenderCourtReportsByOffenderId");
-        return courtReportsResponseEntityOf(Optional.of(offenderId));
-    }
-
     @RequestMapping(value = "offenders/crn/{crn}/courtReports", method = RequestMethod.GET)
     @JwtValidation
     public ResponseEntity<List<CourtReport>> getOffenderCourtReportsByCrn(final @RequestHeader HttpHeaders httpHeaders,
@@ -49,16 +40,6 @@ public class CourtReportController {
 
         log.info("Call to getOffenderCourtReportsByCrn");
         return courtReportsResponseEntityOf(offenderService.offenderIdOfCrn(crn));
-    }
-
-    @RequestMapping(value = "offenders/offenderId/{offenderId}/courtReports/{courtReportId}", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<CourtReport> getOffenderCourtReportByOffenderIdAndCourtReportId(final @RequestHeader HttpHeaders httpHeaders,
-                                                                                 final @PathVariable("offenderId") Long offenderId,
-                                                                                 final @PathVariable Long courtReportId) {
-
-        log.info("Call to getOffenderCourtReportByOffenderIdAndCourtReportId");
-        return courtReportResponseEntityOf(Optional.of(offenderId), courtReportId);
     }
 
     @RequestMapping(value = "offenders/crn/{crn}/courtReports/{courtReportId}", method = RequestMethod.GET)

@@ -128,64 +128,6 @@ public class InstitutionalReportControllerTest {
                 .statusCode(404);
     }
 
-    @Test
-    public void canGetAllReportsForOffenderByOffenderId() {
-        when(institutionalReportService.institutionalReportsFor(any())).thenReturn(ImmutableList.of(
-                InstitutionalReport.builder().institutionalReportId(1L)
-                        .offenderId(1L)
-                        .conviction(aConviction(10L))
-                        .build(),
-                InstitutionalReport.builder().institutionalReportId(2L)
-                        .offenderId(1L)
-                        .conviction(aConviction(20L))
-                        .build(),
-                InstitutionalReport.builder().institutionalReportId(4L)
-                        .offenderId(1L)
-                        .conviction(aConviction(30L))
-                        .build()
-        ));
-
-        InstitutionalReport[] institutionalReports = given()
-            .when()
-            .get("/api/offenders/offenderId/1/institutionalReports")
-            .then()
-            .statusCode(200)
-            .extract()
-            .body()
-            .as(InstitutionalReport[].class);
-
-        assertThat(institutionalReports).hasSize(3);
-    }
-
-    @Test
-    public void canGetSpecificReportForOffenderByOffenderIdAndReportId() {
-        when(institutionalReportService.institutionalReportFor(any(), any())).thenReturn(
-                Optional.of(InstitutionalReport.builder().institutionalReportId(4L).offenderId(1L).build()));
-
-        InstitutionalReport institutionalReport = given()
-            .when()
-            .get("/api/offenders/offenderId/1/institutionalReports/4")
-            .then()
-            .statusCode(200)
-            .extract()
-            .body()
-            .as(InstitutionalReport.class);
-
-        assertThat(institutionalReport).isNotNull();
-        assertThat(institutionalReport.getInstitutionalReportId()).isEqualTo(4);
-    }
-
-    @Test
-    public void missingInstitutionalReportRecordResultsInReportForOffenderByOffenderIdAndReportIdNotFound() {
-        when(institutionalReportService.institutionalReportFor(any(), any())).thenReturn(Optional.empty());
-
-        given()
-                .when()
-                .get("/api/offenders/offenderId/1/institutionalReports/4")
-                .then()
-                .statusCode(404);
-    }
-
     private Conviction aConviction(Long id) {
         return Conviction.builder()
             .convictionId(id)
