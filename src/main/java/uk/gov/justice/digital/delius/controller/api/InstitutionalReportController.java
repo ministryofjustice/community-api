@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.controller.api;
 
-import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -21,7 +20,6 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @Slf4j
-@Api(description = "Offender institutional report resources", tags = "Offender institutional Reports")
 @RequestMapping(value = "api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class InstitutionalReportController {
 
@@ -34,15 +32,6 @@ public class InstitutionalReportController {
         this.institutionalReportService = institutionalReportService;
     }
 
-    @RequestMapping(value = "offenders/offenderId/{offenderId}/institutionalReports", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<List<InstitutionalReport>> getOffenderInstitutionalReportsByOffenderId(final @RequestHeader HttpHeaders httpHeaders,
-                                                                                     final @PathVariable("offenderId") Long offenderId) {
-
-        log.info("Call to getOffenderInstitutionalReportsByOffenderId");
-        return institutionalReportsResponseEntityOf(Optional.of(offenderId));
-    }
-
     @RequestMapping(value = "offenders/crn/{crn}/institutionalReports", method = RequestMethod.GET)
     @JwtValidation
     public ResponseEntity<List<InstitutionalReport>> getOffenderInstitutionalReportsByCrn(final @RequestHeader HttpHeaders httpHeaders,
@@ -50,16 +39,6 @@ public class InstitutionalReportController {
 
         log.info("Call to getOffenderInstitutionalReportsByCrn");
         return institutionalReportsResponseEntityOf(offenderService.offenderIdOfCrn(crn));
-    }
-
-    @RequestMapping(value = "offenders/offenderId/{offenderId}/institutionalReports/{institutionalReportId}", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<InstitutionalReport> getOffenderInstitutionalReportByOffenderIdAndInstitutionalReportId(final @RequestHeader HttpHeaders httpHeaders,
-                                                                                 final @PathVariable("offenderId") Long offenderId,
-                                                                                 final @PathVariable Long institutionalReportId) {
-
-        log.info("Call to getOffenderInstitutionalReportByOffenderIdAndInstitutionalReportId");
-        return institutionalReportResponseEntityOf(Optional.of(offenderId), institutionalReportId);
     }
 
     @RequestMapping(value = "offenders/crn/{crn}/institutionalReports/{institutionalReportId}", method = RequestMethod.GET)

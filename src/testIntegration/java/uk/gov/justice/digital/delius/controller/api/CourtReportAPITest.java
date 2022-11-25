@@ -59,22 +59,6 @@ public class CourtReportAPITest {
     }
 
     @Test
-    public void cannotGetReportForOffenderByOffenderIdAndReportIdWithoutJwtAuthorizationHeader() {
-        RestAssured.when()
-                .get("offenders/offenderId/1/courtReports/4")
-                .then()
-                .statusCode(HttpStatus.UNAUTHORIZED.value());
-    }
-
-    @Test
-    public void cannotGetReportsForOffenderByOffenderIdWithoutJwtAuthorizationHeader() {
-        RestAssured.when()
-                .get("offenders/offenderId/1/courtReports")
-                .then()
-                .statusCode(HttpStatus.UNAUTHORIZED.value());
-    }
-
-    @Test
     public void cannotGetReportForOffenderByCrnAndReportIdWithoutJwtAuthorizationHeader() {
         RestAssured.when()
                 .get("offenders/crn/CRN1/courtReports/4")

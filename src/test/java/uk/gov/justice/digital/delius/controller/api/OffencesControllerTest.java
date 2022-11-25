@@ -59,29 +59,6 @@ public class OffencesControllerTest {
     }
 
     @Test
-    public void canGetOffencesByOffenderId() {
-        when(offenderService.getOffenderByOffenderId(1L))
-                .thenReturn(Optional.of(OffenderDetail.builder().offenderId(1L).build()));
-        when(offenceService.offencesFor(1L))
-                .thenReturn(ImmutableList.of(anOffence(1L, "Fraud"), anOffence(2L, "Perjury")));
-
-        Offence[] offences = given()
-            .when()
-            .get("/api/offenders/offenderId/1/offences")
-            .then()
-            .statusCode(200)
-            .extract()
-            .body()
-            .as(Offence[].class);
-
-        assertThat(offences).hasSize(2);
-        assertThat(offences[0].getOffenceId()).isEqualTo("1");
-        assertThat(offences[1].getOffenceId()).isEqualTo("2");
-        assertThat(offences[0].getDetail().getDescription()).isEqualTo("Fraud");
-        assertThat(offences[1].getDetail().getDescription()).isEqualTo("Perjury");
-    }
-
-    @Test
     public void getOffencesForUnknownCrnReturnsNotFound() {
         when(offenderService.offenderIdOfCrn("notFoundCrn")).thenReturn(Optional.empty());
 
@@ -92,19 +69,6 @@ public class OffencesControllerTest {
             .statusCode(404);
 
         verify(offenderService).offenderIdOfCrn("notFoundCrn");
-    }
-
-    @Test
-    public void getOffencesForUnknownOffenderIdReturnsNotFound() {
-        when(offenderService.getOffenderByOffenderId(99L)).thenReturn(Optional.empty());
-
-        given()
-            .when()
-            .get("/api/offenders/offenderId/99/offences")
-            .then()
-            .statusCode(404);
-
-        verify(offenderService).getOffenderByOffenderId(99L);
     }
 
     private Offence anOffence(Long id, String description) {
