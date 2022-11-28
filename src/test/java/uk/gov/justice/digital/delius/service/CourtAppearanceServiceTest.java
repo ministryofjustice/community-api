@@ -118,10 +118,9 @@ class CourtAppearanceServiceTest {
         var previous = now.minusDays(3);
         var appearance1 = aCourtAppearance(1L, 0L, Collections.emptyList(), now.minusDays(3));
         var appearance2 = aCourtAppearance(1L, 0L, Collections.emptyList(), now);
-        var deletedAppearance = aCourtAppearance(1L, 1L, Collections.emptyList(), previous);
 
-        when(courtAppearanceRepository.findByAppearanceDateGreaterThanEqual(today.atStartOfDay()))
-            .thenReturn(ImmutableList.of(appearance1, appearance2, deletedAppearance));
+        when(courtAppearanceRepository.findByAppearanceDateGreaterThanEqualAndSoftDeletedNot(today.atStartOfDay(), 1L))
+            .thenReturn(ImmutableList.of(appearance1, appearance2));
 
         var courtAppearances = courtAppearanceService.courtAppearances(today);
 
