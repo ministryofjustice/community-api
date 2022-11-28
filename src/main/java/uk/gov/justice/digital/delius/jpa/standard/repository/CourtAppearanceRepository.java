@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.jpa.standard.repository;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance;
@@ -13,6 +14,7 @@ public interface CourtAppearanceRepository extends JpaRepository<CourtAppearance
     @Query("SELECT ca from CourtAppearance ca where ca.event.eventId = :eventId and ca.offenderId = :offenderId")
     List<CourtAppearance> findByOffenderIdAndEventId(Long offenderId, Long eventId);
 
-    List<CourtAppearance> findByAppearanceDateGreaterThanEqual(LocalDateTime fromDate);
+    @EntityGraph("ContactAppearance.minimal")
+    List<CourtAppearance> findByAppearanceDateGreaterThanEqualAndSoftDeletedNot(LocalDateTime fromDate, Long softDeleted);
 }
 

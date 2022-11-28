@@ -56,13 +56,12 @@ public class CourtAppearanceService {
 
     public List<CourtAppearanceMinimal> courtAppearances(LocalDate fromDate) {
 
-        var courtAppearances = courtAppearanceRepository.findByAppearanceDateGreaterThanEqual(fromDate.atStartOfDay());
+        var courtAppearances = courtAppearanceRepository.findByAppearanceDateGreaterThanEqualAndSoftDeletedNot(fromDate.atStartOfDay(), 1L);
         return courtAppearances
                 .stream()
-                .filter(courtAppearance -> !convertToBoolean(courtAppearance.getSoftDeleted()))
                 .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance::getAppearanceDate))
                 .map(CourtAppearanceMinimalTransformer::courtAppearanceOf)
-                .collect(toList());
+                .toList();
     }
 
     @NotNull

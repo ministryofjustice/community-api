@@ -15,6 +15,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -28,6 +31,26 @@ import java.util.Optional;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "COURT_APPEARANCE")
+@NamedEntityGraph(name = "ContactAppearance.minimal",
+    attributeNodes = {
+        @NamedAttributeNode("offenderId"),
+        @NamedAttributeNode("courtAppearanceId"),
+        @NamedAttributeNode("appearanceDate"),
+        @NamedAttributeNode(value = "court", subgraph = "Court.minimal"),
+        @NamedAttributeNode(value = "appearanceType", subgraph = "AppearanceType.minimal")
+    },
+    subgraphs = {
+        @NamedSubgraph(name = "Court.minimal", attributeNodes = {
+            @NamedAttributeNode("code"),
+            @NamedAttributeNode("courtName")
+        }),
+        @NamedSubgraph(name = "AppearanceType.minimal", attributeNodes = {
+            @NamedAttributeNode("codeValue"),
+            @NamedAttributeNode("codeDescription")
+        })
+    }
+
+)
 public class CourtAppearance {
     enum CourtAppearanceType {
         SENTENCING("S");
