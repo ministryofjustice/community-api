@@ -33,4 +33,4 @@ spec:
   owner: group:probation-integration
   system: system:hmpps-delius
   definition:
-    $text: https://community-api-public.test.probation.service.justice.gov.uk/v2/api-docs?group=Community%20API
+    $text: https://community-api.test.probation.service.justice.gov.uk/v2/api-docs?group=Community%20API
