@@ -6,6 +6,7 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       leak-detection-threshold: 20000
+      maximum-pool-size: 30
   profiles:
     include: stdout
     group:
