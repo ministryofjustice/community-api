@@ -34,6 +34,7 @@ dependencies {
     implementation 'io.swagger:swagger-core:1.6.8'
     implementation 'io.vavr:vavr:0.10.4'
     implementation 'com.github.java-json-tools:json-patch:1.13'
+    implementation 'io.sentry:sentry-spring-boot-starter:6.10.0'
 
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
