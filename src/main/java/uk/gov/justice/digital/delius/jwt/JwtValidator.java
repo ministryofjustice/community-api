@@ -1,6 +1,9 @@
 package uk.gov.justice.digital.delius.jwt;
 
 import com.google.common.collect.Lists;
+import com.microsoft.applicationinsights.telemetry.RequestTelemetry;
+import com.microsoft.applicationinsights.web.internal.RequestTelemetryContext;
+import com.microsoft.applicationinsights.web.internal.ThreadContext;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -28,7 +31,6 @@ public class JwtValidator {
 
     @Before("execution(@uk.gov.justice.digital.delius.jwt.JwtValidation * *(..))")
     public void validateJwt(JoinPoint joinPoint) {
-
         ArrayList<Object> argsList = Lists.newArrayList(joinPoint.getArgs());
 
         Optional<Claims> maybeClaims = argsList.stream()
@@ -38,7 +40,13 @@ public class JwtValidator {
                 .map(jwt::parseAuthorizationHeader)
                 .orElseThrow(() -> new JwtTokenMissingException("No Authorization Bearer token found in headers."));
 
-        maybeClaims.ifPresent(CurrentUserSupplier::setClaims);
+        maybeClaims.ifPresent(claims -> {
+            CurrentUserSupplier.setClaims(claims);
+            Optional.ofNullable(ThreadContext.getRequestTelemetryContext())
+                .map(RequestTelemetryContext::getHttpRequestTelemetry)
+                .map(RequestTelemetry::getProperties)
+                .ifPresent(properties -> properties.putIfAbsent("clientId", "delius-new-tech"));
+        });
     }
 
 }
