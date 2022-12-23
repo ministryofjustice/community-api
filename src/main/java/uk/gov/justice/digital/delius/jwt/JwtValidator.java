@@ -12,6 +12,7 @@ import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
+import uk.gov.justice.digital.delius.config.ApplicationInsightsConfiguration;
 import uk.gov.justice.digital.delius.exception.JwtTokenMissingException;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 
@@ -40,13 +41,8 @@ public class JwtValidator {
                 .map(jwt::parseAuthorizationHeader)
                 .orElseThrow(() -> new JwtTokenMissingException("No Authorization Bearer token found in headers."));
 
-        maybeClaims.ifPresent(claims -> {
-            CurrentUserSupplier.setClaims(claims);
-            Optional.ofNullable(ThreadContext.getRequestTelemetryContext())
-                .map(RequestTelemetryContext::getHttpRequestTelemetry)
-                .map(RequestTelemetry::getProperties)
-                .ifPresent(properties -> properties.putIfAbsent("clientId", "delius-new-tech"));
-        });
+        maybeClaims.ifPresent(ApplicationInsightsConfiguration::setNewTechClientId);
+        maybeClaims.ifPresent(CurrentUserSupplier::setClaims);
     }
 
 }
