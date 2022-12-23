@@ -1,9 +1,14 @@
 package uk.gov.justice.digital.delius.config;
 
 import com.microsoft.applicationinsights.TelemetryClient;
+import com.microsoft.applicationinsights.telemetry.RequestTelemetry;
+import com.microsoft.applicationinsights.web.internal.RequestTelemetryContext;
+import com.microsoft.applicationinsights.web.internal.ThreadContext;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.*;
+
+import java.util.Optional;
 
 /**
  * Application insights now controlled by the spring-boot-starter dependency.  However when the key is not specified
@@ -17,5 +22,12 @@ public class ApplicationInsightsConfiguration {
     public TelemetryClient telemetryClient() {
         log.warn("Application insights configuration missing, returning dummy bean instead");
         return new TelemetryClient();
+    }
+
+    public static void setNewTechClientId(Object any) {
+        Optional.ofNullable(ThreadContext.getRequestTelemetryContext())
+            .map(RequestTelemetryContext::getHttpRequestTelemetry)
+            .map(RequestTelemetry::getProperties)
+            .ifPresent(properties -> properties.putIfAbsent("clientId", "delius-new-tech"));
     }
 }

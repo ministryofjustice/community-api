@@ -9,7 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import uk.gov.justice.digital.delius.config.ApplicationInsightsConfiguration;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import uk.gov.justice.digital.delius.jpa.national.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jwt.Jwt;
@@ -56,6 +61,7 @@ public class LogonController {
     public ResponseEntity<String> getToken(final @RequestBody String distinguishedName) {
         Optional<String> maybeUid = SYSTEM_USERS.contains(distinguishedName) ? Optional.of(distinguishedName) : ldapRepository.getDeliusUid(distinguishedName);
 
+        maybeUid.ifPresent(ApplicationInsightsConfiguration::setNewTechClientId);
         return maybeUid.map(uid ->
                 new ResponseEntity<>(jwt.buildToken(UserData.builder()
                         .distinguishedName(distinguishedName)
