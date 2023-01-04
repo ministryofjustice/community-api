@@ -301,31 +301,6 @@ workflows:
           requires:
             - slack-approval-preprod
       - deploy:
-          name: deploy_to_stage
-          environment_type: staging
-          context:
-            - hmpps-common-vars
-            - hmpps-delius-deploy-to-ecs-stage
-          env-vars: >-
-            container=community-api,name=SPRING_PROFILES_ACTIVE,                                      value=oracle,
-            container=community-api,name=SPRING_DATASOURCE_USERNAME,                                  value=delius_pool,
-            container=community-api,name=DELIUSAPI_BASEURL,                                           value=http://delius-api.ecs.cluster:8080/,
-            container=community-api,name=SMOKE_TEST_AWARE,                                            value=true,
-            container=community-api,name=SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI,       value=https://sign-in-preprod.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json,
-            container=community-api,name=FEATURES_NOMS_UPDATE_CUSTODY,                                value=true,
-            container=community-api,name=FEATURES_NOMS_UPDATE_RELEASE_RECALL,                         value=true,
-            container=community-api,name=FEATURES_NOMS_UPDATE_BOOKING_NUMBER,                         value=true,
-            container=community-api,name=FEATURES_NOMS_UPDATE_KEYDATES,                               value=true,
-            container=community-api,name=FEATURES_NOMS_UPDATE_NOMS_NUMBER,                            value=true,
-            container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_BULK_KEY_DATES,  value=false,
-            container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_KEY_DATES,       value=false,
-            container=community-api,name=FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION, value=false,
-            container=community-api,name=FEATURES_REGISTERS_COURT_CODE_ALLOWED_PATTERN,               value=,
-            container=community-api,name=APPLICATIONINSIGHTS_CONFIGURATION_FILE,                      value=applicationinsights.dev.json,
-            container=community-api,name=JDK_JAVA_OPTIONS,                                            value="-javaagent:/agent/agent.jar"
-          requires:
-            - request-pre-prod-approval
-      - deploy:
           name: deploy_to_pre_prod
           environment_type: staging
           context:
@@ -355,7 +330,6 @@ workflows:
           context: hmpps-common-vars
           environment: Production
           requires:
-            - deploy_to_stage
             - deploy_to_pre_prod
       - request-prod-approval:
           type: approval
