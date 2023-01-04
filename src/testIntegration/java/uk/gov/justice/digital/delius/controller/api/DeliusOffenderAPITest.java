@@ -18,6 +18,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusExtension;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusMockServer;
@@ -61,6 +62,7 @@ import static uk.gov.justice.digital.delius.OffenderHelper.anOffender;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"offender.ids.pagesize=5"})
 @ExtendWith(SpringExtension.class)
+@ActiveProfiles("dev-seed")
 public class DeliusOffenderAPITest {
 
     private static DeliusMockServer deliusMockServer = new DeliusMockServer(8088, "src/testIntegration/resources");
