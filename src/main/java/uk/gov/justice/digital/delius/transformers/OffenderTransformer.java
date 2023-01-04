@@ -67,7 +67,7 @@ public class OffenderTransformer {
 
     private static PreviousConviction previousConvictionOf(Document document) {
         if (document == null) {
-            return null;
+            return PreviousConviction.builder().build();
         }
         return PreviousConviction.builder()
             .convictionDate(document.getCreatedDate().toLocalDate())
