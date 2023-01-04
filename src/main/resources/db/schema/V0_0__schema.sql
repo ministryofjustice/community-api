@@ -6953,7 +6953,8 @@ create table DOCUMENT
             unique,
     PUBLISHED                   CHAR
         constraint YES_OR_NO_ONLY_1030455660
-            check (PUBLISHED IN ('Y', 'N'))
+            check (PUBLISHED IN ('Y', 'N')),
+    DOCUMENT_TYPE VARCHAR2(100) default 'DOCUMENT'
 )
     ;
 
