@@ -13,6 +13,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Release;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderDocumentRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderPrimaryIdentifiersRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.util.EntityHelper;
@@ -43,6 +44,9 @@ public class OffenderServiceTest_getOffenderLatestRecall {
     @Mock
     private ConvictionService mockConvictionService;
 
+    @Mock
+    private OffenderDocumentRepository mockOffenderDocumentRepository;
+
     private OffenderService offenderService;
 
     @BeforeEach
@@ -50,7 +54,8 @@ public class OffenderServiceTest_getOffenderLatestRecall {
         offenderService = new OffenderService(
                 mockOffenderRepository,
                 mockOffenderPrimaryIdentifiersRepository,
-                mockConvictionService
+                mockConvictionService,
+                mockOffenderDocumentRepository
         );
     }
 

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderDocumentRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderPrimaryIdentifiersRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.util.EntityHelper;
@@ -30,12 +31,14 @@ class OffenderServiceTest {
     private OffenderPrimaryIdentifiersRepository offenderPrimaryIdentifiersRepository;
     @Mock
     private ConvictionService convictionService;
+    @Mock
+    private OffenderDocumentRepository offenderDocumentRepository;
 
     private OffenderService service;
 
     @BeforeEach
     void setUp() {
-        service = new OffenderService(offenderRepository, offenderPrimaryIdentifiersRepository, convictionService);
+        service = new OffenderService(offenderRepository, offenderPrimaryIdentifiersRepository, convictionService, offenderDocumentRepository);
     }
 
 

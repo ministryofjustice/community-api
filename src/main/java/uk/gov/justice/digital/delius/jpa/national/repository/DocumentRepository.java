@@ -13,5 +13,4 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
 
     @Query(value = "SELECT PKG_USER_SUPPORT.getSPGInboundUserID(?2,?1) FROM dual", nativeQuery = true)
     Long lookupUser(Long probationAreaId, String alfrescoUser);
-
 }

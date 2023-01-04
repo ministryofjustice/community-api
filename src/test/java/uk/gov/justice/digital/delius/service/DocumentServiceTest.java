@@ -21,7 +21,9 @@ import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
 import uk.gov.justice.digital.delius.data.filters.DocumentFilter;
 import uk.gov.justice.digital.delius.jpa.national.repository.DocumentRepository;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CourtReportDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Document.DocumentType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
+import uk.gov.justice.digital.delius.jpa.standard.entity.EventDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReportDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.repository.AddressAssessmentDocumentRepository;
@@ -51,6 +53,7 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -136,8 +139,8 @@ public class DocumentServiceTest {
             contactDocumentRepository
         );
         when(offenderRepository.findByOffenderId(any())).thenReturn(Optional.of(anOffender()));
-        when(offenderDocumentRepository.findByOffenderId(any())).thenReturn(List.of());
-        when(eventDocumentRepository.findByOffenderId(any())).thenReturn(List.of());
+        when(offenderDocumentRepository.findByOffenderId(any(), any())).thenReturn(List.of());
+        when(eventDocumentRepository.findByOffenderId(any(), any())).thenReturn(List.of());
         when(courtReportDocumentRepository.findAll(courtReportDocumentSpecification.capture())).thenReturn(List
             .of());
         when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(List.of());
@@ -190,10 +193,12 @@ public class DocumentServiceTest {
         courtReportDocument.getCourtReport().getCourtAppearance().getEvent().setEventId(1L);
         final Event event = anEvent();
         event.setEventId(99L);
+        final EventDocument cpsPack = anEventDocument(event.getEventId(), DocumentType.CPS_PACK);
 
         when(eventRepository.findByOffenderId(any())).thenReturn(List.of(event));
         when(courtReportDocumentRepository.findAll(courtReportDocumentSpecification.capture())).thenReturn(List
             .of(courtReportDocument));
+        when(eventDocumentRepository.findByOffenderId(any(), eq(DocumentType.CPS_PACK))).thenReturn(List.of(cpsPack));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
@@ -230,8 +235,10 @@ public class DocumentServiceTest {
         institutionalReportDocument.getInstitutionalReport().getCustody().getDisposal().getEvent().setEventId(1L);
         final Event event = anEvent();
         event.setEventId(99L);
+        final EventDocument cpsPack = anEventDocument(event.getEventId(), DocumentType.CPS_PACK);
 
         when(eventRepository.findByOffenderId(any())).thenReturn(List.of(event));
+        when(eventDocumentRepository.findByOffenderId(any(),eq(DocumentType.CPS_PACK))).thenReturn(List.of(cpsPack));
         when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(List.of(institutionalReportDocument));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
@@ -240,56 +247,8 @@ public class DocumentServiceTest {
     }
 
     @Test
-    public void noConvictionsAddedWhenSingleEventHasNoCPSPack() {
-        final Event event = anEvent();
-        event.setCpsAlfrescoDocumentId(null);
-
-        when(eventRepository.findByOffenderId(any())).thenReturn(List.of(event));
-
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
-
-        assertThat(documents.getConvictions()).hasSize(0);
-    }
-
-    @Test
-    public void singleConvictionsAddedWhenSingleEventHasCPSPack() {
-        final Event event = anEvent();
-        event.setCpsAlfrescoDocumentId("123");
-
-        when(eventRepository.findByOffenderId(any())).thenReturn(List.of(event));
-
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
-
-        assertThat(documents.getConvictions()).hasSize(1);
-    }
-
-    @Test
-    public void singleOffenderDocumentAddedWhenOffenderHasPreviousConvictionsUploaded() {
-        final Offender offender = anOffender();
-        offender.setPreviousConvictionsAlfrescoDocumentId("123");
-
-        when(offenderRepository.findByOffenderId(any())).thenReturn(Optional.of(offender));
-
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
-
-        assertThat(documents.getDocuments()).hasSize(1);
-    }
-
-    @Test
-    public void noOffenderDocumentsAddedWhenOffenderHasNoPreviousConvictionsUploaded() {
-        final Offender offender = anOffender();
-        offender.setPreviousConvictionsAlfrescoDocumentId(null);
-
-        when(offenderRepository.findByOffenderId(any())).thenReturn(Optional.of(offender));
-
-        final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
-
-        assertThat(documents.getDocuments()).hasSize(0);
-    }
-
-    @Test
     public void eventDocumentsDistributedToEachConviction() {
-        when(eventDocumentRepository.findByOffenderId(any())).thenReturn(List.of(
+        when(eventDocumentRepository.findByOffenderId(any(),eq(DocumentType.DOCUMENT))).thenReturn(List.of(
             anEventDocument(1L),
             anEventDocument(2L),
             anEventDocument(2L),
@@ -510,7 +469,8 @@ public class DocumentServiceTest {
     class Filters {
         @BeforeEach
         void setUp() {
-            when(eventDocumentRepository.findByOffenderId(any())).thenReturn(List.of(anEventDocument(1L)));
+            when(eventDocumentRepository.findByOffenderId(any(), eq(DocumentType.DOCUMENT))).thenReturn(List.of(anEventDocument(1L)));
+            when(eventDocumentRepository.findByOffenderId(any(), eq(DocumentType.CPS_PACK))).thenReturn(List.of(anEventDocument(1L, DocumentType.CPS_PACK)));
             when(courtReportDocumentRepository.findAll(courtReportDocumentSpecification.capture())).thenReturn(List.of(aCourtReportDocument(1L)));
             when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(List.of(anInstitutionalReportDocument(1L)));
             when(approvedPremisesReferralDocumentRepository.findByOffenderId(any())).thenReturn(List.of(anApprovedPremisesReferralDocument(1L)));
@@ -520,18 +480,17 @@ public class DocumentServiceTest {
             when(nsiDocumentRepository.findByOffenderId(any())).thenReturn(List.of(aNsiDocument(1L), aNsiDocument()));
             when(upwAppointmentDocumentRepository.findByOffenderId(any())).thenReturn(List.of(aUPWAppointmentDocument(1L)));
             when(contactDocumentRepository.findByOffenderId(any())).thenReturn(List.of(aContactDocument(1L), aContactDocument()));
-            when(offenderDocumentRepository.findByOffenderId(any())).thenReturn(List.of(anOffenderDocument()));
+            when(offenderDocumentRepository.findByOffenderId(any(), eq(DocumentType.DOCUMENT))).thenReturn(List.of(anOffenderDocument()));
+            when(offenderDocumentRepository.findByOffenderId(any(), eq(DocumentType.PREVIOUS_CONVICTION))).thenReturn(List.of(anOffenderDocument(DocumentType.PREVIOUS_CONVICTION)));
             when(addressAssessmentRepository.findByOffenderId(any())).thenReturn(List.of(anAddressAssessmentDocument()));
             when(personalContactDocumentRepository.findByOffenderId(any())).thenReturn(List.of(aPersonalContactDocument()));
             when(personalCircumstanceDocumentRepository.findByOffenderId(any())).thenReturn(List.of(aPersonalCircumstanceDocument()));
             when(offenderRepository.findByOffenderId(any())).thenReturn(Optional.of(anOffender()
                 .toBuilder()
-                .previousConvictionsAlfrescoDocumentId("123")
                 .build()));
             when(eventRepository.findByOffenderId(any())).thenReturn(List.of(anEvent()
                 .toBuilder()
                 .eventId(1L)
-                .cpsAlfrescoDocumentId("123")
                 .build()));
         }
 
@@ -543,7 +502,8 @@ public class DocumentServiceTest {
             void whenNoFilterAllRepositoriesAreQueried() {
                 documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
 
-                verify(eventDocumentRepository).findByOffenderId(1L);
+                verify(eventDocumentRepository).findByOffenderId(1L, DocumentType.DOCUMENT);
+                verify(eventDocumentRepository).findByOffenderId(1L, DocumentType.CPS_PACK.DOCUMENT);
                 verify(courtReportDocumentRepository).findAll(courtReportDocumentSpecification.capture());
                 verify(institutionReportDocumentRepository).findByOffenderId(1L);
                 verify(approvedPremisesReferralDocumentRepository).findByOffenderId(1L);
@@ -553,7 +513,8 @@ public class DocumentServiceTest {
                 verify(nsiDocumentRepository).findByOffenderId(1L);
                 verify(upwAppointmentDocumentRepository).findByOffenderId(1L);
                 verify(contactDocumentRepository).findByOffenderId(1L);
-                verify(offenderDocumentRepository).findByOffenderId(1L);
+                verify(offenderDocumentRepository).findByOffenderId(1L, DocumentType.DOCUMENT);
+                verify(offenderDocumentRepository).findByOffenderId(1L, DocumentType.PREVIOUS_CONVICTION);
                 verify(addressAssessmentRepository).findByOffenderId(1L);
                 verify(personalContactDocumentRepository).findByOffenderId(1L);
                 verify(personalCircumstanceDocumentRepository).findByOffenderId(1L);

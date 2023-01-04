@@ -52,8 +52,6 @@ public interface OffenderHelper {
                 .title(StandardReference.builder().codeDescription("Mr").build())
                 .secondNationality(StandardReference.builder().codeDescription("EIRE").build())
                 .sexualOrientation(StandardReference.builder().codeDescription("STR").build())
-                .previousConvictionDate(LocalDate.of(2016, 1, 1))
-                .prevConvictionDocumentName("CONV1234")
                 .offenderAliases(Lists.newArrayList(OffenderAlias.builder().build()))
                 .offenderAddresses(Lists.newArrayList(OffenderAddress.builder().build()))
                 .partitionArea(PartitionArea.builder().area("Fulchester").build())

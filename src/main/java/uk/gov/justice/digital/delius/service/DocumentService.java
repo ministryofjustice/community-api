@@ -22,6 +22,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.AssessmentDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CaseAllocationDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CourtReportDocument;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Document.DocumentType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.EventDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReportDocument;
@@ -111,10 +112,9 @@ public class DocumentService {
 
     @Transactional(readOnly = true)
     public OffenderDocuments offenderDocumentsFor(Long offenderId, DocumentFilter filter) {
-        final var eventCpsPackFilter = filter.hasDocument(Type.CPSPACK_DOCUMENT, Event::hasCpsPack);
-        final var hasPreviousConvictionsFilter = filter.hasDocument(Type.PRECONS_DOCUMENT, this::hasPreviousConvictions);
 
         final var eventDocuments = eventDocumentsFor(offenderId, filter);
+        final var cpsDocuments = cpsDocumentsFor(offenderId, filter);
         final var courtReportDocuments = courtReportDocumentsFor(offenderId, filter);
         final var institutionReportDocuments = institutionReportDocumentsFor(offenderId, filter);
         final var approvedPremisesReferralDocuments = approvedPremisesReferralDocumentsFor(offenderId, filter);
@@ -133,8 +133,8 @@ public class DocumentService {
 
         final var setOfRelatedEventIds = ImmutableSet
                 .<Long>builder()
-                .addAll(events.stream().filter(eventCpsPackFilter).map(Event::getEventId).collect(toList()))
                 .addAll(eventDocuments.stream().map(this::eventId).collect(toList()))
+                .addAll(cpsDocuments.stream().map(this::eventId).collect(toList()))
                 .addAll(courtReportDocuments.stream().map(this::eventId).collect(toList()))
                 .addAll(institutionReportDocuments.stream().map(this::eventId).collect(toList()))
                 .addAll(approvedPremisesReferralDocuments.stream().map(this::eventId).collect(toList()))
@@ -153,7 +153,6 @@ public class DocumentService {
                         .convictionId(String.valueOf(eventId))
                         .documents(
                                 ImmutableList.<OffenderDocumentDetail>builder()
-                                        .addAll(toOffenderDocumentDetailList(eventWithCPsPack(events, eventId, eventCpsPackFilter)))
                                         .addAll(
                                             DocumentTransformer
                                             .offenderDocumentsDetailsOfEventDocuments(
@@ -161,6 +160,13 @@ public class DocumentService {
                                                             .stream()
                                                             .filter(document -> eventId(document).equals(eventId))
                                                             .collect(toList())))
+                                        .addAll(
+                                            DocumentTransformer
+                                                .offenderDocumentsDetailsOfEventDocuments(
+                                                    cpsDocuments
+                                                        .stream()
+                                                        .filter(document -> eventId(document).equals(eventId))
+                                                        .collect(toList())))
                                         .addAll(DocumentTransformer
                                                 .offenderDocumentsDetailsOfCourtReportDocuments(
                                                         courtReportDocuments
@@ -229,15 +235,16 @@ public class DocumentService {
                         )
                         .build())
                 .collect(toList());
-
         return OffenderDocuments
                 .builder()
                 .documents(
                         ImmutableList.<OffenderDocumentDetail>builder()
-                                .addAll(previousConvictions(offender, hasPreviousConvictionsFilter))
                                 .addAll(DocumentTransformer
                                         .offenderDocumentsDetailsOfOffenderDocuments(
                                             offenderRelatedDocumentsFor(offenderId, filter)))
+                                .addAll(DocumentTransformer
+                                .offenderDocumentsDetailsOfOffenderDocuments(
+                                        offenderPreConsDocumentFor(offenderId, filter)))
                                 .addAll(DocumentTransformer
                                         .offenderDocumentsDetailsOfAddressAssessmentDocuments(
                                             addressAssessmentDocumentsFor(offenderId, filter)))
@@ -272,9 +279,12 @@ public class DocumentService {
     }
 
     private List<OffenderDocument> offenderRelatedDocumentsFor(Long offenderId, DocumentFilter filter) {
-        return filter.documentsFor(Type.OFFENDER_DOCUMENT, () -> offenderDocumentRepository.findByOffenderId(offenderId));
+        return filter.documentsFor(Type.OFFENDER_DOCUMENT, () -> offenderDocumentRepository.findByOffenderId(offenderId, DocumentType.DOCUMENT));
     }
 
+    private List<OffenderDocument> offenderPreConsDocumentFor(Long offenderId, DocumentFilter filter) {
+        return filter.documentsFor(Type.PRECONS_DOCUMENT, () -> offenderDocumentRepository.findByOffenderId(offenderId, DocumentType.PREVIOUS_CONVICTION));
+    }
     private List<ContactDocument> contactDocumentsFor(Long offenderId, DocumentFilter filter) {
         return filter.documentsFor(Type.CONTACT_DOCUMENT, () -> contactDocumentRepository.findByOffenderId(offenderId));
     }
@@ -312,9 +322,12 @@ public class DocumentService {
     }
 
     private List<EventDocument> eventDocumentsFor(Long offenderId, DocumentFilter filter) {
-        return filter.documentsFor(Type.CONVICTION_DOCUMENT, () -> eventDocumentRepository.findByOffenderId(offenderId));
+        return filter.documentsFor(Type.CONVICTION_DOCUMENT, () -> eventDocumentRepository.findByOffenderId(offenderId, DocumentType.DOCUMENT));
     }
 
+    private List<EventDocument> cpsDocumentsFor(Long offenderId, DocumentFilter filter) {
+        return filter.documentsFor(Type.CPSPACK_DOCUMENT, () -> eventDocumentRepository.findByOffenderId(offenderId, DocumentType.CPS_PACK));
+    }
     private boolean isEventRelated(ContactDocument contactDocument) {
         return Optional.ofNullable(contactDocument.getContact().getEvent()).isPresent();
     }
@@ -368,23 +381,6 @@ public class DocumentService {
                 .filter(event -> event.getEventId().equals(eventId))
                 .filter(eventCpsPackFilter)
                 .findAny();
-    }
-
-    private List<OffenderDocumentDetail> toOffenderDocumentDetailList(Optional<Event> maybeEvent) {
-        return maybeEvent
-                .map(event -> ImmutableList.of(DocumentTransformer.offenderDocumentDetailsOfCpsPack(event)))
-                .orElseGet(ImmutableList::of);
-    }
-
-    private List<OffenderDocumentDetail> previousConvictions(Offender offender, Predicate<Offender> previousConvictionCheck) {
-        return Optional.of(offender)
-                .filter(previousConvictionCheck)
-                .map(offenderWithPreCPns -> ImmutableList.of(DocumentTransformer.offenderDocumentDetailsOfPreviousConvictions(offenderWithPreCPns)))
-                .orElseGet(ImmutableList::of);
-    }
-
-    private boolean hasPreviousConvictions(Offender offender) {
-        return StringUtils.hasText(offender.getPreviousConvictionsAlfrescoDocumentId());
     }
 }
 

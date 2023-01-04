@@ -37,10 +37,8 @@ import static uk.gov.justice.digital.delius.util.EntityHelper.aUPWAppointmentDoc
 import static uk.gov.justice.digital.delius.util.EntityHelper.anAddressAssessmentDocument;
 import static uk.gov.justice.digital.delius.util.EntityHelper.anApprovedPremisesReferralDocument;
 import static uk.gov.justice.digital.delius.util.EntityHelper.anAssessmentDocument;
-import static uk.gov.justice.digital.delius.util.EntityHelper.anEvent;
 import static uk.gov.justice.digital.delius.util.EntityHelper.anInstitutionalReportDocument;
 import static uk.gov.justice.digital.delius.util.EntityHelper.anOffenderDocument;
-import static uk.gov.justice.digital.delius.util.EntityHelper.anOffenderWithPreviousConvictionsDocument;
 
 public class DocumentTransformerTest {
     private DocumentTransformer documentTransformer;
@@ -105,77 +103,6 @@ public class DocumentTransformerTest {
         assertThat(DocumentTransformer.offenderDocumentsDetailsOfOffenderDocuments(ImmutableList.of(offenderDocument))).hasSize(1);
         assertThat(DocumentTransformer.offenderDocumentsDetailsOfOffenderDocuments(ImmutableList.of(offenderDocument))
                 .get(0).getAuthor()).isEqualTo("Lardy Lump");
-    }
-
-    @Test
-    public void authorNameUsesEventCPSCreatedByWhenPresent() {
-        final Event event = anEvent();
-        event.setCpsCreatedByUser(
-                User
-                        .builder()
-                        .forename("Bobby")
-                        .surname("Bread")
-                        .build()
-        );
-
-        assertThat(DocumentTransformer.offenderDocumentDetailsOfCpsPack(event)
-                .getAuthor()).isEqualTo("Bobby Bread");
-    }
-    @Test
-    public void authorLeftNullForEventCPSCreatedByWhenNotPresent() {
-        final Event event = anEvent();
-        event.setCpsCreatedByUser(null);
-
-        assertThat(DocumentTransformer.offenderDocumentDetailsOfCpsPack(event)
-                .getAuthor()).isNull();
-    }
-
-    @Test
-    public void authorNameUsesOffenderPreviousConvictionsCreatedByWhenPresent() {
-        final Offender offender = anOffenderWithPreviousConvictionsDocument();
-        offender.setPreviousConvictionsCreatedByUser(
-                User
-                        .builder()
-                        .forename("Bobby")
-                        .surname("Bread")
-                        .build()
-        );
-
-        assertThat(DocumentTransformer.offenderDocumentDetailsOfPreviousConvictions(offender)
-                .getAuthor()).isEqualTo("Bobby Bread");
-    }
-
-    @Test
-    public void authorNameLeftNullWhenOffenderPreviousConvictionsCreatedByWhenNotPresent() {
-        final Offender offender = anOffenderWithPreviousConvictionsDocument();
-        offender.setPreviousConvictionsCreatedByUser(null);
-
-        assertThat(DocumentTransformer.offenderDocumentDetailsOfPreviousConvictions(offender)
-                .getAuthor()).isNull();
-    }
-
-    @Test
-    public void cpsPackDescriptionsSet() {
-        final Event event = anEvent();
-        event.setCpsDate(LocalDate.of(1965, 7, 19));
-
-        final OffenderDocumentDetail offenderDocumentDetail = DocumentTransformer.offenderDocumentDetailsOfCpsPack(event);
-
-        assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("CPSPACK_DOCUMENT");
-        assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Crown Prosecution Service case pack");
-        assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Crown Prosecution Service case pack for 19/07/1965");
-    }
-
-    @Test
-    public void previousConvictionsDescriptionsSet() {
-        final Offender offender = anOffenderWithPreviousConvictionsDocument();
-        offender.setPreviousConvictionDate(LocalDate.of(1965, 7, 19));
-
-        final OffenderDocumentDetail offenderDocumentDetail = DocumentTransformer.offenderDocumentDetailsOfPreviousConvictions(offender);
-
-        assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("PRECONS_DOCUMENT");
-        assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("PNC previous convictions");
-        assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Previous convictions as of 19/07/1965");
     }
 
     @Test
