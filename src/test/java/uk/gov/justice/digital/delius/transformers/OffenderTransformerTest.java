@@ -106,7 +106,7 @@ public class OffenderTransformerTest {
                                         .build())
                                 .build()
                 ))
-                .build())
+                .build(), null)
                 .getOffenderProfile()
                 .getDisabilities())
                 .extracting("disabilityId")
@@ -142,7 +142,7 @@ public class OffenderTransformerTest {
                                         .build())
                                 .build()
                 ))
-                .build())
+                .build(), null)
                 .getOffenderProfile()
                 .getDisabilities())
                 .extracting("disabilityId")
@@ -191,7 +191,7 @@ public class OffenderTransformerTest {
         assertThat(OffenderTransformer.fullOffenderOf(anOffender()
             .toBuilder()
             .disabilities(disabilities)
-            .build())
+            .build(), null)
             .getOffenderProfile()
             .getDisabilities())
             .extracting("provisions")
@@ -271,14 +271,14 @@ public class OffenderTransformerTest {
     @Test
     public void currentTierDescriptionCopiedWhenNotNull() {
         assertThat(OffenderTransformer.fullOffenderOf(anOffender().toBuilder().currentTier(
-                null).build()).getCurrentTier())
+                null).build(), null).getCurrentTier())
                 .isNull();
 
         assertThat(OffenderTransformer.fullOffenderOf(anOffender().toBuilder().currentTier(
                 StandardReference
                         .builder()
                         .codeDescription("D2")
-                        .build()).build()).getCurrentTier())
+                        .build()).build(), null).getCurrentTier())
                 .isEqualTo("D2");
     }
 
@@ -553,7 +553,7 @@ public class OffenderTransformerTest {
 
         )).build();
 
-        final var offender = OffenderTransformer.fullOffenderOf(offenderEntity);
+        final var offender = OffenderTransformer.fullOffenderOf(offenderEntity, null);
 
         assertThat(offender.getOffenderAliases())
                 .hasSize(2)
@@ -582,7 +582,7 @@ public class OffenderTransformerTest {
         final var source = EntityHelper.anOffender();
         final var address = source.getOffenderAddresses().get(0);
 
-        final var observed = OffenderTransformer.fullOffenderOf(source).getContactDetails().getAddresses();
+        final var observed = OffenderTransformer.fullOffenderOf(source, null).getContactDetails().getAddresses();
 
         assertThat(observed)
             .hasSize(1)
@@ -606,7 +606,7 @@ public class OffenderTransformerTest {
     void basicInfoCopied() {
         final var source = EntityHelper.anOffender();
 
-        final var observed = OffenderTransformer.fullOffenderOf(source);
+        final var observed = OffenderTransformer.fullOffenderOf(source, null);
 
         assertThat(observed)
             .hasFieldOrPropertyWithValue("firstName", "Bill")
@@ -632,7 +632,7 @@ public class OffenderTransformerTest {
                         .disabilityType(StandardReference.builder().build())
                         .build()
                 ))
-                .build())
+                .build(), null)
             .getOffenderProfile()
             .getDisabilities())
             .extracting("isActive")
@@ -652,7 +652,7 @@ public class OffenderTransformerTest {
                         .disabilityType(StandardReference.builder().build())
                         .build()
                 ))
-                .build())
+                .build(), null)
             .getOffenderProfile()
             .getDisabilities())
             .extracting("isActive")
@@ -673,7 +673,7 @@ public class OffenderTransformerTest {
                         .disabilityType(StandardReference.builder().build())
                         .build()
                 ))
-                .build())
+                .build(), null)
             .getOffenderProfile()
             .getDisabilities())
             .extracting("isActive")
@@ -693,7 +693,7 @@ public class OffenderTransformerTest {
                         .disabilityType(StandardReference.builder().build())
                         .build()
                 ))
-                .build())
+                .build(), null)
             .getOffenderProfile()
             .getDisabilities())
             .extracting("isActive")

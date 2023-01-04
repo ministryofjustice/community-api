@@ -117,25 +117,6 @@ public class Event {
     @Column(name = "LAST_UPDATED_DATETIME")
     private LocalDateTime lastUpdatedDatetime;
 
-    @Column(name = "CPS_ALFRESCO_DOCUMENT_ID")
-    private String cpsAlfrescoDocumentId;
-
-    @Column(name = "CPS_DOCUMENT_NAME")
-    private String cpsDocumentName;
-
-    @JoinColumn(name = "CPS_CREATED_BY_USER_ID", referencedColumnName = "USER_ID")
-    @ManyToOne
-    private User cpsCreatedByUser;
-
-    @Column(name = "CPS_CREATED_DATETIME")
-    private LocalDateTime cpsCreatedDatetime;
-
-    @Column(name = "CPS_DATE")
-    private LocalDate cpsDate;
-
-    @Column(name = "CPS_SOFT_DELETED")
-    private Boolean cpsSoftDeleted;
-
     @JoinColumn(name = "COURT_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     @Exclude
@@ -146,11 +127,6 @@ public class Event {
     @Where(clause = "SOFT_DELETED != 1")
     @Exclude
     private List<AdditionalSentence> additionalSentences;
-
-    public boolean hasCpsPack() {
-        return StringUtils.isNotEmpty(cpsAlfrescoDocumentId)
-                && cpsSoftDeleted != Boolean.TRUE;
-    }
 
     public boolean isActive() {
         return isActiveFlag() && !isSoftDeleted();

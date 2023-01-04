@@ -20,11 +20,15 @@ import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
 import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
 import uk.gov.justice.digital.delius.jpa.filters.OffenderFilterTransformer;
+import uk.gov.justice.digital.delius.jpa.national.repository.DocumentRepository;
 import uk.gov.justice.digital.delius.jpa.oracle.annotations.NationalUserOverride;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Document.DocumentType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDocument;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderDocumentRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderPrimaryIdentifiersRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository.DuplicateOffenderException;
@@ -48,36 +52,53 @@ public class OffenderService {
     private final OffenderPrimaryIdentifiersRepository offenderPrimaryIdentifiersRepository;
     private final ConvictionService convictionService;
 
+    private final OffenderDocumentRepository documentRepository;
+
     @Transactional(readOnly = true)
     public Optional<OffenderDetail> getOffenderByOffenderId(Long offenderId) {
 
-        Optional<Offender> maybeOffender = offenderRepository.findByOffenderId(offenderId);
-
-        return maybeOffender.map(OffenderTransformer::fullOffenderOf);
+        return offenderRepository.findByOffenderId(offenderId).map(o -> {
+                OffenderDocument document = documentRepository.findByOffenderIdAndDocumentTypeAndSoftDeletedIsFalse(
+                    o.getOffenderId(), DocumentType.PREVIOUS_CONVICTION
+                );
+                return OffenderTransformer.fullOffenderOf(o, document);
+            }
+        );
     }
 
     @Transactional(readOnly = true)
     public Optional<OffenderDetail> getOffenderByCrn(String crn) {
 
-        Optional<Offender> maybeOffender = offenderRepository.findByCrn(crn);
-
-        return maybeOffender.map(OffenderTransformer::fullOffenderOf);
+        return offenderRepository.findByCrn(crn).map(o -> {
+                OffenderDocument document = documentRepository.findByOffenderIdAndDocumentTypeAndSoftDeletedIsFalse(
+                    o.getOffenderId(), DocumentType.PREVIOUS_CONVICTION
+                );
+                return OffenderTransformer.fullOffenderOf(o, document);
+            }
+        );
     }
 
     @Transactional(readOnly = true)
     public Optional<OffenderDetailSummary> getOffenderSummaryByOffenderId(Long offenderId) {
-
-        Optional<Offender> maybeOffender = offenderRepository.findByOffenderId(offenderId);
-
-        return maybeOffender.map(OffenderTransformer::offenderSummaryOf);
+        return offenderRepository.findByOffenderId(offenderId).map(o -> {
+                OffenderDocument document = documentRepository.findByOffenderIdAndDocumentTypeAndSoftDeletedIsFalse(
+                    o.getOffenderId(), DocumentType.PREVIOUS_CONVICTION
+                );
+                return OffenderTransformer.offenderSummaryOf(o, document);
+            }
+        );
     }
 
     @Transactional(readOnly = true)
     public Optional<OffenderDetailSummary> getOffenderSummaryByCrn(String crn) {
 
-        Optional<Offender> maybeOffender = offenderRepository.findByCrn(crn);
-
-        return maybeOffender.map(OffenderTransformer::offenderSummaryOf);
+        return offenderRepository.findByCrn(crn).map(o -> {
+                OffenderDocument document = documentRepository.findByOffenderIdAndDocumentTypeAndSoftDeletedIsFalse(
+                    o.getOffenderId(), DocumentType.PREVIOUS_CONVICTION
+                );
+                return OffenderTransformer.offenderSummaryOf(o, document);
+            }
+        );
     }
 
     public Optional<String> crnOf(Long offenderId) {
@@ -103,27 +124,41 @@ public class OffenderService {
 
     public Either<DuplicateOffenderException, Optional<Long>> mostLikelyOffenderIdOfNomsNumber(String nomsNumber) {
         return offenderRepository.findMostLikelyByNomsNumber(nomsNumber).fold(Either::left,
-                offender -> Either.right(offender.map(Offender::getOffenderId)));
+            offender -> Either.right(offender.map(Offender::getOffenderId)));
     }
 
     public Either<DuplicateOffenderException, Optional<OffenderDetail>> getMostLikelyOffenderByNomsNumber(String nomsNumber) {
         return offenderRepository.findMostLikelyByNomsNumber(nomsNumber).fold(Either::left,
-            offender -> Either.right(offender.map(OffenderTransformer::fullOffenderOf)));
+            offender -> Either.right(offender.map(this::fullOffenderWithPrecons)));
+    }
+
+    private OffenderDetail fullOffenderWithPrecons(Offender offender){
+        OffenderDocument document = documentRepository.findByOffenderIdAndDocumentTypeAndSoftDeletedIsFalse(
+            offender.getOffenderId(), DocumentType.PREVIOUS_CONVICTION
+        );
+        return OffenderTransformer.fullOffenderOf(offender, document);
+    }
+
+    private OffenderDetailSummary offenderSummaryWithPrecons(Offender offender){
+        OffenderDocument document = documentRepository.findByOffenderIdAndDocumentTypeAndSoftDeletedIsFalse(
+            offender.getOffenderId(), DocumentType.PREVIOUS_CONVICTION
+        );
+        return OffenderTransformer.offenderSummaryOf(offender, document);
     }
 
     public Either<DuplicateOffenderException, Optional<OffenderDetailSummary>> getMostLikelyOffenderSummaryByNomsNumber(String nomsNumber) {
         return offenderRepository.findMostLikelyByNomsNumber(nomsNumber).fold(Either::left,
-            offender -> Either.right(offender.map(OffenderTransformer::offenderSummaryOf)));
+            offender -> Either.right(offender.map(this::offenderSummaryWithPrecons)));
     }
 
     public Either<DuplicateOffenderException, Optional<OffenderDetail>> getSingleOffenderByNomsNumber(String nomsNumber) {
         return tryToGetSingleOffenderByNomsNumber(nomsNumber).fold(Either::left,
-            offender -> Either.right(offender.map(OffenderTransformer::fullOffenderOf)));
+            offender -> Either.right(offender.map(this::fullOffenderWithPrecons)));
     }
 
     public Either<DuplicateOffenderException, Optional<OffenderDetailSummary>> getSingleOffenderSummaryByNomsNumber(String nomsNumber) {
-        return tryToGetSingleOffenderByNomsNumber(nomsNumber).fold(Either::left,
-            offender -> Either.right(offender.map(OffenderTransformer::offenderSummaryOf)));
+       return tryToGetSingleOffenderByNomsNumber(nomsNumber).fold(Either::left,
+            offender -> Either.right(offender.map(this::offenderSummaryWithPrecons)));
     }
 
     public Either<DuplicateOffenderException, Optional<Offender>> tryToGetSingleOffenderByNomsNumber(String nomsNumber) {
@@ -163,28 +198,28 @@ public class OffenderService {
     @Transactional(readOnly = true)
     public Optional<List<OffenderManager>> getOffenderManagersForOffenderId(Long offenderId) {
         return offenderRepository.findByOffenderId(offenderId).map(
-                offender -> OffenderTransformer.offenderManagersOf(offender.getOffenderManagers()));
+            offender -> OffenderTransformer.offenderManagersOf(offender.getOffenderManagers()));
 
     }
 
     @Transactional(readOnly = true)
     public Optional<List<OffenderManager>> getOffenderManagersForNomsNumber(String nomsNumber) {
         return offenderRepository.findByNomsNumber(nomsNumber).map(
-                offender -> OffenderTransformer.offenderManagersOf(offender.getOffenderManagers()));
+            offender -> OffenderTransformer.offenderManagersOf(offender.getOffenderManagers()));
 
     }
 
     @Transactional(readOnly = true)
     public Optional<List<OffenderManager>> getOffenderManagersForCrn(String crn) {
         return offenderRepository.findByCrn(crn).map(
-                offender -> OffenderTransformer.offenderManagersOf(offender.getOffenderManagers()));
+            offender -> OffenderTransformer.offenderManagersOf(offender.getOffenderManagers()));
 
     }
 
     @Transactional(readOnly = true)
     public Optional<List<ResponsibleOfficer>> getResponsibleOfficersForNomsNumber(String nomsNumber, boolean current) {
         return offenderRepository.findByNomsNumber(nomsNumber).map(
-                offender -> OffenderTransformer.responsibleOfficersOf(offender, current));
+            offender -> OffenderTransformer.responsibleOfficersOf(offender, current));
 
     }
 
@@ -193,41 +228,41 @@ public class OffenderService {
         final var actualCustodialEvent = convictionService.getActiveCustodialEvent(offenderId);
         final var custody = findCustodyOrThrow(actualCustodialEvent);
         return custody.findLatestRelease()
-                .map(ReleaseTransformer::offenderLatestRecallOf)
-                .orElse(OffenderLatestRecall.NO_RELEASE);
+            .map(ReleaseTransformer::offenderLatestRecallOf)
+            .orElse(OffenderLatestRecall.NO_RELEASE);
     }
 
     @Transactional(readOnly = true)
     public OffenderIdentifiers getOffenderIdentifiers(Long offenderId) {
         var offender = offenderRepository.findByOffenderId(offenderId)
-                .orElseThrow(() -> new NotFoundException("Offender not found"));
+            .orElseThrow(() -> new NotFoundException("Offender not found"));
 
         return OffenderIdentifiers
-                .builder()
-                .primaryIdentifiers(OffenderTransformer.idsOf(offender))
-                .additionalIdentifiers(OffenderTransformer.additionalIdentifiersOf(offender.getAdditionalIdentifiers()))
-                .offenderId(offender.getOffenderId())
-                .build();
+            .builder()
+            .primaryIdentifiers(OffenderTransformer.idsOf(offender))
+            .additionalIdentifiers(OffenderTransformer.additionalIdentifiersOf(offender.getAdditionalIdentifiers()))
+            .offenderId(offender.getOffenderId())
+            .build();
     }
 
     private Custody findCustodyOrThrow(Event activeCustodialEvent) {
         return Optional.ofNullable(activeCustodialEvent.getDisposal())
-                .filter(not(Disposal::isSoftDeleted))
-                .map(Disposal::getCustody)
-                .filter(not(Custody::isSoftDeleted))
-                .orElseThrow(() -> new CustodyNotFoundException(activeCustodialEvent));
+            .filter(not(Disposal::isSoftDeleted))
+            .map(Disposal::getCustody)
+            .filter(not(Custody::isSoftDeleted))
+            .orElseThrow(() -> new CustodyNotFoundException(activeCustodialEvent));
     }
 
     @NationalUserOverride
     @Transactional(readOnly = true)
     public Page<PrimaryIdentifiers> getAllPrimaryIdentifiers(OffenderFilter filter, Pageable pageable) {
         return offenderPrimaryIdentifiersRepository
-                .findAll(OffenderFilterTransformer.fromFilter(filter), pageable)
-                .map(offender -> PrimaryIdentifiers
-                        .builder()
-                        .crn(offender.getCrn())
-                        .offenderId(offender.getOffenderId())
-                        .build());
+            .findAll(OffenderFilterTransformer.fromFilter(filter), pageable)
+            .map(offender -> PrimaryIdentifiers
+                .builder()
+                .crn(offender.getCrn())
+                .offenderId(offender.getOffenderId())
+                .build());
     }
 
     @Transactional(readOnly = true)

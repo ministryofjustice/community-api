@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail.Type.COURT_REPORT_DOCUMENT;
 import static uk.gov.justice.digital.delius.data.filters.DocumentFilter.SubType.PSR;

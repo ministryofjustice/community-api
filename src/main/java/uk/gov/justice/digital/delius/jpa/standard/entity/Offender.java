@@ -210,23 +210,6 @@ public class Offender {
     @Column(name = "OFFENDER_DETAILS")
     private String offenderDetails;
 
-    @Column(name = "PREVIOUS_CONVICTION_DATE")
-    private LocalDate previousConvictionDate;
-
-    @Column(name = "PREV_CONVICTION_DOCUMENT_NAME")
-    private String prevConvictionDocumentName;
-
-    @Column(name = "PREV_CON_ALFRESCO_DOCUMENT_ID")
-    private String previousConvictionsAlfrescoDocumentId;
-
-    @JoinColumn(name = "PREV_CON_CREATED_BY_USER_ID", referencedColumnName = "USER_ID")
-    @ManyToOne(fetch = FetchType.LAZY)
-    @Exclude
-    private User previousConvictionsCreatedByUser;
-
-    @Column(name = "PREV_CON_CREATED_DATETIME")
-    private LocalDateTime previousConvictionsCreatedDatetime;
-
     @Column(name = "CURRENT_REMAND_STATUS")
     private String currentRemandStatus;
 

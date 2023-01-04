@@ -27,6 +27,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.DisposalType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Document;
+import uk.gov.justice.digital.delius.jpa.standard.entity.Document.DocumentType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.EnforcementAction;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.EventDocument;
@@ -130,20 +131,6 @@ public class EntityHelper {
                 .build();
     }
 
-    public static Offender anOffenderWithPreviousConvictionsDocument() {
-        final var offender = OffenderHelper.anOffender();
-        offender.setPrevConvictionDocumentName("precons.pdf");
-        offender.setPreviousConvictionDate(LocalDate.now());
-        offender.setPreviousConvictionsAlfrescoDocumentId("123");
-        offender.setPreviousConvictionsCreatedByUser(User
-                .builder()
-                .forename("createdforename")
-                .surname("createdsurname")
-                .build());
-        offender.setPreviousConvictionsCreatedDatetime(LocalDateTime.now());
-        return offender;
-    }
-
     public static Offender anOffender() {
         return anOffender(List.of(anActiveOffenderManager()), List.of(anActivePrisonOffenderManager()));
     }
@@ -171,16 +158,6 @@ public class EntityHelper {
                 .eventId(eventId)
                 .offenderId(offenderId)
                 .eventNumber("1")
-                .cpsAlfrescoDocumentId("123")
-                .cpsCreatedByUser(User
-                        .builder()
-                        .forename("createdforename")
-                        .surname("createdsurname")
-                        .build())
-                .cpsDocumentName("cps.pdf")
-                .cpsDate(LocalDate.now())
-                .cpsCreatedDatetime(LocalDateTime.now())
-                .cpsSoftDeleted(false)
                 .softDeleted(false)
                 .activeFlag(true)
                 .orderManagers(List.of(anOrderManager()))
@@ -254,11 +231,14 @@ public class EntityHelper {
                 .build();
     }
 
-    public static OffenderDocument anOffenderDocument() {
+    public static OffenderDocument anOffenderDocument(DocumentType documentType) {
         final var offenderDocument = new OffenderDocument();
-
         populateBasics(offenderDocument);
+        offenderDocument.setDocumentType(documentType);
         return offenderDocument;
+    }
+    public static OffenderDocument anOffenderDocument() {
+       return anOffenderDocument(DocumentType.DOCUMENT);
     }
 
     public static CourtReportDocument aCourtReportDocument() {
@@ -345,13 +325,18 @@ public class EntityHelper {
         document.setPrimaryKeyId(100L);
     }
 
-    public static EventDocument anEventDocument(final Long eventId) {
+    public static EventDocument anEventDocument(final Long eventId, DocumentType documentType) {
         final var document = new EventDocument();
         populateBasics(document);
         final var event = anEvent();
         event.setEventId(eventId);
         document.setEvent(event);
+        document.setDocumentType(documentType);
         return document;
+    }
+
+    public static EventDocument anEventDocument(final Long eventId) {
+        return anEventDocument(eventId, DocumentType.DOCUMENT);
     }
 
     public static AddressAssessmentDocument anAddressAssessmentDocument() {

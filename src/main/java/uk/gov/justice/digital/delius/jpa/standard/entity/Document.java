@@ -69,4 +69,13 @@ public class Document {
     @Column(name = "LAST_UPD_AUTHOR_PROVIDER_ID")
     private Long lastUpdatedByProbationAreaId;
 
+    @Column(name = "DOCUMENT_TYPE")
+    @Enumerated(EnumType.STRING)
+    private DocumentType documentType;
+
+    public enum DocumentType {
+        DOCUMENT,
+        CPS_PACK,
+        PREVIOUS_CONVICTION
+    }
 }
