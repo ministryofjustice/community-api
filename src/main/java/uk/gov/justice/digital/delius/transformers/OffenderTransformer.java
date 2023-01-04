@@ -70,7 +70,7 @@ public class OffenderTransformer {
             return PreviousConviction.builder().build();
         }
         return PreviousConviction.builder()
-            .convictionDate(document.getCreatedDate().toLocalDate())
+            .convictionDate(document.getDateProduced().toLocalDate())
             .detail(Optional.ofNullable(document.getDocumentName()).map(doc -> ImmutableMap.of("documentName", doc)).orElse(null))
             .build();
     }

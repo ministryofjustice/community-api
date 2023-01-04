@@ -24,6 +24,9 @@ public class Document {
     @Column(name = "LAST_SAVED")
     private LocalDateTime lastSaved;
 
+    @Column(name = "DATE_PRODUCED")
+    private LocalDateTime dateProduced;
+
     @Column(name = "OFFENDER_ID")
     private Long offenderId;
 
