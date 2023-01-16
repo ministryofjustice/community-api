@@ -129,21 +129,6 @@ public class StaffResource {
         return staffService.getStaffDetailsByStaffCodes(staffCodes);
     }
 
-    @ApiOperation(value = "EXPERIMENTAL: Return list of of currently managed offenders, with RAR requirement and only a single active sentence",
-        notes = "Accepts a Delius Username. No backward compatibility guaranteed - intended for the use of the Manage a Supervision service, behaviour or responses may be modified in the future.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-        @ApiResponse(code = 404, message = "Not found", response = ErrorResponse.class),
-        @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)})
-    @GetMapping(path = "/staff/username/{username}/manage-supervisions-eligible-offenders")
-    public Page<StaffCaseloadEntry> getManageSupervisionsEligibleOffenders(
-        @ApiParam(name = "username", value = "Delius username", example = "SheliaHancockNPS", required = true)
-        @NotNull
-        @PathVariable(value = "username") final String username,
-        @PageableDefault(sort = {"secondName", "firstName"}, direction = Direction.ASC, size = Integer.MAX_VALUE) final Pageable pageable) {
-        return staffService.getManageSupervisionsEligibleOffendersByUsername(username, pageable);
-    }
-
     @ApiOperation(
         value = "Return the full caseload for a probation staff/officer",
         notes = "Currently, this endpoint is restricted to offender managers and order supervisors. Additional management types (e.g. requirements, reports) may be added later.")

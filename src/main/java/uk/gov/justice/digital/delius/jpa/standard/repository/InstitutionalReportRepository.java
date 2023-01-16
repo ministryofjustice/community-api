@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface InstitutionalReportRepository extends JpaRepository<InstitutionalReport, Long> {
-    List<InstitutionalReport> findByOffenderId(Long offenderId);
 
     Optional<InstitutionalReport> findByOffenderIdAndInstitutionalReportId(Long offenderId, Long institutionalReportId);
 }

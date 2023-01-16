@@ -34,33 +34,8 @@ class CourtReportServiceTest {
     @BeforeEach
     void before() {
         courtReportService = new CourtReportService(courtReportRepository);
-        when(courtReportRepository.findByOffenderId(any())).thenReturn(ImmutableList.of(
-                CourtReport.builder().courtReportId(1L).offenderId(1L).dateRequested(LocalDateTime.now().minusDays(98)).reportManagers(emptyList()).build(),
-                CourtReport.builder().courtReportId(2L).offenderId(1L).dateRequested(LocalDateTime.now().minusDays(1)).reportManagers(emptyList()).build(),
-                CourtReport.builder().courtReportId(3L).offenderId(1L).dateRequested(LocalDateTime.now()).softDeleted(true).reportManagers(emptyList()).build(),
-                CourtReport.builder().courtReportId(4L).offenderId(1L).dateRequested(LocalDateTime.now().minusDays(99)).reportManagers(emptyList()).build()
-        ));
         when(courtReportRepository.findByOffenderIdAndCourtReportIdAndSoftDeletedFalse(any(), any())).thenReturn(
                 Optional.of(CourtReport.builder().courtReportId(4L).offenderId(1L).reportManagers(emptyList()).build()));
-    }
-
-    @Test
-    void courtReportsForFiltersDeletedRecords() {
-        assertThat(courtReportService.courtReportsFor(1L)).hasSize(3);
-    }
-
-    @Test
-    void courtReportsForOrdersByDateRequested() {
-        assertThat(courtReportService.courtReportsFor(1L).get(0).getCourtReportId()).isEqualTo(2L);
-        assertThat(courtReportService.courtReportsFor(1L).get(1).getCourtReportId()).isEqualTo(1L);
-        assertThat(courtReportService.courtReportsFor(1L).get(2).getCourtReportId()).isEqualTo(4L);
-    }
-
-    @Test
-    void courtReportForUsesBothOffenderIdAndCourtIdForLookup() {
-        courtReportService.courtReportFor(1L, 4L);
-
-        verify(courtReportRepository).findByOffenderIdAndCourtReportIdAndSoftDeletedFalse(1L, 4L);
     }
 
     @Test

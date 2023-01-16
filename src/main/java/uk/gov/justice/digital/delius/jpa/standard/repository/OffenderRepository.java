@@ -58,34 +58,6 @@ public interface OffenderRepository extends JpaRepository<Offender, Long>, JpaSp
             join d.requirements r
             join r.requirementTypeMainCategory rtmc
             where o.softDeleted <> 1
-                and om.softDeleted <> 1
-                and upper(u.distinguishedName) = upper(:username)
-                and e.softDeleted <> 1 and e.activeFlag = 1
-                and d.softDeleted <> 1
-                and dt.sentenceType = 'SP'
-                and rtmc.code = 'F'
-                and r.softDeleted <> 1
-                and r.startDate < CURRENT_TIMESTAMP AND (r.terminationDate IS NULL OR r.terminationDate > CURRENT_TIMESTAMP)
-            group by o.offenderId
-            having count(e.eventId) = 1
-        )
-        """)
-    Page<Offender> getOffendersWithOneActiveEventCommunitySentenceAndRarRequirementForStaff(@Param("username") String username, Pageable pageable);
-
-    @Query(value = """
-        select o from Offender o
-        where o.offenderId in (
-            select o.offenderId
-            from Offender o
-            join o.offenderManagers om
-            join om.staff s
-            join s.user u
-            join o.events e
-            join e.disposal d
-            join d.disposalType dt
-            join d.requirements r
-            join r.requirementTypeMainCategory rtmc
-            where o.softDeleted <> 1
                 and o.crn = :crn
                 and om.softDeleted <> 1
                 and e.softDeleted <> 1 and e.activeFlag = 1

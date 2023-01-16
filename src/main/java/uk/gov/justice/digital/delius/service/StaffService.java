@@ -1,13 +1,10 @@
 package uk.gov.justice.digital.delius.service;
 
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.ManagedOffender;
-import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Borough;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
@@ -42,14 +39,6 @@ public class StaffService {
     @Transactional(readOnly = true)
     public Optional<Long> getStaffIdByStaffCode(final String staffCode) {
         return staffRepository.findStaffIdByOfficerCode(staffCode);
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<List<ManagedOffender>> getManagedOffendersByStaffCode(final String staffCode, final boolean current) {
-
-        return staffRepository.findByOfficerCode(staffCode).map(
-            staff -> OffenderTransformer.managedOffenderOf(staff, current)
-        );
     }
 
     @Transactional(readOnly = true)
@@ -181,11 +170,6 @@ public class StaffService {
 
     private String firstNameIn(final String forenames) {
         return Stream.of(forenames.split("[, ]")).findFirst().orElseThrow();
-    }
-
-    public Page<StaffCaseloadEntry> getManageSupervisionsEligibleOffendersByUsername(final String username, final Pageable pageable) {
-        return offenderRepository.getOffendersWithOneActiveEventCommunitySentenceAndRarRequirementForStaff(username, pageable)
-            .map(OffenderTransformer::caseOf);
     }
 
     public List<StaffDetails> findStaffByTeam(Long teamId) {

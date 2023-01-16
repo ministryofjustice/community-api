@@ -46,18 +46,6 @@ public class InstitutionalReportServiceTest {
     }
 
     @Test
-    public void listOfReportsFiltersOutSoftDeleted() {
-        given(institutionalReportRepository.findByOffenderId(1L)).
-            willReturn(ImmutableList.of(
-                InstitutionalReport.builder().softDeleted(0L).build(),
-                InstitutionalReport.builder().softDeleted(1L).build(),
-                InstitutionalReport.builder().softDeleted(0L).build())
-            );
-
-        assertThat(institutionalReportService.institutionalReportsFor(1L).size()).isEqualTo(2);
-    }
-
-    @Test
     public void convictionIsEmbellishedWithMainOffence() {
 
         given(institutionalReportRepository.findByOffenderIdAndInstitutionalReportId(1L, 2L)).
@@ -103,21 +91,6 @@ public class InstitutionalReportServiceTest {
             institutionalReportService.institutionalReportFor(1L, 2L).get();
 
         assertThat(institutionalReport.getSentence().getDescription()).isEqualTo("Some sentence text");
-    }
-
-    @Test
-    public void sentenceIsEmbellishedWithOutcomeDescriptionForListOfReports() {
-        given(institutionalReportRepository.findByOffenderId(1L)).
-            willReturn(ImmutableList.of(
-                InstitutionalReport.builder().softDeleted(1L).build(),
-                anInstitutionalReportWithSentenceDescription("Some other sentence text"),
-                InstitutionalReport.builder().softDeleted(0L).build())
-            );
-
-        List<uk.gov.justice.digital.delius.data.api.InstitutionalReport> institutionalReports =
-            institutionalReportService.institutionalReportsFor(1L);
-
-        assertThat(institutionalReports.get(0).getSentence().getDescription()).isEqualTo("Some other sentence text");
     }
 
     private InstitutionalReport anInstitutionalReport(Event event) {
