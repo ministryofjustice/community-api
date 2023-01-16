@@ -23,18 +23,6 @@ public class InstitutionalReportService {
         this.institutionalReportRepository = institutionalReportRepository;
     }
 
-    public List<InstitutionalReport> institutionalReportsFor(Long offenderId) {
-
-        List<uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReport> institutionalReports =
-            institutionalReportRepository.findByOffenderId(offenderId);
-
-        return institutionalReports
-            .stream()
-            .filter(this::notDeleted)
-            .map(InstitutionalReportTransformer::institutionalReportOf)
-            .collect(toList());
-    }
-
     public Optional<InstitutionalReport> institutionalReportFor(Long offenderId, Long institutionalReportId) {
 
         Optional<uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReport> maybeInstitutionalReport =

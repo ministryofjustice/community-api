@@ -32,15 +32,6 @@ public class InstitutionalReportController {
         this.institutionalReportService = institutionalReportService;
     }
 
-    @RequestMapping(value = "offenders/crn/{crn}/institutionalReports", method = RequestMethod.GET)
-    @JwtValidation
-    public ResponseEntity<List<InstitutionalReport>> getOffenderInstitutionalReportsByCrn(final @RequestHeader HttpHeaders httpHeaders,
-                                                                             final @PathVariable("crn") String crn) {
-
-        log.info("Call to getOffenderInstitutionalReportsByCrn");
-        return institutionalReportsResponseEntityOf(offenderService.offenderIdOfCrn(crn));
-    }
-
     @RequestMapping(value = "offenders/crn/{crn}/institutionalReports/{institutionalReportId}", method = RequestMethod.GET)
     @JwtValidation
     public ResponseEntity<InstitutionalReport> getOffenderInstitutionalReportByCrnAndInstitutionalReportId(final @RequestHeader HttpHeaders httpHeaders,
@@ -51,22 +42,11 @@ public class InstitutionalReportController {
         return institutionalReportResponseEntityOf(offenderService.offenderIdOfCrn(crn), institutionalReportId);
     }
 
-    private ResponseEntity<List<InstitutionalReport>> institutionalReportsResponseEntityOf(Optional<Long> maybeOffenderId) {
-        return maybeOffenderId
-            .map(offenderId -> new ResponseEntity<>(institutionalReportService.institutionalReportsFor(offenderId), OK))
-            .orElseGet(this::institutionalReportsNotFound);
-    }
-
     private ResponseEntity<InstitutionalReport> institutionalReportResponseEntityOf(Optional<Long> maybeOffenderId,  Long institutionalReportId) {
         Optional<InstitutionalReport> maybeInstitutionalReport = maybeOffenderId.flatMap(offenderId -> institutionalReportService.institutionalReportFor(offenderId, institutionalReportId));
         return maybeInstitutionalReport.map(
                 institutionalReport -> new ResponseEntity<>(institutionalReport, OK)).orElse(institutionalReportNotFound());
 
-    }
-
-
-    private ResponseEntity<List<InstitutionalReport>> institutionalReportsNotFound() {
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     private ResponseEntity<InstitutionalReport> institutionalReportNotFound() {

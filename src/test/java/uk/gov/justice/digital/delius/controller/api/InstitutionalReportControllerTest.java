@@ -45,48 +45,6 @@ public class InstitutionalReportControllerTest {
     }
 
     @Test
-    public void canGetAllReportsForOffenderByCrn() {
-        when(offenderService.offenderIdOfCrn("CRN1")).thenReturn(Optional.of(1L));
-        when(institutionalReportService.institutionalReportsFor(any())).thenReturn(ImmutableList.of(
-                InstitutionalReport.builder().institutionalReportId(1L)
-                        .offenderId(1L)
-                        .conviction(aConviction(10L))
-                        .build(),
-                InstitutionalReport.builder().institutionalReportId(2L)
-                        .offenderId(1L)
-                        .conviction(aConviction(20L))
-                        .build(),
-                InstitutionalReport.builder().institutionalReportId(4L)
-                        .offenderId(1L)
-                        .conviction(aConviction(30L))
-                        .build()
-        ));
-
-        InstitutionalReport[] institutionalReports = given()
-            .when()
-            .get("/api/offenders/crn/CRN1/institutionalReports")
-            .then()
-            .statusCode(200)
-            .extract()
-            .body()
-            .as(InstitutionalReport[].class);
-
-        assertThat(institutionalReports).hasSize(3);
-    }
-
-    @Test
-    public void missingOffenderRecordResultsInAllReportsForOffenderByCrnNotFound() {
-        when(offenderService.offenderIdOfCrn("CRN1")).thenReturn(Optional.empty());
-
-        given()
-            .when()
-            .get("/api/offenders/crn/CRN1/institutionalReports")
-            .then()
-            .statusCode(404);
-
-    }
-
-    @Test
     public void canGetSpecificReportForOffenderByCrnAndReportId() {
         when(offenderService.offenderIdOfCrn("CRN1")).thenReturn(Optional.of(1L));
         when(institutionalReportService.institutionalReportFor(any(), any())).thenReturn(
@@ -126,13 +84,5 @@ public class InstitutionalReportControllerTest {
                 .get("/api/offenders/crn/CRN1/institutionalReports/4")
                 .then()
                 .statusCode(404);
-    }
-
-    private Conviction aConviction(Long id) {
-        return Conviction.builder()
-            .convictionId(id)
-            .convictionDate(LocalDate.now())
-            .active(true)
-            .build();
     }
 }

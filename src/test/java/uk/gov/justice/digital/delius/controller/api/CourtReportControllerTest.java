@@ -36,39 +36,6 @@ public class CourtReportControllerTest {
     }
 
     @Test
-    public void canGetAllReportsForOffenderByCrn() {
-        when(offenderService.offenderIdOfCrn("CRN1")).thenReturn(Optional.of(1L));
-        when(courtReportService.courtReportsFor(any())).thenReturn(ImmutableList.of(
-                CourtReport.builder().courtReportId(1L).offenderId(1L).dateRequested(LocalDateTime.now()).build(),
-                CourtReport.builder().courtReportId(2L).offenderId(1L).dateRequested(LocalDateTime.now()).build(),
-                CourtReport.builder().courtReportId(4L).offenderId(1L).dateRequested(LocalDateTime.now()).build()
-        ));
-
-        CourtReport[] courtReports = given()
-            .when()
-            .get("/api/offenders/crn/CRN1/courtReports")
-            .then()
-            .statusCode(200)
-            .extract()
-            .body()
-            .as(CourtReport[].class);
-
-        assertThat(courtReports).hasSize(3);
-    }
-
-    @Test
-    public void missingOffenderRecordResultsInAllReportsForOffenderByCrnNotFound() {
-        when(offenderService.offenderIdOfCrn("CRN1")).thenReturn(Optional.empty());
-
-        given()
-            .when()
-            .get("/api/offenders/crn/CRN1/courtReports")
-            .then()
-            .statusCode(404);
-
-    }
-
-    @Test
     public void canGetSpecificReportForOffenderByCrnAndReportId() {
         when(offenderService.offenderIdOfCrn("CRN1")).thenReturn(Optional.of(1L));
         when(courtReportService.courtReportFor(any(), any())).thenReturn(

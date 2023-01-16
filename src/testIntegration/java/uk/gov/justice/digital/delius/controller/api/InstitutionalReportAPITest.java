@@ -42,44 +42,10 @@ public class InstitutionalReportAPITest {
     }
 
     @Test
-    public void canGetAllReportsForOffenderByCrn() {
-
-        InstitutionalReport[] institutionalReports = given()
-            .header("Authorization", aValidToken())
-            .when()
-            .get("offenders/crn/X320741/institutionalReports")
-            .then()
-            .statusCode(200)
-            .extract()
-            .body()
-            .as(InstitutionalReport[].class);
-
-        assertThat(institutionalReports).hasSize(1);
-    }
-
-    @Test
     public void cannotGetReportForOffenderByCrnAndReportIdWithoutJwtAuthorizationHeader() {
         RestAssured.when()
                 .get("offenders/crn/CRN1/institutionalReports/4")
                 .then()
                 .statusCode(HttpStatus.UNAUTHORIZED.value());
-    }
-
-    @Test
-    public void cannotGetReportsForOffenderByCrnWithoutJwtAuthorizationHeader() {
-        RestAssured.when()
-                .get("offenders/crn/CRN1/institutionalReports")
-                .then()
-                .statusCode(HttpStatus.UNAUTHORIZED.value());
-    }
-
-    private String aValidToken() {
-        return aValidTokenFor(UUID.randomUUID().toString());
-    }
-
-    private String aValidTokenFor(String distinguishedName) {
-        return "Bearer " + jwt.buildToken(UserData.builder()
-                .distinguishedName(distinguishedName)
-                .uid("bobby.davro").build());
     }
 }
