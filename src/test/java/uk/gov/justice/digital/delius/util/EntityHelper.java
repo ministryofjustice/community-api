@@ -879,6 +879,7 @@ public class EntityHelper {
     public static RInstitution aPrisonInstitution() {
         return RInstitution
                 .builder()
+                .institutionId(12L)
                 .institutionName("HMP Wandsworth")
                 .establishment("Yes")
                 .privateFlag(0L)

@@ -65,7 +65,7 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
                 contactService,
                 telemetryClient);
 
-        when(probationAreaRepository.findByInstitutionByNomsCDECode(any())).thenAnswer(args -> {
+        when(probationAreaRepository.findByInstitutionInstitutionId(any())).thenAnswer(args -> {
             var code = args.getArgument(0).toString();
             return Optional.of(aPrisonProbationArea()
                     .toBuilder()
