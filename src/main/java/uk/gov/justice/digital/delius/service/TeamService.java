@@ -40,7 +40,7 @@ import static java.lang.String.format;
 @Slf4j
 public class TeamService {
     private static final String POM_TEAM_SUFFIX = "POM";
-    private static final String UNALLOCATED_TEAM_SUFFIX = "ALL";
+    static final String UNALLOCATED_TEAM_SUFFIX = "ALL";
     private static final String POM_DESCRIPTION = "Prison Offender Managers";
 
     private final TeamRepository teamRepository;

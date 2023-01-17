@@ -39,6 +39,7 @@ import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.Optional.empty;
+import static uk.gov.justice.digital.delius.service.TeamService.UNALLOCATED_TEAM_SUFFIX;
 
 @Service
 @Slf4j
@@ -105,9 +106,12 @@ public class OffenderManagerService {
 
     public CommunityOrPrisonOffenderManager autoAllocatePrisonOffenderManagerAtInstitution(final Offender offender, final RInstitution institution) {
         final var allocationReason = referenceDataService.pomAllocationAutoTransferReason();
-        final var probationArea = probationAreaRepository.findByInstitutionByNomsCDECode(institution.getNomisCdeCode()).orElseThrow();
-        final var team = teamService.findUnallocatedTeam(probationArea).orElseThrow();
-        final var staff = staffService.findUnallocatedForTeam(team).orElseThrow();
+        final var probationArea = probationAreaRepository.findByInstitutionByNomsCDECode(institution.getNomisCdeCode())
+            .orElseThrow(() -> new NotFoundException("institution with CdeCode: " + institution.getNomisCdeCode()));
+        final var team = teamService.findUnallocatedTeam(probationArea)
+            .orElseThrow(() -> new NotFoundException("Team Not Found with code: " + probationArea.getCode() + UNALLOCATED_TEAM_SUFFIX));
+        final var staff = staffService.findUnallocatedForTeam(team)
+            .orElseThrow(() -> new NotFoundException("Staff Not Found with code: " + team.getCode() + "U"));
 
         return allocatePrisonOffenderManager(probationArea, staff, offender, team, allocationReason, empty());
     }
