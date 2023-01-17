@@ -118,7 +118,7 @@ public class CustodyUpdateAPITest extends IntegrationTestBase {
 
         assertThat(prisonOffenderManager.getIsUnallocated()).isTrue();
         assertThat(prisonOffenderManager.getProbationArea().getInstitution().getNomsPrisonInstitutionCode()).isEqualTo("MDI");
-        assertThat(prisonOffenderManager.getStaffCode()).isEqualTo("MDIALLU");
+        assertThat(prisonOffenderManager.getStaffCode()).isEqualTo("MDIUATU");
 
 
         final var contact = jdbcTemplate.query(
