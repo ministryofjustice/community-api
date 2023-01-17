@@ -107,7 +107,7 @@ public class TeamServiceTest {
                         .code("N01")
                         .build())).isNotNull();
 
-        verify(teamRepository).findByCode("N01UAT");
+        verify(teamRepository).findByCode("N01ALL");
     }
 
     @Test
