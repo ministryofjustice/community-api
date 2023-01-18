@@ -106,8 +106,8 @@ public class OffenderManagerService {
 
     public CommunityOrPrisonOffenderManager autoAllocatePrisonOffenderManagerAtInstitution(final Offender offender, final RInstitution institution) {
         final var allocationReason = referenceDataService.pomAllocationAutoTransferReason();
-        final var probationArea = probationAreaRepository.findByInstitutionByNomsCDECode(institution.getNomisCdeCode())
-            .orElseThrow(() -> new NotFoundException("institution with CdeCode: " + institution.getNomisCdeCode()));
+        final var probationArea = probationAreaRepository.findByInstitutionInstitutionId(institution.getInstitutionId())
+            .orElseThrow(() -> new NotFoundException("probation area for institution: " + institution.getCode()));
         final var team = teamService.findUnallocatedTeam(probationArea)
             .orElseThrow(() -> new NotFoundException("Team Not Found with code: " + probationArea.getCode() + UNALLOCATED_TEAM_SUFFIX));
         final var staff = staffService.findUnallocatedForTeam(team)

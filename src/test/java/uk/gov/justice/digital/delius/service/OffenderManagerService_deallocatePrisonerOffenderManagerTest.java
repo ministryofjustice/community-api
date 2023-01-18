@@ -82,7 +82,7 @@ public class OffenderManagerService_deallocatePrisonerOffenderManagerTest {
     @Test
     public void deallocatePrisonerOffenderManagerSuccess() {
         when(offenderRepository.findMostLikelyByNomsNumber(anyString())).thenReturn(Either.right(Optional.of(anOffender())));
-        when(probationAreaRepository.findByInstitutionByNomsCDECode(any())).thenAnswer(args -> {
+        when(probationAreaRepository.findByInstitutionInstitutionId(any())).thenAnswer(args -> {
             final var code = args.getArgument(0).toString();
             return Optional.of(aPrisonProbationArea()
                 .toBuilder()
@@ -97,6 +97,6 @@ public class OffenderManagerService_deallocatePrisonerOffenderManagerTest {
         offenderManagerService.deallocatePrisonerOffenderManager("A1234AB");
 
         verify(telemetryClient).trackEvent("POMAllocated",
-            Map.of("probationArea", "WWI", "staffCode", "A1234", "crn", "crn123"), null);
+            Map.of("probationArea", "12", "staffCode", "A1234", "crn", "crn123"), null);
     }
 }
