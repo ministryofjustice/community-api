@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.jpa.standard.repository;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,5 +20,5 @@ public interface CaseAllocationRepository extends JpaRepository<CaseAllocation, 
         "and e.softDeleted = false and d.softDeleted = 0 " +
         "order by ca.allocationDecisionDate desc"
     )
-    Optional<CaseAllocation> findLatestDecisionOnActiveEvent(@Param("offenderId") Long offenderId);
+    Optional<CaseAllocation> findLatestDecisionOnActiveEvent(@Param("offenderId") Long offenderId, PageRequest pageRequest);
 }

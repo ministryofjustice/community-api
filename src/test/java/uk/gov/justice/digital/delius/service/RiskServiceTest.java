@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CaseAllocation;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
@@ -39,7 +40,7 @@ class RiskServiceTest {
         @Test
         @DisplayName("will return resourcing details when found")
         void willReturnResourcingDetailsWhenFound() {
-            when(caseAllocationRepository.findLatestDecisionOnActiveEvent(99L))
+            when(caseAllocationRepository.findLatestDecisionOnActiveEvent(99L, PageRequest.of(0, 1)))
                 .thenReturn(Optional
                     .of(CaseAllocation
                         .builder()
@@ -60,7 +61,7 @@ class RiskServiceTest {
         @Test
         @DisplayName("will return empty when not found")
         void willReturnEmptyWhenNotFound() {
-            when(caseAllocationRepository.findLatestDecisionOnActiveEvent(99L))
+            when(caseAllocationRepository.findLatestDecisionOnActiveEvent(99L, PageRequest.of(0, 1)))
                 .thenReturn(Optional.empty());
             final var resourcingDetails = riskService.getResourcingDetails(99L);
 
