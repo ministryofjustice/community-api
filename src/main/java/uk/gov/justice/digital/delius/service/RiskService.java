@@ -33,7 +33,7 @@ public class RiskService {
 
     public Optional<RiskResourcingDetails> getResourcingDetails(Long offenderId) {
         return caseAllocationRepository
-            .findFirstByOffenderIdAndAllocationDecisionDateNotNullOrderByAllocationDecisionDateDesc(offenderId)
+            .findLatestDecisionOnActiveEvent(offenderId)
             .map(CaseAllocationTransformer::riskResourcingDetailsOf);
     }
 }
