@@ -56,7 +56,7 @@ public class TeamService {
     @Transactional
     public Team findOrCreatePrisonOffenderManagerTeamInArea(ProbationArea probationArea) {
         final String teamCode = String.format("%s%s", probationArea.getCode(), POM_TEAM_SUFFIX);
-        return teamRepository.findByCode(teamCode)
+        return teamRepository.findActiveByCode(teamCode)
                 .orElseGet(() -> createPOMTeamInArea(teamCode, probationArea));
     }
 
@@ -78,7 +78,7 @@ public class TeamService {
 
     private boolean isPOMTeamMissingForArea(ProbationArea probationArea) {
         final String teamCode = String.format("%s%s", probationArea.getCode(), POM_TEAM_SUFFIX);
-        return teamRepository.findByCode(teamCode).isEmpty();
+        return teamRepository.findActiveByCode(teamCode).isEmpty();
     }
 
     private boolean isPOMTeamMissingUnallocatedStaff(Team team) {
@@ -87,7 +87,7 @@ public class TeamService {
 
     Optional<Team> findUnallocatedTeam(uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea probationArea) {
         final String teamCode = String.format("%s%s", probationArea.getCode(), UNALLOCATED_TEAM_SUFFIX);
-        return teamRepository.findByCode(teamCode);
+        return teamRepository.findActiveByCode(teamCode);
     }
 
     @Transactional

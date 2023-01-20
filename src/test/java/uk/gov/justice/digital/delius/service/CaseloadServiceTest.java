@@ -73,7 +73,7 @@ public class CaseloadServiceTest {
         final Team team = new Team();
         team.setTeamId(37L);
 
-        when(teamRepository.findByCode("TEST")).thenReturn(Optional.of(team));
+        when(teamRepository.findActiveByCode("TEST")).thenReturn(Optional.of(team));
         when(caseloadRepository.findByTeamTeamIdAndRoleCodeIn(eq(team.getTeamId()), eq(asList("OM", "OS")), any(Pageable.class)))
             .thenReturn(asList(
                 Caseload.builder().roleCode("OM").team(aTeam()).staff(aStaff().toBuilder().staffId(2L).build()).build(),
