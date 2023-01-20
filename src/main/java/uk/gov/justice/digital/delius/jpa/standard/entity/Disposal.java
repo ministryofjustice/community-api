@@ -35,6 +35,9 @@ public class Disposal {
     @Column(name = "SOFT_DELETED")
     private Long softDeleted;
 
+    @Column(name = "ACTIVE_FLAG")
+    private boolean activeFlag;
+
     @Column(name = "OFFENDER_ID")
     private Long offenderId;
 
