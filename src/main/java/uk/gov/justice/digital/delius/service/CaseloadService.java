@@ -39,7 +39,7 @@ public class CaseloadService {
     public Optional<Caseload> getCaseloadByTeamCode(
         final String teamCode, final Pageable pageable, final CaseloadRole... roles
     ) {
-        return teamRepository.findByCode(teamCode)
+        return teamRepository.findActiveByCode(teamCode)
             .map(t -> caseloadRepository.findByTeamTeamIdAndRoleCodeIn(
                 t.getTeamId(),
                 Stream.of(roles).map(CaseloadRole::getRoleCode).toList(),

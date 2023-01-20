@@ -8,8 +8,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import java.util.Optional;
 
 public interface TeamRepository extends JpaRepository<Team, Long> {
-    Optional<Team> findByCode(String code);
-
     @Query("""
         SELECT team FROM Team team
         WHERE team.code = :code

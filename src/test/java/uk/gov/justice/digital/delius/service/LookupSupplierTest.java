@@ -155,7 +155,7 @@ public class LookupSupplierTest {
 
     @Test
     public void teamSupplierWillLookupUnallocatedTeamForAreaWhenNoTeamIdSupplied() {
-        when(teamRepository.findByCode(any())).thenReturn(Optional.of(Team.builder().build()));
+        when(teamRepository.findActiveByCode(any())).thenReturn(Optional.of(Team.builder().build()));
         when(probationAreaRepository.findById(1L)).thenReturn(Optional.ofNullable(ProbationArea.builder().code("ABC").build()));
 
         val team = lookupSupplier.teamSupplier().apply(uk.gov.justice.digital.delius.data.api.OrderManager
@@ -166,7 +166,7 @@ public class LookupSupplierTest {
 
         assertThat(team).isNotNull();
 
-        verify(teamRepository).findByCode("ABCUAT");
+        verify(teamRepository).findActiveByCode("ABCUAT");
     }
 
     @Test
@@ -198,7 +198,7 @@ public class LookupSupplierTest {
     @Test
     public void staffSupplierWillLookupUnallocatedStaffForUnallocatedTeamWhenNoStaffIdOrTeamIdSupplied() {
         when(probationAreaRepository.findById(1L)).thenReturn(Optional.ofNullable(ProbationArea.builder().code("ABC").build()));
-        when(teamRepository.findByCode("ABCUAT")).thenReturn(Optional.of(Team.builder().code("XYZ").build()));
+        when(teamRepository.findActiveByCode("ABCUAT")).thenReturn(Optional.of(Team.builder().code("XYZ").build()));
         when(staffRepository.findByOfficerCode(any(String.class))).thenReturn(Optional.of(Staff.builder().build()));
 
         val staff = lookupSupplier.staffSupplier().apply(uk.gov.justice.digital.delius.data.api.OrderManager
@@ -208,7 +208,7 @@ public class LookupSupplierTest {
 
         assertThat(staff).isNotNull();
 
-        verify(teamRepository).findByCode("ABCUAT");
+        verify(teamRepository).findActiveByCode("ABCUAT");
         verify(staffRepository).findByOfficerCode("XYZU");
     }
 

@@ -86,7 +86,7 @@ public class TeamServiceTest {
 
     @Test
     public void findOrCreatePrisonOffenderManagerTeamInAreaWillLookupBaseOnPOMCode() {
-        when(teamRepository.findByCode(any())).thenReturn(Optional.of(aTeam()));
+        when(teamRepository.findActiveByCode(any())).thenReturn(Optional.of(aTeam()));
 
         assertThat(teamService.findOrCreatePrisonOffenderManagerTeamInArea(
                 aProbationArea()
@@ -94,12 +94,12 @@ public class TeamServiceTest {
                         .code("N01")
                         .build())).isNotNull();
 
-        verify(teamRepository).findByCode("N01POM");
+        verify(teamRepository).findActiveByCode("N01POM");
     }
 
     @Test
     public void findUnallocatedTeamInAreaWillLookupBaseOnALLCode() {
-        when(teamRepository.findByCode(any())).thenReturn(Optional.of(aTeam()));
+        when(teamRepository.findActiveByCode(any())).thenReturn(Optional.of(aTeam()));
 
         assertThat(teamService.findUnallocatedTeam(
                 aProbationArea()
@@ -107,12 +107,12 @@ public class TeamServiceTest {
                         .code("N01")
                         .build())).isNotNull();
 
-        verify(teamRepository).findByCode("N01ALL");
+        verify(teamRepository).findActiveByCode("N01ALL");
     }
 
     @Test
     public void findOrCreatePrisonOffenderManagerTeamInAreaWillCreateNewPOMTeamWhenNotFound() {
-        when(teamRepository.findByCode(any())).thenReturn(Optional.empty());
+        when(teamRepository.findActiveByCode(any())).thenReturn(Optional.empty());
         when(districtRepository.findByCode(any())).thenReturn(Optional.of(aDistrict()));
         when(localDeliveryUnitRepository.findByCode(any())).thenReturn(Optional.of(aLocalDeliveryUnit()));
 
@@ -133,7 +133,7 @@ public class TeamServiceTest {
     }
     @Test
     public void telemetryTeamCreatedWillBeRaised() {
-        when(teamRepository.findByCode(any())).thenReturn(Optional.empty());
+        when(teamRepository.findActiveByCode(any())).thenReturn(Optional.empty());
         when(districtRepository.findByCode(any())).thenReturn(Optional.of(aDistrict()));
         when(localDeliveryUnitRepository.findByCode(any())).thenReturn(Optional.of(aLocalDeliveryUnit()));
 
@@ -151,7 +151,7 @@ public class TeamServiceTest {
 
     @Test
     public void findOrCreatePrisonOffenderManagerTeamInAreaWillCreateDistrictBoroughAndLDUWhenTheyAreNotFound() {
-        when(teamRepository.findByCode(any())).thenReturn(Optional.empty());
+        when(teamRepository.findActiveByCode(any())).thenReturn(Optional.empty());
         when(districtRepository.findByCode(any())).thenReturn(Optional.empty());
         when(localDeliveryUnitRepository.findByCode(any())).thenReturn(Optional.empty());
         when(boroughRepository.findActiveByCode(any())).thenReturn(Optional.empty());
@@ -179,7 +179,7 @@ public class TeamServiceTest {
 
     @Test
     public void findOrCreatePrisonOffenderManagerTeamInAreaWillRaiseTelemetryEventsForEachCreated() {
-        when(teamRepository.findByCode(any())).thenReturn(Optional.empty());
+        when(teamRepository.findActiveByCode(any())).thenReturn(Optional.empty());
         when(districtRepository.findByCode(any())).thenReturn(Optional.empty());
         when(localDeliveryUnitRepository.findByCode(any())).thenReturn(Optional.empty());
         when(boroughRepository.findActiveByCode(any())).thenReturn(Optional.empty());
@@ -237,8 +237,8 @@ public class TeamServiceTest {
                     .build();
             when(probationAreaRepository.findAllWithNomsCDECodeExcludeOut()).thenReturn(List.of(probationAreaWithTeamAlready, probationAreaWithMissingTeam));
 
-            when(teamRepository.findByCode("A01POM")).thenReturn(Optional.of(EntityHelper.aTeam("A01POM")));
-            when(teamRepository.findByCode("Z01POM")).thenReturn(Optional.empty());
+            when(teamRepository.findActiveByCode("A01POM")).thenReturn(Optional.of(EntityHelper.aTeam("A01POM")));
+            when(teamRepository.findActiveByCode("Z01POM")).thenReturn(Optional.empty());
             when(districtRepository.findByCode("Z01POM")).thenReturn(Optional.empty());
             when(boroughRepository.findActiveByCode("Z01POM")).thenReturn(Optional.empty());
             when(localDeliveryUnitRepository.findByCode("Z01POM")).thenReturn(Optional.empty());
@@ -293,8 +293,8 @@ public class TeamServiceTest {
             final var teamWithUnallocatedStaff = EntityHelper.aTeam("A01POM").toBuilder().probationArea(probationAreaWithUnallocatedPOMStaff).build();
             final var teamWithoutUnallocatedStaff = EntityHelper.aTeam("Z01POM").toBuilder().probationArea(probationAreaWithoutUnallocatedPOMStaff).teamId(88L).build();
             when(probationAreaRepository.findAllWithNomsCDECodeExcludeOut()).thenReturn(List.of(probationAreaWithUnallocatedPOMStaff, probationAreaWithoutUnallocatedPOMStaff));
-            when(teamRepository.findByCode("A01POM")).thenReturn(Optional.of(teamWithUnallocatedStaff));
-            when(teamRepository.findByCode("Z01POM")).thenReturn(Optional.of(teamWithoutUnallocatedStaff));
+            when(teamRepository.findActiveByCode("A01POM")).thenReturn(Optional.of(teamWithUnallocatedStaff));
+            when(teamRepository.findActiveByCode("Z01POM")).thenReturn(Optional.of(teamWithoutUnallocatedStaff));
 
             when(staffService.findUnallocatedForTeam(teamWithUnallocatedStaff)).thenReturn(Optional.of(aStaff()));
             when(staffService.findUnallocatedForTeam(teamWithoutUnallocatedStaff)).thenReturn(Optional.empty());

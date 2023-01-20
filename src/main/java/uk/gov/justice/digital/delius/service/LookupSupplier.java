@@ -95,7 +95,7 @@ public class LookupSupplier {
 
     private Team findUnallocatedTeam(Long probationAreaId) {
         return teamRepository
-                .findByCode(unallocatedTeamCodeForProbationArea(probationAreaId))
+                .findActiveByCode(unallocatedTeamCodeForProbationArea(probationAreaId))
                 .orElseThrow(() -> new RuntimeException(String.format("No unallocated team found for %d", probationAreaId)));
     }
     public Function<uk.gov.justice.digital.delius.data.api.OrderManager, Staff> staffSupplier() {
