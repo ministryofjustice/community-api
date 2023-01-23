@@ -58,7 +58,7 @@ testIntegration {
             include(it.replace("src/testIntegration/java/", "**/").replace(".java", ".class"))
         }
     }
-    timeout = Duration.ofMinutes(15)
+    timeout.set(Duration.ofMinutes(15))
     useJUnitPlatform()
     testLogging {
         events "started", "passed", "skipped", "failed", "standardError"
@@ -86,13 +86,12 @@ copyAgentJar.dependsOn(assemble)
 
 jib {
     container {
-        creationTime = "USE_CURRENT_TIMESTAMP"
         mainClass = "uk.gov.justice.digital.delius.DeliusOffenderAPI"
         jvmFlags = ["-Duser.timezone=Europe/London"]
         user = "2000:2000"
     }
     from {
-        image = "ghcr.io/ministryofjustice/hmpps-probation-integration-services/eclipse-temurin:19-jre-jammy"
+        image = "ghcr.io/ministryofjustice/hmpps-probation-integration-services/eclipse-temurin:17-jre-jammy"
         platforms {
             platform {
                 architecture = 'amd64'
@@ -108,11 +107,11 @@ jib {
         paths {
             path {
                 setFrom("${project.buildDir}")
-                includes = ["agent/agent.jar"]
+                includes.add("agent/agent.jar")
             }
             path {
                 setFrom("${project.rootDir}")
-                includes = ["applicationinsights*.json"]
+                includes.add("applicationinsights*.json")
                 into = "/agent"
             }
         }
