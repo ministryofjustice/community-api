@@ -15,8 +15,5 @@ public interface ProbationAreaRepository extends JpaRepository<ProbationArea, Lo
     @Query("select pa from ProbationArea pa, RInstitution institution where pa.institution = institution and institution.nomisCdeCode = :nomisCdeCode")
     Optional<ProbationArea> findByInstitutionByNomsCDECode(@Param("nomisCdeCode") String nomsPrisonInstitutionCode);
 
-    @Query("select pa from ProbationArea pa, RInstitution institution where pa.institution = institution and institution.nomisCdeCode is not null and institution.nomisCdeCode <> 'OUT'")
-    List<ProbationArea> findAllWithNomsCDECodeExcludeOut();
-
     Optional<ProbationArea> findByInstitutionInstitutionId(Long institutionId);
 }

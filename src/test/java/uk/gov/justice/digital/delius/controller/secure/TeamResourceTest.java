@@ -28,22 +28,8 @@ public class TeamResourceTest {
     @Mock
     private TeamService service;
 
-    @Mock
-    private CaseloadService caseloadService;
-
     @InjectMocks
     private TeamResource subject;
-
-    @Test
-    public void gettingTeamOfficeLocations() {
-        final var CODE = "some-team";
-        final var locations = List.of(anOfficeLocation(), anOfficeLocation());
-        when(service.getAllOfficeLocations(CODE)).thenReturn(locations);
-
-        final var observed = subject.getAllOfficeLocations(CODE);
-
-        assertThat(observed).isSameAs(locations);
-    }
 
     @Test
     public void gettingStaffByTeamCode() {
@@ -56,32 +42,5 @@ public class TeamResourceTest {
         final var observed = subject.getAllStaff(CODE);
 
         assertThat(observed).isSameAs(staffHumanList);
-    }
-
-    @Test
-    public void gettingCaseload() {
-        final var code = "123456";
-        final var caseload = Caseload.builder()
-            .managedOffenders(Set.of(ManagedOffenderCrn.builder().offenderCrn("A123456").build()))
-            .supervisedOrders(Set.of(ManagedEventId.builder().eventId(123L).build()))
-            .build();
-        when(caseloadService.getCaseloadByTeamCode(eq(code), any(Pageable.class), any())).thenReturn(Optional.of(caseload));
-
-        final var observed = subject.getCaseloadForTeam(code, 0, 100);
-
-        assertThat(observed).isSameAs(caseload);
-    }
-
-    private static OfficeLocation anOfficeLocation() {
-        return OfficeLocation.builder()
-            .code("ASP_ASH")
-            .description("Ashley House Approved Premises")
-            .buildingName("Ashley House")
-            .buildingNumber("14")
-            .streetName("Somerset Street")
-            .townCity("Bristol")
-            .county("Somerset")
-            .postcode("BS2 8NB")
-            .build();
     }
 }

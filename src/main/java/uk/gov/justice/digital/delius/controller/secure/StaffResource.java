@@ -129,17 +129,6 @@ public class StaffResource {
         return staffService.getStaffDetailsByStaffCodes(staffCodes);
     }
 
-    @ApiOperation(
-        value = "Return the full caseload for a probation staff/officer",
-        notes = "Currently, this endpoint is restricted to offender managers and order supervisors. Additional management types (e.g. requirements, reports) may be added later.")
-    @GetMapping(path = "/staff/staffIdentifier/{staffIdentifier}/caseload")
-    public Caseload getCaseloadForStaff(
-        @ApiParam(name = "staffIdentifier", value = "Delius staff/officer identifier", example = "123456", required = true)
-        @NotNull @PathVariable(value = "staffIdentifier") final Long staffIdentifier) {
-        return caseloadService.getCaseloadByStaffIdentifier(staffIdentifier, OFFENDER_MANAGER, ORDER_SUPERVISOR)
-            .orElseThrow(() -> new NotFoundException(String.format("Staff member with identifier %d", staffIdentifier)));
-    }
-
     @ApiOperation(value = "Return the full caseload for a probation staff/officer, returning only the managed offenders")
     @GetMapping(path = "/staff/staffIdentifier/{staffIdentifier}/caseload/managedOffenders")
     public Set<ManagedOffenderCrn> getCaseloadOffendersForStaff(
@@ -150,42 +139,12 @@ public class StaffResource {
             .orElseThrow(() -> new NotFoundException(String.format("Staff member with identifier %d", staffIdentifier)));
     }
 
-    @ApiOperation(value = "Return the full caseload for a probation staff/officer, returning only the supervised orders/events")
-    @GetMapping(path = "/staff/staffIdentifier/{staffIdentifier}/caseload/supervisedOrders")
-    public Set<ManagedEventId> getCaseloadOrdersForStaff(
-        @ApiParam(name = "staffIdentifier", value = "Delius staff/officer identifier", example = "123456", required = true)
-        @NotNull @PathVariable(value = "staffIdentifier") final Long staffIdentifier) {
-        return caseloadService.getCaseloadByStaffIdentifier(staffIdentifier, ORDER_SUPERVISOR)
-            .map(Caseload::getSupervisedOrders)
-            .orElseThrow(() -> new NotFoundException(String.format("Staff member with identifier %d", staffIdentifier)));
-    }
-
-    @ApiOperation(
-        value = "Return the full caseload for a probation staff/officer",
-        notes = "Currently, this endpoint is restricted to offender managers and order supervisors. Additional management types (e.g. requirements, reports) may be added later.")
-    @GetMapping(path = "/staff/staffCode/{staffCode}/caseload")
-    public Caseload getCaseloadForStaff(
-        @ApiParam(name = "staffCode", value = "Delius staff/officer code", example = "N01A123", required = true)
-        @NotNull @StaffCode @PathVariable(value = "staffCode") final String staffCode) {
-        return getCaseloadForStaff(staffService.getStaffIdByStaffCode(staffCode)
-            .orElseThrow(() -> new NotFoundException(String.format("Staff member with code %s", staffCode))));
-    }
-
     @ApiOperation(value = "Return the full caseload for a probation staff/officer, returning only the managed offenders")
     @GetMapping(path = "/staff/staffCode/{staffCode}/caseload/managedOffenders")
     public Set<ManagedOffenderCrn> getCaseloadOffendersForStaff(
         @ApiParam(name = "staffCode", value = "Delius staff/officer code", example = "N01A123", required = true)
         @NotNull @StaffCode @PathVariable(value = "staffCode") final String staffCode) {
         return getCaseloadOffendersForStaff(staffService.getStaffIdByStaffCode(staffCode)
-            .orElseThrow(() -> new NotFoundException(String.format("Staff member with code %s", staffCode))));
-    }
-
-    @ApiOperation(value = "Return the full caseload for a probation staff/officer, returning only the supervised orders/events")
-    @GetMapping(path = "/staff/staffCode/{staffCode}/caseload/supervisedOrders")
-    public Set<ManagedEventId> getCaseloadOrdersForStaff(
-        @ApiParam(name = "staffCode", value = "Delius staff/officer code", example = "N01A123", required = true)
-        @NotNull @StaffCode @PathVariable(value = "staffCode") final String staffCode) {
-        return getCaseloadOrdersForStaff(staffService.getStaffIdByStaffCode(staffCode)
             .orElseThrow(() -> new NotFoundException(String.format("Staff member with code %s", staffCode))));
     }
 
