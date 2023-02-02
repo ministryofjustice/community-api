@@ -40,8 +40,6 @@ public class OffenderServiceTest_getOffenderLatestRecall {
     @Mock
     private OffenderRepository mockOffenderRepository;
     @Mock
-    private OffenderPrimaryIdentifiersRepository mockOffenderPrimaryIdentifiersRepository;
-    @Mock
     private ConvictionService mockConvictionService;
 
     @Mock
@@ -53,7 +51,6 @@ public class OffenderServiceTest_getOffenderLatestRecall {
     public void setup() {
         offenderService = new OffenderService(
                 mockOffenderRepository,
-                mockOffenderPrimaryIdentifiersRepository,
                 mockConvictionService,
                 mockOffenderDocumentRepository
         );

@@ -26,7 +26,6 @@ public class RiskAPITest extends IntegrationTestBase {
         @SuppressWarnings("unused")
         private Stream<Arguments> secureEndpoints() {
             return Stream.of(
-                Arguments.of("/offenders/nomsNumber/NOMS/risk/mappa"),
                 Arguments.of("/offenders/crn/CRN/risk/mappa"),
                 Arguments.of("/offenders/nomsNumber/NOMS/risk/resourcing/latest"),
                 Arguments.of("/offenders/crn/CRN/risk/resourcing/latest")
@@ -60,50 +59,9 @@ public class RiskAPITest extends IntegrationTestBase {
 
     @Nested
     class Mappa {
-        @Nested
-        class NotFound {
-
-            @Test
-            void noOffender_notFound() {
-                given()
-                    .auth().oauth2(createJwt("ROLE_COMMUNITY"))
-                    .contentType(APPLICATION_JSON_VALUE)
-                    .when()
-                    .get("/offenders/nomsNumber/UNKNOWN_OFFENDER/risk/mappa")
-                    .then()
-                    .statusCode(404)
-                    .body("status", equalTo(404))
-                    .body("developerMessage", equalTo("Offender not found"));
-            }
-
-            @Test
-            void noMappaDetails_notFound() {
-                given()
-                    .auth().oauth2(createJwt("ROLE_COMMUNITY"))
-                    .contentType(APPLICATION_JSON_VALUE)
-                    .when()
-                    .get("/offenders/nomsNumber/G9643VP/risk/mappa")
-                    .then()
-                    .statusCode(404)
-                    .body("status", equalTo(404))
-                    .body("developerMessage", equalTo("MAPPA details for offender not found"));
-            }
-
-        }
 
         @Nested
         class OffenderFound {
-
-            @Test
-            void nomsNumberFound_ok() {
-                given()
-                    .auth().oauth2(createJwt("ROLE_COMMUNITY"))
-                    .contentType(APPLICATION_JSON_VALUE)
-                    .when()
-                    .get("/offenders/nomsNumber/G9542VP/risk/mappa")
-                    .then()
-                    .statusCode(200);
-            }
 
             @Test
             void crnFound_ok() {
@@ -115,32 +73,6 @@ public class RiskAPITest extends IntegrationTestBase {
                     .then()
                     .statusCode(200);
             }
-
-            @Test
-            void mappaDetailsReturned() {
-                given()
-                    .auth().oauth2(createJwt("ROLE_COMMUNITY"))
-                    .contentType(APPLICATION_JSON_VALUE)
-                    .when()
-                    .get("/offenders/nomsNumber/G9542VP/risk/mappa")
-                    .then()
-                    .statusCode(200)
-                    .body("level", equalTo(2))
-                    .body("levelDescription", equalTo("MAPPA Level 2"))
-                    .body("category", equalTo(2))
-                    .body("categoryDescription", equalTo("MAPPA Cat 2"))
-                    .body("startDate", equalTo(LocalDate.of(2021, 2, 1).format(ISO_LOCAL_DATE)))
-                    .body("reviewDate", equalTo(LocalDate.of(2021, 5, 1).format(ISO_LOCAL_DATE)))
-                    .body("team.code", equalTo("N02AAM"))
-                    .body("team.description", equalTo("OMIC OMU A "))
-                    .body("officer.code", equalTo("N02AAMU"))
-                    .body("officer.forenames", equalTo("Unallocated"))
-                    .body("officer.surname", equalTo("Staff"))
-                    .body("probationArea.code", equalTo("N02"))
-                    .body("probationArea.description", equalTo("NPS North East"))
-                    .body("notes", equalTo("X320741 registering MAPPA cat 2 level 2"));
-            }
-
 
             @Test
             void categoryAndLevelNull_okWithNominalValues() {
@@ -256,20 +188,7 @@ public class RiskAPITest extends IntegrationTestBase {
         @Nested
         @DisplayName("When only one of the records is current")
         class OnlyOneActive{
-            @Test
-            @DisplayName("will return the absence of mappa details")
-            void willSuccessfulIndicateWhenNoMappaDetails() {
-                given()
-                    .auth().oauth2(createJwt("ROLE_COMMUNITY"))
-                    .contentType(APPLICATION_JSON_VALUE)
-                    .when()
-                    .get("/offenders/nomsNumber/G3232DD/risk/mappa")
-                    .then()
-                    .statusCode(404)
-                    .body("status", equalTo(404))
-                    .body("developerMessage", equalTo("MAPPA details for offender not found"));
 
-            }
             @Test
             @DisplayName("will return the absence of resourcing details")
             void willSuccessfulIndicateWhenNoResourcingDetails() {
@@ -283,30 +202,6 @@ public class RiskAPITest extends IntegrationTestBase {
                     .body("status", equalTo(404))
                     .body("developerMessage", equalTo("Resourcing details for offender not found"));
 
-            }
-        }
-        @Nested
-        @DisplayName("When both records have the same active state")
-        class BothActive{
-            @Test
-            @DisplayName("will return a conflict response")
-            void willReturnAConflictResponse() {
-                given()
-                    .auth()
-                    .oauth2(tokenWithRoleCommunity())
-                    .contentType(APPLICATION_JSON_VALUE)
-                    .when()
-                    .get("/offenders/nomsNumber/G3636DD/risk/mappa")
-                    .then()
-                    .statusCode(409);
-                given()
-                    .auth()
-                    .oauth2(tokenWithRoleCommunity())
-                    .contentType(APPLICATION_JSON_VALUE)
-                    .when()
-                    .get("/offenders/nomsNumber/G3636DD/risk/resourcing/latest")
-                    .then()
-                    .statusCode(409);
             }
         }
     }

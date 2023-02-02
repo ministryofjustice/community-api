@@ -28,8 +28,6 @@ class OffenderServiceTest {
     @Mock
     private OffenderRepository offenderRepository;
     @Mock
-    private OffenderPrimaryIdentifiersRepository offenderPrimaryIdentifiersRepository;
-    @Mock
     private ConvictionService convictionService;
     @Mock
     private OffenderDocumentRepository offenderDocumentRepository;
@@ -38,7 +36,7 @@ class OffenderServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new OffenderService(offenderRepository, offenderPrimaryIdentifiersRepository, convictionService, offenderDocumentRepository);
+        service = new OffenderService(offenderRepository, convictionService, offenderDocumentRepository);
     }
 
 

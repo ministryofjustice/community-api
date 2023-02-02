@@ -49,7 +49,6 @@ import static java.util.function.Predicate.not;
 public class OffenderService {
 
     private final OffenderRepository offenderRepository;
-    private final OffenderPrimaryIdentifiersRepository offenderPrimaryIdentifiersRepository;
     private final ConvictionService convictionService;
 
     private final OffenderDocumentRepository documentRepository;
@@ -160,13 +159,6 @@ public class OffenderService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<List<ResponsibleOfficer>> getResponsibleOfficersForNomsNumber(String nomsNumber, boolean current) {
-        return offenderRepository.findByNomsNumber(nomsNumber).map(
-            offender -> OffenderTransformer.responsibleOfficersOf(offender, current));
-
-    }
-
-    @Transactional(readOnly = true)
     public OffenderLatestRecall getOffenderLatestRecall(Long offenderId) {
         final var actualCustodialEvent = convictionService.getActiveCustodialEvent(offenderId);
         final var custody = findCustodyOrThrow(actualCustodialEvent);
@@ -194,18 +186,6 @@ public class OffenderService {
             .map(Disposal::getCustody)
             .filter(not(Custody::isSoftDeleted))
             .orElseThrow(() -> new CustodyNotFoundException(activeCustodialEvent));
-    }
-
-    @NationalUserOverride
-    @Transactional(readOnly = true)
-    public Page<PrimaryIdentifiers> getAllPrimaryIdentifiers(OffenderFilter filter, Pageable pageable) {
-        return offenderPrimaryIdentifiersRepository
-            .findAll(OffenderFilterTransformer.fromFilter(filter), pageable)
-            .map(offender -> PrimaryIdentifiers
-                .builder()
-                .crn(offender.getCrn())
-                .offenderId(offender.getOffenderId())
-                .build());
     }
 
     @Transactional(readOnly = true)

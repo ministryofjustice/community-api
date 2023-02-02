@@ -39,20 +39,6 @@ public class RegistrationResource {
     private final UserAccessService userAccessService;
 
     @ApiOperation(
-        value = "Return the registrations for an offender using offenderId", notes = "requires ROLE_COMMUNITY")
-    @ApiResponses(
-        value = {
-            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 404, message = "Offender not found", response = ErrorResponse.class),
-            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
-        })
-    @GetMapping(value = "offenders/offenderId/{offenderId}/registrations")
-    public Registrations getOffenderRegistrationsByOffenderId(final @PathVariable("offenderId") Long offenderId) {
-        Optional<OffenderDetail> maybeOffender = offenderService.getOffenderByOffenderId(offenderId);
-        return registrationsOf(maybeOffender.map(OffenderDetail::getOffenderId));
-    }
-
-    @ApiOperation(
         value = "Return the registrations for an offender using NOMS number", notes = "requires ROLE_COMMUNITY")
     @ApiResponses(
         value = {

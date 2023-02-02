@@ -66,24 +66,6 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                 .then()
                 .statusCode(403);
 
-        given()
-                .auth().oauth2(token)
-                .contentType("application/json")
-                .body(createCustodyKeyDate())
-                .when()
-                .put(String.format("offenders/offenderId/%s/custody/keyDates/POM1",  OFFENDER_ID))
-                .then()
-                .statusCode(403);
-
-        given()
-                .auth().oauth2(token)
-                .contentType("application/json")
-                .body(createCustodyKeyDate())
-                .when()
-                .put(String.format("offenders/prisonBookingNumber/%s/custody/keyDates/POM1", PRISON_BOOKING_NUMBER))
-                .then()
-                .statusCode(403);
-
 
         given()
                 .auth().oauth2(token)
@@ -100,24 +82,6 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                 .body(createCustodyKeyDate())
                 .when()
                 .delete(String.format("offenders/nomsNumber/%s/custody/keyDates/POM1",  NOMS_NUMBER))
-                .then()
-                .statusCode(403);
-
-        given()
-                .auth().oauth2(token)
-                .contentType("application/json")
-                .body(createCustodyKeyDate())
-                .when()
-                .delete(String.format("offenders/offenderId/%s/custody/keyDates/POM1",  OFFENDER_ID))
-                .then()
-                .statusCode(403);
-
-        given()
-                .auth().oauth2(token)
-                .contentType("application/json")
-                .body(createCustodyKeyDate())
-                .when()
-                .delete(String.format("offenders/prisonBookingNumber/%s/custody/keyDates/POM1", PRISON_BOOKING_NUMBER))
                 .then()
                 .statusCode(403);
     }
@@ -191,60 +155,6 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
         assertThat(addedKeyDate.getType().getCode()).isEqualTo("POM1");
         assertThat(addedKeyDate.getType().getDescription()).isEqualTo("POM Handover expected start date");
     }
-    @Test
-    public void anAddedKeyDateCanBeRetrievedByOffenderId() {
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-
-        given()
-                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
-                .contentType("application/json")
-                .body(createCustodyKeyDateOf(tomorrow))
-                .when()
-                .put(String.format("offenders/offenderId/%s/custody/keyDates/POM1",  OFFENDER_ID))
-                .then()
-                .statusCode(200);
-
-        CustodyKeyDate addedKeyDate = given()
-                .auth().oauth2(tokenWithRoleCommunity())
-                .when()
-                .get(String.format("offenders/offenderId/%s/custody/keyDates/POM1",  OFFENDER_ID))
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(CustodyKeyDate.class);
-
-        assertThat(addedKeyDate.getDate()).isEqualTo(tomorrow);
-        assertThat(addedKeyDate.getType().getCode()).isEqualTo("POM1");
-        assertThat(addedKeyDate.getType().getDescription()).isEqualTo("POM Handover expected start date");
-    }
-    @Test
-    public void anAddedKeyDateCanBeRetrievedByBookingNumber()  {
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-
-        given()
-                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
-                .contentType("application/json")
-                .body(createCustodyKeyDateOf(tomorrow))
-                .when()
-                .put(String.format("offenders/prisonBookingNumber/%s/custody/keyDates/POM1", PRISON_BOOKING_NUMBER))
-                .then()
-                .statusCode(200);
-
-        CustodyKeyDate addedKeyDate = given()
-                .auth().oauth2(tokenWithRoleCommunity())
-                .when()
-                .get(String.format("offenders/prisonBookingNumber/%s/custody/keyDates/POM1", PRISON_BOOKING_NUMBER))
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(CustodyKeyDate.class);
-
-        assertThat(addedKeyDate.getDate()).isEqualTo(tomorrow);
-        assertThat(addedKeyDate.getType().getCode()).isEqualTo("POM1");
-        assertThat(addedKeyDate.getType().getDescription()).isEqualTo("POM Handover expected start date");
-    }
 
     @Test
     public void allKeyDatesCanBeRetrievedForAnOffender()  {
@@ -288,26 +198,6 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                 .body()
                 .as(CustodyKeyDate[].class);
 
-        CustodyKeyDate[] keyDatesByOffenderId = given()
-                .auth().oauth2(tokenWithRoleCommunity())
-                .when()
-                .get(String.format("offenders/offenderId/%s/custody/keyDates",  OFFENDER_ID))
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(CustodyKeyDate[].class);
-
-        CustodyKeyDate[] keyDatesByBookingNumber = given()
-                .auth().oauth2(tokenWithRoleCommunity())
-                .when()
-                .get(String.format("offenders/prisonBookingNumber/%s/custody/keyDates", PRISON_BOOKING_NUMBER))
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(CustodyKeyDate[].class);
-
         assertThat(keyDatesByCRN).contains(
                 CustodyKeyDate
                         .builder()
@@ -328,9 +218,7 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                                 .build())
                         .build()
                 )
-                .isEqualTo(keyDatesByNOMSNumber)
-                .isEqualTo(keyDatesByOffenderId)
-                .isEqualTo(keyDatesByBookingNumber);
+                .isEqualTo(keyDatesByNOMSNumber);
     }
 
     @Test
@@ -445,82 +333,6 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                 .then()
                 .statusCode(404);
     }
-
-    @Test
-    public void anExistingKeyDateCanBeDeletedByOffenderId()  {
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        LocalDate dayAfterNext = LocalDate.now().plusDays(2);
-
-        given()
-                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
-                .contentType("application/json")
-                .body(createCustodyKeyDateOf(tomorrow))
-                .when()
-                .put(String.format("offenders/offenderId/%s/custody/keyDates/POM1",  OFFENDER_ID))
-                .then()
-                .statusCode(200);
-
-        given()
-                .auth().oauth2(tokenWithRoleCommunity())
-                .when()
-                .get(String.format("offenders/offenderId/%s/custody/keyDates/POM1",  OFFENDER_ID))
-                .then()
-                .statusCode(200);
-
-        given()
-                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
-                .contentType("application/json")
-                .body(createCustodyKeyDateOf(dayAfterNext))
-                .when()
-                .delete(String.format("offenders/offenderId/%s/custody/keyDates/POM1",  OFFENDER_ID))
-                .then()
-                .statusCode(200);
-
-        given()
-                .auth().oauth2(tokenWithRoleCommunity())
-                .when()
-                .get(String.format("offenders/offenderId/%s/custody/keyDates/POM1",  OFFENDER_ID))
-                .then()
-                .statusCode(404);
-    }
-    @Test
-    public void anExistingKeyDateCanBeDeletedByBookingNumber()  {
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        LocalDate dayAfterNext = LocalDate.now().plusDays(2);
-
-        given()
-                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
-                .contentType("application/json")
-                .body(createCustodyKeyDateOf(tomorrow))
-                .when()
-                .put(String.format("offenders/prisonBookingNumber/%s/custody/keyDates/POM1", PRISON_BOOKING_NUMBER))
-                .then()
-                .statusCode(200);
-
-        given()
-                .auth().oauth2(tokenWithRoleCommunity())
-                .when()
-                .get(String.format("offenders/prisonBookingNumber/%s/custody/keyDates/POM1", PRISON_BOOKING_NUMBER))
-                .then()
-                .statusCode(200);
-
-        given()
-                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
-                .contentType("application/json")
-                .body(createCustodyKeyDateOf(dayAfterNext))
-                .when()
-                .delete(String.format("offenders/prisonBookingNumber/%s/custody/keyDates/POM1", PRISON_BOOKING_NUMBER))
-                .then()
-                .statusCode(200);
-
-        given()
-                .auth().oauth2(tokenWithRoleCommunity())
-                .when()
-                .get(String.format("offenders/prisonBookingNumber/%s/custody/keyDates/POM1", PRISON_BOOKING_NUMBER))
-                .then()
-                .statusCode(404);
-    }
-
     @Test
     public void shouldRespond404WhenOffenderNotFound()  {
         given()

@@ -33,24 +33,6 @@ public class RiskResource {
     private final OffenderService offenderService;
 
     @ApiOperation(
-        value = "Return the MAPPA details for an offender using NOMS number", notes = "requires ROLE_COMMUNITY")
-    @ApiResponses(
-        value = {
-            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Forbidden - requires ROLE_COMMUNITY", response = ErrorResponse.class),
-            @ApiResponse(code = 404, message = "Offender not found", response = ErrorResponse.class),
-            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
-        })
-    @GetMapping(value = "offenders/nomsNumber/{nomsNumber}/risk/mappa")
-    public MappaDetails getOffenderMappaDetailsByNomsNumber(final @PathVariable("nomsNumber") String nomsNumber) {
-        final var mayBeOffenderId = offenderService
-            .mostLikelyOffenderIdOfNomsNumber(nomsNumber)
-            .getOrElseThrow(error -> new ConflictingRequestException(error.getMessage()));
-
-        return mappaDetailsFor(mayBeOffenderId);
-    }
-
-    @ApiOperation(
         value = "Return the MAPPA details for an offender using CRN", notes = "requires ROLE_COMMUNITY")
     @ApiResponses(
         value = {

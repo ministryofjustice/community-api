@@ -183,27 +183,6 @@ public class ConvictionService {
         return ConvictionTransformer.convictionOf(eventRepository.save(event));
     }
 
-    @Transactional(readOnly = true)
-    public Optional<Long> getConvictionIdByPrisonBookingNumber(String prisonBookingNumber) throws DuplicateActiveCustodialConvictionsException {
-        final var events = eventRepository.findByPrisonBookingNumber(prisonBookingNumber);
-
-        if (events.size() == 1) {
-            return firstEventId(events);
-        }
-
-        // allow being relaxed and allow inactive events to be filtered out
-        final var activeEvents = activeEvents(events);
-
-        switch (activeEvents.size()) {
-            case 0:
-                return Optional.empty();
-            case 1:
-                return firstEventId(activeEvents);
-            default:
-                throw new DuplicateActiveCustodialConvictionsException(activeEvents.size());
-        }
-    }
-
     public Optional<Event> getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(Long offenderId, String prisonBookingNumber) throws DuplicateActiveCustodialConvictionsException {
         final var events = activeCustodyEvents(offenderId);
 

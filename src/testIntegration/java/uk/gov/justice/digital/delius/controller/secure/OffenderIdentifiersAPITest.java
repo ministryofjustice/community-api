@@ -42,20 +42,6 @@ public class OffenderIdentifiersAPITest extends IntegrationTestBase {
     }
 
     @Test
-    public void canGetOffenderIdentifiersByNOMSNumber() {
-        given()
-                .auth().oauth2(tokenWithRoleCommunity())
-                .contentType(APPLICATION_JSON_VALUE)
-                .when()
-                .get("/offenders/nomsNumber/{nomsNumber}/identifiers", NOMS_NUMBER)
-                .then()
-                .statusCode(200)
-                .body("primaryIdentifiers.nomsNumber", is(NOMS_NUMBER))
-                .body("additionalIdentifiers[0].value", is("A1234CR"))
-                .body("additionalIdentifiers[1].value", is("X123456"));
-    }
-
-    @Test
     public void canGetOffenderIdentifiersByCRN() {
         given()
                 .auth().oauth2(tokenWithRoleCommunity())

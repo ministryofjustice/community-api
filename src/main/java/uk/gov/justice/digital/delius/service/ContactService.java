@@ -119,24 +119,6 @@ public class ContactService {
     }
 
     @Transactional
-    public void addContactForResponsibleOfficerChange(final OffenderManager newResponsibleOfficer, final PrisonOffenderManager existingResponisbleOfficer) {
-        addContactForResponsibleOfficerChange(newResponsibleOfficer.getOffenderId(),
-                notesForResponsibleManager(newResponsibleOfficer, existingResponisbleOfficer),
-                newResponsibleOfficer.getTeam(),
-                newResponsibleOfficer.getStaff(),
-                newResponsibleOfficer.getProbationArea());
-    }
-
-    @Transactional
-    public void addContactForResponsibleOfficerChange(final PrisonOffenderManager newResponsibleOfficer, final OffenderManager existingResponsibleOfficer) {
-        addContactForResponsibleOfficerChange(newResponsibleOfficer.getOffenderId(),
-                notesForResponsibleManager(newResponsibleOfficer, existingResponsibleOfficer),
-                newResponsibleOfficer.getTeam(),
-                newResponsibleOfficer.getStaff(),
-                newResponsibleOfficer.getProbationArea());
-    }
-
-    @Transactional
     public void addContactForPrisonLocationChange(final Offender offender, final Event event) {
         addContactForCustodyChange(offender,
                 event,
@@ -259,27 +241,6 @@ public class ContactService {
                 notesForResponsibleManagerOf(existingPrisonOffenderManager));
     }
 
-    private String notesForResponsibleManager(final OffenderManager newOffenderManager, final PrisonOffenderManager existingPrisonOffenderManager) {
-        return String.format(
-                "New Details:\n" +
-                        "%s\n" +
-                        "Previous Details:\n" +
-                        "%s\n",
-                notesForResponsibleManagerOf(newOffenderManager),
-                notesForResponsibleManagerOf(existingPrisonOffenderManager));
-    }
-
-    private String notesForResponsibleManager(final PrisonOffenderManager newPrisonOffenderManager, final OffenderManager existingCommunityOffenderManager) {
-        return String.format(
-                "New Details:\n" +
-                        "%s\n" +
-                        "Previous Details:\n" +
-                        "%s\n",
-                notesForResponsibleManagerOf(newPrisonOffenderManager),
-                notesForResponsibleManagerOf(existingCommunityOffenderManager));
-    }
-
-
     private String notesForResponsibleManagerOf(final PrisonOffenderManager prisonOffenderManager) {
         return String.format(
                 "Responsible Officer Type: Prison Offender Manager\n" +
@@ -294,28 +255,9 @@ public class ContactService {
         ;
     }
 
-    private String notesForResponsibleManagerOf(final OffenderManager offenderManager) {
-        return String.format(
-                "Responsible Officer Type: Offender Manager\n" +
-                        "Responsible Officer: %s\n" +
-                        "Start Date: %s\n" +
-                        "%s" +
-                        "Allocation Reason: %s\n",
-                responsibleOfficerOf(offenderManager),
-                offenderManager.getLatestResponsibleOfficer().getStartDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")),
-                Optional.ofNullable(offenderManager.getLatestResponsibleOfficer().getEndDateTime()).map(dateTime -> dateTime.format(DateTimeFormatter.ofPattern("'End Date: 'dd/MM/yyyy HH:mm:ss'\n'"))).orElse(""),
-                offenderManager.getAllocationReason().getCodeDescription())
-        ;
-    }
-
     private String responsibleOfficerOf(final PrisonOffenderManager pom) {
         return Optional.ofNullable(pom.getStaff()).map(staff ->
                 String.format("%s (%s, %s)", displayNameOf(staff), pom.getTeam().getDescription(), pom.getProbationArea().getDescription()))
-                .orElse("");
-    }
-    private String responsibleOfficerOf(final OffenderManager com) {
-        return Optional.ofNullable(com.getStaff()).map(staff ->
-                String.format("%s (%s, %s)", displayNameOf(staff), com.getTeam().getDescription(), com.getProbationArea().getDescription()))
                 .orElse("");
     }
 
@@ -360,22 +302,5 @@ public class ContactService {
 
     private String notesForBookingNumbUpdate(final Event event) {
         return String.format("Prison Number: %s\n", event.getDisposal().getCustody().getPrisonerNumber());
-    }
-
-    private void addContactForResponsibleOfficerChange(Long offenderId, String notes, Team team, Staff staff, ProbationArea probationArea) {
-        final var contactType = contactTypeForResponsibleOfficerChange();
-        contactRepository.save(builder()
-                .contactDate(LocalDate.now())
-                .contactStartTime(LocalTime.now())
-                .offenderId(offenderId)
-                .notes(notes)
-                .team(team)
-                .staff(staff)
-                .probationArea(probationArea)
-                .staffEmployeeId(staff.getStaffId())
-                .teamProviderId(team.getTeamId())
-                .contactType(contactType)
-                .alertActive(contactType.getAlertFlag())
-                .build());
     }
 }
