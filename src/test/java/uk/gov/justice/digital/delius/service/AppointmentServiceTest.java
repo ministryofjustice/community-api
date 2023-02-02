@@ -548,31 +548,6 @@ public class AppointmentServiceTest {
         }
     }
 
-    @Test
-    public void gettingAllAppointmentTypes() {
-        final var types = List.of(
-            anAppointmentContactType(1, Y, true, true),
-            anAppointmentContactType(2, B, true, false),
-            anAppointmentContactType(3, N, false, false)
-        );
-        when(contactTypeRepository.findAllSelectableAppointmentTypes()).thenReturn(types);
-
-        final var observed = service.getAllAppointmentTypes();
-
-        assertThat(observed).extracting(AppointmentType::getContactType).containsOnly("T1", "T2", "T3");
-        assertThat(observed).extracting(AppointmentType::getDescription).containsOnly("D1", "D2", "D3");
-        assertThat(observed).extracting(AppointmentType::getRequiresLocation)
-            .containsOnly(RequiredOptional.REQUIRED, RequiredOptional.OPTIONAL, RequiredOptional.NOT_REQUIRED);
-
-        //noinspection unchecked
-        assertThat(observed).extracting(AppointmentType::getOrderTypes)
-            .containsOnly(
-                List.of(OrderType.CJA, OrderType.LEGACY),
-                List.of(OrderType.CJA),
-                List.of()
-            );
-    }
-
     private void havingContactType(boolean having, UnaryOperator<ContactTypeBuilder> builderOperator, String contactTypeAsString) {
         final var contactType = builderOperator.apply(ContactType.builder()).build();
         final Optional<ContactType> result = having ? of(contactType) : Optional.empty();

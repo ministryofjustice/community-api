@@ -146,13 +146,6 @@ public class AppointmentService {
         return patchAppointment(crn, appointmentId, mappedJsonPatch);
     }
 
-    public List<AppointmentType> getAllAppointmentTypes() {
-        return contactTypeRepository.findAllSelectableAppointmentTypes()
-            .stream()
-            .map(AppointmentTransformer::appointmentTypeOf)
-            .collect(Collectors.toList());
-    }
-
     private void assertAppointmentType(String contactTypeCode) {
         final var type = this.contactTypeRepository.findByCode(contactTypeCode)
             .orElseThrow(() -> new BadRequestException(format("contact type '%s' does not exist", contactTypeCode)));
