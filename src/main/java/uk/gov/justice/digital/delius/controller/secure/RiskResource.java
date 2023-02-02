@@ -64,21 +64,6 @@ public class RiskResource {
         return resourcingDetailsFor(mayBeOffenderId);
     }
 
-    @ApiOperation(
-        value = "Return the resourcing details for an offender using CRN number. Typically this is allocated or retained requiring greater resourcing. This equates to the historic NPS/CRC split for low and high risk offenders", notes = "requires ROLE_COMMUNITY")
-    @ApiResponses(
-        value = {
-            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Forbidden - requires ROLE_COMMUNITY", response = ErrorResponse.class),
-            @ApiResponse(code = 404, message = "Offender not found", response = ErrorResponse.class),
-            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
-        })
-    @GetMapping(value = "offenders/crn/{crn}/risk/resourcing/latest")
-    public RiskResourcingDetails getOffenderResourcingDetailsByCrn(final @PathVariable("crn") String crn) {
-        return resourcingDetailsFor(offenderService.offenderIdOfCrn(crn));
-    }
-
-
     private MappaDetails mappaDetailsFor(final Optional<Long> maybeOffenderId) {
         return maybeOffenderId
             .map(riskService::getMappaDetails)

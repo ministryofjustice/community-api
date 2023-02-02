@@ -25,6 +25,4 @@ public interface RegistrationRepository extends JpaRepository<Registration, Long
         "and registration.deregistered = 0 " +
         "order by registration.createdDatetime desc")
     Page<Registration> findActiveMappaRegistrationByOffenderId(Long offenderId, Pageable pageable);
-
-    Optional<Registration> findByOffenderIdAndRegistrationId(Long offenderId, Long registrationId);
 }

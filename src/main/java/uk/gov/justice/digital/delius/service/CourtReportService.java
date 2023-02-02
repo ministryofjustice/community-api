@@ -28,12 +28,6 @@ public class CourtReportService {
                 .map(CourtReportTransformer::courtReportOf);
     }
 
-    public Optional<CourtReportMinimal> courtReportMinimalFor(Long offenderId, Long courtReportId) {
-
-        return courtReportRepository.findByOffenderIdAndCourtReportIdAndSoftDeletedFalse(offenderId, courtReportId)
-            .map(CourtReportTransformer::courtReportMinimalOf);
-    }
-
     public List<CourtReportMinimal> courtReportsMinimalFor(Long offenderId, Long eventId) {
 
         return courtReportRepository.findByOffenderIdAndEventId(offenderId, eventId)

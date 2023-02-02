@@ -26,9 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith({SpringExtension.class, FlywayRestoreExtension.class})
 public class CustodyKeyDatesAPITest extends IntegrationTestBase {
     private static final String OFFENDER_ID = "2500343964";
-    private static final String CRN = "X320741";
-    private static final String CRN_NO_EVENTS = "CRN31";
-    private static final String OFFENDER_ID_NO_EVENTS = "31";
     private static final String NOMS_NUMBER = "G9542VP";
     private static final String PRISON_BOOKING_NUMBER = "V74111";
 
@@ -41,77 +38,6 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
         jdbcTemplate.execute("DELETE FROM KEY_DATE");
         //noinspection SqlWithoutWhere
         jdbcTemplate.execute("DELETE FROM CONTACT");
-    }
-
-
-    @Test
-    void withoutUpdateRoleAccessWillBeDenied() {
-        final var token = createJwt("ROLE_COMMUNITY");
-
-        given()
-                .auth().oauth2(token)
-                .contentType("application/json")
-                .body(createCustodyKeyDate())
-                .when()
-                .put(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
-                .then()
-                .statusCode(403);
-
-        given()
-                .auth().oauth2(token)
-                .contentType("application/json")
-                .body(createCustodyKeyDate())
-                .when()
-                .put(String.format("offenders/nomsNumber/%s/custody/keyDates/POM1",  NOMS_NUMBER))
-                .then()
-                .statusCode(403);
-
-
-        given()
-                .auth().oauth2(token)
-                .contentType("application/json")
-                .body(createCustodyKeyDate())
-                .when()
-                .delete(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
-                .then()
-                .statusCode(403);
-
-        given()
-                .auth().oauth2(token)
-                .contentType("application/json")
-                .body(createCustodyKeyDate())
-                .when()
-                .delete(String.format("offenders/nomsNumber/%s/custody/keyDates/POM1",  NOMS_NUMBER))
-                .then()
-                .statusCode(403);
-    }
-
-    @Test
-    public void anAddedKeyDateCanBeRetrievedByCRN()  {
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-
-        given()
-                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
-                .contentType("application/json")
-                .body(createCustodyKeyDateOf(tomorrow))
-                .when()
-                .put(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
-                .then()
-                .statusCode(200);
-
-        CustodyKeyDate addedKeyDate = given()
-                .auth().oauth2(tokenWithRoleCommunity())
-                .when()
-                .get(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(CustodyKeyDate.class);
-
-        assertThat(addedKeyDate.getDate()).isEqualTo(tomorrow);
-        assertThat(addedKeyDate.getType().getCode()).isEqualTo("POM1");
-        assertThat(addedKeyDate.getType().getDescription()).isEqualTo("POM Handover expected start date");
     }
 
     private String createCustodyKeyDateOf(LocalDate tomorrow) {
@@ -156,146 +82,6 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
         assertThat(addedKeyDate.getType().getDescription()).isEqualTo("POM Handover expected start date");
     }
 
-    @Test
-    public void allKeyDatesCanBeRetrievedForAnOffender()  {
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-
-        given()
-                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
-                .contentType("application/json")
-                .body(createCustodyKeyDateOf(tomorrow))
-                .when()
-                .put(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
-                .then()
-                .statusCode(200);
-
-        given()
-                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
-                .contentType("application/json")
-                .body(createCustodyKeyDateOf(tomorrow))
-                .when()
-                .put(String.format("offenders/crn/%s/custody/keyDates/POM2",  CRN))
-                .then()
-                .statusCode(200);
-
-        CustodyKeyDate[] keyDatesByCRN = given()
-                .auth().oauth2(tokenWithRoleCommunity())
-                .when()
-                .get(String.format("offenders/crn/%s/custody/keyDates",  CRN))
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(CustodyKeyDate[].class);
-
-        CustodyKeyDate[] keyDatesByNOMSNumber = given()
-                .auth().oauth2(tokenWithRoleCommunity())
-                .when()
-                .get(String.format("offenders/nomsNumber/%s/custody/keyDates",  NOMS_NUMBER))
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(CustodyKeyDate[].class);
-
-        assertThat(keyDatesByCRN).contains(
-                CustodyKeyDate
-                        .builder()
-                        .date(tomorrow)
-                        .type(KeyValue
-                                .builder()
-                                .code("POM1")
-                                .description("POM Handover expected start date")
-                                .build())
-                        .build(),
-                CustodyKeyDate
-                        .builder()
-                        .date(tomorrow)
-                        .type(KeyValue
-                                .builder()
-                                .code("POM2")
-                                .description("RO responsibility handover from POM to OM expected date")
-                                .build())
-                        .build()
-                )
-                .isEqualTo(keyDatesByNOMSNumber);
-    }
-
-    @Test
-    public void anExistingKeyDateCanBeUpdated()  {
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        LocalDate dayAfterNext = LocalDate.now().plusDays(2);
-
-        given()
-                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
-                .contentType("application/json")
-                .body(createCustodyKeyDateOf(tomorrow))
-                .when()
-                .put(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
-                .then()
-                .statusCode(200);
-
-        given()
-                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
-                .contentType("application/json")
-                .body(createCustodyKeyDateOf(dayAfterNext))
-                .when()
-                .put(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
-                .then()
-                .statusCode(200);
-
-        CustodyKeyDate addedKeyDate = given()
-                .auth().oauth2(tokenWithRoleCommunity())
-                .when()
-                .get(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(CustodyKeyDate.class);
-
-        assertThat(addedKeyDate.getDate()).isEqualTo(dayAfterNext);
-        assertThat(addedKeyDate.getType().getCode()).isEqualTo("POM1");
-        assertThat(addedKeyDate.getType().getDescription()).isEqualTo("POM Handover expected start date");
-    }
-
-    @Test
-    public void anExistingKeyDateCanBeDeletedByCRN()  {
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        LocalDate dayAfterNext = LocalDate.now().plusDays(2);
-
-        given()
-                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
-                .contentType("application/json")
-                .body(createCustodyKeyDateOf(tomorrow))
-                .when()
-                .put(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
-                .then()
-                .statusCode(200);
-
-        given()
-                .auth().oauth2(tokenWithRoleCommunity())
-                .when()
-                .get(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
-                .then()
-                .statusCode(200);
-
-        given()
-                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
-                .contentType("application/json")
-                .body(createCustodyKeyDateOf(dayAfterNext))
-                .when()
-                .delete(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
-                .then()
-                .statusCode(200);
-
-        given()
-                .auth().oauth2(tokenWithRoleCommunity())
-                .when()
-                .get(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN))
-                .then()
-                .statusCode(404);
-    }
     @Test
     public void anExistingKeyDateCanBeDeletedByNOMSNumber()  {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
@@ -428,40 +214,6 @@ public class CustodyKeyDatesAPITest extends IntegrationTestBase {
                 .statusCode(404);
 
 
-    }
-
-    @Test
-    public void shouldRespond400WhenAddingKeyDateThatIsNotValid()  {
-        JsonPath  errorMessage = given()
-                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
-                .contentType("application/json")
-                .body(createCustodyKeyDateOf(LocalDate.now()))
-                .when()
-                .put(String.format("offenders/crn/%s/custody/keyDates/DOESNOTEXIST",  CRN))
-                .then()
-                .statusCode(400)
-                .extract()
-                .body()
-                .jsonPath();
-
-        assertThat(errorMessage.getString("developerMessage")).isEqualTo("DOESNOTEXIST is not a valid custody key date");
-    }
-
-    @Test
-    public void shouldRespond400WhenOffenderHasInvalidActiveCustodyEvents()  {
-        JsonPath errorMessage = given()
-                .auth().oauth2(tokenWithRoleCommunityAndCustodyUpdate())
-                .contentType("application/json")
-                .body(createCustodyKeyDateOf(LocalDate.now()))
-                .when()
-                .put(String.format("offenders/crn/%s/custody/keyDates/POM1",  CRN_NO_EVENTS))
-                .then()
-                .statusCode(400)
-                .extract()
-                .body()
-                .jsonPath();
-
-        assertThat(errorMessage.getString("developerMessage")).isEqualTo(String.format("Expected offender %s to have a single custody related event but found 0 events", OFFENDER_ID_NO_EVENTS));
     }
 
     @Nested

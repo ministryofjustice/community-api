@@ -45,20 +45,6 @@ public class CustodyKeyDatesController {
     private final ConvictionService convictionService;
     private final FeatureSwitches featureSwitches;
 
-    @RequestMapping(value = "offenders/crn/{crn}/custody/keyDates/{typeCode}", method = RequestMethod.PUT, consumes = "application/json")
-    @ApiResponses(value = {
-            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
-            @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be added to an offender which does not have a single custody event"),
-            @ApiResponse(code = 404, message = "The requested offender was not found.")
-    })
-    @ApiOperation(value = "Adds or replaces a custody key date for the active custodial conviction", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
-    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
-    public CustodyKeyDate putCustodyKeyDateByCrn(final @PathVariable String crn,
-                                                 final @PathVariable String typeCode,
-                                                 final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
-        return addOrReplaceCustodyKeyDate(offenderService.offenderIdOfCrn(crn), typeCode, custodyKeyDate);
-    }
-
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/custody/keyDates/{typeCode}", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
             @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
@@ -104,18 +90,6 @@ public class CustodyKeyDatesController {
             .orElseThrow();
     }
 
-
-    @RequestMapping(value = "offenders/crn/{crn}/custody/keyDates/{typeCode}", method = RequestMethod.GET)
-    @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be retrieved for an offender which does not have a single custody event"),
-            @ApiResponse(code = 404, message = "The requested offender was not found or does not have the supplied key date type.")
-    })
-    @ApiOperation(value = "Gets a custody key date for the active custodial conviction")
-    public CustodyKeyDate getCustodyKeyDateByCrn(final @PathVariable String crn,
-                                                 final @PathVariable String typeCode) {
-        return getCustodyKeyDate(offenderService.offenderIdOfCrn(crn), typeCode);
-    }
-
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/custody/keyDates/{typeCode}", method = RequestMethod.GET)
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be retrieved for an offender which does not have a single custody event"),
@@ -146,19 +120,6 @@ public class CustodyKeyDatesController {
     @ApiOperation(value = "Gets all custody key dates for the active custodial conviction")
     public List<CustodyKeyDate> getAllCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber) {
         return getCustodyKeyDates(offenderService.mostLikelyOffenderIdOfNomsNumber(nomsNumber).getOrElseThrow(e -> new ConflictingRequestException(e.getMessage())));
-    }
-
-    @RequestMapping(value = "offenders/crn/{crn}/custody/keyDates/{typeCode}", method = RequestMethod.DELETE)
-    @ApiResponses(value = {
-            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
-            @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be deleted from an offender which does not have a single custody event"),
-            @ApiResponse(code = 404, message = "The requested offender was not found.")
-    })
-    @ApiOperation(value = "Deletes the custody key date for the active custodial conviction", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
-    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
-    public void deleteCustodyKeyDateByCrn(final @PathVariable String crn,
-                                          final @PathVariable String typeCode) {
-        deleteCustodyKeyDate(offenderService.offenderIdOfCrn(crn), typeCode);
     }
 
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/custody/keyDates/{typeCode}", method = RequestMethod.DELETE)

@@ -67,28 +67,6 @@ public class RegistrationsAPITest extends IntegrationTestBase {
             .body("developerMessage", equalTo("You are excluded from viewing this offender record. Please contact a system administrator"));
     }
 
-    @Test
-    public void canGetIndividualRegistrationByCRNAndRegistrationId() {
-        given()
-            .auth().oauth2(tokenWithRoleCommunity())
-            .contentType(APPLICATION_JSON_VALUE)
-            .when()
-            .get("/offenders/crn/{crn}/registrations/{registrationId}", CRN, 2500094760L)
-            .then()
-            .statusCode(200)
-            .body("register.description", is("Public Protection"))
-            .body("registrationId", is(2500094760L))
-            .body("registrationReviews[0].reviewDate", is("2020-04-08"))
-            .body("registrationReviews[0].reviewDateDue", is("2021-04-08"))
-            .body("registrationReviews[0].notes", is("Bad"))
-            .body("registrationReviews[0].reviewingTeam.code", is("N02T01"))
-            .body("registrationReviews[0].reviewingTeam.description", is("OMU A "))
-            .body("registrationReviews[0].reviewingOfficer.code", is("N02P008"))
-            .body("registrationReviews[0].reviewingOfficer.forenames", is("Alfie ZZ"))
-            .body("registrationReviews[0].reviewingOfficer.surname", is("Rhenal"))
-            .body("registrationReviews[0].completed", is(false));
-    }
-
     @Nested
     @DisplayName("When multiple records match the same noms number")
     class DuplicateNOMSNumbers{

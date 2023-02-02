@@ -262,26 +262,4 @@ class OffenderServiceTest {
                 .hasFieldOrPropertyWithValue("personalContactId", contact.getPersonalContactId());
         }
     }
-
-    @Nested
-    class GetManageSupervisionsEligibleOffenderByCrn {
-        @Test
-        public void offenderIsEligible() {
-            final var offender = EntityHelper.anOffender();
-            when(offenderRepository.getOffenderWithOneActiveEventCommunitySentenceAndRarRequirementByCrn("some-crn"))
-                .thenReturn(Optional.of(offender));
-
-            final var observed = service.getManageSupervisionsEligibleOffenderByCrn("some-crn");
-
-            assertThat(observed.getCrn()).isEqualTo("crn123");
-        }
-
-        @Test
-        public void offenderIsNotEligible() {
-            when(offenderRepository.getOffenderWithOneActiveEventCommunitySentenceAndRarRequirementByCrn("some-crn"))
-                .thenReturn(Optional.empty());
-
-            assertThrows(NotFoundException.class, () -> service.getManageSupervisionsEligibleOffenderByCrn("some-crn"));
-        }
-    }
 }

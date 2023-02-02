@@ -69,22 +69,6 @@ public class ContactService {
             .map(ContactTransformer::contactSummaryOf);
     }
 
-    public Page<ActivityLogGroup> activityLogFor(ContactFilter filter, int page, int pageSize) {
-        // 1. calculate pagination based on distinct contact dates.
-        final var pageable = PageRequest.of(page, pageSize, Sort.by(DESC, "contactDate"));
-        final var dates = contactDateRepository.findAll(filter, pageable);
-        final var minDate = dates.stream().min(LocalDate::compareTo);
-        final var maxDate = dates.stream().max(LocalDate::compareTo);
-        if (minDate.isEmpty() || maxDate.isEmpty()) {
-            return new PageImpl<>(List.of(), pageable, dates.getTotalElements());
-        }
-
-        // 2. use resulting date range to filter the contact log.
-        final var contactFilter = filter.toBuilder().contactDateFrom(minDate).contactDateTo(maxDate).build();
-        final var contacts = contactRepository.findAll(contactFilter);
-        return new PageImpl<>(ContactTransformer.activityLogGroupsOf(contacts), pageable, dates.getTotalElements());
-    }
-
     @Transactional
     public void addContactForPOMAllocation(final PrisonOffenderManager newPrisonOffenderManager) {
         contactRepository.save(contactForPOMAllocation(newPrisonOffenderManager));
@@ -140,10 +124,6 @@ public class ContactService {
                 event,
                 contactTypeForCustodyAutoUpdate(),
                 notesForKeyDatesUpdate(datesAmendedOrUpdated, datesRemoved));
-    }
-
-    public Optional<ContactSummary> getContactSummary(final Long offenderId, final Long contactId) {
-        return contactRepository.findByContactIdAndOffenderIdAndSoftDeletedIsFalse(contactId, offenderId).map(ContactTransformer::contactSummaryOf);
     }
 
     private String notesForKeyDatesUpdate(final Map<String, LocalDate> datesAmendedOrUpdated, final Map<String, LocalDate> datesRemoved) {

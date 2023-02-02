@@ -27,8 +27,7 @@ public class RiskAPITest extends IntegrationTestBase {
         private Stream<Arguments> secureEndpoints() {
             return Stream.of(
                 Arguments.of("/offenders/crn/CRN/risk/mappa"),
-                Arguments.of("/offenders/nomsNumber/NOMS/risk/resourcing/latest"),
-                Arguments.of("/offenders/crn/CRN/risk/resourcing/latest")
+                Arguments.of("/offenders/nomsNumber/NOMS/risk/resourcing/latest")
             );
         }
 
@@ -112,19 +111,6 @@ public class RiskAPITest extends IntegrationTestBase {
             }
 
             @Test
-            void noOffenderByCRNNumber_notFound() {
-                given()
-                    .auth().oauth2(createJwt("ROLE_COMMUNITY"))
-                    .contentType(APPLICATION_JSON_VALUE)
-                    .when()
-                    .get("/offenders/crn/UNKNOWN_OFFENDER/risk/resourcing/latest")
-                    .then()
-                    .statusCode(404)
-                    .body("status", equalTo(404))
-                    .body("developerMessage", equalTo("Offender not found"));
-            }
-
-            @Test
             void noCaseAllocation_notFound() {
                 given()
                     .auth().oauth2(createJwt("ROLE_COMMUNITY"))
@@ -149,17 +135,6 @@ public class RiskAPITest extends IntegrationTestBase {
                     .contentType(APPLICATION_JSON_VALUE)
                     .when()
                     .get("/offenders/nomsNumber/G9542VP/risk/resourcing/latest")
-                    .then()
-                    .statusCode(200);
-            }
-
-            @Test
-            void crnFound_ok() {
-                given()
-                    .auth().oauth2(createJwt("ROLE_COMMUNITY"))
-                    .contentType(APPLICATION_JSON_VALUE)
-                    .when()
-                    .get("/offenders/crn/X320741/risk/resourcing/latest")
                     .then()
                     .statusCode(200);
             }

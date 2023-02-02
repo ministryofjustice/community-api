@@ -137,49 +137,6 @@ public class AppointmentServiceTest {
     }
 
     @Nested
-    class FindAppointments {
-
-        @Test
-        public void gettingAppointmentDetails() {
-            final var contacts = List.of(
-                EntityHelper.aContact().toBuilder().contactId(1L).build(),
-                EntityHelper.aContact().toBuilder().contactId(2L).build());
-            final var filter = anAppointmentFilter();
-            when(contactRepository.findAll(specificationArgumentCaptor.capture(), sortArgumentCaptor.capture()))
-                .thenReturn(contacts);
-
-            final var observed = service.appointmentDetailsFor(1L, filter);
-
-            assertThat(sortArgumentCaptor.getValue()).isEqualTo(Sort.by(DESC, "contactDate", "contactStartTime", "contactEndTime"));
-            assertThat(specificationArgumentCaptor.getValue()).isEqualTo(filter.toBuilder().offenderId(1L).build());
-            assertThat(observed).hasSize(2).extracting("appointmentId", Long.class).containsExactly(1L, 2L);
-        }
-
-        @Test
-        public void gettingAppointment() {
-            final var contact = EntityHelper.aContact().toBuilder().contactId(200L).build();
-            when(contactRepository.findByContactIdAndOffenderIdAndContactTypeAttendanceContactIsTrueAndSoftDeletedIsFalse( 100L, 200L)).thenReturn(Optional.of(contact));
-            final var observed = service.getAppointment(100L, 200L);
-            assertThat(observed).isPresent().map(AppointmentDetail::getAppointmentId).hasValue(200L);
-        }
-
-        @Test
-        public void gettingMissingAppointment() {
-            when(contactRepository.findByContactIdAndOffenderIdAndContactTypeAttendanceContactIsTrueAndSoftDeletedIsFalse(100L, 200L)).thenReturn(Optional.empty());
-            final var observed = service.getAppointment(100L, 200L);
-            assertThat(observed).isNotPresent();
-        }
-
-        private AppointmentFilter anAppointmentFilter() {
-            return AppointmentFilter.builder()
-                .from(Optional.of(LocalDate.of(2021, 5, 26)))
-                .to(Optional.of(LocalDate.of(2021, 6, 2)))
-                .attended(Optional.of(Attended.ATTENDED))
-                .build();
-        }
-    }
-
-    @Nested
     class CreateAppointments {
 
         @Test
@@ -662,16 +619,6 @@ public class AppointmentServiceTest {
             .countsTowardsRarDays(true)
             .attended(attended)
             .notifyPPOfAttendanceBehaviour(notifyPP)
-            .build();
-    }
-
-    private static ContactType anAppointmentContactType(int id, YesNoBlank locationFlag, boolean cja, boolean legacy) {
-        return ContactType.builder()
-            .code(String.format("T%d", id))
-            .description(String.format("D%d", id))
-            .locationFlag(locationFlag)
-            .cjaOrderLevel(cja ? "Y" : "N")
-            .legacyOrderLevel(legacy ? "Y" : "N")
             .build();
     }
 }

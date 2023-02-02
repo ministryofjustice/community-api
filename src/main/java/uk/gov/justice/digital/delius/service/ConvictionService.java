@@ -141,25 +141,6 @@ public class ConvictionService {
     }
 
     @Transactional(readOnly = true)
-    public List<Conviction> convictionsWithActiveRequirementFor(Long offenderId, String requirementTypeMainCategoryCode) {
-        final var events = eventRepository.findByOffenderIdAndActiveFlagTrue(offenderId);
-
-        return events
-            .stream()
-            .filter(event -> !event.isSoftDeleted())
-            .filter(event -> ofNullable(event.getDisposal())
-                    .map(Disposal::getRequirements)
-                    .stream()
-                    .flatMap(Collection::stream)
-                    .filter(Requirement::getActiveFlag)
-                    .map(requirement -> requirement.getRequirementTypeMainCategory().getCode())
-                    .anyMatch(code -> requirementTypeMainCategoryCode.equals(code)))
-            .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Event::getReferralDate).reversed())
-            .map(ConvictionTransformer::convictionOf)
-            .collect(toList());
-    }
-
-    @Transactional(readOnly = true)
     public Optional<Conviction> convictionFor(Long offenderId, Long eventId) {
         final var event = eventRepository.findById(eventId);
         return event

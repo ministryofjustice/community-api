@@ -194,10 +194,4 @@ public class OffenderService {
             .map(offender -> offender.getPersonalContacts().stream().map(PersonalContactTransformer::personalContactOf).collect(Collectors.toList()))
             .orElseThrow(() -> new NotFoundException("Offender not found"));
     }
-
-    public StaffCaseloadEntry getManageSupervisionsEligibleOffenderByCrn(final String crn) {
-        return offenderRepository.getOffenderWithOneActiveEventCommunitySentenceAndRarRequirementByCrn(crn)
-            .map(OffenderTransformer::caseOf)
-            .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN '%s' is not eligible for the manage supervisions service", crn)));
-    }
 }
