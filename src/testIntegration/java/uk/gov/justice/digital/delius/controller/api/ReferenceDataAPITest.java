@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.delius.controller.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -15,7 +14,6 @@ import uk.gov.justice.digital.delius.data.api.ProbationArea;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.user.UserData;
 
-import java.util.List;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
@@ -39,34 +37,6 @@ public class ReferenceDataAPITest {
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig().jackson2ObjectMapperFactory(
                 (aClass, s) -> objectMapper
         ));
-    }
-
-    private ProbationArea aProbationArea(int i) {
-        return ProbationArea.builder()
-                .code("P0" + i)
-                .description("Probation" + i)
-                .build();
-    }
-
-    private List<ProbationArea> someProbationAreas() {
-        return ImmutableList.of(
-                aProbationArea(1),
-                aProbationArea(2));
-    }
-
-    @Test
-    public void canGetAllProbationAreas() {
-        ProbationArea[] probationAreas = given()
-                .when()
-                .header("Authorization", aValidToken())
-                .get("/probationAreas")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(ProbationArea[].class);
-
-        assertThat(probationAreas).extracting(ProbationArea::getCode).contains("C01", "C02", "C03");
     }
 
     @Test

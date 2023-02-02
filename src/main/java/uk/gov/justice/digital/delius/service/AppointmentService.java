@@ -56,13 +56,6 @@ public class AppointmentService {
     private final DeliusIntegrationContextConfig deliusIntegrationContextConfig;
     private final JsonPatchSupport jsonPatchSupport;
 
-    public List<Appointment> appointmentsFor(Long offenderId, AppointmentFilter filter) {
-        return AppointmentTransformer.appointmentsOf(
-                contactRepository.findAll(
-                        filter.toBuilder().offenderId(offenderId).build(),
-                        Sort.by(DESC, "contactDate")));
-    }
-
     public List<AppointmentDetail> appointmentDetailsFor(Long offenderId, AppointmentFilter filter) {
         final var contacts = contactRepository.findAll(
             filter.toBuilder().offenderId(offenderId).build(),

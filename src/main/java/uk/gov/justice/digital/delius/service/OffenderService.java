@@ -79,17 +79,6 @@ public class OffenderService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<OffenderDetailSummary> getOffenderSummaryByOffenderId(Long offenderId) {
-        return offenderRepository.findByOffenderId(offenderId).map(o -> {
-                OffenderDocument document = documentRepository.findByOffenderIdAndDocumentTypeAndSoftDeletedIsFalse(
-                    o.getOffenderId(), DocumentType.PREVIOUS_CONVICTION
-                );
-                return OffenderTransformer.offenderSummaryOf(o, document);
-            }
-        );
-    }
-
-    @Transactional(readOnly = true)
     public Optional<OffenderDetailSummary> getOffenderSummaryByCrn(String crn) {
 
         return offenderRepository.findByCrn(crn).map(o -> {
@@ -99,10 +88,6 @@ public class OffenderService {
                 return OffenderTransformer.offenderSummaryOf(o, document);
             }
         );
-    }
-
-    public Optional<String> crnOf(Long offenderId) {
-        return offenderRepository.findByOffenderId(offenderId).map(Offender::getCrn);
     }
 
     public Optional<String> crnOf(String nomsNumber) {
@@ -172,48 +157,6 @@ public class OffenderService {
                 return Either.left(new DuplicateOffenderException(String.format("Expect a single offender with noms number %s but foud %d", nomsNumber, list
                     .size())));
         }
-    }
-
-
-    public List<BigDecimal> allOffenderIds(int pageSize, int page) {
-
-        int lower = (page * pageSize) - pageSize + 1;
-        int upper = page * pageSize;
-
-        List<BigDecimal> offenderIds = offenderRepository.listOffenderIds(lower, upper);
-
-        if (offenderIds == null) {
-            log.error("Call to offenderRepository.listOffenderIds {}, {} returned a null list", pageSize, page);
-        } else if (offenderIds.contains(null)) {
-            log.error("Call to offenderRepository.listOffenderIds {}, {} returned a list containing null", pageSize, page);
-        }
-
-        return offenderIds;
-    }
-
-    public Long getOffenderCount() {
-        return offenderRepository.count();
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<List<OffenderManager>> getOffenderManagersForOffenderId(Long offenderId) {
-        return offenderRepository.findByOffenderId(offenderId).map(
-            offender -> OffenderTransformer.offenderManagersOf(offender.getOffenderManagers()));
-
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<List<OffenderManager>> getOffenderManagersForNomsNumber(String nomsNumber) {
-        return offenderRepository.findByNomsNumber(nomsNumber).map(
-            offender -> OffenderTransformer.offenderManagersOf(offender.getOffenderManagers()));
-
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<List<OffenderManager>> getOffenderManagersForCrn(String crn) {
-        return offenderRepository.findByCrn(crn).map(
-            offender -> OffenderTransformer.offenderManagersOf(offender.getOffenderManagers()));
-
     }
 
     @Transactional(readOnly = true)

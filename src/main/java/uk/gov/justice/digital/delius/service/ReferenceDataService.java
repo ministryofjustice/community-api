@@ -57,12 +57,6 @@ public class ReferenceDataService {
         this.referenceDataMasterRepository = referenceDataMasterRepository;
     }
 
-    public List<ProbationArea> getProbationAreas(Optional<List<String>> maybeCodes, boolean restrictActive) {
-        ProbationAreaFilter probationAreaFilter = ProbationAreaFilter.builder().probationAreaCodes(maybeCodes).restrictActive(restrictActive).build();
-
-        return ProbationAreaTransformer.probationAreasOf(probationAreaRepository.findAll(probationAreaFilter));
-    }
-
     public List<ProbationArea> getProbationAreasForCode(String code, boolean restrictActive) {
         ProbationAreaFilter probationAreaFilter = ProbationAreaFilter.builder().probationAreaCodes(Optional.of(Lists.newArrayList(code))).restrictActive(restrictActive).build();
 

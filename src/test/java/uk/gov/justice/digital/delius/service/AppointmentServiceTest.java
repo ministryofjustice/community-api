@@ -140,22 +140,6 @@ public class AppointmentServiceTest {
     class FindAppointments {
 
         @Test
-        public void gettingAppointments() {
-            final var contacts = List.of(
-                EntityHelper.aContact().toBuilder().contactId(1L).build(),
-                EntityHelper.aContact().toBuilder().contactId(2L).build());
-            final var filter = anAppointmentFilter();
-            when(contactRepository.findAll(specificationArgumentCaptor.capture(), sortArgumentCaptor.capture()))
-                .thenReturn(contacts);
-
-            final var observed = service.appointmentsFor(1L, filter);
-
-            assertThat(sortArgumentCaptor.getValue()).isEqualTo(Sort.by(DESC, "contactDate"));
-            assertThat(specificationArgumentCaptor.getValue()).isEqualTo(filter.toBuilder().offenderId(1L).build());
-            assertThat(observed).hasSize(2).extracting("appointmentId", Long.class).containsExactly(1L, 2L);
-        }
-
-        @Test
         public void gettingAppointmentDetails() {
             final var contacts = List.of(
                 EntityHelper.aContact().toBuilder().contactId(1L).build(),

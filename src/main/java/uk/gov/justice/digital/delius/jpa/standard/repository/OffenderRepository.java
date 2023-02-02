@@ -41,9 +41,6 @@ public interface OffenderRepository extends JpaRepository<Offender, Long>, JpaSp
     @Query("select o.id from Offender o where o.crn = :crn")
     Optional<Long> getOffenderIdFrom(@Param("crn") String crn);
 
-    @Query(value = "SELECT OFFENDER_ID FROM (SELECT QRY_PAG.*, ROWNUM rnum FROM (SELECT OFFENDER_ID FROM OFFENDER) QRY_PAG WHERE ROWNUM <= ?2) WHERE rnum >= ?1", nativeQuery = true)
-    List<BigDecimal> listOffenderIds(int lower, int upper);
-
     @Query(value = """
         select o from Offender o
         where o.offenderId in (
