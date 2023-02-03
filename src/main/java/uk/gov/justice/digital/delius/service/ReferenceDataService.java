@@ -148,16 +148,6 @@ public class ReferenceDataService {
                 .filter(district -> ynToBoolean(district.getSelectable()));
     }
 
-    public Optional<List<ReferenceData>> getReferenceDataForSet(String set) {
-        return referenceDataMasterRepository
-                .findByCodeSetName(set)
-                .map(referenceDataMaster -> ReferenceDataTransformer.referenceDataOf(referenceDataMaster.getStandardReferences()));
-    }
-
-    public List<KeyValue> getReferenceDataSets() {
-        return ReferenceDataTransformer.referenceDataSetsOf(referenceDataMasterRepository.findAll());
-    }
-
     public List<ProbationAreaWithLocalDeliveryUnits> getProbationAreasAndLocalDeliveryUnits(boolean restrictActive) {
         final var filter = ProbationAreaFilter
                 .builder()

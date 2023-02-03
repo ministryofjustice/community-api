@@ -99,37 +99,4 @@ public class ReferenceDataResource {
         log.info("Call to getTeamsForLdu");
         return referenceDataService.getTeamsForLocalDeliveryUnit(code, lduCode);
     }
-
-    @ApiOperation(value = "Return the reference data items for the given set")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 404, message = "Data set not found", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
-            })
-    @GetMapping(value = "/referenceData/set/{set}")
-    public ReferenceDataList getReferenceData(
-            @ApiParam(name = "set", value = "The set of reference data", example = "ADDITIONAL IDENTIFIER TYPE", required = true) final @PathVariable String set) {
-        return referenceDataService.getReferenceDataForSet(set)
-                .map(
-                        list -> ReferenceDataList
-                                .builder()
-                                .referenceData(list)
-                                .build())
-                .orElseThrow(() -> new NotFoundException(String.format("Data set %s not found. All data sets available can be found by calling /secure/referenceData/sets", set)));
-    }
-
-    @ApiOperation(value = "Returns all available reference data sets", notes = "It is expected that this API will be used to assist developers in understanding the available set codes available for /secure/referenceData/set/{set} endpoint")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
-            })
-    @GetMapping(value = "/referenceData/sets")
-    public ReferenceDataSets getReferenceDataSets() {
-
-        return ReferenceDataSets
-                .builder()
-                .referenceDataSets(referenceDataService.getReferenceDataSets())
-                .build();
-    }
 }
