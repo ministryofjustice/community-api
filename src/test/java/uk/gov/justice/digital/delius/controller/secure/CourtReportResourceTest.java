@@ -29,7 +29,6 @@ import static org.mockito.Mockito.when;
 class CourtReportResourceTest {
 
     private static final String CRN = "X321741";
-    private static final Long REPORT_ID = 1L;
     private static final Long OFFENDER_ID = 100L;
     private static final Long CONVICTION_ID = 200L;
     private static final CourtReportMinimal courtReportMinimal = CourtReportMinimal.builder().offenderId(OFFENDER_ID).build();
@@ -51,48 +50,6 @@ class CourtReportResourceTest {
     @BeforeEach
     void beforeEach() {
         doReturn(emptyList()).when(authentication).getAuthorities();
-    }
-
-    @Test
-    void givenKnownCrnAndReportId_whenGetReport_thenCheckExclusionsAndReturn() {
-
-        when(offenderService.offenderIdOfCrn(CRN)).thenReturn(Optional.of(OFFENDER_ID));
-        when(courtReportService.courtReportMinimalFor(OFFENDER_ID, REPORT_ID)).thenReturn(Optional.of(courtReportMinimal));
-
-        final var courtReport = courtReportResource.getOffenderCourtReportByCrnAndCourtReportId(CRN, REPORT_ID, authentication);
-
-        assertThat(courtReport).isSameAs(courtReportMinimal);
-
-        verify(userAccessService).checkExclusionsAndRestrictions(eq(CRN), eq(emptyList()));
-    }
-
-    @Test
-    void givenUnknownCrn_whenGetReport_thenCheckExclusionsAndReturn404() {
-
-        when(offenderService.offenderIdOfCrn(CRN)).thenReturn(Optional.empty());
-
-        var thrown = assertThrows(
-            NotFoundException.class,
-            () -> courtReportResource.getOffenderCourtReportByCrnAndCourtReportId(CRN, REPORT_ID, authentication)
-        );
-        assertThat(thrown.getMessage()).contains("Offender with crn X321741 not found");
-
-        verify(userAccessService).checkExclusionsAndRestrictions(eq(CRN), eq(emptyList()));
-    }
-
-    @Test
-    void givenUnknownReportId_whenGetReport_thenCheckExclusionsAndReturn404() {
-
-        when(offenderService.offenderIdOfCrn(CRN)).thenReturn(Optional.of(OFFENDER_ID));
-        when(courtReportService.courtReportMinimalFor(OFFENDER_ID, REPORT_ID)).thenReturn(Optional.empty());
-
-        var thrown = assertThrows(
-            NotFoundException.class,
-            () -> courtReportResource.getOffenderCourtReportByCrnAndCourtReportId(CRN, REPORT_ID, authentication)
-        );
-        assertThat(thrown.getMessage()).contains("Court report with ID 1 not found");
-
-        verify(userAccessService).checkExclusionsAndRestrictions(eq(CRN), eq(emptyList()));
     }
 
     @Test

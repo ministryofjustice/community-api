@@ -56,29 +56,6 @@ public class AppointmentService {
     private final DeliusIntegrationContextConfig deliusIntegrationContextConfig;
     private final JsonPatchSupport jsonPatchSupport;
 
-    public List<Appointment> appointmentsFor(Long offenderId, AppointmentFilter filter) {
-        return AppointmentTransformer.appointmentsOf(
-                contactRepository.findAll(
-                        filter.toBuilder().offenderId(offenderId).build(),
-                        Sort.by(DESC, "contactDate")));
-    }
-
-    public List<AppointmentDetail> appointmentDetailsFor(Long offenderId, AppointmentFilter filter) {
-        final var contacts = contactRepository.findAll(
-            filter.toBuilder().offenderId(offenderId).build(),
-            Sort.by(DESC, "contactDate", "contactStartTime", "contactEndTime"));
-        return contacts.stream().map(AppointmentTransformer::appointmentDetailOf).collect(Collectors.toList());
-    }
-
-    /**
-     * Get appointment by offender id & appointment (contact) id.
-     * This effectively validates that the appointment is associated to the specified offender.
-     */
-    public Optional<AppointmentDetail> getAppointment(Long appointmentId, Long offenderId) {
-        return contactRepository.findByContactIdAndOffenderIdAndContactTypeAttendanceContactIsTrueAndSoftDeletedIsFalse(appointmentId, offenderId)
-            .map(AppointmentTransformer::appointmentDetailOf);
-    }
-
     @Transactional
     public AppointmentCreateResponse createAppointment(String crn, Long sentenceId, AppointmentCreateRequest request) {
         this.assertAppointmentType(request.getContactType());
@@ -151,13 +128,6 @@ public class AppointmentService {
         final var context = getContext(contextName);
         final var mappedJsonPatch = mapAttendanceFieldsToOutcomeOf(request, context);
         return patchAppointment(crn, appointmentId, mappedJsonPatch);
-    }
-
-    public List<AppointmentType> getAllAppointmentTypes() {
-        return contactTypeRepository.findAllSelectableAppointmentTypes()
-            .stream()
-            .map(AppointmentTransformer::appointmentTypeOf)
-            .collect(Collectors.toList());
     }
 
     private void assertAppointmentType(String contactTypeCode) {

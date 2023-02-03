@@ -213,15 +213,6 @@ public class CustodyService {
         }
     }
 
-    @Transactional(readOnly = true)
-    public Custody getCustodyByConvictionId(final String crn, final Long convictionId) {
-        final var offender = offenderRepository.findByCrn(crn)
-                .orElseThrow(() -> new NotFoundException(String.format("offender with crn %s not found", crn)));
-        return Optional.ofNullable(convictionService.convictionFor(offender.getOffenderId(), convictionId)
-                .orElseThrow(() -> new NotFoundException(String.format("conviction with convictionId %d not found", convictionId))).getCustody())
-                .orElseThrow(() -> new BadRequestException(String.format("The conviction with convictionId %d is not a custodial sentence", convictionId)));
-    }
-
     private Event updateBookingNumberFor(final Offender offender, final Event event, final String bookingNumber) {
         if (updateBookingNumberFeatureSwitch) {
             event.getDisposal().getCustody().setPrisonerNumber(bookingNumber);

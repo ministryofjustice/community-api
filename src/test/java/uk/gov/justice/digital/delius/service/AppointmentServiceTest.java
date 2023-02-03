@@ -137,65 +137,6 @@ public class AppointmentServiceTest {
     }
 
     @Nested
-    class FindAppointments {
-
-        @Test
-        public void gettingAppointments() {
-            final var contacts = List.of(
-                EntityHelper.aContact().toBuilder().contactId(1L).build(),
-                EntityHelper.aContact().toBuilder().contactId(2L).build());
-            final var filter = anAppointmentFilter();
-            when(contactRepository.findAll(specificationArgumentCaptor.capture(), sortArgumentCaptor.capture()))
-                .thenReturn(contacts);
-
-            final var observed = service.appointmentsFor(1L, filter);
-
-            assertThat(sortArgumentCaptor.getValue()).isEqualTo(Sort.by(DESC, "contactDate"));
-            assertThat(specificationArgumentCaptor.getValue()).isEqualTo(filter.toBuilder().offenderId(1L).build());
-            assertThat(observed).hasSize(2).extracting("appointmentId", Long.class).containsExactly(1L, 2L);
-        }
-
-        @Test
-        public void gettingAppointmentDetails() {
-            final var contacts = List.of(
-                EntityHelper.aContact().toBuilder().contactId(1L).build(),
-                EntityHelper.aContact().toBuilder().contactId(2L).build());
-            final var filter = anAppointmentFilter();
-            when(contactRepository.findAll(specificationArgumentCaptor.capture(), sortArgumentCaptor.capture()))
-                .thenReturn(contacts);
-
-            final var observed = service.appointmentDetailsFor(1L, filter);
-
-            assertThat(sortArgumentCaptor.getValue()).isEqualTo(Sort.by(DESC, "contactDate", "contactStartTime", "contactEndTime"));
-            assertThat(specificationArgumentCaptor.getValue()).isEqualTo(filter.toBuilder().offenderId(1L).build());
-            assertThat(observed).hasSize(2).extracting("appointmentId", Long.class).containsExactly(1L, 2L);
-        }
-
-        @Test
-        public void gettingAppointment() {
-            final var contact = EntityHelper.aContact().toBuilder().contactId(200L).build();
-            when(contactRepository.findByContactIdAndOffenderIdAndContactTypeAttendanceContactIsTrueAndSoftDeletedIsFalse( 100L, 200L)).thenReturn(Optional.of(contact));
-            final var observed = service.getAppointment(100L, 200L);
-            assertThat(observed).isPresent().map(AppointmentDetail::getAppointmentId).hasValue(200L);
-        }
-
-        @Test
-        public void gettingMissingAppointment() {
-            when(contactRepository.findByContactIdAndOffenderIdAndContactTypeAttendanceContactIsTrueAndSoftDeletedIsFalse(100L, 200L)).thenReturn(Optional.empty());
-            final var observed = service.getAppointment(100L, 200L);
-            assertThat(observed).isNotPresent();
-        }
-
-        private AppointmentFilter anAppointmentFilter() {
-            return AppointmentFilter.builder()
-                .from(Optional.of(LocalDate.of(2021, 5, 26)))
-                .to(Optional.of(LocalDate.of(2021, 6, 2)))
-                .attended(Optional.of(Attended.ATTENDED))
-                .build();
-        }
-    }
-
-    @Nested
     class CreateAppointments {
 
         @Test
@@ -564,31 +505,6 @@ public class AppointmentServiceTest {
         }
     }
 
-    @Test
-    public void gettingAllAppointmentTypes() {
-        final var types = List.of(
-            anAppointmentContactType(1, Y, true, true),
-            anAppointmentContactType(2, B, true, false),
-            anAppointmentContactType(3, N, false, false)
-        );
-        when(contactTypeRepository.findAllSelectableAppointmentTypes()).thenReturn(types);
-
-        final var observed = service.getAllAppointmentTypes();
-
-        assertThat(observed).extracting(AppointmentType::getContactType).containsOnly("T1", "T2", "T3");
-        assertThat(observed).extracting(AppointmentType::getDescription).containsOnly("D1", "D2", "D3");
-        assertThat(observed).extracting(AppointmentType::getRequiresLocation)
-            .containsOnly(RequiredOptional.REQUIRED, RequiredOptional.OPTIONAL, RequiredOptional.NOT_REQUIRED);
-
-        //noinspection unchecked
-        assertThat(observed).extracting(AppointmentType::getOrderTypes)
-            .containsOnly(
-                List.of(OrderType.CJA, OrderType.LEGACY),
-                List.of(OrderType.CJA),
-                List.of()
-            );
-    }
-
     private void havingContactType(boolean having, UnaryOperator<ContactTypeBuilder> builderOperator, String contactTypeAsString) {
         final var contactType = builderOperator.apply(ContactType.builder()).build();
         final Optional<ContactType> result = having ? of(contactType) : Optional.empty();
@@ -703,16 +619,6 @@ public class AppointmentServiceTest {
             .countsTowardsRarDays(true)
             .attended(attended)
             .notifyPPOfAttendanceBehaviour(notifyPP)
-            .build();
-    }
-
-    private static ContactType anAppointmentContactType(int id, YesNoBlank locationFlag, boolean cja, boolean legacy) {
-        return ContactType.builder()
-            .code(String.format("T%d", id))
-            .description(String.format("D%d", id))
-            .locationFlag(locationFlag)
-            .cjaOrderLevel(cja ? "Y" : "N")
-            .legacyOrderLevel(legacy ? "Y" : "N")
             .build();
     }
 }

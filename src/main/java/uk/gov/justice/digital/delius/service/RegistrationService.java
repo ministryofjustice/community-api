@@ -30,11 +30,6 @@ public class RegistrationService {
         return transform(registrationRepository.findActiveByOffenderId(offenderId));
     }
 
-    public Optional<Registration> registration(Long offenderId, Long registrationId) {
-        return registrationRepository.findByOffenderIdAndRegistrationId(offenderId, registrationId)
-            .map(RegistrationTransformer::registrationOfWithReviews);
-    }
-
     private List<Registration> transform(List<uk.gov.justice.digital.delius.jpa.standard.entity.Registration> registrations) {
         return registrations
             .stream()

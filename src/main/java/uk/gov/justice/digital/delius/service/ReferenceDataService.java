@@ -57,12 +57,6 @@ public class ReferenceDataService {
         this.referenceDataMasterRepository = referenceDataMasterRepository;
     }
 
-    public List<ProbationArea> getProbationAreas(Optional<List<String>> maybeCodes, boolean restrictActive) {
-        ProbationAreaFilter probationAreaFilter = ProbationAreaFilter.builder().probationAreaCodes(maybeCodes).restrictActive(restrictActive).build();
-
-        return ProbationAreaTransformer.probationAreasOf(probationAreaRepository.findAll(probationAreaFilter));
-    }
-
     public List<ProbationArea> getProbationAreasForCode(String code, boolean restrictActive) {
         ProbationAreaFilter probationAreaFilter = ProbationAreaFilter.builder().probationAreaCodes(Optional.of(Lists.newArrayList(code))).restrictActive(restrictActive).build();
 
@@ -152,16 +146,6 @@ public class ReferenceDataService {
                 // LDUs are represented as districts in the delius schema
                 .flatMap(borough -> borough.getDistricts().stream())
                 .filter(district -> ynToBoolean(district.getSelectable()));
-    }
-
-    public Optional<List<ReferenceData>> getReferenceDataForSet(String set) {
-        return referenceDataMasterRepository
-                .findByCodeSetName(set)
-                .map(referenceDataMaster -> ReferenceDataTransformer.referenceDataOf(referenceDataMaster.getStandardReferences()));
-    }
-
-    public List<KeyValue> getReferenceDataSets() {
-        return ReferenceDataTransformer.referenceDataSetsOf(referenceDataMasterRepository.findAll());
     }
 
     public List<ProbationAreaWithLocalDeliveryUnits> getProbationAreasAndLocalDeliveryUnits(boolean restrictActive) {

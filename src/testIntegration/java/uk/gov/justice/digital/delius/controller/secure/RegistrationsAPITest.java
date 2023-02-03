@@ -13,37 +13,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class RegistrationsAPITest extends IntegrationTestBase {
     private static final String NOMS_NUMBER = "G9542VP";
-    private static final String OFFENDER_ID = "2500343964";
     private static final String CRN = "X320741";
-
-    @Test
-    public void mustHaveCommunityRole() {
-        final var token = createJwt("ROLE_BANANAS");
-
-        given()
-                .auth().oauth2(token)
-                .contentType(APPLICATION_JSON_VALUE)
-                .when()
-                .get("/offenders/offenderId/{offenderId}/registrations", OFFENDER_ID)
-                .then()
-                .statusCode(403);
-    }
-
-    @Test
-    public void canGetRegistrationByOffenderId() {
-        given()
-                .auth().oauth2(tokenWithRoleCommunity())
-                .contentType(APPLICATION_JSON_VALUE)
-                .when()
-                .get("/offenders/offenderId/{offenderId}/registrations", OFFENDER_ID)
-                .then()
-                .statusCode(200)
-                .body("registrations[2].register.description", is("Public Protection"))
-                .body("registrations[2].startDate", is("2019-10-11"))
-                .body("registrations[2].deregisteringNotes", nullValue())
-                .body("registrations[3].deregisteringNotes", is("Ok again now"));
-
-    }
 
     @Test
     public void canGetRegistrationByNOMSNumber() {
@@ -95,28 +65,6 @@ public class RegistrationsAPITest extends IntegrationTestBase {
             .then()
             .statusCode(403)
             .body("developerMessage", equalTo("You are excluded from viewing this offender record. Please contact a system administrator"));
-    }
-
-    @Test
-    public void canGetIndividualRegistrationByCRNAndRegistrationId() {
-        given()
-            .auth().oauth2(tokenWithRoleCommunity())
-            .contentType(APPLICATION_JSON_VALUE)
-            .when()
-            .get("/offenders/crn/{crn}/registrations/{registrationId}", CRN, 2500094760L)
-            .then()
-            .statusCode(200)
-            .body("register.description", is("Public Protection"))
-            .body("registrationId", is(2500094760L))
-            .body("registrationReviews[0].reviewDate", is("2020-04-08"))
-            .body("registrationReviews[0].reviewDateDue", is("2021-04-08"))
-            .body("registrationReviews[0].notes", is("Bad"))
-            .body("registrationReviews[0].reviewingTeam.code", is("N02T01"))
-            .body("registrationReviews[0].reviewingTeam.description", is("OMU A "))
-            .body("registrationReviews[0].reviewingOfficer.code", is("N02P008"))
-            .body("registrationReviews[0].reviewingOfficer.forenames", is("Alfie ZZ"))
-            .body("registrationReviews[0].reviewingOfficer.surname", is("Rhenal"))
-            .body("registrationReviews[0].completed", is(false));
     }
 
     @Nested

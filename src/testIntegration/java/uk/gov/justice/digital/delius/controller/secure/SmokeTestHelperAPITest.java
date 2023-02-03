@@ -78,21 +78,6 @@ public class SmokeTestHelperAPITest extends IntegrationTestBase {
                 .then()
                 .statusCode(200);
 
-            // AND I verify that data has been set
-            given()
-                .auth().oauth2(token)
-                .contentType("application/json")
-                .when()
-                .get("offenders/crn/{crn}/custody/convictionId/{convictionId}", CRN, CONVICTION_ID)
-                .then()
-                .statusCode(200)
-                .body("bookingNumber", equalTo("V74111"))
-                .body("institution.code", equalTo("MDIHMP"))
-                .body("status.code", equalTo("D"))
-                .body("status.description", equalTo("In Custody"))
-                .body("keyDates.size()", equalTo(7))
-            ;
-
 
             // WHEN when I reset this data
             given()
@@ -103,19 +88,6 @@ public class SmokeTestHelperAPITest extends IntegrationTestBase {
                 .then()
                 .statusCode(200);
 
-
-            // THEN the custody data is set to initial defaults
-            given()
-                .auth().oauth2(token)
-                .contentType("application/json")
-                .when()
-                .get("offenders/crn/{crn}/custody/convictionId/{convictionId}", CRN, CONVICTION_ID)
-                .then()
-                .statusCode(200)
-                .body("bookingNumber", nullValue())
-                .body("institution.code", equalTo("UNKNOW"))
-                .body("status.code", equalTo("A"))
-                .body("keyDates.size()", equalTo(0));
 
             // AND the offender no longer has a NOMS number
             given()

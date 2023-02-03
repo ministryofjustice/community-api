@@ -43,21 +43,6 @@ public class AttendanceResource {
         this.attendanceService = attendanceService;
     }
 
-    @GetMapping(value = "/offenders/crn/{crn}/convictions/{convictionId}/attendances", produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Return the attendances for a CRN and a conviction id where enforcement is flagged")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
-            })
-    public Attendances getAttendances(final @RequestHeader HttpHeaders httpHeaders,
-                                    final @PathVariable("crn") String crn,
-                                    final @PathVariable("convictionId") Long convictionId) {
-        final Long offenderId = getOffenderId(crn);
-
-        return new Attendances(AttendanceService.attendancesFor(attendanceService.getContactsForEventEnforcement(offenderId, convictionId, LocalDate.now())));
-    }
-
     @GetMapping(value = "/offenders/crn/{crn}/convictions/{convictionId}/attendancesFilter", produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Return the attendances for a CRN and a conviction id, filtered.")
     @ApiResponses(

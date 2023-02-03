@@ -28,8 +28,6 @@ class OffenderServiceTest {
     @Mock
     private OffenderRepository offenderRepository;
     @Mock
-    private OffenderPrimaryIdentifiersRepository offenderPrimaryIdentifiersRepository;
-    @Mock
     private ConvictionService convictionService;
     @Mock
     private OffenderDocumentRepository offenderDocumentRepository;
@@ -38,7 +36,7 @@ class OffenderServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new OffenderService(offenderRepository, offenderPrimaryIdentifiersRepository, convictionService, offenderDocumentRepository);
+        service = new OffenderService(offenderRepository, convictionService, offenderDocumentRepository);
     }
 
 
@@ -262,28 +260,6 @@ class OffenderServiceTest {
             assertThat(observed).asList()
                 .hasSize(1).first()
                 .hasFieldOrPropertyWithValue("personalContactId", contact.getPersonalContactId());
-        }
-    }
-
-    @Nested
-    class GetManageSupervisionsEligibleOffenderByCrn {
-        @Test
-        public void offenderIsEligible() {
-            final var offender = EntityHelper.anOffender();
-            when(offenderRepository.getOffenderWithOneActiveEventCommunitySentenceAndRarRequirementByCrn("some-crn"))
-                .thenReturn(Optional.of(offender));
-
-            final var observed = service.getManageSupervisionsEligibleOffenderByCrn("some-crn");
-
-            assertThat(observed.getCrn()).isEqualTo("crn123");
-        }
-
-        @Test
-        public void offenderIsNotEligible() {
-            when(offenderRepository.getOffenderWithOneActiveEventCommunitySentenceAndRarRequirementByCrn("some-crn"))
-                .thenReturn(Optional.empty());
-
-            assertThrows(NotFoundException.class, () -> service.getManageSupervisionsEligibleOffenderByCrn("some-crn"));
         }
     }
 }

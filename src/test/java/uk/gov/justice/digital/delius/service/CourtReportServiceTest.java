@@ -39,11 +39,6 @@ class CourtReportServiceTest {
     }
 
     @Test
-    void minimalCourtReport() {
-        assertThat(courtReportService.courtReportMinimalFor(1L, 0L).get().getCourtReportId()).isEqualTo(4);
-    }
-
-    @Test
     void givenNoReports_whenGetReportsForOffenderAndEventId_thenReturnEmptyList() {
 
         when(courtReportRepository.findByOffenderIdAndEventId(1L, 99L)).thenReturn(emptyList());

@@ -141,25 +141,6 @@ public class ConvictionService {
     }
 
     @Transactional(readOnly = true)
-    public List<Conviction> convictionsWithActiveRequirementFor(Long offenderId, String requirementTypeMainCategoryCode) {
-        final var events = eventRepository.findByOffenderIdAndActiveFlagTrue(offenderId);
-
-        return events
-            .stream()
-            .filter(event -> !event.isSoftDeleted())
-            .filter(event -> ofNullable(event.getDisposal())
-                    .map(Disposal::getRequirements)
-                    .stream()
-                    .flatMap(Collection::stream)
-                    .filter(Requirement::getActiveFlag)
-                    .map(requirement -> requirement.getRequirementTypeMainCategory().getCode())
-                    .anyMatch(code -> requirementTypeMainCategoryCode.equals(code)))
-            .sorted(Comparator.comparing(uk.gov.justice.digital.delius.jpa.standard.entity.Event::getReferralDate).reversed())
-            .map(ConvictionTransformer::convictionOf)
-            .collect(toList());
-    }
-
-    @Transactional(readOnly = true)
     public Optional<Conviction> convictionFor(Long offenderId, Long eventId) {
         final var event = eventRepository.findById(eventId);
         return event
@@ -181,27 +162,6 @@ public class ConvictionService {
             calculateNextEventNumber(offenderId));
 
         return ConvictionTransformer.convictionOf(eventRepository.save(event));
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<Long> getConvictionIdByPrisonBookingNumber(String prisonBookingNumber) throws DuplicateActiveCustodialConvictionsException {
-        final var events = eventRepository.findByPrisonBookingNumber(prisonBookingNumber);
-
-        if (events.size() == 1) {
-            return firstEventId(events);
-        }
-
-        // allow being relaxed and allow inactive events to be filtered out
-        final var activeEvents = activeEvents(events);
-
-        switch (activeEvents.size()) {
-            case 0:
-                return Optional.empty();
-            case 1:
-                return firstEventId(activeEvents);
-            default:
-                throw new DuplicateActiveCustodialConvictionsException(activeEvents.size());
-        }
     }
 
     public Optional<Event> getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(Long offenderId, String prisonBookingNumber) throws DuplicateActiveCustodialConvictionsException {

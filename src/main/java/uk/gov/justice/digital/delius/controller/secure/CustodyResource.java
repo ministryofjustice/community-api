@@ -101,16 +101,4 @@ public class CustodyResource {
                                  final @PathVariable String bookingNumber) {
         return custodyService.getCustodyByBookNumber(nomsNumber, bookingNumber);
     }
-
-    @RequestMapping(value = "offenders/crn/{crn}/custody/convictionId/{convictionId}", method = RequestMethod.GET)
-    @ApiResponses(value = {
-            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY"),
-            @ApiResponse(code = 404, message = "Either the requested offender was not found or the conviction associated the conviction id.")
-    })
-    @ApiOperation(value = "Gets the current custody record")
-    @PreAuthorize("hasRole('ROLE_COMMUNITY')")
-    public Custody getCustodyByConvictionId(final @PathVariable String crn,
-                                 final @PathVariable Long convictionId) {
-        return custodyService.getCustodyByConvictionId(crn, convictionId);
-    }
 }

@@ -39,20 +39,6 @@ public class RegistrationResource {
     private final UserAccessService userAccessService;
 
     @ApiOperation(
-        value = "Return the registrations for an offender using offenderId", notes = "requires ROLE_COMMUNITY")
-    @ApiResponses(
-        value = {
-            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 404, message = "Offender not found", response = ErrorResponse.class),
-            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
-        })
-    @GetMapping(value = "offenders/offenderId/{offenderId}/registrations")
-    public Registrations getOffenderRegistrationsByOffenderId(final @PathVariable("offenderId") Long offenderId) {
-        Optional<OffenderDetail> maybeOffender = offenderService.getOffenderByOffenderId(offenderId);
-        return registrationsOf(maybeOffender.map(OffenderDetail::getOffenderId));
-    }
-
-    @ApiOperation(
         value = "Return the registrations for an offender using NOMS number", notes = "requires ROLE_COMMUNITY")
     @ApiResponses(
         value = {
@@ -98,29 +84,6 @@ public class RegistrationResource {
         }
         return registrationsOf(offenderService.offenderIdOfCrn(crn));
     }
-
-    @ApiOperation(
-        value = "Returns a specific registration for an offender", notes = "requires ROLE_COMMUNITY")
-    @ApiResponses(
-        value = {
-            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 404, message = "Offender not found", response = ErrorResponse.class),
-            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
-        })
-    @GetMapping(value = "offenders/crn/{crn}/registrations/{registrationId}")
-    public Registration getOffenderRegistrationDetailsByCrn(
-        final @PathVariable("crn") String crn,
-        final @PathVariable("registrationId") Long registrationId,
-        Authentication authentication
-    ) {
-        userAccessService.checkExclusionsAndRestrictions(crn, authentication.getAuthorities());
-
-        final var offenderId =  offenderService.offenderIdOfCrn(crn)
-            .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s does not exist", crn)));
-        return registrationService.registration(offenderId, registrationId)
-            .orElseThrow(() -> new NotFoundException(String.format("No registration found with id %d", registrationId)));
-    }
-
 
     private Registrations activeRegistrationsOf(Optional<Long> maybeOffenderId) {
         return maybeOffenderId

@@ -44,19 +44,6 @@ public class OffenderIdentifiersResource {
     }
 
     @ApiOperation(
-            value = "Return the identifiers for an offender using NOMS number", notes = "requires ROLE_COMMUNITY")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 404, message = "Offender not found", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
-            })
-    @GetMapping(value = "offenders/nomsNumber/{nomsNumber}/identifiers")
-    public OffenderIdentifiers getOffenderIdentifiersByNomsNumber(final @PathVariable("nomsNumber") String nomsNumber) {
-        return identifiersFor(offenderService.offenderIdOfNomsNumber(nomsNumber));
-    }
-
-    @ApiOperation(
             value = "Return the identifiers for an offender using the crn", notes = "requires ROLE_COMMUNITY")
     @ApiResponses(
             value = {

@@ -48,15 +48,6 @@ import static org.mockito.Mockito.when;
 public class OffendersResource_getOffenderContactSummariesByCrn {
     @Mock private OffenderService offenderService;
     @Mock private ContactService contactService;
-    @Mock private ConvictionService convictionService;
-    @Mock private NsiService nsiService;
-    @Mock private OffenderManagerService offenderManagerService;
-    @Mock private SentenceService sentenceService;
-    @Mock private UserService userService;
-    @Mock private CurrentUserSupplier currentUserSupplier;
-    @Mock private CustodyService custodyService;
-    @Mock private UserAccessService userAccessService;
-    @Mock private AssessmentService assessmentService;
     @InjectMocks private OffendersResource subject;
     @Captor private ArgumentCaptor<ContactFilter> filterCaptor;
 

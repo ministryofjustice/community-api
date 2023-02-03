@@ -31,33 +31,6 @@ public class PersonalCircumstanceResource {
     private final OffenderService offenderService;
     private final PersonalCircumstanceService personalCircumstanceService;
 
-    @GetMapping(value = "offenders/offenderId/{offenderId}/personalCircumstances")
-    @ApiOperation(
-            value = "Return the personal circumstances for an offender using offenderId", notes = "requires ROLE_COMMUNITY")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 404, message = "Offender not found", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
-            })
-    public PersonalCircumstances getOffenderPersonalCircumstancesByOffenderId(final @PathVariable("offenderId") Long offenderId) {
-        final var maybeOffender = offenderService.getOffenderByOffenderId(offenderId);
-        return personalCircumstancesOf(maybeOffender.map(OffenderDetail::getOffenderId));
-    }
-
-    @GetMapping(value = "offenders/nomsNumber/{nomsNumber}/personalCircumstances")
-    @ApiOperation(
-            value = "Return the personal circumstances for an offender using noms number", notes = "requires ROLE_COMMUNITY")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 404, message = "Offender not found", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
-            })
-    public PersonalCircumstances getOffenderPersonalCircumstancesByNomsNumber(final @PathVariable("nomsNumber") String nomsNumber) {
-        return personalCircumstancesOf(offenderService.offenderIdOfNomsNumber(nomsNumber));
-    }
-
     @GetMapping(value = "offenders/crn/{crn}/personalCircumstances")
     @ApiOperation(
             value = "Return the personal circumstances for an offender using crn", notes = "requires ROLE_COMMUNITY")

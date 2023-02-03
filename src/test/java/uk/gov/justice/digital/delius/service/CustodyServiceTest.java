@@ -932,35 +932,45 @@ public class CustodyServiceTest {
         class WhenHasMultipleActiveEvents {
             @BeforeEach
             void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
-                when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
-                when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
-                        .thenThrow(new ConvictionService.DuplicateActiveCustodialConvictionsException(2));
+                when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder()
+                    .offenderId(99L).build()));
+                when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(
+                    anyLong(),
+                    anyString()
+                ))
+                    .thenThrow(new ConvictionService.DuplicateActiveCustodialConvictionsException(2));
             }
 
             @Test
             @DisplayName("then a NotFoundException will be thrown")
             void willThrowNotFound() {
                 assertThatThrownBy(() -> custodyService.getCustodyByBookNumber("G9542VP", "44463B"))
-                        .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(NotFoundException.class);
             }
         }
+
         @Nested
         @DisplayName("and there no active events for the booking number")
         class WhenNoActiveEvents {
             @BeforeEach
             void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
-                when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
-                when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
-                        .thenReturn(Optional.empty());
+                when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder()
+                    .offenderId(99L).build()));
+                when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(
+                    anyLong(),
+                    anyString()
+                ))
+                    .thenReturn(Optional.empty());
             }
 
             @Test
             @DisplayName("then a NotFoundException will be thrown")
             void willThrowNotFound() {
                 assertThatThrownBy(() -> custodyService.getCustodyByBookNumber("G9542VP", "44463B"))
-                        .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(NotFoundException.class);
             }
         }
+
         @Nested
         @DisplayName("and the offender is not found")
         class WhenNoOffenderFound {
@@ -973,7 +983,7 @@ public class CustodyServiceTest {
             @DisplayName("then a NotFoundException will be thrown")
             void willThrowNotFound() {
                 assertThatThrownBy(() -> custodyService.getCustodyByBookNumber("G9542VP", "44463B"))
-                        .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(NotFoundException.class);
             }
         }
 
@@ -982,13 +992,17 @@ public class CustodyServiceTest {
         class WhenHasSingleActiveEvent {
             @BeforeEach
             void setup() throws ConvictionService.DuplicateActiveCustodialConvictionsException {
-                when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
-                when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(anyLong(), anyString()))
-                        .thenReturn(Optional.of(aCustodyEvent(StandardReference
-                                .builder()
-                                .codeDescription("In Custody")
-                                .codeValue("X")
-                                .build())));
+                when(offenderRepository.findByNomsNumber(anyString())).thenReturn(Optional.of(Offender.builder()
+                    .offenderId(99L).build()));
+                when(convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(
+                    anyLong(),
+                    anyString()
+                ))
+                    .thenReturn(Optional.of(aCustodyEvent(StandardReference
+                        .builder()
+                        .codeDescription("In Custody")
+                        .codeValue("X")
+                        .build())));
             }
 
             @Test
@@ -996,90 +1010,6 @@ public class CustodyServiceTest {
             void willReturnCustody() {
                 final var custody = custodyService.getCustodyByBookNumber("G9542VP", "44463B");
                 assertThat(custody.getStatus().getDescription()).isEqualTo("In Custody");
-            }
-        }
-    }
-    @Nested
-    @DisplayName("when calling getCustodyByConvictionId")
-    class WhenRetrievingByConvictionId {
-        @Nested
-        @DisplayName("and there no active events for the booking number")
-        class WhenNoActiveEvents {
-            @BeforeEach
-            void setup() {
-                when(offenderRepository.findByCrn(anyString())).thenReturn(Optional.of(Offender.builder().offenderId(99L).build()));
-                when(convictionService.convictionFor(anyLong(), anyLong()))
-                        .thenReturn(Optional.empty());
-            }
-
-            @Test
-            @DisplayName("then a NotFoundException will be thrown")
-            void willThrowNotFound() {
-                assertThatThrownBy(() -> custodyService.getCustodyByConvictionId("X12345", 99L))
-                        .isInstanceOf(NotFoundException.class);
-            }
-        }
-        @Nested
-        @DisplayName("and the offender is not found")
-        class WhenNoOffenderFound {
-            @BeforeEach
-            void setup() {
-                when(offenderRepository.findByCrn(anyString())).thenReturn(Optional.empty());
-            }
-
-            @Test
-            @DisplayName("then a NotFoundException will be thrown")
-            void willThrowNotFound() {
-                assertThatThrownBy(() -> custodyService.getCustodyByConvictionId("X12345", 99L))
-                        .isInstanceOf(NotFoundException.class);
-            }
-        }
-
-        @Nested
-        @DisplayName("and there is a custodial event for the conviction id")
-        class WhenHasSingleActiveEvent {
-            @BeforeEach
-            void setup() {
-                when(offenderRepository.findByCrn(anyString())).thenReturn(Optional.of(Offender
-                        .builder()
-                        .offenderId(99L)
-                        .build()));
-                when(convictionService.convictionFor(anyLong(), anyLong()))
-                        .thenReturn(Optional.of(Conviction
-                                .builder()
-                                .custody(Custody.builder().status(KeyValue.builder().description("In Custody")
-                                        .build()).build())
-                                .build()));
-            }
-
-            @Test
-            @DisplayName("then the custody element will be returned")
-            void willReturnCustody() {
-                final var custody = custodyService.getCustodyByConvictionId("X12345", 99L);
-                assertThat(custody.getStatus().getDescription()).isEqualTo("In Custody");
-            }
-        }
-        @Nested
-        @DisplayName("and there is a non-custodial event for the conviction id")
-        class WhenHasANonCustodialEvent {
-            @BeforeEach
-            void setup() {
-                when(offenderRepository.findByCrn(anyString())).thenReturn(Optional.of(Offender
-                        .builder()
-                        .offenderId(99L)
-                        .build()));
-                when(convictionService.convictionFor(anyLong(), anyLong()))
-                        .thenReturn(Optional.of(Conviction
-                                .builder()
-                                .custody(null)
-                                .build()));
-            }
-
-            @Test
-            @DisplayName("then a BadRequest will be thrown")
-            void willThrowNotFound() {
-                assertThatThrownBy(() -> custodyService.getCustodyByConvictionId("X12345", 99L))
-                        .isInstanceOf(BadRequestException.class);
             }
         }
     }

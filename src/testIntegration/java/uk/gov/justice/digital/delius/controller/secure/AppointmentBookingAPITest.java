@@ -48,66 +48,6 @@ public class AppointmentBookingAPITest extends IntegrationTestBase {
     }
 
     @Test
-    public void shouldReturnOKAfterCreatingANewContact() {
-
-        deliusApiMockServer.stubPostContactToDeliusApi();
-
-        final var token = createJwt("bob", Collections.singletonList("ROLE_COMMUNITY_INTERVENTIONS_UPDATE"));
-
-        given()
-            .when()
-            .auth().oauth2(token)
-            .contentType(String.valueOf(ContentType.APPLICATION_JSON))
-            .body(writeValueAsString(anAppointmentCreateRequest("CRSAPT")))
-            .post("offenders/crn/X320741/sentence/2500295343/appointments")
-            .then()
-            .assertThat()
-            .statusCode(HttpStatus.CREATED.value())
-            .body("appointmentId", equalTo(2500029015L))
-            .body("type", equalTo("CRSAPT"))
-            .body("typeDescription", equalTo("Appointment with CRS Provider (NS)"))
-            .body("appointmentStart", equalTo("2021-03-01T13:01:02Z"))
-            .body("appointmentEnd", equalTo("2021-03-01T14:03:04Z"))
-            .body("sensitive", equalTo(true));
-    }
-
-    @Test
-    public void whenAttemptingToCreateAppointmentFromNonAppointmentContactType() {
-
-        deliusApiMockServer.stubPostContactToDeliusApi();
-
-        final var token = createJwt("bob", Collections.singletonList("ROLE_COMMUNITY_INTERVENTIONS_UPDATE"));
-
-        given()
-            .when()
-            .auth().oauth2(token)
-            .contentType(String.valueOf(ContentType.APPLICATION_JSON))
-            .body(writeValueAsString(anAppointmentCreateRequest("C062")))
-            .post("offenders/crn/X320741/sentence/2500295343/appointments")
-            .then()
-            .assertThat()
-            .statusCode(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @Test
-    public void whenAttemptingToCreateAppointmentFromMissingContactType() {
-
-        deliusApiMockServer.stubPostContactToDeliusApi();
-
-        final var token = createJwt("bob", Collections.singletonList("ROLE_COMMUNITY_INTERVENTIONS_UPDATE"));
-
-        given()
-            .when()
-            .auth().oauth2(token)
-            .contentType(String.valueOf(ContentType.APPLICATION_JSON))
-            .body(writeValueAsString(anAppointmentCreateRequest("MISSING_CONTACT_TYPE")))
-            .post("offenders/crn/X320741/sentence/2500295343/appointments")
-            .then()
-            .assertThat()
-            .statusCode(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @Test
     public void shouldReturnOKAfterCreatingANewContactUsingContextlessClientEndpoint() {
 
         deliusApiMockServer.stubPostContactToDeliusApi();

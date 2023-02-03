@@ -45,20 +45,6 @@ public class CustodyKeyDatesController {
     private final ConvictionService convictionService;
     private final FeatureSwitches featureSwitches;
 
-    @RequestMapping(value = "offenders/crn/{crn}/custody/keyDates/{typeCode}", method = RequestMethod.PUT, consumes = "application/json")
-    @ApiResponses(value = {
-            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
-            @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be added to an offender which does not have a single custody event"),
-            @ApiResponse(code = 404, message = "The requested offender was not found.")
-    })
-    @ApiOperation(value = "Adds or replaces a custody key date for the active custodial conviction", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
-    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
-    public CustodyKeyDate putCustodyKeyDateByCrn(final @PathVariable String crn,
-                                                 final @PathVariable String typeCode,
-                                                 final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
-        return addOrReplaceCustodyKeyDate(offenderService.offenderIdOfCrn(crn), typeCode, custodyKeyDate);
-    }
-
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/custody/keyDates/{typeCode}", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
             @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
@@ -104,51 +90,6 @@ public class CustodyKeyDatesController {
             .orElseThrow();
     }
 
-    @RequestMapping(value = "offenders/offenderId/{offenderId}/custody/keyDates/{typeCode}", method = RequestMethod.PUT, consumes = "application/json")
-    @ApiResponses(value = {
-            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
-            @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be added to an offender which does not have a single custody event"),
-            @ApiResponse(code = 404, message = "The requested offender was not found.")
-    })
-    @ApiOperation(value = "Adds or replaces a custody key date for the active custodial conviction", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
-    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
-    public CustodyKeyDate putCustodyKeyDateByOffenderId(final @PathVariable Long offenderId,
-                                                        final @PathVariable String typeCode,
-                                                        final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
-        return addOrReplaceCustodyKeyDate(offenderService.getOffenderByOffenderId(offenderId).map(OffenderDetail::getOffenderId), typeCode, custodyKeyDate);
-    }
-
-    @RequestMapping(value = "offenders/prisonBookingNumber/{prisonBookingNumber}/custody/keyDates/{typeCode}", method = RequestMethod.PUT, consumes = "application/json")
-    @ApiResponses(value = {
-            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
-            @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be added to an offender which does not have a single custody event"),
-            @ApiResponse(code = 404, message = "The requested conviction with associated prison booking was not found.")
-    })
-    @ApiOperation(value = "Adds or replaces a custody key date for the active custodial conviction", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
-    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
-    public CustodyKeyDate putCustodyKeyDateByPrisonBookingNumber(final @PathVariable String prisonBookingNumber,
-                                                                 final @PathVariable String typeCode,
-                                                                 final @RequestBody CreateCustodyKeyDate custodyKeyDate) {
-        try {
-            return addOrReplaceCustodyKeyDateByConvictionId(convictionService.getConvictionIdByPrisonBookingNumber(prisonBookingNumber), typeCode, custodyKeyDate);
-        } catch (final DuplicateActiveCustodialConvictionsException e) {
-            log.warn("Multiple active custodial convictions found for {}", prisonBookingNumber);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Can not add a key date where offender has multiple convictions for booking number. %s has %d", prisonBookingNumber, e.getConvictionCount()));
-        }
-    }
-
-
-    @RequestMapping(value = "offenders/crn/{crn}/custody/keyDates/{typeCode}", method = RequestMethod.GET)
-    @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be retrieved for an offender which does not have a single custody event"),
-            @ApiResponse(code = 404, message = "The requested offender was not found or does not have the supplied key date type.")
-    })
-    @ApiOperation(value = "Gets a custody key date for the active custodial conviction")
-    public CustodyKeyDate getCustodyKeyDateByCrn(final @PathVariable String crn,
-                                                 final @PathVariable String typeCode) {
-        return getCustodyKeyDate(offenderService.offenderIdOfCrn(crn), typeCode);
-    }
-
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/custody/keyDates/{typeCode}", method = RequestMethod.GET)
     @ApiResponses(value = {
             @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be retrieved for an offender which does not have a single custody event"),
@@ -158,33 +99,6 @@ public class CustodyKeyDatesController {
     public CustodyKeyDate getCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber,
                                                         final @PathVariable String typeCode) {
         return getCustodyKeyDate(offenderService.mostLikelyOffenderIdOfNomsNumber(nomsNumber).getOrElseThrow(e -> new ConflictingRequestException(e.getMessage())), typeCode);
-    }
-
-    @RequestMapping(value = "offenders/offenderId/{offenderId}/custody/keyDates/{typeCode}", method = RequestMethod.GET)
-    @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be retrieved for an offender which does not have a single custody event"),
-            @ApiResponse(code = 404, message = "The requested offender was not found or does not have the supplied key date type.")
-    })
-    @ApiOperation(value = "Gets a custody key date for the active custodial conviction")
-    public CustodyKeyDate getCustodyKeyDateByOffenderId(final @PathVariable Long offenderId,
-                                                        final @PathVariable String typeCode) {
-        return getCustodyKeyDate(offenderService.getOffenderByOffenderId(offenderId).map(OffenderDetail::getOffenderId), typeCode);
-    }
-
-    @RequestMapping(value = "offenders/prisonBookingNumber/{prisonBookingNumber}/custody/keyDates/{typeCode}", method = RequestMethod.GET)
-    @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be retrieved for an offender which does not have a single custody event"),
-            @ApiResponse(code = 404, message = "The requested offender was not found or does not have the supplied key date type.")
-    })
-    @ApiOperation(value = "Gets a custody key date for the related custodial conviction with the matching prison booking")
-    public CustodyKeyDate getCustodyKeyDateByPrisonBookingNumber(final @PathVariable String prisonBookingNumber,
-                                                                 final @PathVariable String typeCode) {
-        try {
-            return getCustodyKeyDateByConvictionId(convictionService.getConvictionIdByPrisonBookingNumber(prisonBookingNumber), typeCode);
-        } catch (final DuplicateActiveCustodialConvictionsException e) {
-            log.warn("Multiple active custodial convictions found for {}", prisonBookingNumber);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Can only get a key date where offender has multiple convictions for booking number. %s has %d", prisonBookingNumber, e.getConvictionCount()));
-        }
     }
 
 
@@ -208,46 +122,6 @@ public class CustodyKeyDatesController {
         return getCustodyKeyDates(offenderService.mostLikelyOffenderIdOfNomsNumber(nomsNumber).getOrElseThrow(e -> new ConflictingRequestException(e.getMessage())));
     }
 
-    @RequestMapping(value = "offenders/offenderId/{offenderId}/custody/keyDates", method = RequestMethod.GET)
-    @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "The the offender does not have a single custody event"),
-            @ApiResponse(code = 404, message = "The requested offender was not found.")
-    })
-    @ApiOperation(value = "Gets a all custody key dates for the active custodial conviction")
-
-    public List<CustodyKeyDate> getAllCustodyKeyDateByOffenderId(final @PathVariable Long offenderId) {
-        return getCustodyKeyDates(offenderService.getOffenderByOffenderId(offenderId).map(OffenderDetail::getOffenderId));
-    }
-
-    @RequestMapping(value = "offenders/prisonBookingNumber/{prisonBookingNumber}/custody/keyDates", method = RequestMethod.GET)
-    @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "The the offender does not have a single custody event"),
-            @ApiResponse(code = 404, message = "The requested offender was not found.")
-    })
-    @ApiOperation(value = "Gets a all custody key dates for the active custodial conviction")
-    public List<CustodyKeyDate> getAllCustodyKeyDateByPrisonBookingNumber(final @PathVariable String prisonBookingNumber) {
-        log.info("Call to getAllCustodyKeyDateByPrisonBookingNumber for {}", prisonBookingNumber);
-        try {
-            return getCustodyKeyDatesByConvictionId(convictionService.getConvictionIdByPrisonBookingNumber(prisonBookingNumber));
-        } catch (final DuplicateActiveCustodialConvictionsException e) {
-            log.warn("Multiple active custodial convictions found for {}", prisonBookingNumber);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Can only get a key dates where offender has multiple convictions for booking number. %s has %d", prisonBookingNumber, e.getConvictionCount()));
-        }
-    }
-
-    @RequestMapping(value = "offenders/crn/{crn}/custody/keyDates/{typeCode}", method = RequestMethod.DELETE)
-    @ApiResponses(value = {
-            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
-            @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be deleted from an offender which does not have a single custody event"),
-            @ApiResponse(code = 404, message = "The requested offender was not found.")
-    })
-    @ApiOperation(value = "Deletes the custody key date for the active custodial conviction", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
-    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
-    public void deleteCustodyKeyDateByCrn(final @PathVariable String crn,
-                                          final @PathVariable String typeCode) {
-        deleteCustodyKeyDate(offenderService.offenderIdOfCrn(crn), typeCode);
-    }
-
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/custody/keyDates/{typeCode}", method = RequestMethod.DELETE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Key date has been deleted"),
@@ -260,40 +134,6 @@ public class CustodyKeyDatesController {
     public void deleteCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber,
                                                  final @PathVariable String typeCode) {
         deleteCustodyKeyDate(offenderService.mostLikelyOffenderIdOfNomsNumber(nomsNumber).getOrElseThrow(e -> new ConflictingRequestException(e.getMessage())), typeCode);
-    }
-
-    @RequestMapping(value = "offenders/offenderId/{offenderId}/custody/keyDates/{typeCode}", method = RequestMethod.DELETE)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Key date has been deleted"),
-            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
-            @ApiResponse(code = 400, message = "The keyDate is not valid or a key date can not be deleted from an offender which does not have a single custody event"),
-            @ApiResponse(code = 404, message = "The requested offender was not found.")
-    })
-    @ApiOperation(value = "Deletes the custody key date for the active custodial conviction", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
-    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
-    public void deleteCustodyKeyDateByOffenderId(final @PathVariable Long offenderId,
-                                                 final @PathVariable String typeCode) {
-        deleteCustodyKeyDate(offenderService.getOffenderByOffenderId(offenderId).map(OffenderDetail::getOffenderId), typeCode);
-    }
-
-    @RequestMapping(value = "offenders/prisonBookingNumber/{prisonBookingNumber}/custody/keyDates/{typeCode}", method = RequestMethod.DELETE)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Key date has been deleted"),
-            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
-            @ApiResponse(code = 400, message = "The keyDate is not valid"),
-            @ApiResponse(code = 404, message = "The requested prison booking was not found.")
-    })
-    @ApiOperation(value = "Deletes the custody key date for the associated custodial conviction", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE")
-    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
-    public void deleteCustodyKeyDateByPrisonBookingNumber(final @PathVariable String prisonBookingNumber,
-                                                          final @PathVariable String typeCode) {
-        log.info("Call to deleteCustodyKeyDateByPrisonBookingNumber for {} code {}", prisonBookingNumber, typeCode);
-        try {
-            deleteCustodyKeyDateByConvictionId(convictionService.getConvictionIdByPrisonBookingNumber(prisonBookingNumber), typeCode);
-        } catch (final DuplicateActiveCustodialConvictionsException e) {
-            log.warn("Multiple active custodial convictions found for {}", prisonBookingNumber);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Can only delete a key date where offender has multiple convictions for booking number. %s has %d", prisonBookingNumber, e.getConvictionCount()));
-        }
     }
 
     private CustodyKeyDate addOrReplaceCustodyKeyDate(final Optional<Long> maybeOffenderId, final String typeCode, final CreateCustodyKeyDate custodyKeyDate) {
@@ -309,19 +149,6 @@ public class CustodyKeyDatesController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Offender not found"));
     }
 
-    private CustodyKeyDate addOrReplaceCustodyKeyDateByConvictionId(final Optional<Long> maybeConvictionId, final String typeCode, final CreateCustodyKeyDate custodyKeyDate) {
-        return maybeConvictionId
-                .map(convictionId -> {
-                    try {
-                        return convictionService.addOrReplaceCustodyKeyDateByConvictionId(convictionId, typeCode, custodyKeyDate);
-                    } catch (final CustodyTypeCodeIsNotValidException e) {
-                        log.warn("Key type code is not valid for {}", typeCode);
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-                    }
-                })
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conviction not found"));
-    }
-
     private CustodyKeyDate getCustodyKeyDate(final Optional<Long> maybeOffenderId, final String typeCode) {
         return maybeOffenderId
                 .map(getCustodyKeyDateByOffenderId(typeCode))
@@ -333,28 +160,10 @@ public class CustodyKeyDatesController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Key date not found"));
     }
 
-    private CustodyKeyDate getCustodyKeyDateByConvictionId(final Optional<Long> maybeConvictionId, final String typeCode) {
-        return maybeConvictionId
-                .map(getCustodyKeyDateByConvictionId(typeCode))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conviction not found"));
-    }
-
-    private Function<Long, CustodyKeyDate> getCustodyKeyDateByConvictionId(final String typeCode) {
-        return convictionId ->
-                convictionService.getCustodyKeyDateByConvictionId(convictionId, typeCode)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Key date not found"));
-    }
-
     private List<CustodyKeyDate> getCustodyKeyDates(final Optional<Long> maybeOffenderId) {
         return maybeOffenderId
                 .map(convictionService::getCustodyKeyDatesByOffenderId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Offender not found"));
-    }
-
-    private List<CustodyKeyDate> getCustodyKeyDatesByConvictionId(final Optional<Long> maybeConvictionId) {
-        return maybeConvictionId
-                .map(convictionService::getCustodyKeyDatesByConvictionId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conviction not found"));
     }
 
     private void deleteCustodyKeyDate(final Optional<Long> maybeOffenderId, final String typeCode) {
@@ -362,13 +171,6 @@ public class CustodyKeyDatesController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Offender not found");
         }
         maybeOffenderId.ifPresent(offenderId -> convictionService.deleteCustodyKeyDateByOffenderId(offenderId, typeCode));
-    }
-
-    private void deleteCustodyKeyDateByConvictionId(final Optional<Long> maybeConvictionId, final String typeCode) {
-        if (maybeConvictionId.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Offender not found");
-        }
-        maybeConvictionId.ifPresent(convictionId -> convictionService.deleteCustodyKeyDateByConvictionId(convictionId, typeCode));
     }
 
 }

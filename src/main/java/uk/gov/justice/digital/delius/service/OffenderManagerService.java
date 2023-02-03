@@ -222,81 +222,12 @@ public class OffenderManagerService {
         autoAllocatePrisonOffenderManagerAtInstitution(offender, prisonerOffenderManager.getProbationArea().getInstitution());
     }
 
-    @Transactional
-    public CommunityOrPrisonOffenderManager switchResponsibleOfficer(String nomsNumber, ResponsibleOfficerSwitch responsibleOfficerSwitch) {
-        return offenderRepository.findByNomsNumber(nomsNumber).map(offender -> {
-            currentResponsibleOfficer(offender).orElseThrow(() -> {
-                throw new ConflictingRequestException(String.format("Cannot find a current RO for %s", offender.getNomsNumber()));
-            });
-            if (responsibleOfficerSwitch.isSwitchToCommunityOffenderManager()) {
-                switchResponsibleOfficeToCommunityOffenderManager(offender);
-            } else {
-                switchResponsibleOfficerToPrisonOffenderManager(offender);
-            }
-            return currentResponsibleOfficer(offender).orElseThrow();
-        }).orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
-    }
-
-    private void switchResponsibleOfficerToPrisonOffenderManager(Offender offender) {
-        offender.getResponsibleOfficerWhoIsCommunityOffenderManager()
-                .ifPresentOrElse(currentCOMResponsibleOfficer -> offender.getActivePrisonOffenderManager()
-                        .ifPresentOrElse(prisonOffenderManager -> {
-                            currentCOMResponsibleOfficer.getActiveResponsibleOfficer().makeInactive();
-                            prisonOffenderManager.addResponsibleOfficer(responsibleOfficerRepository
-                                    .save(responsibleOfficerOf(offender, prisonOffenderManager)));
-                            contactService
-                                    .addContactForResponsibleOfficerChange(prisonOffenderManager, currentCOMResponsibleOfficer);
-                        }, () -> {
-                            throw new ConflictingRequestException(String
-                                    .format("Cannot find an active POM for %s", offender
-                                            .getNomsNumber()));
-                        }),
-                        () -> log.info(String.format("Current RO is not a COM for %s, so not doing anything", offender.getNomsNumber())));
-    }
-
-    private void switchResponsibleOfficeToCommunityOffenderManager(Offender offender) {
-        offender.getResponsibleOfficerWhoIsPrisonOffenderManager()
-                .ifPresentOrElse(currentPOMResponsibleOfficer -> offender.getActiveCommunityOffenderManager()
-                                .ifPresentOrElse(communityOffenderManager -> {
-                                    currentPOMResponsibleOfficer.getActiveResponsibleOfficer().makeInactive();
-                                    communityOffenderManager.addResponsibleOfficer(responsibleOfficerRepository
-                                            .save(responsibleOfficerOf(offender, communityOffenderManager)));
-                                    contactService
-                                            .addContactForResponsibleOfficerChange(communityOffenderManager, currentPOMResponsibleOfficer);
-                                }, () -> {
-                                    throw new ConflictingRequestException(String
-                                            .format("Cannot find an active COM for %s", offender
-                                                    .getNomsNumber()));
-                                }),
-                        () -> log.info(String.format("Current RO is not a POM for %s, so not doing anything", offender
-                                .getNomsNumber())));
-    }
-
-    private ResponsibleOfficer responsibleOfficerOf(Offender offender, OffenderManager communityOffenderManager) {
-        return ResponsibleOfficer
-                .builder()
-                .offenderId(offender.getOffenderId())
-                .offenderManagerId(communityOffenderManager.getOffenderManagerId())
-                .build();
-    }
-
     private ResponsibleOfficer responsibleOfficerOf(Offender offender, PrisonOffenderManager prisonOffenderManager) {
         return ResponsibleOfficer
                 .builder()
                 .offenderId(offender.getOffenderId())
                 .prisonOffenderManagerId(prisonOffenderManager.getPrisonOffenderManagerId())
                 .build();
-    }
-
-    private Optional<CommunityOrPrisonOffenderManager> currentResponsibleOfficer(final Offender offender) {
-        return getAllOffenderManagers(offender)
-                .stream()
-                .filter(CommunityOrPrisonOffenderManager::getIsResponsibleOfficer)
-                .findAny();
-    }
-
-    private List<CommunityOrPrisonOffenderManager> getAllOffenderManagers(final Offender offender) {
-        return getAllOffenderManagers(offender, true);
     }
 
     private List<CommunityOrPrisonOffenderManager> getAllOffenderManagers(final Offender offender, final boolean includeProbationAreaTeams) {

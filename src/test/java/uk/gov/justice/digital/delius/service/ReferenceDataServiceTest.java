@@ -294,62 +294,6 @@ public class ReferenceDataServiceTest {
         verify(standardReferenceRepository).findByCodeAndCodeSetName("XNOMS", "ADDITIONAL IDENTIFIER TYPE");
     }
 
-    @Nested
-    class GetReferenceDataForSet {
-        @Test
-        void willRetrieveDataFromRepository() {
-            when(referenceDataMasterRepository.findByCodeSetName(any())).thenReturn(Optional.of(ReferenceDataMaster
-                    .builder()
-                    .description("description")
-                    .codeSetName("code set name")
-                    .standardReferences(List.of(
-                            StandardReference
-                            .builder()
-                            .selectable("N")
-                            .codeValue("C")
-                            .codeDescription("c description")
-                            .standardReferenceListId(3L)
-                            .build()
-                    ))
-                    .build()));
-
-            assertThat(referenceDataService.getReferenceDataForSet("code set name")).isNotEmpty();
-
-            verify(referenceDataMasterRepository).findByCodeSetName("code set name");
-        }
-        @Test
-        void willReturnEmptyWhenSetNotFound() {
-            when(referenceDataMasterRepository.findByCodeSetName(any())).thenReturn(Optional.empty());
-
-            assertThat(referenceDataService.getReferenceDataForSet("code set name")).isEmpty();
-        }
-    }
-
-    @Nested
-    class GetReferenceDataSets {
-        @Test
-        void willRetrieveDataFromRepository() {
-            when(referenceDataMasterRepository.findAll()).thenReturn(List.of(ReferenceDataMaster
-                    .builder()
-                    .description("description")
-                    .codeSetName("code set name")
-                    .standardReferences(List.of(
-                            StandardReference
-                                    .builder()
-                                    .selectable("N")
-                                    .codeValue("C")
-                                    .codeDescription("c description")
-                                    .standardReferenceListId(3L)
-                                    .build()
-                    ))
-                    .build()));
-
-            assertThat(referenceDataService.getReferenceDataSets()).hasSize(1);
-
-            verify(referenceDataMasterRepository).findAll();
-        }
-    }
-
     @Test
     public void getProbationAreasAndLocalDeliveryUnits() {
         final var filter = ProbationAreaFilter.builder().restrictActive(false).excludeEstablishments(true).build();

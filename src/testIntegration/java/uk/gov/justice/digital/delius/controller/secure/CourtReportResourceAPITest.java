@@ -44,28 +44,6 @@ class CourtReportResourceAPITest extends IntegrationTestBase {
     }
 
     @Test
-    void givenKnownValues_whenGetCourtReport_thenReturn() {
-        given()
-            .auth()
-            .oauth2(tokenWithRoleCommunity())
-            .contentType(APPLICATION_JSON_VALUE)
-            .when()
-            .get(String.format(COURT_REPORT_PATH_FORMAT, "X320741", "1"))
-            .then()
-            .statusCode(200)
-            .body("offenderId", is(2500343964L))
-            .body("courtReportId", is(1))
-            .body("requestedDate", equalTo(standardDateTimeOf(2021, FEBRUARY, 1)))
-            .body("requiredDate", equalTo(standardDateTimeOf(2021, FEBRUARY, 8)))
-            .body("allocationDate", equalTo(standardDateTimeOf(2021, FEBRUARY, 2)))
-            .body("completedDate", equalTo(standardDateTimeOf(2021, FEBRUARY, 4)))
-            .body("sentToCourtDate", equalTo(standardDateTimeOf(2021, FEBRUARY, 4)))
-            .body("receivedByCourtDate", equalTo(standardDateTimeOf(2021, FEBRUARY, 5)))
-            .body("courtReportType.code", equalTo("CJF"))
-            .body("courtReportType.description", equalTo("Pre-Sentence Report - Fast"));
-    }
-
-    @Test
     void givenKnownValuesButSoftDeletedReport_whenGetCourtReport_thenNotFound() {
         given()
             .auth()
