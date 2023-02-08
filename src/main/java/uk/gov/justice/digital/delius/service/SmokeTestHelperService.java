@@ -7,7 +7,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.InstitutionReposito
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StandardReferenceRepository;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 @Service
 public class SmokeTestHelperService {

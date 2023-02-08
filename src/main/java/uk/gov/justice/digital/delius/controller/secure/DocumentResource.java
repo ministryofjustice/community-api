@@ -26,7 +26,7 @@ import uk.gov.justice.digital.delius.service.AlfrescoService;
 import uk.gov.justice.digital.delius.service.DocumentService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.io.InputStream;
 import java.util.Optional;
 

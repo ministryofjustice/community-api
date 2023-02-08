@@ -20,7 +20,7 @@ import uk.gov.justice.digital.delius.data.api.ReferralEndResponse;
 import uk.gov.justice.digital.delius.data.api.ReferralStartResponse;
 import uk.gov.justice.digital.delius.service.ReferralService;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 @RestController
 @Api(tags = {"Referrals"})

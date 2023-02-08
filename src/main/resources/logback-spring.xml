@@ -56,7 +56,6 @@
     </springProfile>
 
     <springProfile name="!(dev)">
-        <appender name="logAppender" class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender"/>
 
         <logger name="uk.gov.justice.digital.delius.DeliusOffenderAPI" additivity="false" level="INFO">
             <appender-ref ref="logAppender"/>

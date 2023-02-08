@@ -1,11 +1,8 @@
 package uk.gov.justice.digital.delius.config;
 
 import com.microsoft.applicationinsights.TelemetryClient;
-import com.microsoft.applicationinsights.telemetry.RequestTelemetry;
-import com.microsoft.applicationinsights.web.internal.RequestTelemetryContext;
-import com.microsoft.applicationinsights.web.internal.ThreadContext;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import io.opentelemetry.api.trace.Span;
 import org.springframework.context.annotation.*;
 
 import java.util.Optional;
@@ -18,16 +15,12 @@ import java.util.Optional;
 @Log4j2
 public class ApplicationInsightsConfiguration {
     @Bean
-    @ConditionalOnExpression("T(org.apache.commons.lang3.StringUtils).isBlank('${applicationinsights.connection.string:}')")
     public TelemetryClient telemetryClient() {
         log.warn("Application insights configuration missing, returning dummy bean instead");
         return new TelemetryClient();
     }
 
     public static void setNewTechClientId(Object any) {
-        Optional.ofNullable(ThreadContext.getRequestTelemetryContext())
-            .map(RequestTelemetryContext::getHttpRequestTelemetry)
-            .map(RequestTelemetry::getProperties)
-            .ifPresent(properties -> properties.putIfAbsent("clientId", "delius-new-tech"));
+        Span.current().setAttribute("clientId", "delius-new-tech");
     }
 }

@@ -4,16 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
+import org.hibernate.type.YesNoConverter;
+import jakarta.persistence.Convert;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 import java.util.List;
 
 @Data
@@ -35,19 +36,19 @@ public class ContactOutcomeType {
     private String description;
 
     @Column(name = "OUTCOME_COMPLIANT_ACCEPTABLE", length = 1)
-    @Type(type = "yes_no")
+    @Convert(converter = YesNoConverter.class)
     private Boolean compliantAcceptable;
 
     @Column(name = "OUTCOME_ATTENDANCE", length = 1)
-    @Type(type = "yes_no")
+    @Convert(converter = YesNoConverter.class)
     private Boolean attendance;
 
     @Column(name = "ACTION_REQUIRED", nullable = false)
-    @Type(type = "yes_no")
+    @Convert(converter = YesNoConverter.class)
     private Boolean actionRequired;
 
     @Column(name = "ENFORCEABLE", length = 1)
-    @Type(type = "yes_no")
+    @Convert(converter = YesNoConverter.class)
     private Boolean enforceable;
 
     @ManyToMany(fetch = FetchType.LAZY)

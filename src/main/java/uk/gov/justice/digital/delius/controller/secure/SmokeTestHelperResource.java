@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.data.api.UpdateOffenderDetails;
 import uk.gov.justice.digital.delius.service.SmokeTestHelperService;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 @Api(tags = "Smoke test")
 @RestController

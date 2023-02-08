@@ -21,7 +21,7 @@ import uk.gov.justice.digital.delius.data.api.UpdateOffenderNomsNumber;
 import uk.gov.justice.digital.delius.service.CustodyService;
 import uk.gov.justice.digital.delius.service.OffenderIdentifierService;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController

@@ -3,7 +3,7 @@ package uk.gov.justice.digital.delius.data.api;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 @ApiModel(description = "Court details for a new court")
 public record NewCourtDto(

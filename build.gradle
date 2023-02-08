@@ -1,5 +1,5 @@
 plugins {
-    id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.8.1"
+    id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.0.1"
     id 'groovy'
     id 'org.unbroken-dome.test-sets' version '4.0.0'
     id "com.google.cloud.tools.jib" version "3.3.1"
@@ -17,8 +17,13 @@ java {
 }
 check.dependsOn(testIntegration)
 
+repositories {
+  maven { url = uri("https://repo.spring.io/milestone") }
+  mavenCentral()
+}
 dependencies {
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-ldap'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
@@ -31,7 +36,7 @@ dependencies {
     implementation 'com.zaxxer:HikariCP'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.apache.commons:commons-text:1.10.0'
-    implementation 'io.swagger:swagger-core:1.6.8'
+    implementation 'io.swagger:swagger-core:1.6.9'
     implementation 'io.vavr:vavr:0.10.4'
     implementation 'com.github.java-json-tools:json-patch:1.13'
     implementation 'io.sentry:sentry-spring-boot-starter:6.13.1'
@@ -72,9 +77,6 @@ testIntegration {
     jvmArgs = ["--add-opens", "java.naming/com.sun.jndi.ldap=ALL-UNNAMED"]
 }
 
-repositories {
-    mavenCentral()
-}
 
 tasks.register('copyAgentJar', Copy) {
     from("${project.buildDir}/libs")

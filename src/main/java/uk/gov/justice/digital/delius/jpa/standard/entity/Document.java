@@ -2,7 +2,7 @@ package uk.gov.justice.digital.delius.jpa.standard.entity;
 
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Data

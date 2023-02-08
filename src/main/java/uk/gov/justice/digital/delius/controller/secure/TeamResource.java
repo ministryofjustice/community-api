@@ -31,7 +31,7 @@ import uk.gov.justice.digital.delius.service.CaseloadService;
 import uk.gov.justice.digital.delius.service.TeamService;
 import uk.gov.justice.digital.delius.validation.TeamCode;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Set;
 

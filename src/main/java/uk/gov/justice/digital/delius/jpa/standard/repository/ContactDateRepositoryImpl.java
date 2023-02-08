@@ -9,8 +9,8 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.time.LocalDate;
 
 import static org.springframework.data.jpa.repository.query.QueryUtils.toOrders;
