@@ -17,10 +17,6 @@ java {
 }
 check.dependsOn(testIntegration)
 
-repositories {
-  maven { url = uri("https://repo.spring.io/milestone") }
-  mavenCentral()
-}
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-ldap'
@@ -36,7 +32,6 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.apache.commons:commons-text:1.10.0'
-    implementation 'io.swagger:swagger-core:1.6.9'
     implementation 'io.vavr:vavr:0.10.4'
     implementation 'com.github.java-json-tools:json-patch:1.13'
     implementation 'io.sentry:sentry-spring-boot-starter:6.13.1'
@@ -77,6 +72,9 @@ testIntegration {
     jvmArgs = ["--add-opens", "java.naming/com.sun.jndi.ldap=ALL-UNNAMED"]
 }
 
+repositories {
+    mavenCentral()
+}
 
 tasks.register('copyAgentJar', Copy) {
     from("${project.buildDir}/libs")
