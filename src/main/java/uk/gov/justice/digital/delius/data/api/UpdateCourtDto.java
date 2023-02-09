@@ -1,24 +1,22 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import jakarta.validation.constraints.NotBlank;
-
-@ApiModel(description = "Court details for updating an exiting court")
+@Schema(description = "Court details for updating an exiting court")
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateCourtDto {
-    @ApiModelProperty(value = "type code from standard reference data", example = "MAG")
+    @Schema(description = "type code from standard reference data", example = "MAG")
     @NotBlank(message = "Court type code is required")
     private String courtTypeCode;
-    @ApiModelProperty(value = "true when this court is open")
+    @Schema(description = "true when this court is open")
     private boolean active;
     @NotBlank(message = "Court name is required")
     private String courtName;
@@ -28,9 +26,9 @@ public class UpdateCourtDto {
     private String street;
     private String locality;
     private String town;
-    @ApiModelProperty(example = "South Yorkshire")
+    @Schema(example = "South Yorkshire")
     private String county;
     private String postcode;
-    @ApiModelProperty(example = "England")
+    @Schema(example = "England")
     private String country;
 }

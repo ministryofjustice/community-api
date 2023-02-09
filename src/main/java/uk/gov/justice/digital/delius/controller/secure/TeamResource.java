@@ -1,11 +1,11 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -16,33 +16,26 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
-import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.Caseload;
-import uk.gov.justice.digital.delius.data.api.ManagedEventId;
 import uk.gov.justice.digital.delius.data.api.ManagedOffenderCrn;
-import uk.gov.justice.digital.delius.data.api.OfficeLocation;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
-import uk.gov.justice.digital.delius.data.api.TeamCreationResult;
 import uk.gov.justice.digital.delius.service.CaseloadService;
 import uk.gov.justice.digital.delius.service.TeamService;
 import uk.gov.justice.digital.delius.validation.TeamCode;
 
-import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Set;
 
 import static uk.gov.justice.digital.delius.data.api.CaseloadRole.OFFENDER_MANAGER;
-import static uk.gov.justice.digital.delius.data.api.CaseloadRole.ORDER_SUPERVISOR;
 
 @RestController
 @Slf4j
 @Validated
 @AllArgsConstructor
-@Api(tags = "Teams")
+@Tag(name = "Teams")
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TeamResource {
     public static final Sort CASELOAD_DEFAULT_SORT = Sort.by("allocationDate").descending();
@@ -54,30 +47,25 @@ public class TeamResource {
     @PreAuthorize("hasRole('ROLE_COMMUNITY')")
     @ApiResponses(
         value = {
-            @ApiResponse(code = 200, message = "All staff for the specified team", response = StaffDetails.class, responseContainer = "List"),
-            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY"),
-            @ApiResponse(code = 404, message = "The specified team does not exist or is not active"),
-            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            @ApiResponse(responseCode = "200", description = "All staff for the specified team"),
+            @ApiResponse(responseCode = "403", description = "Requires role ROLE_COMMUNITY"),
+            @ApiResponse(responseCode = "404", description = "The specified team does not exist or is not active"),
+            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
         })
-    @ApiOperation(
-        value = "Determines all staff for the specified team",
-        authorizations = {@Authorization("ROLE_COMMUNITY")}
-    )
+    @Operation(description = "Determines all staff for the specified team. Requires ROLE_COMMUNITY")
     public List<StaffDetails> getAllStaff(
         @PathVariable("teamCode")
-        @ApiParam(value = "Team code", example = "N07T01")
+        @Parameter(description = "Team code", example = "N07T01")
             String teamCode
     ) {
         return teamService.getAllStaff(teamCode);
     }
 
-    @ApiOperation(
-        value = "Return the managed offenders for all members of a probation team",
-        authorizations = {@Authorization("ROLE_COMMUNITY")})
+    @Operation(description = "Return the managed offenders for all members of a probation team. Requires ROLE_COMMUNITY")
     @GetMapping(path = "/team/{teamCode}/caseload/managedOffenders")
     @PreAuthorize("hasRole('ROLE_COMMUNITY')")
     public Set<ManagedOffenderCrn> getCaseloadOffendersForTeam(
-        @ApiParam(name = "teamCode", example = "N07T01")
+        @Parameter(name = "teamCode", example = "N07T01")
         @NotNull @TeamCode @PathVariable(value = "teamCode") final String teamCode,
         @RequestParam(required = false, defaultValue = "0") int page,
         @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) int pageSize

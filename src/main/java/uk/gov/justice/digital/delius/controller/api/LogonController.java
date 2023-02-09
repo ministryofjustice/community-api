@@ -1,9 +1,9 @@
 package uk.gov.justice.digital.delius.controller.api;
 
 import com.google.common.collect.ImmutableList;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,7 +35,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RestController
 @RequestMapping("/api/logon")
 @Slf4j
-@Api(description = "Obtain JWT token", tags = "Logon as user")
+@Tag(description = "Obtain JWT token", name = "Logon as user")
 public class LogonController {
     private static final List<String> SYSTEM_USERS = ImmutableList.of(CurrentUserSupplier.NATIONAL_USER, CurrentUserSupplier.API_USER);
     private final Jwt jwt;
@@ -55,7 +55,7 @@ public class LogonController {
 
     @RequestMapping(method = RequestMethod.POST, consumes = "text/plain")
     @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "User lookup: not found")
+            @ApiResponse(responseCode = "404", description = "User lookup: not found")
     })
     @Transactional
     public ResponseEntity<String> getToken(final @RequestBody String distinguishedName) {

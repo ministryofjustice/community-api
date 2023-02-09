@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.delius.data.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LicenceConditions {
-    @ApiModelProperty(value = "List of licenceConditions associated with this conviction")
+    @Schema(description = "List of licenceConditions associated with this conviction")
     private List<LicenceCondition> licenceConditions;
 }

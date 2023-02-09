@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LocalDeliveryUnit {
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private Long localDeliveryUnitId;
-    @ApiModelProperty(value = "LDU code", example = "N01KSCT")
+    @Schema(description = "LDU code", example = "N01KSCT")
     private String code;
-    @ApiModelProperty(value = "description", example = "NPS Manchester City South")
+    @Schema(description = "description", example = "NPS Manchester City South")
     private String description;
 }

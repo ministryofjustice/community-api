@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,26 +14,26 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ManagedOffender {
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private String staffCode;
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private Long staffIdentifier;
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private Long offenderId;
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private String nomsNumber;
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private String crnNumber;
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private String offenderSurname;
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private boolean isCurrentRo;
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private boolean isCurrentOm;
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private boolean isCurrentPom;
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private LocalDate omStartDate;
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private LocalDate omEndDate;
 }

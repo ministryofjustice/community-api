@@ -1,14 +1,11 @@
 package uk.gov.justice.digital.delius.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -27,6 +24,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DeliusDocumentsServiceTest {
@@ -51,7 +52,7 @@ class DeliusDocumentsServiceTest {
     private final MultipartFile file = multiPartFile();
 
     @BeforeEach
-    private void setup() {
+    public void setup() {
         deliusDocumentsService = new DeliusDocumentsService(deliusApiClient, offenderManagerService);
         contactType.setCode(EASU);
     }

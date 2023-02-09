@@ -1,12 +1,11 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import jakarta.validation.constraints.NotNull;
 
 @Data
 @Builder
@@ -14,19 +13,19 @@ import jakarta.validation.constraints.NotNull;
 @AllArgsConstructor
 public class AppointmentOutcome {
     @NotNull
-    @ApiModelProperty(name = "Code", example = "ABC123")
+    @Schema(name = "Code", example = "ABC123")
     private String code;
 
     @NotNull
-    @ApiModelProperty(name = "Description", example = "Some appointment outcome")
+    @Schema(name = "Description", example = "Some appointment outcome")
     private String description;
 
-    @ApiModelProperty(name = "Attended", example = "true")
+    @Schema(name = "Attended", example = "true")
     private Boolean attended;
 
-    @ApiModelProperty(name = "Complied", example = "true")
+    @Schema(name = "Complied", example = "true")
     private Boolean complied;
 
-    @ApiModelProperty(name = "Hours credited", example = "1.5")
+    @Schema(name = "Hours credited", example = "1.5")
     private Double hoursCredited;
 }

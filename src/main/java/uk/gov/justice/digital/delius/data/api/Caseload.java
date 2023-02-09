@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,10 +12,10 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel(description = "A set of managed entities in Delius")
+@Schema(description = "A set of managed entities in Delius")
 public class Caseload {
-    @ApiModelProperty(value = "Managed offender CRNs")
+    @Schema(description = "Managed offender CRNs")
     private Set<ManagedOffenderCrn> managedOffenders;
-    @ApiModelProperty(value = "Managed order/event/conviction identifiers")
+    @Schema(description = "Managed order/event/conviction identifiers")
     private Set<ManagedEventId> supervisedOrders;
 }

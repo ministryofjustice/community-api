@@ -16,10 +16,13 @@ public class ResourceServerConfiguration {
     @Bean
     public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests( auth ->
-                        auth.requestMatchers("/secure/**").authenticated()
-                )
-                .oauth2ResourceServer().jwt().jwtAuthenticationConverter(new AuthAwareTokenConverter());
+            .securityMatcher("/secure/**")
+            .authorizeHttpRequests( auth ->
+                    auth.requestMatchers("/secure/**").authenticated()
+            )
+            .oauth2ResourceServer()
+            .jwt()
+            .jwtAuthenticationConverter(new AuthAwareTokenConverter());
         return http.build();
     }
 }

@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,10 +13,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OffenderRecall {
-    @ApiModelProperty(value = "The date the recall occurred", example = "2019-11-27")
+    @Schema(description = "The date the recall occurred", example = "2019-11-27")
     private LocalDate date;
-    @ApiModelProperty(value = "The reason for the recall")
+    @Schema(description = "The reason for the recall")
     private KeyValue reason;
-    @ApiModelProperty(value = "Some notes")
+    @Schema(description = "Some notes")
     private String notes;
 }

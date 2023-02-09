@@ -1,10 +1,11 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,17 +14,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.ContextlessReferralEndRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessReferralStartRequest;
 import uk.gov.justice.digital.delius.data.api.ReferralEndResponse;
 import uk.gov.justice.digital.delius.data.api.ReferralStartResponse;
 import uk.gov.justice.digital.delius.service.ReferralService;
 
-import jakarta.validation.Valid;
-
 @RestController
-@Api(tags = {"Referrals"})
+@Tag(name = "Referrals")
 @PreAuthorize("hasRole('ROLE_COMMUNITY_INTERVENTIONS_UPDATE')")
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
@@ -36,15 +34,15 @@ public class ReferralController {
         consumes = "application/json")
     @ApiResponses(
         value = {
-            @ApiResponse(code = 200, message = "Created", response = String.class),
-            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_INTERVENTIONS_UPDATE"),
-            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            @ApiResponse(responseCode = "200", description = "Created"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "403", description = "Requires role ROLE_COMMUNITY_INTERVENTIONS_UPDATE"),
+            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
         })
 
-    @ApiOperation(value = "Starts an NSI referral")
+    @Operation(description = "Starts an NSI referral")
     public ReferralStartResponse startReferralContextLess(final @PathVariable("crn") String crn,
-                                                          final @ApiParam(value = "Name identifying preprocessing applied to the request", example = "commissioned-rehabilitation-services")
+                                                          final @Parameter(description = "Name identifying preprocessing applied to the request", example = "commissioned-rehabilitation-services")
                                                                 @PathVariable("context") String context,
                                                           final @RequestBody @Valid ContextlessReferralStartRequest referralStartRequest) {
         return referralService.startNsiReferral(crn, context, referralStartRequest);
@@ -55,15 +53,15 @@ public class ReferralController {
         consumes = "application/json")
     @ApiResponses(
         value = {
-            @ApiResponse(code = 200, message = "Updated", response = String.class),
-            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_INTERVENTIONS_UPDATE"),
-            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            @ApiResponse(responseCode = "200", description = "Updated"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "403", description = "Requires role ROLE_COMMUNITY_INTERVENTIONS_UPDATE"),
+            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
         })
 
-    @ApiOperation(value = "Ends a NSI referral")
+    @Operation(description = "Ends a NSI referral")
     public ReferralEndResponse endReferralContextLess(final @PathVariable("crn") String crn,
-                                                      final @ApiParam(value = "Name identifying preprocessing applied to the request", example = "commissioned-rehabilitation-services")
+                                                      final @Parameter(description = "Name identifying preprocessing applied to the request", example = "commissioned-rehabilitation-services")
                                                             @PathVariable("context") String context,
                                                       final @RequestBody @Valid ContextlessReferralEndRequest referralEndRequest) {
         return referralService.endNsiReferral(crn, context, referralEndRequest);

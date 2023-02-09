@@ -22,8 +22,6 @@ repositories {
   mavenCentral()
 }
 dependencies {
-    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
-    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-ldap'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
@@ -31,9 +29,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'com.oracle.database.jdbc:ojdbc11'
     implementation 'com.unboundid:unboundid-ldapsdk'
-    implementation 'io.springfox:springfox-boot-starter:3.0.0'
     implementation 'org.flywaydb:flyway-core'
     implementation 'com.zaxxer:HikariCP'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.apache.commons:commons-text:1.10.0'
     implementation 'io.swagger:swagger-core:1.6.9'

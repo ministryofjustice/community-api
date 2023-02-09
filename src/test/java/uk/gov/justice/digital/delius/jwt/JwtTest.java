@@ -4,8 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.io.DecodingException;
+import io.jsonwebtoken.security.SecurityException;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.user.UserData;
 
@@ -19,10 +20,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class JwtTest {
+    private static final String secret512chars = "x".repeat(512);
 
     @Test
     public void canGenerateJwt() {
-        Jwt jwt = new Jwt("a secret", 1);
+        Jwt jwt = new Jwt(secret512chars, 1);
 
         String token = jwt.buildToken(UserData.builder().distinguishedName("Colin").build());
 
@@ -32,7 +34,7 @@ public class JwtTest {
 
     @Test
     public void canDecodeOwnSignedJwt() {
-        Jwt jwt = new Jwt("a secret", 1);
+        Jwt jwt = new Jwt(secret512chars, 1);
 
         String distinguishedName = UUID.randomUUID().toString();
         String token = jwt.buildToken(UserData.builder().distinguishedName(distinguishedName).build());
@@ -46,28 +48,28 @@ public class JwtTest {
 
     @Test
     public void cannotDecodeSomebodyElsesSignedJwt() {
-        Jwt jwt = new Jwt("a secret", 1);
+        Jwt jwt = new Jwt(secret512chars, 1);
 
         String token = jwt.buildToken(UserData.builder().distinguishedName("Colin").build());
 
-        Jwt jwtOther = new Jwt("a different secret", 1);
+        Jwt jwtOther = new Jwt("y".repeat(512), 1);
 
-        assertThrows(SignatureException.class,
+        assertThrows(SecurityException.class,
             () -> { jwtOther.parseToken(token); }, "Should have failed signature validation.");
     }
 
     @Test
     public void cannotDecodeRubbishJwt() {
-        Jwt jwt = new Jwt("a secret", 1);
+        Jwt jwt = new Jwt(secret512chars, 1);
 
-        assertThrows(MalformedJwtException.class,
+        assertThrows(DecodingException.class,
             () -> { jwt.parseToken("utter rubbish.."); },
             "Should have failed to parse malformed token");
     }
 
     @Test
         public void cannotDecodeExpiredJwt() throws InterruptedException {
-        Jwt jwt = new Jwt("a secret", 1);
+        Jwt jwt = new Jwt(secret512chars, 1);
 
         String token = jwt.buildToken(UserData.builder().distinguishedName("Colin").build());
 
@@ -79,7 +81,7 @@ public class JwtTest {
 
     @Test
     public void canDecodeAuthorizationHeaderWithOwnSignedJwt() {
-        Jwt jwt = new Jwt("a secret", 1);
+        Jwt jwt = new Jwt(secret512chars, 1);
 
         String distinguishedName = UUID.randomUUID().toString();
         String token = jwt.buildToken(UserData.builder().distinguishedName(distinguishedName).build());
@@ -98,7 +100,7 @@ public class JwtTest {
 
     @Test
     public void cannotModifyClaimsAndStillHaveValidToken() throws IOException {
-        Jwt jwt = new Jwt("a secret", 1);
+        Jwt jwt = new Jwt(secret512chars, 1);
 
         String distinguishedName = UUID.randomUUID().toString();
         String uid = UUID.randomUUID().toString();

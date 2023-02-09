@@ -1,9 +1,9 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -13,14 +13,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
-import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderIdentifiers;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
 import java.util.Optional;
 
-@Api(tags = "Core offender")
+@Tag(name = "Core offender")
 @RestController
 @Slf4j
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -29,13 +28,12 @@ import java.util.Optional;
 public class OffenderIdentifiersResource {
     private final OffenderService offenderService;
 
-    @ApiOperation(
-            value = "Return the identifiers for an offender using offenderId", notes = "requires ROLE_COMMUNITY")
+    @Operation(description = "Return the identifiers for an offender using offenderId. requires ROLE_COMMUNITY")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 404, message = "Offender not found", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+                    @ApiResponse(responseCode = "400", description = "Invalid request"),
+                    @ApiResponse(responseCode = "404", description = "Offender not found"),
+                    @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
             })
     @GetMapping(value = "offenders/offenderId/{offenderId}/identifiers")
     public OffenderIdentifiers getOffenderIdentifiersByOffenderId(final @PathVariable("offenderId") Long offenderId) {
@@ -43,13 +41,12 @@ public class OffenderIdentifiersResource {
         return identifiersFor(maybeOffender.map(OffenderDetail::getOffenderId));
     }
 
-    @ApiOperation(
-            value = "Return the identifiers for an offender using the crn", notes = "requires ROLE_COMMUNITY")
+    @Operation(description = "Return the identifiers for an offender using the crn. requires ROLE_COMMUNITY")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 404, message = "Offender not found", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+                    @ApiResponse(responseCode = "400", description = "Invalid request"),
+                    @ApiResponse(responseCode = "404", description = "Offender not found"),
+                    @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
             })
     @GetMapping(value = "offenders/crn/{crn}/identifiers")
     public OffenderIdentifiers getOffenderIdentifiersByCrn(final @PathVariable("crn") String crn) {

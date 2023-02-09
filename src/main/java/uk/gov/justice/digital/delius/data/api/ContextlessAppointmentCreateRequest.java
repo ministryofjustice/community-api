@@ -1,12 +1,12 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import jakarta.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -18,39 +18,39 @@ public class ContextlessAppointmentCreateRequest {
 
     // Fields used to identify associated Referral/Nsi
     @NotNull
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private String contractType;
 
     @NotNull
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private OffsetDateTime referralStart;
 
-    @ApiModelProperty
+    @Schema
     private UUID referralId;
 
     // Fields used for creating the appointment
     @NotNull
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private OffsetDateTime appointmentStart;
 
     @NotNull
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private OffsetDateTime appointmentEnd;
 
-    @ApiModelProperty
+    @Schema
     private String officeLocationCode;
 
     @NotNull
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private String notes;
 
     @NotNull
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private Boolean countsTowardsRarDays;
 
-    @ApiModelProperty
+    @Schema
     private String attended;
 
-    @ApiModelProperty
+    @Schema
     private Boolean notifyPPOfAttendanceBehaviour;
 }

@@ -1,10 +1,10 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,12 +21,11 @@ import uk.gov.justice.digital.delius.data.api.UpdateOffenderNomsNumber;
 import uk.gov.justice.digital.delius.service.CustodyService;
 import uk.gov.justice.digital.delius.service.OffenderIdentifierService;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
 @Slf4j
-@Api(tags = {"Custody"}, authorizations = {@Authorization("ROLE_COMMUNITY_CUSTODY_UPDATE")})
+@Tag(name = "Custody", description = "Requires ROLE_COMMUNITY_CUSTODY_UPDATE")
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
 public class CustodyResource {
@@ -40,11 +39,11 @@ public class CustodyResource {
 
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/custody/bookingNumber/{bookingNumber}", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
-            @ApiResponse(code = 400, message = "The custody request is invalid"),
-            @ApiResponse(code = 404, message = "Either the requested offender was not found or the conviction associated the booking number.")
+            @ApiResponse(responseCode = "403", description = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
+            @ApiResponse(responseCode = "400", description = "The custody request is invalid"),
+            @ApiResponse(responseCode = "404", description = "Either the requested offender was not found or the conviction associated the booking number.")
     })
-    @ApiOperation(value = "Updates the associated custody record with changes defined in UpdateCustody")
+    @Operation(description = "Updates the associated custody record with changes defined in UpdateCustody")
     public Custody updateCustody(final @PathVariable String nomsNumber,
                                  final @PathVariable String bookingNumber,
                                  final @RequestBody @Valid UpdateCustody updateCustody) {
@@ -54,11 +53,11 @@ public class CustodyResource {
 
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/custody/bookingNumber", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
-            @ApiResponse(code = 400, message = "The booking number custody request is invalid"),
-            @ApiResponse(code = 404, message = "Either the requested offender was not found or the conviction associated the sentence start date")
+            @ApiResponse(responseCode = "403", description = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
+            @ApiResponse(responseCode = "400", description = "The booking number custody request is invalid"),
+            @ApiResponse(responseCode = "404", description = "Either the requested offender was not found or the conviction associated the sentence start date")
     })
-    @ApiOperation(value = "Updates the associated custody record with booking number in UpdateCustodyBookingNumber")
+    @Operation(description = "Updates the associated custody record with booking number in UpdateCustodyBookingNumber")
     public Custody updateCustodyBookingNumber(final @PathVariable String nomsNumber,
                                               final @RequestBody @Valid UpdateCustodyBookingNumber updateCustodyBookingNumber) {
         return custodyService.updateCustodyBookingNumber(nomsNumber, updateCustodyBookingNumber);
@@ -66,10 +65,10 @@ public class CustodyResource {
 
     @RequestMapping(value = "offenders/crn/{crn}/nomsNumber", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
-            @ApiResponse(code = 404, message = "The requested offender was not found")
+            @ApiResponse(responseCode = "403", description = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
+            @ApiResponse(responseCode = "404", description = "The requested offender was not found")
     })
-    @ApiOperation(value = "Updates the offender record with the NOMS number in UpdateOffenderNomsNumber")
+    @Operation(description = "Updates the offender record with the NOMS number in UpdateOffenderNomsNumber")
     public IDs updateOffenderNomsNumber(final @PathVariable String crn,
                                               final @RequestBody @Valid UpdateOffenderNomsNumber updateOffenderNomsNumber) {
         return offenderIdentifierService.updateNomsNumber(crn, updateOffenderNomsNumber);
@@ -77,13 +76,12 @@ public class CustodyResource {
 
     @RequestMapping(value = "offenders/nomsNumber/{originalNomsNumber}/nomsNumber", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "The new noms number is not present in request"),
-            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
-            @ApiResponse(code = 404, message = "The requested offender was not found"),
-            @ApiResponse(code = 409, message = "The new noms number is assigned to an existing offender already")
+            @ApiResponse(responseCode = "400", description = "The new noms number is not present in request"),
+            @ApiResponse(responseCode = "403", description = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE"),
+            @ApiResponse(responseCode = "404", description = "The requested offender was not found"),
+            @ApiResponse(responseCode = "409", description = "The new noms number is assigned to an existing offender already")
     })
-    @ApiOperation(value = "Updates the offender record(s) with the new NOMS number in UpdateOffenderNomsNumber replacing the existing number.",
-            notes = "In the very rare circumstances more than one offender is found with matching noms number, all will be updated and their identifiers returned.")
+    @Operation(description = "Updates the offender record(s) with the new NOMS number in UpdateOffenderNomsNumber replacing the existing number. In the very rare circumstances more than one offender is found with matching noms number, all will be updated and their identifiers returned.")
     public List<IDs> replaceOffenderNomsNumber(final @PathVariable String originalNomsNumber,
                                                final @RequestBody @Valid UpdateOffenderNomsNumber updateOffenderNomsNumber) {
         return offenderIdentifierService.replaceNomsNumber(originalNomsNumber, updateOffenderNomsNumber);
@@ -92,10 +90,10 @@ public class CustodyResource {
 
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/custody/bookingNumber/{bookingNumber}", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY"),
-            @ApiResponse(code = 404, message = "Either the requested offender was not found or the conviction associated the booking number.")
+            @ApiResponse(responseCode = "403", description = "Requires role ROLE_COMMUNITY"),
+            @ApiResponse(responseCode = "404", description = "Either the requested offender was not found or the conviction associated the booking number.")
     })
-    @ApiOperation(value = "Gets the current custody record")
+    @Operation(description = "Gets the current custody record")
     @PreAuthorize("hasRole('ROLE_COMMUNITY')")
     public Custody getCustodyByBookNumber(final @PathVariable String nomsNumber,
                                  final @PathVariable String bookingNumber) {

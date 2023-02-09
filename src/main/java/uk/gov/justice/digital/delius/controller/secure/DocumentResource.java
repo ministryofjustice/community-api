@@ -1,11 +1,11 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -19,18 +19,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
-import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.OffenderDocuments;
 import uk.gov.justice.digital.delius.data.filters.DocumentFilter;
 import uk.gov.justice.digital.delius.service.AlfrescoService;
 import uk.gov.justice.digital.delius.service.DocumentService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
-import jakarta.validation.constraints.NotNull;
-import java.io.InputStream;
 import java.util.Optional;
 
-@Api(tags = "Documents", authorizations = {@Authorization("ROLE_COMMUNITY")})
+@Tag(name = "Documents", description = "Requires ROLE_COMMUNITY")
 @RestController
 @Slf4j
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -76,22 +73,20 @@ public class DocumentResource {
     private final DocumentService documentService;
 
 
-    @ApiOperation(
-        value = "Returns all document's meta data for an offender by NOMS number",
-        tags = "Documents",
-        notes = typeDocumentation)
+    @Operation(description = "Returns all document's meta data for an offender by NOMS number. " + typeDocumentation,
+        tags = "Documents")
     @ApiResponses(
         value = {
-            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
         })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/documents/grouped")
     public OffenderDocuments getOffenderDocumentsByNomsNumber(
-        @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
+        @Parameter(name = "nomsNumber", description = "Nomis number for the offender", example = "G9542VP", required = true)
         @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber,
-        @ApiParam(name = "type", value = "Optional filter for type" + typeDocumentation, example = "COURT_REPORT_DOCUMENT")
+        @Parameter(name = "type", description = "Optional filter for type" + typeDocumentation, example = "COURT_REPORT_DOCUMENT")
         @RequestParam(required = false) final String type,
-        @ApiParam(name = "subtype", value = "Optional filter for subtype within a type. Can only be used if type is also present" + subtypeDocumentation, example = "PSR")
+        @Parameter(name = "subtype", description = "Optional filter for subtype within a type. Can only be used if type is also present" + subtypeDocumentation, example = "PSR")
         @RequestParam(required = false) final String subtype) {
 
         return offenderService.offenderIdOfNomsNumber(nomsNumber)
@@ -99,21 +94,21 @@ public class DocumentResource {
             .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
     }
 
-    @ApiOperation(value = "Returns all documents' meta data for an offender by CRN", tags = "Documents")
+    @Operation(description = "Returns all documents' meta data for an offender by CRN", tags = "Documents")
     @ApiResponses(
         value = {
-            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 404, message = "Not Found. For example if the CRN is not known.", response = ErrorResponse.class),
-            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "404", description = "Not Found. For example if the CRN is not known."),
+            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
         })
     @GetMapping(path = "/offenders/crn/{crn}/documents/grouped")
     public OffenderDocuments getOffenderDocumentsByCrn(
-        @ApiParam(name = "crn", value = "CRN for the offender", example = "X340906", required = true)
+        @Parameter(name = "crn", description = "CRN for the offender", example = "X340906", required = true)
         @NotNull
         @PathVariable(value = "crn") final String crn,
-        @ApiParam(name = "type", value = "Optional filter for type" + typeDocumentation, example = "COURT_REPORT_DOCUMENT")
+        @Parameter(name = "type", description = "Optional filter for type" + typeDocumentation, example = "COURT_REPORT_DOCUMENT")
         @RequestParam(required = false) final String type,
-        @ApiParam(name = "subtype", value = "Optional filter for subtype within a type. Can only be used if type is also present" + subtypeDocumentation, example = "PSR")
+        @Parameter(name = "subtype", description = "Optional filter for subtype within a type. Can only be used if type is also present" + subtypeDocumentation, example = "PSR")
         @RequestParam(required = false) final String subtype) {
 
         return offenderService.offenderIdOfCrn(crn)
@@ -121,26 +116,26 @@ public class DocumentResource {
             .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 
-    @ApiOperation(value = "Returns the document contents meta data for a given document associated with an offender", tags = "Documents")
-    @ApiResponse(response = InputStream.class, code = 200,
-        message = "Returns the binary document data with an encoded filename in the content disposition header. ")
+    @Operation(description = "Returns the document contents meta data for a given document associated with an offender", tags = "Documents")
+    @ApiResponse(responseCode = "200",
+        description = "Returns the binary document data with an encoded filename in the content disposition header. ")
     @GetMapping(value = "/offenders/nomsNumber/{nomsNumber}/documents/{documentId}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public HttpEntity<Resource> getOffenderDocument(
-        @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true) @NotNull final @PathVariable("nomsNumber") String nomsNumber,
-        @ApiParam(name = "documentId", value = "Document Id", example = "12312322", required = true) @NotNull final @PathVariable("documentId") String documentId) {
+        @Parameter(name = "nomsNumber", description = "Nomis number for the offender", example = "G9542VP", required = true) @NotNull final @PathVariable("nomsNumber") String nomsNumber,
+        @Parameter(name = "documentId", description = "Document Id", example = "12312322", required = true) @NotNull final @PathVariable("documentId") String documentId) {
 
         return offenderService.crnOf(nomsNumber)
             .map(crn -> alfrescoService.getDocument(documentId, crn))
             .orElseThrow(() -> new NotFoundException(String.format("document with id %s not found", documentId)));
     }
 
-    @ApiOperation(value = "Returns the document for a given document id associated with an offender", tags = "Documents")
-    @ApiResponse(response = InputStream.class, code = 200,
-        message = "Returns the binary document data with an encoded filename in the content disposition header. ")
+    @Operation(description = "Returns the document for a given document id associated with an offender", tags = "Documents")
+    @ApiResponse(responseCode = "200",
+        description = "Returns the binary document data with an encoded filename in the content disposition header. ")
     @GetMapping(value = "/offenders/crn/{crn}/documents/{documentId}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public HttpEntity<Resource> getOffenderDocumentByCrn(
-        @ApiParam(name = "crn", value = "CRN for the offender", example = "X12345", required = true) @NotNull final @PathVariable("crn") String crn,
-        @ApiParam(name = "documentId", value = "Document Id", example = "12312322", required = true) @NotNull final @PathVariable("documentId") String documentId) {
+        @Parameter(name = "crn", description = "CRN for the offender", example = "X12345", required = true) @NotNull final @PathVariable("crn") String crn,
+        @Parameter(name = "documentId", description = "Document Id", example = "12312322", required = true) @NotNull final @PathVariable("documentId") String documentId) {
 
         return Optional.ofNullable(alfrescoService.getDocument(documentId, crn))
             .orElseThrow(() -> new NotFoundException(String.format("document with id %s not found", documentId)));

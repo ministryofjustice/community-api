@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,30 +8,30 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-@ApiModel(description = "MAPPA Details")
+@Schema(description = "MAPPA Details")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class MappaDetails {
-    @ApiModelProperty(value = "MAPPA Level (0=unknown)", example = "1", allowableValues = "0,1,2,3", notes = "If the level is unknown due to an unrecognised Delius MAPPA level code (e.g. one not used anymore) the original Delius level description will still be returned")
+    @Schema(example = "1", allowableValues = "0,1,2,3", description = "MAPPA Level (0=unknown). If the level is unknown due to an unrecognised Delius MAPPA level code (e.g. one not used anymore) the original Delius level description will still be returned")
     private Integer level;
-    @ApiModelProperty(value = "MAPPA Level Description", example = "MAPPA Level 1")
+    @Schema(description = "MAPPA Level Description", example = "MAPPA Level 1")
     private String levelDescription;
-    @ApiModelProperty(value = "MAPPA Category (0 = unknown)", example = "3", allowableValues = "0,1,2,3", notes = "If the category is unknown due to an unrecognised Delius MAPPA category code (e.g. one not used anymore) the original Delius category  description will still be returned")
+    @Schema(example = "3", allowableValues = "0,1,2,3", description = "MAPPA Category (0 = unknown). If the category is unknown due to an unrecognised Delius MAPPA category code (e.g. one not used anymore) the original Delius category  description will still be returned")
     private Integer category;
-    @ApiModelProperty(value = "MAPPA Category Description", example = "MAPPA Cat 1")
+    @Schema(description = "MAPPA Category Description", example = "MAPPA Cat 1")
     private String categoryDescription;
-    @ApiModelProperty(value = "Start date", example = "2021-01-27")
+    @Schema(description = "Start date", example = "2021-01-27")
     private LocalDate startDate;
-    @ApiModelProperty(value = "Next review date", example = "2021-04-27")
+    @Schema(description = "Next review date", example = "2021-04-27")
     private LocalDate reviewDate;
-    @ApiModelProperty(value = "Team")
+    @Schema(description = "Team")
     private KeyValue team;
-    @ApiModelProperty(value = "Officer")
+    @Schema(description = "Officer")
     private StaffHuman officer;
-    @ApiModelProperty(value = "Probation area")
+    @Schema(description = "Probation area")
     private KeyValue probationArea;
-    @ApiModelProperty(value = "Notes")
+    @Schema(description = "Notes")
     private String notes;
 }

@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Institution {
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private Long institutionId;
     private Boolean isEstablishment;
     private String code;
@@ -19,6 +19,6 @@ public class Institution {
     private String institutionName;
     private KeyValue establishmentType;
     private Boolean isPrivate;
-    @ApiModelProperty(value = "Prison institution code in NOMIS")
+    @Schema(description = "Prison institution code in NOMIS")
     private String nomsPrisonInstitutionCode;
 }

@@ -1,12 +1,11 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import jakarta.validation.constraints.NotBlank;
 
 @Data
 @Builder
@@ -14,9 +13,9 @@ import jakarta.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class UpdateOffenderDetails {
     @NotBlank(message = "Missing firstname")
-    @ApiModelProperty(example = "John")
+    @Schema(example = "John")
     private String firstName;
     @NotBlank(message = "Missing surname")
-    @ApiModelProperty(example = "Smith")
+    @Schema(example = "Smith")
     private String surname;
 }

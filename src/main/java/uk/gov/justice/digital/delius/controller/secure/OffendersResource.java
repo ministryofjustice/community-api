@@ -1,19 +1,18 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,71 +20,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
-import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
-import uk.gov.justice.digital.delius.data.api.AccessLimitation;
-import uk.gov.justice.digital.delius.data.api.ActivityLogGroup;
-import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
-import uk.gov.justice.digital.delius.data.api.Contact;
-import uk.gov.justice.digital.delius.data.api.ContactSummary;
-import uk.gov.justice.digital.delius.data.api.Conviction;
-import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
-import uk.gov.justice.digital.delius.data.api.Nsi;
-import uk.gov.justice.digital.delius.data.api.NsiWrapper;
-import uk.gov.justice.digital.delius.data.api.OffenderAssessments;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
-import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
-import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
-import uk.gov.justice.digital.delius.data.api.PersonalContact;
-import uk.gov.justice.digital.delius.data.api.PrimaryIdentifiers;
-import uk.gov.justice.digital.delius.data.api.ProbationStatusDetail;
-import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
-import uk.gov.justice.digital.delius.data.api.ResponsibleOfficerSwitch;
-import uk.gov.justice.digital.delius.data.api.Sentence;
-import uk.gov.justice.digital.delius.data.api.SentenceStatus;
-import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
-import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
+import uk.gov.justice.digital.delius.data.api.*;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
-import uk.gov.justice.digital.delius.jpa.filters.ContactFilter.ConvictionDatesFilter;
-import uk.gov.justice.digital.delius.service.AssessmentService;
-import uk.gov.justice.digital.delius.service.ContactService;
-import uk.gov.justice.digital.delius.service.ConvictionService;
-import uk.gov.justice.digital.delius.service.CustodyService;
-import uk.gov.justice.digital.delius.service.NsiService;
-import uk.gov.justice.digital.delius.service.OffenderManagerService;
-import uk.gov.justice.digital.delius.service.OffenderService;
-import uk.gov.justice.digital.delius.service.SentenceService;
-import uk.gov.justice.digital.delius.service.UserAccessService;
-import uk.gov.justice.digital.delius.service.UserService;
+import uk.gov.justice.digital.delius.service.*;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.OK;
-import static uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory.REHABILITATION_ACTIVITY_REQUIREMENT_CODE;
+import static org.springframework.http.HttpStatus.*;
 
-@Api(tags = "Core offender", authorizations = {@Authorization("ROLE_COMMUNITY")})
+@Tag(name = "Core offender", description = "Requires ROLE_COMMUNITY")
 @RestController
 @Slf4j
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -111,59 +63,57 @@ public class OffendersResource {
     private final UserAccessService userAccessService;
     private final AssessmentService assessmentService;
 
-    @ApiOperation(
-            value = "Returns the current community and prison offender managers for an offender",
-            notes = "Accepts a NOMIS offender nomsNumber in the format A9999AA",
+    @Operation(
+            description = "Returns the current community and prison offender managers for an offender. Accepts a NOMIS offender nomsNumber in the format A9999AA",
             tags = {"Offender managers", "-- Popular core APIs --"})
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+                    @ApiResponse(responseCode = "400", description = "Invalid request"),
+                    @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
             })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/allOffenderManagers")
     public List<CommunityOrPrisonOffenderManager> getAllOffenderManagersForOffender(
-        @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
+        @Parameter(name = "nomsNumber", description = "Nomis number for the offender", example = "G9542VP", required = true)
         @NotNull
         @PathVariable(value = "nomsNumber") final String nomsNumber,
-        @ApiParam(name = "includeProbationAreaTeams", value = "include teams on the ProbationArea records", example = "true")
+        @Parameter(name = "includeProbationAreaTeams", description = "include teams on the ProbationArea records", example = "true")
         @RequestParam(name = "includeProbationAreaTeams", required = false, defaultValue = "false") final boolean includeProbationAreaTeams) {
         return offenderManagerService.getAllOffenderManagersForNomsNumber(nomsNumber, includeProbationAreaTeams)
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with NOMS number %s not found", nomsNumber)));
     }
 
-    @ApiOperation(
-        value = "Returns the current community and prison offender managers for an offender",
-        notes = "Accepts an offender CRN in the format A999999",
+    @Operation(
+        description = "Returns the current community and prison offender managers for an offender. Accepts an offender CRN in the format A999999",
         tags = {"Offender managers", "-- Popular core APIs --"})
     @ApiResponses(
         value = {
-            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
         })
     @GetMapping(path = "/offenders/crn/{crn}/allOffenderManagers")
     public List<CommunityOrPrisonOffenderManager> getAllOffenderManagersForOffenderbyCrn(
-        @ApiParam(name = "crn", value = "CRN for the offender", example = "X320741", required = true)
+        @Parameter(name = "crn", description = "CRN for the offender", example = "X320741", required = true)
         @NotNull
         @PathVariable(value = "crn") final String crn,
-        @ApiParam(name = "includeProbationAreaTeams", value = "include teams on the ProbationArea records", example = "true")
+        @Parameter(name = "includeProbationAreaTeams", description = "include teams on the ProbationArea records", example = "true")
         @RequestParam(name = "includeProbationAreaTeams", required = false, defaultValue = "false") final boolean includeProbationAreaTeams) {
         return offenderManagerService.getAllOffenderManagersForCrn(crn, includeProbationAreaTeams)
             .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN %s not found", crn)));
     }
 
-    @ApiOperation(value = "Return the convictions (AKA Delius Event) for an offender", tags = {"Convictions","-- Popular core APIs --"})
+    @Operation(description = "Return the convictions (AKA Delius Event) for an offender", tags = {"Convictions","-- Popular core APIs --"})
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 409, message = "Multiple offenders found in the same state ", response = ErrorResponse.class)
+                    @ApiResponse(responseCode = "400", description = "Invalid request"),
+                    @ApiResponse(responseCode = "409", description = "Multiple offenders found in the same state ")
             })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/convictions")
     public List<Conviction> getConvictionsForOffender(
-            @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
+            @Parameter(name = "nomsNumber", description = "Nomis number for the offender", example = "G9542VP", required = true)
             @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber,
-            @ApiParam(name = "activeOnly", value = "retrieve only active convictions", example = "true")
+            @Parameter(name = "activeOnly", description = "retrieve only active convictions", example = "true")
             @RequestParam(name = "activeOnly", required = false, defaultValue = "false") final boolean activeOnly,
-            @ApiParam(name = "failOnDuplicate", value = "Should fail if multiple offenders found regardless of status", example = "true", defaultValue = "false")
+            @Parameter(name = "failOnDuplicate", description = "Should fail if multiple offenders found regardless of status", example = "true")
             final @RequestParam(value = "failOnDuplicate", defaultValue = "false") boolean failOnDuplicate) {
 
         final Optional<Long> mayBeOffenderId;
@@ -183,17 +133,17 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
     }
 
-    @ApiOperation(value = "Return the details for an offender. If multiple offenders found the active one wll be returned", tags = "-- Popular core APIs --")
+    @Operation(description = "Return the details for an offender. If multiple offenders found the active one wll be returned", tags = "-- Popular core APIs --")
     @ApiResponses(
         value = {
-            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 409, message = "Multiple offenders found in the same state ", response = ErrorResponse.class)
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "409", description = "Multiple offenders found in the same state ")
         })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}")
     public OffenderDetailSummary getOffenderDetails(
-        @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
+        @Parameter(name = "nomsNumber", description = "Nomis number for the offender", example = "G9542VP", required = true)
         @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber,
-        @ApiParam(name = "failOnDuplicate", value = "Should fail if multiple offenders found regardless of status", example = "true", defaultValue = "false")
+        @Parameter(name = "failOnDuplicate", description = "Should fail if multiple offenders found regardless of status", example = "true")
         final @RequestParam(value = "failOnDuplicate", defaultValue = "false") boolean failOnDuplicate
     ) {
         final Optional<OffenderDetailSummary> offender;
@@ -210,15 +160,15 @@ public class OffendersResource {
         return offender.orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
     }
 
-    @ApiOperation(value = "Returns the contact details for an offender by NOMS number", tags = "Contact and attendance")
+    @Operation(description = "Returns the contact details for an offender by NOMS number", tags = "Contact and attendance")
     @ApiResponses(
             value = {
-                @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                @ApiResponse(code = 404, message = "Offender does not exist"),
-                @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+                @ApiResponse(responseCode = "400", description = "Invalid request"),
+                @ApiResponse(responseCode = "404", description = "Offender does not exist"),
+                @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
             })
     @GetMapping(value = "/offenders/nomsNumber/{nomsNumber}/contacts")
-    public ResponseEntity<List<Contact>> getOffenderContactReportByNomsNumber(@ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true) @NotNull final @PathVariable("nomsNumber") String nomsNumber,
+    public ResponseEntity<List<Contact>> getOffenderContactReportByNomsNumber(@Parameter(name = "nomsNumber", description = "Nomis number for the offender", example = "G9542VP", required = true) @NotNull final @PathVariable("nomsNumber") String nomsNumber,
                                                                               final @RequestParam(value = "contactTypes", required = false) Optional<List<String>> contactTypes,
                                                                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final @RequestParam(value = "from", required = false) Optional<LocalDateTime> from,
                                                                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final @RequestParam(value = "to", required = false) Optional<LocalDateTime> to) {
@@ -233,17 +183,17 @@ public class OffendersResource {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @ApiOperation(value = "Returns the induction appointments for an offender by CRN", tags = "Contact and attendance")
+    @Operation(description = "Returns the induction appointments for an offender by CRN", tags = "Contact and attendance")
     @ApiResponses(
         value = {
-            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 404, message = "Offender does not exist"),
-            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "404", description = "Offender does not exist"),
+            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
         })
     @GetMapping(value = "/offenders/crn/{crn}/contact-summary/inductions")
     public List<ContactSummary> getOffenderInitialAppointmentsByCrn(
-        final @ApiParam(name = "crn", value = "CRN of the offender", example = "X123456", required = true) @NotNull @PathVariable("crn") String crn,
-        final @ApiParam(name = "contactDateFrom", value = "Show contacts from this date", example = "2013-01-21") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "contactDateFrom", required = false) Optional<LocalDate> contactDateFrom)
+        final @Parameter(name = "crn", description = "CRN of the offender", example = "X123456", required = true) @NotNull @PathVariable("crn") String crn,
+        final @Parameter(name = "contactDateFrom", description = "Show contacts from this date", example = "2013-01-21") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "contactDateFrom", required = false) Optional<LocalDate> contactDateFrom)
         {
             final var contactFilter = ContactFilter.builder()
                 .contactTypes(Optional.of(INITIAL_APPOINTMENT_CONTACT_TYPES))
@@ -255,18 +205,18 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN '%s' does not exist", crn)));
         }
 
-    @ApiOperation(value = "Returns the contact summaries for an offender by CRN", tags = "Contact and attendance")
+    @Operation(description = "Returns the contact summaries for an offender by CRN", tags = "Contact and attendance")
     @ApiResponses(
         value = {
-            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 404, message = "Offender does not exist"),
-            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "404", description = "Offender does not exist"),
+            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
         })
     @GetMapping(value = "/offenders/crn/{crn}/contact-summary")
     public Page<ContactSummary> getOffenderContactSummariesByCrn(
-        final @ApiParam(name = "crn", value = "CRN of the offender", example = "X123456", required = true) @NotNull @PathVariable("crn") String crn,
-        final @ApiParam(name = "page", value = "Page number (0-based)", example = "0") @RequestParam(required = false, defaultValue = "0") @PositiveOrZero int page,
-        final @ApiParam(name = "pageSize", value = "Optional size of page", example = "20") @RequestParam(required = false, defaultValue = "1000") @Positive int pageSize,
+        final @Parameter(name = "crn", description = "CRN of the offender", example = "X123456", required = true) @NotNull @PathVariable("crn") String crn,
+        final @Parameter(name = "page", description = "Page number (0-based)", example = "0") @RequestParam(required = false, defaultValue = "0") @PositiveOrZero int page,
+        final @Parameter(name = "pageSize", description = "Optional size of page", example = "20") @RequestParam(required = false, defaultValue = "1000") @Positive int pageSize,
         final @RequestParam(value = "contactTypes", required = false) Optional<List<String>> contactTypes,
         final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam(value = "from", required = false) Optional<LocalDateTime> from,
         final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam(value = "to", required = false) Optional<LocalDateTime> to,
@@ -278,8 +228,8 @@ public class OffendersResource {
         final @RequestParam(value = "complied", required = false) Optional<Boolean> complied,
         final @RequestParam(value = "nationalStandard", required = false) Optional<Boolean> nationalStandard,
         final @RequestParam(value = "outcome", required = false) Optional<Boolean> outcome,
-        final @ApiParam(name = "include", value = "Contacts to include. Can be a contact type code, prefixed with 'type_' or appointments", example = "type_ccmp", allowMultiple = true) @RequestParam(value = "include", required = false) Optional<List<String>> include,
-        final @ApiParam(name = "rarActivity", value = "Counts toward the RAR day calculation. If this filter is set to false then no filter will be applied.", example = "true")
+        final @Parameter(name = "include", description = "Contacts to include. Can be a contact type code, prefixed with 'type_' or appointments", example = "type_ccmp") @RequestParam(value = "include", required = false) Optional<List<String>> include,
+        final @Parameter(name = "rarActivity", description = "Counts toward the RAR day calculation. If this filter is set to false then no filter will be applied.", example = "true")
         @RequestParam(value = "rarActivity", required = false) Optional<Boolean> rarActivity) {
 
         final var contactFilter = ContactFilter.builder()
@@ -303,18 +253,17 @@ public class OffendersResource {
             .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN '%s' does not exist", crn)));
     }
 
-    @ApiOperation(
-            value = "Returns the latest recall and release details for an offender",
-            notes = "Accepts an offender CRN in the format A999999",
+    @Operation(
+            description = "Returns the latest recall and release details for an offender. Accepts an offender CRN in the format A999999",
             tags = "Convictions")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+                    @ApiResponse(responseCode = "400", description = "Invalid request"),
+                    @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
             })
     @GetMapping(path = "/offenders/crn/{crn}/release")
     public OffenderLatestRecall getLatestRecallAndReleaseForOffenderByCrn(
-            @ApiParam(name = "crn", value = "CRN for the offender", example = "X320741", required = true)
+            @Parameter(name = "crn", description = "CRN for the offender", example = "X320741", required = true)
             @NotNull
             @PathVariable(value = "crn") final String crn) {
 
@@ -329,12 +278,12 @@ public class OffendersResource {
 
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/prisonOffenderManager", method = RequestMethod.PUT, consumes = "application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Staff id does belong to the probation area related prison institution"),
-            @ApiResponse(code = 403, message = "Forbidden, requires ROLE_COMMUNITY_CUSTODY_UPDATE"),
-            @ApiResponse(code = 404, message = "The offender or prison institution is not found")
+            @ApiResponse(responseCode = "400", description = "Staff id does belong to the probation area related prison institution"),
+            @ApiResponse(responseCode = "403", description = "Forbidden, requires ROLE_COMMUNITY_CUSTODY_UPDATE"),
+            @ApiResponse(responseCode = "404", description = "The offender or prison institution is not found")
     })
-    @ApiOperation(value = "Allocates the prison offender manager for an offender in custody. This operation may also have a side affect of creating a Staff member " +
-            "if one matching the name does not already exist. An existing staff member can be used if the staff id is supplied.", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE", tags = "Offender managers")
+    @Operation(description = "Allocates the prison offender manager for an offender in custody. This operation may also have a side affect of creating a Staff member " +
+            "if one matching the name does not already exist. An existing staff member can be used if the staff id is supplied. Requires role ROLE_COMMUNITY_CUSTODY_UPDATE", tags = "Offender managers")
     @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public CommunityOrPrisonOffenderManager allocatePrisonOffenderManagerByNomsNumber(final @PathVariable String nomsNumber,
                                                                                       final @RequestBody CreatePrisonOffenderManager prisonOffenderManager) {
@@ -352,12 +301,12 @@ public class OffendersResource {
 
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/prisonOffenderManager", method = RequestMethod.DELETE)
     @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "The noms number must be passed in the URL"),
-            @ApiResponse(code = 403, message = "Forbidden, requires ROLE_COMMUNITY_CUSTODY_UPDATE"),
-            @ApiResponse(code = 404, message = "The offender is not found"),
-            @ApiResponse(code = 409, message = "The offender does not have a POM to deallocate or the offender has multiple active noms numbers")
+            @ApiResponse(responseCode = "400", description = "The noms number must be passed in the URL"),
+            @ApiResponse(responseCode = "403", description = "Forbidden, requires ROLE_COMMUNITY_CUSTODY_UPDATE"),
+            @ApiResponse(responseCode = "404", description = "The offender is not found"),
+            @ApiResponse(responseCode = "409", description = "The offender does not have a POM to deallocate or the offender has multiple active noms numbers")
     })
-    @ApiOperation(value = "Deallocates the prison offender manager for an offender in custody. The POM is set back to its unallocated state", notes = "Requires role ROLE_COMMUNITY_CUSTODY_UPDATE", tags = "Offender managers")
+    @Operation(description = "Deallocates the prison offender manager for an offender in custody. The POM is set back to its unallocated state. Requires role ROLE_COMMUNITY_CUSTODY_UPDATE", tags = "Offender managers")
     @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
     public void deallocatePrisonOffenderManagerByNomsNumber(final @PathVariable String nomsNumber) {
         offenderManagerService.deallocatePrisonerOffenderManager(nomsNumber);
@@ -372,10 +321,10 @@ public class OffendersResource {
 
     @RequestMapping(value = "/offenders/crn/{crn}", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 403, message = "Forbidden, the offender may have exclusions or restrictions in place preventing some users from viewing. Adopting the client scopes SCOPE_IGNORE_DELIUS_INCLUSIONS_ALWAYS and SCOPE_IGNORE_DELIUS_EXCLUSIONS_ALWAYS can bypass these restrictions."),
-            @ApiResponse(code = 404, message = "The offender not found")
+            @ApiResponse(responseCode = "403", description = "Forbidden, the offender may have exclusions or restrictions in place preventing some users from viewing. Adopting the client scopes SCOPE_IGNORE_DELIUS_INCLUSIONS_ALWAYS and SCOPE_IGNORE_DELIUS_EXCLUSIONS_ALWAYS can bypass these restrictions."),
+            @ApiResponse(responseCode = "404", description = "The offender not found")
     })
-    @ApiOperation(value = "Returns the offender summary for the given crn", tags = "-- Popular core APIs --")
+    @Operation(description = "Returns the offender summary for the given crn", tags = "-- Popular core APIs --")
 
     public OffenderDetailSummary getOffenderSummaryByCrn(final @PathVariable("crn") String crn, Authentication authentication) {
         userAccessService.checkExclusionsAndRestrictions(crn, authentication.getAuthorities());
@@ -386,10 +335,10 @@ public class OffendersResource {
 
     @RequestMapping(value = "/offenders/crn/{crn}/all", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "The offender is not found"),
-            @ApiResponse(code = 403, message = "Forbidden, the offender may have exclusions or restrictions in place preventing some users from viewing. Adopting the client scopes SCOPE_IGNORE_DELIUS_INCLUSIONS_ALWAYS and SCOPE_IGNORE_DELIUS_EXCLUSIONS_ALWAYS can bypass these restrictions."),
+            @ApiResponse(responseCode = "404", description = "The offender is not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden, the offender may have exclusions or restrictions in place preventing some users from viewing. Adopting the client scopes SCOPE_IGNORE_DELIUS_INCLUSIONS_ALWAYS and SCOPE_IGNORE_DELIUS_EXCLUSIONS_ALWAYS can bypass these restrictions."),
     })
-    @ApiOperation(value = "Returns the full offender detail for the given crn", tags = "-- Popular core APIs --")
+    @Operation(description = "Returns the full offender detail for the given crn", tags = "-- Popular core APIs --")
     public OffenderDetail getOffenderDetailByCrn(final @PathVariable("crn") String crn, Authentication authentication) {
         userAccessService.checkExclusionsAndRestrictions(crn, authentication.getAuthorities());
 
@@ -399,15 +348,15 @@ public class OffendersResource {
 
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/all", method = RequestMethod.GET)
     @ApiResponses(value = {
-        @ApiResponse(code = 404, message = "The offender is not found"),
-        @ApiResponse(code = 409, message = "Multiple offenders found in the same state", response = ErrorResponse.class)
+        @ApiResponse(responseCode = "404", description = "The offender is not found"),
+        @ApiResponse(responseCode = "409", description = "Multiple offenders found in the same state")
     })
-    @ApiOperation(value = "Returns the full offender detail for the given nomsNumber. If multiple offender found the active one will be returned", tags = "-- Popular core APIs --")
+    @Operation(description = "Returns the full offender detail for the given nomsNumber. If multiple offender found the active one will be returned", tags = "-- Popular core APIs --")
     public OffenderDetail getOffenderDetailByNomsNumber(
-        @ApiParam(name = "nomsNumber", value = "Nomis number for the offender", example = "G9542VP", required = true)
+        @Parameter(name = "nomsNumber", description = "Nomis number for the offender", example = "G9542VP", required = true)
         @NotNull @PathVariable(value = "nomsNumber")
         final String nomsNumber,
-        @ApiParam(name = "failOnDuplicate", value = "Should fail if multiple offenders found", example = "true", defaultValue = "false")
+        @Parameter(name = "failOnDuplicate", description = "Should fail if multiple offenders found", example = "true")
         final @RequestParam(value = "failOnDuplicate", defaultValue = "false") boolean failOnDuplicate
     ) {
         final Optional<OffenderDetail> offender;
@@ -424,18 +373,18 @@ public class OffendersResource {
         return offender.orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
     }
 
-    @ApiOperation(value = "Return the convictions (AKA Delius Event) for an offender", tags = {"-- Popular core APIs --", "Convictions"})
+    @Operation(description = "Return the convictions (AKA Delius Event) for an offender", tags = {"-- Popular core APIs --", "Convictions"})
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 404, message = "The offender is not found", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+                    @ApiResponse(responseCode = "400", description = "Invalid request"),
+                    @ApiResponse(responseCode = "404", description = "The offender is not found"),
+                    @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
             })
     @GetMapping(path = "/offenders/crn/{crn}/convictions")
     public List<Conviction> getConvictionsForOffenderByCrn(
-            @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
+            @Parameter(name = "crn", description = "CRN for the offender", example = "A123456", required = true)
             @NotNull @PathVariable(value = "crn") final String crn,
-            @ApiParam(name = "activeOnly", value = "retrieve only active convictions", example = "true")
+            @Parameter(name = "activeOnly", description = "retrieve only active convictions", example = "true")
             @RequestParam(name = "activeOnly", required = false, defaultValue = "false") final boolean activeOnly) {
 
         return offenderService.offenderIdOfCrn(crn)
@@ -443,18 +392,18 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 
-    @ApiOperation(value = "Return the conviction (AKA Delius Event) for a conviction ID and a CRN", tags = {"-- Popular core APIs --", "Convictions"})
+    @Operation(description = "Return the conviction (AKA Delius Event) for a conviction ID and a CRN", tags = {"-- Popular core APIs --", "Convictions"})
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 404, message = "The offender CRN or conviction ID is not found", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+                    @ApiResponse(responseCode = "400", description = "Invalid request"),
+                    @ApiResponse(responseCode = "404", description = "The offender CRN or conviction ID is not found"),
+                    @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
             })
     @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}")
     public Conviction getConvictionForOffenderByCrnAndConvictionId(
-            @ApiParam(value = "CRN for the offender", example = "A123456", required = true)
+            @Parameter(description = "CRN for the offender", example = "A123456", required = true)
             @NotNull @PathVariable(value = "crn") final String crn,
-            @ApiParam(value = "ID for the conviction / event", example = "2500295345", required = true)
+            @Parameter(description = "ID for the conviction / event", example = "2500295345", required = true)
             @NotNull @PathVariable(value = "convictionId") final Long convictionId) {
 
         return offenderService.offenderIdOfCrn(crn)
@@ -463,35 +412,35 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Conviction with ID %s for Offender with crn %s not found", convictionId, crn)));
     }
 
-    @ApiOperation(value = "Return the assessments for a CRN", tags = {"Assessments"})
+    @Operation(description = "Return the assessments for a CRN", tags = {"Assessments"})
     @ApiResponses(
         value = {
-            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 404, message = "The offender CRN is not found", response = ErrorResponse.class),
-            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "404", description = "The offender CRN is not found"),
+            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
         })
     @GetMapping(path = "/offenders/crn/{crn}/assessments")
     public OffenderAssessments getAssessmentsByCrn(
-        @ApiParam(value = "CRN for the offender", example = "A123456", required = true)
+        @Parameter(description = "CRN for the offender", example = "A123456", required = true)
         @NotNull @PathVariable(value = "crn") final String crn) {
         return assessmentService.getAssessments(crn)
             .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 
-    @ApiOperation(value = "Return the NSIs for a conviction ID and a CRN, filtering by NSI codes", tags = "Sentence requirements and breach")
+    @Operation(description = "Return the NSIs for a conviction ID and a CRN, filtering by NSI codes", tags = "Sentence requirements and breach")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 404, message = "The offender CRN is not found", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+                    @ApiResponse(responseCode = "400", description = "Invalid request"),
+                    @ApiResponse(responseCode = "404", description = "The offender CRN is not found"),
+                    @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
             })
     @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/nsis")
     public NsiWrapper getNsiForOffenderByCrnAndConvictionId(
-            @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
+            @Parameter(name = "crn", description = "CRN for the offender", example = "A123456", required = true)
             @NotNull @PathVariable(value = "crn") final String crn,
-            @ApiParam(name = "convictionId", value = "ID for the conviction / event", example = "2500295345", required = true)
+            @Parameter(name = "convictionId", description = "ID for the conviction / event", example = "2500295345", required = true)
             @NotNull @PathVariable(value = "convictionId") final Long convictionId,
-            @ApiParam(name = "nsiCodes", value = "list of NSI codes to constrain by", example = "BRE,BRES", required = true)
+            @Parameter(name = "nsiCodes", description = "list of NSI codes to constrain by", example = "BRE,BRES", required = true)
             @NotEmpty @RequestParam(value = "nsiCodes") final List<String> nsiCodes) {
 
         return offenderService.offenderIdOfCrn(crn)
@@ -500,18 +449,18 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Conviction with ID %s for Offender with crn %s not found", convictionId, crn)));
     }
 
-    @ApiOperation(value = "Return all the NSIs for the CRN, active convictions only, filtering by NSI codes", tags = "Sentence requirements and breach")
+    @Operation(description = "Return all the NSIs for the CRN, active convictions only, filtering by NSI codes", tags = "Sentence requirements and breach")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 404, message = "The offender CRN is not found", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+                    @ApiResponse(responseCode = "400", description = "Invalid request"),
+                    @ApiResponse(responseCode = "404", description = "The offender CRN is not found"),
+                    @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
             })
     @GetMapping(path = "/offenders/crn/{crn}/convictions/active/nsis")
     public NsiWrapper getNsisForOffenderByCrnAndActiveConvictions(
-            @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
+            @Parameter(name = "crn", description = "CRN for the offender", example = "A123456", required = true)
             @NotNull @PathVariable(value = "crn") final String crn,
-            @ApiParam(name = "nsiCodes", value = "list of NSI codes to constrain by", example = "BRE,BRES", required = true)
+            @Parameter(name = "nsiCodes", description = "list of NSI codes to constrain by", example = "BRE,BRES", required = true)
             @NotEmpty @RequestParam(value = "nsiCodes") final List<String> nsiCodes) {
 
         return offenderService.offenderIdOfCrn(crn)
@@ -519,14 +468,14 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 
-    @ApiOperation(value = "Return all the recall NSIs for the noms number, active convictions only when licence has not expired", tags = "Sentence requirements and breach")
+    @Operation(description = "Return all the recall NSIs for the noms number, active convictions only when licence has not expired", tags = "Sentence requirements and breach")
     @ApiResponses(
         value = {
-            @ApiResponse(code = 404, message = "The offender NOMS number is not found", response = ErrorResponse.class)
+            @ApiResponse(responseCode = "404", description = "The offender NOMS number is not found")
         })
     @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/convictions/active/nsis/recall")
     public NsiWrapper getRecallNsisForOffenderByNomsNumberAndActiveConvictions(
-        @ApiParam(name = "nomsNumber", value = "NOMS number for the offender", example = "A1234GH", required = true)
+        @Parameter(name = "nomsNumber", description = "NOMS number for the offender", example = "A1234GH", required = true)
         @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber) {
 
         return offenderService.offenderIdOfNomsNumber(nomsNumber)
@@ -534,20 +483,20 @@ public class OffendersResource {
             .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
     }
 
-    @ApiOperation(value = "Return an NSI by crn, convictionId and nsiId", tags = "Convictions")
+    @Operation(description = "Return an NSI by crn, convictionId and nsiId", tags = "Convictions")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 404, message = "The offender CRN is not found", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+                    @ApiResponse(responseCode = "400", description = "Invalid request"),
+                    @ApiResponse(responseCode = "404", description = "The offender CRN is not found"),
+                    @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
             })
     @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/nsis/{nsiId}")
     public Nsi getNsiByNsiId(
-            @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
+            @Parameter(name = "crn", description = "CRN for the offender", example = "A123456", required = true)
             @NotNull @PathVariable(value = "crn") final String crn,
-            @ApiParam(name = "convictionId", value = "ID for the conviction / event", example = "2500295345", required = true)
+            @Parameter(name = "convictionId", description = "ID for the conviction / event", example = "2500295345", required = true)
             @NotNull @PathVariable(value = "convictionId") final Long convictionId,
-            @ApiParam(name = "nsiId", value = "ID for the nsi", example = "2500295123", required = true)
+            @Parameter(name = "nsiId", description = "ID for the nsi", example = "2500295123", required = true)
             @PathVariable(value = "nsiId") final Long nsiId) {
         return offenderService.getOffenderByCrn(crn)
                 .map((offender) -> convictionService.convictionFor(offender.getOffenderId(), convictionId)
@@ -557,18 +506,18 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 
-    @ApiOperation(value = "Return sentence and custodial status information by crn, convictionId.")
+    @Operation(description = "Return sentence and custodial status information by crn, convictionId.")
     @ApiResponses(
         value = {
-            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 404, message = "The offender CRN / conviction ID is not found", response = ErrorResponse.class),
-            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "404", description = "The offender CRN / conviction ID is not found"),
+            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
         })
     @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/sentenceStatus")
     public Optional<SentenceStatus> getSentenceStatusByConvictionId(
-        @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
+        @Parameter(name = "crn", description = "CRN for the offender", example = "A123456", required = true)
         @PathVariable(value = "crn") final String crn,
-        @ApiParam(name = "convictionId", value = "ID for the conviction / event", example = "2500295345", required = true)
+        @Parameter(name = "convictionId", description = "ID for the conviction / event", example = "2500295345", required = true)
         @PathVariable(value = "convictionId") final Long convictionId) {
 
         var sentence = offenderService.offenderIdOfCrn(crn)
@@ -582,33 +531,33 @@ public class OffendersResource {
             .orElseThrow(() -> new NotFoundException(String.format("Sentence not found for crn '%s', convictionId '%s'", crn, convictionId)));
     }
 
-    @ApiIgnore("This endpoint is too specific to use case and does not reflect best practice so is deprecated for new use")
+    @Hidden // This endpoint is too specific to use case and does not reflect best practice so is deprecated for new use
     @Deprecated
-    @ApiOperation(value = "Return sentence and custodial status information by crn, convictionId and sentenceId.")
+    @Operation(description = "Return sentence and custodial status information by crn, convictionId and sentenceId.")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 404, message = "The offender CRN / conviction ID / sentence ID is not found", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+                    @ApiResponse(responseCode = "400", description = "Invalid request"),
+                    @ApiResponse(responseCode = "404", description = "The offender CRN / conviction ID / sentence ID is not found"),
+                    @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
             })
     @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/sentences/{sentenceId}/status")
     public SentenceStatus getSentenceStatusBySentenceId(
-            @ApiParam(name = "crn", value = "CRN for the offender", example = "A123456", required = true)
+            @Parameter(name = "crn", description = "CRN for the offender", example = "A123456", required = true)
             @PathVariable(value = "crn") final String crn,
-            @ApiParam(name = "convictionId", value = "ID for the conviction / event", example = "2500295345", required = true)
+            @Parameter(name = "convictionId", description = "ID for the conviction / event", example = "2500295345", required = true)
             @PathVariable(value = "convictionId") final Long convictionId,
-            @ApiParam(name = "sentenceId", value = "ID for the sentence", example = "2500295123", required = true)
+            @Parameter(name = "sentenceId", description = "ID for the sentence", example = "2500295123", required = true)
             @PathVariable(value = "sentenceId") final Long sentenceId) {
 
         return sentenceService.getSentenceStatus(crn, convictionId, sentenceId)
                 .orElseThrow(() -> new NotFoundException(String.format("Sentence not found for crn '%s', convictionId '%s', and sentenceId '%s'", crn, convictionId, sentenceId)));
     }
 
-    @ApiOperation(value = "Reveals if the logged on user can access details about the supplied offender", tags = "Authentication and users")
+    @Operation(description = "Reveals if the logged on user can access details about the supplied offender", tags = "Authentication and users")
     @RequestMapping(value = "/offenders/crn/{crn}/userAccess", method = RequestMethod.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 403, message = "User is restricted from access to offender", response = AccessLimitation.class),
-            @ApiResponse(code = 404, message = "No such offender, or no such User (see body for detail)")
+            @ApiResponse(responseCode = "403", description = "User is restricted from access to offender"),
+            @ApiResponse(responseCode = "404", description = "No such offender, or no such User (see body for detail)")
     })
     @PreAuthorize("hasAnyRole('ROLE_COMMUNITY', 'ROLE_PROBATION')")
     public ResponseEntity<AccessLimitation> checkUserAccessByCrn(
@@ -618,11 +567,11 @@ public class OffendersResource {
             .orElse(new ResponseEntity<>(NOT_FOUND));
     }
 
-    @ApiOperation(value = "Reveals if the specified user can access details about the supplied offender", tags = "Authentication and users")
+    @Operation(description = "Reveals if the specified user can access details about the supplied offender", tags = "Authentication and users")
     @RequestMapping(value = "/offenders/crn/{crn}/user/{username}/userAccess", method = RequestMethod.GET)
     @ApiResponses(value = {
-        @ApiResponse(code = 403, message = "User is restricted from access to offender", response = AccessLimitation.class),
-        @ApiResponse(code = 404, message = "No such offender, or no such User (see body for detail)")
+        @ApiResponse(responseCode = "403", description = "User is restricted from access to offender"),
+        @ApiResponse(responseCode = "404", description = "No such offender, or no such User (see body for detail)")
     })
     public ResponseEntity<AccessLimitation> checkUserAccessByCrn(
         final @PathVariable("crn") String crn,
@@ -634,19 +583,19 @@ public class OffendersResource {
 
     @RequestMapping(value = "/offenders/crn/{crn}/probationStatus", method = RequestMethod.GET)
     @ApiResponses(value = {
-        @ApiResponse(code = 404, message = "The offender was not found")
+        @ApiResponse(responseCode = "404", description = "The offender was not found")
     })
-    @ApiOperation(value = "Returns the probation status for the given crn", tags = "-- Popular core APIs --")
+    @Operation(description = "Returns the probation status for the given crn", tags = "-- Popular core APIs --")
 
     public ProbationStatusDetail getOffenderProbationStatusByCrn(final @PathVariable("crn") String crn) {
         return convictionService.probationStatusFor(crn)
             .orElseThrow(() -> new NotFoundException("Offender not found"));
     }
 
-    @ApiOperation(value = "Gets all offender personal contacts by CRN")
+    @Operation(description = "Gets all offender personal contacts by CRN")
     @GetMapping(path = "/offenders/crn/{crn}/personalContacts")
     public List<PersonalContact> getAllOffenderPersonalContactsByCrn(
-        @ApiParam(name = "crn", value = "CRN of the offender", example = "X320741", required = true)
+        @Parameter(name = "crn", description = "CRN of the offender", example = "X320741", required = true)
         @NotNull
         @PathVariable(value = "crn") final String crn) {
         return offenderService.getOffenderPersonalContactsByCrn(crn);

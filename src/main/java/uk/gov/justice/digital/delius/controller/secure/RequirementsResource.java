@@ -1,11 +1,10 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -15,14 +14,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.ConvictionRequirements;
 import uk.gov.justice.digital.delius.data.api.LicenceConditions;
 import uk.gov.justice.digital.delius.data.api.PssRequirements;
 import uk.gov.justice.digital.delius.service.RequirementService;
 
 
-@Api(tags = "Sentence requirements and breach", authorizations = {@Authorization("ROLE_COMMUNITY")})
+@Tag(name = "Sentence requirements and breach", description = "Requires ROLE_COMMUNITY")
 @RestController
 @Slf4j
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -31,12 +29,12 @@ import uk.gov.justice.digital.delius.service.RequirementService;
 public class RequirementsResource {
     private RequirementService requirementsService;
 
-    @ApiOperation(value = "Returns the Post Sentence Supervision Requirements for a conviction")
+    @Operation(description = "Returns the Post Sentence Supervision Requirements for a conviction")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 404, message = "Not Found", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+                    @ApiResponse(responseCode = "400", description = "Invalid request"),
+                    @ApiResponse(responseCode = "404", description = "Not Found"),
+                    @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
             })
     @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/pssRequirements")
     public PssRequirements getPssRequirementsByConvictionId(
@@ -46,12 +44,12 @@ public class RequirementsResource {
         return requirementsService.getPssRequirementsByConvictionId(crn, convictionId);
     }
 
-    @ApiOperation(value = "Returns the Licence Conditions for a conviction")
+    @Operation(description = "Returns the Licence Conditions for a conviction")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 404, message = "Not Found", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+                    @ApiResponse(responseCode = "400", description = "Invalid request"),
+                    @ApiResponse(responseCode = "404", description = "Not Found"),
+                    @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
             })
     @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/licenceConditions")
     public LicenceConditions getLicenceConditionsByConvictionId(
@@ -61,20 +59,20 @@ public class RequirementsResource {
         return requirementsService.getLicenceConditionsByConvictionId(crn, convictionId);
     }
 
-    @ApiOperation(value = "Returns the requirements for a conviction")
+    @Operation(description = "Returns the requirements for a conviction")
     @ApiResponses(
             value = {
-                    @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                    @ApiResponse(code = 404, message = "Not Found", response = ErrorResponse.class),
-                    @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+                    @ApiResponse(responseCode = "400", description = "Invalid request"),
+                    @ApiResponse(responseCode = "404", description = "Not Found"),
+                    @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
             })
     @GetMapping(path = "/offenders/crn/{crn}/convictions/{convictionId}/requirements")
     public ConvictionRequirements getRequirementsByConvictionId(
             @PathVariable(value = "crn") String crn,
             @PathVariable(value = "convictionId") Long convictionId,
-            @ApiParam(name = "activeOnly", value = "retrieve only active requirements", example = "true")
+            @Parameter(name = "activeOnly", description = "retrieve only active requirements", example = "true")
             @RequestParam(name = "activeOnly", required = false, defaultValue = "false") final boolean activeOnly,
-            @ApiParam(name = "excludeSoftDeleted", value = "retrieve only requirements that have not been soft-deleted", example = "true")
+            @Parameter(name = "excludeSoftDeleted", description = "retrieve only requirements that have not been soft-deleted", example = "true")
             @RequestParam(name = "excludeSoftDeleted", required = false, defaultValue = "false") final boolean excludeSoftDeleted
     ) {
         return requirementsService.getRequirementsByConvictionId(crn, convictionId, !activeOnly, !excludeSoftDeleted);

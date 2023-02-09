@@ -1,12 +1,12 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import jakarta.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 
 @Data
@@ -16,17 +16,17 @@ import java.time.OffsetDateTime;
 public class ContextlessAppointmentRescheduleRequest {
 
     @NotNull
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private OffsetDateTime updatedAppointmentStart;
 
     @NotNull
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private OffsetDateTime updatedAppointmentEnd;
 
     @NotNull
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private Boolean initiatedByServiceProvider;
 
-    @ApiModelProperty
+    @Schema
     private String officeLocationCode;
 }

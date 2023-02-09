@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.delius.data.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,10 +18,10 @@ import java.time.LocalTime;
 public class Appointment {
     @JsonInclude
     protected Long linkedContactId;
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private Long appointmentId;
     private Long eventId;
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private KeyValue appointmentType;
     private Requirement requirement;
     private KeyValue explanation;

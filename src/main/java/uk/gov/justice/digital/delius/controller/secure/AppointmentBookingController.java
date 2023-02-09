@@ -1,10 +1,10 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,20 +15,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
-import uk.gov.justice.digital.delius.data.api.AppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentCreateResponse;
+import uk.gov.justice.digital.delius.data.api.AppointmentRelocateRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentRelocateResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentRescheduleResponse;
 import uk.gov.justice.digital.delius.data.api.AppointmentUpdateResponse;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentCreateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentOutcomeRequest;
-import uk.gov.justice.digital.delius.data.api.AppointmentRelocateRequest;
 import uk.gov.justice.digital.delius.data.api.ContextlessAppointmentRescheduleRequest;
 import uk.gov.justice.digital.delius.service.AppointmentService;
 
 @RestController
-@Api(tags = {"Appointments"})
+@Tag(name = "Appointments")
 @PreAuthorize("hasRole('ROLE_COMMUNITY_INTERVENTIONS_UPDATE')")
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
@@ -41,17 +39,17 @@ public class AppointmentBookingController {
                 consumes = "application/json")
     @ApiResponses(
         value = {
-                @ApiResponse(code = 201, message = "Created", response = String.class),
-                @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-                @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_INTERVENTIONS_UPDATE"),
-                @ApiResponse(code = 409, message = "Conflicts with another appointment"),
-                @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+                @ApiResponse(responseCode = "201", description = "Created"),
+                @ApiResponse(responseCode = "400", description = "Invalid request"),
+                @ApiResponse(responseCode = "403", description = "Requires role ROLE_COMMUNITY_INTERVENTIONS_UPDATE"),
+                @ApiResponse(responseCode = "409", description = "Conflicts with another appointment"),
+                @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
         })
 
-    @ApiOperation(value = "Creates an Contact appointment for a specified context")
+    @Operation(description = "Creates an Contact appointment for a specified context")
     public ResponseEntity<AppointmentCreateResponse> createAppointmentWithContextName(final @PathVariable("crn") String crn,
                                                                                       final @PathVariable("sentenceId") Long sentenceId,
-                                                                                      final @ApiParam(value = "Name identifying preprocessing applied to the request", example = "commissioned-rehabilitation-services")
+                                                                                      final @Parameter(description = "Name identifying preprocessing applied to the request", example = "commissioned-rehabilitation-services")
                                                                                           @PathVariable("contextName") String contextName,
                                                                                       final @RequestBody ContextlessAppointmentCreateRequest contextlessAppointmentCreateRequest) {
 
@@ -64,16 +62,16 @@ public class AppointmentBookingController {
         consumes = "application/json")
     @ApiResponses(
         value = {
-            @ApiResponse(code = 200, message = "Updated", response = String.class),
-            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_INTERVENTIONS_UPDATE"),
-            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            @ApiResponse(responseCode = "200", description = "Updated"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "403", description = "Requires role ROLE_COMMUNITY_INTERVENTIONS_UPDATE"),
+            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
         })
 
-    @ApiOperation(value = "Reschedules an appointment")
+    @Operation(description = "Reschedules an appointment")
     public AppointmentRescheduleResponse rescheduleAppointmentWithContextName(final @PathVariable("crn") String crn,
                                                                               final @PathVariable("appointmentId") Long appointmentId,
-                                                                              final @ApiParam(value = "Name identifying preprocessing applied to the request", example = "commissioned-rehabilitation-services")
+                                                                              final @Parameter(description = "Name identifying preprocessing applied to the request", example = "commissioned-rehabilitation-services")
                                                                                     @PathVariable("contextName") String context,
                                                                               final @RequestBody ContextlessAppointmentRescheduleRequest appointmentRescheduleRequest) {
 
@@ -85,13 +83,13 @@ public class AppointmentBookingController {
         consumes = "application/json")
     @ApiResponses(
         value = {
-            @ApiResponse(code = 200, message = "Updated", response = String.class),
-            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_INTERVENTIONS_UPDATE"),
-            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            @ApiResponse(responseCode = "200", description = "Updated"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "403", description = "Requires role ROLE_COMMUNITY_INTERVENTIONS_UPDATE"),
+            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
         })
 
-    @ApiOperation(value = "Relocates an appointment")
+    @Operation(description = "Relocates an appointment")
     public AppointmentRelocateResponse relocateAppointment(final @PathVariable("crn") String crn,
                                                            final @PathVariable("appointmentId") Long appointmentId,
                                                            final @RequestBody AppointmentRelocateRequest appointmentRelocateRequest) {
@@ -104,16 +102,16 @@ public class AppointmentBookingController {
         consumes = "application/json")
     @ApiResponses(
         value = {
-            @ApiResponse(code = 200, message = "Updated", response = String.class),
-            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 403, message = "Requires role ROLE_COMMUNITY_INTERVENTIONS_UPDATE"),
-            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            @ApiResponse(responseCode = "200", description = "Updated"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "403", description = "Requires role ROLE_COMMUNITY_INTERVENTIONS_UPDATE"),
+            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
         })
 
-    @ApiOperation(value = "Updates an Contact appointment outcome")
+    @Operation(description = "Updates an Contact appointment outcome")
     public AppointmentUpdateResponse updateAppointmentOutcomeWithContext(final @PathVariable("crn") String crn,
                                                                          final @PathVariable("appointmentId") Long appointmentId,
-                                                                         final @ApiParam(value = "Name identifying preprocessing applied to the request", example = "commissioned-rehabilitation-services")
+                                                                         final @Parameter(description = "Name identifying preprocessing applied to the request", example = "commissioned-rehabilitation-services")
                                                                              @PathVariable("contextName") String context,
                                                                          final @RequestBody ContextlessAppointmentOutcomeRequest appointmentOutcomeRequest) {
 

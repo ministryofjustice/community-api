@@ -1,17 +1,17 @@
 package uk.gov.justice.digital.delius.jwt;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 @ApiResponses({
-        @ApiResponse(code = 200, message = "Happy path"),
-        @ApiResponse(code = 401, message = "User JWT is missing"),
-        @ApiResponse(code = 403, message = "User JWT has failed validation"),
-        @ApiResponse(code = 404, message = "Entity not found")
+        @ApiResponse(responseCode = "200", description = "Happy path"),
+        @ApiResponse(responseCode = "401", description = "User JWT is missing"),
+        @ApiResponse(responseCode = "403", description = "User JWT has failed validation"),
+        @ApiResponse(responseCode = "404", description = "Entity not found")
 
 })
 public @interface JwtValidation {

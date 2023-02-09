@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class KeyValue {
-    @ApiModelProperty(name = "Code", example = "ABC123", position = 1)
+    @Schema(name = "Code", example = "ABC123")
     private String code;
 
-    @ApiModelProperty(name = "Description", example = "Some description", position = 2)
+    @Schema(name = "Description", example = "Some description")
     private String description;
 }

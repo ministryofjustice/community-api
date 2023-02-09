@@ -1,13 +1,13 @@
 package uk.gov.justice.digital.delius.data.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -16,32 +16,31 @@ import java.util.List;
 @AllArgsConstructor
 public class AppointmentType {
     @NotNull
-    @ApiModelProperty(name = "Contact type", example = "CHVS", position = 1)
+    @Schema(name = "Contact type", example = "CHVS")
     private String contactType;
 
     @NotNull
-    @ApiModelProperty(name = "Description", example = "Home Visit to Case (NS)", position = 2)
+    @Schema(name = "Description", example = "Home Visit to Case (NS)")
     private String description;
 
     @NotNull
-    @ApiModelProperty(name = "Requires location", example = "REQUIRED", position = 3)
+    @Schema(name = "Requires location", example = "REQUIRED")
     private RequiredOptional requiresLocation;
 
-    @ApiModelProperty(name = "Does this appointment type represent a national standard appointment")
+    @Schema(name = "Does this appointment type represent a national standard appointment")
     private Boolean nationalStandard;
 
-    @ApiModelProperty(name = "Appointment can be used on the whole order")
+    @Schema(name = "Appointment can be used on the whole order")
     private Boolean wholeOrderLevel;
 
-    @ApiModelProperty(name = "Appointment can be used at the offender level")
+    @Schema(name = "Appointment can be used at the offender level")
     private Boolean offenderLevel;
 
     @NotNull
     @JsonInclude
-    @ApiModelProperty(
+    @Schema(
         name = "Order types appropriate for this appointment type",
-        example = "[\"LEGACY\", \"CJA\"]",
-        position = 4
+        example = "[\"LEGACY\", \"CJA\"]"
     )
     private List<OrderType> orderTypes;
 

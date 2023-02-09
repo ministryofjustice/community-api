@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,52 +14,52 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Conviction {
-    @ApiModelProperty(name = "Unique id of this conviction", example = "2500000001")
+    @Schema(name = "Unique id of this conviction", example = "2500000001")
     private Long convictionId;
 
-    @ApiModelProperty(name = "Index of this conviction", example = "1")
+    @Schema(name = "Index of this conviction", example = "1")
     private String index;
 
-    @ApiModelProperty(name = "Active conviction flag", example = "true")
+    @Schema(name = "Active conviction flag", example = "true")
     private Boolean active;
 
-    @ApiModelProperty(name = "Conviction in breach flag", example = "true")
+    @Schema(name = "Conviction in breach flag", example = "true")
     private Boolean inBreach;
 
-    @ApiModelProperty(name = "Total number of failure to comply outcomes since the last breach end", example = "3")
+    @Schema(name = "Total number of failure to comply outcomes since the last breach end", example = "3")
     private Long failureToComplyCount;
 
-    @ApiModelProperty(name = "Date of the last breach end, or null if no previous breach has occurred", example = "2021-05-13")
+    @Schema(name = "Date of the last breach end, or null if no previous breach has occurred", example = "2021-05-13")
     private LocalDate breachEnd;
 
-    @ApiModelProperty(name = "Conviction is awaiting pre-sentence report", example = "true")
+    @Schema(name = "Conviction is awaiting pre-sentence report", example = "true")
     private boolean awaitingPsr;
 
-    @ApiModelProperty(name = "Date of this conviction", example = "2021-06-10")
+    @Schema(name = "Date of this conviction", example = "2021-06-10")
     private LocalDate convictionDate;
 
-    @ApiModelProperty(name = "Referral date of this conviction", example = "2021-06-10")
+    @Schema(name = "Referral date of this conviction", example = "2021-06-10")
     private LocalDate referralDate;
 
-    @ApiModelProperty(name = "Main & additional offences that resulted in this conviction")
+    @Schema(name = "Main & additional offences that resulted in this conviction")
     private List<Offence> offences;
 
-    @ApiModelProperty(name = "Sentence given with this conviction")
+    @Schema(name = "Sentence given with this conviction")
     private Sentence sentence;
 
-    @ApiModelProperty(name = "Outcome of the latest court appearance for this conviction")
+    @Schema(name = "Outcome of the latest court appearance for this conviction")
     private KeyValue latestCourtAppearanceOutcome;
 
-    @ApiModelProperty(name = "Custody details")
+    @Schema(name = "Custody details")
     private Custody custody;
 
-    @ApiModelProperty(name = "Court associated to this conviction")
+    @Schema(name = "Court associated to this conviction")
     private Court responsibleCourt;
 
-    @ApiModelProperty(name = "Sentencing court appearance or the latest court appearance otherwise")
+    @Schema(name = "Sentencing court appearance or the latest court appearance otherwise")
     private CourtAppearanceBasic courtAppearance;
 
-    @ApiModelProperty(name = "Offender manager supervising the order")
+    @Schema(name = "Offender manager supervising the order")
     private List<OrderManager> orderManagers;
 
 }

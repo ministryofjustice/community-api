@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.controller.api;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -22,7 +22,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @Slf4j
-@Api(tags = "Offenders resources")
+@Tag(name = "Offenders resources")
 @RequestMapping(value = "api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OffenderController {
 

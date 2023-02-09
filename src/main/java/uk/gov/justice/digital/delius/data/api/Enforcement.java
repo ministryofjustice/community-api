@@ -1,12 +1,11 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import jakarta.validation.constraints.NotNull;
 
 @Data
 @Builder
@@ -14,6 +13,6 @@ import jakarta.validation.constraints.NotNull;
 @AllArgsConstructor
 public class Enforcement {
     @NotNull
-    @ApiModelProperty(name = "EnforcementAction", required = true)
+    @Schema(name = "EnforcementAction", required = true)
     private KeyValue enforcementAction;
 }
