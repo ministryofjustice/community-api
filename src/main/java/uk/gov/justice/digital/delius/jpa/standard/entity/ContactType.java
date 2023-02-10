@@ -1,14 +1,7 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.type.YesNoConverter;
-import jakarta.persistence.Convert;
-import uk.gov.justice.digital.delius.jpa.standard.YesNoBlank;
-
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -17,6 +10,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.type.YesNoConverter;
+import uk.gov.justice.digital.delius.jpa.standard.YesNoBlank;
+
 import java.util.List;
 
 @Data
@@ -61,7 +61,7 @@ public class ContactType {
     @Column(name = "FUTURE_SCHEDULED_CONTACTS_FLAG", nullable = false, length = 1)
     private String scheduleFutureAppointments;
 
-    @Column(name = "CONTACT_LOCATION_FLAG", length = 1, nullable = false)
+    @Column(name = "CONTACT_LOCATION_FLAG", columnDefinition = "CHAR(1)", nullable = false)
     @Enumerated(EnumType.STRING)
     private YesNoBlank locationFlag;
 

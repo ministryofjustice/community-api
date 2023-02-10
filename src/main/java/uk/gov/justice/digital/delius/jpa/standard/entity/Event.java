@@ -1,14 +1,5 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.ToString.Exclude;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.Where;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,6 +13,14 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.ToString.Exclude;
+import org.hibernate.annotations.Where;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;

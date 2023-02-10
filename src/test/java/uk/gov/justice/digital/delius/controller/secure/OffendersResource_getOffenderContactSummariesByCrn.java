@@ -9,26 +9,15 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import uk.gov.justice.digital.delius.data.api.AppointmentOutcome;
 import uk.gov.justice.digital.delius.data.api.ContactSummary;
 import uk.gov.justice.digital.delius.data.api.ContactType;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.OfficeLocation;
 import uk.gov.justice.digital.delius.data.api.StaffHuman;
-import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
-import uk.gov.justice.digital.delius.service.AssessmentService;
 import uk.gov.justice.digital.delius.service.ContactService;
-import uk.gov.justice.digital.delius.service.ConvictionService;
-import uk.gov.justice.digital.delius.service.CustodyService;
-import uk.gov.justice.digital.delius.service.NsiService;
-import uk.gov.justice.digital.delius.service.OffenderManagerService;
 import uk.gov.justice.digital.delius.service.OffenderService;
-import uk.gov.justice.digital.delius.service.SentenceService;
-import uk.gov.justice.digital.delius.service.UserAccessService;
-import uk.gov.justice.digital.delius.service.UserService;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -40,6 +29,7 @@ import static io.restassured.RestAssured.withArgs;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -60,21 +50,21 @@ public class OffendersResource_getOffenderContactSummariesByCrn {
     public void gettingContactSummariesByCrn() {
         final var contacts = List.of(aContactSummary(1L), aContactSummary(2L));
         when(offenderService.offenderIdOfCrn("CRN1")).thenReturn(Optional.of(123L));
-        when(contactService.contactSummariesFor(eq(123L), filterCaptor.capture(), eq(10), eq(20)))
-            .thenReturn(new PageImpl(contacts, PageRequest.of(10, 20), 1000));
+        when(contactService.contactSummariesFor(eq(123L), filterCaptor.capture()))
+            .thenReturn(contacts);
 
         given()
             .when()
             .get("/secure/offenders/crn/CRN1/contact-summary?page=10&pageSize=20&from=2021-05-26T00:00:00Z&to=2021-06-02T00:00:00Z&contactTypes=CT1,CT2&appointmentsOnly=true&convictionId=56331&attended=true&complied=true&nationalStandard=true&outcome=true&rarActivity=true")
             .then()
             .statusCode(200)
-            .body("number", equalTo(10))
-            .body("first", equalTo(false))
-            .body("last", equalTo(false))
-            .body("totalPages", equalTo(50))
-            .body("totalElements", equalTo(1000))
-            .body("size", equalTo(20))
-            .body("content.size()", equalTo(2))
+            .body("number", equalTo(0))
+            .body("first", equalTo(true))
+            .body("last", equalTo(true))
+            .body("totalPages", equalTo(1))
+            .body("totalElements", equalTo(2))
+            .body("size", equalTo(2))
+            .body("content", hasSize(2))
             .body("content.find { it.contactId == 1 }", notNullValue())
             .body("content.find { it.contactId == 2 }", notNullValue())
             .rootPath("content.find { it.contactId == %d }")

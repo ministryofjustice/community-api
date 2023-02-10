@@ -8,11 +8,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,14 +19,43 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
-import uk.gov.justice.digital.delius.data.api.*;
+import uk.gov.justice.digital.delius.data.api.AccessLimitation;
+import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
+import uk.gov.justice.digital.delius.data.api.Contact;
+import uk.gov.justice.digital.delius.data.api.ContactSummary;
+import uk.gov.justice.digital.delius.data.api.Conviction;
+import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
+import uk.gov.justice.digital.delius.data.api.Nsi;
+import uk.gov.justice.digital.delius.data.api.NsiWrapper;
+import uk.gov.justice.digital.delius.data.api.OffenderAssessments;
+import uk.gov.justice.digital.delius.data.api.OffenderDetail;
+import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
+import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
+import uk.gov.justice.digital.delius.data.api.PersonalContact;
+import uk.gov.justice.digital.delius.data.api.ProbationStatusDetail;
+import uk.gov.justice.digital.delius.data.api.SentenceStatus;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
-import uk.gov.justice.digital.delius.service.*;
+import uk.gov.justice.digital.delius.service.AssessmentService;
+import uk.gov.justice.digital.delius.service.ContactService;
+import uk.gov.justice.digital.delius.service.ConvictionService;
+import uk.gov.justice.digital.delius.service.CustodyService;
+import uk.gov.justice.digital.delius.service.NsiService;
+import uk.gov.justice.digital.delius.service.OffenderManagerService;
+import uk.gov.justice.digital.delius.service.OffenderService;
+import uk.gov.justice.digital.delius.service.SentenceService;
+import uk.gov.justice.digital.delius.service.UserAccessService;
+import uk.gov.justice.digital.delius.service.UserService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,7 +63,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
 
 @Tag(name = "Core offender", description = "Requires ROLE_COMMUNITY")
 @RestController
@@ -205,7 +235,7 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN '%s' does not exist", crn)));
         }
 
-    @Operation(description = "Returns the contact summaries for an offender by CRN", tags = "Contact and attendance")
+    @Operation(description = "Returns the contact summaries for an offender by CRN. Note: this endpoint is *not* paged.", tags = "Contact and attendance")
     @ApiResponses(
         value = {
             @ApiResponse(responseCode = "400", description = "Invalid request"),
@@ -215,8 +245,6 @@ public class OffendersResource {
     @GetMapping(value = "/offenders/crn/{crn}/contact-summary")
     public Page<ContactSummary> getOffenderContactSummariesByCrn(
         final @Parameter(name = "crn", description = "CRN of the offender", example = "X123456", required = true) @NotNull @PathVariable("crn") String crn,
-        final @Parameter(name = "page", description = "Page number (0-based)", example = "0") @RequestParam(required = false, defaultValue = "0") @PositiveOrZero int page,
-        final @Parameter(name = "pageSize", description = "Optional size of page", example = "20") @RequestParam(required = false, defaultValue = "1000") @Positive int pageSize,
         final @RequestParam(value = "contactTypes", required = false) Optional<List<String>> contactTypes,
         final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam(value = "from", required = false) Optional<LocalDateTime> from,
         final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam(value = "to", required = false) Optional<LocalDateTime> to,
@@ -249,7 +277,8 @@ public class OffendersResource {
             .build();
 
         return offenderService.offenderIdOfCrn(crn)
-            .map(offenderId -> contactService.contactSummariesFor(offenderId, contactFilter, page, pageSize))
+            .map(offenderId -> contactService.contactSummariesFor(offenderId, contactFilter))
+            .map(PageImpl::new)
             .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN '%s' does not exist", crn)));
     }
 

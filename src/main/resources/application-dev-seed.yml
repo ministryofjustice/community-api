@@ -1,4 +1,5 @@
 spring:
   flyway:
     enabled: true
+    cleanDisabled: false
     locations: classpath:/db/schema,classpath:/db/data

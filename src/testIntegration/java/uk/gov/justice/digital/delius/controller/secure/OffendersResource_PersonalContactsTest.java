@@ -58,7 +58,7 @@ public class OffendersResource_PersonalContactsTest extends IntegrationTestBase 
             .assertThat()
             .statusCode(200)
             .body("size()", greaterThan(0))
-            .root("find { it.personalContactId == 2500058493 }")
+            .rootPath("find { it.personalContactId == 2500058493 }")
             .body("title", equalTo("Lady"))
             .body("firstName", equalTo("Smile"))
             .body("surname", equalTo("Barry"))

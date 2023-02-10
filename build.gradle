@@ -47,7 +47,7 @@ dependencies {
 
     testImplementation 'io.rest-assured:rest-assured'
     testImplementation 'io.rest-assured:spring-mock-mvc'
-    testIntegrationImplementation 'com.github.tomakehurst:wiremock:2.27.2'
+    testIntegrationImplementation 'com.github.tomakehurst:wiremock-jre8-standalone:2.35.0'
 }
 
 testIntegration {

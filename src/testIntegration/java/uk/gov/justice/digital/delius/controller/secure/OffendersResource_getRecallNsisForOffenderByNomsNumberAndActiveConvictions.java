@@ -49,7 +49,7 @@ public class OffendersResource_getRecallNsisForOffenderByNomsNumberAndActiveConv
             .assertThat()
             .statusCode(200)
             .body("nsis.size()", equalTo(2))
-            .root("nsis.find { it.nsiId == %d }")
+            .rootPath("nsis.find { it.nsiId == %d }")
             .body("nsiType.code", recallNoOutcome, equalTo("REC"))
             .body("nsiOutcome", recallNoOutcome, nullValue())
             .body("nsiStatus.description", recallNoOutcome, equalTo("Recall Initiated"))

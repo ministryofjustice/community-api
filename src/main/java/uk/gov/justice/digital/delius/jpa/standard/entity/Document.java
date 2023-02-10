@@ -1,8 +1,23 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.Data;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
@@ -72,7 +87,7 @@ public class Document {
     @Column(name = "LAST_UPD_AUTHOR_PROVIDER_ID")
     private Long lastUpdatedByProbationAreaId;
 
-    @Column(name = "DOCUMENT_TYPE")
+    @Column(name = "DOCUMENT_TYPE", columnDefinition = "CHAR(1)")
     @Enumerated(EnumType.STRING)
     private DocumentType documentType;
 
