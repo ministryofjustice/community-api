@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.delius.config;
 
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
-import io.opentelemetry.api.trace.Span;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
