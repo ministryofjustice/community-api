@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,12 +13,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Event {
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private Long eventId;
     private String notes;
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private Boolean active;
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private Boolean inBreach;
     private List<Contact> contacts;
 }

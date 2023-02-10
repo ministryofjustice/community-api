@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +17,7 @@ public class InstitutionalReport {
     private Long offenderId;
     private Conviction conviction;
 
-    @ApiModelProperty(notes = "Deprecated - Use conviction to access sentence")
+    @Schema(description = "Deprecated - Use conviction to access sentence")
     public Sentence getSentence() {
         return Optional.ofNullable(conviction).map(Conviction::getSentence).orElse(null);
     }

@@ -1,13 +1,12 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@ApiModel(description = "Additional Identifier. \nCurrent active values for the type are\n " +
+@Schema(description = "Additional Identifier. \nCurrent active values for the type are\n " +
         "LIFN\tLifer Number\n" +
         "OTHR\tOther Personal Identifier\n" +
         "SPNC\tScottish/Old PNC Number\n" +
@@ -29,10 +28,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdditionalIdentifier {
-    @ApiModelProperty(value = "unique id of identifier", example = "23456789")
+    @Schema(description = "unique id of identifier", example = "23456789")
     private Long additionalIdentifierId;
-    @ApiModelProperty(value = "value of identifier", example = "X1234")
+    @Schema(description = "value of identifier", example = "X1234")
     private String value;
-    @ApiModelProperty(value = "identifier name and description")
+    @Schema(description = "identifier name and description")
     private KeyValue type;
 }

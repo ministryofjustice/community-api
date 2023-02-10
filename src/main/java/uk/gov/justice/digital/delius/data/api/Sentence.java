@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,26 +23,26 @@ public class Sentence {
     private Long defaultLength;
     private Long effectiveLength;
     private Long lengthInDays;
-    @ApiModelProperty(value = "The expected end date of the sentence")
+    @Schema(description = "The expected end date of the sentence")
     private LocalDate expectedSentenceEndDate;
-    @ApiModelProperty(value = "Unpaid Work to date associated with this sentence")
+    @Schema(description = "Unpaid Work to date associated with this sentence")
     private UnpaidWork unpaidWork;
-    @ApiModelProperty(value = "Date sentence started")
+    @Schema(description = "Date sentence started")
     private LocalDate startDate;
     private LocalDate terminationDate;
     private String terminationReason;
-    @ApiModelProperty(value = "Sentence type and description")
+    @Schema(description = "Sentence type and description")
     private KeyValue sentenceType;
 
-    @ApiModelProperty(name = "Additional sentences if present")
+    @Schema(name = "Additional sentences if present")
     private List<AdditionalSentence> additionalSentences;
 
-    @ApiModelProperty(name = "Maximum number of appointments with a failure to comply outcome before a breach should be initiated")
+    @Schema(name = "Maximum number of appointments with a failure to comply outcome before a breach should be initiated")
     private Long failureToComplyLimit;
 
-    @ApiModelProperty(name = "A CJA 2003 or later order")
+    @Schema(name = "A CJA 2003 or later order")
     private Boolean cja2003Order;
 
-    @ApiModelProperty(name = "A legacy order (pre-CJA 2003)")
+    @Schema(name = "A legacy order (pre-CJA 2003)")
     private Boolean  legacyOrder;
 }

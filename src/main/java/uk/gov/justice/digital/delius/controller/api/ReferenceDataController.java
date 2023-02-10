@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.controller.api;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@Api(description = "Reference Data APIs", tags = "Reference data")
+@Tag(description = "Reference Data APIs", name = "Reference data")
 @RequestMapping(value = "api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ReferenceDataController {
 

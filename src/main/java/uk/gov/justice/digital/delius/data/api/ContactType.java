@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,21 +13,21 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContactType {
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private String code;
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private String description;
     private String shortDescription;
 
-    @ApiModelProperty(name = "Does this contact type represent an appointment type")
+    @Schema(name = "Does this contact type represent an appointment type")
     private Boolean appointment;
 
-    @ApiModelProperty(name = "Does this contact type represent a national standard contact")
+    @Schema(name = "Does this contact type represent a national standard contact")
     private Boolean nationalStandard;
 
-    @ApiModelProperty(name = "Active categories this contact type belongs belongs to")
+    @Schema(name = "Active categories this contact type belongs belongs to")
     private List<KeyValue> categories;
 
-    @ApiModelProperty(name = "Does this contact type represent a system generated type")
+    @Schema(name = "Does this contact type represent a system generated type")
     private Boolean systemGenerated;
 }

@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private Long userId;
     private Long staffId;
     private String forename;

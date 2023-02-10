@@ -172,10 +172,10 @@ public class SecureControllerAdvice {
     public ResponseEntity<ErrorResponse> handleException(final ResponseStatusException e) {
         log.debug("Bad request (400) returned", e);
         return ResponseEntity
-                .status(e.getStatus())
+                .status(e.getBody().getStatus())
                 .body(ErrorResponse
                         .builder()
-                        .status(e.getStatus().value())
+                        .status(e.getBody().getStatus())
                         .developerMessage(e.getReason())
                         .build());
     }

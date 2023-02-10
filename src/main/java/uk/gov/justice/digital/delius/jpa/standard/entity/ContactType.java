@@ -1,21 +1,22 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
+import org.hibernate.type.YesNoConverter;
 import uk.gov.justice.digital.delius.jpa.standard.YesNoBlank;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
 import java.util.List;
 
 @Data
@@ -39,18 +40,18 @@ public class ContactType {
     private String shortDescription;
 
     @Column(name = "ATTENDANCE_CONTACT")
-    @Type(type = "yes_no")
+    @Convert(converter = YesNoConverter.class)
     private Boolean attendanceContact;
 
     @Column(name = "NATIONAL_STANDARDS_CONTACT")
-    @Type(type = "yes_no")
+    @Convert(converter = YesNoConverter.class)
     private Boolean nationalStandardsContact;
 
     @Column(name = "CONTACT_ALERT_FLAG")
     private String alertFlag;
 
     @Column(name = "SELECTABLE", nullable = false, length = 1)
-    @Type(type = "yes_no")
+    @Convert(converter = YesNoConverter.class)
     private Boolean selectable;
 
     /**
@@ -60,7 +61,7 @@ public class ContactType {
     @Column(name = "FUTURE_SCHEDULED_CONTACTS_FLAG", nullable = false, length = 1)
     private String scheduleFutureAppointments;
 
-    @Column(name = "CONTACT_LOCATION_FLAG", length = 1, nullable = false)
+    @Column(name = "CONTACT_LOCATION_FLAG", columnDefinition = "CHAR(1)", nullable = false)
     @Enumerated(EnumType.STRING)
     private YesNoBlank locationFlag;
 
@@ -71,11 +72,11 @@ public class ContactType {
     private String  legacyOrderLevel;
 
     @Column(name = "OFFENDER_LEVEL_CONTACT", nullable = false, length = 1)
-    @Type(type = "yes_no")
+    @Convert(converter = YesNoConverter.class)
     private Boolean wholeOrderLevel;
 
     @Column(name = "OFFENDER_EVENT_0", nullable = false, length = 1)
-    @Type(type = "yes_no")
+    @Convert(converter = YesNoConverter.class)
     private Boolean offenderLevel;
 
     @Column(name = "SGC_FLAG")

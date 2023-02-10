@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,12 +13,12 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OffenderRelease {
-    @ApiModelProperty(value = "The date the release occurred", example = "2019-11-26")
+    @Schema(description = "The date the release occurred", example = "2019-11-26")
     private LocalDate date;
-    @ApiModelProperty(value = "Some notes")
+    @Schema(description = "Some notes")
     private String notes;
-    @ApiModelProperty(value = "The institution the offender was released from")
+    @Schema(description = "The institution the offender was released from")
     private Institution institution;
-    @ApiModelProperty(value = "The reason for the release")
+    @Schema(description = "The reason for the release")
     private KeyValue reason;
 }

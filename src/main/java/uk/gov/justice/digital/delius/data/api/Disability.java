@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,8 +22,8 @@ public class Disability {
     private String notes;
     private List<Provision> provisions;
 
-    @ApiModelProperty(name = "Date time when disability was last updated", example = "2020-09-20T11:00:00+01:00")
+    @Schema(name = "Date time when disability was last updated", example = "2020-09-20T11:00:00+01:00")
     private LocalDateTime lastUpdatedDateTime;
-    @ApiModelProperty(value = "The active status of this disability, if the start date is before or on today and the end date is after today or null", example = "true")
+    @Schema(description = "The active status of this disability, if the start date is before or on today and the end date is after today or null", example = "true")
     private Boolean isActive;
 }

@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,10 +14,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class OffenderAssessments {
 
-    @ApiModelProperty(value = "Risk of Serious Recidivism")
+    @Schema(description = "Risk of Serious Recidivism")
     private Double rsrScore;
-    @ApiModelProperty(value = "Offender Group Reconviction Scale")
+    @Schema(description = "Offender Group Reconviction Scale")
     private Integer ogrsScore;
-    @ApiModelProperty(example = "1982-10-24")
+    @Schema(example = "1982-10-24")
     private LocalDate ogrsLastUpdate;
 }

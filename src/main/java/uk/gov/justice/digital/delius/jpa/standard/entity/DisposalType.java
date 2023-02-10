@@ -5,12 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
+import org.hibernate.type.YesNoConverter;
+import jakarta.persistence.Convert;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.util.Optional;
 
 @Data
@@ -31,11 +32,11 @@ public class DisposalType {
     private String description;
 
     @Column(name = "CJA2003")
-    @Type(type = "yes_no")
+    @Convert(converter = YesNoConverter.class)
     private Boolean cja2003Order;
 
     @Column(name = "PRE_CJA2003")
-    @Type(type = "yes_no")
+    @Convert(converter = YesNoConverter.class)
     private Boolean  legacyOrder;
 
     @Column(name = "SENTENCE_TYPE")

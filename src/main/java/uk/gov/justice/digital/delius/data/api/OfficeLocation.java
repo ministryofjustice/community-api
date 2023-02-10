@@ -1,12 +1,11 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
@@ -14,28 +13,28 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class OfficeLocation {
     @NotNull
-    @ApiModelProperty(name = "Office location code", example = "ASP_ASH", position = 1)
+    @Schema(name = "Office location code", example = "ASP_ASH")
     private String code;
 
     @NotNull
-    @ApiModelProperty(name = "Description", example = "Ashley House Approved Premises", position = 2)
+    @Schema(name = "Description", example = "Ashley House Approved Premises")
     private String description;
 
-    @ApiModelProperty(name = "Building name", example = "Ashley House", position = 3)
+    @Schema(name = "Building name", example = "Ashley House")
     private String buildingName;
 
-    @ApiModelProperty(name = "Building number", example = "14", position = 4)
+    @Schema(name = "Building number", example = "14")
     private String buildingNumber;
 
-    @ApiModelProperty(name = "Street name", example = "Somerset Street", position = 5)
+    @Schema(name = "Street name", example = "Somerset Street")
     private String streetName;
 
-    @ApiModelProperty(name = "Town or city", example = "Bristol", position = 6)
+    @Schema(name = "Town or city", example = "Bristol")
     private String townCity;
 
-    @ApiModelProperty(name = "County", example = "Somerset", position = 7)
+    @Schema(name = "County", example = "Somerset")
     private String county;
 
-    @ApiModelProperty(name = "Postcode", example = "BS2 8NB", position = 8)
+    @Schema(name = "Postcode", example = "BS2 8NB")
     private String postcode;
 }

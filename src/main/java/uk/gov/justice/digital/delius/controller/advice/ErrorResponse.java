@@ -1,7 +1,8 @@
 package uk.gov.justice.digital.delius.controller.advice;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,8 +14,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse {
-    @ApiModelProperty(required = true, value = "Http status code", example = "400")
+    @Schema(description = "Http status code", example = "400", requiredMode = RequiredMode.REQUIRED)
     private Integer status;
-    @ApiModelProperty(value = "Reason for error", example = "Surname required", position = 1)
+    @Schema(description = "Reason for error", example = "Surname required")
     private String developerMessage;
 }

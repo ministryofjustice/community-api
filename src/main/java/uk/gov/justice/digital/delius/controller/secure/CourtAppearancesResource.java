@@ -1,11 +1,10 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
-import uk.gov.justice.digital.delius.controller.advice.ErrorResponse;
 import uk.gov.justice.digital.delius.data.api.CourtAppearanceBasicWrapper;
 import uk.gov.justice.digital.delius.data.api.CourtAppearanceMinimalWrapper;
 import uk.gov.justice.digital.delius.service.CourtAppearanceService;
@@ -27,7 +25,7 @@ import java.util.Optional;
 
 @RestController
 @Slf4j
-@Api(tags = {"Court appearances"}, authorizations = {@Authorization("ROLE_COMMUNITY")})
+@Tag(name = "Court appearances", description = "Requires ROLE_COMMUNITY")
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @PreAuthorize("hasRole('ROLE_COMMUNITY')")
 public class CourtAppearancesResource {
@@ -39,25 +37,25 @@ public class CourtAppearancesResource {
         this.offenderService = offenderService;
     }
 
-    @ApiOperation(value = "Returns all court appearances on and after the given date.")
+    @Operation(description = "Returns all court appearances on and after the given date.")
     @ApiResponses(
         value = {
-            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
         })
     @GetMapping(value = "/courtAppearances")
-    public CourtAppearanceMinimalWrapper getCourtAppearances(@ApiParam(name = "fromDate", value = "Return court appearances from the given date. Defaults to today if not provided.", example = "2019-03-02")
+    public CourtAppearanceMinimalWrapper getCourtAppearances(@Parameter(name = "fromDate", description = "Return court appearances from the given date. Defaults to today if not provided.", example = "2019-03-02")
                                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final @RequestParam("fromDate") Optional<LocalDate> fromDate) {
         final var courtAppearances = courtAppearanceService.courtAppearances(fromDate.orElse(LocalDate.now()));
         return new CourtAppearanceMinimalWrapper(courtAppearances);
     }
 
-    @ApiOperation(value = "Returns all court appearances associated with the CRN for the conviction ID.")
+    @Operation(description = "Returns all court appearances associated with the CRN for the conviction ID.")
     @ApiResponses(
         value = {
-            @ApiResponse(code = 400, message = "Invalid request", response = ErrorResponse.class),
-            @ApiResponse(code = 404, message = "The offender CRN is not found", response = ErrorResponse.class),
-            @ApiResponse(code = 500, message = "Unrecoverable error whilst processing request.", response = ErrorResponse.class)
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "404", description = "The offender CRN is not found"),
+            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
         })
     @GetMapping(value = "/offenders/crn/{crn}/convictions/{convictionId}/courtAppearances")
     public CourtAppearanceBasicWrapper getOffenderCourtAppearancesByCrn(final @PathVariable("crn") String crn,

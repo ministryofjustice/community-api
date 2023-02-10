@@ -3,7 +3,7 @@ package uk.gov.justice.digital.delius.jpa.standard.entity;
 import lombok.*;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;

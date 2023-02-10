@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,6 +9,6 @@ import lombok.Getter;
 public class PssRequirement {
     private KeyValue type;
     private KeyValue subType;
-    @ApiModelProperty(value = "Is the requirement currently active")
+    @Schema(description = "Is the requirement currently active")
     private Boolean active;
 }

@@ -2,8 +2,8 @@ package uk.gov.justice.digital.delius.jpa.standard.entity;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
 import java.io.Serializable;
 
 

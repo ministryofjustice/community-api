@@ -1,12 +1,11 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
@@ -15,14 +14,14 @@ import javax.validation.constraints.NotNull;
 public class ContextlessAppointmentOutcomeRequest {
 
     @NotNull
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private String notes;
 
     @NotNull
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private String attended;
 
     @NotNull
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private Boolean notifyPPOfAttendanceBehaviour;
 }

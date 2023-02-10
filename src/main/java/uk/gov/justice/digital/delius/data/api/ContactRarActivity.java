@@ -1,12 +1,11 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
@@ -14,15 +13,15 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class ContactRarActivity {
     @NotNull
-    @ApiModelProperty(name = "The ID of the RAR requirement")
+    @Schema(name = "The ID of the RAR requirement")
     private Long requirementId;
 
-    @ApiModelProperty(name = "The ID of the RAR NSI if present")
+    @Schema(name = "The ID of the RAR NSI if present")
     private Long nsiId;
 
-    @ApiModelProperty(name = "The RAR type if known")
+    @Schema(name = "The RAR type if known")
     private KeyValue type;
 
-    @ApiModelProperty(name = "The RAR subtype if known")
+    @Schema(name = "The RAR subtype if known")
     private KeyValue subtype;
 }

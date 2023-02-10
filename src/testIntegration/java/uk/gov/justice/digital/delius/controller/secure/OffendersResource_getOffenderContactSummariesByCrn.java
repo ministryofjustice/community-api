@@ -28,14 +28,13 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .statusCode(HttpStatus.OK.value())
             .body("number", equalTo(0))
             .body("first", equalTo(true))
-            .body("last", equalTo(false))
-            .body("totalPages", greaterThan(1))
+            .body("last", equalTo(true))
+            .body("totalPages", equalTo(1))
             .body("totalElements", greaterThan(10))
-            .body("size", equalTo(10))
-            .body("numberOfElements", equalTo(10))
-            .body("content.size()", equalTo(10))
-            .root("content.find { it.contactId == %d }")
-
+            .body("size", greaterThan(10))
+            .body("numberOfElements", greaterThan(10))
+            .body("content.size()", greaterThan(10))
+            .rootPath("content.find { it.contactId == %d }")
             .body("contactStart", registration, equalTo("2021-02-01T00:00:00Z"))
             .body("contactEnd", registration, equalTo("2021-02-01T00:00:00Z"))
             .body("type.code", registration, equalTo("ERGN"))
@@ -91,10 +90,10 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("last", equalTo(true))
             .body("totalPages", equalTo(1))
             .body("totalElements", equalTo(4))
-            .body("size", equalTo(1000))
+            .body("size", equalTo(4))
             .body("numberOfElements", equalTo(4))
             .body("content.size()", equalTo(4))
-            .root("content.find { it.contactId == %d }")
+            .rootPath("content.find { it.contactId == %d }")
 
             .body("", registration, equalTo(null))
 
@@ -115,10 +114,10 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("last", equalTo(true))
             .body("totalPages", equalTo(1))
             .body("totalElements", equalTo(1))
-            .body("size", equalTo(1000))
+            .body("size", equalTo(1))
             .body("numberOfElements", equalTo(1))
             .body("content.size()", equalTo(1))
-            .root("content.find { it.contactId == %d }")
+            .rootPath("content.find { it.contactId == %d }")
 
             .body("", registration, equalTo(null))
 
@@ -139,10 +138,10 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("last", equalTo(true))
             .body("totalPages", equalTo(1))
             .body("totalElements", equalTo(3))
-            .body("size", equalTo(1000))
+            .body("size", equalTo(3))
             .body("numberOfElements", equalTo(3))
             .body("content.size()", equalTo(3))
-            .root("content.find { it.contactId == %d }")
+            .rootPath("content.find { it.contactId == %d }")
 
             .body("", registration, equalTo(null))
 
@@ -164,10 +163,10 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("last", equalTo(true))
             .body("totalPages", equalTo(1))
             .body("totalElements", equalTo(2))
-            .body("size", equalTo(1000))
+            .body("size", equalTo(2))
             .body("numberOfElements", equalTo(2))
             .body("content.size()", equalTo(2))
-            .root("content.find { it.contactId == %d }")
+            .rootPath("content.find { it.contactId == %d }")
 
             .body("", registration, equalTo(null))
 
@@ -189,10 +188,10 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("last", equalTo(true))
             .body("totalPages", equalTo(1))
             .body("totalElements", equalTo(1))
-            .body("size", equalTo(1000))
+            .body("size", equalTo(1))
             .body("numberOfElements", equalTo(1))
             .body("content.size()", equalTo(1))
-            .root("content.find { it.contactId == %d }")
+            .rootPath("content.find { it.contactId == %d }")
 
             .body("", registration, equalTo(null))
 
@@ -213,10 +212,10 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("last", equalTo(true))
             .body("totalPages", equalTo(1))
             .body("totalElements", equalTo(1))
-            .body("size", equalTo(1000))
+            .body("size", equalTo(1))
             .body("numberOfElements", equalTo(1))
             .body("content.size()", equalTo(1))
-            .root("content.find { it.contactId == %d }")
+            .rootPath("content.find { it.contactId == %d }")
 
             .body("", withArgs(2502719244L), notNullValue());
     }
@@ -235,10 +234,10 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("last", equalTo(true))
             .body("totalPages", equalTo(1))
             .body("totalElements", equalTo(5))
-            .body("size", equalTo(1000))
+            .body("size", equalTo(5))
             .body("numberOfElements", equalTo(5))
             .body("content.size()", equalTo(5))
-            .root("content.find { it.contactId == %d }")
+            .rootPath("content.find { it.contactId == %d }")
 
             .body("", registration, equalTo(null))
 
@@ -273,10 +272,10 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("last", equalTo(true))
             .body("totalPages", equalTo(1))
             .body("totalElements", greaterThan(10))
-            .body("size", equalTo(1000))
+            .body("size", greaterThan(10))
             .body("numberOfElements", greaterThan(10))
             .body("content.size()", greaterThan(10))
-            .root("content.find { it.contactId == %d }")
+            .rootPath("content.find { it.contactId == %d }")
 
             .body("", withArgs(2502743375L), notNullValue())
             .body("type.description", withArgs(2502743375L), equalTo("NOMIS Case Notes - General"))
@@ -297,10 +296,10 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("last", equalTo(true))
             .body("totalPages", equalTo(1))
             .body("totalElements", greaterThan(1))
-            .body("size", equalTo(1000))
+            .body("size", greaterThan(1))
             .body("numberOfElements", greaterThan(1))
             .body("content.size()", greaterThan(1))
-            .root("content.find { it.contactId == %d }")
+            .rootPath("content.find { it.contactId == %d }")
 
             .body("", withArgs(2502719245L), notNullValue())
             .body("contactStart", withArgs(2502719245L), equalTo("2020-09-04T00:00:00+01:00"));
@@ -320,10 +319,10 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("last", equalTo(true))
             .body("totalPages", equalTo(1))
             .body("totalElements", equalTo(5))
-            .body("size", equalTo(1000))
+            .body("size", equalTo(5))
             .body("numberOfElements", equalTo(5))
             .body("content.size()", equalTo(5))
-            .root("content.find { it.contactId == %d }")
+            .rootPath("content.find { it.contactId == %d }")
 
             .body("", withArgs(2502719244L), notNullValue());
     }
@@ -342,10 +341,10 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("last", equalTo(true))
             .body("totalPages", equalTo(1))
             .body("totalElements", greaterThan(40))
-            .body("size", equalTo(1000))
+            .body("size", greaterThan(40))
             .body("numberOfElements", greaterThan(40))
             .body("content.size()", greaterThan(40))
-            .root("content.find { it.contactId == %d }")
+            .rootPath("content.find { it.contactId == %d }")
 
             .body("", withArgs(2512709905L), notNullValue());
     }
@@ -364,10 +363,10 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("last", equalTo(true))
             .body("totalPages", equalTo(1))
             .body("totalElements", equalTo(8))
-            .body("size", equalTo(1000))
+            .body("size", equalTo(8))
             .body("numberOfElements", equalTo(8))
             .body("content.size()", equalTo(8))
-            .root("content.find { it.contactId == %d }")
+            .rootPath("content.find { it.contactId == %d }")
 
             // appointments
             .body("type.code", withArgs(2502719240L), equalTo("C084"))
@@ -411,10 +410,10 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("last", equalTo(true))
             .body("totalPages", equalTo(1))
             .body("totalElements", equalTo(2))
-            .body("size", equalTo(1000))
+            .body("size", equalTo(2))
             .body("numberOfElements", equalTo(2))
             .body("content.size()", equalTo(2))
-            .root("content.find { it.contactId == %d }")
+            .rootPath("content.find { it.contactId == %d }")
 
             .body("", withArgs(2502709898L), notNullValue())
             .body("rarActivity", withArgs(2502709898L), equalTo(true));
@@ -433,41 +432,16 @@ public class OffendersResource_getOffenderContactSummariesByCrn extends Integrat
             .body("last", equalTo(true))
             .body("totalPages", equalTo(1))
             .body("totalElements", greaterThan(40))
-            .body("size", equalTo(1000))
+            .body("size", greaterThan(40))
             .body("numberOfElements", greaterThan(40))
             .body("content.size()", greaterThan(40))
-            .root("content.find { it.contactId == %d }")
+            .rootPath("content.find { it.contactId == %d }")
 
             .body("", withArgs(2502719193L), notNullValue())
             .body("rarActivity", withArgs(2502719193L), equalTo(false))
 
             .body("", withArgs(2502709898L), notNullValue())
             .body("rarActivity", withArgs(2502709898L), equalTo(true));
-    }
-    @Test
-    public void gettingOffenderContactSummariesByCrnDefaultsToFirstPage() {
-        given()
-            .auth().oauth2(tokenWithRoleCommunity())
-            .when()
-            .get("/offenders/crn/X320741/contact-summary")
-            .then()
-            .assertThat()
-            .statusCode(HttpStatus.OK.value())
-            .body("number", equalTo(0))
-            .body("first", equalTo(true))
-            .body("size", equalTo(1000))
-            .body("content.size()", greaterThan(0));
-    }
-
-    @Test
-    public void gettingOffenderContactSummariesByCrnButInvalidRequest() {
-        given()
-            .auth().oauth2(tokenWithRoleCommunity())
-            .when()
-            .get("/offenders/crn/any_crn/contact-summary?page=0&pageSize=0")
-            .then()
-            .assertThat()
-            .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test

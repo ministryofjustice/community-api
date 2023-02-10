@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,13 +13,13 @@ import static org.apache.commons.text.WordUtils.capitalizeFully;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContactableHuman {
-    @ApiModelProperty(value = "Given names", example = "Sheila Linda")    
+    @Schema(description = "Given names", example = "Sheila Linda")    
     private String forenames;
-    @ApiModelProperty(value = "Family name", example = "Hancock")    
+    @Schema(description = "Family name", example = "Hancock")    
     private String surname;
-    @ApiModelProperty(value = "Email address", example = "officer@gov.uk")
+    @Schema(description = "Email address", example = "officer@gov.uk")
     private String email;
-    @ApiModelProperty(value = "Phone number", example = "0123411278")
+    @Schema(description = "Phone number", example = "0123411278")
     private String phoneNumber;
 
     public ContactableHuman capitalise() {

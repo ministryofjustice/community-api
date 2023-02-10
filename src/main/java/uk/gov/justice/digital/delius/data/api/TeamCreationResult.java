@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.delius.data.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,10 +16,10 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.ALWAYS;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TeamCreationResult {
-    @ApiModelProperty(value = "List of teams created")
+    @Schema(description = "List of teams created")
     @JsonInclude(ALWAYS)
     private List<Team> teams;
-    @ApiModelProperty(value = "List of unallocated staff created")
+    @Schema(description = "List of unallocated staff created")
     @JsonInclude(ALWAYS)
     private List<StaffHuman> unallocatedStaff;
 }

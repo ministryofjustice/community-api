@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -48,12 +48,12 @@ public class Nsi {
         }
     }
 
-    @ApiModelProperty("present only for recalls, convenience property indicating this resulted in a recall")
+    @Schema(description = "present only for recalls, convenience property indicating this resulted in a recall")
     public Boolean isOutcomeRecall() {
         return Optional.ofNullable(asOutcomeType()).map(OutcomeType::getIsOutcomeRecall).orElse(null);
     }
 
-    @ApiModelProperty("present only for recalls, convenience property indicating the recall was never accepted")
+    @Schema(description = "present only for recalls, convenience property indicating the recall was never accepted")
     public Boolean isRecallRejectedOrWithdrawn() {
         return Optional.ofNullable(asStatus())
             .map(Status::getIsRejectedOrWithdrawn)

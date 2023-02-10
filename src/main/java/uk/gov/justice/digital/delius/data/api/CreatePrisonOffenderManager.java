@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,14 +17,14 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 @Slf4j
-@ApiModel(description = "Request body for assigning an offender manager to an offender. Must pass exactly one of officer / officerCode (not both)")
+@Schema(description = "Request body for assigning an offender manager to an offender. Must pass exactly one of officer / officerCode (not both)")
 public class CreatePrisonOffenderManager {
     // This annotation appears to be ignored by swagger docs and nobody seems to care: https://github.com/springfox/springfox/issues/2237
-    @ApiModelProperty(value = "Name and contact details of offender manager. If passed then must contain both forename(s) and surname", example = "officer: {\"forenames\": \"John\", \"surname\": \"Smith\" }")
+    @Schema(description = "Name and contact details of offender manager. If passed then must contain both forename(s) and surname", example = "officer: {\"forenames\": \"John\", \"surname\": \"Smith\" }")
     private ContactableHuman officer;
-    @ApiModelProperty(value = "Officer staff ID. If not present officer will be used to lookup staff member", example = "1234567")
+    @Schema(description = "Officer staff ID. If not present officer will be used to lookup staff member", example = "1234567")
     private Long staffId;
-    @ApiModelProperty(value = "Prison institution code in NOMIS", required = true, example = "MDI")
+    @Schema(description = "Prison institution code in NOMIS", required = true, example = "MDI")
     private String nomsPrisonInstitutionCode;
 
     /**

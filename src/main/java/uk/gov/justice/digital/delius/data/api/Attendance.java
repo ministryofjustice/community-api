@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,16 +14,16 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class Attendance {
 
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private Long contactId;
 
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private LocalDate attendanceDate;
 
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private boolean attended;
 
-    @ApiModelProperty(required = true )
+    @Schema(required = true )
     private boolean complied;
 
     private String outcome;
@@ -36,10 +36,10 @@ public class Attendance {
     @NoArgsConstructor
     public static class ContactTypeDetail {
 
-        @ApiModelProperty(required = true)
+        @Schema(required = true)
         private String description;
 
-        @ApiModelProperty(required = true)
+        @Schema(required = true)
         private String code;
 
     }

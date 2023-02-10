@@ -62,7 +62,7 @@ public class JwtAuthenticationHelper {
 
         return builder.addClaims(claims)
                 .setExpiration(new Date(System.currentTimeMillis() + parameters.getExpiryTime().toMillis()))
-                .signWith(SignatureAlgorithm.RS256, keyPair.getPrivate())
+                .signWith(keyPair.getPrivate(), SignatureAlgorithm.RS256)
                 .compact();
     }
 

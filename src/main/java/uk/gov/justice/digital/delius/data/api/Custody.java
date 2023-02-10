@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.delius.data.api;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,15 +15,15 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class Custody {
 
-    @ApiModelProperty(value = "Human readable id of the prison booking, AKA book number", example = "V74111")
+    @Schema(description = "Human readable id of the prison booking, AKA book number", example = "V74111")
     private String bookingNumber;
-    @ApiModelProperty(value = "Institution where the offender currently resides")
+    @Schema(description = "Institution where the offender currently resides")
     private Institution institution;
-    @ApiModelProperty(value = "Key sentence dates of particular interest to custody")
+    @Schema(description = "Key sentence dates of particular interest to custody")
     private CustodyRelatedKeyDates keyDates;
-    @ApiModelProperty(value = "Custodial status")
+    @Schema(description = "Custodial status")
     private KeyValue status;
-    @ApiModelProperty(value = "Date when related sentence started")
+    @Schema(description = "Date when related sentence started")
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate sentenceStartDate;
 

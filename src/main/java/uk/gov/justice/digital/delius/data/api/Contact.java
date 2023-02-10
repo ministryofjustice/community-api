@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,19 +15,19 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class Contact {
     protected Long linkedContactId;
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private Long contactId;
     private Long eventId;
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private ContactType contactType;
     private Requirement requirement;
     private KeyValue explanation;
     private LicenceCondition licenceCondition;
     private Nsi nsi;
     private String notes;
-    @ApiModelProperty(example = "12:00:00", dataType = "String")
+    @Schema(example = "12:00:00")
     private LocalTime contactStartTime;
-    @ApiModelProperty(example = "13:00:00", dataType = "String")
+    @Schema(example = "13:00:00")
     private LocalTime contactEndTime;
     private Boolean softDeleted;
     private Boolean alertActive;

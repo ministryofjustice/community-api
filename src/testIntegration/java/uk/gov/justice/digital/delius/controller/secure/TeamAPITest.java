@@ -34,7 +34,7 @@ public class TeamAPITest extends IntegrationTestBase {
             .assertThat()
             .statusCode(HttpStatus.OK.value())
             .body("size()", greaterThan(0))
-            .root("find { it.staffCode == '%s' }")
+            .rootPath("find { it.staffCode == '%s' }")
 
             .body("staffCode", staff, Matchers.equalTo("C00P002"))
             .body("staff.forenames", staff, Matchers.equalTo("Nolan ZZ"))

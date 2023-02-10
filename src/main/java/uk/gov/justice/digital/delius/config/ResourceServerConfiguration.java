@@ -1,24 +1,30 @@
 package uk.gov.justice.digital.delius.config;
 
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
-public class ResourceServerConfiguration extends WebSecurityConfigurerAdapter {
+@ConditionalOnWebApplication
+@EnableMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
+public class ResourceServerConfiguration {
 
-    @Override
-    public void configure(final HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
         http
-                .antMatcher("/secure/**")
-                .authorizeRequests( auth ->
-                        auth.antMatchers("/secure/**").authenticated()
-                )
-                .oauth2ResourceServer().jwt().jwtAuthenticationConverter(new AuthAwareTokenConverter());
+            .securityMatcher("/secure/**")
+            .authorizeHttpRequests( auth ->
+                    auth.requestMatchers("/secure/**").authenticated()
+            )
+            .oauth2ResourceServer()
+            .jwt()
+            .jwtAuthenticationConverter(new AuthAwareTokenConverter());
+        return http.build();
     }
 }

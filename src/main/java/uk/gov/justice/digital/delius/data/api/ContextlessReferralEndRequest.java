@@ -1,14 +1,14 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -21,28 +21,28 @@ public class ContextlessReferralEndRequest {
 
     // Fields used to identify associated Referral/Nsi
     @NotNull
-    @ApiModelProperty(required = true, value = "Denotes a group of services delivered through a referral to a service user, e.g. Personal Well Being", example = "PWB")
+    @Schema(required = true, description = "Denotes a group of services delivered through a referral to a service user, e.g. Personal Well Being", example = "PWB")
     private String contractType;
 
     @NotNull
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private OffsetDateTime startedAt;
 
-    @ApiModelProperty
+    @Schema
     private UUID referralId;
 
     // Fields used for ending the referral
     @NotNull
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private OffsetDateTime endedAt;
 
     @Positive
     @NotNull
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private Long sentenceId;
 
     @NotNull
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private String endType;
 
     @NotNull

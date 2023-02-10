@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.delius.data.api;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,9 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProbationAreaWithLocalDeliveryUnits {
-    @ApiModelProperty(value = "area code", example = "N01")
+    @Schema(description = "area code", example = "N01")
     private String code;
-    @ApiModelProperty(value = "description", example = "NPS North West")
+    @Schema(description = "description", example = "NPS North West")
     private String description;
     private List<LocalDeliveryUnit> localDeliveryUnits;
 }
