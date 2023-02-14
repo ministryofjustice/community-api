@@ -4,7 +4,7 @@
 [![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://community-api.test.probation.service.justice.gov.uk/swagger-ui/index.html)
 
 # Community API
-Spring Boot 2, Java 11 API for accessing Probation offenders information
+Spring Boot Java API for accessing Probation offenders information
 
 The service provides REST access to the Delius Oracle DB.
 
