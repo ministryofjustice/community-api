@@ -3,7 +3,8 @@
     "name": "community-api"
   },
   "customDimensions": {
-    "service.version": "${BUILD_NUMBER}"
+    "service.version": "${BUILD_NUMBER}",
+    "service.team": "probation-integration"
   },
   "instrumentation": {
     "logging": {
