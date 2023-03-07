@@ -15,7 +15,6 @@ public class ClientTrackingConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-        log.info("Adding application insights client tracking interceptor");
         registry.addInterceptor(clientTrackingInterceptor).addPathPatterns("/**");
     }
 }

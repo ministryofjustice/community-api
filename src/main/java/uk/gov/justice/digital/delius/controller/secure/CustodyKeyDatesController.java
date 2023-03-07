@@ -80,7 +80,6 @@ public class CustodyKeyDatesController {
 
         // legacy behaviour - do not update multiple events
         if (activeCustodialEvents.size() > 1 && !featureSwitches.getNoms().getUpdate().getMultipleEvents().isUpdateBulkKeyDates()) {
-            log.warn("Multiple active custodial convictions found for {} for offender {}", bookingNumber, nomsNumber);
             throw new NotFoundException(String.format("Single active conviction for %s with booking number %s not found. Instead has %d convictions", nomsNumber, bookingNumber, activeCustodialEvents.size()));
         }
 
@@ -143,7 +142,6 @@ public class CustodyKeyDatesController {
                     try {
                         return convictionService.addOrReplaceCustodyKeyDateByOffenderId(offenderId, typeCode, custodyKeyDate);
                     } catch (final CustodyTypeCodeIsNotValidException e) {
-                        log.warn("Key type code is not valid for {}", typeCode);
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
                     }
                 })

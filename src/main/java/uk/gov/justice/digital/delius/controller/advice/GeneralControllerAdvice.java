@@ -40,7 +40,6 @@ public class GeneralControllerAdvice {
 
    @ExceptionHandler(NoSuchUserException.class)
    public ResponseEntity<String> noSuchUser(NoSuchUserException e) {
-       log.info(e.getMessage());
        return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
    }
 

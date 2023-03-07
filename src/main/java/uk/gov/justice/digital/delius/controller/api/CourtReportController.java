@@ -42,7 +42,6 @@ public class CourtReportController {
                                                                                               final @PathVariable("crn") String crn,
                                                                                               final @PathVariable Long courtReportId) {
 
-        log.info("Call to getOffenderCourtReportByCrnAndCourtReportId");
         return courtReportResponseEntityOf(offenderService.offenderIdOfCrn(crn), courtReportId);
     }
 
