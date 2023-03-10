@@ -31,19 +31,15 @@ public class OffenderIdentifierService {
         this.updateNomsNumberFeatureSwitch = updateNomsNumberFeatureSwitch;
         this.offenderRepository = offenderRepository;
         this.referenceDataService = referenceDataService;
-        log.info("NOMIS update NOMS number feature is {}", this.updateNomsNumberFeatureSwitch ? "ON" : "OFF");
+        log.debug("NOMIS update NOMS number feature is {}", this.updateNomsNumberFeatureSwitch ? "ON" : "OFF");
     }
 
     @Transactional
     public IDs updateNomsNumber(String crn, UpdateOffenderNomsNumber updateOffenderNomsNumber) {
         final var offender = offenderRepository.findByCrn(crn).orElseThrow(() -> new NotFoundException(String
                 .format("Offender with crn %s not found ", crn)));
-        if (updateNomsNumberFeatureSwitch) {
-            if (!updateOffenderNomsNumber.getNomsNumber().equals(offender.getNomsNumber())) {
+        if (updateNomsNumberFeatureSwitch && !updateOffenderNomsNumber.getNomsNumber().equals(offender.getNomsNumber())) {
                 doUpdateNomsNumber(updateOffenderNomsNumber.getNomsNumber(), offender);
-            } else {
-                log.info("No need to Update NOMS number since it is already set");
-            }
         } else {
             log.warn("Update NOMS number will be ignored, this feature is switched off ");
         }
@@ -54,7 +50,6 @@ public class OffenderIdentifierService {
         final var existingOffendersAlreadyWithNomsNumber = offenderRepository.findAllByNomsNumber(updateOffenderNomsNumber.getNomsNumber());
 
         if (!existingOffendersAlreadyWithNomsNumber.isEmpty()) {
-            log.info("No need to Update NOMS number since an offender with the new noms number already exists");
             throw new ConflictingRequestException(String.format("NOMS number %s is already assigned to %s", updateOffenderNomsNumber.getNomsNumber(), existingOffendersAlreadyWithNomsNumber.stream().map(Offender::getCrn).collect(Collectors.joining(","))));
         }
 

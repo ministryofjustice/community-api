@@ -58,11 +58,7 @@ public class NotificationService {
             .orElseThrow(() -> new BadRequestException(format("Cannot find NSI for CRN: %s Sentence: %d and ContractType %s", crn, sentenceId, contextlessRequest.getContractType())));
 
         return matchExistingCRSContact(crn, request)
-            .map(contactId -> {
-                log.warn(format("Notification already exists for CRN: %s, NsiId: %d, Sentence: %d, ContactType: %s and ContactDateTime: %s",
-                    crn, request.getNsiId(), sentenceId, request.getContactType(), request.getContactDateTime()));
-                return NotificationResponse.builder().contactId(contactId).build();
-            })
+            .map(contactId -> NotificationResponse.builder().contactId(contactId).build())
             .orElseGet(() -> notifyContact(crn, sentenceId, request));
     }
 

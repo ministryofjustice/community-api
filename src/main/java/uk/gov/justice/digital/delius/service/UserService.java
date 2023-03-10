@@ -125,7 +125,6 @@ public class UserService {
     public void addRole(final String username, final String roleId) {
         final var allRoles = ldapRepository.getAllRoles();
         if (!allRoles.contains(roleId)) {
-            log.info("Could not add role with id: '{}' in {}", roleId, allRoles);
             throw new BadRequestException(String.format("Could not find role with id: '%s'", roleId));
         }
         try {

@@ -40,9 +40,9 @@ public class ApplicationConfig {
     public ApplicationListener<ApplicationReadyEvent> buildInfoLogger() {
         return event -> {
             try {
-                log.info("BUILD PROPERTIES:");
+                log.debug("BUILD PROPERTIES:");
                 BuildProperties buildProperties = (BuildProperties) event.getApplicationContext().getBean("buildProperties");
-                buildProperties.iterator().forEachRemaining(prop -> log.info("{} : {}", prop.getKey(), prop.getValue()));
+                buildProperties.iterator().forEachRemaining(prop -> log.debug("{} : {}", prop.getKey(), prop.getValue()));
             } catch (NoSuchBeanDefinitionException nsbde) {
                 log.warn("No build info found! Is this a local build?");
             }

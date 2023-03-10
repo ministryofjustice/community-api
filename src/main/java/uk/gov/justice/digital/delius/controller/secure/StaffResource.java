@@ -69,7 +69,6 @@ public class StaffResource {
         @Parameter(name = "staffIdentifier", description = "Delius officer identifier", example = "123456", required = true)
         @NotNull
         @PathVariable(value = "staffIdentifier") final long staffIdentifier) {
-        log.info("getStaffDetailsForStaffIdentifier called with {}", staffIdentifier);
         return staffService.getStaffDetailsByStaffIdentifier(staffIdentifier)
             .orElseThrow(() -> new NotFoundException(String.format("Staff member with identifier %s", staffIdentifier)));
     }

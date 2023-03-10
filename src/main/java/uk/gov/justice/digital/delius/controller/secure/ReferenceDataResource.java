@@ -38,7 +38,6 @@ public class ReferenceDataResource {
             @Parameter(name = "active", description = "Restricts to active areas only", example = "true") final @RequestParam(name = "active", required = false) boolean restrictActive,
             @Parameter(name = "excludeEstablishments", description = "Restricts to areas that are providers, no prisons will be returned", example = "true") final @RequestParam(name = "excludeEstablishments", required = false) boolean excludeEstablishments) {
 
-        log.info("Call to getProbationAreaCodes");
         return referenceDataService.getProbationAreasCodes(restrictActive, excludeEstablishments);
     }
 
@@ -79,7 +78,6 @@ public class ReferenceDataResource {
             @Parameter(name = "code", description = "Probation area code", example = "NO2", required = true) final @PathVariable String code,
             @Parameter(name = "lduCode", description = "Local delivery unit code", example = "NO2NPSA", required = true) final @PathVariable String lduCode) {
 
-        log.info("Call to getTeamsForLdu");
         return referenceDataService.getTeamsForLocalDeliveryUnit(code, lduCode);
     }
 }
