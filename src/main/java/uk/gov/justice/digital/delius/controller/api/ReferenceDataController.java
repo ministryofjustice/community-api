@@ -37,7 +37,6 @@ public class ReferenceDataController {
     public ResponseEntity<List<ProbationArea>> getProbationAreasForCode(final @RequestHeader HttpHeaders httpHeaders,
                                                                         final @RequestParam(name = "active", required = false) boolean restrictActive,
                                                                         final @PathVariable String code) {
-        log.info("Call to getProbationAreasForCode");
         List<ProbationArea> probationAreasForCode = referenceDataService.getProbationAreasForCode(code, restrictActive);
 
         if (probationAreasForCode.isEmpty()) {

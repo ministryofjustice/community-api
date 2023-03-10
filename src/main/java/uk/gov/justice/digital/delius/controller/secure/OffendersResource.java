@@ -344,7 +344,6 @@ public class OffendersResource {
     public static class InvalidAllocatePOMRequestException extends BadRequestException {
         InvalidAllocatePOMRequestException(final CreatePrisonOffenderManager createPrisonOffenderManager, final String message) {
             super(message);
-            log.warn("Bad request: {}", createPrisonOffenderManager);
         }
     }
 

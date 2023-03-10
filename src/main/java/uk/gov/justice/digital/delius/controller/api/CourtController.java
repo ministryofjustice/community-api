@@ -34,7 +34,6 @@ public class CourtController {
     public ResponseEntity<List<CourtAppearance>> getOffenderCourtAppearancesByCrn(final @RequestHeader HttpHeaders httpHeaders,
                                                                              final @PathVariable("crn") String crn) {
 
-        log.info("Call to getOffenderCourtAppearancesByCrn");
         return courtAppearancesResponseEntityOf(offenderService.offenderIdOfCrn(crn));
     }
 

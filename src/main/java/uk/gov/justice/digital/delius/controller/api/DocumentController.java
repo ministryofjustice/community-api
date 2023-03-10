@@ -29,8 +29,6 @@ public class DocumentController {
     @RequestMapping(path = "/documentLink", method = RequestMethod.POST, consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
     public void insertDocument(final @RequestBody DocumentLink documentLink) {
-        log.info("Received call to insertDocument with body {}", documentLink);
-
         documentService.insertDocument(documentLink);
     }
 

@@ -38,7 +38,6 @@ public class InstitutionalReportController {
                                                                                               final @PathVariable("crn") String crn,
                                                                                               final @PathVariable Long institutionalReportId) {
 
-        log.info("Call to getOffenderInstitutionalReportByCrnAndInstitutionalReportId");
         return institutionalReportResponseEntityOf(offenderService.offenderIdOfCrn(crn), institutionalReportId);
     }
 

@@ -33,7 +33,6 @@ public class OffenceController {
     public ResponseEntity<List<Offence>> getOffenderOffencesByCrn(final @RequestHeader HttpHeaders httpHeaders,
                                                                   final @PathVariable("crn") String crn) {
 
-        log.info("Call to getOffenderOffencesByCrn");
         return offencesResponseEntityOf(offenderService.offenderIdOfCrn(crn));
     }
 

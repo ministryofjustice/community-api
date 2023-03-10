@@ -51,7 +51,6 @@ dependencies {
 }
 
 testIntegration {
-    println(project.getProperties().get("testFilter"))
     if (project.hasProperty("testFilter")) {
         List<String> props = project.getProperties().get("testFilter").split("\\s+")
         props.each {
