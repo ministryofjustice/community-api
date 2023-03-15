@@ -1,5 +1,5 @@
 plugins {
-    id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.1.0"
+    id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.1.1"
     id 'groovy'
     id 'org.unbroken-dome.test-sets' version '4.0.0'
     id "com.google.cloud.tools.jib" version "3.3.1"
