@@ -90,7 +90,7 @@ jib {
         user = "2000:2000"
     }
     from {
-        image = "ghcr.io/ministryofjustice/hmpps-probation-integration-services/eclipse-temurin:17-jre-jammy"
+        image = "eclipse-temurin:17-jre-jammy"
         platforms {
             platform {
                 architecture = 'amd64'
