@@ -9,6 +9,8 @@
 
 [*.kt]
 indent_size = 2
+ij_kotlin_allow_trailing_comma_on_call_site = true
+ij_kotlin_allow_trailing_comma = true
 
 [*.kts]
 indent_size = 2

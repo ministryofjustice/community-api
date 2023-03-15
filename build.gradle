@@ -1,5 +1,5 @@
 plugins {
-    id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.1.0"
+    id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.1.2"
     id 'groovy'
     id 'org.unbroken-dome.test-sets' version '4.0.0'
     id "com.google.cloud.tools.jib" version "3.3.1"
@@ -90,7 +90,7 @@ jib {
         user = "2000:2000"
     }
     from {
-        image = "ghcr.io/ministryofjustice/hmpps-probation-integration-services/eclipse-temurin:17-jre-jammy"
+        image = "eclipse-temurin:17-jre-jammy"
         platforms {
             platform {
                 architecture = 'amd64'
