@@ -28,6 +28,7 @@ public interface OffenderRepository extends JpaRepository<Offender, Long>, JpaSp
     }
     Optional<Offender> findByOffenderId(Long offenderId);
 
+    @Query("select o from Offender o where o.softDeleted = false and o.crn = :crn")
     Optional<Offender> findByCrn(String crn);
 
     @Query("select o from Offender o where o.softDeleted = 0 and upper(o.nomsNumber) = upper(:nomsNumber)")
