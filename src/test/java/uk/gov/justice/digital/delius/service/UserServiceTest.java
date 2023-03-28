@@ -9,12 +9,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.UserDetails;
 import uk.gov.justice.digital.delius.data.api.UserRole;
 import uk.gov.justice.digital.delius.jpa.national.entity.Exclusion;
 import uk.gov.justice.digital.delius.jpa.national.entity.Restriction;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAccessLimitations;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
 import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusRole;
 import uk.gov.justice.digital.delius.ldap.repository.entity.NDeliusUser;
@@ -54,7 +54,7 @@ public class UserServiceTest {
 
     @Test
     public void exclusionListNotCheckedWhenNotExcludedForAnyone() {
-        userService.accessLimitationOf("Micky", OffenderDetail
+        userService.accessLimitationOf("Micky", OffenderAccessLimitations
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(false)
@@ -68,7 +68,7 @@ public class UserServiceTest {
 
     @Test
     public void exclusionUnsetWhenNotExcludedForAnyone() {
-        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderAccessLimitations
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(false)
@@ -81,7 +81,7 @@ public class UserServiceTest {
 
     @Test
     public void excludedMessageUnsetWhenNotExcludedForAnyone() {
-        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderAccessLimitations
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(false)
@@ -101,7 +101,7 @@ public class UserServiceTest {
                         .offenderId(2L)
                         .build()))
                 .build());
-        userService.accessLimitationOf("Micky", OffenderDetail
+        userService.accessLimitationOf("Micky", OffenderAccessLimitations
                 .builder()
                 .currentExclusion(true)
                 .currentRestriction(false)
@@ -122,7 +122,7 @@ public class UserServiceTest {
                         .offenderId(2L)
                         .build()))
                 .build());
-        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderAccessLimitations
                 .builder()
                 .currentExclusion(true)
                 .currentRestriction(false)
@@ -143,7 +143,7 @@ public class UserServiceTest {
                         .offenderId(1L)
                         .build()))
                 .build());
-        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderAccessLimitations
                 .builder()
                 .currentExclusion(true)
                 .currentRestriction(false)
@@ -164,7 +164,7 @@ public class UserServiceTest {
                         .offenderId(1L)
                         .build()))
                 .build());
-        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderAccessLimitations
                 .builder()
                 .currentExclusion(true)
                 .currentRestriction(false)
@@ -179,7 +179,7 @@ public class UserServiceTest {
 
     @Test
     public void restrictionListNotCheckedWhenNotRestrictedToAnyone() {
-        userService.accessLimitationOf("Micky", OffenderDetail
+        userService.accessLimitationOf("Micky", OffenderAccessLimitations
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(false)
@@ -193,7 +193,7 @@ public class UserServiceTest {
 
     @Test
     public void restrictionUnsetWhenNotRestrictedToAnyone() {
-        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderAccessLimitations
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(false)
@@ -206,7 +206,7 @@ public class UserServiceTest {
 
     @Test
     public void restrictedMessageUnsetWhenNotRestrictedToAnyone() {
-        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderAccessLimitations
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(false)
@@ -226,7 +226,7 @@ public class UserServiceTest {
                         .offenderId(1L)
                         .build()))
                 .build());
-        userService.accessLimitationOf("Micky", OffenderDetail
+        userService.accessLimitationOf("Micky", OffenderAccessLimitations
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(true)
@@ -247,7 +247,7 @@ public class UserServiceTest {
                         .offenderId(1L)
                         .build()))
                 .build());
-        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderAccessLimitations
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(true)
@@ -268,7 +268,7 @@ public class UserServiceTest {
                         .offenderId(2L)
                         .build()))
                 .build());
-        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderAccessLimitations
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(true)
@@ -289,7 +289,7 @@ public class UserServiceTest {
                         .offenderId(2L)
                         .build()))
                 .build());
-        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderDetail
+        final var accessLimitation = userService.accessLimitationOf("Micky", OffenderAccessLimitations
                 .builder()
                 .currentExclusion(false)
                 .currentRestriction(true)
