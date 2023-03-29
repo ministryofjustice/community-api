@@ -8,13 +8,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.controller.CustodyNotFoundException;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Release;
-import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+import uk.gov.justice.digital.delius.jpa.standard.entity.*;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderAccessLimitationRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderDocumentRepository;
-import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderPrimaryIdentifiersRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.util.EntityHelper;
 
@@ -39,6 +35,10 @@ public class OffenderServiceTest_getOffenderLatestRecall {
 
     @Mock
     private OffenderRepository mockOffenderRepository;
+
+    @Mock
+    private OffenderAccessLimitationRepository mockOffenderAccessLimitationRepository;
+
     @Mock
     private ConvictionService mockConvictionService;
 
@@ -51,6 +51,7 @@ public class OffenderServiceTest_getOffenderLatestRecall {
     public void setup() {
         offenderService = new OffenderService(
                 mockOffenderRepository,
+                mockOffenderAccessLimitationRepository,
                 mockConvictionService,
                 mockOffenderDocumentRepository
         );

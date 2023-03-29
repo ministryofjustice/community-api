@@ -46,6 +46,7 @@ import uk.gov.justice.digital.delius.data.api.ProbationStatusDetail;
 import uk.gov.justice.digital.delius.data.api.SentenceStatus;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAccessLimitations;
 import uk.gov.justice.digital.delius.service.AssessmentService;
 import uk.gov.justice.digital.delius.service.ContactService;
 import uk.gov.justice.digital.delius.service.ConvictionService;
@@ -590,7 +591,7 @@ public class OffendersResource {
     @PreAuthorize("hasAnyRole('ROLE_COMMUNITY', 'ROLE_PROBATION')")
     public ResponseEntity<AccessLimitation> checkUserAccessByCrn(
             final @PathVariable("crn") String crn) {
-        return offenderService.getOffenderByCrn(crn)
+        return offenderService.getOffenderAccessLimitationsByCrn(crn)
             .map(this::accessLimitationResponseEntityOf)
             .orElse(new ResponseEntity<>(NOT_FOUND));
     }
@@ -604,7 +605,7 @@ public class OffendersResource {
     public ResponseEntity<AccessLimitation> checkUserAccessByCrn(
         final @PathVariable("crn") String crn,
         final @PathVariable("username") String username) {
-        return offenderService.getOffenderByCrn(crn)
+        return offenderService.getOffenderAccessLimitationsByCrn(crn)
             .map(offender -> accessLimitationResponseEntityOf(offender, username))
             .orElse(new ResponseEntity<>(NOT_FOUND));
     }
@@ -629,11 +630,11 @@ public class OffendersResource {
         return offenderService.getOffenderPersonalContactsByCrn(crn);
     }
 
-    private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(final OffenderDetail offender) {
+    private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(final OffenderAccessLimitations offender) {
         return accessLimitationResponseEntityOf(offender, currentUserSupplier.username().orElseThrow());
     }
 
-    private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(final OffenderDetail offender, final String username) {
+    private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(final OffenderAccessLimitations offender, final String username) {
         final var accessLimitation = userService.accessLimitationOf(username, offender);
         return new ResponseEntity<>(accessLimitation, (accessLimitation.isUserExcluded() || accessLimitation.isUserRestricted()) ? FORBIDDEN : OK);
     }

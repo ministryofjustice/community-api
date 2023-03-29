@@ -3,8 +3,6 @@ package uk.gov.justice.digital.delius.service;
 import io.vavr.control.Either;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.controller.CustodyNotFoundException;
@@ -13,30 +11,22 @@ import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderIdentifiers;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
-import uk.gov.justice.digital.delius.data.api.OffenderManager;
 import uk.gov.justice.digital.delius.data.api.PersonalContact;
-import uk.gov.justice.digital.delius.data.api.PrimaryIdentifiers;
-import uk.gov.justice.digital.delius.data.api.ResponsibleOfficer;
-import uk.gov.justice.digital.delius.data.api.StaffCaseloadEntry;
-import uk.gov.justice.digital.delius.data.filters.OffenderFilter;
-import uk.gov.justice.digital.delius.jpa.filters.OffenderFilterTransformer;
-import uk.gov.justice.digital.delius.jpa.national.repository.DocumentRepository;
-import uk.gov.justice.digital.delius.jpa.oracle.annotations.NationalUserOverride;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Document.DocumentType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAccessLimitations;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDocument;
+import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderAccessLimitationRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderDocumentRepository;
-import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderPrimaryIdentifiersRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository.DuplicateOffenderException;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
 import uk.gov.justice.digital.delius.transformers.PersonalContactTransformer;
 import uk.gov.justice.digital.delius.transformers.ReleaseTransformer;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -49,6 +39,7 @@ import static java.util.function.Predicate.not;
 public class OffenderService {
 
     private final OffenderRepository offenderRepository;
+    private final OffenderAccessLimitationRepository offenderAccessLimitationRepository;
     private final ConvictionService convictionService;
 
     private final OffenderDocumentRepository documentRepository;
@@ -87,6 +78,11 @@ public class OffenderService {
                 return OffenderTransformer.offenderSummaryOf(o, document);
             }
         );
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<OffenderAccessLimitations> getOffenderAccessLimitationsByCrn(String crn) {
+        return offenderAccessLimitationRepository.findByCrn(crn);
     }
 
     public Optional<String> crnOf(String nomsNumber) {

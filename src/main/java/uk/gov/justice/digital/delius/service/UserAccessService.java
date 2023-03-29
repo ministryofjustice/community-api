@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.data.api.AccessLimitation;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAccessLimitations;
 
 import java.util.Collection;
 import java.util.Set;
@@ -34,7 +35,7 @@ public class UserAccessService {
         final var username = currentUserSupplier.username();
         if (username.isPresent() && shouldCheckExclusion(authorities)) {
 
-            final var excludedException = offenderService.getOffenderByCrn(crn)
+            final var excludedException = offenderService.getOffenderAccessLimitationsByCrn(crn)
                 .map(o -> userService.accessLimitationOf(username.get(), o))
                 .filter(AccessLimitation::isUserExcluded)
                 .map(accessLimitation -> new AccessDeniedException(accessLimitation.getExclusionMessage()));
@@ -44,7 +45,7 @@ public class UserAccessService {
         }
 
         if (shouldCheckRestriction(authorities)) {
-            final var restrictedException = offenderService.getOffenderByCrn(crn)
+            final var restrictedException = offenderService.getOffenderAccessLimitationsByCrn(crn)
                 .map(o -> username.map(u -> userService.accessLimitationOf(u, o))
                                          .orElseGet(() -> buildAnonymousUserAccessLimitation(o)))
                 .filter(AccessLimitation::isUserRestricted)
@@ -69,7 +70,7 @@ public class UserAccessService {
             .noneMatch(ignoreRestrictionRoles::contains);
     }
 
-    private AccessLimitation buildAnonymousUserAccessLimitation(uk.gov.justice.digital.delius.data.api.OffenderDetail offender) {
+    private AccessLimitation buildAnonymousUserAccessLimitation(OffenderAccessLimitations offender) {
         return AccessLimitation.builder()
             .userRestricted(offender.getCurrentRestriction())
             .restrictionMessage(offender.getRestrictionMessage())

@@ -6,8 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
 import uk.gov.justice.digital.delius.data.api.AccessLimitation;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAccessLimitations;
 import uk.gov.justice.digital.delius.service.AssessmentService;
 import uk.gov.justice.digital.delius.service.ContactService;
 import uk.gov.justice.digital.delius.service.ConvictionService;
@@ -54,7 +54,7 @@ public class OffenderResource_CheckUserAccess {
     @Test
     void willCheckUserAccessIsNotRestrictedOrExcluded(){
         final var offender = theOffender();
-        given(offenderService.getOffenderByCrn(SOME_CRN_NUMBER)).willReturn(offender);
+        given(offenderService.getOffenderAccessLimitationsByCrn(SOME_CRN_NUMBER)).willReturn(offender);
         given(currentUserSupplier.username()).willReturn(Optional.of("BOB"));
         given(userService.accessLimitationOf("BOB", offender.orElseThrow())).willReturn(accessLimitationNone());
 
@@ -78,7 +78,7 @@ public class OffenderResource_CheckUserAccess {
     @Test
     void willCheckUserAccessIsRestrictedAndExcluded(){
         final var offender = theOffender();
-        given(offenderService.getOffenderByCrn(SOME_CRN_NUMBER)).willReturn(offender);
+        given(offenderService.getOffenderAccessLimitationsByCrn(SOME_CRN_NUMBER)).willReturn(offender);
         given(currentUserSupplier.username()).willReturn(Optional.of("BOB"));
         given(userService.accessLimitationOf("BOB", offender.orElseThrow())).willReturn(accessLimitationRestrictedAndExcluded());
 
@@ -111,10 +111,9 @@ public class OffenderResource_CheckUserAccess {
                 .statusCode(404);
     }
 
-    private Optional<OffenderDetail> theOffender() {
-        return Optional.of(OffenderDetail.builder()
-                .firstName("Bob")
-                .surname("Jones")
+    private Optional<OffenderAccessLimitations> theOffender() {
+        return Optional.of(OffenderAccessLimitations.builder()
+                .offenderId(1L)
                 .currentExclusion(Boolean.TRUE)
                 .exclusionMessage("the exclusion message")
                 .currentRestriction(Boolean.TRUE)

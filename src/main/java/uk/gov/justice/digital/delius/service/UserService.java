@@ -9,9 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.delius.controller.BadRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.AccessLimitation;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.UserDetails;
 import uk.gov.justice.digital.delius.data.api.UserRole;
+import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAccessLimitations;
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
 import uk.gov.justice.digital.delius.service.wrapper.UserRepositoryWrapper;
 
@@ -38,7 +38,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public AccessLimitation accessLimitationOf(final String subject, final OffenderDetail offenderDetail) {
+    public AccessLimitation accessLimitationOf(final String subject, final OffenderAccessLimitations offenderDetail) {
         final var accessLimitationBuilder = AccessLimitation.builder();
 
         if (offenderDetail.getCurrentExclusion() || offenderDetail.getCurrentRestriction()) {
