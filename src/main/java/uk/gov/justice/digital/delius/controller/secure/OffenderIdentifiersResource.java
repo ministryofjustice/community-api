@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderIdentifiers;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
@@ -27,19 +26,6 @@ import java.util.Optional;
 @PreAuthorize("hasRole('ROLE_COMMUNITY')")
 public class OffenderIdentifiersResource {
     private final OffenderService offenderService;
-
-    @Operation(description = "Return the identifiers for an offender using offenderId. requires ROLE_COMMUNITY")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "400", description = "Invalid request"),
-                    @ApiResponse(responseCode = "404", description = "Offender not found"),
-                    @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
-            })
-    @GetMapping(value = "offenders/offenderId/{offenderId}/identifiers")
-    public OffenderIdentifiers getOffenderIdentifiersByOffenderId(final @PathVariable("offenderId") Long offenderId) {
-        final var maybeOffender = offenderService.getOffenderByOffenderId(offenderId);
-        return identifiersFor(maybeOffender.map(OffenderDetail::getOffenderId));
-    }
 
     @Operation(description = "Return the identifiers for an offender using the crn. requires ROLE_COMMUNITY")
     @ApiResponses(

@@ -18,11 +18,9 @@ import uk.gov.justice.digital.delius.data.api.ReplaceCustodyKeyDates;
 import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
 import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.KeyDate;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
@@ -43,7 +41,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.time.temporal.ChronoUnit.DAYS;
-import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.service.CustodyKeyDatesMapper.custodyManagedKeyDates;
 import static uk.gov.justice.digital.delius.service.CustodyKeyDatesMapper.descriptionOf;
@@ -242,16 +239,6 @@ public class ConvictionService {
     @Transactional(readOnly = true)
     public Optional<CustodyKeyDate> getCustodyKeyDateByConvictionId(Long convictionId, String typeCode) {
         return getCustodyKeyDate(eventRepository.getOne(convictionId), typeCode);
-    }
-
-    @Transactional(readOnly = true)
-    public List<CustodyKeyDate> getCustodyKeyDatesByOffenderId(Long offenderId) {
-        return getCustodyKeyDates(getActiveCustodialEvent(offenderId));
-    }
-
-    @Transactional(readOnly = true)
-    public List<CustodyKeyDate> getCustodyKeyDatesByConvictionId(Long convictionId) {
-        return getCustodyKeyDates(eventRepository.getOne(convictionId));
     }
 
     @Transactional
@@ -509,13 +496,6 @@ public class ConvictionService {
         return String.valueOf(eventRepository.findByOffenderId(offenderId).size() + 1);
     }
 
-    private List<Event> activeEvents(List<Event> events) {
-        return events.stream()
-            .filter(event -> !event.isSoftDeleted())
-            .filter(Event::isActiveFlag)
-            .collect(toList());
-    }
-
     private List<Event> activeCustodyEvents(Long offenderId) {
         return eventRepository.findActiveByOffenderIdWithCustody(offenderId)
             .stream()
@@ -595,13 +575,6 @@ public class ConvictionService {
         return getCustodyKeyDate(event, typeCode).orElseThrow(() -> new RuntimeException("Added/Updated keyDate has disappeared"));
     }
 
-    private List<CustodyKeyDate> getCustodyKeyDates(Event event) {
-        return event.getDisposal().getCustody().getKeyDates()
-            .stream()
-            .map(CustodyKeyDateTransformer::custodyKeyDateOf)
-            .collect(toList());
-    }
-
     private void deleteCustodyKeyDate(Event event, String typeCode, boolean shouldNotifyIAPS) {
         final var telemetryProperties = Map.of("offenderId", event.getOffenderId().toString(),
             "eventId", event.getEventId().toString(),
@@ -622,9 +595,5 @@ public class ConvictionService {
             }
             telemetryClient.trackEvent("KeyDateDeleted", telemetryProperties, null);
         });
-    }
-
-    private Optional<Long> firstEventId(List<Event> events) {
-        return events.stream().findFirst().map(Event::getEventId);
     }
 }

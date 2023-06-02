@@ -101,27 +101,6 @@ public class CustodyKeyDatesController {
         return getCustodyKeyDate(offenderService.mostLikelyOffenderIdOfNomsNumber(nomsNumber).getOrElseThrow(e -> new ConflictingRequestException(e.getMessage())), typeCode);
     }
 
-
-    @RequestMapping(value = "offenders/crn/{crn}/custody/keyDates", method = RequestMethod.GET)
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "400", description = "The the offender does not have a single custody event"),
-            @ApiResponse(responseCode = "404", description = "The requested offender was not found.")
-    })
-    @Operation(description = "Gets a all custody key dates for the active custodial conviction")
-    public List<CustodyKeyDate> getAllCustodyKeyDateByCrn(final @PathVariable String crn) {
-        return getCustodyKeyDates(offenderService.offenderIdOfCrn(crn));
-    }
-
-    @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/custody/keyDates", method = RequestMethod.GET)
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "400", description = "The the offender does not have a single custody event"),
-            @ApiResponse(responseCode = "404", description = "The requested offender was not found.")
-    })
-    @Operation(description = "Gets all custody key dates for the active custodial conviction")
-    public List<CustodyKeyDate> getAllCustodyKeyDateByNomsNumber(final @PathVariable String nomsNumber) {
-        return getCustodyKeyDates(offenderService.mostLikelyOffenderIdOfNomsNumber(nomsNumber).getOrElseThrow(e -> new ConflictingRequestException(e.getMessage())));
-    }
-
     @RequestMapping(value = "offenders/nomsNumber/{nomsNumber}/custody/keyDates/{typeCode}", method = RequestMethod.DELETE)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Key date has been deleted"),
@@ -157,12 +136,6 @@ public class CustodyKeyDatesController {
     private Function<Long, CustodyKeyDate> getCustodyKeyDateByOffenderId(final String typeCode) {
         return offenderId -> convictionService.getCustodyKeyDateByOffenderId(offenderId, typeCode)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Key date not found"));
-    }
-
-    private List<CustodyKeyDate> getCustodyKeyDates(final Optional<Long> maybeOffenderId) {
-        return maybeOffenderId
-                .map(convictionService::getCustodyKeyDatesByOffenderId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Offender not found"));
     }
 
     private void deleteCustodyKeyDate(final Optional<Long> maybeOffenderId, final String typeCode) {
