@@ -31,20 +31,6 @@ public class AuthenticationController {
 
     private final UserService userService;
 
-    @Operation(description = "Authenticate a username and password against Delius Identity (LDAP). Requires ROLE_COMMUNITY_AUTH_INT")
-    @ApiResponses(
-        value = {
-            @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "403", description = "Requires role ROLE_COMMUNITY_AUTH_INT"),
-        })
-    @PreAuthorize("hasRole('ROLE_COMMUNITY_AUTH_INT')")
-    @PostMapping("/authenticate")
-    public void authenticate(@NotNull @Valid @Parameter(description = "Authentication Details", required = true) @RequestBody final AuthUser authUser) {
-        if (!userService.authenticateUser(authUser.getUsername(), authUser.getPassword())) {
-            throw new UnauthorisedException(String.format("User with username %s", authUser.getUsername()));
-        }
-    }
-
     @Operation(description = "Change password a users (LDAP) account. Requiers ROLE_COMMUNITY_AUTH_INT")
     @ApiResponses(
         value = {

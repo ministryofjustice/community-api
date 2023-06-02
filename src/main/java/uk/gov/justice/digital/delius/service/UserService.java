@@ -114,10 +114,6 @@ public class UserService {
             .collect(Collectors.toList());
     }
 
-    public boolean authenticateUser(final String user, final String password) {
-        return ldapRepository.authenticateUser(user, password);
-    }
-
     public boolean changePassword(final String username, final String password) {
         return ldapRepository.changePassword(username, password);
     }

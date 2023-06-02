@@ -25,7 +25,6 @@ import uk.gov.justice.digital.delius.data.api.ManagedOffenderCrn;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.service.CaseloadService;
 import uk.gov.justice.digital.delius.service.StaffService;
-import uk.gov.justice.digital.delius.validation.StaffCode;
 
 import java.util.List;
 import java.util.Set;
@@ -133,15 +132,6 @@ public class StaffResource {
         return caseloadService.getCaseloadByStaffIdentifier(staffIdentifier, OFFENDER_MANAGER)
             .map(Caseload::getManagedOffenders)
             .orElseThrow(() -> new NotFoundException(String.format("Staff member with identifier %d", staffIdentifier)));
-    }
-
-    @Operation(description = "Return the full caseload for a probation staff/officer, returning only the managed offenders")
-    @GetMapping(path = "/staff/staffCode/{staffCode}/caseload/managedOffenders")
-    public Set<ManagedOffenderCrn> getCaseloadOffendersForStaff(
-        @Parameter(name = "staffCode", description = "Delius staff/officer code", example = "N01A123", required = true)
-        @NotNull @StaffCode @PathVariable(value = "staffCode") final String staffCode) {
-        return getCaseloadOffendersForStaff(staffService.getStaffIdByStaffCode(staffCode)
-            .orElseThrow(() -> new NotFoundException(String.format("Staff member with code %s", staffCode))));
     }
 
     @Operation(description = "Return the list of heads of a specific probation delivery unit (aka borough)")

@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,7 +30,6 @@ import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.AccessLimitation;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
-import uk.gov.justice.digital.delius.data.api.Contact;
 import uk.gov.justice.digital.delius.data.api.ContactSummary;
 import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
@@ -189,29 +187,6 @@ public class OffendersResource {
                 .getOrElseThrow(error -> new ConflictingRequestException(error.getMessage()));
         }
         return offender.orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
-    }
-
-    @Operation(description = "Returns the contact details for an offender by NOMS number", tags = "Contact and attendance")
-    @ApiResponses(
-            value = {
-                @ApiResponse(responseCode = "400", description = "Invalid request"),
-                @ApiResponse(responseCode = "404", description = "Offender does not exist"),
-                @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
-            })
-    @GetMapping(value = "/offenders/nomsNumber/{nomsNumber}/contacts")
-    public ResponseEntity<List<Contact>> getOffenderContactReportByNomsNumber(@Parameter(name = "nomsNumber", description = "Nomis number for the offender", example = "G9542VP", required = true) @NotNull final @PathVariable("nomsNumber") String nomsNumber,
-                                                                              final @RequestParam(value = "contactTypes", required = false) Optional<List<String>> contactTypes,
-                                                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final @RequestParam(value = "from", required = false) Optional<LocalDateTime> from,
-                                                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final @RequestParam(value = "to", required = false) Optional<LocalDateTime> to) {
-        final var contactFilter = ContactFilter.builder()
-                .contactTypes(contactTypes)
-                .from(from)
-                .to(to)
-                .build();
-
-        return offenderService.offenderIdOfNomsNumber(nomsNumber)
-                .map(offenderId -> new ResponseEntity<>(contactService.contactsFor(offenderId, contactFilter), HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @Operation(description = "Returns the induction appointments for an offender by CRN", tags = "Contact and attendance")

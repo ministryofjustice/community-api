@@ -86,40 +86,6 @@ public class ConvictionService_GetCustodyKeyDateTest {
         }
 
         @Test
-        public void canGetAllKeyDateByOffenderIdWhenPresent() throws SingleActiveCustodyConvictionNotFoundException {
-            val today = LocalDate.now();
-            val event = aCustodyEvent(1L, new ArrayList<>());
-            event.getDisposal().getCustody().getKeyDates().add(aKeyDate("POM1", "POM Handover expected start date", today));
-            event.getDisposal().getCustody().getKeyDates().add(aKeyDate("POM2", "RO responsibility handover from POM to OM expected date", today));
-
-            when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(event));
-
-            val custodyKeyDates = convictionService.getCustodyKeyDatesByOffenderId(999L);
-
-            assertThat(custodyKeyDates).containsExactlyInAnyOrder(
-                CustodyKeyDate
-                    .builder()
-                    .date(today)
-                    .type(KeyValue
-                        .builder()
-                        .code("POM1")
-                        .description("POM Handover expected start date")
-                        .build())
-                    .build(),
-                CustodyKeyDate
-                    .builder()
-                    .date(today)
-                    .type(KeyValue
-                        .builder()
-                        .code("POM2")
-                        .description("RO responsibility handover from POM to OM expected date")
-                        .build())
-                    .build()
-            );
-
-        }
-
-        @Test
         public void willReturnEmptyIfKeyDateByOffenderIdKeyDateNotPresent() throws SingleActiveCustodyConvictionNotFoundException {
             val event = aCustodyEvent(1L, new ArrayList<>());
             event.getDisposal().getCustody().getKeyDates().clear();
@@ -130,18 +96,6 @@ public class ConvictionService_GetCustodyKeyDateTest {
 
             assertThat(custodyKeyDate).isNotPresent();
 
-        }
-
-        @Test
-        public void willReturnEmptyListKeyDateByOffenderIdKeyDatesNotPresent() throws SingleActiveCustodyConvictionNotFoundException {
-            val event = aCustodyEvent(1L, new ArrayList<>());
-            event.getDisposal().getCustody().getKeyDates().clear();
-
-            when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(event));
-
-            val custodyKeyDates = convictionService.getCustodyKeyDatesByOffenderId(999L);
-
-            assertThat(custodyKeyDates).isEmpty();
         }
 
         @Test
@@ -158,24 +112,6 @@ public class ConvictionService_GetCustodyKeyDateTest {
             when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEvent1, activeCustodyEvent2));
 
             assertThatThrownBy(() -> convictionService.getCustodyKeyDateByOffenderId(999L, "POM1"))
-                .isInstanceOf(SingleActiveCustodyConvictionNotFoundException.class);
-
-        }
-
-        @Test
-        public void shouldNotAllowKeyDatesToBeRetrievedWhenMoreThanOneActiveCustodialEvent() {
-            val activeCustodyEvent1 = aCustodyEvent(1L, new ArrayList<>())
-                .toBuilder()
-                .activeFlag(true)
-                .build();
-            val activeCustodyEvent2 = aCustodyEvent(2L, new ArrayList<>())
-                .toBuilder()
-                .activeFlag(true)
-                .build();
-
-            when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEvent1, activeCustodyEvent2));
-
-            assertThatThrownBy(() -> convictionService.getCustodyKeyDatesByOffenderId(999L))
                 .isInstanceOf(SingleActiveCustodyConvictionNotFoundException.class);
 
         }
@@ -209,38 +145,6 @@ public class ConvictionService_GetCustodyKeyDateTest {
                     .description("POM Handover expected start date")
                     .build())
                 .build());
-
-        }
-        @Test
-        public void keyDatesRetrievedFromActiveCustodyRecord() throws SingleActiveCustodyConvictionNotFoundException {
-            val today = LocalDate.now();
-            val activeCustodyEvent = aCustodyEvent(1L, new ArrayList<>())
-                .toBuilder()
-                .activeFlag(true)
-                .build();
-            activeCustodyEvent.getDisposal().getCustody().getKeyDates().add(aKeyDate("POM1", "POM Handover expected start date", today));
-
-            val event = aCustodyEvent(2L, new ArrayList<>())
-                .toBuilder()
-                .activeFlag(true)
-                .build();
-            val terminatedDisposal = event.getDisposal().toBuilder().terminationDate(LocalDate.now()).build();
-            val activeEventButTerminatedCustodyEvent = event.toBuilder().disposal(terminatedDisposal).build();
-
-            when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEvent, activeEventButTerminatedCustodyEvent));
-
-            val custodyKeyDates = convictionService.getCustodyKeyDatesByOffenderId(999L);
-
-            assertThat(custodyKeyDates).containsExactly(CustodyKeyDate
-                .builder()
-                .date(today)
-                .type(KeyValue
-                    .builder()
-                    .code("POM1")
-                    .description("POM Handover expected start date")
-                    .build())
-                .build());
-
         }
     }
 
@@ -285,51 +189,6 @@ public class ConvictionService_GetCustodyKeyDateTest {
                     .build())
                 .build());
 
-        }
-
-        @Test
-        public void willReturnEmptyListIfKeyDatesByConvictionIdNotPresent() {
-            val event = aCustodyEvent(1L, new ArrayList<>());
-            event.getDisposal().getCustody().getKeyDates().clear();
-
-            when(eventRepository.getOne(999L)).thenReturn(event);
-
-            val custodyKeyDates = convictionService.getCustodyKeyDatesByConvictionId(999L);
-
-            assertThat(custodyKeyDates).isEmpty();
-        }
-
-        @Test
-        public void canGetAllKeyDatesByConvictionIdWhenPresent() {
-            val today = LocalDate.now();
-            val event = aCustodyEvent(1L, new ArrayList<>());
-            event.getDisposal().getCustody().getKeyDates().add(aKeyDate("POM1", "POM Handover expected start date", today));
-            event.getDisposal().getCustody().getKeyDates().add(aKeyDate("POM2", "RO responsibility handover from POM to OM expected date", today));
-
-            when(eventRepository.getOne(999L)).thenReturn(event);
-
-            val custodyKeyDates = convictionService.getCustodyKeyDatesByConvictionId(999L);
-
-            assertThat(custodyKeyDates).containsExactlyInAnyOrder(
-                CustodyKeyDate
-                    .builder()
-                    .date(today)
-                    .type(KeyValue
-                        .builder()
-                        .code("POM1")
-                        .description("POM Handover expected start date")
-                        .build())
-                    .build(),
-                CustodyKeyDate
-                    .builder()
-                    .date(today)
-                    .type(KeyValue
-                        .builder()
-                        .code("POM2")
-                        .description("RO responsibility handover from POM to OM expected date")
-                        .build())
-                    .build()
-            );
         }
     }
 }

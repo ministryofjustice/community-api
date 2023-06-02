@@ -49,10 +49,6 @@ public class LdapRepository {
                 (AttributesMapper<String>) attrs -> (String) attrs.get("uid").get()));
     }
 
-    public boolean authenticateUser(final String user, final String password) {
-        return authenticationTemplate.authenticate(ldapUserBase, "(cn=" + user + ")", password);
-    }
-
     public Optional<NDeliusUser> getDeliusUser(final String username) {
         // this is a two step process:
         //   1. find the user matching the supplied username in the delius LDAP.
