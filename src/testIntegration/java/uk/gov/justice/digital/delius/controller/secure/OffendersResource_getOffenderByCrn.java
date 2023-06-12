@@ -57,12 +57,15 @@ public class OffendersResource_getOffenderByCrn extends IntegrationTestBase {
         assertThat(disability.getEndDate()).isNull();
         assertThat(disability.getDisabilityType().getCode()).isEqualTo("PC");
         assertThat(disability.getDisabilityType().getDescription()).isEqualTo("Progressive Condition");
-        assertThat(disability.getProvisions().get(0).getProvisionId()).isEqualTo(2500022000L);
-        assertThat(disability.getProvisions().get(0).getProvisionType().getCode()).isEqualTo("99");
-        assertThat(disability.getProvisions().get(0).getProvisionType().getDescription()).isEqualTo("Other");
-        assertThat(disability.getProvisions().get(0).getNotes()).isEqualTo("stair lift");
-        assertThat(disability.getProvisions().get(0).getStartDate()).isEqualTo(LocalDate.of(2021, 1, 13));
-        assertThat(disability.getProvisions().get(0).getFinishDate()).isNull();
+
+        final var provision = offenderDetail.getOffenderProfile().getProvisions().get(0);
+        assertThat(provision.getProvisionId()).isEqualTo(2500022000L);
+        assertThat(provision.getProvisionType().getCode()).isEqualTo("99");
+        assertThat(provision.getProvisionType().getDescription()).isEqualTo("Other");
+        assertThat(provision.getNotes()).isEqualTo("stair lift");
+        assertThat(provision.getStartDate()).isEqualTo(LocalDate.of(2021, 1, 13));
+        assertThat(provision.getFinishDate()).isNull();
+
         assertThat(disability.getLastUpdatedDateTime()).isEqualTo(LocalDateTime.of(2021, 1, 12, 16, 7, 51));
         assertThat(offenderDetail.getContactDetails().getAddresses())
             .hasSize(1)
