@@ -27,6 +27,8 @@ public class OffenderProfile {
     private String riskColour;
     private List<Disability> disabilities;
 
+    private List<Provision> provisions;
+
     @Schema(name = "Gender identity", example = "Prefer to self-describe")
     private String genderIdentity;
 
