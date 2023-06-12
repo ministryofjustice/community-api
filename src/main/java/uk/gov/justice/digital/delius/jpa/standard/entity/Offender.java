@@ -181,6 +181,11 @@ public class Offender {
     @Exclude
     private List<Disability> disabilities;
 
+    @OneToMany
+    @JoinColumn(name = "OFFENDER_ID")
+    @Exclude
+    private List<Provision> provisions;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SEXUAL_ORIENTATION_ID")
     @Exclude

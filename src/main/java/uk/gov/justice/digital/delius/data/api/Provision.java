@@ -20,4 +20,8 @@ public class Provision {
     private LocalDate finishDate;
 
     private KeyValue provisionType;
+
+    private KeyValue category;
+
+
 }

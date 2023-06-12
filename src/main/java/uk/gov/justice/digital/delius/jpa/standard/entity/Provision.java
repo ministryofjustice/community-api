@@ -29,10 +29,6 @@ public class Provision
     @Column(name = "ROW_VERSION")
     private Long version;
 
-    @ManyToOne()
-    @JoinColumn(name = "DISABILITY_ID")
-    private Disability disability;
-
     @Column(name = "START_DATE")
     private LocalDate startDate;
 
@@ -42,6 +38,10 @@ public class Provision
     @ManyToOne()
     @JoinColumn(name = "PROVISION_TYPE_ID")
     private StandardReference provisionType;
+
+    @ManyToOne()
+    @JoinColumn(name = "PROVISION_CATEGORY_ID")
+    private StandardReference category;
 
     @Lob
     @Column(name = "NOTES")

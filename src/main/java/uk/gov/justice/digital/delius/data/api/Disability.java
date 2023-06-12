@@ -17,9 +17,12 @@ import java.util.List;
 public class Disability {
     private Long disabilityId;
     private KeyValue disabilityType;
+    private KeyValue disabilityCondition;
     private LocalDate startDate;
     private LocalDate endDate;
     private String notes;
+
+    //leaving this in for backwards compatibility
     private List<Provision> provisions;
 
     @Schema(name = "Date time when disability was last updated", example = "2020-09-20T11:00:00+01:00")

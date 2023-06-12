@@ -23,14 +23,15 @@ public class Disability {
     @JoinColumn(name = "DISABILITY_TYPE_ID")
     @OneToOne
     private StandardReference disabilityType;
+    @JoinColumn(name = "DISABILITY_CONDITION_ID")
+    @OneToOne
+    private StandardReference condition;
     @Column(name = "START_DATE")
     private LocalDate startDate;
     @Column(name = "FINISH_DATE")
     private LocalDate finishDate;
     @Column(name = "NOTES")
     private String notes;
-    @OneToMany(mappedBy = "disability", fetch = FetchType.LAZY)
-    private List<Provision> provisions;
     @Column(name = "SOFT_DELETED")
     private Long softDeleted;
     @Column(name = "ROW_VERSION")

@@ -36,9 +36,9 @@ public class OffenderTransformerTest {
     @Test
     public void offenderManagerAllocationReasonMappedFromAllocationReasonInOffenderTransfer() {
         assertThat(OffenderTransformer.offenderManagersOf(ImmutableList.of(aOffenderManager())).get(0).getAllocationReason())
-                .isNotNull()
-                .hasFieldOrPropertyWithValue("code", "1984")
-                .hasFieldOrPropertyWithValue("description", "Reallocation - Inactive Offender");
+            .isNotNull()
+            .hasFieldOrPropertyWithValue("code", "1984")
+            .hasFieldOrPropertyWithValue("description", "Reallocation - Inactive Offender");
 
     }
 
@@ -46,12 +46,12 @@ public class OffenderTransformerTest {
     public void offenderManagerAllocationReasonNullWhenOffenderTransferAbsent() {
         assertThat(OffenderTransformer.offenderManagersOf(
                 ImmutableList.of(
-                        aOffenderManager()
-                                .toBuilder()
-                                .allocationReason(null)
-                                .build()))
-                .get(0).getAllocationReason())
-                .isNull();
+                    aOffenderManager()
+                        .toBuilder()
+                        .allocationReason(null)
+                        .build()))
+            .get(0).getAllocationReason())
+            .isNull();
 
     }
 
@@ -60,57 +60,45 @@ public class OffenderTransformerTest {
         assertThat(OffenderTransformer.fullOffenderOf(anOffender()
                 .toBuilder()
                 .disabilities(ImmutableList.of(
-                        Disability
-                                .builder()
-                                .softDeleted(0L)
-                                .disabilityId(1L)
-                                .startDate(LocalDate.now().minus(5, ChronoUnit.DAYS))
-                                .disabilityType(StandardReference
-                                        .builder()
-                                        .codeValue("A")
-                                        .codeDescription("Mental health")
-                                        .build())
-                                .provisions(ImmutableList.of(Provision
-                                    .builder()
-                                    .softDeleted(0L)
-                                    .provisionID(1L)
-                                    .notes("This is an adjustment")
-                                    .startDate(LocalDate.now().minus(5, ChronoUnit.DAYS))
-                                    .provisionType(StandardReference
-                                        .builder()
-                                        .codeValue("O")
-                                        .codeDescription("Other")
-                                        .build())
-                                    .build()))
-                                .build(),
-                        Disability
-                                .builder()
-                                .softDeleted(0L)
-                                .disabilityId(2L)
-                                .startDate(LocalDate.now().minus(2, ChronoUnit.DAYS))
-                                .disabilityType(StandardReference
-                                        .builder()
-                                        .codeValue("B")
-                                        .codeDescription("Physical health")
-                                        .build())
-                                .build(),
-                        Disability
-                                .builder()
-                                .softDeleted(0L)
-                                .disabilityId(3L)
-                                .startDate(LocalDate.now().minus(3, ChronoUnit.DAYS))
-                                .disabilityType(StandardReference
-                                        .builder()
-                                        .codeValue("C")
-                                        .codeDescription("No disability")
-                                        .build())
-                                .build()
+                    Disability
+                        .builder()
+                        .softDeleted(0L)
+                        .disabilityId(1L)
+                        .startDate(LocalDate.now().minus(5, ChronoUnit.DAYS))
+                        .disabilityType(StandardReference
+                            .builder()
+                            .codeValue("A")
+                            .codeDescription("Mental health")
+                            .build())
+                        .build(),
+                    Disability
+                        .builder()
+                        .softDeleted(0L)
+                        .disabilityId(2L)
+                        .startDate(LocalDate.now().minus(2, ChronoUnit.DAYS))
+                        .disabilityType(StandardReference
+                            .builder()
+                            .codeValue("B")
+                            .codeDescription("Physical health")
+                            .build())
+                        .build(),
+                    Disability
+                        .builder()
+                        .softDeleted(0L)
+                        .disabilityId(3L)
+                        .startDate(LocalDate.now().minus(3, ChronoUnit.DAYS))
+                        .disabilityType(StandardReference
+                            .builder()
+                            .codeValue("C")
+                            .codeDescription("No disability")
+                            .build())
+                        .build()
                 ))
                 .build(), null)
-                .getOffenderProfile()
-                .getDisabilities())
-                .extracting("disabilityId")
-                .containsExactly(2L, 3L, 1L);
+            .getOffenderProfile()
+            .getDisabilities())
+            .extracting("disabilityId")
+            .containsExactly(2L, 3L, 1L);
 
     }
 
@@ -119,88 +107,34 @@ public class OffenderTransformerTest {
         assertThat(OffenderTransformer.fullOffenderOf(anOffender()
                 .toBuilder()
                 .disabilities(ImmutableList.of(
-                        uk.gov.justice.digital.delius.jpa.standard.entity.Disability
-                                .builder()
-                                .softDeleted(0L)
-                                .disabilityId(1L)
-                                .startDate(LocalDate.now().minus(5, ChronoUnit.DAYS))
-                                .disabilityType(StandardReference
-                                        .builder()
-                                        .codeValue("A")
-                                        .codeDescription("Mental health")
-                                        .build())
-                                .build(),
-                        uk.gov.justice.digital.delius.jpa.standard.entity.Disability
-                                .builder()
-                                .softDeleted(1L)
-                                .disabilityId(2L)
-                                .startDate(LocalDate.now().minus(2, ChronoUnit.DAYS))
-                                .disabilityType(StandardReference
-                                        .builder()
-                                        .codeValue("B")
-                                        .codeDescription("Physical health")
-                                        .build())
-                                .build()
+                    uk.gov.justice.digital.delius.jpa.standard.entity.Disability
+                        .builder()
+                        .softDeleted(0L)
+                        .disabilityId(1L)
+                        .startDate(LocalDate.now().minus(5, ChronoUnit.DAYS))
+                        .disabilityType(StandardReference
+                            .builder()
+                            .codeValue("A")
+                            .codeDescription("Mental health")
+                            .build())
+                        .build(),
+                    uk.gov.justice.digital.delius.jpa.standard.entity.Disability
+                        .builder()
+                        .softDeleted(1L)
+                        .disabilityId(2L)
+                        .startDate(LocalDate.now().minus(2, ChronoUnit.DAYS))
+                        .disabilityType(StandardReference
+                            .builder()
+                            .codeValue("B")
+                            .codeDescription("Physical health")
+                            .build())
+                        .build()
                 ))
                 .build(), null)
-                .getOffenderProfile()
-                .getDisabilities())
-                .extracting("disabilityId")
-                .containsExactly(1L);
-
-    }
-
-
-    @Test
-    public void disabilitiesCopiedWithProvisions() {
-        var disabilities = ImmutableList.of(Disability
-            .builder()
-            .softDeleted(0L)
-            .disabilityId(1L)
-            .startDate(LocalDate.now().minus(5, ChronoUnit.DAYS))
-            .disabilityType(StandardReference
-                .builder()
-                .codeValue("A")
-                .codeDescription("Mental health")
-                .build())
-            .provisions(ImmutableList.of(Provision
-                .builder()
-                .softDeleted(0L)
-                .provisionID(1L)
-                .notes("This is an adjustment")
-                .startDate(LocalDate.of(2021, 6, 1))
-                .provisionType(StandardReference
-                    .builder()
-                    .codeValue("O")
-                    .codeDescription("Other")
-                    .build())
-                .build()))
-            .build(),
-            Disability
-                .builder()
-                .softDeleted(0L)
-                .disabilityId(2L)
-                .startDate(LocalDate.now().minus(2, ChronoUnit.DAYS))
-                .disabilityType(StandardReference
-                    .builder()
-                    .codeValue("B")
-                    .codeDescription("Physical health")
-                    .build())
-                .build());
-
-        assertThat(OffenderTransformer.fullOffenderOf(anOffender()
-            .toBuilder()
-            .disabilities(disabilities)
-            .build(), null)
             .getOffenderProfile()
             .getDisabilities())
-            .extracting("provisions")
-            .containsExactly(ImmutableList.of(), ImmutableList.of(uk.gov.justice.digital.delius.data.api.Provision.builder()
-                .notes("This is an adjustment")
-                .provisionId(1L)
-                .startDate(LocalDate.of(2021, 6, 1))
-                .provisionType(KeyValue.builder().code("O").description("Other").build())
-                .build()));
+            .extracting("disabilityId")
+            .containsExactly(1L);
 
     }
 
@@ -209,11 +143,11 @@ public class OffenderTransformerTest {
 
         // Get currently managed offenders for this officer
         assertThat(OffenderTransformer.managedOffenderOf(anOfficerWithOffenderManagers(), true)
-                .get(0))
-                .hasFieldOrPropertyWithValue("nomsNumber", "A1111")
-                .hasFieldOrPropertyWithValue("offenderSurname", "SMITH")
-                .hasFieldOrPropertyWithValue("staffCode", "AAAA")
-                .hasFieldOrPropertyWithValue("staffIdentifier", 3L);
+            .get(0))
+            .hasFieldOrPropertyWithValue("nomsNumber", "A1111")
+            .hasFieldOrPropertyWithValue("offenderSurname", "SMITH")
+            .hasFieldOrPropertyWithValue("staffCode", "AAAA")
+            .hasFieldOrPropertyWithValue("staffIdentifier", 3L);
     }
 
     @Test
@@ -221,7 +155,7 @@ public class OffenderTransformerTest {
 
         // Get current and past managed offenders for this officer
         assertThat(new ArrayList<>(OffenderTransformer.managedOffenderOf(anOfficerWithOffenderManagers(), false)))
-                .hasSize(2);
+            .hasSize(2);
     }
 
     @Test
@@ -229,11 +163,11 @@ public class OffenderTransformerTest {
 
         // Get the current responsible officers for an offender
         assertThat(OffenderTransformer.responsibleOfficersOf(anOffenderWithManagers(), true)
-                .stream()
-                .map(uk.gov.justice.digital.delius.data.api.ResponsibleOfficer::getOffenderManagerId)
-                .collect(Collectors.toList()))
-                .hasSize(1)
-                .containsOnly(2L);
+            .stream()
+            .map(uk.gov.justice.digital.delius.data.api.ResponsibleOfficer::getOffenderManagerId)
+            .collect(Collectors.toList()))
+            .hasSize(1)
+            .containsOnly(2L);
     }
 
     @Test
@@ -241,78 +175,78 @@ public class OffenderTransformerTest {
 
         // Get the current and previous reponsible officers assignments for this offender
         assertThat(OffenderTransformer.responsibleOfficersOf(anOffenderWithManagers(), false)
-                .stream()
-                .map(uk.gov.justice.digital.delius.data.api.ResponsibleOfficer::getOffenderManagerId)
-                .collect(Collectors.toList()))
-                .hasSize(2)
-                .containsAll(Arrays.asList(1L, 2L));
+            .stream()
+            .map(uk.gov.justice.digital.delius.data.api.ResponsibleOfficer::getOffenderManagerId)
+            .collect(Collectors.toList()))
+            .hasSize(2)
+            .containsAll(Arrays.asList(1L, 2L));
     }
 
     @Test
     public void ProbationAreaNPSPrivateSectorTransformedToTrue() {
         assertThat(OffenderTransformer.offenderManagersOf(ImmutableList.of(
                 aOffenderManager()
-                        .toBuilder()
-                        .probationArea(npsProbationArea())
-                        .build()))
-                .get(0).getProbationArea().getNps()).isTrue();
+                    .toBuilder()
+                    .probationArea(npsProbationArea())
+                    .build()))
+            .get(0).getProbationArea().getNps()).isTrue();
     }
 
     @Test
     public void ProbationAreaNPSPrivateSectorTransformedToFalse() {
         assertThat(OffenderTransformer.offenderManagersOf(ImmutableList.of(
                 aOffenderManager()
-                        .toBuilder()
-                        .probationArea(crcProbationArea())
-                        .build()))
-                .get(0).getProbationArea().getNps()).isFalse();
+                    .toBuilder()
+                    .probationArea(crcProbationArea())
+                    .build()))
+            .get(0).getProbationArea().getNps()).isFalse();
     }
 
     @Test
     public void currentTierDescriptionCopiedWhenNotNull() {
         assertThat(OffenderTransformer.fullOffenderOf(anOffender().toBuilder().currentTier(
-                null).build(), null).getCurrentTier())
-                .isNull();
+            null).build(), null).getCurrentTier())
+            .isNull();
 
         assertThat(OffenderTransformer.fullOffenderOf(anOffender().toBuilder().currentTier(
-                StandardReference
-                        .builder()
-                        .codeDescription("D2")
-                        .build()).build(), null).getCurrentTier())
-                .isEqualTo("D2");
+            StandardReference
+                .builder()
+                .codeDescription("D2")
+                .build()).build(), null).getCurrentTier())
+            .isEqualTo("D2");
     }
 
     private List<OffenderManager> aListOfOffenderManagers() {
 
         // List of offender managers managing the same offender with one current and one historical
         return ImmutableList.of(
-                aOffenderManager()
-                        .toBuilder()
-                        .offenderManagerId(1L)
-                        .offenderId(1L)
-                        .allocationDate(LocalDate.parse("2018-01-01"))
-                        .endDate(LocalDate.parse("2019-01-01"))
-                        .activeFlag(0L)
-                        .probationArea(npsProbationArea())
-                        .team(aTeam())
-                        .providerTeam(aProviderTeam())
-                        .staff(anOfficerWithoutOffenderManagers())
-                        .managedOffender(anOffenderWithoutManagers())
-                        .build(),
+            aOffenderManager()
+                .toBuilder()
+                .offenderManagerId(1L)
+                .offenderId(1L)
+                .allocationDate(LocalDate.parse("2018-01-01"))
+                .endDate(LocalDate.parse("2019-01-01"))
+                .activeFlag(0L)
+                .probationArea(npsProbationArea())
+                .team(aTeam())
+                .providerTeam(aProviderTeam())
+                .staff(anOfficerWithoutOffenderManagers())
+                .managedOffender(anOffenderWithoutManagers())
+                .build(),
 
-                aOffenderManager()
-                        .toBuilder()
-                        .offenderManagerId(2L)
-                        .offenderId(1L)
-                        .allocationDate(LocalDate.parse("2019-01-01"))
-                        .activeFlag(1L)
-                        .probationArea(crcProbationArea())
-                        .team(aTeam())
-                        .providerTeam(aProviderTeam())
-                        .staff(anOfficerWithoutOffenderManagers())
-                        .responsibleOfficers(List.of(aResponsibleOfficer()))
-                        .managedOffender(anOffenderWithoutManagers())
-                        .build()
+            aOffenderManager()
+                .toBuilder()
+                .offenderManagerId(2L)
+                .offenderId(1L)
+                .allocationDate(LocalDate.parse("2019-01-01"))
+                .activeFlag(1L)
+                .probationArea(crcProbationArea())
+                .team(aTeam())
+                .providerTeam(aProviderTeam())
+                .staff(anOfficerWithoutOffenderManagers())
+                .responsibleOfficers(List.of(aResponsibleOfficer()))
+                .managedOffender(anOffenderWithoutManagers())
+                .build()
         );
     }
 
@@ -323,68 +257,68 @@ public class OffenderTransformerTest {
     private Offender anOffenderWithoutManagers() {
 
         return Offender.builder()
-                .offenderId(1L)
-                .surname("SMITH")
-                .nomsNumber("A1111")
-                .build();
+            .offenderId(1L)
+            .surname("SMITH")
+            .nomsNumber("A1111")
+            .build();
     }
 
     private Offender anOffenderWithManagers() {
 
         return Offender.builder()
-                .offenderId(1L)
-                .surname("SMITH")
-                .nomsNumber("A1111")
-                .offenderManagers(aListOfOffenderManagers())
-                .prisonOffenderManagers(aListOfPrisonOffenderManagers())
-                .build();
+            .offenderId(1L)
+            .surname("SMITH")
+            .nomsNumber("A1111")
+            .offenderManagers(aListOfOffenderManagers())
+            .prisonOffenderManagers(aListOfPrisonOffenderManagers())
+            .build();
     }
 
 
     private ResponsibleOfficer aResponsibleOfficer() {
         return ResponsibleOfficer
-                .builder()
-                .startDateTime(LocalDateTime.parse("2018-01-01T00:00:00"))
-                .offenderId(1L)
-                .offenderManagerId(2L)
-                .build();
+            .builder()
+            .startDateTime(LocalDateTime.parse("2018-01-01T00:00:00"))
+            .offenderId(1L)
+            .offenderManagerId(2L)
+            .build();
     }
 
 
     private OffenderManager aOffenderManager() {
         return OffenderManager
-                .builder()
-                .allocationReason(
-                        StandardReference
-                                .builder()
-                                .codeDescription("Reallocation - Inactive Offender")
-                                .codeValue("1984")
-                                .build()
-                )
-                .probationArea(ProbationArea.builder().build())
-                .build();
+            .builder()
+            .allocationReason(
+                StandardReference
+                    .builder()
+                    .codeDescription("Reallocation - Inactive Offender")
+                    .codeValue("1984")
+                    .build()
+            )
+            .probationArea(ProbationArea.builder().build())
+            .build();
     }
 
     private Staff anOfficerWithOffenderManagers() {
         return Staff
-                .builder()
-                .staffId(3L)
-                .officerCode("AAAA")
-                .surname("Officer")
-                .forename("First")
-                .forname2("First2")
-                .offenderManagers(aListOfOffenderManagers())
-                .build();
+            .builder()
+            .staffId(3L)
+            .officerCode("AAAA")
+            .surname("Officer")
+            .forename("First")
+            .forname2("First2")
+            .offenderManagers(aListOfOffenderManagers())
+            .build();
     }
 
     private Staff anOfficerWithoutOffenderManagers() {
         return Staff.builder()
-                .staffId(3L)
-                .officerCode("AAAA")
-                .surname("Officer")
-                .forename("First")
-                .forname2("First2")
-                .build();
+            .staffId(3L)
+            .officerCode("AAAA")
+            .surname("Officer")
+            .forename("First")
+            .forname2("First2")
+            .build();
     }
 
     private Team aTeam() {
@@ -413,16 +347,16 @@ public class OffenderTransformerTest {
         @Test
         void willCopyPrimaryIdentifiers() {
             final var offender = Offender
-                    .builder()
-                    .offenderId(99L)
-                    .crn("X123456")
-                    .nomsNumber("A1234CR")
-                    .pncNumber("2004/0712343H")
-                    .croNumber("123456/04A")
-                    .niNumber("AA112233B")
-                    .immigrationNumber("A1234567")
-                    .mostRecentPrisonerNumber("G12345")
-                    .build();
+                .builder()
+                .offenderId(99L)
+                .crn("X123456")
+                .nomsNumber("A1234CR")
+                .pncNumber("2004/0712343H")
+                .croNumber("123456/04A")
+                .niNumber("AA112233B")
+                .immigrationNumber("A1234567")
+                .mostRecentPrisonerNumber("G12345")
+                .build();
 
             final var ids = OffenderTransformer.idsOf(offender);
 
@@ -437,96 +371,96 @@ public class OffenderTransformerTest {
         @Test
         void willCopyAdditionalIdentifiers() {
             final var offender = Offender
-                    .builder()
-                    .additionalIdentifiers(List.of(
-                            AdditionalIdentifier
-                                    .builder()
-                                    .additionalIdentifierId(999L)
-                                    .identifierName(StandardReference
-                                            .builder()
-                                            .codeDescription("Duplicate NOMS number")
-                                            .codeValue("DNOMS")
-                                            .build())
-                                    .identifier("A1234XX")
-                                    .softDeleted(0L)
-                                    .build(),
-                            AdditionalIdentifier
-                                    .builder()
-                                    .additionalIdentifierId(998L)
-                                    .identifierName(StandardReference
-                                            .builder()
-                                            .codeDescription("Former NOMS number")
-                                            .codeValue("XNOMS")
-                                            .build())
-                                    .identifier("A1234YY")
-                                    .softDeleted(0L)
-                                    .build()
+                .builder()
+                .additionalIdentifiers(List.of(
+                    AdditionalIdentifier
+                        .builder()
+                        .additionalIdentifierId(999L)
+                        .identifierName(StandardReference
+                            .builder()
+                            .codeDescription("Duplicate NOMS number")
+                            .codeValue("DNOMS")
+                            .build())
+                        .identifier("A1234XX")
+                        .softDeleted(0L)
+                        .build(),
+                    AdditionalIdentifier
+                        .builder()
+                        .additionalIdentifierId(998L)
+                        .identifierName(StandardReference
+                            .builder()
+                            .codeDescription("Former NOMS number")
+                            .codeValue("XNOMS")
+                            .build())
+                        .identifier("A1234YY")
+                        .softDeleted(0L)
+                        .build()
 
-                    ))
-                    .build();
+                ))
+                .build();
 
             final var additionalIdentifiers = OffenderTransformer
-                    .additionalIdentifiersOf(offender.getAdditionalIdentifiers());
+                .additionalIdentifiersOf(offender.getAdditionalIdentifiers());
 
             assertThat(additionalIdentifiers)
-                    .hasSize(2)
-                    .containsExactly(uk.gov.justice.digital.delius.data.api.AdditionalIdentifier
-                                    .builder()
-                                    .additionalIdentifierId(999L)
-                                    .value("A1234XX")
-                                    .type(KeyValue
-                                            .builder()
-                                            .code("DNOMS")
-                                            .description("Duplicate NOMS number")
-                                            .build())
-                                    .build(),
-                            uk.gov.justice.digital.delius.data.api.AdditionalIdentifier
-                                    .builder()
-                                    .additionalIdentifierId(998L)
-                                    .value("A1234YY")
-                                    .type(KeyValue
-                                            .builder()
-                                            .code("XNOMS")
-                                            .description("Former NOMS number")
-                                            .build())
-                                    .build()
-                    );
+                .hasSize(2)
+                .containsExactly(uk.gov.justice.digital.delius.data.api.AdditionalIdentifier
+                        .builder()
+                        .additionalIdentifierId(999L)
+                        .value("A1234XX")
+                        .type(KeyValue
+                            .builder()
+                            .code("DNOMS")
+                            .description("Duplicate NOMS number")
+                            .build())
+                        .build(),
+                    uk.gov.justice.digital.delius.data.api.AdditionalIdentifier
+                        .builder()
+                        .additionalIdentifierId(998L)
+                        .value("A1234YY")
+                        .type(KeyValue
+                            .builder()
+                            .code("XNOMS")
+                            .description("Former NOMS number")
+                            .build())
+                        .build()
+                );
 
         }
 
         @Test
         void willNotCopyDeletedAdditionalIdentifiers() {
             final var offender = Offender
-                    .builder()
-                    .additionalIdentifiers(List.of(
-                            AdditionalIdentifier
-                                    .builder()
-                                    .additionalIdentifierId(999L)
-                                    .identifierName(StandardReference
-                                            .builder()
-                                            .codeDescription("Duplicate NOMS number")
-                                            .codeValue("DNOMS")
-                                            .build())
-                                    .identifier("A1234XX")
-                                    .softDeleted(0L)
-                                    .build(),
-                            AdditionalIdentifier
-                                    .builder()
-                                    .additionalIdentifierId(998L)
-                                    .identifierName(StandardReference
-                                            .builder()
-                                            .codeDescription("Former NOMS number")
-                                            .codeValue("XNOMS")
-                                            .build())
-                                    .identifier("A1234YY")
-                                    .softDeleted(1L)
-                                    .build()
+                .builder()
+                .additionalIdentifiers(List.of(
+                    AdditionalIdentifier
+                        .builder()
+                        .additionalIdentifierId(999L)
+                        .identifierName(StandardReference
+                            .builder()
+                            .codeDescription("Duplicate NOMS number")
+                            .codeValue("DNOMS")
+                            .build())
+                        .identifier("A1234XX")
+                        .softDeleted(0L)
+                        .build(),
+                    AdditionalIdentifier
+                        .builder()
+                        .additionalIdentifierId(998L)
+                        .identifierName(StandardReference
+                            .builder()
+                            .codeDescription("Former NOMS number")
+                            .codeValue("XNOMS")
+                            .build())
+                        .identifier("A1234YY")
+                        .softDeleted(1L)
+                        .build()
 
-                    ))
-                    .build();
+                ))
+                .build();
 
             final var additionalIdentifiers = OffenderTransformer
-                    .additionalIdentifiersOf(offender.getAdditionalIdentifiers());
+                .additionalIdentifiersOf(offender.getAdditionalIdentifiers());
 
             assertThat(additionalIdentifiers).hasSize(1);
 
@@ -536,45 +470,45 @@ public class OffenderTransformerTest {
     @Test
     void aliasesAreCopied() {
         final var offenderEntity = EntityHelper.anOffender().toBuilder().offenderAliases(List.of(
-                OffenderAlias
-                        .builder()
-                        .aliasID(99L)
-                        .dateOfBirth(LocalDate.parse("1965-07-19"))
-                        .firstName("John")
-                        .surname("Smith")
-                        .build(),
-                OffenderAlias
-                        .builder()
-                        .aliasID(100L)
-                        .dateOfBirth(LocalDate.parse("1965-07-20"))
-                        .firstName("Johnny")
-                        .surname("Smyth")
-                        .build()
+            OffenderAlias
+                .builder()
+                .aliasID(99L)
+                .dateOfBirth(LocalDate.parse("1965-07-19"))
+                .firstName("John")
+                .surname("Smith")
+                .build(),
+            OffenderAlias
+                .builder()
+                .aliasID(100L)
+                .dateOfBirth(LocalDate.parse("1965-07-20"))
+                .firstName("Johnny")
+                .surname("Smyth")
+                .build()
 
         )).build();
 
         final var offender = OffenderTransformer.fullOffenderOf(offenderEntity, null);
 
         assertThat(offender.getOffenderAliases())
-                .hasSize(2)
-                .containsExactly(
-                        uk.gov.justice.digital.delius.data.api.OffenderAlias
-                                .builder()
-                                .id("99")
-                                .dateOfBirth(LocalDate.parse("1965-07-19"))
-                                .firstName("John")
-                                .surname("Smith")
-                                .middleNames(List.of())
-                                .build(),
-                        uk.gov.justice.digital.delius.data.api.OffenderAlias
-                                .builder()
-                                .id("100")
-                                .dateOfBirth(LocalDate.parse("1965-07-20"))
-                                .firstName("Johnny")
-                                .surname("Smyth")
-                                .middleNames(List.of())
-                                .build()
-                );
+            .hasSize(2)
+            .containsExactly(
+                uk.gov.justice.digital.delius.data.api.OffenderAlias
+                    .builder()
+                    .id("99")
+                    .dateOfBirth(LocalDate.parse("1965-07-19"))
+                    .firstName("John")
+                    .surname("Smith")
+                    .middleNames(List.of())
+                    .build(),
+                uk.gov.justice.digital.delius.data.api.OffenderAlias
+                    .builder()
+                    .id("100")
+                    .dateOfBirth(LocalDate.parse("1965-07-20"))
+                    .firstName("Johnny")
+                    .surname("Smyth")
+                    .middleNames(List.of())
+                    .build()
+            );
     }
 
     @Test

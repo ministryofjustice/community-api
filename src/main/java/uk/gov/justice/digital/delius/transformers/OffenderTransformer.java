@@ -89,6 +89,7 @@ public class OffenderTransformer {
             .riskColour(offender.getCurrentHighestRiskColour())
             .offenderDetails(offender.getOffenderDetails())
             .disabilities(disabilitiesOf(offender.getDisabilities(), LocalDate.now()))
+            .provisions(provisionsOf(offender.getProvisions()))
             .genderIdentity(Optional.ofNullable(offender.getGenderIdentity()).map(StandardReference::getCodeDescription).orElse(null))
             .selfDescribedGender(offender.getSelfDescribedGender())
             .build();
@@ -355,10 +356,19 @@ public class OffenderTransformer {
                 .builder()
                 .code(disability.getDisabilityType().getCodeValue())
                 .description(disability.getDisabilityType().getCodeDescription()).build())
-            .provisions(provisionsOf(disability.getProvisions()))
+            .disabilityCondition(disabilityConditionOf(disability))
+            .provisions(new ArrayList<>())
             .lastUpdatedDateTime(disability.getLastUpdatedDatetime())
             .isActive(isActiveOf(disability, dateToCompare))
             .build();
+    }
+
+    private static KeyValue disabilityConditionOf(Disability disability) {
+        if (disability.getCondition() == null) return null;
+        return KeyValue
+            .builder()
+            .code(disability.getCondition().getCodeValue())
+            .description(disability.getCondition().getCodeDescription()).build();
     }
 
     private static List<uk.gov.justice.digital.delius.data.api.Provision> provisionsOf(List<Provision> disabilityProvisions) {
@@ -382,7 +392,14 @@ public class OffenderTransformer {
             .finishDate(provision.getFinishDate())
             .provisionType(KeyValue.builder().code(provision.getProvisionType().getCodeValue())
                 .description(provision.getProvisionType().getCodeDescription()).build())
+            .category(categoryOf(provision))
             .build();
+    }
+
+    private static KeyValue categoryOf(Provision provision) {
+        if (provision.getCategory() == null) return null;
+        return KeyValue.builder().code(provision.getCategory().getCodeValue())
+            .description(provision.getCategory().getCodeDescription()).build();
     }
 
     private static Boolean isActiveOf(uk.gov.justice.digital.delius.jpa.standard.entity.Disability disability, LocalDate dateToCompare) {
