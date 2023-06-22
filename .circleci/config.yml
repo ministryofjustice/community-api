@@ -261,6 +261,8 @@ workflows:
             container=community-api,name=APPLICATIONINSIGHTS_CONFIGURATION_FILE,                value=applicationinsights.dev.json,
             container=community-api,name=JDK_JAVA_OPTIONS,                                      value="-javaagent:/agent/agent.jar"
           requires:
+            - validate-unit
+            - validate-integration
             - jib-build
       - deploy:
           name: deploy_to_test
