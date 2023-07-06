@@ -1,5 +1,5 @@
 # Suppressed as we do not process any untrusted YML content
-CVE-2022-1471 exp:2023-07-01
+CVE-2022-1471 exp:2023-08-01
 
-# Suppressed as Welcome Page not utilised - also no cache for 404 responses
-CVE-2023-20883 exp:2023-07-01
+# Suppressed as we do not use proxy cache nor spring welcome page support
+CVE-2023-20883 exp:2023-08-01
