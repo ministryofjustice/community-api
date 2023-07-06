@@ -40,8 +40,8 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     compileOnly 'org.projectlombok:lombok'
 
-    runtimeOnly 'com.h2database:h2:2.1.214'
-    testRuntimeOnly 'com.h2database:h2:2.1.214'
+    runtimeOnly 'com.h2database:h2:2.2.220'
+    testRuntimeOnly 'com.h2database:h2:2.2.220'
     testAnnotationProcessor 'org.projectlombok:lombok'
     testCompileOnly 'org.projectlombok:lombok'
 
