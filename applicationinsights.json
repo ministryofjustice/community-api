@@ -24,24 +24,37 @@
     "sampling": {
       "overrides": [
         {
-          "attributes": [
-            {
-              "key": "db.system",
-              "value": "oracle",
-              "matchType": "strict"
-            }
-          ],
-          "percentage": 10
-        },
-        {
+          "telemetryType": "request",
           "attributes": [
             {
               "key": "http.url",
-              "value": "https?://[^/]+/health.*",
+              "value": "https?://[^/]+/health/?.*",
               "matchType": "regexp"
             }
           ],
           "percentage": 0
+        },
+        {
+          "telemetryType": "dependency",
+          "attributes": [
+            {
+              "key": "db.statement",
+              "value": ".*CLIENT_IDENTIFIER.*",
+              "matchType": "regexp"
+            }
+          ],
+          "percentage": 0
+        },
+        {
+          "telemetryType": "dependency",
+          "attributes": [
+            {
+              "key": "db.operation",
+              "value": "SELECT",
+              "matchType": "strict"
+            }
+          ],
+          "percentage": 10
         }
       ]
     }
