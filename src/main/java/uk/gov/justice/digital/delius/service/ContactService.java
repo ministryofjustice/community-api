@@ -20,7 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Optional;
 
-import static uk.gov.justice.digital.delius.jpa.standard.entity.Contact.builder;
+import static uk.gov.justice.digital.delius.jpa.standard.entity.Contact.*;
 
 @Service
 @AllArgsConstructor
