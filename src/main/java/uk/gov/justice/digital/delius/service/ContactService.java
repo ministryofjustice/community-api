@@ -1,13 +1,8 @@
 package uk.gov.justice.digital.delius.service;
 
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.justice.digital.delius.data.api.ContactSummary;
-import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
@@ -18,17 +13,14 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ContactTypeRepository;
-import uk.gov.justice.digital.delius.transformers.ContactTransformer;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.springframework.data.domain.Sort.Direction.DESC;
-import static uk.gov.justice.digital.delius.jpa.standard.entity.Contact.*;
+import static uk.gov.justice.digital.delius.jpa.standard.entity.Contact.builder;
 
 @Service
 @AllArgsConstructor
@@ -43,17 +35,6 @@ public class ContactService {
     public static final String DELIUS_DATE_FORMAT = "E MMM dd yyyy"; // e.g. "Tue Nov 24 2020"
     private final ContactRepository contactRepository;
     private final ContactTypeRepository contactTypeRepository;
-
-    public List<ContactSummary> contactSummariesFor(final Long offenderId, final ContactFilter filter) {
-        return contactRepository.findAll(filter.toBuilder().offenderId(offenderId).build())
-            .stream().map(ContactTransformer::contactSummaryOf).toList();
-    }
-
-    public Page<ContactSummary> contactSummariesFor(final Long offenderId, final ContactFilter filter, final int page, final int pageSize) {
-        final var pagination = PageRequest.of(page, pageSize, Sort.by(DESC, "contactDate", "contactStartTime", "contactEndTime"));
-        return contactRepository.findAll(filter.toBuilder().offenderId(offenderId).build(), pagination)
-            .map(ContactTransformer::contactSummaryOf);
-    }
 
     @Transactional
     public void addContactForPOMAllocation(final PrisonOffenderManager newPrisonOffenderManager) {

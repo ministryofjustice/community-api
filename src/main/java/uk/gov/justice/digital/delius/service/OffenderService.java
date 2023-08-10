@@ -11,7 +11,6 @@ import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderIdentifiers;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
-import uk.gov.justice.digital.delius.data.api.PersonalContact;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Document.DocumentType;
@@ -24,12 +23,9 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderDocumentRep
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository.DuplicateOffenderException;
 import uk.gov.justice.digital.delius.transformers.OffenderTransformer;
-import uk.gov.justice.digital.delius.transformers.PersonalContactTransformer;
 import uk.gov.justice.digital.delius.transformers.ReleaseTransformer;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.util.function.Predicate.not;
 
@@ -182,12 +178,5 @@ public class OffenderService {
             .map(Disposal::getCustody)
             .filter(not(Custody::isSoftDeleted))
             .orElseThrow(() -> new CustodyNotFoundException(activeCustodialEvent));
-    }
-
-    @Transactional(readOnly = true)
-    public List<PersonalContact> getOffenderPersonalContactsByCrn(String crn) {
-        return offenderRepository.findByCrn(crn)
-            .map(offender -> offender.getPersonalContacts().stream().map(PersonalContactTransformer::personalContactOf).collect(Collectors.toList()))
-            .orElseThrow(() -> new NotFoundException("Offender not found"));
     }
 }

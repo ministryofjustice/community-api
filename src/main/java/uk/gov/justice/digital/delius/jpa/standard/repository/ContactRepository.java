@@ -8,7 +8,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface ContactRepository extends JpaRepository<Contact, Long>, JpaSpecificationExecutor<Contact> {
     @Query("SELECT contact FROM Contact contact "
@@ -33,33 +32,4 @@ public interface ContactRepository extends JpaRepository<Contact, Long>, JpaSpec
                                             @Param("eventId") Long eventId,
                                             @Param("contactDate") LocalDate contactDate);
 
-
-    @Query("SELECT contact FROM Contact contact "
-        + "WHERE contact.offenderId = :offenderId "
-        + "AND contact.nsi.nsiId = :nsiId "
-    )
-    List<Contact> findByOffenderAndNsiId(@Param("offenderId") Long offenderId,
-                                         @Param("nsiId") Long nsiId);
-
-    /**
-     * Get appointment (contact with type.attendanceContact) by offender id & contact id.
-     * Specifying both offender & contact ids effectively validates that the appointment is associated to the offender.
-     */
-    Optional<Contact> findByContactIdAndOffenderIdAndContactTypeAttendanceContactIsTrueAndSoftDeletedIsFalse(Long contactId, Long offenderId);
-
-    Optional<Contact> findByContactIdAndOffenderIdAndSoftDeletedIsFalse(Long contactId, Long offenderId);
-
-    @Query("""
-           SELECT contact FROM Contact contact
-            INNER JOIN ContactType ct ON ct = contact.contactType AND ct.code = :contactType
-            WHERE contact.offenderId = :offenderId
-            AND contact.nsi.nsiId = :nsiId
-            AND contact.contactDate = :contactDate
-            AND contact.softDeleted = false"""
-    )
-    List<Contact> findByOffenderAndNsiIdAndContactTypeAndContactDateAndSoftDeletedIsFalse(
-        @Param("offenderId") Long offenderId,
-        @Param("nsiId") Long nsiId,
-        @Param("contactType") String contactType,
-        @Param("contactDate") LocalDate contactDate);
 }
