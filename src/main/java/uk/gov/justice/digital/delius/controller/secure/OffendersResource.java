@@ -10,9 +10,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,7 +27,6 @@ import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.AccessLimitation;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
-import uk.gov.justice.digital.delius.data.api.ContactSummary;
 import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Nsi;
@@ -39,11 +35,9 @@ import uk.gov.justice.digital.delius.data.api.OffenderAssessments;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
-import uk.gov.justice.digital.delius.data.api.PersonalContact;
 import uk.gov.justice.digital.delius.data.api.ProbationStatusDetail;
 import uk.gov.justice.digital.delius.data.api.SentenceStatus;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
-import uk.gov.justice.digital.delius.jpa.filters.ContactFilter;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAccessLimitations;
 import uk.gov.justice.digital.delius.service.AssessmentService;
 import uk.gov.justice.digital.delius.service.ContactService;
@@ -56,9 +50,6 @@ import uk.gov.justice.digital.delius.service.SentenceService;
 import uk.gov.justice.digital.delius.service.UserAccessService;
 import uk.gov.justice.digital.delius.service.UserService;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,12 +65,6 @@ import static org.springframework.http.HttpStatus.OK;
 @PreAuthorize("hasRole('ROLE_COMMUNITY')")
 @Validated
 public class OffendersResource {
-
-    private static final String INITIAL_APPOINTMENT_CONTACT_TYPE = "COAI";
-    private static final String INITIAL_APPOINTMENT_VIDEO_CONTACT_TYPE = "COVI";
-    private static final String INITIAL_APPOINTMENT_DOORSTEP_CONTACT_TYPE = "CODI";
-    private static final String INITIAL_APPOINTMENT_HOME_VISIT_CONTACT_TYPE = "COHV";
-    private static final List<String> INITIAL_APPOINTMENT_CONTACT_TYPES = Arrays.asList(INITIAL_APPOINTMENT_CONTACT_TYPE, INITIAL_APPOINTMENT_VIDEO_CONTACT_TYPE, INITIAL_APPOINTMENT_DOORSTEP_CONTACT_TYPE,INITIAL_APPOINTMENT_HOME_VISIT_CONTACT_TYPE);
     private final OffenderService offenderService;
     private final ContactService contactService;
     private final ConvictionService convictionService;
@@ -187,75 +172,6 @@ public class OffendersResource {
                 .getOrElseThrow(error -> new ConflictingRequestException(error.getMessage()));
         }
         return offender.orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
-    }
-
-    @Operation(description = "Returns the induction appointments for an offender by CRN", tags = "Contact and attendance")
-    @ApiResponses(
-        value = {
-            @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "404", description = "Offender does not exist"),
-            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
-        })
-    @GetMapping(value = "/offenders/crn/{crn}/contact-summary/inductions")
-    public List<ContactSummary> getOffenderInitialAppointmentsByCrn(
-        final @Parameter(name = "crn", description = "CRN of the offender", example = "X123456", required = true) @NotNull @PathVariable("crn") String crn,
-        final @Parameter(name = "contactDateFrom", description = "Show contacts from this date", example = "2013-01-21") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "contactDateFrom", required = false) Optional<LocalDate> contactDateFrom)
-        {
-            final var contactFilter = ContactFilter.builder()
-                .contactTypes(Optional.of(INITIAL_APPOINTMENT_CONTACT_TYPES))
-                .contactDateFrom(contactDateFrom)
-                .build();
-
-            return offenderService.offenderIdOfCrn(crn)
-                .map(offenderId -> contactService.contactSummariesFor(offenderId, contactFilter))
-                .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN '%s' does not exist", crn)));
-        }
-
-    @Operation(description = "Returns the contact summaries for an offender by CRN. Note: this endpoint is *not* paged.", tags = "Contact and attendance")
-    @ApiResponses(
-        value = {
-            @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "404", description = "Offender does not exist"),
-            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
-        })
-    @GetMapping(value = "/offenders/crn/{crn}/contact-summary")
-    public Page<ContactSummary> getOffenderContactSummariesByCrn(
-        final @Parameter(name = "crn", description = "CRN of the offender", example = "X123456", required = true) @NotNull @PathVariable("crn") String crn,
-        final @RequestParam(value = "contactTypes", required = false) Optional<List<String>> contactTypes,
-        final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam(value = "from", required = false) Optional<LocalDateTime> from,
-        final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam(value = "to", required = false) Optional<LocalDateTime> to,
-        final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "contactDateFrom", required = false) Optional<LocalDate> contactDateFrom,
-        final @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "contactDateTo", required = false) Optional<LocalDate> contactDateTo,
-        final @RequestParam(value = "appointmentsOnly", required = false) Optional<Boolean> appointmentsOnly,
-        final @RequestParam(value = "convictionId", required = false) Optional<Long> convictionId,
-        final @RequestParam(value = "attended", required = false) Optional<Boolean> attended,
-        final @RequestParam(value = "complied", required = false) Optional<Boolean> complied,
-        final @RequestParam(value = "nationalStandard", required = false) Optional<Boolean> nationalStandard,
-        final @RequestParam(value = "outcome", required = false) Optional<Boolean> outcome,
-        final @Parameter(name = "include", description = "Contacts to include. Can be a contact type code, prefixed with 'type_' or appointments", example = "type_ccmp") @RequestParam(value = "include", required = false) Optional<List<String>> include,
-        final @Parameter(name = "rarActivity", description = "Counts toward the RAR day calculation. If this filter is set to false then no filter will be applied.", example = "true")
-        @RequestParam(value = "rarActivity", required = false) Optional<Boolean> rarActivity) {
-
-        final var contactFilter = ContactFilter.builder()
-            .contactTypes(contactTypes)
-            .from(from)
-            .to(to)
-            .contactDateFrom(contactDateFrom)
-            .contactDateTo(contactDateTo)
-            .appointmentsOnly(appointmentsOnly)
-            .convictionId(convictionId)
-            .attended(attended)
-            .complied(complied)
-            .nationalStandard(nationalStandard)
-            .outcome(outcome)
-            .include(include)
-            .rarActivity(rarActivity)
-            .build();
-
-        return offenderService.offenderIdOfCrn(crn)
-            .map(offenderId -> contactService.contactSummariesFor(offenderId, contactFilter))
-            .map(PageImpl::new)
-            .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN '%s' does not exist", crn)));
     }
 
     @Operation(
@@ -594,15 +510,6 @@ public class OffendersResource {
     public ProbationStatusDetail getOffenderProbationStatusByCrn(final @PathVariable("crn") String crn) {
         return convictionService.probationStatusFor(crn)
             .orElseThrow(() -> new NotFoundException("Offender not found"));
-    }
-
-    @Operation(description = "Gets all offender personal contacts by CRN")
-    @GetMapping(path = "/offenders/crn/{crn}/personalContacts")
-    public List<PersonalContact> getAllOffenderPersonalContactsByCrn(
-        @Parameter(name = "crn", description = "CRN of the offender", example = "X320741", required = true)
-        @NotNull
-        @PathVariable(value = "crn") final String crn) {
-        return offenderService.getOffenderPersonalContactsByCrn(crn);
     }
 
     private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(final OffenderAccessLimitations offender) {

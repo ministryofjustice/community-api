@@ -13,7 +13,6 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.NsiRepository;
 import uk.gov.justice.digital.delius.transformers.NsiTransformer;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -30,14 +29,6 @@ public class NsiService {
     public NsiService(final NsiRepository nsiRepository, final ConvictionService convictionService) {
         this.nsiRepository = nsiRepository;
         this.convictionService = convictionService;
-    }
-
-    @Transactional(readOnly = true)
-    public List<Nsi> getNsisInAnyStateByExternalReferenceURN(final Long offenderId, final String urn) {
-        return nsiRepository.findByOffenderIdAndExternalReference(offenderId, urn)
-            .stream()
-            .map(NsiTransformer::nsiOf)
-            .toList();
     }
 
     @Transactional(readOnly = true)

@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import uk.gov.justice.digital.delius.data.api.ConvictionDocuments;
 import uk.gov.justice.digital.delius.data.api.DocumentLink;
 import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail;
@@ -54,7 +53,6 @@ import uk.gov.justice.digital.delius.transformers.DocumentTransformer;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.helpers.FluentHelper.not;
@@ -373,14 +371,6 @@ public class DocumentService {
     }
     private Long eventId(ContactDocument document) {
         return Optional.ofNullable(document.getContact().getEvent()).map(Event::getEventId).orElseThrow(() -> new RuntimeException("requested eventId even when this is offender related"));
-    }
-
-    private Optional<Event> eventWithCPsPack(List<Event> events, Long eventId, Predicate<Event> eventCpsPackFilter) {
-        return events
-                .stream()
-                .filter(event -> event.getEventId().equals(eventId))
-                .filter(eventCpsPackFilter)
-                .findAny();
     }
 }
 

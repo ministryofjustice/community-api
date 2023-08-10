@@ -15,7 +15,4 @@ public interface NsiRepository extends JpaRepository<Nsi, Long> {
 
     @Query("select n from Nsi n where n.event.activeFlag = true AND n.offenderId = :offenderId")
     List<Nsi> findByOffenderIdForActiveEvents(Long offenderId);
-
-    @Query("SELECT n FROM Nsi n WHERE n.offenderId = :offenderId AND n.externalReference = :externalReference")
-    List<Nsi> findByOffenderIdAndExternalReference(@Param("offenderId") Long offenderId, @Param("externalReference") String externalReference);
 }
