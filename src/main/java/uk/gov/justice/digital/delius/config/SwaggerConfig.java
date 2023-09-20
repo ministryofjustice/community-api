@@ -23,7 +23,7 @@ import java.util.List;
         description = """
             <h2><b>Please do not use this API for new work.</b></h2>
             <p>The probation integration team are in the process of decommissioning this API. <br>
-            Please contact the probation integration team for any new Delius, Nomis or Oasys integration via 
+            Please contact the probation integration team for any new Delius integrations via 
             probation-integration-team@digital.justice.gov.uk or #probation-integration-tech on Slack               ,
             </p>
             <h2>REST service for accessing community probation information</h2>
