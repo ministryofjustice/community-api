@@ -2,7 +2,7 @@ plugins {
     id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.1.4"
     id 'groovy'
     id 'org.unbroken-dome.test-sets' version '4.1.0'
-    id "com.google.cloud.tools.jib" version "3.3.2"
+    id "com.google.cloud.tools.jib" version "3.4.0"
 }
 
 group = 'uk.gov.justice.digital.delius'
@@ -40,8 +40,8 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     compileOnly 'org.projectlombok:lombok'
 
-    runtimeOnly 'com.h2database:h2:2.2.222'
-    testRuntimeOnly 'com.h2database:h2:2.2.222'
+    runtimeOnly 'com.h2database:h2:2.2.224'
+    testRuntimeOnly 'com.h2database:h2:2.2.224'
     testAnnotationProcessor 'org.projectlombok:lombok'
     testCompileOnly 'org.projectlombok:lombok'
 
