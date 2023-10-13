@@ -3,13 +3,12 @@ package uk.gov.justice.digital.delius.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.user.UserData;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.Optional;
 
@@ -19,7 +18,7 @@ public class Jwt {
     public static final String UID = "uid";
     public static final String PROBATION_AREA_CODES = "probationAreaCodes";
 
-    private final Key key;
+    private final SecretKey key;
     private final int lifetimeSeconds;
     private final JwtParser parser;
 
@@ -27,13 +26,13 @@ public class Jwt {
                @Value("${jwt.lifetimeSeconds:300}") int lifetimeSeconds) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
         this.lifetimeSeconds = lifetimeSeconds;
-        this.parser = Jwts.parserBuilder()
-            .setSigningKey(key)
+        this.parser = Jwts.parser()
+            .verifyWith(key)
             .build();
     }
 
     public Optional<Claims> parseToken(String bearerToken) {
-        return Optional.ofNullable(parser.parseClaimsJws(bearerToken).getBody());
+        return Optional.ofNullable(parser.parseSignedClaims(bearerToken).getPayload());
     }
 
     public Optional<Claims> parseAuthorizationHeader(String authorizationHeader) {
@@ -42,14 +41,16 @@ public class Jwt {
 
     public String buildToken(UserData userData) {
 
-        Claims claims = Jwts.claims().setSubject(userData.getDistinguishedName());
-        claims.put(UID, userData.getUid());
-        claims.put(PROBATION_AREA_CODES, userData.getProbationAreaCodes());
+        Claims claims = Jwts.claims()
+            .subject(userData.getDistinguishedName())
+            .add(UID, userData.getUid())
+            .add(PROBATION_AREA_CODES, userData.getProbationAreaCodes())
+            .build();
 
         return Jwts.builder()
-                .setClaims(claims)
-                .setExpiration(Date.from(java.time.ZonedDateTime.now().plusSeconds(lifetimeSeconds).toInstant()))
-                .signWith(key, SignatureAlgorithm.HS512)
+                .claims(claims)
+                .expiration(Date.from(java.time.ZonedDateTime.now().plusSeconds(lifetimeSeconds).toInstant()))
+                .signWith(key, Jwts.SIG.HS512)
                 .compact();
     }
 }

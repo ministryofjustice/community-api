@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.security.SecurityException;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.user.UserData;
@@ -62,7 +62,7 @@ public class JwtTest {
     public void cannotDecodeRubbishJwt() {
         Jwt jwt = new Jwt(secret512chars, 1);
 
-        assertThrows(DecodingException.class,
+        assertThrows(MalformedJwtException.class,
             () -> { jwt.parseToken("utter rubbish.."); },
             "Should have failed to parse malformed token");
     }
