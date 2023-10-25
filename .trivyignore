@@ -1,17 +1,8 @@
 # Suppressed as we do not process any untrusted YML content
-CVE-2022-1471 exp:2023-10-01
-
-# Suppressed as we do not use proxy cache nor spring welcome page support
-CVE-2023-20883 exp:2023-10-01
+CVE-2022-1471 exp:2023-12-01
 
 # Suppressed
-CVE-2023-2976 exp:2023-10-01
+CVE-2023-2976 exp:2023-12-01
 
 # Suppressed
-CVE-2023-3635 exp:2023-10-01
-
-# Suppressed
-CVE-2023-20883 exp:2023-10-01
-
-# Suppressed
-CVE-2023-34034 exp:2023-10-01
+CVE-2023-3635 exp:2023-12-01
