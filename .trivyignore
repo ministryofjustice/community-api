@@ -1,8 +1,34 @@
-# Suppressed as we do not process any untrusted YML content
-CVE-2022-1471 exp:2023-12-01
 
-# Suppressed
-CVE-2023-2976 exp:2023-12-01
+# Reason: No untrusted YAML content
+# Package: org.yaml:snakeyaml
+CVE-2022-1471 exp:2024-03-01
 
-# Suppressed
-CVE-2023-3635 exp:2023-12-01
+# Reason: Only exploitable if logback receiver component is deployed. This is not the case by default in Spring Boot.
+# Reference: https://github.com/spring-projects/spring-boot/issues/38643#issuecomment-1838497420
+# Packages:
+#  * ch.qos.logback:logback-core
+#  * ch.qos.logback:logback-classic
+CVE-2023-6378 exp:2024-03-01
+CVE-2023-6481 exp:2024-03-01
+
+# Reason: Spring welcome page not used
+# Package: org.springframework.boot:spring-boot-autoconfigure
+CVE-2023-20883 exp:2024-03-01
+
+# Reason: "**" is not used in WebFlux config
+# Package: org.springframework.security:spring-security-config
+CVE-2023-34034 exp:2024-03-01
+
+# Reason: Only a single servlet is used
+# Package: org.springframework.security:spring-security-config
+CVE-2023-34035 exp:2024-03-01
+
+# Reason: Access only allowed from within trusted network
+# Package: org.springframework:spring-webmvc
+CVE-2023-34053 exp:2024-03-01
+
+# Reason: Access only allowed from within trusted network
+# Package: io.projectreactor.netty:reactor-netty-http
+GHSA-xpw8-rcwv-8f8p exp:2024-03-01
+CVE-2023-34054 exp:2024-03-01
+CVE-2023-34062 exp:2024-03-01
