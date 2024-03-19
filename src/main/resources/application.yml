@@ -144,6 +144,7 @@ delius-integration-context:
           DNR-SC: CRS04
           DNR-SY: CRS04
           DNR-WM: CRS04
+          DNR-SW: CRS04
       contact-mapping:
         notification-contact-type: CRSNOTE
         appointment-rar-contact-type: CRSAPT
