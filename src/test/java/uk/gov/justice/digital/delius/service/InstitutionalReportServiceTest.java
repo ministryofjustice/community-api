@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,7 +57,7 @@ public class InstitutionalReportServiceTest {
                                     .ogrsOffenceCategory(StandardReference.builder().build())
                                     .build())
                             .build())
-                    .additionalOffences(ImmutableList.of(
+                    .additionalOffences(List.of(
                             AdditionalOffence.builder()
                                     .additionalOffenceId(32L)
                                     .event(Event.builder().eventId(EVENT_ID).build())
@@ -111,7 +110,7 @@ public class InstitutionalReportServiceTest {
                         .build())
                 .event(Event
                         .builder()
-                        .additionalOffences(ImmutableList.of())
+                        .additionalOffences(List.of())
                         .build())
                 .build();
 

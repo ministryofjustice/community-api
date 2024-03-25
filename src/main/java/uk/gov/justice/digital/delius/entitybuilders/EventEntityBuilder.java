@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.entitybuilders;
 
-import com.google.common.collect.ImmutableList;
 import lombok.val;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.delius.data.api.CourtCase;
@@ -11,6 +10,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.OrderManager;
 import uk.gov.justice.digital.delius.service.LookupSupplier;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -61,7 +61,7 @@ public class EventEntityBuilder {
         event.setMainOffence(mainOffenceEntityBuilder.mainOffenceOf(offenderId, mainOffence(courtCase.getOffences()), event));
         event.setAdditionalOffences(additionalOffenceEntityBuilder.additionalOffencesOf(additionalOffences(courtCase.getOffences()), event));
         event.setCourtAppearances(courtAppearances(offenderId, event, courtCase.getCourtAppearance(), courtCase.getNextAppearance()));
-        event.setOrderManagers(ImmutableList.of(orderManager(courtCase.getOrderManager(), event)));
+        event.setOrderManagers(List.of(orderManager(courtCase.getOrderManager(), event)));
 
         return event;
 
@@ -105,8 +105,12 @@ public class EventEntityBuilder {
             Event event,
             uk.gov.justice.digital.delius.data.api.CourtAppearance first,
             uk.gov.justice.digital.delius.data.api.CourtAppearance next) {
-        val builder = ImmutableList.<CourtAppearance>builder().add(courtAppearanceEntityBuilder.courtAppearanceOf(offenderId, event, first));
-        return Optional.ofNullable(next).map(courtAppearance -> builder.add(courtAppearanceEntityBuilder.courtAppearanceOf(offenderId, event, courtAppearance))).orElse(builder).build();
+        val builder = new ArrayList<CourtAppearance>();
+        builder.add(courtAppearanceEntityBuilder.courtAppearanceOf(offenderId, event, first));
+        return Optional.ofNullable(next).map(courtAppearance -> {
+            builder.add(courtAppearanceEntityBuilder.courtAppearanceOf(offenderId, event, courtAppearance));
+            return builder;
+        }).orElse(new ArrayList<>());
     }
 
 }

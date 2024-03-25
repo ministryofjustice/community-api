@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -267,7 +266,7 @@ public class StaffServiceTest {
         Set<String> usernames = Set.of("joefrazier", "georgeforeman");
 
         when(staffRepository.findByUsernames(any()))
-                .thenReturn(ImmutableList.of(
+                .thenReturn(List.of(
                         aStaff()
                                 .toBuilder()
                                 .user(
@@ -308,7 +307,7 @@ public class StaffServiceTest {
         Set<String> staffCodes = Set.of("X1234", "A4321");
 
         when(staffRepository.findByOfficerCodeIn(any()))
-            .thenReturn(ImmutableList.of(
+            .thenReturn(List.of(
                 aStaff()
                     .toBuilder()
                     .user(

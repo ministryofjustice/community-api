@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Custody;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
@@ -8,6 +7,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReport;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -132,7 +132,7 @@ public class InstitutionalReportTransformerTest {
         return Event.builder()
             .activeFlag(true)
             .convictionDate(LocalDate.of(2018, 11, 2))
-            .additionalOffences(ImmutableList.of())
+            .additionalOffences(List.of())
             .eventId(1L)
             .softDeleted(false)
             .build();

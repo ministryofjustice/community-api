@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
-import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +11,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
+import java.util.List;
 import java.util.Optional;
 
 @Data
@@ -48,7 +49,7 @@ public class DisposalType {
     public boolean isCustodial() {
         return Optional
                 .ofNullable(sentenceType)
-                .filter(type -> ImmutableList.of(nonStatutoryCustodyCode, statutoryCustodyCode).contains(type))
+                .filter(type -> List.of(nonStatutoryCustodyCode, statutoryCustodyCode).contains(type))
                 .isPresent();
     }
 }

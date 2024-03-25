@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import com.google.common.collect.ImmutableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.data.api.Offence;
@@ -33,13 +32,12 @@ public class OffenceService {
             .collect(toList());
     }
 
-    private ImmutableList<Offence> combineMainAndAdditionalOffences(MainOffence mainOffence) {
-        List<Offence> additionalOffences =
-            OffenceTransformer.offencesOf(mainOffence.getEvent().getAdditionalOffences());
-        return ImmutableList.<Offence>builder()
-            .add(OffenceTransformer.offenceOf(mainOffence))
-            .addAll(additionalOffences)
-            .build();
+    private List<Offence> combineMainAndAdditionalOffences(MainOffence mainOffence) {
+        List<Offence> offences = OffenceTransformer.offencesOf(mainOffence.getEvent().getAdditionalOffences());
+        if (mainOffence != null) {
+            offences.addFirst(OffenceTransformer.offenceOf(mainOffence));
+        }
+        return offences;
     }
 
 }

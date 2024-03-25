@@ -13,7 +13,6 @@ import uk.gov.justice.digital.delius.data.api.OffenderRecall;
 import uk.gov.justice.digital.delius.data.api.OffenderRelease;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
-import uk.gov.justice.digital.delius.service.AssessmentService;
 import uk.gov.justice.digital.delius.service.ContactService;
 import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.CustodyService;
@@ -55,12 +54,11 @@ public class OffendersResource_GetLatestRecallAndReleaseForOffenderAPITest {
     private final CurrentUserSupplier currentUserSupplier = mock(CurrentUserSupplier.class);
     private final CustodyService custodyService = mock(CustodyService.class);
     private final UserAccessService userAccessService = mock(UserAccessService.class);
-    private final AssessmentService assessmentService = mock(AssessmentService.class);
 
     @BeforeEach
     public void setup() {
         RestAssuredMockMvc.standaloneSetup(
-                new OffendersResource(offenderService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier, custodyService, userAccessService, assessmentService),
+                new OffendersResource(offenderService, contactService, convictionService, nsiService, offenderManagerService, sentenceService, userService, currentUserSupplier, custodyService, userAccessService),
                 new SecureControllerAdvice()
         );
     }

@@ -4,13 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aStaff;
 import static uk.gov.justice.digital.delius.util.EntityHelper.aTeam;
 
-import com.google.common.collect.ImmutableList;
-
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.Human;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.User;
+
+import java.util.List;
 
 public class StaffTransformerTest {
 
@@ -57,7 +57,7 @@ public class StaffTransformerTest {
         assertThat(StaffTransformer.staffDetailsOf(
                                         aStaff()
                                         .toBuilder()
-                                        .teams(ImmutableList.of(aTeam(), aTeam()))
+                                        .teams(List.of(aTeam(), aTeam()))
                                         .build()).getTeams())
                     .hasSize(2);
     }

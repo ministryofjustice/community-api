@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.jpa.filters;
 
-import com.google.common.collect.ImmutableList;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -11,6 +10,8 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,19 +31,17 @@ public class ProbationAreaFilter implements Specification<ProbationArea> {
 
     @Override
     public Predicate toPredicate(Root<ProbationArea> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        ImmutableList.Builder<Predicate> predicateBuilder = ImmutableList.builder();
+        List<Predicate> predicates = new ArrayList<>();
 
-        probationAreaCodes.ifPresent(strings -> predicateBuilder.add(root.get("code").in(strings)));
+        probationAreaCodes.ifPresent(strings -> predicates.add(root.get("code").in(strings)));
 
         if (restrictActive) {
-            predicateBuilder.add(cb.equal(root.get("selectable"), "Y"));
+            predicates.add(cb.equal(root.get("selectable"), "Y"));
         }
 
         if (excludeEstablishments) {
-            predicateBuilder.add(cb.isNull(root.get("establishment")));
+            predicates.add(cb.isNull(root.get("establishment")));
         }
-
-        ImmutableList<Predicate> predicates = predicateBuilder.build();
 
         return cb.and(predicates.toArray(new Predicate[0]));
     }

@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.OffenderDocumentDetail;
@@ -10,10 +9,8 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.AssessmentDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CaseAllocationDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ContactDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.CourtReportDocument;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.InstitutionalReportDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.NsiDocument;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalCircumstanceDocument;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PersonalContactDocument;
@@ -23,6 +20,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.User;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -54,8 +52,8 @@ public class DocumentTransformerTest {
         offenderDocument.setCreatedDate(LocalDateTime.of(1965, 7, 19, 0, 0, 0));
         offenderDocument.setLastSaved(LocalDateTime.of(1985, 7, 19, 0, 0, 0));
 
-        assertThat(DocumentTransformer.offenderDocumentsDetailsOfOffenderDocuments(ImmutableList.of(offenderDocument))).hasSize(1);
-        assertThat(DocumentTransformer.offenderDocumentsDetailsOfOffenderDocuments(ImmutableList.of(offenderDocument)).get(0).getCreatedAt()).isEqualTo(LocalDateTime.of(1965, 7, 19, 0, 0, 0));
+        assertThat(DocumentTransformer.offenderDocumentsDetailsOfOffenderDocuments(List.of(offenderDocument))).hasSize(1);
+        assertThat(DocumentTransformer.offenderDocumentsDetailsOfOffenderDocuments(List.of(offenderDocument)).get(0).getCreatedAt()).isEqualTo(LocalDateTime.of(1965, 7, 19, 0, 0, 0));
     }
 
     @Test
@@ -64,8 +62,8 @@ public class DocumentTransformerTest {
         offenderDocument.setCreatedDate(null);
         offenderDocument.setLastSaved(LocalDateTime.of(1985, 7, 19, 0, 0, 0));
 
-        assertThat(DocumentTransformer.offenderDocumentsDetailsOfOffenderDocuments(ImmutableList.of(offenderDocument))).hasSize(1);
-        assertThat(DocumentTransformer.offenderDocumentsDetailsOfOffenderDocuments(ImmutableList.of(offenderDocument)).get(0).getCreatedAt()).isEqualTo(LocalDateTime.of(1985, 7, 19, 0, 0, 0));
+        assertThat(DocumentTransformer.offenderDocumentsDetailsOfOffenderDocuments(List.of(offenderDocument))).hasSize(1);
+        assertThat(DocumentTransformer.offenderDocumentsDetailsOfOffenderDocuments(List.of(offenderDocument)).get(0).getCreatedAt()).isEqualTo(LocalDateTime.of(1985, 7, 19, 0, 0, 0));
     }
     @Test
     public void authorNameUsesCreatedByWhenPresent() {
@@ -85,8 +83,8 @@ public class DocumentTransformerTest {
                         .build()
         );
 
-        assertThat(DocumentTransformer.offenderDocumentsDetailsOfOffenderDocuments(ImmutableList.of(offenderDocument))).hasSize(1);
-        assertThat(DocumentTransformer.offenderDocumentsDetailsOfOffenderDocuments(ImmutableList.of(offenderDocument)).get(0).getAuthor()).isEqualTo("Bobby Bread");
+        assertThat(DocumentTransformer.offenderDocumentsDetailsOfOffenderDocuments(List.of(offenderDocument))).hasSize(1);
+        assertThat(DocumentTransformer.offenderDocumentsDetailsOfOffenderDocuments(List.of(offenderDocument)).get(0).getAuthor()).isEqualTo("Bobby Bread");
     }
     @Test
     public void authorNameUsesLastUpdatedByWhenCreatedByNotPresent() {
@@ -100,8 +98,8 @@ public class DocumentTransformerTest {
                         .build()
         );
 
-        assertThat(DocumentTransformer.offenderDocumentsDetailsOfOffenderDocuments(ImmutableList.of(offenderDocument))).hasSize(1);
-        assertThat(DocumentTransformer.offenderDocumentsDetailsOfOffenderDocuments(ImmutableList.of(offenderDocument))
+        assertThat(DocumentTransformer.offenderDocumentsDetailsOfOffenderDocuments(List.of(offenderDocument))).hasSize(1);
+        assertThat(DocumentTransformer.offenderDocumentsDetailsOfOffenderDocuments(List.of(offenderDocument))
                 .get(0).getAuthor()).isEqualTo("Lardy Lump");
     }
 
@@ -112,10 +110,10 @@ public class DocumentTransformerTest {
         document.getCourtReport().setDateRequested(LocalDateTime.of(1965, 7, 19, 0, 0));
         document.getCourtReport().getCourtAppearance().getCourt().setCourtName("Sheffield Crown Court");
 
-        assertThat(DocumentTransformer.offenderDocumentsDetailsOfCourtReportDocuments(ImmutableList.of(document))).hasSize(1);
+        assertThat(DocumentTransformer.offenderDocumentsDetailsOfCourtReportDocuments(List.of(document))).hasSize(1);
 
         final OffenderDocumentDetail offenderDocumentDetail = DocumentTransformer
-                .offenderDocumentsDetailsOfCourtReportDocuments(ImmutableList.of(document)).get(0);
+                .offenderDocumentsDetailsOfCourtReportDocuments(List.of(document)).get(0);
 
         assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("COURT_REPORT_DOCUMENT");
         assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Court report");
@@ -133,10 +131,10 @@ public class DocumentTransformerTest {
         document.getInstitutionalReport().getInstitution().setInstitutionName("Sheffield jail");
 
         assertThat(DocumentTransformer
-                .offenderDocumentsDetailsOfInstitutionReportDocuments(ImmutableList.of(document))).hasSize(1);
+                .offenderDocumentsDetailsOfInstitutionReportDocuments(List.of(document))).hasSize(1);
 
         final OffenderDocumentDetail offenderDocumentDetail = DocumentTransformer
-                .offenderDocumentsDetailsOfInstitutionReportDocuments(ImmutableList.of(document)).get(0);
+                .offenderDocumentsDetailsOfInstitutionReportDocuments(List.of(document)).get(0);
 
         assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("INSTITUTION_REPORT_DOCUMENT");
         assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Institution report");
@@ -155,10 +153,10 @@ public class DocumentTransformerTest {
         document.getAddressAssessment().setAssessmentDate(LocalDateTime.of(1965, 7, 19, 0, 0));
 
         assertThat(DocumentTransformer
-                .offenderDocumentsDetailsOfAddressAssessmentDocuments(ImmutableList.of(document))).hasSize(1);
+                .offenderDocumentsDetailsOfAddressAssessmentDocuments(List.of(document))).hasSize(1);
 
         final OffenderDocumentDetail offenderDocumentDetail = DocumentTransformer
-                .offenderDocumentsDetailsOfAddressAssessmentDocuments(ImmutableList.of(document)).get(0);
+                .offenderDocumentsDetailsOfAddressAssessmentDocuments(List.of(document)).get(0);
 
         assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("ADDRESS_ASSESSMENT_DOCUMENT");
         assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Address assessment related document");
@@ -172,10 +170,10 @@ public class DocumentTransformerTest {
         document.getApprovedPremisesReferral().setReferralDate(LocalDateTime.of(1965, 7, 19, 0, 0));
 
         assertThat(DocumentTransformer
-                .offenderDocumentsDetailsOfApprovedPremisesReferralDocuments(ImmutableList.of(document))).hasSize(1);
+                .offenderDocumentsDetailsOfApprovedPremisesReferralDocuments(List.of(document))).hasSize(1);
 
         final OffenderDocumentDetail offenderDocumentDetail = DocumentTransformer
-                .offenderDocumentsDetailsOfApprovedPremisesReferralDocuments(ImmutableList.of(document)).get(0);
+                .offenderDocumentsDetailsOfApprovedPremisesReferralDocuments(List.of(document)).get(0);
 
         assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("APPROVED_PREMISES_REFERRAL_DOCUMENT");
         assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Approved premises referral related document");
@@ -189,10 +187,10 @@ public class DocumentTransformerTest {
         document.getAssessment().setAssessmentDate(LocalDateTime.of(1965, 7, 19, 0, 0));
         document.getAssessment().getAssessmentType().setDescription("Drugs testing");
 
-        assertThat(DocumentTransformer.offenderDocumentsDetailsOfAssessmentDocuments(ImmutableList.of(document))).hasSize(1);
+        assertThat(DocumentTransformer.offenderDocumentsDetailsOfAssessmentDocuments(List.of(document))).hasSize(1);
 
         final OffenderDocumentDetail offenderDocumentDetail = DocumentTransformer
-                .offenderDocumentsDetailsOfAssessmentDocuments(ImmutableList.of(document)).get(0);
+                .offenderDocumentsDetailsOfAssessmentDocuments(List.of(document)).get(0);
 
         assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("ASSESSMENT_DOCUMENT");
         assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Assessment document");
@@ -205,10 +203,10 @@ public class DocumentTransformerTest {
 
 
         assertThat(DocumentTransformer
-                .offenderDocumentsDetailsOfCaseAllocationDocuments(ImmutableList.of(document))).hasSize(1);
+                .offenderDocumentsDetailsOfCaseAllocationDocuments(List.of(document))).hasSize(1);
 
         final OffenderDocumentDetail offenderDocumentDetail = DocumentTransformer
-                .offenderDocumentsDetailsOfCaseAllocationDocuments(ImmutableList.of(document)).get(0);
+                .offenderDocumentsDetailsOfCaseAllocationDocuments(List.of(document)).get(0);
 
         assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("CASE_ALLOCATION_DOCUMENT");
         assertThat(offenderDocumentDetail.getType().getDescription()).isEqualTo("Case allocation document");
@@ -220,10 +218,10 @@ public class DocumentTransformerTest {
 
 
         assertThat(DocumentTransformer
-                .offenderDocumentsDetailsOfPersonalContactDocuments(ImmutableList.of(document))).hasSize(1);
+                .offenderDocumentsDetailsOfPersonalContactDocuments(List.of(document))).hasSize(1);
 
         final OffenderDocumentDetail offenderDocumentDetail = DocumentTransformer
-                .offenderDocumentsDetailsOfPersonalContactDocuments(ImmutableList.of(document)).get(0);
+                .offenderDocumentsDetailsOfPersonalContactDocuments(List.of(document)).get(0);
 
         assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("PERSONAL_CONTACT_DOCUMENT");
         assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Personal contact of type Drug Worker with Father");
@@ -238,10 +236,10 @@ public class DocumentTransformerTest {
         document.getReferral().setReferralDate(LocalDateTime.of(1965, 7, 19, 0, 0));
 
 
-        assertThat(DocumentTransformer.offenderDocumentsDetailsOfReferralDocuments(ImmutableList.of(document))).hasSize(1);
+        assertThat(DocumentTransformer.offenderDocumentsDetailsOfReferralDocuments(List.of(document))).hasSize(1);
 
         final OffenderDocumentDetail offenderDocumentDetail = DocumentTransformer
-                .offenderDocumentsDetailsOfReferralDocuments(ImmutableList.of(document)).get(0);
+                .offenderDocumentsDetailsOfReferralDocuments(List.of(document)).get(0);
 
         assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("REFERRAL_DOCUMENT");
         assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Referral for Mental Health on 19/07/1965");
@@ -256,10 +254,10 @@ public class DocumentTransformerTest {
         document.getNsi().setReferralDate(LocalDate.of(1965, 7, 19));
 
 
-        assertThat(DocumentTransformer.offenderDocumentsDetailsOfNsiDocuments(ImmutableList.of(document))).hasSize(1);
+        assertThat(DocumentTransformer.offenderDocumentsDetailsOfNsiDocuments(List.of(document))).hasSize(1);
 
         final OffenderDocumentDetail offenderDocumentDetail = DocumentTransformer
-                .offenderDocumentsDetailsOfNsiDocuments(ImmutableList.of(document)).get(0);
+                .offenderDocumentsDetailsOfNsiDocuments(List.of(document)).get(0);
 
         assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("NSI_DOCUMENT");
         assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Non Statutory Intervention for Custody - Accredited Programme on 19/07/1965");
@@ -275,9 +273,9 @@ public class DocumentTransformerTest {
         document.getPersonalCircumstance().setStartDate(LocalDate.of(1965, 7, 19));
 
 
-        assertThat(DocumentTransformer.offenderDocumentsDetailsOfPersonalCircumstanceDocuments(ImmutableList.of(document))).hasSize(1);
+        assertThat(DocumentTransformer.offenderDocumentsDetailsOfPersonalCircumstanceDocuments(List.of(document))).hasSize(1);
 
-        final OffenderDocumentDetail offenderDocumentDetail = DocumentTransformer.offenderDocumentsDetailsOfPersonalCircumstanceDocuments(ImmutableList.of(document)).get(0);
+        final OffenderDocumentDetail offenderDocumentDetail = DocumentTransformer.offenderDocumentsDetailsOfPersonalCircumstanceDocuments(List.of(document)).get(0);
 
         assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("PERSONAL_CIRCUMSTANCE_DOCUMENT");
         assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Personal circumstance of AP - Medication in Posession - Assessment started on 19/07/1965");
@@ -292,9 +290,9 @@ public class DocumentTransformerTest {
         document.getUpwAppointment().setAppointmentDate(LocalDateTime.of(1965, 7, 19, 0, 0));
 
 
-        assertThat(DocumentTransformer.offenderDocumentsDetailsOfUPWAppointmentDocuments(ImmutableList.of(document))).hasSize(1);
+        assertThat(DocumentTransformer.offenderDocumentsDetailsOfUPWAppointmentDocuments(List.of(document))).hasSize(1);
 
-        final OffenderDocumentDetail offenderDocumentDetail = DocumentTransformer.offenderDocumentsDetailsOfUPWAppointmentDocuments(ImmutableList.of(document)).get(0);
+        final OffenderDocumentDetail offenderDocumentDetail = DocumentTransformer.offenderDocumentsDetailsOfUPWAppointmentDocuments(List.of(document)).get(0);
 
         assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("UPW_APPOINTMENT_DOCUMENT");
         assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Unpaid work appointment on 19/07/1965 for Cutting grass");
@@ -309,9 +307,9 @@ public class DocumentTransformerTest {
         document.getContact().setContactDate(LocalDate.of(1965, 7, 19));
 
 
-        assertThat(DocumentTransformer.offenderDocumentsDetailsOfContactDocuments(ImmutableList.of(document))).hasSize(1);
+        assertThat(DocumentTransformer.offenderDocumentsDetailsOfContactDocuments(List.of(document))).hasSize(1);
 
-        final OffenderDocumentDetail offenderDocumentDetail = DocumentTransformer.offenderDocumentsDetailsOfContactDocuments(ImmutableList.of(document)).get(0);
+        final OffenderDocumentDetail offenderDocumentDetail = DocumentTransformer.offenderDocumentsDetailsOfContactDocuments(List.of(document)).get(0);
 
         assertThat(offenderDocumentDetail.getType().getCode()).isEqualTo("CONTACT_DOCUMENT");
         assertThat(offenderDocumentDetail.getExtendedDescription()).isEqualTo("Contact on 19/07/1965 for Meet up");

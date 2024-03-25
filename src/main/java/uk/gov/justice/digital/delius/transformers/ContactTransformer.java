@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import com.google.common.collect.ImmutableList;
 import uk.gov.justice.digital.delius.data.api.ActivityLogGroup;
 import uk.gov.justice.digital.delius.data.api.ActivityLogGroup.ActivityLogEntry;
 import uk.gov.justice.digital.delius.data.api.AvailableContactOutcomeTypes;
@@ -38,7 +37,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.stream.*;
 
 import static java.util.Comparator.comparing;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
@@ -180,8 +179,7 @@ public class ContactTransformer {
         Optional<String> maybeSecondName = Optional.ofNullable(name1);
         Optional<String> maybeThirdName = Optional.ofNullable(name2);
 
-        return ImmutableList.of(maybeSecondName, maybeThirdName)
-                .stream()
+        return Stream.of(maybeSecondName, maybeThirdName)
                 .flatMap(Optional::stream)
                 .collect(Collectors.joining(" "));
     }

@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.info;
 
-import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
@@ -40,7 +39,7 @@ public class ServerInfo implements InfoContributor {
         serverDetails.put("serverTimeMillis", System.currentTimeMillis());
         serverDetails.put("serverDateTime", LocalDateTime.now().toString());
 
-        ImmutableMap<String, Long> mem = ImmutableMap.of("memoryUsedByJVM", Runtime.getRuntime().totalMemory(),
+        Map<String, Long> mem = Map.of("memoryUsedByJVM", Runtime.getRuntime().totalMemory(),
                 "remainingMemoryAvailableToJVM", Runtime.getRuntime().freeMemory());
 
         serverDetails.put("memory", mem);

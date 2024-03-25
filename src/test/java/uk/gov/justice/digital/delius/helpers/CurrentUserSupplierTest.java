@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.helpers;
 
-import com.google.common.collect.ImmutableMap;
 import io.jsonwebtoken.impl.DefaultClaims;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.config.SecurityUserContext;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,9 +34,9 @@ public class CurrentUserSupplierTest {
     public void willReturnUserFromClaimWhenNotSecure() {
         when(securityUserContext.isSecure()).thenReturn(false);
 
-        CurrentUserSupplier.setClaims(new DefaultClaims(ImmutableMap.of(Jwt.UID, "testy.test")));
+        CurrentUserSupplier.setClaims(new DefaultClaims(Map.of(Jwt.UID, "testy.test")));
 
-        assertThat(currentUserSupplier.username()).get().isEqualTo("testy.test");
+        assertThat(currentUserSupplier.username()).contains("testy.test");
     }
 
     @Test
@@ -55,7 +55,7 @@ public class CurrentUserSupplierTest {
         when(securityUserContext.getCurrentUsername()).thenReturn(Optional.of("testy.test"));
 
 
-        assertThat(currentUserSupplier.username()).get().isEqualTo("testy.test");
+        assertThat(currentUserSupplier.username()).contains("testy.test");
     }
 
     @Test
@@ -64,7 +64,7 @@ public class CurrentUserSupplierTest {
         when(securityUserContext.isClientOnly()).thenReturn(true);
 
 
-        assertThat(currentUserSupplier.username()).get().isEqualTo("APIUser");
+        assertThat(currentUserSupplier.username()).contains("APIUser");
     }
 
     @Test
@@ -73,7 +73,7 @@ public class CurrentUserSupplierTest {
         when(securityUserContext.isClientOnly()).thenReturn(true);
         when(securityUserContext.getDatabaseUsername()).thenReturn("MOIC");
 
-        assertThat(currentUserSupplier.username()).get().isEqualTo("MOIC");
+        assertThat(currentUserSupplier.username()).contains("MOIC");
     }
 
     @Test
@@ -81,11 +81,11 @@ public class CurrentUserSupplierTest {
         // the implementation means the below will not be called but leave it
         // here for clarity on the scenario
         lenient().when(securityUserContext.isSecure()).thenReturn(false);
-        CurrentUserSupplier.setClaims(new DefaultClaims(ImmutableMap.of(Jwt.UID, "testy.test")));
+        CurrentUserSupplier.setClaims(new DefaultClaims(Map.of(Jwt.UID, "testy.test")));
 
         CurrentUserSupplier.setNationalUserOverride();
 
-        assertThat(currentUserSupplier.username()).get().isEqualTo("NationalUser");
+        assertThat(currentUserSupplier.username()).contains("NationalUser");
     }
 
     @Test
@@ -106,7 +106,7 @@ public class CurrentUserSupplierTest {
 
         CurrentUserSupplier.setNationalUserOverride();
 
-        assertThat(currentUserSupplier.username()).get().isEqualTo("NationalUser");
+        assertThat(currentUserSupplier.username()).contains("NationalUser");
     }
 
     @Test
@@ -116,6 +116,6 @@ public class CurrentUserSupplierTest {
 
         CurrentUserSupplier.setNationalUserOverride();
 
-        assertThat(currentUserSupplier.username()).get().isEqualTo("NationalUser");
+        assertThat(currentUserSupplier.username()).contains("NationalUser");
     }
 }

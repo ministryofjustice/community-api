@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,13 +29,13 @@ public class OffenceServiceTest {
         offenceService = new OffenceService(mainOffenceRepository);
 
         Mockito.when(mainOffenceRepository.findByOffenderId(1L))
-            .thenReturn(ImmutableList.of(
+            .thenReturn(List.of(
                 MainOffence.builder()
                     .mainOffenceId(1L)
                     .event(Event
                             .builder()
                             .eventId(42L)
-                            .additionalOffences(ImmutableList.of(
+                            .additionalOffences(List.of(
                                     AdditionalOffence.builder()
                                             .additionalOffenceId(101L)
                                             .softDeleted(1L)
@@ -62,7 +61,7 @@ public class OffenceServiceTest {
                     .event(Event
                             .builder()
                             .eventId(43L)
-                            .additionalOffences(ImmutableList.of(
+                            .additionalOffences(List.of(
                                     AdditionalOffence.builder()
                                             .additionalOffenceId(103L)
                                             .offence(Offence.builder()
@@ -80,7 +79,7 @@ public class OffenceServiceTest {
                     .event(Event
                             .builder()
                             .eventId(44L)
-                            .additionalOffences(ImmutableList.of(
+                            .additionalOffences(List.of(
                                     AdditionalOffence.builder()
                                             .additionalOffenceId(104L)
                                             .offence(Offence.builder()

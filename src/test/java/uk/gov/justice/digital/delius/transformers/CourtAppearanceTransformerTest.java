@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -26,7 +25,7 @@ public class CourtAppearanceTransformerTest {
             .appearanceDate(LocalDateTime.now())
             .court(aCourt())
             .event(aEvent())
-            .courtReports(ImmutableList.of(
+            .courtReports(List.of(
                 uk.gov.justice.digital.delius.jpa.standard.entity.CourtReport.builder()
                     .courtReportId(1L)
                     .build(),
@@ -49,7 +48,7 @@ public class CourtAppearanceTransformerTest {
     private Event aEvent() {
         return Event
                 .builder()
-                .additionalOffences(ImmutableList.of())
+                .additionalOffences(List.of())
                 .build();
     }
 

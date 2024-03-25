@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
@@ -13,7 +12,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProviderTeam;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Provision;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ResponsibleOfficer;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
@@ -35,7 +33,7 @@ public class OffenderTransformerTest {
 
     @Test
     public void offenderManagerAllocationReasonMappedFromAllocationReasonInOffenderTransfer() {
-        assertThat(OffenderTransformer.offenderManagersOf(ImmutableList.of(aOffenderManager())).get(0).getAllocationReason())
+        assertThat(OffenderTransformer.offenderManagersOf(List.of(aOffenderManager())).getFirst().getAllocationReason())
             .isNotNull()
             .hasFieldOrPropertyWithValue("code", "1984")
             .hasFieldOrPropertyWithValue("description", "Reallocation - Inactive Offender");
@@ -45,12 +43,12 @@ public class OffenderTransformerTest {
     @Test
     public void offenderManagerAllocationReasonNullWhenOffenderTransferAbsent() {
         assertThat(OffenderTransformer.offenderManagersOf(
-                ImmutableList.of(
+                List.of(
                     aOffenderManager()
                         .toBuilder()
                         .allocationReason(null)
                         .build()))
-            .get(0).getAllocationReason())
+            .getFirst().getAllocationReason())
             .isNull();
 
     }
@@ -59,12 +57,12 @@ public class OffenderTransformerTest {
     public void disabilitiesCopiedWithLatestFirst() {
         assertThat(OffenderTransformer.fullOffenderOf(anOffender()
                 .toBuilder()
-                .disabilities(ImmutableList.of(
+                .disabilities(List.of(
                     Disability
                         .builder()
                         .softDeleted(0L)
                         .disabilityId(1L)
-                        .startDate(LocalDate.now().minus(5, ChronoUnit.DAYS))
+                        .startDate(LocalDate.now().minusDays(5))
                         .disabilityType(StandardReference
                             .builder()
                             .codeValue("A")
@@ -75,7 +73,7 @@ public class OffenderTransformerTest {
                         .builder()
                         .softDeleted(0L)
                         .disabilityId(2L)
-                        .startDate(LocalDate.now().minus(2, ChronoUnit.DAYS))
+                        .startDate(LocalDate.now().minusDays(2))
                         .disabilityType(StandardReference
                             .builder()
                             .codeValue("B")
@@ -86,7 +84,7 @@ public class OffenderTransformerTest {
                         .builder()
                         .softDeleted(0L)
                         .disabilityId(3L)
-                        .startDate(LocalDate.now().minus(3, ChronoUnit.DAYS))
+                        .startDate(LocalDate.now().minusDays(3))
                         .disabilityType(StandardReference
                             .builder()
                             .codeValue("C")
@@ -106,12 +104,12 @@ public class OffenderTransformerTest {
     public void deletedDisabilitiesNotCopied() {
         assertThat(OffenderTransformer.fullOffenderOf(anOffender()
                 .toBuilder()
-                .disabilities(ImmutableList.of(
+                .disabilities(List.of(
                     uk.gov.justice.digital.delius.jpa.standard.entity.Disability
                         .builder()
                         .softDeleted(0L)
                         .disabilityId(1L)
-                        .startDate(LocalDate.now().minus(5, ChronoUnit.DAYS))
+                        .startDate(LocalDate.now().minusDays(5))
                         .disabilityType(StandardReference
                             .builder()
                             .codeValue("A")
@@ -122,7 +120,7 @@ public class OffenderTransformerTest {
                         .builder()
                         .softDeleted(1L)
                         .disabilityId(2L)
-                        .startDate(LocalDate.now().minus(2, ChronoUnit.DAYS))
+                        .startDate(LocalDate.now().minusDays(2))
                         .disabilityType(StandardReference
                             .builder()
                             .codeValue("B")
@@ -184,17 +182,17 @@ public class OffenderTransformerTest {
 
     @Test
     public void ProbationAreaNPSPrivateSectorTransformedToTrue() {
-        assertThat(OffenderTransformer.offenderManagersOf(ImmutableList.of(
+        assertThat(OffenderTransformer.offenderManagersOf(List.of(
                 aOffenderManager()
                     .toBuilder()
                     .probationArea(npsProbationArea())
                     .build()))
-            .get(0).getProbationArea().getNps()).isTrue();
+            .getFirst().getProbationArea().getNps()).isTrue();
     }
 
     @Test
     public void ProbationAreaNPSPrivateSectorTransformedToFalse() {
-        assertThat(OffenderTransformer.offenderManagersOf(ImmutableList.of(
+        assertThat(OffenderTransformer.offenderManagersOf(List.of(
                 aOffenderManager()
                     .toBuilder()
                     .probationArea(crcProbationArea())
@@ -219,7 +217,7 @@ public class OffenderTransformerTest {
     private List<OffenderManager> aListOfOffenderManagers() {
 
         // List of offender managers managing the same offender with one current and one historical
-        return ImmutableList.of(
+        return List.of(
             aOffenderManager()
                 .toBuilder()
                 .offenderManagerId(1L)
@@ -556,7 +554,7 @@ public class OffenderTransformerTest {
     public void isActiveIsTrueWhenStartDateTodayAndEndDateInFuture() {
         assertThat(OffenderTransformer.fullOffenderOf(anOffender()
                 .toBuilder()
-                .disabilities(ImmutableList.of(
+                .disabilities(List.of(
                     Disability
                         .builder()
                         .softDeleted(0L)
@@ -577,7 +575,7 @@ public class OffenderTransformerTest {
     public void isActiveIsTrueWhenEndDateIsNull() {
         assertThat(OffenderTransformer.fullOffenderOf(anOffender()
                 .toBuilder()
-                .disabilities(ImmutableList.of(
+                .disabilities(List.of(
                     Disability
                         .builder()
                         .softDeleted(0L)
@@ -597,7 +595,7 @@ public class OffenderTransformerTest {
     public void isActiveIsFalseWhenEndDateIsToday() {
         assertThat(OffenderTransformer.fullOffenderOf(anOffender()
                 .toBuilder()
-                .disabilities(ImmutableList.of(
+                .disabilities(List.of(
                     Disability
                         .builder()
                         .softDeleted(0L)
@@ -618,7 +616,7 @@ public class OffenderTransformerTest {
     public void isActiveIsFalseWhenStartDateInFuture() {
         assertThat(OffenderTransformer.fullOffenderOf(anOffender()
                 .toBuilder()
-                .disabilities(ImmutableList.of(
+                .disabilities(List.of(
                     Disability
                         .builder()
                         .softDeleted(0L)

@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.controller.api;
 
-import com.google.common.collect.ImmutableList;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +10,6 @@ import uk.gov.justice.digital.delius.data.api.CourtReport;
 import uk.gov.justice.digital.delius.service.CourtReportService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;

@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import com.google.common.collect.ImmutableList;
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -96,7 +95,7 @@ public class UserServiceTest {
     public void exclusionListCheckedWhenExcludedForSomeone() {
         when(userRepositoryWrapper.getUser(any())).thenReturn(User
                 .builder()
-                .exclusions(ImmutableList.of(Exclusion
+                .exclusions(List.of(Exclusion
                         .builder()
                         .offenderId(2L)
                         .build()))
@@ -117,7 +116,7 @@ public class UserServiceTest {
     public void exclusionUnsetWhenUserNotInExclusionList() {
         when(userRepositoryWrapper.getUser(any())).thenReturn(User
                 .builder()
-                .exclusions(ImmutableList.of(Exclusion
+                .exclusions(List.of(Exclusion
                         .builder()
                         .offenderId(2L)
                         .build()))
@@ -138,7 +137,7 @@ public class UserServiceTest {
     public void exclusionSetWhenUserIsInExclusionList() {
         when(userRepositoryWrapper.getUser(any())).thenReturn(User
                 .builder()
-                .exclusions(ImmutableList.of(Exclusion
+                .exclusions(List.of(Exclusion
                         .builder()
                         .offenderId(1L)
                         .build()))
@@ -159,7 +158,7 @@ public class UserServiceTest {
     public void exclusionMessageReturnedWhenUserIsInExclusionList() {
         when(userRepositoryWrapper.getUser(any())).thenReturn(User
                 .builder()
-                .exclusions(ImmutableList.of(Exclusion
+                .exclusions(List.of(Exclusion
                         .builder()
                         .offenderId(1L)
                         .build()))
@@ -221,7 +220,7 @@ public class UserServiceTest {
     public void restrictedListCheckedWhenRestrictedToSomeone() {
         when(userRepositoryWrapper.getUser(any())).thenReturn(User
                 .builder()
-                .restrictions(ImmutableList.of(Restriction
+                .restrictions(List.of(Restriction
                         .builder()
                         .offenderId(1L)
                         .build()))
@@ -242,7 +241,7 @@ public class UserServiceTest {
     public void restrictedUnsetWhenUserInRestrictionList() {
         when(userRepositoryWrapper.getUser(any())).thenReturn(User
                 .builder()
-                .restrictions(ImmutableList.of(Restriction
+                .restrictions(List.of(Restriction
                         .builder()
                         .offenderId(1L)
                         .build()))
@@ -263,7 +262,7 @@ public class UserServiceTest {
     public void restrictedSetWhenUserIsNotInRestrictionList() {
         when(userRepositoryWrapper.getUser(any())).thenReturn(User
                 .builder()
-                .restrictions(ImmutableList.of(Restriction
+                .restrictions(List.of(Restriction
                         .builder()
                         .offenderId(2L)
                         .build()))
@@ -284,7 +283,7 @@ public class UserServiceTest {
     public void restrictedMessageReturnedWhenUserIsNotInRestrictionList() {
         when(userRepositoryWrapper.getUser(any())).thenReturn(User
                 .builder()
-                .restrictions(ImmutableList.of(Restriction
+                .restrictions(List.of(Restriction
                         .builder()
                         .offenderId(2L)
                         .build()))
@@ -309,7 +308,7 @@ public class UserServiceTest {
                         .givenname("John")
                         .sn("Bean")
                         .mail("john.bean@justice.gov.uk")
-                        .roles(ImmutableList.of(
+                        .roles(List.of(
                                 NDeliusRole
                                         .builder()
                                         .cn("ROLE1")
@@ -357,7 +356,7 @@ public class UserServiceTest {
                     .sn("Bean")
                     .cn("john.bean")
                     .mail("john.bean@justice.gov.uk")
-                    .roles(ImmutableList.of(NDeliusRole.builder().cn("ROLE1").build()))
+                    .roles(List.of(NDeliusRole.builder().cn("ROLE1").build()))
                     .build())
         );
         when(userRepositoryWrapper.getUser(any())).thenReturn(User.builder().userId(12345L).build());
@@ -388,14 +387,14 @@ public class UserServiceTest {
                     .sn("Bean")
                     .cn("john.bean")
                     .mail("john.bean@justice.gov.uk")
-                    .roles(ImmutableList.of(NDeliusRole.builder().cn("ROLE1").build()))
+                    .roles(List.of(NDeliusRole.builder().cn("ROLE1").build()))
                     .build(),
                 NDeliusUser.builder()
                     .givenname("Al")
                     .sn("Green")
                     .cn("al.green")
                     .mail("al.green@justice.gov.uk")
-                    .roles(ImmutableList.of(NDeliusRole.builder().cn("ROLE2").build()))
+                    .roles(List.of(NDeliusRole.builder().cn("ROLE2").build()))
                     .build())
         );
         when(userRepositoryWrapper.getUser("al.green")).thenThrow(new NoSuchUserException(""));

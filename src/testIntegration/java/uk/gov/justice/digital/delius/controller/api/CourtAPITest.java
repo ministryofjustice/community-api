@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.delius.controller.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -11,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.justice.digital.delius.data.api.Court;
 import uk.gov.justice.digital.delius.data.api.CourtAppearance;
-import uk.gov.justice.digital.delius.data.api.CourtReport;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.user.UserData;
 
@@ -67,14 +64,6 @@ public class CourtAPITest {
             .get("offenders/crn/crn1/courtAppearances")
             .then()
             .statusCode(401);
-    }
-
-    private CourtAppearance aCourtAppearance(Long id) {
-        return CourtAppearance.builder()
-            .courtAppearanceId(id)
-            .court(Court.builder().build())
-            .courtReports(ImmutableList.of(CourtReport.builder().build()))
-            .build();
     }
 
     private String aValidToken() {

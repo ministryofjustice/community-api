@@ -138,13 +138,11 @@ public class DocumentServiceTest {
             upwAppointmentDocumentRepository,
             contactDocumentRepository
         );
-        when(offenderRepository.findByOffenderId(any())).thenReturn(Optional.of(anOffender()));
         when(offenderDocumentRepository.findByOffenderId(any(), any())).thenReturn(List.of());
         when(eventDocumentRepository.findByOffenderId(any(), any())).thenReturn(List.of());
         when(courtReportDocumentRepository.findAll(courtReportDocumentSpecification.capture())).thenReturn(List
             .of());
         when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(List.of());
-        when(eventRepository.findByOffenderId(any())).thenReturn(List.of());
         when(addressAssessmentRepository.findByOffenderId(any())).thenReturn(List.of());
         when(approvedPremisesReferralDocumentRepository.findByOffenderId(any())).thenReturn(List.of());
         when(assessmentDocumentRepository.findByOffenderId(any())).thenReturn(List.of());
@@ -176,10 +174,7 @@ public class DocumentServiceTest {
     public void singleConvictionAddedWhenSingleCourtReportAndSingleEventShareSameId() {
         final CourtReportDocument courtReportDocument = aCourtReportDocument();
         courtReportDocument.getCourtReport().getCourtAppearance().getEvent().setEventId(99L);
-        final Event event = anEvent();
-        event.setEventId(99L);
 
-        when(eventRepository.findByOffenderId(any())).thenReturn(List.of(event));
         when(courtReportDocumentRepository.findAll(courtReportDocumentSpecification.capture())).thenReturn(List.of(courtReportDocument));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
@@ -195,7 +190,6 @@ public class DocumentServiceTest {
         event.setEventId(99L);
         final EventDocument cpsPack = anEventDocument(event.getEventId(), DocumentType.CPS_PACK);
 
-        when(eventRepository.findByOffenderId(any())).thenReturn(List.of(event));
         when(courtReportDocumentRepository.findAll(courtReportDocumentSpecification.capture())).thenReturn(List
             .of(courtReportDocument));
         when(eventDocumentRepository.findByOffenderId(any(), eq(DocumentType.CPS_PACK))).thenReturn(List.of(cpsPack));
@@ -218,10 +212,7 @@ public class DocumentServiceTest {
     public void singleConvictionAddedWhenSingleInstitutionalReportAndSingleEventShareSameId() {
         final InstitutionalReportDocument institutionalReportDocument = anInstitutionalReportDocument();
         institutionalReportDocument.getInstitutionalReport().getCustody().getDisposal().getEvent().setEventId(99L);
-        final Event event = anEvent();
-        event.setEventId(99L);
 
-        when(eventRepository.findByOffenderId(any())).thenReturn(List.of(event));
         when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(List.of(institutionalReportDocument));
 
         final OffenderDocuments documents = documentService.offenderDocumentsFor(1L, DocumentFilter.noFilter());
@@ -237,7 +228,6 @@ public class DocumentServiceTest {
         event.setEventId(99L);
         final EventDocument cpsPack = anEventDocument(event.getEventId(), DocumentType.CPS_PACK);
 
-        when(eventRepository.findByOffenderId(any())).thenReturn(List.of(event));
         when(eventDocumentRepository.findByOffenderId(any(),eq(DocumentType.CPS_PACK))).thenReturn(List.of(cpsPack));
         when(institutionReportDocumentRepository.findByOffenderId(any())).thenReturn(List.of(institutionalReportDocument));
 

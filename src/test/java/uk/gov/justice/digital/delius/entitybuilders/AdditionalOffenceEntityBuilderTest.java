@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.entitybuilders;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +10,8 @@ import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offence;
 import uk.gov.justice.digital.delius.service.LookupSupplier;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -31,7 +32,7 @@ public class AdditionalOffenceEntityBuilderTest {
 
     @Test
     public void eachOffenceIsCopied() {
-        ImmutableList<uk.gov.justice.digital.delius.data.api.Offence> offences = ImmutableList.of(
+        List<uk.gov.justice.digital.delius.data.api.Offence> offences = List.of(
                 anOffence(),
                 anOffence()
         );
@@ -43,25 +44,25 @@ public class AdditionalOffenceEntityBuilderTest {
     public void setsAuditFields() {
         when(lookupSupplier.userSupplier()).thenReturn(() -> User.builder().userId(99L).build());
 
-        ImmutableList<uk.gov.justice.digital.delius.data.api.Offence> offences = ImmutableList.of(
+        List<uk.gov.justice.digital.delius.data.api.Offence> offences = List.of(
                 anOffence()
         );
 
-        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).get(0).getCreatedByUserId()).isEqualTo(99L);
-        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).get(0).getLastUpdatedUserId()).isEqualTo(99L);
-        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).get(0).getCreatedDatetime()).isNotNull();
-        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).get(0).getLastUpdatedDatetime()).isNotNull();
+        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).getFirst().getCreatedByUserId()).isEqualTo(99L);
+        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).getFirst().getLastUpdatedUserId()).isEqualTo(99L);
+        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).getFirst().getCreatedDatetime()).isNotNull();
+        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).getFirst().getLastUpdatedDatetime()).isNotNull();
     }
 
     @Test
     public void setsSensibleDefaults() {
-        ImmutableList<uk.gov.justice.digital.delius.data.api.Offence> offences = ImmutableList.of(
+        List<uk.gov.justice.digital.delius.data.api.Offence> offences = List.of(
                 anOffence()
         );
 
-        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).get(0).getSoftDeleted()).isEqualTo(0L);
-        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).get(0).getPartitionAreaId()).isEqualTo(0L);
-        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).get(0).getRowVersion()).isEqualTo(1L);
+        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).getFirst().getSoftDeleted()).isEqualTo(0L);
+        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).getFirst().getPartitionAreaId()).isEqualTo(0L);
+        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).getFirst().getRowVersion()).isEqualTo(1L);
 
     }
 
@@ -69,7 +70,7 @@ public class AdditionalOffenceEntityBuilderTest {
     public void offenceDetailLookedUpFromCode() {
         when(lookupSupplier.offenceSupplier()).thenReturn(code -> Offence.builder().offenceId(88L).build());
 
-        ImmutableList<uk.gov.justice.digital.delius.data.api.Offence> offences = ImmutableList.of(
+        List<uk.gov.justice.digital.delius.data.api.Offence> offences = List.of(
                 anOffence()
                         .toBuilder()
                         .detail(OffenceDetail
@@ -79,7 +80,7 @@ public class AdditionalOffenceEntityBuilderTest {
                         .build()
         );
 
-        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).get(0).getOffence().getOffenceId()).isEqualTo(88L);
+        assertThat(additionalOffenceEntityBuilder.additionalOffencesOf(offences, anEvent()).getFirst().getOffence().getOffenceId()).isEqualTo(88L);
 
     }
     private Event anEvent() {

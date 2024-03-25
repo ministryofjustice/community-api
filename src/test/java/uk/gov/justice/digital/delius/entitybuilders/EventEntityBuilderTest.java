@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.entitybuilders;
 
-import com.google.common.collect.ImmutableList;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -101,7 +100,7 @@ public class EventEntityBuilderTest {
                 .toBuilder()
                 .eventId(99L)
                 .mainOffence(aMainOffence())
-                .additionalOffences(ImmutableList.of(anAdditionalOffence(), anAdditionalOffence()))
+                .additionalOffences(List.of(anAdditionalOffence(), anAdditionalOffence()))
                 .build()).getOffences()
         ).hasSize(3);
     }
@@ -132,7 +131,7 @@ public class EventEntityBuilderTest {
         assertThat(ConvictionTransformer.convictionOf(
             anEvent()
                 .toBuilder()
-                .courtAppearances(ImmutableList.of(
+                .courtAppearances(List.of(
                     aCourtAppearanceWithNoOutcome(LocalDateTime.now()),
                     aCourtAppearance("Final Review", "Y", LocalDateTime.now().minusDays(1)),
                     aCourtAppearance("Adjourned", "X", LocalDateTime.now().minusDays(2))
@@ -588,8 +587,8 @@ public class EventEntityBuilderTest {
     private Event anEvent() {
         return Event
             .builder()
-            .additionalOffences(ImmutableList.of())
-            .courtAppearances(ImmutableList.of())
+            .additionalOffences(List.of())
+            .courtAppearances(List.of())
             .build();
     }
 
@@ -606,7 +605,7 @@ public class EventEntityBuilderTest {
     private CourtCase aCourtCase() {
         return CourtCase
             .builder()
-            .offences(ImmutableList.of(anApiMainOffence()))
+            .offences(List.of(anApiMainOffence()))
             .orderManager(uk.gov.justice.digital.delius.data.api.OrderManager.builder().build())
             .build();
     }

@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.controller.api;
 
-import com.google.common.collect.ImmutableList;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,10 +8,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.Offence;
 import uk.gov.justice.digital.delius.data.api.OffenceDetail;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.service.OffenceService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
+import java.util.List;
 import java.util.Optional;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
@@ -40,7 +39,7 @@ public class OffencesControllerTest {
     public void canGetOffencesByCrn() {
         when(offenderService.offenderIdOfCrn("crn1")).thenReturn(Optional.of(1L));
         when(offenceService.offencesFor(1L))
-                .thenReturn(ImmutableList.of(anOffence(1L, "Fraud"), anOffence(2L, "Perjury")));
+                .thenReturn(List.of(anOffence(1L, "Fraud"), anOffence(2L, "Perjury")));
 
         Offence[] offences = given()
             .when()

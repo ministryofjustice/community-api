@@ -1,7 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import uk.gov.justice.digital.delius.data.api.AdditionalIdentifier;
 import uk.gov.justice.digital.delius.data.api.Address;
 import uk.gov.justice.digital.delius.data.api.ContactDetails;
@@ -40,8 +38,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toList;
@@ -51,10 +51,10 @@ import static uk.gov.justice.digital.delius.transformers.TypesTransformer.zeroOn
 public class OffenderTransformer {
 
     private static List<PhoneNumber> phoneNumbersOf(Offender offender) {
-        return ImmutableList.of(
+        return Stream.of(
             PhoneNumber.builder().number(Optional.ofNullable(offender.getTelephoneNumber())).type(PhoneNumber.PhoneTypes.TELEPHONE).build(),
             PhoneNumber.builder().number(Optional.ofNullable(offender.getMobileNumber())).type(PhoneNumber.PhoneTypes.MOBILE).build()
-        ).stream().filter(phoneNumber -> phoneNumber.getNumber().isPresent()).collect(toList());
+        ).filter(phoneNumber -> phoneNumber.getNumber().isPresent()).collect(toList());
     }
 
     private static OffenderLanguages languagesOf(Offender offender) {
@@ -71,7 +71,7 @@ public class OffenderTransformer {
         }
         return PreviousConviction.builder()
             .convictionDate(document.getDateProduced().toLocalDate())
-            .detail(Optional.ofNullable(document.getDocumentName()).map(doc -> ImmutableMap.of("documentName", doc)).orElse(null))
+            .detail(Optional.ofNullable(document.getDocumentName()).map(doc -> Map.of("documentName", doc)).orElse(null))
             .build();
     }
 
@@ -236,10 +236,9 @@ public class OffenderTransformer {
         Optional<String> maybeSecondName = Optional.ofNullable(secondName);
         Optional<String> maybeThirdName = Optional.ofNullable(thirdName);
 
-        return ImmutableList.of(maybeSecondName, maybeThirdName)
-            .stream()
+        return Stream.of(maybeSecondName, maybeThirdName)
             .flatMap(Optional::stream)
-            .collect(toList());
+            .toList();
     }
 
     public static List<OffenderManager> offenderManagersOf(List<uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager> offenderManagers) {

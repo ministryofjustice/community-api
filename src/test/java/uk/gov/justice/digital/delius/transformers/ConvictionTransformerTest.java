@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.Conviction;
@@ -50,7 +49,7 @@ class ConvictionTransformerTest {
                 .toBuilder()
                 .eventId(99L)
                 .mainOffence(aMainOffence())
-                .additionalOffences(ImmutableList.of(anAdditionalOffence(), anAdditionalOffence()))
+                .additionalOffences(List.of(anAdditionalOffence(), anAdditionalOffence()))
                 .build()).getOffences()
         ).hasSize(3);
     }
@@ -447,7 +446,7 @@ class ConvictionTransformerTest {
             assertThat(ConvictionTransformer.convictionOf(
                 anEvent()
                     .toBuilder()
-                    .courtAppearances(ImmutableList.of(
+                    .courtAppearances(List.of(
                         aCourtAppearanceWithNoOutcome(LocalDateTime.now()),
                         aCourtAppearance("Final Review", "Y", LocalDateTime.now().minusDays(1)),
                         aCourtAppearance("Adjourned", "X", LocalDateTime.now().minusDays(2))
@@ -464,7 +463,7 @@ class ConvictionTransformerTest {
             assertThat(ConvictionTransformer.convictionOf(
                 anEvent(aDisposal())
                     .toBuilder()
-                    .courtAppearances(ImmutableList.of(
+                    .courtAppearances(List.of(
                         aCourtAppearance("ORA Adult Custody (inc PSS)", "325", LocalDateTime.now()),
                         aCourtAppearance("Final Review", "Y", LocalDateTime.now().minusDays(1)),
                         aCourtAppearance("PSR Adjourned", REFERENCE_DATA_PSR_ADJOURNED_CODE, LocalDateTime.now().minusDays(2))
@@ -479,7 +478,7 @@ class ConvictionTransformerTest {
             assertThat(ConvictionTransformer.convictionOf(
                 anEvent()
                     .toBuilder()
-                    .courtAppearances(ImmutableList.of(
+                    .courtAppearances(List.of(
                         aCourtAppearance("PSR Adjourned", REFERENCE_DATA_PSR_ADJOURNED_CODE, LocalDateTime.now().minusDays(2)),
                         aCourtAppearance("Something else", "100", LocalDateTime.now().minusDays(5))
                     ))
@@ -588,16 +587,16 @@ class ConvictionTransformerTest {
         return Event
             .builder()
             .disposal(disposal)
-            .additionalOffences(ImmutableList.of())
-            .courtAppearances(ImmutableList.of())
+            .additionalOffences(List.of())
+            .courtAppearances(List.of())
             .build();
     }
 
     private Event anEvent() {
         return Event
             .builder()
-            .additionalOffences(ImmutableList.of())
-            .courtAppearances(ImmutableList.of())
+            .additionalOffences(List.of())
+            .courtAppearances(List.of())
             .build();
     }
 

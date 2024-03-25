@@ -1,11 +1,12 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.jpa.standard.entity.AdditionalOffence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.MainOffence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,7 +14,7 @@ public class OffenceTransformerTest {
     @Test
     public void itFiltersOutSoftDeletedEntries() {
 
-        ImmutableList<AdditionalOffence> additionalOffences = ImmutableList.of(
+        List<AdditionalOffence> additionalOffences = List.of(
             AdditionalOffence.builder()
                 .additionalOffenceId(1L)
                 .offence(Offence.builder()
@@ -42,7 +43,7 @@ public class OffenceTransformerTest {
 
     @Test
     public void itConvertsTheIdCorrectly() {
-        ImmutableList<AdditionalOffence> additionalOffences = ImmutableList.of(
+        List<AdditionalOffence> additionalOffences = List.of(
             AdditionalOffence.builder()
                 .additionalOffenceId(92L)
                 .offence(Offence.builder()
@@ -57,7 +58,7 @@ public class OffenceTransformerTest {
 
     @Test
     public void itSetsTheMainOffenceFlagToFalse() {
-        ImmutableList<AdditionalOffence> additionalOffences = ImmutableList.of(
+        List<AdditionalOffence> additionalOffences = List.of(
             AdditionalOffence.builder()
                 .offence(Offence.builder()
                     .ogrsOffenceCategory(StandardReference.builder().build())

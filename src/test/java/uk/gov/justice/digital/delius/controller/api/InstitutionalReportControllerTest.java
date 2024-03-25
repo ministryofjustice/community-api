@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.delius.controller.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.module.mockmvc.config.RestAssuredMockMvcConfig;
@@ -10,12 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.InstitutionalReport;
 import uk.gov.justice.digital.delius.service.InstitutionalReportService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
