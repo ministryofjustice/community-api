@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,10 +59,10 @@ class CourtAppearanceServiceTest {
     @Test
     void softDeletedRecordsAreExcluded() {
         var deletedCourtAppearance = aCourtAppearance(0L, 1L, Collections.emptyList());
-        var courtAppearance = aCourtAppearance(2L, 0L, ImmutableList.of(anAdditionalOffence(200L), anAdditionalOffence(201L)));
+        var courtAppearance = aCourtAppearance(2L, 0L, List.of(anAdditionalOffence(200L), anAdditionalOffence(201L)));
 
         when(courtAppearanceRepository.findByOffenderId(OFFENDER_ID))
-            .thenReturn(ImmutableList.of(deletedCourtAppearance, courtAppearance));
+            .thenReturn(List.of(deletedCourtAppearance, courtAppearance));
 
         List<CourtAppearance> courtAppearances = courtAppearanceService.courtAppearancesFor(OFFENDER_ID);
 
@@ -85,7 +84,7 @@ class CourtAppearanceServiceTest {
 
         when(convictionService.convictionFor(OFFENDER_ID, EVENT_ID)).thenReturn(Optional.of(conviction));
         when(courtAppearanceRepository.findByOffenderIdAndEventId(OFFENDER_ID, EVENT_ID))
-            .thenReturn(ImmutableList.of(appearance1, appearance2, deletedAppearance));
+            .thenReturn(List.of(appearance1, appearance2, deletedAppearance));
 
         var optionalCourtAppearances = courtAppearanceService.courtAppearancesFor(OFFENDER_ID, EVENT_ID);
 
@@ -120,7 +119,7 @@ class CourtAppearanceServiceTest {
         var appearance2 = aCourtAppearance(1L, 0L, Collections.emptyList(), now);
 
         when(courtAppearanceRepository.findByAppearanceDateGreaterThanEqualAndSoftDeletedNot(today.atStartOfDay(), 1L))
-            .thenReturn(ImmutableList.of(appearance1, appearance2));
+            .thenReturn(List.of(appearance1, appearance2));
 
         var courtAppearances = courtAppearanceService.courtAppearances(today);
 
@@ -159,7 +158,7 @@ class CourtAppearanceServiceTest {
                 .additionalOffences(additionalOffences)
                 .build())
             .court(aCourt())
-            .courtReports(ImmutableList.of(
+            .courtReports(List.of(
                 CourtReport.builder()
                     .courtReportId(1L)
                     .build()

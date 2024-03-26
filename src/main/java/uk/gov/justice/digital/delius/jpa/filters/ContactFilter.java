@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.jpa.filters;
 
-import com.google.common.collect.ImmutableList;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.JoinType;
@@ -16,6 +15,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -89,36 +89,37 @@ public class ContactFilter implements Specification<Contact> {
 
     @Override
     public Predicate toPredicate(Root<Contact> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        final var predicateBuilder = ImmutableList.<Predicate>builder()
-            .add(cb.equal(root.get("offenderId"), offenderId));
+        final var predicates = new ArrayList<Predicate>();
 
-        contactTypes.ifPresent(strings -> predicateBuilder.add(root.get("contactType").get("code").in(strings)));
+        predicates.add(cb.equal(root.get("offenderId"), offenderId));
 
-        from.ifPresent(localDateTime -> predicateBuilder.add(cb.greaterThanOrEqualTo(root.get("createdDateTime"), localDateTime)));
+        contactTypes.ifPresent(strings -> predicates.add(root.get("contactType").get("code").in(strings)));
 
-        to.ifPresent(localDateTime -> predicateBuilder.add(cb.lessThanOrEqualTo(root.get("createdDateTime"), localDateTime)));
+        from.ifPresent(localDateTime -> predicates.add(cb.greaterThanOrEqualTo(root.get("createdDateTime"), localDateTime)));
 
-        contactDateFrom.ifPresent(localDate -> predicateBuilder.add(cb.greaterThanOrEqualTo(root.get("contactDate"), localDate)));
+        to.ifPresent(localDateTime -> predicates.add(cb.lessThanOrEqualTo(root.get("createdDateTime"), localDateTime)));
 
-        contactDateTo.ifPresent(localDate -> predicateBuilder.add(cb.lessThanOrEqualTo(root.get("contactDate"), localDate)));
+        contactDateFrom.ifPresent(localDate -> predicates.add(cb.greaterThanOrEqualTo(root.get("contactDate"), localDate)));
 
-        appointmentsOnly.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("contactType").get("attendanceContact"), value)));
+        contactDateTo.ifPresent(localDate -> predicates.add(cb.lessThanOrEqualTo(root.get("contactDate"), localDate)));
 
-        convictionId.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("event").get("eventId"), value)));
+        appointmentsOnly.ifPresent(value -> predicates.add(cb.equal(root.get("contactType").get("attendanceContact"), value)));
 
-        attended.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("attended"), value ? "Y" : "N")));
+        convictionId.ifPresent(value -> predicates.add(cb.equal(root.get("event").get("eventId"), value)));
 
-        complied.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("complied"), value ? "Y" : "N")));
+        attended.ifPresent(value -> predicates.add(cb.equal(root.get("attended"), value ? "Y" : "N")));
 
-        nationalStandard.ifPresent(value -> predicateBuilder.add(cb.equal(root.get("contactType").get("nationalStandardsContact"), value)));
+        complied.ifPresent(value -> predicates.add(cb.equal(root.get("complied"), value ? "Y" : "N")));
 
-        outcome.ifPresent(value -> predicateBuilder.add(value ? cb.isNotNull(root.get("contactOutcomeType")) : cb.isNull(root.get("contactOutcomeType"))));
+        nationalStandard.ifPresent(value -> predicates.add(cb.equal(root.get("contactType").get("nationalStandardsContact"), value)));
 
-        rarActivity.filter(value -> value).ifPresent(value -> predicateBuilder.add(rarActivityOnlyFilter(root, cb)));
+        outcome.ifPresent(value -> predicates.add(value ? cb.isNotNull(root.get("contactOutcomeType")) : cb.isNull(root.get("contactOutcomeType"))));
+
+        rarActivity.filter(value -> value).ifPresent(value -> predicates.add(rarActivityOnlyFilter(root, cb)));
         List<Predicate> includePredicates = getIncludePredicates(root, query, cb);
 
-        if (includePredicates.size() > 0 ) {
-            predicateBuilder.add(cb.or(includePredicates.toArray(new Predicate[0])));
+        if (!includePredicates.isEmpty()) {
+            predicates.add(cb.or(includePredicates.toArray(new Predicate[0])));
         }
 
         convictionDatesOf.map(value -> {
@@ -127,19 +128,18 @@ public class ContactFilter implements Specification<Contact> {
             return getConvictionDatesPredicate(root, cb, value)
                 .map(offenderLevel -> cb.or(eventEq, cb.and(cb.isNull(eventId), offenderLevel)))
                 .orElse(eventEq);
-        }).ifPresent(predicateBuilder::add);
+        }).ifPresent(predicates::add);
 
-        return cb.and(predicateBuilder.build().toArray(new Predicate[0]));
+        return cb.and(predicates.toArray(new Predicate[0]));
     }
 
     private Optional<Predicate> getConvictionDatesPredicate(Root<Contact> root, CriteriaBuilder cb, ConvictionDatesFilter filter) {
-        final var builder = ImmutableList.<Predicate>builder();
+        final var predicates = new ArrayList<Predicate>();
         if (filter.getFrom().isPresent() && filter.getTo().isPresent()) {
-            builder.add(cb.between(root.get("contactDate"), filter.getFrom().get(), filter.getTo().get()));
+            predicates.add(cb.between(root.get("contactDate"), filter.getFrom().get(), filter.getTo().get()));
         } else if (filter.getFrom().isPresent()) {
-            builder.add(cb.greaterThanOrEqualTo(root.get("contactDate"), filter.getFrom().get()));
-        } else filter.getTo().ifPresent(value -> builder.add(cb.lessThanOrEqualTo(root.get("contactDate"), value)));
-        final var predicates = builder.build();
+            predicates.add(cb.greaterThanOrEqualTo(root.get("contactDate"), filter.getFrom().get()));
+        } else filter.getTo().ifPresent(value -> predicates.add(cb.lessThanOrEqualTo(root.get("contactDate"), value)));
         return predicates.isEmpty() ? Optional.empty() : Optional.of(cb.and(predicates.toArray(new Predicate[0])));
     }
 

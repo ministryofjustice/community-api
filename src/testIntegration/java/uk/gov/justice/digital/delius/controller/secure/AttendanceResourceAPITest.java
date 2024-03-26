@@ -34,7 +34,7 @@ public class AttendanceResourceAPITest extends IntegrationTestBase {
             .body()
             .as(Attendances.class);
 
-        assertThat(attendances.getAttendances().stream()).hasSize(1);
+        assertThat(attendances.getAttendances()).hasSize(1);
         assertThat(attendances.getAttendances()).containsExactlyInAnyOrder(Attendance.builder()
             .attended(true)
             .attendanceDate(LocalDate.of(2020, Month.SEPTEMBER, 4))

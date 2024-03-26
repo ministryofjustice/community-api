@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import com.google.common.collect.ImmutableList;
 import com.microsoft.applicationinsights.TelemetryClient;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,7 +89,7 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
         @DisplayName("will reject requests with invalid key date code")
         public void shouldNotAllowKeyDateToBeAddedByOffenderIdWhenInvalidKeyDateCode() {
             when(lookupSupplier.custodyKeyDateTypeSupplier()).thenReturn(code -> Optional.empty());
-            when(eventRepository.findActiveByOffenderIdWithCustody(anyLong())).thenReturn(ImmutableList.of(aCustodyEvent()));
+            when(eventRepository.findActiveByOffenderIdWithCustody(anyLong())).thenReturn(List.of(aCustodyEvent()));
 
             assertThatThrownBy(() -> convictionService.addOrReplaceCustodyKeyDateByOffenderId(
                 999L,
@@ -106,7 +105,7 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
         @Test
         @DisplayName("will reject requests with no active custodial events")
         public void shouldNotAllowKeyDateToBeAddedByOffenderIdWhenNoActiveCustodialEvent() {
-            when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of());
+            when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(List.of());
 
             assertThatThrownBy(() -> convictionService.addOrReplaceCustodyKeyDateByOffenderId(
                 999L,
@@ -166,7 +165,7 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
                     .codeValue("POM1")
                     .build();
 
-                when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(event));
+                when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(List.of(event));
                 when(lookupSupplier.custodyKeyDateTypeSupplier()).thenReturn(code -> Optional.of(keyDateType));
 
                 convictionService.addOrReplaceCustodyKeyDateByOffenderId(
@@ -242,7 +241,7 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
             @DisplayName("will not notify IAPS when sentence expiry date not added")
             public void iapsIsNotNotifiedOfAddWhenAddedByOffenderIdAndWhenSentenceExpiryNotAffected() throws SingleActiveCustodyConvictionNotFoundException, CustodyTypeCodeIsNotValidException {
                 val event = aCustodyEvent(1L, new ArrayList<>());
-                when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(event));
+                when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(List.of(event));
 
                 convictionService.addOrReplaceCustodyKeyDateByOffenderId(
                     999L,
@@ -259,7 +258,7 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
             @DisplayName("will notify IAPS when sentence expiry date added")
             public void iapsIsNotifiedOfAddWhenAddedByOffenderIdAndWhenSentenceExpiryNotAffected() throws SingleActiveCustodyConvictionNotFoundException, CustodyTypeCodeIsNotValidException {
                 val event = aCustodyEvent(1L, new ArrayList<>());
-                when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(event));
+                when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(List.of(event));
 
                 convictionService.addOrReplaceCustodyKeyDateByOffenderId(
                     999L,
@@ -294,7 +293,7 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
                     .codeValue("POM1")
                     .build();
 
-                when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(event));
+                when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(List.of(event));
                 when(lookupSupplier.custodyKeyDateTypeSupplier()).thenReturn(code -> Optional.of(keyDateType));
 
                 convictionService.addOrReplaceCustodyKeyDateByOffenderId(
@@ -357,7 +356,7 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
                 event.getDisposal().getCustody().getKeyDates().add(
                     aKeyDate("POM1", "POM Handover expected start date", LocalDate.now().minusDays(1)));
 
-                when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(event));
+                when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(List.of(event));
 
                 convictionService.addOrReplaceCustodyKeyDateByOffenderId(
                     999L,
@@ -375,11 +374,11 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
             public void iapsIsNotNotifiedOfReplaceWhenAddedByOffenderIdAndWhenSentenceExpiryNotAffected() throws SingleActiveCustodyConvictionNotFoundException, CustodyTypeCodeIsNotValidException {
                 val event = aCustodyEvent(
                     1L,
-                    ImmutableList.of(aKeyDate("POM1", "POM Handover expected start date", LocalDate
+                    List.of(aKeyDate("POM1", "POM Handover expected start date", LocalDate
                         .now()
                         .minusDays(1))));
 
-                when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(event));
+                when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(List.of(event));
 
                 convictionService.addOrReplaceCustodyKeyDateByOffenderId(
                     999L,
@@ -397,9 +396,9 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
             public void iapsIsNotifiedOfUpdateWhenAddedByOffenderIdAndWhenSentenceExpiryIsAffected() throws SingleActiveCustodyConvictionNotFoundException, CustodyTypeCodeIsNotValidException {
                 val event = aCustodyEvent(
                     1L,
-                    ImmutableList.of(aKeyDate("SED", "Sentence Expiry Date", LocalDate.now().minusDays(1))));
+                    List.of(aKeyDate("SED", "Sentence Expiry Date", LocalDate.now().minusDays(1))));
 
-                when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(event));
+                when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(List.of(event));
 
                 convictionService.addOrReplaceCustodyKeyDateByOffenderId(
                     999L,
@@ -417,7 +416,7 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
             public void addedCustodyKeyDateByOffenderIdIsReturned() throws SingleActiveCustodyConvictionNotFoundException, CustodyTypeCodeIsNotValidException {
                 val keyDate = LocalDate.now();
 
-                when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(aCustodyEvent(1L, new ArrayList<>())));
+                when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(List.of(aCustodyEvent(1L, new ArrayList<>())));
                 when(lookupSupplier.custodyKeyDateTypeSupplier()).thenReturn(code -> Optional.of(StandardReference
                     .builder()
                     .codeDescription("POM Handover expected start date")
@@ -451,7 +450,7 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
                 val terminatedDisposal = event.getDisposal().toBuilder().terminationDate(LocalDate.now()).build();
                 val activeEventButTerminatedCustodyEvent = event.toBuilder().disposal(terminatedDisposal).build();
 
-                when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEvent, activeEventButTerminatedCustodyEvent));
+                when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(List.of(activeCustodyEvent, activeEventButTerminatedCustodyEvent));
 
                 convictionService.addOrReplaceCustodyKeyDateByOffenderId(
                     999L,
@@ -482,7 +481,7 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
                         .activeFlag(true)
                         .build();
 
-                    when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEvent1, activeCustodyEvent2));
+                    when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(List.of(activeCustodyEvent1, activeCustodyEvent2));
                 }
 
                 @Nested
@@ -571,7 +570,7 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
                         void setUp() {
                             activeCustodyEventWithPOM1 = aCustodyEvent(
                                 1L,
-                                ImmutableList.of(aKeyDate("POM1", "POM Handover expected start date", LocalDate
+                                List.of(aKeyDate("POM1", "POM Handover expected start date", LocalDate
                                     .now()
                                     .minusDays(1))));
                             activeCustodyEventWithoutPMO1 = aCustodyEvent(2L, new ArrayList<>())
@@ -579,7 +578,7 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
                                 .activeFlag(true)
                                 .build();
 
-                            when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(ImmutableList.of(activeCustodyEventWithPOM1, activeCustodyEventWithoutPMO1));
+                            when(eventRepository.findActiveByOffenderIdWithCustody(999L)).thenReturn(List.of(activeCustodyEventWithPOM1, activeCustodyEventWithoutPMO1));
                         }
 
                         @Test
@@ -684,7 +683,7 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
             public void iapsIsNotNotifiedOfReplaceWhenAddedByConvictionIdAndWhenSentenceExpiryNotAffected() throws SingleActiveCustodyConvictionNotFoundException, CustodyTypeCodeIsNotValidException {
                 val event = aCustodyEvent(
                     1L,
-                    ImmutableList.of(aKeyDate("POM1", "POM Handover expected start date", LocalDate
+                    List.of(aKeyDate("POM1", "POM Handover expected start date", LocalDate
                         .now()
                         .minusDays(1))));
 
@@ -706,7 +705,7 @@ public class ConvictionService_AddReplaceCustodyKeyDateTest {
             public void iapsIsNotifiedOfUpdateWhenAddedByConvictionIdAndWhenSentenceExpiryIsAffected() throws CustodyTypeCodeIsNotValidException {
                 val event = aCustodyEvent(
                     1L,
-                    ImmutableList.of(aKeyDate("SED", "Sentence Expiry Date", LocalDate.now().minusDays(1))));
+                    List.of(aKeyDate("SED", "Sentence Expiry Date", LocalDate.now().minusDays(1))));
 
                 when(eventRepository.getOne(999L)).thenReturn(event);
 

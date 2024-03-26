@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.entitybuilders;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +12,8 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.CourtAppearance;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.service.LookupSupplier;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -84,7 +85,7 @@ public class CourtAppearanceEntityBuilderTest {
     private Event aEvent() {
         return Event
                 .builder()
-                .additionalOffences(ImmutableList.of())
+                .additionalOffences(List.of())
                 .build();
     }
 

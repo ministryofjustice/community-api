@@ -228,7 +228,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
             when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
-                            .prisonOffenderManagers(List.of())
+                            .prisonOffenderManagers(new ArrayList<>(List.of()))
                             .build()
             )));
             when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
@@ -269,7 +269,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
             when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
-                            .prisonOffenderManagers(List.of(existingPOM))
+                            .prisonOffenderManagers(new ArrayList<>(List.of(existingPOM)))
                             .build()
             )));
             when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
@@ -311,7 +311,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
             when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
-                            .prisonOffenderManagers(List.of(existingPOM))
+                            .prisonOffenderManagers(new ArrayList<>(List.of(existingPOM)))
                             .build()
             )));
             when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
@@ -342,7 +342,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
             when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
-                            .prisonOffenderManagers(List.of(existingPOM))
+                            .prisonOffenderManagers(new ArrayList<>(List.of(existingPOM)))
                             .build()
             )));
             when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
@@ -375,7 +375,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
             when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
-                            .prisonOffenderManagers(List.of(existingPOM))
+                            .prisonOffenderManagers(new ArrayList<>(List.of(existingPOM)))
                             .build()
             )));
             when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
@@ -408,7 +408,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
             when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
-                            .prisonOffenderManagers(List.of(existingPOM))
+                            .prisonOffenderManagers(new ArrayList<>(List.of(existingPOM)))
                             .build()
             )));
 
@@ -439,7 +439,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
             when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
-                            .prisonOffenderManagers(List.of())
+                            .prisonOffenderManagers(new ArrayList<>(List.of()))
                             .build())));
             when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
             when(teamService.findOrCreatePrisonOffenderManagerTeamInArea(any())).thenReturn(aTeam());
@@ -461,7 +461,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
             when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
-                            .prisonOffenderManagers(List.of())
+                            .prisonOffenderManagers(new ArrayList<>(List.of()))
                             .crn("X12345")
                             .build())));
             when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
@@ -488,7 +488,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
             when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
-                            .prisonOffenderManagers(List.of(existingPOM))
+                            .prisonOffenderManagers(new ArrayList<>(List.of(existingPOM)))
                             .build())));
             when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
             when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
@@ -520,7 +520,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
             when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
-                            .prisonOffenderManagers(List.of(existingPOM))
+                            .prisonOffenderManagers(new ArrayList<>(List.of(existingPOM)))
                             .build()
             )));
 
@@ -558,7 +558,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
                     anOffender()
                             .toBuilder()
                             .crn("X12345")
-                            .prisonOffenderManagers(List.of(existingPOM))
+                            .prisonOffenderManagers(new ArrayList<>(List.of(existingPOM)))
                             .build()
             )));
 
@@ -594,7 +594,7 @@ public class OffenderManagerService_allocatePrisonOffenderManagerTest {
             when(offenderRepository.findMostLikelyByNomsNumber(any())).thenReturn(Either.right(Optional.of(
                     anOffender()
                             .toBuilder()
-                            .prisonOffenderManagers(List.of())
+                            .prisonOffenderManagers(new ArrayList<>(List.of()))
                             .build())));
             when(probationAreaRepository.findByInstitutionByNomsCDECode(any())).thenAnswer(args -> {
                 final var code = args.getArgument(0).toString();

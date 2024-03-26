@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import uk.gov.justice.digital.delius.data.api.AdditionalSentence;
 import uk.gov.justice.digital.delius.data.api.Appointments;
@@ -18,6 +17,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Disposal;
 import uk.gov.justice.digital.delius.jpa.standard.entity.DisposalType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.KeyDate;
+import uk.gov.justice.digital.delius.jpa.standard.entity.MainOffence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.entity.UpwAppointment;
 import uk.gov.justice.digital.delius.jpa.standard.entity.UpwDetails;
@@ -140,11 +140,12 @@ public class ConvictionTransformer {
 
 
     private static List<Offence> offencesOf(Event event) {
-        return ImmutableList.<Offence>builder()
-                .addAll(Optional.ofNullable(event.getMainOffence()).map(mainOffence -> ImmutableList.of(OffenceTransformer
-                        .offenceOf(mainOffence))).orElse(ImmutableList.of()) )
-                .addAll(OffenceTransformer.offencesOf(event.getAdditionalOffences()))
-                .build();
+       MainOffence main = event.getMainOffence();
+       List<Offence> offences = OffenceTransformer.offencesOf(event.getAdditionalOffences());
+       if (main != null) {
+           offences.addFirst(OffenceTransformer.offenceOf(main));
+       }
+       return offences;
     }
 
     private static List<OrderManager> orderManagersOf(@NotNull Event event){

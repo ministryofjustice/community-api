@@ -3,6 +3,7 @@ package uk.gov.justice.digital.delius.jpa.standard.entity;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,25 +30,25 @@ class OffenderTest {
     class GetResponsibleOfficerWhoIsPrisonOffenderManager {
         @Test
         void willReturnEmptyWhenNoPOMs() {
-            final Offender offender = Offender.builder().prisonOffenderManagers(List.of()).build();
+            final Offender offender = Offender.builder().prisonOffenderManagers(new ArrayList<>(List.of())).build();
             assertThat(offender.getResponsibleOfficerWhoIsPrisonOffenderManager()).isNotPresent();
         }
 
         @Test
         void willReturnEmptyWhenNoActivePOMs() {
-            final Offender offender = Offender.builder().prisonOffenderManagers(List.of(inactivePOM)).build();
+            final Offender offender = Offender.builder().prisonOffenderManagers(new ArrayList<>(List.of(inactivePOM))).build();
             assertThat(offender.getResponsibleOfficerWhoIsPrisonOffenderManager()).isNotPresent();
         }
 
         @Test
         void willReturnEmptyWhenActivePOMIsNotAResponsibleOfficer() {
-            final Offender offender = Offender.builder().prisonOffenderManagers(List.of(activePOMNotRO)).build();
+            final Offender offender = Offender.builder().prisonOffenderManagers(new ArrayList<>(List.of(activePOMNotRO))).build();
             assertThat(offender.getResponsibleOfficerWhoIsPrisonOffenderManager()).isNotPresent();
         }
 
         @Test
         void willReturnActivePOMWhoIsAlsoResponsibleOfficer() {
-            final Offender offender = Offender.builder().prisonOffenderManagers(List.of(inactivePOM, activePOMIsRO))
+            final Offender offender = Offender.builder().prisonOffenderManagers(new ArrayList<>(List.of(inactivePOM, activePOMIsRO)))
                     .build();
             assertThat(offender.getResponsibleOfficerWhoIsPrisonOffenderManager()).get().isEqualTo(activePOMIsRO);
         }
@@ -106,19 +107,19 @@ class OffenderTest {
     class GetActivePrisonOffenderManager {
         @Test
         void willReturnEmptyWhenNoPOMs() {
-            final Offender offender = Offender.builder().prisonOffenderManagers(List.of()).build();
+            final Offender offender = Offender.builder().prisonOffenderManagers(new ArrayList<>(List.of())).build();
             assertThat(offender.getActivePrisonOffenderManager()).isNotPresent();
         }
 
         @Test
         void willReturnEmptyWhenNoActivePOMs() {
-            final Offender offender = Offender.builder().prisonOffenderManagers(List.of(inactivePOM)).build();
+            final Offender offender = Offender.builder().prisonOffenderManagers(new ArrayList<>(List.of(inactivePOM))).build();
             assertThat(offender.getActivePrisonOffenderManager()).isNotPresent();
         }
 
         @Test
         void willReturnActivePOM() {
-            final Offender offender = Offender.builder().prisonOffenderManagers(List.of(inactivePOM, activePOMNotRO))
+            final Offender offender = Offender.builder().prisonOffenderManagers(new ArrayList<>(List.of(inactivePOM, activePOMNotRO)))
                     .build();
             assertThat(offender.getActivePrisonOffenderManager()).get().isEqualTo(activePOMNotRO);
         }

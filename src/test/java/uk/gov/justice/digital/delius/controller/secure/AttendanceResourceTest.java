@@ -1,25 +1,6 @@
 package uk.gov.justice.digital.delius.controller.secure;
 
-import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,12 +8,23 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import uk.gov.justice.digital.delius.controller.advice.SecureControllerAdvice;
-import uk.gov.justice.digital.delius.data.api.Attendance;
 import uk.gov.justice.digital.delius.data.api.Attendances;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Contact;
 import uk.gov.justice.digital.delius.service.AttendanceService;
 import uk.gov.justice.digital.delius.service.AttendanceServiceTest;
 import uk.gov.justice.digital.delius.service.OffenderService;
+
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.List;
+import java.util.Optional;
+
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 @ExtendWith(MockitoExtension.class)

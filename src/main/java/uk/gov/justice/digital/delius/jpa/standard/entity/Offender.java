@@ -287,15 +287,6 @@ public class Offender {
                 .findFirst();
     }
 
-    public static class OffenderBuilder {
-        private List<PrisonOffenderManager> prisonOffenderManagers = new ArrayList<>();
-        public OffenderBuilder prisonOffenderManagers(List<PrisonOffenderManager> prisonOffenderManagers) {
-            this.prisonOffenderManagers.clear();
-            this.prisonOffenderManagers.addAll(prisonOffenderManagers);
-            return this;
-        }
-    }
-
     public boolean hasActiveSentence() {
         return currentDisposal == 1L;
     }

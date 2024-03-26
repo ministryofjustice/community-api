@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.transformers;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 
@@ -49,7 +48,7 @@ class OffenderManagerTransformerTest {
                 anOffenderManager(
                         aStaff()
                                 .toBuilder()
-                                .teams(ImmutableList.of(aTeam("BB"), aTeam("AA")))
+                                .teams(List.of(aTeam("BB"), aTeam("AA")))
                                 .build(),
                         aTeam("AA"))).getTeam().getCode())
                 .isEqualTo("AA");
@@ -91,7 +90,7 @@ class OffenderManagerTransformerTest {
                 aPrisonOffenderManager(
                         aStaff()
                                 .toBuilder()
-                                .teams(ImmutableList.of(aTeam("BB"), aTeam("AA")))
+                                .teams(List.of(aTeam("BB"), aTeam("AA")))
                                 .build(),
                         aTeam("AA"))).getTeam().getCode())
                 .isEqualTo("AA");

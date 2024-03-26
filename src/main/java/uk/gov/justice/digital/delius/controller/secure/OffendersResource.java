@@ -31,7 +31,6 @@ import uk.gov.justice.digital.delius.data.api.Conviction;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.Nsi;
 import uk.gov.justice.digital.delius.data.api.NsiWrapper;
-import uk.gov.justice.digital.delius.data.api.OffenderAssessments;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
@@ -39,7 +38,6 @@ import uk.gov.justice.digital.delius.data.api.ProbationStatusDetail;
 import uk.gov.justice.digital.delius.data.api.SentenceStatus;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAccessLimitations;
-import uk.gov.justice.digital.delius.service.AssessmentService;
 import uk.gov.justice.digital.delius.service.ContactService;
 import uk.gov.justice.digital.delius.service.ConvictionService;
 import uk.gov.justice.digital.delius.service.CustodyService;
@@ -75,7 +73,6 @@ public class OffendersResource {
     private final CurrentUserSupplier currentUserSupplier;
     private final CustodyService custodyService;
     private final UserAccessService userAccessService;
-    private final AssessmentService assessmentService;
 
     @Operation(
             description = "Returns the current community and prison offender managers for an offender. Accepts a NOMIS offender nomsNumber in the format A9999AA",
@@ -330,21 +327,6 @@ public class OffendersResource {
                 .map((offenderId) -> convictionService.convictionFor(offenderId, convictionId))
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)))
                 .orElseThrow(() -> new NotFoundException(String.format("Conviction with ID %s for Offender with crn %s not found", convictionId, crn)));
-    }
-
-    @Operation(description = "Return the assessments for a CRN", tags = {"Assessments"})
-    @ApiResponses(
-        value = {
-            @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "404", description = "The offender CRN is not found"),
-            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
-        })
-    @GetMapping(path = "/offenders/crn/{crn}/assessments")
-    public OffenderAssessments getAssessmentsByCrn(
-        @Parameter(description = "CRN for the offender", example = "A123456", required = true)
-        @NotNull @PathVariable(value = "crn") final String crn) {
-        return assessmentService.getAssessments(crn)
-            .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
     }
 
     @Operation(description = "Return the NSIs for a conviction ID and a CRN, filtering by NSI codes", tags = "Sentence requirements and breach")

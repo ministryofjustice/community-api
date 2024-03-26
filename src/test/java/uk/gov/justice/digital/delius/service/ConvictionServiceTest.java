@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import com.google.common.collect.ImmutableList;
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,8 +25,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.DisposalType;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Event;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offence;
 import uk.gov.justice.digital.delius.jpa.standard.entity.ProbationArea;
-import uk.gov.justice.digital.delius.jpa.standard.entity.Requirement;
-import uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
@@ -42,14 +39,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.time.LocalDate.now;
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.digital.delius.jpa.standard.entity.RequirementTypeMainCategory.REHABILITATION_ACTIVITY_REQUIREMENT_CODE;
 
 @ExtendWith(MockitoExtension.class)
 class ConvictionServiceTest {
@@ -96,7 +90,7 @@ class ConvictionServiceTest {
     @Test
     void convictionsOrderedByCreationDate() {
         when(eventRepository.findByOffenderId(1L))
-                .thenReturn(ImmutableList.of(
+                .thenReturn(List.of(
                         aEvent().toBuilder().eventId(99L).referralDate(now().minusDays(1)).build(),
                         aEvent().toBuilder().eventId(9L).referralDate(now().minusDays(2)).build(),
                         aEvent().toBuilder().eventId(999L).referralDate(now()).build()
@@ -140,7 +134,7 @@ class ConvictionServiceTest {
     @Test
     void deletedRecordsIgnored() {
         when(eventRepository.findByOffenderId(1L))
-                .thenReturn(ImmutableList.of(
+                .thenReturn(List.of(
                         aEvent().toBuilder().eventId(1L).build(),
                         aEvent().toBuilder().eventId(2L).softDeleted(true).build(),
                         aEvent().toBuilder().eventId(3L).build()
@@ -167,7 +161,7 @@ class ConvictionServiceTest {
 
         // echo back what we saved
         when(eventRepository.save(any(Event.class))).thenAnswer((invocationOnMock -> invocationOnMock.getArgument(0)));
-        when(eventRepository.findByOffenderId(1L)).thenReturn(ImmutableList.of(aEvent(), aEvent()));
+        when(eventRepository.findByOffenderId(1L)).thenReturn(List.of(aEvent(), aEvent()));
 
         final Conviction conviction = convictionService.addCourtCaseFor(
                 1L,
@@ -176,7 +170,7 @@ class ConvictionServiceTest {
                         .orderManager(uk.gov.justice.digital.delius.data.api.OrderManager
                                 .builder()
                                 .build())
-                        .offences(ImmutableList.of(uk.gov.justice.digital.delius.data.api.Offence
+                        .offences(List.of(uk.gov.justice.digital.delius.data.api.Offence
                                 .builder()
                                 .detail(OffenceDetail
                                         .builder()
@@ -200,7 +194,7 @@ class ConvictionServiceTest {
         @Test
         @DisplayName("will match a single custodial sentence")
         public void convictionReturnedWhenSingleConvictionMatchedForOffenderIdPrisonBookingNumber() throws DuplicateActiveCustodialConvictionsException {
-            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(List.of(
                     aCustodialEvent("A12345", true)
                             .toBuilder()
                             .eventId(999L)
@@ -213,7 +207,7 @@ class ConvictionServiceTest {
         @Test
         @DisplayName("will not match a custodial sentence in Post Sentence Supervision phase")
         public void custodialSentenceIsPSSIgnored() throws DuplicateActiveCustodialConvictionsException {
-            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(List.of(
                     aCustodialEvent("A12345", true, "P")
                             .toBuilder()
                             .eventId(999L)
@@ -226,7 +220,7 @@ class ConvictionServiceTest {
         @Test
         @DisplayName("will throw exception is multiple active convictions matched with same prison book number")
         public void exceptionThrownWhenMultipleActiveConvictionsMatchedForOffenderIdPrisonBookingNumber() {
-            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(List.of(
                     aCustodialEvent("A12345", true)
                             .toBuilder()
                             .eventId(999L)
@@ -245,7 +239,7 @@ class ConvictionServiceTest {
         @Test
         @DisplayName("will throw exception is multiple active custodial convictions matched even when prison book number not set")
         public void exceptionThrownWhenMultipleActiveCustodialConvictionsMatchedForOffenderId() {
-            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(List.of(
                     aCustodialEvent("A12345", true)
                             .toBuilder()
                             .eventId(999L)
@@ -263,7 +257,7 @@ class ConvictionServiceTest {
         @Test
         @DisplayName("will match a single custodial sentence when others are in the Post Sentence Supervision phase")
         public void convictionReturnedWhenMultiplesButOneInPSSPhase() throws DuplicateActiveCustodialConvictionsException {
-            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(List.of(
                     aCustodialEvent("A12345", true, "P") // Post Sentence Supervision
                             .toBuilder()
                             .eventId(998L)
@@ -283,7 +277,7 @@ class ConvictionServiceTest {
         @Test
         @DisplayName("nothing returned if no matching convictions found")
         public void emptyReturnedWhenNoConvictionsMatchedForOffenderIdAndPrisonBookingNumber() throws DuplicateActiveCustodialConvictionsException {
-            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of());
+            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(List.of());
 
             Optional<Event> maybeConviction = convictionService.getSingleActiveConvictionByOffenderIdAndPrisonBookingNumber(99L, "A12345");
 
@@ -293,7 +287,7 @@ class ConvictionServiceTest {
         @Test
         @DisplayName("nothing returned if no matching convictions found with correct prison book number")
         public void emptyReturnedWhenSingleConvictionMatchedForOffenderIdButNotPrisonBookingNumber() throws DuplicateActiveCustodialConvictionsException {
-            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(List.of(
                     aCustodialEvent("X65432", true)
                             .toBuilder()
                             .eventId(999L)
@@ -307,7 +301,7 @@ class ConvictionServiceTest {
         @Test
         @DisplayName("will return ID of match a single custodial sentence when others are inactive")
         public void convictionIdReturnedWhenSingleActiveConvictionMatchedAmongstDuplicatesForOffenderIdPrisonBookingNumber() throws DuplicateActiveCustodialConvictionsException {
-            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(List.of(
                     aCustodialEvent("A12345", true)
                             .toBuilder()
                             .eventId(999L)
@@ -327,7 +321,7 @@ class ConvictionServiceTest {
         @Test
         @DisplayName("will return active custodial conviction with the same sentence start date")
         public void convictionReturnedWhenSingleConvictionMatchedForOffenderIdAndSentenceDate() {
-            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(List.of(
                     anActiveCustodialEvent(LocalDate.of(2020, 1, 30))
                             .toBuilder()
                             .eventId(999L)
@@ -341,7 +335,7 @@ class ConvictionServiceTest {
         @Test
         @DisplayName("will return active custodial conviction with the sentence start date within 7 days")
         public void convictionReturnedWhenSingleConvictionMatchedForOffenderIdAndCloseToSentenceDate() {
-            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(List.of(
                     anActiveCustodialEvent(LocalDate.of(2020, 1, 30))
                             .toBuilder()
                             .eventId(999L)
@@ -354,7 +348,7 @@ class ConvictionServiceTest {
         @Test
         @DisplayName("will return nothing when active custodial conviction has sentence start date after 7 days")
         public void convictionNotReturnedWhenSingleConvictionMatchedForOffenderIdButNotCloseToSentenceDateAfter() {
-            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(List.of(
                     anActiveCustodialEvent(LocalDate.of(2020, 1, 30))
                             .toBuilder()
                             .eventId(999L)
@@ -367,7 +361,7 @@ class ConvictionServiceTest {
         @Test
         @DisplayName("will return nothing when active custodial conviction has sentence start date before 7 days")
         public void convictionNotReturnedWhenSingleConvictionMatchedForOffenderIdButNotCloseToSentenceDateBefore() {
-            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(List.of(
                     anActiveCustodialEvent(LocalDate.of(2020, 1, 21))
                             .toBuilder()
                             .eventId(999L)
@@ -380,7 +374,7 @@ class ConvictionServiceTest {
         @Test
         @DisplayName("exception thrown if more than one active custodial conviction found close to sentence start date")
         public void exceptionThrownWhenMultipleActiveConvictionsMatchedForOffenderIdAndSentenceDate() {
-            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(List.of(
                     anActiveCustodialEvent(LocalDate.of(2020, 1, 30))
                             .toBuilder()
                             .eventId(999L)
@@ -398,7 +392,7 @@ class ConvictionServiceTest {
         @Test
         @DisplayName("will return the conviction not in Post Sentence Supervision phase if more than one active custodial conviction found close to sentence start date")
         public void willIgnorePSSConvictionsWHenMultipleCustodialEventsFoundThatMatchDate() {
-            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(List.of(
                     anActiveCustodialEvent(LocalDate.of(2020, 1, 30), "D")
                             .toBuilder()
                             .eventId(999L)
@@ -418,7 +412,7 @@ class ConvictionServiceTest {
         @Test
         @DisplayName("will return nothing when no convictions")
         public void emptyReturnedWhenNoConvictionsMatchedForOffenderIdAndSentenceDate() {
-            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of());
+            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(List.of());
 
             final var maybeConviction = convictionService.getSingleActiveConvictionIdByOffenderIdAndCloseToSentenceDate(99L, LocalDate.of(2020, 1, 30));
 
@@ -428,7 +422,7 @@ class ConvictionServiceTest {
         @Test
         @DisplayName("will return nothing if conviction is matched but is in Post Sentence Supervision Phase")
         public void emptyReturnedWhenNoConvictionsMatchedForOffenderIdAndSentenceDateThatIsNotPSS() {
-            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(ImmutableList.of(
+            when(eventRepository.findActiveByOffenderIdWithCustody(99L)).thenReturn(List.of(
                     anActiveCustodialEvent(LocalDate.of(2020, 1, 30), "P")
                             .toBuilder()
                             .eventId(999L)
@@ -514,7 +508,7 @@ class ConvictionServiceTest {
     private Event aEvent() {
         return Event.builder()
                 .referralDate(now())
-                .additionalOffences(ImmutableList.of())
+                .additionalOffences(List.of())
                 .activeFlag(true)
                 .build();
     }

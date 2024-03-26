@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.controller.api;
 
-import com.google.common.collect.ImmutableList;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,7 +36,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Slf4j
 @Tag(description = "Obtain JWT token", name = "Logon as user")
 public class LogonController {
-    private static final List<String> SYSTEM_USERS = ImmutableList.of(CurrentUserSupplier.NATIONAL_USER, CurrentUserSupplier.API_USER);
+    private static final List<String> SYSTEM_USERS = List.of(CurrentUserSupplier.NATIONAL_USER, CurrentUserSupplier.API_USER);
     private final Jwt jwt;
     private final LdapRepository ldapRepository;
     private final UserRepositoryWrapper userRepositoryWrapper;

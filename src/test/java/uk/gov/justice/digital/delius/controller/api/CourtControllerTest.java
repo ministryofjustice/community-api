@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.controller.api;
 
-import com.google.common.collect.ImmutableList;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,10 +9,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.justice.digital.delius.data.api.Court;
 import uk.gov.justice.digital.delius.data.api.CourtAppearance;
 import uk.gov.justice.digital.delius.data.api.CourtReport;
-import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.service.CourtAppearanceService;
 import uk.gov.justice.digital.delius.service.OffenderService;
 
+import java.util.List;
 import java.util.Optional;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
@@ -41,7 +40,7 @@ public class CourtControllerTest {
     public void canGetCourtAppearancesByCrn() {
         when(offenderService.offenderIdOfCrn("crn1")).thenReturn(Optional.of(1L));
         when(courtAppearanceService.courtAppearancesFor(1L))
-                .thenReturn(ImmutableList.of(aCourtAppearance(1L), aCourtAppearance(2L)));
+                .thenReturn(List.of(aCourtAppearance(1L), aCourtAppearance(2L)));
 
         CourtAppearance[] courtAppearances = given()
             .when()
@@ -76,7 +75,7 @@ public class CourtControllerTest {
         return CourtAppearance.builder()
             .courtAppearanceId(id)
             .court(Court.builder().build())
-            .courtReports(ImmutableList.of(CourtReport.builder().build()))
+            .courtReports(List.of(CourtReport.builder().build()))
             .build();
     }
 }

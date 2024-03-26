@@ -203,7 +203,7 @@ public class OffenderManagerService {
     private static <T> List<T> combine(final List<T> first, final List<T> second) {
         return Stream.of(first, second)
                 .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional
@@ -237,12 +237,12 @@ public class OffenderManagerService {
                         .filter(OffenderManager::isActive)
                         .map(this::addLdapFields)
                         .map(offMgr -> OffenderManagerTransformer.offenderManagerOf(offMgr, includeProbationAreaTeams))
-                        .collect(Collectors.toList()),
+                        .toList(),
                 offender.getPrisonOffenderManagers()
                         .stream()
                         .filter(PrisonOffenderManager::isActive)
                         .map(offMgr -> OffenderManagerTransformer.offenderManagerOf(offMgr, includeProbationAreaTeams))
-                        .collect(Collectors.toList())
+                        .toList()
         );
     }
 

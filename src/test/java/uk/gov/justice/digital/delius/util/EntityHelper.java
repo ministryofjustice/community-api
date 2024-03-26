@@ -132,7 +132,7 @@ public class EntityHelper {
     }
 
     public static Offender anOffender() {
-        return anOffender(List.of(anActiveOffenderManager()), List.of(anActivePrisonOffenderManager()));
+        return anOffender(new ArrayList<>(List.of(anActiveOffenderManager())), new ArrayList<>(List.of(anActivePrisonOffenderManager())));
     }
 
     public static Offender anOffender(final List<OffenderManager> offenderManagers, final List<PrisonOffenderManager> prisonOffenderManagers) {

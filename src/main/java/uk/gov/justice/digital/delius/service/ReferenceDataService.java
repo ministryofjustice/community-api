@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -10,7 +9,6 @@ import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.LocalDeliveryUnit;
 import uk.gov.justice.digital.delius.data.api.ProbationArea;
 import uk.gov.justice.digital.delius.data.api.ProbationAreaWithLocalDeliveryUnits;
-import uk.gov.justice.digital.delius.data.api.ReferenceData;
 import uk.gov.justice.digital.delius.jpa.filters.ProbationAreaFilter;
 import uk.gov.justice.digital.delius.jpa.standard.entity.District;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
@@ -18,7 +16,6 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaReposi
 import uk.gov.justice.digital.delius.jpa.standard.repository.ReferenceDataMasterRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.StandardReferenceRepository;
 import uk.gov.justice.digital.delius.transformers.ProbationAreaTransformer;
-import uk.gov.justice.digital.delius.transformers.ReferenceDataTransformer;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,18 +44,16 @@ public class ReferenceDataService {
     private static final String FORMER_NOMS_NUMBER_CODE = "XNOMS";
     private final ProbationAreaRepository probationAreaRepository;
     private final StandardReferenceRepository standardReferenceRepository;
-    private final ReferenceDataMasterRepository referenceDataMasterRepository;
 
 
     @Autowired
     public ReferenceDataService(ProbationAreaRepository probationAreaRepository, StandardReferenceRepository standardReferenceRepository, ReferenceDataMasterRepository referenceDataMasterRepository) {
         this.probationAreaRepository = probationAreaRepository;
         this.standardReferenceRepository = standardReferenceRepository;
-        this.referenceDataMasterRepository = referenceDataMasterRepository;
     }
 
     public List<ProbationArea> getProbationAreasForCode(String code, boolean restrictActive) {
-        ProbationAreaFilter probationAreaFilter = ProbationAreaFilter.builder().probationAreaCodes(Optional.of(Lists.newArrayList(code))).restrictActive(restrictActive).build();
+        ProbationAreaFilter probationAreaFilter = ProbationAreaFilter.builder().probationAreaCodes(Optional.of(List.of(code))).restrictActive(restrictActive).build();
 
         return ProbationAreaTransformer.probationAreasOf(probationAreaRepository.findAll(probationAreaFilter));
     }

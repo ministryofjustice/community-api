@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -15,6 +14,7 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import uk.gov.justice.digital.delius.jpa.standard.repository.RegistrationRepository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +35,7 @@ public class RegistrationServiceTest {
     @Test
     public void registrationsOrderedByRegistrationDateReversed() {
         Mockito.when(registrationRepository.findByOffenderId(1L))
-                .thenReturn(ImmutableList.of(
+                .thenReturn(List.of(
                         aRegistration().toBuilder().registrationDate(LocalDate.of(2018, 10, 1)).registrationId(1L).build(),
                         aRegistration().toBuilder().registrationDate(LocalDate.of(2018, 11, 1)).registrationId(2L).build(),
                         aRegistration().toBuilder().registrationDate(LocalDate.of(2018, 9, 1)).registrationId(3L).build()
@@ -51,7 +51,7 @@ public class RegistrationServiceTest {
     @Test
     public void deletedRecordsIgnored() {
         Mockito.when(registrationRepository.findByOffenderId(1L))
-                .thenReturn(ImmutableList.of(
+                .thenReturn(List.of(
                         aRegistration().toBuilder().registrationId(1L).build(),
                         aRegistration().toBuilder().registrationId(2L).softDeleted(1L).build(),
                         aRegistration().toBuilder().registrationId(3L).build()

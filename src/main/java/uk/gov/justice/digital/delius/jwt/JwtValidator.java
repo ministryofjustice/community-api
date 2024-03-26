@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.jwt;
 
-import com.google.common.collect.Lists;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -13,8 +12,7 @@ import uk.gov.justice.digital.delius.config.ApplicationInsightsConfiguration;
 import uk.gov.justice.digital.delius.exception.JwtTokenMissingException;
 import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.*;
 
 @Aspect
 @Component
@@ -29,10 +27,10 @@ public class JwtValidator {
 
     @Before("execution(@uk.gov.justice.digital.delius.jwt.JwtValidation * *(..))")
     public void validateJwt(JoinPoint joinPoint) {
-        ArrayList<Object> argsList = Lists.newArrayList(joinPoint.getArgs());
+        ArrayList<Object> argsList = new ArrayList<>(List.of(joinPoint.getArgs()));
 
         Optional<Claims> maybeClaims = argsList.stream()
-                .filter(arg -> arg instanceof HttpHeaders)
+                .filter(HttpHeaders.class::isInstance)
                 .findFirst()
                 .map(headers -> ((HttpHeaders) headers).getFirst("Authorization"))
                 .map(jwt::parseAuthorizationHeader)

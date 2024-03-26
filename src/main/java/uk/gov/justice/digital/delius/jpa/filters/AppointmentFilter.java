@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.jpa.filters;
 
-import com.google.common.collect.ImmutableList;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -14,6 +13,8 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -34,7 +35,7 @@ public class AppointmentFilter implements Specification<Contact> {
 
     @Override
     public Predicate toPredicate(Root<Contact> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        ImmutableList.Builder<Predicate> predicateBuilder = ImmutableList.builder();
+        List<Predicate> predicates = new ArrayList<>();
 
         final Function<Attended, Predicate> mapAttended = (attended) -> {
             switch (attended) {
@@ -49,18 +50,16 @@ public class AppointmentFilter implements Specification<Contact> {
             throw new IllegalArgumentException("attended must match enum");
         };
 
-        predicateBuilder.add(cb.equal(root.get("offenderId"), offenderId));
+        predicates.add(cb.equal(root.get("offenderId"), offenderId));
 
-        from.ifPresent(localDate -> predicateBuilder.add(cb.greaterThanOrEqualTo(root.get("contactDate"), localDate)));
+        from.ifPresent(localDate -> predicates.add(cb.greaterThanOrEqualTo(root.get("contactDate"), localDate)));
 
-        to.ifPresent(localDate -> predicateBuilder.add(cb.lessThanOrEqualTo(root.get("contactDate"), localDate)));
+        to.ifPresent(localDate -> predicates.add(cb.lessThanOrEqualTo(root.get("contactDate"), localDate)));
 
-        attended.ifPresent(attendedFlag -> predicateBuilder.add(mapAttended.apply(attendedFlag)));
+        attended.ifPresent(attendedFlag -> predicates.add(mapAttended.apply(attendedFlag)));
 
-        predicateBuilder.add(cb.and(cb.equal(root.get("contactType").get("attendanceContact"), true)));
-        predicateBuilder.add(cb.and(cb.equal(root.get("softDeleted"), 0L)));
-
-        ImmutableList<Predicate> predicates = predicateBuilder.build();
+        predicates.add(cb.and(cb.equal(root.get("contactType").get("attendanceContact"), true)));
+        predicates.add(cb.and(cb.equal(root.get("softDeleted"), 0L)));
 
         return cb.and(predicates.toArray(new Predicate[0]));
     }
