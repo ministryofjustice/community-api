@@ -30,44 +30,16 @@ public interface OffenderRepository extends JpaRepository<Offender, Long>, JpaSp
 
     Optional<Offender> findByCrn(String crn);
 
-    @Query("select o from Offender o where o.softDeleted = 0 and upper(o.nomsNumber) = upper(:nomsNumber)")
+    @Query("select o from Offender o where o.softDeleted = false and upper(o.nomsNumber) = upper(:nomsNumber)")
     Optional<Offender> findByNomsNumber(@Param("nomsNumber") String nomsNumber);
 
     // there are a small number of offenders (100 as of April 2020) that have duplicate NOMS numbers
     // this allows features that can deal with duplicates to access all offenders with the same number
-    @Query("select o from Offender o where o.softDeleted = 0 and upper(o.nomsNumber) = upper(:nomsNumber)")
+    @Query("select o from Offender o where o.softDeleted = false and upper(o.nomsNumber) = upper(:nomsNumber)")
     List<Offender> findAllByNomsNumber(@Param("nomsNumber") String nomsNumber);
 
-    @Query("select o.id from Offender o where o.crn = :crn")
+    @Query("select o.offenderId from Offender o where o.crn = :crn")
     Optional<Long> getOffenderIdFrom(@Param("crn") String crn);
-
-    @Query(value = """
-        select o from Offender o
-        where o.offenderId in (
-            select o.offenderId
-            from Offender o
-            join o.offenderManagers om
-            join om.staff s
-            join s.user u
-            join o.events e
-            join e.disposal d
-            join d.disposalType dt
-            join d.requirements r
-            join r.requirementTypeMainCategory rtmc
-            where o.softDeleted <> 1
-                and o.crn = :crn
-                and om.softDeleted <> 1
-                and e.softDeleted <> 1 and e.activeFlag = 1
-                and d.softDeleted <> 1
-                and dt.sentenceType = 'SP'
-                and rtmc.code = 'F'
-                and r.softDeleted <> 1
-                and r.startDate < CURRENT_TIMESTAMP AND (r.terminationDate IS NULL OR r.terminationDate > CURRENT_TIMESTAMP)
-            group by o.offenderId
-            having count(e.eventId) = 1
-        )
-        """)
-    Optional<Offender> getOffenderWithOneActiveEventCommunitySentenceAndRarRequirementByCrn(@Param("crn") String crn);
 
     default Either<DuplicateOffenderException, Optional<Offender>> findMostLikelyByNomsNumber(String nomsNumber) {
         final var offenders = findAllByNomsNumber(nomsNumber);
@@ -75,11 +47,11 @@ public interface OffenderRepository extends JpaRepository<Offender, Long>, JpaSp
             case 0:
                 return Either.right(Optional.empty());
             case 1:
-                return Either.right(Optional.of(offenders.get(0)));
+                return Either.right(Optional.of(offenders.getFirst()));
             default: {
-                final var activeOffenders = offenders.stream().filter(Offender::hasActiveSentence).collect(toList());
+                final var activeOffenders = offenders.stream().filter(Offender::hasActiveSentence).toList();
                 if (activeOffenders.size() == 1) {
-                    return Either.right(Optional.of(activeOffenders.get(0)));
+                    return Either.right(Optional.of(activeOffenders.getFirst()));
                 } else {
                     return Either.left(new DuplicateOffenderException(String.format("Expecting only a single active offender but found %d offenders with noms number %s", offenders.size(), nomsNumber)));
                 }

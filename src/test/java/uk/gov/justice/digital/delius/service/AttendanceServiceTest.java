@@ -74,12 +74,12 @@ public class AttendanceServiceTest {
 
         final LocalDate today = LocalDate.now();
 
-        when(contactRepository.findByOffenderAndEventId(SOME_OFFENDER_ID, SOME_EVENT_ID, today))
+        when(contactRepository.findByOffenderIdAndEventId(SOME_OFFENDER_ID, SOME_EVENT_ID, today))
             .thenReturn(Collections.emptyList());
 
         assertTrue(attendanceService.getContactsForEvent(SOME_OFFENDER_ID, SOME_EVENT_ID, today).isEmpty());
 
-        verify(contactRepository).findByOffenderAndEventId(SOME_OFFENDER_ID, SOME_EVENT_ID, today);
+        verify(contactRepository).findByOffenderIdAndEventId(SOME_OFFENDER_ID, SOME_EVENT_ID, today);
         verifyNoMoreInteractions(contactRepository);
     }
 

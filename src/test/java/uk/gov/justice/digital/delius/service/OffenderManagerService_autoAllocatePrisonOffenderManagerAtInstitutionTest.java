@@ -16,6 +16,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.PrisonOffenderManag
 import uk.gov.justice.digital.delius.jpa.standard.repository.ProbationAreaRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.ResponsibleOfficerRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -124,13 +125,13 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
     @Test
     public void existingPrisonerOffenderManagerIsDeactivated() {
         var existingPOM  = anActivePrisonOffenderManager();
-        var offender = anOffender(List.of(), List.of(existingPOM));
+        var offender = anOffender(new ArrayList<>(), new ArrayList<>(List.of(existingPOM)));
 
         when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
         offenderManagerService.autoAllocatePrisonOffenderManagerAtInstitution(offender, aPrisonInstitution());
 
         assertThat(existingPOM.getEndDate()).isNotNull();
-        assertThat(existingPOM.getActiveFlag()).isEqualTo(0L);
+        assertThat(existingPOM.getActiveFlag()).isZero();
     }
 
     @Test
@@ -143,7 +144,7 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
                 .toBuilder()
                 .responsibleOfficers(List.of(existingPOMResponsibleOfficer))
                 .build();
-        var offender = anOffender(List.of(), List.of(existingPOM));
+        var offender = anOffender(new ArrayList<>(), new ArrayList<>(List.of(existingPOM)));
 
         when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
         offenderManagerService.autoAllocatePrisonOffenderManagerAtInstitution(offender, aPrisonInstitution());
@@ -162,7 +163,7 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
                 .responsibleOfficers(List.of(existingPOMResponsibleOfficer))
                 .build();
 
-        var offender = anOffender(List.of(), List.of(existingPOM));
+        var offender = anOffender(new ArrayList<>(), new ArrayList<>(List.of(existingPOM)));
 
         when(prisonOffenderManagerRepository.save(any())).thenAnswer(args -> {
             final PrisonOffenderManager newPOM = args.getArgument(0);
@@ -179,7 +180,7 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
 
     @Test
     public void shouldAddAPOMAllocationContact() {
-        offenderManagerService.autoAllocatePrisonOffenderManagerAtInstitution(anOffender(List.of(), List.of()), aPrisonInstitution());
+        offenderManagerService.autoAllocatePrisonOffenderManagerAtInstitution(anOffender(new ArrayList<>(), new ArrayList<>()), aPrisonInstitution());
 
         verify(contactService).addContactForPOMAllocation(isA(PrisonOffenderManager.class));
     }
@@ -189,7 +190,7 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
         when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
         final var existingPOM = anActivePrisonOffenderManager();
 
-        var offender = anOffender(List.of(), List.of(existingPOM));
+        var offender = anOffender(new ArrayList<>(), new ArrayList<>(List.of(existingPOM)));
 
         offenderManagerService.autoAllocatePrisonOffenderManagerAtInstitution(offender, aPrisonInstitution());
 
@@ -213,7 +214,7 @@ public class OffenderManagerService_autoAllocatePrisonOffenderManagerAtInstituti
             return newPOM;
         });
 
-        var offender = anOffender(List.of(), List.of(existingPOM));
+        var offender = anOffender(new ArrayList<>(), new ArrayList<>(List.of(existingPOM)));
 
         when(responsibleOfficerRepository.save(any())).thenAnswer(args -> args.getArgument(0));
         offenderManagerService.autoAllocatePrisonOffenderManagerAtInstitution(offender, aPrisonInstitution());

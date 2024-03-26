@@ -29,6 +29,7 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository.
 import uk.gov.justice.digital.delius.util.EntityHelper;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -475,7 +476,7 @@ public class CustodyServiceTest {
             when(referenceDataService.getPrisonLocationChangeCustodyEvent()).thenReturn(StandardReference.builder().codeValue("CPL").codeDescription("Change prison location").build());
             when(referenceDataService.getCustodyStatusChangeCustodyEvent()).thenReturn(StandardReference.builder().codeValue("TSC").codeDescription("Custody status change").build());
             when(institutionRepository.findByNomisCdeCode("MDI")).thenReturn(Optional.of(aPrisonInstitution()));
-            when(offenderRepository.findMostLikelyByNomsNumber(anyString())).thenReturn(Either.right(Optional.of(Offender.builder().offenderId(99L).prisonOffenderManagers(List.of(aPrisonOffenderManager(aStaff(), aTeam()))).build())));
+            when(offenderRepository.findMostLikelyByNomsNumber(anyString())).thenReturn(Either.right(Optional.of(Offender.builder().offenderId(99L).prisonOffenderManagers(new ArrayList<>(List.of(aPrisonOffenderManager(aStaff(), aTeam())))).build())));
         }
 
 
