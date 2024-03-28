@@ -114,28 +114,10 @@ public class OffenderService {
         return OffenderTransformer.offenderSummaryOf(offender, document);
     }
 
-    public Either<DuplicateOffenderException, Optional<OffenderDetailSummary>> getMostLikelyOffenderSummaryByNomsNumber(
-        String nomsNumber
-    ) {
-        return offenderRepository.findMostLikelyByNomsNumber(nomsNumber).fold(
-            Either::left,
-            offender -> Either.right(offender.map(this::offenderSummaryWithPrecons))
-        );
-    }
-
     public Either<DuplicateOffenderException, Optional<OffenderDetail>> getSingleOffenderByNomsNumber(String nomsNumber) {
         return tryToGetSingleOffenderByNomsNumber(nomsNumber).fold(
             Either::left,
             offender -> Either.right(offender.map(this::fullOffenderWithPrecons))
-        );
-    }
-
-    public Either<DuplicateOffenderException, Optional<OffenderDetailSummary>> getSingleOffenderSummaryByNomsNumber(
-        String nomsNumber
-    ) {
-        return tryToGetSingleOffenderByNomsNumber(nomsNumber).fold(
-            Either::left,
-            offender -> Either.right(offender.map(this::offenderSummaryWithPrecons))
         );
     }
 

@@ -17,7 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,13 +33,9 @@ import uk.gov.justice.digital.delius.data.api.NsiWrapper;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
 import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
 import uk.gov.justice.digital.delius.data.api.OffenderLatestRecall;
-import uk.gov.justice.digital.delius.data.api.ProbationStatusDetail;
 import uk.gov.justice.digital.delius.data.api.SentenceStatus;
-import uk.gov.justice.digital.delius.helpers.CurrentUserSupplier;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAccessLimitations;
-import uk.gov.justice.digital.delius.service.ContactService;
 import uk.gov.justice.digital.delius.service.ConvictionService;
-import uk.gov.justice.digital.delius.service.CustodyService;
 import uk.gov.justice.digital.delius.service.NsiService;
 import uk.gov.justice.digital.delius.service.OffenderManagerService;
 import uk.gov.justice.digital.delius.service.OffenderService;
@@ -64,14 +59,11 @@ import static org.springframework.http.HttpStatus.OK;
 @Validated
 public class OffendersResource {
     private final OffenderService offenderService;
-    private final ContactService contactService;
     private final ConvictionService convictionService;
     private final NsiService nsiService;
     private final OffenderManagerService offenderManagerService;
     private final SentenceService sentenceService;
     private final UserService userService;
-    private final CurrentUserSupplier currentUserSupplier;
-    private final CustodyService custodyService;
     private final UserAccessService userAccessService;
 
     @Operation(
@@ -144,33 +136,6 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
     }
 
-    @Operation(description = "Return the details for an offender. If multiple offenders found the active one wll be returned", tags = "-- Popular core APIs --")
-    @ApiResponses(
-        value = {
-            @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "409", description = "Multiple offenders found in the same state ")
-        })
-    @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}")
-    public OffenderDetailSummary getOffenderDetails(
-        @Parameter(name = "nomsNumber", description = "Nomis number for the offender", example = "G9542VP", required = true)
-        @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber,
-        @Parameter(name = "failOnDuplicate", description = "Should fail if multiple offenders found regardless of status", example = "true")
-        final @RequestParam(value = "failOnDuplicate", defaultValue = "false") boolean failOnDuplicate
-    ) {
-        final Optional<OffenderDetailSummary> offender;
-        if (failOnDuplicate) {
-            offender = offenderService
-                .getSingleOffenderSummaryByNomsNumber(nomsNumber)
-                .getOrElseThrow(error -> new ConflictingRequestException(error.getMessage()));
-
-        } else {
-            offender = offenderService
-                .getMostLikelyOffenderSummaryByNomsNumber(nomsNumber)
-                .getOrElseThrow(error -> new ConflictingRequestException(error.getMessage()));
-        }
-        return offender.orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
-    }
-
     @Operation(
             description = "Returns the latest recall and release details for an offender. Accepts an offender CRN in the format A999999",
             tags = "Convictions")
@@ -192,29 +157,6 @@ public class OffendersResource {
         return maybeOffenderId
                 .map(offenderId -> offenderService.getOffenderLatestRecall(maybeOffenderId.get()))
                 .orElseThrow(() -> new NotFoundException("Offender not found"));
-    }
-
-    @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/prisonOffenderManager", method = RequestMethod.PUT, consumes = "application/json")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "400", description = "Staff id does belong to the probation area related prison institution"),
-            @ApiResponse(responseCode = "403", description = "Forbidden, requires ROLE_COMMUNITY_CUSTODY_UPDATE"),
-            @ApiResponse(responseCode = "404", description = "The offender or prison institution is not found")
-    })
-    @Operation(description = "Allocates the prison offender manager for an offender in custody. This operation may also have a side affect of creating a Staff member " +
-            "if one matching the name does not already exist. An existing staff member can be used if the staff id is supplied. Requires role ROLE_COMMUNITY_CUSTODY_UPDATE", tags = "Offender managers")
-    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
-    public CommunityOrPrisonOffenderManager allocatePrisonOffenderManagerByNomsNumber(final @PathVariable String nomsNumber,
-                                                                                      final @RequestBody CreatePrisonOffenderManager prisonOffenderManager) {
-        prisonOffenderManager.validate().ifPresent((errorMessage) -> {
-            throw new InvalidAllocatePOMRequestException(prisonOffenderManager, errorMessage);
-        });
-
-        final var newPrisonOffenderManager =  Optional.ofNullable(prisonOffenderManager.getStaffId())
-                .map(staffId -> offenderManagerService.allocatePrisonOffenderManagerByStaffId(nomsNumber, staffId, prisonOffenderManager))
-                .orElseGet(() -> offenderManagerService.allocatePrisonOffenderManagerByName(nomsNumber, prisonOffenderManager))
-                .orElseThrow(() -> new NotFoundException(String.format("Offender with noms number %s not found", nomsNumber)));
-        custodyService.updateCustodyPrisonLocation(nomsNumber, prisonOffenderManager.getNomsPrisonInstitutionCode());
-        return newPrisonOffenderManager;
     }
 
     @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/prisonOffenderManager", method = RequestMethod.DELETE)
@@ -455,20 +397,6 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException(String.format("Sentence not found for crn '%s', convictionId '%s', and sentenceId '%s'", crn, convictionId, sentenceId)));
     }
 
-    @Operation(description = "Reveals if the logged on user can access details about the supplied offender", tags = "Authentication and users")
-    @RequestMapping(value = "/offenders/crn/{crn}/userAccess", method = RequestMethod.GET)
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "403", description = "User is restricted from access to offender"),
-            @ApiResponse(responseCode = "404", description = "No such offender, or no such User (see body for detail)")
-    })
-    @PreAuthorize("hasAnyRole('ROLE_COMMUNITY', 'ROLE_PROBATION')")
-    public ResponseEntity<AccessLimitation> checkUserAccessByCrn(
-            final @PathVariable("crn") String crn) {
-        return offenderService.getOffenderAccessLimitationsByCrn(crn)
-            .map(this::accessLimitationResponseEntityOf)
-            .orElse(new ResponseEntity<>(NOT_FOUND));
-    }
-
     @Operation(description = "Reveals if the specified user can access details about the supplied offender", tags = "Authentication and users")
     @RequestMapping(value = "/offenders/crn/{crn}/user/{username}/userAccess", method = RequestMethod.GET)
     @ApiResponses(value = {
@@ -481,21 +409,6 @@ public class OffendersResource {
         return offenderService.getOffenderAccessLimitationsByCrn(crn)
             .map(offender -> accessLimitationResponseEntityOf(offender, username))
             .orElse(new ResponseEntity<>(NOT_FOUND));
-    }
-
-    @RequestMapping(value = "/offenders/crn/{crn}/probationStatus", method = RequestMethod.GET)
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "404", description = "The offender was not found")
-    })
-    @Operation(description = "Returns the probation status for the given crn", tags = "-- Popular core APIs --")
-
-    public ProbationStatusDetail getOffenderProbationStatusByCrn(final @PathVariable("crn") String crn) {
-        return convictionService.probationStatusFor(crn)
-            .orElseThrow(() -> new NotFoundException("Offender not found"));
-    }
-
-    private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(final OffenderAccessLimitations offender) {
-        return accessLimitationResponseEntityOf(offender, currentUserSupplier.username().orElseThrow());
     }
 
     private ResponseEntity<AccessLimitation> accessLimitationResponseEntityOf(final OffenderAccessLimitations offender, final String username) {

@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.delius.service;
 
-import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -15,7 +14,6 @@ import uk.gov.justice.digital.delius.data.api.OffenceDetail;
 import uk.gov.justice.digital.delius.entitybuilders.AdditionalOffenceEntityBuilder;
 import uk.gov.justice.digital.delius.entitybuilders.CourtAppearanceEntityBuilder;
 import uk.gov.justice.digital.delius.entitybuilders.EventEntityBuilder;
-import uk.gov.justice.digital.delius.entitybuilders.KeyDateEntityBuilder;
 import uk.gov.justice.digital.delius.entitybuilders.MainOffenceEntityBuilder;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Court;
@@ -30,7 +28,6 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Team;
 import uk.gov.justice.digital.delius.jpa.standard.entity.TransferReason;
 import uk.gov.justice.digital.delius.jpa.standard.repository.EventRepository;
-import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.service.ConvictionService.DuplicateActiveCustodialConvictionsException;
 
 import java.time.LocalDate;
@@ -57,22 +54,7 @@ class ConvictionServiceTest {
     private EventRepository eventRepository;
 
     @Mock
-    private OffenderRepository offenderRepository;
-
-    @Mock
-    private ContactService contactService;
-
-    @Mock
     private LookupSupplier lookupSupplier;
-
-    @Mock
-    private KeyDateEntityBuilder keyDateEntityBuilder;
-
-    @Mock
-    private IAPSNotificationService iapsNotificationService;
-
-    @Mock
-    private TelemetryClient telemetryClient;
 
     @BeforeEach
     void setUp() {
@@ -84,7 +66,7 @@ class ConvictionServiceTest {
         );
         final var featureSwitches = new FeatureSwitches();
         featureSwitches.getNoms().getUpdate().setKeyDates(true);
-        convictionService = new ConvictionService(eventRepository, offenderRepository, eventEntityBuilder, lookupSupplier, keyDateEntityBuilder, iapsNotificationService, contactService, telemetryClient, featureSwitches);
+        convictionService = new ConvictionService(eventRepository, eventEntityBuilder);
     }
 
     @Test

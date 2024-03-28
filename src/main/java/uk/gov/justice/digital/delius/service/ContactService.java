@@ -78,14 +78,6 @@ public class ContactService {
     }
 
     @Transactional
-    public void addContactForBookingNumberUpdate(final Offender offender, final Event event) {
-        addContactForCustodyChange(offender,
-                event,
-                contactTypeForCustodyAutoUpdate(),
-                notesForBookingNumbUpdate(event));
-    }
-
-    @Transactional
     public void addContactForBulkCustodyKeyDateUpdate(final Offender offender, final Event event, final Map<String, LocalDate> datesAmendedOrUpdated, final Map<String, LocalDate> datesRemoved) {
         addContactForCustodyChange(offender,
                 event,
