@@ -11,7 +11,6 @@ import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.ContactableHuman;
 import uk.gov.justice.digital.delius.data.api.CreatePrisonOffenderManager;
-import uk.gov.justice.digital.delius.data.api.ResponsibleOfficerSwitch;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderManager;
 import uk.gov.justice.digital.delius.jpa.standard.entity.PrisonOffenderManager;
@@ -34,7 +33,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -55,11 +53,6 @@ public class OffenderManagerService {
     private final ReferenceDataService referenceDataService;
     private final ContactService contactService;
     private final TelemetryClient telemetryClient;
-
-    @Transactional(readOnly = true)
-    public Optional<List<CommunityOrPrisonOffenderManager>> getAllOffenderManagersForNomsNumber(final String nomsNumber, final boolean includeProbationAreaTeams) {
-        return offenderRepository.findByNomsNumber(nomsNumber).map(offender -> getAllOffenderManagers(offender, includeProbationAreaTeams));
-    }
 
     @Transactional(readOnly = true)
     public Optional<List<CommunityOrPrisonOffenderManager>> getAllOffenderManagersForCrn(final String crn, final boolean includeProbationAreaTeams) {

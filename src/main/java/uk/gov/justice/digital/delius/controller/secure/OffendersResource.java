@@ -67,25 +67,6 @@ public class OffendersResource {
     private final UserAccessService userAccessService;
 
     @Operation(
-            description = "Returns the current community and prison offender managers for an offender. Accepts a NOMIS offender nomsNumber in the format A9999AA",
-            tags = {"Offender managers", "-- Popular core APIs --"})
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "400", description = "Invalid request"),
-                    @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
-            })
-    @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/allOffenderManagers")
-    public List<CommunityOrPrisonOffenderManager> getAllOffenderManagersForOffender(
-        @Parameter(name = "nomsNumber", description = "Nomis number for the offender", example = "G9542VP", required = true)
-        @NotNull
-        @PathVariable(value = "nomsNumber") final String nomsNumber,
-        @Parameter(name = "includeProbationAreaTeams", description = "include teams on the ProbationArea records", example = "true")
-        @RequestParam(name = "includeProbationAreaTeams", required = false, defaultValue = "false") final boolean includeProbationAreaTeams) {
-        return offenderManagerService.getAllOffenderManagersForNomsNumber(nomsNumber, includeProbationAreaTeams)
-                .orElseThrow(() -> new NotFoundException(String.format("Offender with NOMS number %s not found", nomsNumber)));
-    }
-
-    @Operation(
         description = "Returns the current community and prison offender managers for an offender. Accepts an offender CRN in the format A999999",
         tags = {"Offender managers", "-- Popular core APIs --"})
     @ApiResponses(

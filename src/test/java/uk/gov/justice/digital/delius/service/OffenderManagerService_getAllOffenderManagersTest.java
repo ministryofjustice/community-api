@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.justice.digital.delius.data.api.CommunityOrPrisonOffenderManager;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Staff;
 import uk.gov.justice.digital.delius.jpa.standard.entity.User;
@@ -24,7 +23,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.justice.digital.delius.util.EntityHelper.*;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anActiveOffenderManager;
+import static uk.gov.justice.digital.delius.util.EntityHelper.anOffender;
 
 @ExtendWith(MockitoExtension.class)
 class OffenderManagerService_getAllOffenderManagersTest {
@@ -61,104 +61,6 @@ class OffenderManagerService_getAllOffenderManagersTest {
                 referenceDataService,
                 contactService,
                 telemetryClient);
-    }
-
-    @Nested
-    @DisplayName("getAllOffenderManagersForNomsNumber")
-    class byNomsNumber {
-
-        @Test
-        void willReturnEmptyWhenOffenderNotFound() {
-            when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.empty());
-
-            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP", true)).isNotPresent();
-        }
-
-        @Test
-        void willReturnAListWhenOffenderFound() {
-            when(offenderRepository.findByNomsNumber("G9542VP")).thenReturn(Optional.of(anOffender()));
-
-            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP", true)).isPresent();
-        }
-
-        @Test
-        void willReturnAnEmptyListWhenOffenderHasNoCOMorPOMS() {
-            when(offenderRepository.findByNomsNumber("G9542VP"))
-                .thenReturn(Optional.of(anOffender(
-                    List.of(),
-                    List.of())));
-
-            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP", true)).get().asList()
-                .hasSize(0);
-        }
-
-        @Test
-        void willReturnActiveCommunityOffenderManagers() {
-            when(offenderRepository.findByNomsNumber("G9542VP"))
-                .thenReturn(Optional.of(anOffender(
-                    List.of(anActiveOffenderManager()),
-                    List.of())));
-
-            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP", true)).get().asList()
-                .hasSize(1);
-        }
-
-        @Test
-        void willOnlyReturnActiveCommunityOffenderManagers() {
-            when(offenderRepository.findByNomsNumber("G9542VP"))
-                .thenReturn(Optional.of(anOffender(
-                    List.of(
-                        anActiveOffenderManager("AA"),
-                        anInactiveOffenderManager("BB"),
-                        anEndDatedActiveOffenderManager("CC")
-                    ),
-                    List.of())));
-
-            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP", true)).get().asList()
-                .hasSize(1).allMatch(offenderManager -> ((CommunityOrPrisonOffenderManager) offenderManager).getStaffCode().equals("AA"));
-        }
-
-        @Test
-        void willReturnActivePrisonOffenderManagers() {
-            when(offenderRepository.findByNomsNumber("G9542VP"))
-                .thenReturn(Optional.of(anOffender(
-                    List.of(),
-                    List.of(anActivePrisonOffenderManager())
-                )));
-
-            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP", true)).get().asList()
-                .hasSize(1);
-        }
-
-        @Test
-        void willOnlyReturnActivePrisonOffenderManagers() {
-            when(offenderRepository.findByNomsNumber("G9542VP"))
-                .thenReturn(Optional.of(anOffender(
-                    List.of(),
-                    List.of(
-                        anActivePrisonOffenderManager("AA"),
-                        anInactivePrisonOffenderManager("BB"),
-                        anEndDatedActivePrisonOffenderManager("CC")
-                    ))));
-
-            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP", true)).get().asList()
-                .hasSize(1).allMatch(offenderManager -> ((CommunityOrPrisonOffenderManager) offenderManager).getStaffCode().equals("AA"));
-        }
-
-        @Test
-        void willExcludeTeamsFromProbationAreasFromPrisonOffenderManagers() {
-            when(offenderRepository.findByNomsNumber("G9542VP"))
-                .thenReturn(Optional.of(anOffender(
-                    List.of(),
-                    List.of(
-                        anActivePrisonOffenderManager("AA"),
-                        anInactivePrisonOffenderManager("BB"),
-                        anEndDatedActivePrisonOffenderManager("CC")
-                    ))));
-
-            assertThat(offenderManagerService.getAllOffenderManagersForNomsNumber("G9542VP", false)).get().asList()
-                .hasSize(1).allMatch(offMgr -> ((CommunityOrPrisonOffenderManager) offMgr).getProbationArea().getTeams() == null);
-        }
     }
 
     @Nested
