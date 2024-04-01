@@ -2,7 +2,7 @@ plugins {
     id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.4"
     id 'groovy'
     id 'org.unbroken-dome.test-sets' version '4.1.0'
-    id "com.google.cloud.tools.jib" version "3.4.1"
+    id "com.google.cloud.tools.jib" version "3.4.2"
 }
 
 group = 'uk.gov.justice.digital.delius'
