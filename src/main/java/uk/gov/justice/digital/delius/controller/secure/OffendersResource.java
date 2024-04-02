@@ -85,38 +85,6 @@ public class OffendersResource {
             .orElseThrow(() -> new NotFoundException(String.format("Offender with CRN %s not found", crn)));
     }
 
-    @Operation(description = "Return the convictions (AKA Delius Event) for an offender", tags = {"Convictions","-- Popular core APIs --"})
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "400", description = "Invalid request"),
-                    @ApiResponse(responseCode = "409", description = "Multiple offenders found in the same state ")
-            })
-    @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/convictions")
-    public List<Conviction> getConvictionsForOffender(
-            @Parameter(name = "nomsNumber", description = "Nomis number for the offender", example = "G9542VP", required = true)
-            @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber,
-            @Parameter(name = "activeOnly", description = "retrieve only active convictions", example = "true")
-            @RequestParam(name = "activeOnly", required = false, defaultValue = "false") final boolean activeOnly,
-            @Parameter(name = "failOnDuplicate", description = "Should fail if multiple offenders found regardless of status", example = "true")
-            final @RequestParam(value = "failOnDuplicate", defaultValue = "false") boolean failOnDuplicate) {
-
-        final Optional<Long> mayBeOffenderId;
-        if (failOnDuplicate) {
-            mayBeOffenderId = offenderService
-                .singleOffenderIdOfNomsNumber(nomsNumber)
-                .getOrElseThrow(error -> new ConflictingRequestException(error.getMessage()));
-
-        } else {
-            mayBeOffenderId = offenderService
-                .mostLikelyOffenderIdOfNomsNumber(nomsNumber)
-                .getOrElseThrow(error -> new ConflictingRequestException(error.getMessage()));
-        }
-
-        return mayBeOffenderId
-                .map(offenderId -> convictionService.convictionsFor(offenderId, activeOnly))
-                .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
-    }
-
     @Operation(
             description = "Returns the latest recall and release details for an offender. Accepts an offender CRN in the format A999999",
             tags = "Convictions")
@@ -291,21 +259,6 @@ public class OffendersResource {
         return offenderService.offenderIdOfCrn(crn)
                 .map((offenderId) -> nsiService.getNsiByCodesForOffenderActiveConvictions(offenderId, nsiCodes))
                 .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
-    }
-
-    @Operation(description = "Return all the recall NSIs for the noms number, active convictions only when licence has not expired", tags = "Sentence requirements and breach")
-    @ApiResponses(
-        value = {
-            @ApiResponse(responseCode = "404", description = "The offender NOMS number is not found")
-        })
-    @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/convictions/active/nsis/recall")
-    public NsiWrapper getRecallNsisForOffenderByNomsNumberAndActiveConvictions(
-        @Parameter(name = "nomsNumber", description = "NOMS number for the offender", example = "A1234GH", required = true)
-        @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber) {
-
-        return offenderService.offenderIdOfNomsNumber(nomsNumber)
-            .map(nsiService::getNonExpiredRecallNsiForOffenderActiveConvictions)
-            .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
     }
 
     @Operation(description = "Return an NSI by crn, convictionId and nsiId", tags = "Convictions")
