@@ -72,28 +72,6 @@ public class DocumentResource {
     private final AlfrescoService alfrescoService;
     private final DocumentService documentService;
 
-
-    @Operation(description = "Returns all document's meta data for an offender by NOMS number. " + typeDocumentation,
-        tags = "Documents")
-    @ApiResponses(
-        value = {
-            @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
-        })
-    @GetMapping(path = "/offenders/nomsNumber/{nomsNumber}/documents/grouped")
-    public OffenderDocuments getOffenderDocumentsByNomsNumber(
-        @Parameter(name = "nomsNumber", description = "Nomis number for the offender", example = "G9542VP", required = true)
-        @NotNull @PathVariable(value = "nomsNumber") final String nomsNumber,
-        @Parameter(name = "type", description = "Optional filter for type" + typeDocumentation, example = "COURT_REPORT_DOCUMENT")
-        @RequestParam(required = false) final String type,
-        @Parameter(name = "subtype", description = "Optional filter for subtype within a type. Can only be used if type is also present" + subtypeDocumentation, example = "PSR")
-        @RequestParam(required = false) final String subtype) {
-
-        return offenderService.offenderIdOfNomsNumber(nomsNumber)
-            .map(offenderId -> documentService.offenderDocumentsFor(offenderId, DocumentFilter.of(type, subtype).getOrElseThrow(BadRequestException::new)))
-            .orElseThrow(() -> new NotFoundException(String.format("Offender with nomsNumber %s not found", nomsNumber)));
-    }
-
     @Operation(description = "Returns all documents' meta data for an offender by CRN", tags = "Documents")
     @ApiResponses(
         value = {
@@ -114,19 +92,6 @@ public class DocumentResource {
         return offenderService.offenderIdOfCrn(crn)
             .map(offenderId -> documentService.offenderDocumentsFor(offenderId, DocumentFilter.of(type, subtype).getOrElseThrow(BadRequestException::new)))
             .orElseThrow(() -> new NotFoundException(String.format("Offender with crn %s not found", crn)));
-    }
-
-    @Operation(description = "Returns the document contents meta data for a given document associated with an offender", tags = "Documents")
-    @ApiResponse(responseCode = "200",
-        description = "Returns the binary document data with an encoded filename in the content disposition header. ")
-    @GetMapping(value = "/offenders/nomsNumber/{nomsNumber}/documents/{documentId}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public HttpEntity<Resource> getOffenderDocument(
-        @Parameter(name = "nomsNumber", description = "Nomis number for the offender", example = "G9542VP", required = true) @NotNull final @PathVariable("nomsNumber") String nomsNumber,
-        @Parameter(name = "documentId", description = "Document Id", example = "12312322", required = true) @NotNull final @PathVariable("documentId") String documentId) {
-
-        return offenderService.crnOf(nomsNumber)
-            .map(crn -> alfrescoService.getDocument(documentId, crn))
-            .orElseThrow(() -> new NotFoundException(String.format("document with id %s not found", documentId)));
     }
 
     @Operation(description = "Returns the document for a given document id associated with an offender", tags = "Documents")

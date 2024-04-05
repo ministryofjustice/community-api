@@ -33,7 +33,6 @@ public class ReferenceDataService {
     public static final String POM_INTERNAL_TRANSFER_ALLOCATION_REASON_CODE = "INA";
     public static final String POM_EXTERNAL_TRANSFER_ALLOCATION_REASON_CODE = "EXT";
     public static final String REFERENCE_DATA_PSR_ADJOURNED_CODE = "101";
-    private static final String POM_ALLOCATION_REASON_DATASET = "POM ALLOCATION REASON";
     private static final String CUSTODY_EVENT_DATASET = "CUSTODY EVENT TYPE";
     private static final String CUSTODY_EVENT_PRISON_LOCATION_CHANGE_CODE = "CPL";
     private static final String CUSTODY_EVENT_CUSTODY_STATUS_CHANGE_CODE = "TSC";
@@ -56,23 +55,6 @@ public class ReferenceDataService {
         ProbationAreaFilter probationAreaFilter = ProbationAreaFilter.builder().probationAreaCodes(Optional.of(List.of(code))).restrictActive(restrictActive).build();
 
         return ProbationAreaTransformer.probationAreasOf(probationAreaRepository.findAll(probationAreaFilter));
-    }
-
-    public StandardReference pomAllocationAutoTransferReason() {
-        return pomAllocationTransferReason(POM_AUTO_TRANSFER_ALLOCATION_REASON_CODE);
-    }
-
-    public StandardReference pomAllocationInternalTransferReason() {
-        return pomAllocationTransferReason(POM_INTERNAL_TRANSFER_ALLOCATION_REASON_CODE);
-    }
-
-    public StandardReference pomAllocationExternalTransferReason() {
-        return pomAllocationTransferReason(POM_EXTERNAL_TRANSFER_ALLOCATION_REASON_CODE);
-    }
-
-    private StandardReference pomAllocationTransferReason(String reason) {
-        return standardReferenceRepository.findByCodeAndCodeSetName(reason, POM_ALLOCATION_REASON_DATASET)
-                .orElseThrow(() -> new RuntimeException(format("No pom allocation reason found for %s", reason)));
     }
 
     public Page<KeyValue> getProbationAreasCodes(boolean restrictActive, boolean excludeEstablishments) {
@@ -155,15 +137,15 @@ public class ReferenceDataService {
                     final var ldus = pa.getBoroughs().stream()
                             // LDUs are represented as districts in the delius schema
                             .flatMap(borough -> borough.getDistricts().stream())
-                            .filter(district -> getPossibleActiveLdus(district)) // current (non-historic) only
+                            .filter(this::getPossibleActiveLdus) // current (non-historic) only
                             .map(ldu -> LocalDeliveryUnit.builder().localDeliveryUnitId(ldu.getDistrictId()).code(ldu.getCode()).description(ldu.getDescription()).build())
-                            .collect(toList());
+                            .toList();
 
                     return ProbationAreaWithLocalDeliveryUnits.builder().code(pa.getCode()).description(pa.getDescription()).localDeliveryUnits(ldus).build();
 
 
                 }
-        ).collect(toList());
+        ).toList();
     }
 
     private boolean getPossibleActiveLdus(District district) {

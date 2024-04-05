@@ -108,25 +108,6 @@ public class OffendersResource {
                 .orElseThrow(() -> new NotFoundException("Offender not found"));
     }
 
-    @RequestMapping(value = "/offenders/nomsNumber/{nomsNumber}/prisonOffenderManager", method = RequestMethod.DELETE)
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "400", description = "The noms number must be passed in the URL"),
-            @ApiResponse(responseCode = "403", description = "Forbidden, requires ROLE_COMMUNITY_CUSTODY_UPDATE"),
-            @ApiResponse(responseCode = "404", description = "The offender is not found"),
-            @ApiResponse(responseCode = "409", description = "The offender does not have a POM to deallocate or the offender has multiple active noms numbers")
-    })
-    @Operation(description = "Deallocates the prison offender manager for an offender in custody. The POM is set back to its unallocated state. Requires role ROLE_COMMUNITY_CUSTODY_UPDATE", tags = "Offender managers")
-    @PreAuthorize("hasRole('ROLE_COMMUNITY_CUSTODY_UPDATE')")
-    public void deallocatePrisonOffenderManagerByNomsNumber(final @PathVariable String nomsNumber) {
-        offenderManagerService.deallocatePrisonerOffenderManager(nomsNumber);
-    }
-
-    public static class InvalidAllocatePOMRequestException extends BadRequestException {
-        InvalidAllocatePOMRequestException(final CreatePrisonOffenderManager createPrisonOffenderManager, final String message) {
-            super(message);
-        }
-    }
-
     @RequestMapping(value = "/offenders/crn/{crn}", method = RequestMethod.GET)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "403", description = "Forbidden, the offender may have exclusions or restrictions in place preventing some users from viewing. Adopting the client scopes SCOPE_IGNORE_DELIUS_INCLUSIONS_ALWAYS and SCOPE_IGNORE_DELIUS_EXCLUSIONS_ALWAYS can bypass these restrictions."),

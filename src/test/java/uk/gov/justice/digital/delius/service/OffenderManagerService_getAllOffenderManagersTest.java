@@ -31,36 +31,13 @@ class OffenderManagerService_getAllOffenderManagersTest {
     @Mock
     private OffenderRepository offenderRepository;
     @Mock
-    private ProbationAreaRepository probationAreaRepository;
-    @Mock
-    private PrisonOffenderManagerRepository prisonOffenderManagerRepository;
-    @Mock
-    private ResponsibleOfficerRepository responsibleOfficerRepository;
-    @Mock
     private StaffService staffService;
-    @Mock
-    private TeamService teamService;
-    @Mock
-    private ReferenceDataService referenceDataService;
-    @Mock
-    private ContactService contactService;
-    @Mock
-    private TelemetryClient telemetryClient;
 
     private OffenderManagerService offenderManagerService;
 
     @BeforeEach
     void setup() {
-        offenderManagerService = new OffenderManagerService(
-                offenderRepository,
-                probationAreaRepository,
-                prisonOffenderManagerRepository,
-                responsibleOfficerRepository,
-                staffService,
-                teamService,
-                referenceDataService,
-                contactService,
-                telemetryClient);
+        offenderManagerService = new OffenderManagerService(offenderRepository, staffService);
     }
 
     @Nested
@@ -109,9 +86,9 @@ class OffenderManagerService_getAllOffenderManagersTest {
 
             var offenderMgrs  = offenderManagerService.getAllOffenderManagersForCrn(CRN, true).get();
             assertThat(offenderMgrs).hasSize(1);
-            assertThat(offenderMgrs.get(0).getStaff().getEmail()).isEqualTo("no-one@nowhere.com");
-            assertThat(offenderMgrs.get(0).getStaff().getPhoneNumber()).isEqualTo("020 1111 2222");
-            assertThat(offenderMgrs.get(0).getProbationArea().getTeams()).hasSize(1);
+            assertThat(offenderMgrs.getFirst().getStaff().getEmail()).isEqualTo("no-one@nowhere.com");
+            assertThat(offenderMgrs.getFirst().getStaff().getPhoneNumber()).isEqualTo("020 1111 2222");
+            assertThat(offenderMgrs.getFirst().getProbationArea().getTeams()).hasSize(1);
 
             verify(staffService).getStaffDetailsByUsername("XX");
         }
@@ -131,7 +108,7 @@ class OffenderManagerService_getAllOffenderManagersTest {
 
             var offenderMgrs  = offenderManagerService.getAllOffenderManagersForCrn(CRN, false).get();
             assertThat(offenderMgrs).hasSize(1);
-            assertThat(offenderMgrs.get(0).getProbationArea().getTeams()).isNull();
+            assertThat(offenderMgrs.getFirst().getProbationArea().getTeams()).isNull();
 
             verify(staffService).getStaffDetailsByUsername("XX");
         }
