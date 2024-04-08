@@ -40,20 +40,4 @@ public class UserController {
         return userService.getUserDetails(username)
             .orElseThrow(() -> new NotFoundException(String.format("User with username %s", username)));
     }
-
-    @Operation(description = "Add a role to a user held in Delius Identity (LDAP). Requires ROLE_COMMUNITY_USERS_ROLES")
-    @ApiResponses(
-        value = {
-            @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "403", description = "Requires role ROLE_COMMUNITY_USERS_ROLES"),
-            @ApiResponse(responseCode = "404", description = "Not Found")
-        })
-    @PreAuthorize("hasAnyRole('ROLE_COMMUNITY_USERS_ROLES')")
-    @RequestMapping(value = "/users/{username}/roles/{roleId}", method = RequestMethod.PUT)
-    public void addRole(
-        @Parameter(name = "username", description = "LDAP username", example = "TESTUSERNPS", required = true) @NotNull final @PathVariable("username") String username,
-        @Parameter(name = "roleId", description = "Delius Role ID", example = "CWBT001", required = true) @NotNull final @PathVariable("roleId") String roleId
-    ) {
-        userService.addRole(username, roleId);
-    }
 }
