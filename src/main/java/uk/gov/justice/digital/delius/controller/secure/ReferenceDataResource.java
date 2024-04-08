@@ -10,7 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.ProbationAreaWithLocalDeliveryUnits;
 import uk.gov.justice.digital.delius.service.ReferenceDataService;
@@ -51,33 +54,5 @@ public class ReferenceDataResource {
     public List<ProbationAreaWithLocalDeliveryUnits> getProbationAreasAndLocalDeliveryUnits(
             @Parameter(name = "active", description = "Restricts to active areas only", example = "true") final @RequestParam(name = "active", required = false) boolean restrictActive) {
         return referenceDataService.getProbationAreasAndLocalDeliveryUnits(restrictActive);
-    }
-
-    @Operation(description = "Return Local delivery units for a probation area. Accepts a probation area code")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "400", description = "Invalid request"),
-                    @ApiResponse(responseCode = "404", description = "Not found"),
-                    @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
-            })
-    @GetMapping(value = "/probationAreas/code/{code}/localDeliveryUnits")
-    public Page<KeyValue> getLdusForProbationCode(
-            @Parameter(name = "code", description = "Probation area code", example = "NO2", required = true) final @PathVariable String code) {
-        return referenceDataService.getLocalDeliveryUnitsForProbationArea(code);
-    }
-
-    @Operation(description = "Return teams for a local delivery unit within a probation area. Accepts a probation area code and local delivery unit code")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "400", description = "Invalid request"),
-                    @ApiResponse(responseCode = "404", description = "Not found"),
-                    @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
-            })
-    @GetMapping(value = "/probationAreas/code/{code}/localDeliveryUnits/code/{lduCode}/teams")
-    public Page<KeyValue> getTeamsForLdu(
-            @Parameter(name = "code", description = "Probation area code", example = "NO2", required = true) final @PathVariable String code,
-            @Parameter(name = "lduCode", description = "Local delivery unit code", example = "NO2NPSA", required = true) final @PathVariable String lduCode) {
-
-        return referenceDataService.getTeamsForLocalDeliveryUnit(code, lduCode);
     }
 }

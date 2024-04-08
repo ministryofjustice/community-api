@@ -15,11 +15,8 @@ import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAccessLimitatio
 import uk.gov.justice.digital.delius.ldap.repository.LdapRepository;
 import uk.gov.justice.digital.delius.service.wrapper.UserRepositoryWrapper;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -81,45 +78,8 @@ public class UserService {
         });
     }
 
-    public List<UserDetails> getUserDetailsByEmail(final String email) {
-        // first we perform the LDAP search to get a list of matching records for the email address
-        final var userList = ldapRepository.getDeliusUserByEmail(email);
-
-        // next we create a `UserDetails` object for each record. this involves looking up
-        // the user in the delius oracle db in order to get the user id. users which exist
-        // in the LDAP but not in the delius oracle db are not included in the result.
-        return userList.stream()
-            .map(user -> {
-                final uk.gov.justice.digital.delius.jpa.national.entity.User oracleUser;
-                final var userCn = user.getCn();
-
-                try {
-                    oracleUser = userRepositoryWrapper.getUser(userCn);
-                } catch (final NoSuchUserException e) {
-                    log.error("no entry found in delius USER table for LDAP user '{}'", userCn);
-                    return null;
-                }
-
-                return UserDetails.builder()
-                    .roles(user.getRoles().stream().map(role -> UserRole.builder().name(role.getCn()).build()).collect(toList()))
-                    .firstName(user.getGivenname())
-                    .surname(user.getSn())
-                    .email(user.getMail())
-                    .enabled(user.isEnabled())
-                    .userId(oracleUser.getUserId())
-                    .username(userCn)
-                    .build();
-            })
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-    }
-
     public boolean authenticateUser(final String user, final String password) {
         return ldapRepository.authenticateUser(user, password);
-    }
-
-    public boolean changePassword(final String username, final String password) {
-        return ldapRepository.changePassword(username, password);
     }
 
     public void addRole(final String username, final String roleId) {

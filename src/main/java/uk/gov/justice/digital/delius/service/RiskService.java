@@ -4,23 +4,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.MappaDetails;
-import uk.gov.justice.digital.delius.data.api.RiskResourcingDetails;
-import uk.gov.justice.digital.delius.jpa.standard.repository.CaseAllocationRepository;
 import uk.gov.justice.digital.delius.jpa.standard.repository.RegistrationRepository;
-import uk.gov.justice.digital.delius.transformers.CaseAllocationTransformer;
 import uk.gov.justice.digital.delius.transformers.MappaDetailsTransformer;
-
-import java.util.Optional;
 
 @Service
 public class RiskService {
     private final RegistrationRepository registrationRepository;
-    private final CaseAllocationRepository caseAllocationRepository;
 
-    public RiskService(RegistrationRepository registrationRepository,
-                       CaseAllocationRepository caseAllocationRepository) {
+    public RiskService(RegistrationRepository registrationRepository) {
         this.registrationRepository = registrationRepository;
-        this.caseAllocationRepository = caseAllocationRepository;
     }
 
     public MappaDetails getMappaDetails(Long offenderId) {
@@ -29,11 +21,5 @@ public class RiskService {
             .findFirst()
             .map(MappaDetailsTransformer::mappaDetailsOf)
             .orElseThrow(() -> new NotFoundException("MAPPA details for offender not found"));
-    }
-
-    public Optional<RiskResourcingDetails> getResourcingDetails(Long offenderId) {
-        return caseAllocationRepository
-            .findLatestDecisionOnActiveEvent(offenderId, PageRequest.of(0, 1))
-            .map(CaseAllocationTransformer::riskResourcingDetailsOf);
     }
 }

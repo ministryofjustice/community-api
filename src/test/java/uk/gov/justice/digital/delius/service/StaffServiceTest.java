@@ -65,7 +65,6 @@ public class StaffServiceTest {
             staffRepository,
             ldapRepository,
             staffHelperRepository,
-            offenderRepository,
             boroughRepository);
     }
 

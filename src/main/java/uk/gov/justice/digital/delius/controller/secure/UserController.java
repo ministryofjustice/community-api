@@ -18,8 +18,6 @@ import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.UserDetails;
 import uk.gov.justice.digital.delius.service.UserService;
 
-import java.util.List;
-
 @RestController
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
@@ -41,18 +39,6 @@ public class UserController {
     public UserDetails findUser(@Parameter(name = "username", description = "LDAP username", example = "TESTUSERNPS", required = true) @NotNull final @PathVariable("username") String username) {
         return userService.getUserDetails(username)
             .orElseThrow(() -> new NotFoundException(String.format("User with username %s", username)));
-    }
-
-    @Operation(description = "Find user details of a user held in Delius Identity (LDAP). Requires ROLE_COMMUNITY_USERS")
-    @ApiResponses(
-        value = {
-            @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "403", description = "Requires role ROLE_COMMUNITY_USERS"),
-        })
-    @PreAuthorize("hasAnyRole('ROLE_COMMUNITY_AUTH_INT','ROLE_COMMUNITY_USERS')")
-    @RequestMapping(value = "/users/search/email/{email}/details", method = RequestMethod.GET)
-    public List<UserDetails> findUserByEmail(@Parameter(name = "email", description = "LDAP email address", example = "sheila.hancock@justice.gov.uk", required = true) @NotNull final @PathVariable("email") String email) {
-        return userService.getUserDetailsByEmail(email);
     }
 
     @Operation(description = "Add a role to a user held in Delius Identity (LDAP). Requires ROLE_COMMUNITY_USERS_ROLES")

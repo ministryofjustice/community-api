@@ -2,8 +2,6 @@ package uk.gov.justice.digital.delius.controller.secure;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -21,12 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.Caseload;
 import uk.gov.justice.digital.delius.data.api.ManagedOffenderCrn;
-import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.service.CaseloadService;
-import uk.gov.justice.digital.delius.service.TeamService;
 import uk.gov.justice.digital.delius.validation.TeamCode;
 
-import java.util.List;
 import java.util.Set;
 
 import static uk.gov.justice.digital.delius.data.api.CaseloadRole.OFFENDER_MANAGER;
@@ -40,26 +35,7 @@ import static uk.gov.justice.digital.delius.data.api.CaseloadRole.OFFENDER_MANAG
 public class TeamResource {
     public static final Sort CASELOAD_DEFAULT_SORT = Sort.by("allocationDate").descending();
     public static final String DEFAULT_PAGE_SIZE = "2147483647"; // Integer.MAX_VALUE
-    private final TeamService teamService;
     private final CaseloadService caseloadService;
-
-    @GetMapping("/teams/{teamCode}/staff")
-    @PreAuthorize("hasRole('ROLE_COMMUNITY')")
-    @ApiResponses(
-        value = {
-            @ApiResponse(responseCode = "200", description = "All staff for the specified team"),
-            @ApiResponse(responseCode = "403", description = "Requires role ROLE_COMMUNITY"),
-            @ApiResponse(responseCode = "404", description = "The specified team does not exist or is not active"),
-            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
-        })
-    @Operation(description = "Determines all staff for the specified team. Requires ROLE_COMMUNITY")
-    public List<StaffDetails> getAllStaff(
-        @PathVariable("teamCode")
-        @Parameter(description = "Team code", example = "N07T01")
-            String teamCode
-    ) {
-        return teamService.getAllStaff(teamCode);
-    }
 
     @Operation(description = "Return the managed offenders for all members of a probation team. Requires ROLE_COMMUNITY")
     @GetMapping(path = "/team/{teamCode}/caseload/managedOffenders")

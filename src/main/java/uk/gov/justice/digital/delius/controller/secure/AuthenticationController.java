@@ -11,14 +11,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.controller.UnauthorisedException;
-import uk.gov.justice.digital.delius.data.api.AuthPassword;
 import uk.gov.justice.digital.delius.data.api.AuthUser;
 import uk.gov.justice.digital.delius.service.UserService;
 
@@ -42,23 +39,6 @@ public class AuthenticationController {
     public void authenticate(@NotNull @Valid @Parameter(description = "Authentication Details", required = true) @RequestBody final AuthUser authUser) {
         if (!userService.authenticateUser(authUser.getUsername(), authUser.getPassword())) {
             throw new UnauthorisedException(String.format("User with username %s", authUser.getUsername()));
-        }
-    }
-
-    @Operation(description = "Change password a users (LDAP) account. Requiers ROLE_COMMUNITY_AUTH_INT")
-    @ApiResponses(
-        value = {
-            @ApiResponse(responseCode = "200", description = "Password Changed"),
-            @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "403", description = "Requires role ROLE_COMMUNITY_AUTH_INT"),
-            @ApiResponse(responseCode = "404", description = "Not Found")
-        })
-    @PreAuthorize("hasRole('ROLE_COMMUNITY_AUTH_INT')")
-    @PostMapping(value = "/users/{username}/password")
-    public void changePassword(@Parameter(name = "username", description = "LDAP username", example = "TESTUSERNPS", required = true) @NotNull final @PathVariable("username") String username,
-                               @NotNull @Valid @Parameter(description = "Password Credentials", required = true) @RequestBody final AuthPassword authPassword) {
-        if (!userService.changePassword(username, authPassword.getPassword())) {
-            throw new NotFoundException(String.format("User with username %s", username));
         }
     }
 }

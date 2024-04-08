@@ -95,45 +95,6 @@ public class UserAPITest extends IntegrationTestBase {
     }
 
     @Test
-    public void userDetailsByEmail_success() {
-        final var userDetails = given()
-            .auth()
-            .oauth2(createJwt("ROLE_COMMUNITY_USERS"))
-            .contentType("text/plain")
-            .when()
-            .get("/users/search/email/bernard.beaks@justice.gov.uk/details")
-            .then()
-            .statusCode(200)
-            .extract()
-            .body()
-            .as(UserDetails[].class);
-
-        assertThat(userDetails.length).isEqualTo(1);
-        final var bernard = userDetails[0];
-        assertThat(bernard.getFirstName()).isEqualTo("Bernard");
-        assertThat(bernard.getSurname()).isEqualTo("Beaks");
-        assertThat(bernard.getEmail()).isEqualTo("bernard.beaks@justice.gov.uk");
-        assertThat(bernard.getRoles()).hasSize(1).contains(UserRole.builder().name("UWBT060").build());
-    }
-
-    @Test
-    public void usersDetailsByEmail_returns200WhenUserNotFound() {
-        final var userDetails = given()
-            .auth()
-            .oauth2(createJwt("ROLE_COMMUNITY_USERS"))
-            .contentType("text/plain")
-            .when()
-            .get("/users/search/email/missing/details")
-            .then()
-            .statusCode(200)
-            .extract()
-            .body()
-            .as(UserDetails[].class);
-
-        assertThat(userDetails.length).isEqualTo(0);
-    }
-
-    @Test
     @DirtiesContext
     public void addRole() {
 
