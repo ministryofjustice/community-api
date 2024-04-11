@@ -16,11 +16,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.Caseload;
-import uk.gov.justice.digital.delius.data.api.ManagedOffender;
 import uk.gov.justice.digital.delius.data.api.ManagedOffenderCrn;
 import uk.gov.justice.digital.delius.data.api.StaffDetails;
 import uk.gov.justice.digital.delius.service.CaseloadService;
@@ -42,20 +40,6 @@ public class StaffResource {
 
     private final StaffService staffService;
     private final CaseloadService caseloadService;
-
-    @Operation(description = "Return list of of currently managed offenders for one responsible officer (RO). Accepts a Delius staff officer identifier")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "400", description = "Invalid request"),
-        @ApiResponse(responseCode = "404", description = "Not found"),
-        @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
-    })
-    @GetMapping(path = "/staff/staffIdentifier/{staffIdentifier}/managedOffenders")
-    public List<ManagedOffender> getOffendersForResponsibleOfficerIdentifier(
-        @Parameter(name = "staffIdentifier", description = "Delius officer identifier of the responsible officer", example = "123456", required = true) @NotNull @PathVariable(value = "staffIdentifier") final Long staffIdentifier,
-        @Parameter(name = "current", description = "Current only", example = "false") @RequestParam(name = "current", required = false, defaultValue = "false") final boolean current) {
-        return staffService.getManagedOffendersByStaffIdentifier(staffIdentifier, current)
-            .orElseThrow(() -> new NotFoundException(String.format("Staff member with identifier %d", staffIdentifier)));
-    }
 
     @Operation(description = "Return details of a staff member including option user details. Accepts a Delius staff officer identifier")
     @ApiResponses(value = {

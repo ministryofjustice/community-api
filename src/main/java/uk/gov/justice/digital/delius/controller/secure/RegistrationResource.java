@@ -10,8 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
-import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.Registrations;
 import uk.gov.justice.digital.delius.service.OffenderService;
@@ -30,30 +33,6 @@ public class RegistrationResource {
     private final OffenderService offenderService;
     private final RegistrationService registrationService;
     private final UserAccessService userAccessService;
-
-    @Operation(description = "Return the registrations for an offender using NOMS number. requires ROLE_COMMUNITY")
-    @ApiResponses(
-        value = {
-            @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "409", description = "Multiple offenders found in the same state ")
-        })
-    @GetMapping(value = "offenders/nomsNumber/{nomsNumber}/registrations")
-    public Registrations getOffenderRegistrationsByNomsNumber(final @PathVariable("nomsNumber") String nomsNumber,
-                                                              final @RequestParam(value = "failOnDuplicate", defaultValue = "false") boolean failOnDuplicate) {
-        final Optional<Long> mayBeOffenderId;
-        if (failOnDuplicate) {
-            mayBeOffenderId = offenderService
-                .singleOffenderIdOfNomsNumber(nomsNumber)
-                .getOrElseThrow(error -> new ConflictingRequestException(error.getMessage()));
-
-        } else {
-            mayBeOffenderId = offenderService
-                .mostLikelyOffenderIdOfNomsNumber(nomsNumber)
-                .getOrElseThrow(error -> new ConflictingRequestException(error.getMessage()));
-        }
-
-        return registrationsOf(mayBeOffenderId);
-    }
 
     @Operation(description = "Return the registrations for an offender using the crn. requires ROLE_COMMUNITY")
     @ApiResponses(

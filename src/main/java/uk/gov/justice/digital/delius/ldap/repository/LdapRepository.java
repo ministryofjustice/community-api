@@ -128,15 +128,6 @@ public class LdapRepository {
         return LdapNameBuilder.newInstance(ldapUserBase).add("cn=ndRoleCatalogue");
     }
 
-    public boolean changePassword(final String username, final String password) {
-        final var context = authenticationTemplate.searchForContext(byUsername(username));
-
-        context.setAttributeValue("userpassword", password);
-
-        authenticationTemplate.modifyAttributes(context);
-        return true;
-    }
-
     private ContainerCriteria byEmail(final String email) {
         return query().base(ldapUserBase).where("mail").is(email);
     }

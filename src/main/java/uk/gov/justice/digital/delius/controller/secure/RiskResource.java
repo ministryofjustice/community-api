@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.justice.digital.delius.controller.ConflictingRequestException;
 import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.MappaDetails;
-import uk.gov.justice.digital.delius.data.api.RiskResourcingDetails;
 import uk.gov.justice.digital.delius.service.OffenderService;
 import uk.gov.justice.digital.delius.service.RiskService;
 
@@ -44,32 +42,9 @@ public class RiskResource {
         return mappaDetailsFor(offenderService.offenderIdOfCrn(crn));
     }
 
-    @Operation(description = "Return the resourcing details for an offender using NOMS number. Typically this is allocated or retained requiring greater resourcing. This equates to the historic NPS/CRC split for low and high risk offenders. requires ROLE_COMMUNITY")
-    @ApiResponses(
-        value = {
-            @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "403", description = "Forbidden - requires ROLE_COMMUNITY"),
-            @ApiResponse(responseCode = "404", description = "Offender not found"),
-            @ApiResponse(responseCode = "500", description = "Unrecoverable error whilst processing request.")
-        })
-    @GetMapping(value = "offenders/nomsNumber/{nomsNumber}/risk/resourcing/latest")
-    public RiskResourcingDetails getOffenderResourcingDetailsByNomsNumber(final @PathVariable("nomsNumber") String nomsNumber) {
-        final var mayBeOffenderId = offenderService
-            .mostLikelyOffenderIdOfNomsNumber(nomsNumber)
-            .getOrElseThrow(error -> new ConflictingRequestException(error.getMessage()));
-
-        return resourcingDetailsFor(mayBeOffenderId);
-    }
-
     private MappaDetails mappaDetailsFor(final Optional<Long> maybeOffenderId) {
         return maybeOffenderId
             .map(riskService::getMappaDetails)
             .orElseThrow(() -> new NotFoundException("Offender not found"));
-    }
-    private RiskResourcingDetails resourcingDetailsFor(final Optional<Long> maybeOffenderId) {
-        return maybeOffenderId
-            .map(riskService::getResourcingDetails)
-            .orElseThrow(() -> new NotFoundException("Offender not found"))
-            .orElseThrow(() -> new NotFoundException("Resourcing details for offender not found"));
     }
 }

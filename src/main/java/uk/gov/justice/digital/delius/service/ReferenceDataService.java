@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
-import uk.gov.justice.digital.delius.controller.NotFoundException;
 import uk.gov.justice.digital.delius.data.api.KeyValue;
 import uk.gov.justice.digital.delius.data.api.LocalDeliveryUnit;
 import uk.gov.justice.digital.delius.data.api.ProbationArea;
@@ -19,9 +18,7 @@ import uk.gov.justice.digital.delius.transformers.ProbationAreaTransformer;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
-import static java.lang.String.format;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.justice.digital.delius.transformers.TypesTransformer.ynToBoolean;
@@ -33,12 +30,6 @@ public class ReferenceDataService {
     public static final String POM_INTERNAL_TRANSFER_ALLOCATION_REASON_CODE = "INA";
     public static final String POM_EXTERNAL_TRANSFER_ALLOCATION_REASON_CODE = "EXT";
     public static final String REFERENCE_DATA_PSR_ADJOURNED_CODE = "101";
-    private static final String POM_ALLOCATION_REASON_DATASET = "POM ALLOCATION REASON";
-    private static final String CUSTODY_EVENT_DATASET = "CUSTODY EVENT TYPE";
-    private static final String CUSTODY_EVENT_PRISON_LOCATION_CHANGE_CODE = "CPL";
-    private static final String CUSTODY_EVENT_CUSTODY_STATUS_CHANGE_CODE = "TSC";
-    private static final String CUSTODY_STATUS_DATASET = "THROUGHCARE STATUS";
-    private static final String CUSTODY_STATUS_IN_CUSTODY_CODE = "D";
     private static final String ADDITIONAL_IDENTIFIER_DATASET = "ADDITIONAL IDENTIFIER TYPE";
     private static final String DUPLICATE_NOMS_NUMBER_CODE = "DNOMS";
     private static final String FORMER_NOMS_NUMBER_CODE = "XNOMS";
@@ -58,23 +49,6 @@ public class ReferenceDataService {
         return ProbationAreaTransformer.probationAreasOf(probationAreaRepository.findAll(probationAreaFilter));
     }
 
-    public StandardReference pomAllocationAutoTransferReason() {
-        return pomAllocationTransferReason(POM_AUTO_TRANSFER_ALLOCATION_REASON_CODE);
-    }
-
-    public StandardReference pomAllocationInternalTransferReason() {
-        return pomAllocationTransferReason(POM_INTERNAL_TRANSFER_ALLOCATION_REASON_CODE);
-    }
-
-    public StandardReference pomAllocationExternalTransferReason() {
-        return pomAllocationTransferReason(POM_EXTERNAL_TRANSFER_ALLOCATION_REASON_CODE);
-    }
-
-    private StandardReference pomAllocationTransferReason(String reason) {
-        return standardReferenceRepository.findByCodeAndCodeSetName(reason, POM_ALLOCATION_REASON_DATASET)
-                .orElseThrow(() -> new RuntimeException(format("No pom allocation reason found for %s", reason)));
-    }
-
     public Page<KeyValue> getProbationAreasCodes(boolean restrictActive, boolean excludeEstablishments) {
         final var filter = ProbationAreaFilter
                 .builder()
@@ -86,40 +60,6 @@ public class ReferenceDataService {
                 .collect(collectingAndThen(toList(), PageImpl::new));
     }
 
-    public Page<KeyValue> getLocalDeliveryUnitsForProbationArea(String code) {
-        return getSelectableLdusForProbationArea(code)
-                .map(ldu -> new KeyValue(ldu.getCode(), ldu.getDescription()))
-                .collect(collectingAndThen(toList(), PageImpl::new));
-    }
-
-    public Page<KeyValue> getTeamsForLocalDeliveryUnit(String code, String lduCode) {
-        var ldus = getSelectableLdusForProbationArea(code)
-                // ldu code is not primary key so duplicates can exist - this returns all teams that are linked to LDUs with the provided code
-                .filter(ldu -> ldu.getCode().equals(lduCode)).toList();
-
-        if (ldus.isEmpty()) {
-            throw new NotFoundException(format("Could not find local delivery unit in probation area: '%s', with code: '%s'", code, lduCode));
-        }
-
-        return ldus.stream()
-                .flatMap(ldu -> ldu.getTeams().stream())
-                .map(team -> new KeyValue(team.getCode(), team.getDescription()))
-                .collect(collectingAndThen(toList(), PageImpl::new));
-    }
-
-    public StandardReference getPrisonLocationChangeCustodyEvent() {
-        return getCustodyEventTypeFor(CUSTODY_EVENT_PRISON_LOCATION_CHANGE_CODE);
-    }
-
-    public StandardReference getCustodyStatusChangeCustodyEvent() {
-        return getCustodyEventTypeFor(CUSTODY_EVENT_CUSTODY_STATUS_CHANGE_CODE);
-    }
-
-
-    public StandardReference getInCustodyCustodyStatus() {
-        return standardReferenceRepository.findByCodeAndCodeSetName(CUSTODY_STATUS_IN_CUSTODY_CODE, CUSTODY_STATUS_DATASET).orElseThrow();
-    }
-
 
     public StandardReference duplicateNomsNumberAdditionalIdentifier() {
         return standardReferenceRepository.findByCodeAndCodeSetName(DUPLICATE_NOMS_NUMBER_CODE, ADDITIONAL_IDENTIFIER_DATASET).orElseThrow();
@@ -127,20 +67,6 @@ public class ReferenceDataService {
 
     public StandardReference formerNomsNumberAdditionalIdentifier() {
         return standardReferenceRepository.findByCodeAndCodeSetName(FORMER_NOMS_NUMBER_CODE, ADDITIONAL_IDENTIFIER_DATASET).orElseThrow();
-    }
-
-    private StandardReference getCustodyEventTypeFor(String code) {
-        return standardReferenceRepository.findByCodeAndCodeSetName(code, CUSTODY_EVENT_DATASET).orElseThrow();
-    }
-
-    private Stream<District> getSelectableLdusForProbationArea(String code) {
-        var probationArea = probationAreaRepository.findByCode(code).orElseThrow(() ->
-                new NotFoundException(format("Could not find probation area with code: '%s'", code)));
-
-        return probationArea.getBoroughs().stream()
-                // LDUs are represented as districts in the delius schema
-                .flatMap(borough -> borough.getDistricts().stream())
-                .filter(district -> ynToBoolean(district.getSelectable()));
     }
 
     public List<ProbationAreaWithLocalDeliveryUnits> getProbationAreasAndLocalDeliveryUnits(boolean restrictActive) {
@@ -155,15 +81,15 @@ public class ReferenceDataService {
                     final var ldus = pa.getBoroughs().stream()
                             // LDUs are represented as districts in the delius schema
                             .flatMap(borough -> borough.getDistricts().stream())
-                            .filter(district -> getPossibleActiveLdus(district)) // current (non-historic) only
+                            .filter(this::getPossibleActiveLdus) // current (non-historic) only
                             .map(ldu -> LocalDeliveryUnit.builder().localDeliveryUnitId(ldu.getDistrictId()).code(ldu.getCode()).description(ldu.getDescription()).build())
-                            .collect(toList());
+                            .toList();
 
                     return ProbationAreaWithLocalDeliveryUnits.builder().code(pa.getCode()).description(pa.getDescription()).localDeliveryUnits(ldus).build();
 
 
                 }
-        ).collect(toList());
+        ).toList();
     }
 
     private boolean getPossibleActiveLdus(District district) {

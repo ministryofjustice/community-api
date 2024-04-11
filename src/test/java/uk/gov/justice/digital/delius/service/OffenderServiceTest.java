@@ -105,37 +105,6 @@ class OffenderServiceTest {
 
     }
     @Nested
-    @DisplayName("getMostLikelyOffenderSummaryByNomsNumber")
-    class GetMostLikelyOffenderSummaryByNomsNumber {
-        @Test
-        @DisplayName("will return the most likely offender")
-        void willReturnOffenderIdOfTheMostLikelyOffender() {
-            when(offenderRepository.findMostLikelyByNomsNumber(any()))
-                .thenReturn(Either.right(Optional.of(anOffender().toBuilder().offenderId(99L).build())));
-
-            assertThat(service.getMostLikelyOffenderSummaryByNomsNumber("A1234ZZ").get()).isPresent();
-        }
-
-        @Test
-        @DisplayName("will return empty if no offender found")
-        void willReturnEmptyWhenNoFoundFund() {
-            when(offenderRepository.findMostLikelyByNomsNumber(any()))
-                .thenReturn(Either.right(Optional.empty()));
-
-            assertThat(service.getMostLikelyOffenderSummaryByNomsNumber("A1234ZZ").get()).isEmpty();
-        }
-
-        @Test
-        @DisplayName("will return error if duplicates found")
-        void willReturnAnErrorForDuplicates() {
-            when(offenderRepository.findMostLikelyByNomsNumber(any()))
-                .thenReturn(Either.left(new OffenderRepository.DuplicateOffenderException("two found!")));
-
-            assertThat(service.getMostLikelyOffenderSummaryByNomsNumber("A1234ZZ").isLeft()).isTrue();
-        }
-
-    }
-    @Nested
     @DisplayName("getSingleOffenderByNomsNumber")
     class GetSingleOffenderByNomsNumber {
         @Test
@@ -166,40 +135,6 @@ class OffenderServiceTest {
                     ));
 
             assertThat(service.getSingleOffenderByNomsNumber("A1234ZZ").isLeft()).isTrue();
-        }
-
-    }
-    @Nested
-    @DisplayName("getSingleOffenderSummaryByNomsNumber")
-    class GetSingleOffenderSummaryByNomsNumber {
-        @Test
-        @DisplayName("will return offender id of the most likely offender")
-        void willReturnOffenderIdOfTheMostLikelyOffender() {
-            when(offenderRepository.findAllByNomsNumber(any()))
-                .thenReturn(List.of(anOffender().toBuilder().offenderId(99L).build()));
-
-            assertThat(service.getSingleOffenderSummaryByNomsNumber("A1234ZZ").get()).isPresent();
-        }
-
-        @Test
-        @DisplayName("will return empty if no offender found")
-        void willReturnEmptyWhenNoFoundFound() {
-            when(offenderRepository.findAllByNomsNumber(any()))
-                .thenReturn(List.of());
-
-            assertThat(service.getSingleOffenderSummaryByNomsNumber("A1234ZZ").get()).isEmpty();
-        }
-
-        @Test
-        @DisplayName("will return error if duplicates found")
-        void willReturnAnErrorForDuplicates() {
-            when(offenderRepository.findAllByNomsNumber(any()))
-                .thenReturn(List.of(
-                    anOffender().toBuilder().offenderId(99L).build(),
-                    anOffender().toBuilder().offenderId(98L).build()
-                    ));
-
-            assertThat(service.getSingleOffenderSummaryByNomsNumber("A1234ZZ").isLeft()).isTrue();
         }
 
     }
