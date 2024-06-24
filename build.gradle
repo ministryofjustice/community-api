@@ -27,7 +27,7 @@ dependencies {
     implementation 'com.unboundid:unboundid-ldapsdk'
     implementation 'org.flywaydb:flyway-core'
     implementation 'com.zaxxer:HikariCP'
-    implementation 'io.jsonwebtoken:jjwt-impl:0.12.5'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.12.6'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.5'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
     implementation 'org.apache.commons:commons-lang3:3.14.0'
