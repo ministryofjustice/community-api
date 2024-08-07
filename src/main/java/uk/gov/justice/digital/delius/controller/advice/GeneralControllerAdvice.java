@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.controller.advice;
 
+import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -29,17 +30,20 @@ public class GeneralControllerAdvice {
    @ExceptionHandler(HttpClientErrorException.class)
    public ResponseEntity<String> restClientError(HttpClientErrorException e) {
        log.error("Unexpected exception", e);
+       Sentry.captureException(e);
        return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
    }
 
    @ExceptionHandler(HttpServerErrorException.class)
    public ResponseEntity<String> restServerError(HttpServerErrorException e) {
        log.error("Unexpected exception", e);
+       Sentry.captureException(e);
        return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
    }
 
    @ExceptionHandler(NoSuchUserException.class)
    public ResponseEntity<String> noSuchUser(NoSuchUserException e) {
+       Sentry.captureException(e);
        return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
    }
 
@@ -47,6 +51,7 @@ public class GeneralControllerAdvice {
     @Order(2)
     public ResponseEntity<byte[]> handleException(final WebClientResponseException e) {
         log.error("Unexpected exception", e);
+        Sentry.captureException(e);
         return ResponseEntity
                 .status(e.getRawStatusCode())
                 .body(e.getResponseBodyAsByteArray());
@@ -55,8 +60,9 @@ public class GeneralControllerAdvice {
     @ExceptionHandler
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, List<String>> handleValidationException(ConstraintViolationException exception) {
-        return exception.getConstraintViolations().stream()
+    public Map<String, List<String>> handleValidationException(ConstraintViolationException e) {
+        Sentry.captureException(e);
+        return e.getConstraintViolations().stream()
             .collect(Collectors.groupingBy(
                 cv -> cv == null ? "null" : cv.getPropertyPath().toString(),
                 Collectors.mapping(ConstraintViolation::getMessage, Collectors.toList())

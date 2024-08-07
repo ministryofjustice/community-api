@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.delius.controller.advice;
 
+import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ public class SecureControllerAdvice {
     @ExceptionHandler(RestClientResponseException.class)
     public ResponseEntity<byte[]> handleException(final RestClientResponseException e) {
         log.error("Unexpected exception", e);
+        Sentry.captureException(e);
         return ResponseEntity
                 .status(e.getRawStatusCode())
                 .body(e.getResponseBodyAsByteArray());
@@ -36,6 +38,7 @@ public class SecureControllerAdvice {
     @ExceptionHandler(WebClientResponseException.class)
     public ResponseEntity<byte[]> handleException(final WebClientResponseException e) {
         log.error("Unexpected exception", e);
+        Sentry.captureException(e);
         return ResponseEntity
                 .status(e.getRawStatusCode())
                 .body(e.getResponseBodyAsByteArray());
@@ -44,6 +47,7 @@ public class SecureControllerAdvice {
     @Order(1)
     @ExceptionHandler(WebClientResponseException.NotFound.class)
     public ResponseEntity<byte[]> handleException(final WebClientResponseException.NotFound e) {
+        Sentry.captureException(e);
         return ResponseEntity
                 .status(e.getRawStatusCode())
                 .body(e.getResponseBodyAsByteArray());
@@ -52,6 +56,7 @@ public class SecureControllerAdvice {
     @ExceptionHandler(RestClientException.class)
     public ResponseEntity<ErrorResponse> handleException(final RestClientException e) {
         log.error("Unexpected exception", e);
+        Sentry.captureException(e);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse
@@ -64,6 +69,7 @@ public class SecureControllerAdvice {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleException(final AccessDeniedException e) {
         log.debug("Forbidden (403) returned", e);
+        Sentry.captureException(e);
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(ErrorResponse
@@ -75,6 +81,7 @@ public class SecureControllerAdvice {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleException(final NotFoundException e) {
+        Sentry.captureException(e);
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(ErrorResponse
@@ -87,6 +94,7 @@ public class SecureControllerAdvice {
     @ExceptionHandler(UnauthorisedException.class)
     public ResponseEntity<ErrorResponse> handleException(final UnauthorisedException e) {
         log.debug("Unauthorised (401) returned", e);
+        Sentry.captureException(e);
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(ErrorResponse
@@ -99,6 +107,7 @@ public class SecureControllerAdvice {
     @ExceptionHandler(InvalidRequestException.class)
     public ResponseEntity<ErrorResponse> handleException(final InvalidRequestException e) {
         log.debug("Bad Request (400) returned", e);
+        Sentry.captureException(e);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse
@@ -111,6 +120,7 @@ public class SecureControllerAdvice {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorResponse> handleException(final BadRequestException e) {
         log.debug("Bad request (400) returned", e);
+        Sentry.captureException(e);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse
@@ -123,6 +133,7 @@ public class SecureControllerAdvice {
     @ExceptionHandler(ConflictingRequestException.class)
     public ResponseEntity<ErrorResponse> handleException(final ConflictingRequestException e) {
         log.debug("Conflict (409) returned", e);
+        Sentry.captureException(e);
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(ErrorResponse
@@ -135,6 +146,7 @@ public class SecureControllerAdvice {
     @ExceptionHandler(OffenderDeltaLockedException.class)
     public ResponseEntity<ErrorResponse> handleException(final OffenderDeltaLockedException e) {
         log.debug("Conflict (409) returned", e);
+        Sentry.captureException(e);
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(ErrorResponse
@@ -147,6 +159,7 @@ public class SecureControllerAdvice {
     @ExceptionHandler(DuplicateOffenderException.class)
     public ResponseEntity<ErrorResponse> handleException(final DuplicateOffenderException e) {
         log.debug("Conflict (409) returned", e);
+        Sentry.captureException(e);
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(ErrorResponse
@@ -159,6 +172,7 @@ public class SecureControllerAdvice {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleException(final MethodArgumentNotValidException e) {
         log.debug("Bad request (400) returned", e);
+        Sentry.captureException(e);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse
@@ -171,6 +185,7 @@ public class SecureControllerAdvice {
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ErrorResponse> handleException(final ResponseStatusException e) {
         log.debug("Bad request (400) returned", e);
+        Sentry.captureException(e);
         return ResponseEntity
                 .status(e.getBody().getStatus())
                 .body(ErrorResponse
