@@ -69,7 +69,6 @@ public class SecureControllerAdvice {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleException(final AccessDeniedException e) {
         log.debug("Forbidden (403) returned", e);
-        Sentry.captureException(e);
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(ErrorResponse
