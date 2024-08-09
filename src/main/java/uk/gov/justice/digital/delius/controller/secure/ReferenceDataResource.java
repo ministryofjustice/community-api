@@ -25,7 +25,7 @@ import java.util.List;
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 @RestController
-@PreAuthorize("hasRole('ROLE_COMMUNITY')")
+@PreAuthorize("hasAnyRole('ROLE_COMMUNITY','ROLE_PROBATION_INTEGRATION_ADMIN')")
 public class ReferenceDataResource {
 
     private final ReferenceDataService referenceDataService;

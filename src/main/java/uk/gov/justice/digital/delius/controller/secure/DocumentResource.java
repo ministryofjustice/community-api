@@ -32,7 +32,7 @@ import java.util.Optional;
 @Slf4j
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
-@PreAuthorize("hasRole('ROLE_COMMUNITY')")
+@PreAuthorize("hasAnyRole('ROLE_COMMUNITY','ROLE_PROBATION_INTEGRATION_ADMIN')")
 public class DocumentResource {
     private static final String typeDocumentation = "" +
         "<div>Supported types are " +

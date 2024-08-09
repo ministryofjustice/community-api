@@ -34,7 +34,7 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Requires any of ROLE_COMMUNITY_AUTH_INT,ROLE_COMMUNITY_USERS,ROLE_COMMUNITY_USERS_ROLES"),
             @ApiResponse(responseCode = "404", description = "Not Found")
         })
-    @PreAuthorize("hasAnyRole('ROLE_COMMUNITY_AUTH_INT','ROLE_COMMUNITY_USERS','ROLE_COMMUNITY_USERS_ROLES')")
+    @PreAuthorize("hasAnyRole('ROLE_COMMUNITY_AUTH_INT','ROLE_COMMUNITY_USERS','ROLE_COMMUNITY_USERS_ROLES','ROLE_PROBATION_INTEGRATION_ADMIN')")
     @RequestMapping(value = "/users/{username}/details", method = RequestMethod.GET)
     public UserDetails findUser(@Parameter(name = "username", description = "LDAP username", example = "TESTUSERNPS", required = true) @NotNull final @PathVariable("username") String username) {
         return userService.getUserDetails(username)

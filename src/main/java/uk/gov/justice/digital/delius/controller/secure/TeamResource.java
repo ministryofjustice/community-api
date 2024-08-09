@@ -39,7 +39,7 @@ public class TeamResource {
 
     @Operation(description = "Return the managed offenders for all members of a probation team. Requires ROLE_COMMUNITY")
     @GetMapping(path = "/team/{teamCode}/caseload/managedOffenders")
-    @PreAuthorize("hasRole('ROLE_COMMUNITY')")
+    @PreAuthorize("hasAnyRole('ROLE_COMMUNITY','ROLE_PROBATION_INTEGRATION_ADMIN')")
     public Set<ManagedOffenderCrn> getCaseloadOffendersForTeam(
         @Parameter(name = "teamCode", example = "N07T01")
         @NotNull @TeamCode @PathVariable(value = "teamCode") final String teamCode,
