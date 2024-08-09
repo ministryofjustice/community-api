@@ -27,7 +27,7 @@ import java.util.Optional;
 @Slf4j
 @Tag(name = "Court appearances", description = "Requires ROLE_COMMUNITY")
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
-@PreAuthorize("hasRole('ROLE_COMMUNITY')")
+@PreAuthorize("hasAnyRole('ROLE_COMMUNITY','ROLE_PROBATION_INTEGRATION_ADMIN')")
 public class CourtAppearancesResource {
     private final CourtAppearanceService courtAppearanceService;
     private final OffenderService offenderService;

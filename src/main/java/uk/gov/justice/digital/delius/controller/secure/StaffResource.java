@@ -34,7 +34,7 @@ import static uk.gov.justice.digital.delius.data.api.CaseloadRole.OFFENDER_MANAG
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
 @RestController
-@PreAuthorize("hasRole('ROLE_COMMUNITY')")
+@PreAuthorize("hasAnyRole('ROLE_COMMUNITY','ROLE_PROBATION_INTEGRATION_ADMIN')")
 @Validated
 public class StaffResource {
 

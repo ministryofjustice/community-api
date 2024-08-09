@@ -55,7 +55,7 @@ import static org.springframework.http.HttpStatus.OK;
 @Slf4j
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
 @AllArgsConstructor
-@PreAuthorize("hasRole('ROLE_COMMUNITY')")
+@PreAuthorize("hasAnyRole('ROLE_COMMUNITY','ROLE_PROBATION_INTEGRATION_ADMIN')")
 @Validated
 public class OffendersResource {
     private final OffenderService offenderService;

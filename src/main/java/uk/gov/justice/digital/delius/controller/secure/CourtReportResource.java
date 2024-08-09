@@ -26,7 +26,7 @@ import java.util.List;
 @Slf4j
 @Tag(name = "Offender Court Reports", description = "Requires ROLE_COMMUNITY")
 @RequestMapping(value = "secure", produces = MediaType.APPLICATION_JSON_VALUE)
-@PreAuthorize("hasRole('ROLE_COMMUNITY')")
+@PreAuthorize("hasAnyRole('ROLE_COMMUNITY','ROLE_PROBATION_INTEGRATION_ADMIN')")
 @AllArgsConstructor
 public class CourtReportResource {
 
