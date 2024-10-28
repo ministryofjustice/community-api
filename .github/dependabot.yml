@@ -11,3 +11,16 @@ updates:
           - "patch"
         patterns:
           - "*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      minor:
+        update-types:
+          - "minor"
+          - "patch"
+        patterns:
+          - "*"
+

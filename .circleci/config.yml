@@ -355,10 +355,6 @@ workflows:
               only:
                 - main
     jobs:
-      - hmpps/trivy_latest_scan:
-          slack_channel: probation-integration-notifications
-          context:
-            - hmpps-common-vars
       - hmpps/veracode_policy_scan:
           context:
             - veracode-credentials
