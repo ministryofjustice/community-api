@@ -1,0 +1,15 @@
+---
+generic-service:
+  replicaCount: 2
+  ingress:
+    host: community-api-preprod.hmpps.service.justice.gov.uk
+
+  env:
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json
+    ALFRESCO_BASEURL: https://alfresco.pre-prod.delius.probation.hmpps.dsd.io/alfresco/s/noms-spg
+    APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
+    SENTRY_ENVIRONMENT: preprod
+
+generic-prometheus-alerts:
+  alertSeverity: probation-integration-notifications
+  businessHoursOnly: true

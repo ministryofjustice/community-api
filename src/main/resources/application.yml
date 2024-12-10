@@ -88,12 +88,9 @@ delius:
   ldap:
     users:
       base: "ou=Users,dc=moj,dc=com"
-  baseurl: 'http://localhost:8999'
-  username: 'default'
-  password: 'default'
 
-deliusApi:
-  baseurl: 'http://localhost:7999'
+
+
 
 features:
   noms:
