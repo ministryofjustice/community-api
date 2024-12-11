@@ -19,11 +19,11 @@ generic-service:
     annotations:
       nginx.ingress.kubernetes.io/server-snippet: |
         server_tokens off;
-        location /api/** {
+        location /api {
           deny all;
           return 401;
         }
-        location /secure/** {
+        location /secure {
           deny all;
           return 401;
         }
