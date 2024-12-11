@@ -1,0 +1,66 @@
+# Values here are the same across all environments
+generic-service:
+  nameOverride: community-api
+
+  resources:
+    requests:
+      cpu: 1
+      memory: 512Mi
+
+  image:
+    repository: quay.io/hmpps/community-api
+    tag: app_version # override at deployment time
+    port: 8080
+
+  ingress:
+    enabled: true
+    v1_2_enabled: true
+    v0_47_enabled: false
+    annotations:
+      nginx.ingress.kubernetes.io/server-snippet: |
+        server_tokens off;
+        location /api/** {
+          deny all;
+          return 401;
+        }
+        location /secure/** {
+          deny all;
+          return 401;
+        }
+    tlsSecretName: community-api-cert
+
+  env:
+    SPRING_PROFILES_ACTIVE: oracle
+    DELIUSAPI_BASEURL: http://delius-api.ecs.cluster:8080/
+    SMOKE_TEST_AWARE: true
+    FEATURES_NOMS_UPDATE_CUSTODY: true
+    FEATURES_NOMS_UPDATE_RELEASE_RECALL: true
+    FEATURES_NOMS_UPDATE_BOOKING_NUMBER: true
+    FEATURES_NOMS_UPDATE_KEYDATES: true
+    FEATURES_NOMS_UPDATE_NOMS_NUMBER: true
+    FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_BULK_KEY_DATES: false
+    FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_KEY_DATES: true
+    FEATURES_NOMS_UPDATE_MULTIPLE_EVENTS_UPDATE_PRISON_LOCATION: true
+    FEATURES_REGISTERS_COURT_CODE_ALLOWED_PATTERN: XXXX[A-Z]{2}
+    JDK_JAVA_OPTIONS: "-javaagent:/agent/agent.jar"
+    DELIUS_LDAP_USERS_BASE: ou=Users,dc=moj,dc=com
+
+  namespace_secrets:
+    common:
+      SPRING_DATASOURCE_URL: DB_URL
+      SPRING_LDAP_URLS: LDAP_URL
+      SPRING_LDAP_USERNAME: LDAP_ADMIN_USERNAME
+      SPRING_LDAP_PASSWORD: LDAP_ADMIN_PASSWORD
+      SPRING_DATASOURCE_USERNAME: DB_DELIUS_POOL_USERNAME
+      SPRING_DATASOURCE_PASSWORD: DB_DELIUS_POOL_PASSWORD
+      APPLICATIONINSIGHTS_CONNECTION_STRING: APPLICATIONINSIGHTS_CONNECTION_STRING
+    community-api:
+      SENTRY_DSN: SENTRY_DSN
+
+  allowlist:
+    groups:
+      - global_protect
+      - unilink_staff
+
+generic-prometheus-alerts:
+  targetApplication: community-api
