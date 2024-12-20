@@ -1,6 +1,6 @@
 ---
 generic-service:
-  replicaCount: 2
+  replicaCount: 4
   ingress:
     host: community-api.hmpps.service.justice.gov.uk
 
