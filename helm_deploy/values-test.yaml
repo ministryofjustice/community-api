@@ -12,6 +12,7 @@ generic-service:
 
   scheduledDowntime:
     enabled: true
+    shutdown: 0 21 * * 1-5 # 9PM UTC Monday-Friday
 
 generic-prometheus-alerts:
   alertSeverity: probation-integration-notifications
