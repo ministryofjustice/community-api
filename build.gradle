@@ -2,7 +2,7 @@ plugins {
     id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.1.4"
     id 'groovy'
     id 'org.unbroken-dome.test-sets' version '4.1.0'
-    id "com.google.cloud.tools.jib" version "3.4.5"
+    id "com.google.cloud.tools.jib" version "3.5.0"
 }
 
 group = 'uk.gov.justice.digital.delius'
@@ -30,11 +30,11 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-impl:0.13.0'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.13.0'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14'
-    implementation 'org.apache.commons:commons-lang3:3.19.0'
+    implementation 'org.apache.commons:commons-lang3:3.20.0'
     implementation 'org.apache.commons:commons-text:1.14.0'
     implementation 'io.vavr:vavr:0.10.7'
     implementation 'com.github.java-json-tools:json-patch:1.13'
-    implementation 'io.sentry:sentry-spring-boot-starter-jakarta:8.25.0'
+    implementation 'io.sentry:sentry-spring-boot-starter-jakarta:8.26.0'
 
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
