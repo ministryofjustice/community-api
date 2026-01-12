@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
 import lombok.*;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -80,7 +80,7 @@ public class PrisonOffenderManager implements Serializable {
     @OneToOne
     @JoinColumn(name = "OFFENDER_ID", referencedColumnName = "OFFENDER_ID", insertable = false, updatable = false)
     // Only select OFFENDER rows that have SOFT_DELETED != 1
-    @Where(clause = "SOFT_DELETED != 1")
+    @SQLRestriction("SOFT_DELETED != 1")
     private Offender managedOffender;
 
     @Column(name = "ROW_VERSION")

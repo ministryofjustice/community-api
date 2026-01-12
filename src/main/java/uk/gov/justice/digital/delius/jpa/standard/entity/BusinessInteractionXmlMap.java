@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
 import lombok.*;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import jakarta.persistence.*;
 
@@ -11,7 +11,7 @@ import jakarta.persistence.*;
 @Builder
 @Entity
 @Table(name = "BUSINESS_INT_XML_MAP")
-@Where(clause = "XSD_NUMBER=1")
+@SQLRestriction("XSD_NUMBER=1")
 public class BusinessInteractionXmlMap {
     @Id
     @Column(name = "BUSINESS_INT_XML_MAP_ID")

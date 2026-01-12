@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString.Exclude;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -167,7 +167,7 @@ public class Offender {
     @OneToMany
     @JoinColumn(name = "OFFENDER_ID")
     // Only select OFFENDER_ADDRESS rows where SOFT_DELETED != 1
-    @Where(clause="SOFT_DELETED != 1")
+    @SQLRestriction("SOFT_DELETED != 1")
     @Exclude
     private List<OffenderAddress> offenderAddresses;
 
@@ -228,13 +228,13 @@ public class Offender {
 
     @OneToMany(mappedBy = "offenderId")
     // Only select OFFENDER_MANAGER rows where the ACTIVE_FLAG = 1 AND SOFT_DELETED != 1
-    @Where(clause = "ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
+    @SQLRestriction("ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
     @Exclude
     private List<OffenderManager> offenderManagers;
 
     @OneToMany(mappedBy = "offenderId")
     // Only select PRISON_OFFENDER_MANAGER rows where the ACTIVE_FLAG = 1 AND SOFT_DELETED= != 1
-    @Where(clause = "ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
+    @SQLRestriction("ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
     @Exclude
     private List<PrisonOffenderManager> prisonOffenderManagers;
 
@@ -248,7 +248,7 @@ public class Offender {
     private List<Event> events;
 
     @OneToMany(mappedBy = "offenderId")
-    @Where(clause = "ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
+    @SQLRestriction("ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
     @Exclude
     private List<Event> activeEvents;
 
@@ -259,7 +259,7 @@ public class Offender {
 
     @OneToMany
     @JoinColumn(name = "OFFENDER_ID")
-    @Where(clause = "SOFT_DELETED != 1")
+    @SQLRestriction("SOFT_DELETED != 1")
     @Exclude
     private List<PersonalContact> personalContacts;
 

@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
 import lombok.*;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
@@ -102,7 +102,7 @@ public class OffenderManager implements Serializable {
     @OneToOne
     @JoinColumn(name = "OFFENDER_ID", referencedColumnName = "OFFENDER_ID", insertable = false, updatable = false)
     // Only select OFFENDER rows that have SOFT_DELETED != 1
-    @Where(clause = "SOFT_DELETED != 1")
+    @SQLRestriction("SOFT_DELETED != 1")
     @ToString.Exclude
     private Offender managedOffender;
 
