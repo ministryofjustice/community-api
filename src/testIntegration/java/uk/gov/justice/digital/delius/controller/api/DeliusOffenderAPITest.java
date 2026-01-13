@@ -43,7 +43,7 @@ import static uk.gov.justice.digital.delius.OffenderHelper.anOffender;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"offender.ids.pagesize=5"})
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("dev-seed")
-@Import(uk.gov.justice.digital.delius.test.FlywayKickConfig.class)
+@Import(uk.gov.justice.digital.delius.FlywayKickConfig.class)
 public class DeliusOffenderAPITest {
 
     private static DeliusMockServer deliusMockServer = new DeliusMockServer(8088, "src/testIntegration/resources");

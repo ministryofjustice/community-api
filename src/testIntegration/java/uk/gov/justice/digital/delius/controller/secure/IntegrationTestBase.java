@@ -27,7 +27,7 @@ import java.util.UUID;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev-seed")
-@Import(uk.gov.justice.digital.delius.test.FlywayKickConfig.class)
+@Import(uk.gov.justice.digital.delius.FlywayKickConfig.class)
 public class IntegrationTestBase {
     @Autowired
     protected JwtAuthenticationHelper jwtAuthenticationHelper;

@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev-seed")
-@Import(uk.gov.justice.digital.delius.test.FlywayKickConfig.class)
+@Import(uk.gov.justice.digital.delius.FlywayKickConfig.class)
 public class InstitutionalReportAPITest {
 
     @LocalServerPort
