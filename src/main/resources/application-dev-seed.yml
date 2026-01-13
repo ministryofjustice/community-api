@@ -23,10 +23,4 @@ spring:
       mode: always
 
 
-  logging:
-    level:
-      org.flywaydb: DEBUG
-      org.springframework.boot.autoconfigure.flyway: DEBUG
-
-
 
