@@ -73,8 +73,8 @@ public class Custody extends AuditableEntity {
 
     @ManyToOne
     @JoinColumns({
-            @JoinColumn(name = "INSTITUTION_ID"),
-            @JoinColumn(name = "ESTABLISHMENT")})
+            @JoinColumn(name = "INSTITUTION_ID", referencedColumnName = "INSTITUTION_ID"),
+            @JoinColumn(name = "ESTABLISHMENT", referencedColumnName = "ESTABLISHMENT")})
     private RInstitution institution;
 
     @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval=true, mappedBy = "custody")

@@ -30,7 +30,7 @@ public class SecureControllerAdvice {
         log.error("Unexpected exception", e);
         Sentry.captureException(e);
         return ResponseEntity
-                .status(e.getRawStatusCode())
+                .status(e.getStatusCode())
                 .body(e.getResponseBodyAsByteArray());
     }
 
@@ -40,7 +40,7 @@ public class SecureControllerAdvice {
         log.error("Unexpected exception", e);
         Sentry.captureException(e);
         return ResponseEntity
-                .status(e.getRawStatusCode())
+                .status(e.getStatusCode())
                 .body(e.getResponseBodyAsByteArray());
     }
 
@@ -49,7 +49,7 @@ public class SecureControllerAdvice {
     public ResponseEntity<byte[]> handleException(final WebClientResponseException.NotFound e) {
         Sentry.captureException(e);
         return ResponseEntity
-                .status(e.getRawStatusCode())
+                .status(e.getStatusCode())
                 .body(e.getResponseBodyAsByteArray());
     }
 

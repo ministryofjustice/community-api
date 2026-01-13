@@ -40,7 +40,7 @@ public class AlfrescoService {
     public SearchResult listDocuments(String crn) {
 
         return webClient.get().uri(format("/search/%s", crn))
-                .headers(httpHeaders -> httpHeaders.addAll(headers))
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(SearchResult.class)
                 .block();
@@ -49,7 +49,7 @@ public class AlfrescoService {
     public Optional<DocumentMeta> getDocumentDetail(String documentId, String crn) {
 
         return webClient.get().uri(format("/details/%s", documentId))
-                .headers(httpHeaders -> httpHeaders.addAll(headers))
+                .headers(httpHeaders -> httpHeaders.putAll(headers))
                 .retrieve()
                 .bodyToMono(DocumentMeta.class)
                 .blockOptional()
@@ -66,7 +66,7 @@ public class AlfrescoService {
 
     private ResponseEntity<Resource> getDocument(String documentId, Optional<String> filename) {
         return webClient.get().uri(format("/fetch/%s", documentId))
-            .headers(httpHeaders -> httpHeaders.addAll(headers))
+            .headers(httpHeaders -> httpHeaders.putAll(headers))
             .exchangeToMono(response -> {
                 response.mutate().headers(h -> h.remove(HttpHeaders.CONTENT_DISPOSITION));
                 return response.toEntity(Resource.class);

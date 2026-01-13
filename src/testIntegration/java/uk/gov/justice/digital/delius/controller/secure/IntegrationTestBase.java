@@ -5,11 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
+import io.restassured.mapper.ObjectMapperType;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.justice.digital.delius.JwtAuthenticationHelper;
 import uk.gov.justice.digital.delius.JwtParameters;
 import uk.gov.justice.digital.delius.JwtParameters.JwtParametersBuilder;
@@ -23,13 +27,14 @@ import java.util.UUID;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev-seed")
+@Import(uk.gov.justice.digital.delius.test.FlywayKickConfig.class)
 public class IntegrationTestBase {
     @Autowired
     protected JwtAuthenticationHelper jwtAuthenticationHelper;
     @LocalServerPort
     protected int port;
     @Autowired
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
     @Autowired
     private Jwt jwt;
 
@@ -37,8 +42,10 @@ public class IntegrationTestBase {
     public void setup() {
         RestAssured.port = port;
         RestAssured.basePath = "/secure";
-        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(
-                new ObjectMapperConfig().jackson2ObjectMapperFactory((aClass, s) -> objectMapper));
+        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig(ObjectMapperType.JACKSON_3)
+            .jackson3ObjectMapperFactory(
+                (aClass, s) -> jsonMapper
+            ));
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
@@ -80,8 +87,8 @@ public class IntegrationTestBase {
 
     protected String writeValueAsString(Object data) {
         try {
-            return objectMapper.writeValueAsString(data);
-        } catch (JsonProcessingException e) {
+            return jsonMapper.writeValueAsString(data);
+        } catch (JacksonException e) {
             throw new RuntimeException(e);
         }
     }

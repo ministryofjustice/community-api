@@ -22,9 +22,11 @@ public class ResourceServerConfiguration {
             .authorizeHttpRequests( auth ->
                     auth.requestMatchers("/secure/**").authenticated()
             )
-            .oauth2ResourceServer()
-            .jwt()
-            .jwtAuthenticationConverter(new AuthAwareTokenConverter());
+            .oauth2ResourceServer(oauth2 -> oauth2
+            .jwt(jwt -> jwt
+                .jwtAuthenticationConverter(new AuthAwareTokenConverter())
+            )
+        );
         return http.build();
     }
 }

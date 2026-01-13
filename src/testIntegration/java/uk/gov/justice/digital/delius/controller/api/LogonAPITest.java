@@ -1,15 +1,16 @@
 package uk.gov.justice.digital.delius.controller.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
+import io.restassured.mapper.ObjectMapperType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.justice.digital.delius.jpa.national.entity.User;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.service.wrapper.UserRepositoryWrapper;
@@ -26,21 +27,22 @@ public class LogonAPITest {
     int port;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     @Autowired
     private Jwt jwt;
 
-    @MockBean
+    @MockitoBean
     private UserRepositoryWrapper userRepositoryWrapper;
 
     @BeforeEach
     public void setup() {
         RestAssured.port = port;
         RestAssured.basePath = "/api";
-        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig().jackson2ObjectMapperFactory(
-                (aClass, s) -> objectMapper
-        ));
+        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig(ObjectMapperType.JACKSON_3)
+            .jackson3ObjectMapperFactory(
+                (aClass, s) -> jsonMapper
+            ));
 
         when(userRepositoryWrapper.getUser(anyString())).thenReturn(aUser());
     }

@@ -6,9 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
+import lombok.Setter;
+
 import java.time.LocalDate;
 
 @Builder(toBuilder = true)
+@Setter
 @Getter
 @Entity
 @Table(name = "NSI_MANAGER")

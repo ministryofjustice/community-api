@@ -12,12 +12,12 @@ import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 @Configuration
 @Slf4j
 public class ApplicationConfig {
 
+    /*
     @Bean
     public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(ObjectMapper objectMapper) {
         MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
@@ -25,12 +25,13 @@ public class ApplicationConfig {
         jsonConverter.setObjectMapper(objectMapper);
         return jsonConverter;
     }
+     */
 
     public static ObjectMapper customiseObjectMapper(final ObjectMapper objectMapper) {
         return objectMapper
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-            .setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+            .setDefaultPropertyInclusion(JsonInclude.Include.NON_EMPTY);
     }
 
     @Bean

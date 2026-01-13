@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.delius.controller.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.mapper.ObjectMapperType;
+import org.springframework.context.annotation.Import;
+import tools.jackson.databind.json.JsonMapper;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -21,13 +23,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev-seed")
+@Import(uk.gov.justice.digital.delius.test.FlywayKickConfig.class)
 public class CourtAPITest {
 
     @LocalServerPort
     int port;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     @Autowired
     private Jwt jwt;
@@ -36,8 +39,9 @@ public class CourtAPITest {
     public void setup() {
         RestAssured.port = port;
         RestAssured.basePath = "/api";
-        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig().jackson2ObjectMapperFactory(
-                (aClass, s) -> objectMapper
+        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig(ObjectMapperType.JACKSON_3)
+            .jackson3ObjectMapperFactory(
+            (aClass, s) -> jsonMapper
         ));
     }
 
