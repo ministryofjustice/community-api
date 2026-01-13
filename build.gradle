@@ -1,5 +1,5 @@
 plugins {
-    id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.3.0"
+    id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.0.0"
     id 'groovy'
     id 'org.unbroken-dome.test-sets' version '4.1.0'
     id "com.google.cloud.tools.jib" version "3.5.2"
@@ -12,6 +12,7 @@ testSets {
 }
 
 java {
+    modularity.inferModulePath = false
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
 }
@@ -25,7 +26,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'com.oracle.database.jdbc:ojdbc11'
     implementation 'com.unboundid:unboundid-ldapsdk'
-    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-core:11.19.0'
     implementation 'com.zaxxer:HikariCP'
     implementation 'io.jsonwebtoken:jjwt-impl:0.13.0'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.13.0'
@@ -45,10 +46,36 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
     testCompileOnly 'org.projectlombok:lombok'
 
-    testImplementation 'io.rest-assured:rest-assured'
-    testImplementation 'io.rest-assured:spring-mock-mvc'
+    testImplementation 'io.rest-assured:rest-assured:6.0.0'
+    testImplementation 'io.rest-assured:spring-mock-mvc:6.0.0'
+    testIntegrationImplementation 'io.rest-assured:rest-assured:6.0.0'
+    testIntegrationImplementation 'io.rest-assured:spring-mock-mvc:6.0.0'
     testIntegrationImplementation 'com.github.tomakehurst:wiremock-jre8-standalone:3.0.1'
+    testIntegrationImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testIntegrationImplementation 'org.springframework.boot:spring-boot-starter-webclient-test'
+    testIntegrationImplementation 'org.springframework.security:spring-security-test'
 }
+
+
+sourceSets {
+    testIntegration {
+        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+        runtimeClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+    }
+}
+
+configurations {
+    testIntegrationImplementation.extendsFrom testImplementation
+    testIntegrationRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+
+tasks.named('testIntegration', Test).configure {
+    systemProperty "spring.flyway.fail-on-missing-locations", "true"
+    classpath = sourceSets.testIntegration.runtimeClasspath
+}
+
+
 
 testIntegration {
     if (project.hasProperty("testFilter")) {

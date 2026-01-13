@@ -19,7 +19,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.ToString.Exclude;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -123,7 +123,7 @@ public class Event {
 
     @JoinColumn(name = "EVENT_ID")
     @OneToMany(fetch = FetchType.LAZY)
-    @Where(clause = "SOFT_DELETED != 1")
+    @SQLRestriction("SOFT_DELETED != 1")
     @Exclude
     private List<AdditionalSentence> additionalSentences;
 

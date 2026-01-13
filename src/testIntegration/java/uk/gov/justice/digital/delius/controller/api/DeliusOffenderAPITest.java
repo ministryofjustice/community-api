@@ -1,11 +1,11 @@
 package uk.gov.justice.digital.delius.controller.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
-import org.assertj.core.util.Lists;
+import io.restassured.mapper.ObjectMapperType;
+import org.springframework.context.annotation.Import;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,26 +13,15 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusExtension;
 import uk.gov.justice.digital.delius.controller.wiremock.DeliusMockServer;
-import uk.gov.justice.digital.delius.data.api.AccessLimitation;
 import uk.gov.justice.digital.delius.data.api.Address;
-import uk.gov.justice.digital.delius.data.api.Count;
-import uk.gov.justice.digital.delius.data.api.DocumentMeta;
 import uk.gov.justice.digital.delius.data.api.OffenderDetail;
-import uk.gov.justice.digital.delius.data.api.OffenderDetailSummary;
-import uk.gov.justice.digital.delius.data.api.OffenderManager;
-import uk.gov.justice.digital.delius.jpa.national.entity.Exclusion;
-import uk.gov.justice.digital.delius.jpa.national.entity.Restriction;
-import uk.gov.justice.digital.delius.jpa.national.entity.User;
-import uk.gov.justice.digital.delius.jpa.national.repository.UserRepository;
 import uk.gov.justice.digital.delius.jpa.standard.entity.Offender;
 import uk.gov.justice.digital.delius.jpa.standard.entity.OffenderAddress;
 import uk.gov.justice.digital.delius.jpa.standard.entity.StandardReference;
@@ -40,20 +29,11 @@ import uk.gov.justice.digital.delius.jpa.standard.repository.OffenderRepository;
 import uk.gov.justice.digital.delius.jwt.Jwt;
 import uk.gov.justice.digital.delius.user.UserData;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
-import java.time.OffsetDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 
-import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.when;
+
+import static io.restassured.RestAssured.*;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -63,6 +43,7 @@ import static uk.gov.justice.digital.delius.OffenderHelper.anOffender;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"offender.ids.pagesize=5"})
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("dev-seed")
+@Import(uk.gov.justice.digital.delius.FlywayKickConfig.class)
 public class DeliusOffenderAPITest {
 
     private static DeliusMockServer deliusMockServer = new DeliusMockServer(8088, "src/testIntegration/resources");
@@ -73,11 +54,11 @@ public class DeliusOffenderAPITest {
     @LocalServerPort
     int port;
 
-    @MockBean
+    @MockitoBean
     private OffenderRepository offenderRepository;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     @Autowired
     private Jwt jwt;
@@ -86,9 +67,10 @@ public class DeliusOffenderAPITest {
     public void setup() {
         RestAssured.port = port;
         RestAssured.basePath = "/api";
-        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig().jackson2ObjectMapperFactory(
-                (aClass, s) -> objectMapper
-        ));
+        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig(ObjectMapperType.JACKSON_3)
+            .jackson3ObjectMapperFactory(
+                (aClass, s) -> jsonMapper
+            ));
         Mockito.when(offenderRepository.findByOffenderId(any(Long.class))).thenReturn(Optional.empty());
         Mockito.when(offenderRepository.count()).thenReturn(666L);
     }

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -75,7 +75,7 @@ public class Registration {
 
     @JoinColumn(name = "REGISTRATION_ID")
     @OneToMany(fetch = FetchType.LAZY)
-    @Where(clause = "SOFT_DELETED != 1")
+    @SQLRestriction("SOFT_DELETED != 1")
     private List<RegistrationReview> registrationReviews;
 
     public Deregistration getLatestDeregistration() {

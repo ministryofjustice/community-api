@@ -53,7 +53,7 @@ public class GeneralControllerAdvice {
         log.error("Unexpected exception", e);
         Sentry.captureException(e);
         return ResponseEntity
-                .status(e.getRawStatusCode())
+                .status(e.getStatusCode())
                 .body(e.getResponseBodyAsByteArray());
     }
 

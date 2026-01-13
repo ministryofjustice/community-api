@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -92,11 +92,11 @@ public class OffenderAddress {
 
     @OneToMany
     @JoinColumn(name = "OFFENDER_ADDRESS_ID")
-    @Where(clause = "SOFT_DELETED != 1")
+    @SQLRestriction("SOFT_DELETED != 1")
     private List<PersonalCircumstance> personalCircumstances;
 
     @OneToMany
     @JoinColumn(name = "OFFENDER_ADDRESS_ID")
-    @Where(clause = "SOFT_DELETED != 1")
+    @SQLRestriction("SOFT_DELETED != 1")
     private List<AddressAssessment> addressAssessments;
 }

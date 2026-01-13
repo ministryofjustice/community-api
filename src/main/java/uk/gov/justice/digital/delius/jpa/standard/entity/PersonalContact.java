@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -68,6 +68,6 @@ public class PersonalContact {
 
     @ManyToOne
     @JoinColumn(name = "ADDRESS_ID")
-    @Where(clause = "SOFT_DELETED != 1")
+    @SQLRestriction("SOFT_DELETED != 1")
     private Address address;
 }

@@ -32,8 +32,8 @@ public class Release {
 
     @ManyToOne
     @JoinColumns({
-            @JoinColumn(name = "INSTITUTION_ID"),
-            @JoinColumn(name = "ESTABLISHMENT")})
+            @JoinColumn(name = "INSTITUTION_ID", referencedColumnName = "INSTITUTION_ID"),
+            @JoinColumn(name = "ESTABLISHMENT", referencedColumnName = "ESTABLISHMENT")})
     private RInstitution institution;
 
     @Column(name = "NOTES")

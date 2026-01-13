@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.Column;
@@ -30,7 +30,7 @@ import static jakarta.persistence.GenerationType.AUTO;
 @EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "ENFORCEMENT")
-@Where(clause = "SOFT_DELETED = 0")
+@SQLRestriction("SOFT_DELETED = 0")
 public class Enforcement extends AuditableEntity{
 
     @Id

@@ -1,5 +1,32 @@
 spring:
+  datasource:
+    url: jdbc:h2:mem:communityapi;DB_CLOSE_DELAY=-1;MODE=Oracle
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
   flyway:
     enabled: true
-    cleanDisabled: false
-    locations: classpath:/db/schema,classpath:/db/data
+    clean-disabled: true
+    locations:
+      - classpath:db/schema
+      - classpath:db/data
+      - filesystem:src/main/resources/db/schema
+    baseline-on-migrate: true
+    fail-on-missing-locations: true
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: none
+  sql:
+    init:
+      mode: always
+
+
+  logging:
+    level:
+      org.flywaydb: DEBUG
+      org.springframework.boot.autoconfigure.flyway: DEBUG
+
+
+

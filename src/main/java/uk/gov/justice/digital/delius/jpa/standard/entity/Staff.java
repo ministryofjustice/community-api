@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.delius.jpa.standard.entity;
 
 import lombok.*;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -44,14 +44,14 @@ public class Staff {
     @OneToMany
     @JoinColumn(name = "ALLOCATION_STAFF_ID")
     // Only select rows from OFFENDER_MANAGER where they have ACTIVE = 1 and SOFT_DELETED != 1
-    @Where(clause = "ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
+    @SQLRestriction("ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
     @ToString.Exclude
     List<OffenderManager> offenderManagers;
 
     @OneToMany
     @JoinColumn(name = "ALLOCATION_STAFF_ID")
     // Only select rows from PRISON_OFFENDER_MANAGER where they have ACTIVE = 1 AND SOFT_DELETED != 1
-    @Where(clause = "ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
+    @SQLRestriction("ACTIVE_FLAG = 1 AND SOFT_DELETED != 1")
     @ToString.Exclude
     List<PrisonOffenderManager> prisonOffenderManagers;
 
