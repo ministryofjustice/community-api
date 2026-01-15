@@ -36,3 +36,6 @@ CVE-2023-34062 exp:2024-03-01
 # Reason: Access only allowed from within trusted network
 # Package: org.apache.tomcat.embed:tomcat-embed-core
 CVE-2023-46589 exp:2024-03-01
+
+# Reason: Access only allowed from within trusted network
+CVE-2025-68973 exp:2026-02-01
