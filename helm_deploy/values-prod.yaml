@@ -6,7 +6,7 @@ generic-service:
 
   env:
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: https://sign-in.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json
-    ALFRESCO_BASEURL: https://alfresco.probation.service.justice.gov.uk/alfresco/s/noms-spg
+    ALFRESCO_BASEURL: https://hmpps-delius-alfresco-prod.apps.live.cloud-platform.service.justice.gov.uk/alfresco/s/noms-spg
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
     SENTRY_ENVIRONMENT: prod
 
