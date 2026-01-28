@@ -13,8 +13,8 @@ testSets {
 
 java {
     modularity.inferModulePath = false
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 check.dependsOn(testIntegration)
 
@@ -120,7 +120,7 @@ jib {
         user = "2000:2000"
     }
     from {
-        image = "eclipse-temurin:21-jre-jammy"
+        image = "eclipse-temurin:25-jre-jammy"
         platforms {
             platform {
                 architecture = 'amd64'
