@@ -26,7 +26,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'com.oracle.database.jdbc:ojdbc11'
     implementation 'com.unboundid:unboundid-ldapsdk'
-    implementation 'org.flywaydb:flyway-core:11.20.2'
+    implementation 'org.flywaydb:flyway-core'
     implementation 'com.zaxxer:HikariCP'
     implementation 'io.jsonwebtoken:jjwt-impl:0.13.0'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.13.0'
