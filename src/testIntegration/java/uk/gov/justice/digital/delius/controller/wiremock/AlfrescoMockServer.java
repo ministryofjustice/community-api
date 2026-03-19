@@ -29,6 +29,7 @@ public class AlfrescoMockServer extends WireMockServer {
         stubFor(get(urlMatching(format("/alfresco/s/noms-spg/fetch/%s", documentId)))
                 .willReturn(aResponse()
                         .withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                        .withHeader(HttpHeaders.CONTENT_LENGTH, "20992")
                         .withStatus(200)
                         .withBody(body)
                 ));
