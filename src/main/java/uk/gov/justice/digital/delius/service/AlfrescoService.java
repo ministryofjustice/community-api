@@ -80,13 +80,23 @@ public class AlfrescoService {
 
     private HttpHeaders collectDocumentResourceHeaders(final HttpHeaders responseHeaders, final String documentId, final Optional<String> filename) {
         HttpHeaders newHeaders = new HttpHeaders();
-        newHeaders.add(HttpHeaders.ACCEPT_RANGES, responseHeaders.getFirst(HttpHeaders.ACCEPT_RANGES));
-        newHeaders.add(HttpHeaders.CONTENT_LENGTH, responseHeaders.getFirst(HttpHeaders.CONTENT_LENGTH));
-        newHeaders.add(HttpHeaders.CONTENT_TYPE, responseHeaders.getFirst(HttpHeaders.CONTENT_TYPE));
-        newHeaders.add(HttpHeaders.ETAG, responseHeaders.getFirst(HttpHeaders.ETAG));
-        newHeaders.add(HttpHeaders.LAST_MODIFIED, responseHeaders.getFirst(HttpHeaders.LAST_MODIFIED));
-        newHeaders.add(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
-            .filename(filename.orElse(documentId), StandardCharsets.UTF_8).build().toString());
+        if (responseHeaders.getFirst(HttpHeaders.ACCEPT_RANGES) != null) {
+			newHeaders.add(HttpHeaders.ACCEPT_RANGES, responseHeaders.getFirst(HttpHeaders.ACCEPT_RANGES));
+		}
+		if (responseHeaders.getFirst(HttpHeaders.CONTENT_LENGTH) != null) {
+			newHeaders.add(HttpHeaders.CONTENT_LENGTH, responseHeaders.getFirst(HttpHeaders.CONTENT_LENGTH));
+		}
+		if (responseHeaders.getFirst(HttpHeaders.CONTENT_TYPE) != null) {
+			newHeaders.add(HttpHeaders.CONTENT_TYPE, responseHeaders.getFirst(HttpHeaders.CONTENT_TYPE));
+		}
+		if (responseHeaders.getFirst(HttpHeaders.ETAG) != null) {
+			newHeaders.add(HttpHeaders.ETAG, responseHeaders.getFirst(HttpHeaders.ETAG));
+		}
+		if (responseHeaders.getFirst(HttpHeaders.LAST_MODIFIED) != null) {
+			newHeaders.add(HttpHeaders.LAST_MODIFIED, responseHeaders.getFirst(HttpHeaders.LAST_MODIFIED));
+		}
+		newHeaders.add(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
+			.filename(filename.orElse(documentId), StandardCharsets.UTF_8).build().toString());
 
         return newHeaders;
     }

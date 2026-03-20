@@ -1,41 +1,13 @@
-
-# Reason: No untrusted YAML content
-# Package: org.yaml:snakeyaml
-CVE-2022-1471 exp:2024-03-01
-
-# Reason: Only exploitable if logback receiver component is deployed. This is not the case by default in Spring Boot.
-# Reference: https://github.com/spring-projects/spring-boot/issues/38643#issuecomment-1838497420
-# Packages:
-#  * ch.qos.logback:logback-core
-#  * ch.qos.logback:logback-classic
-CVE-2023-6378 exp:2024-03-01
-CVE-2023-6481 exp:2024-03-01
-
-# Reason: Spring welcome page not used
-# Package: org.springframework.boot:spring-boot-autoconfigure
-CVE-2023-20883 exp:2024-03-01
-
-# Reason: "**" is not used in WebFlux config
-# Package: org.springframework.security:spring-security-config
-CVE-2023-34034 exp:2024-03-01
-
-# Reason: Only a single servlet is used
-# Package: org.springframework.security:spring-security-config
-CVE-2023-34035 exp:2024-03-01
-
-# Reason: Access only allowed from within trusted network
-# Package: org.springframework:spring-webmvc
-CVE-2023-34053 exp:2024-03-01
-
-# Reason: Access only allowed from within trusted network
-# Package: io.projectreactor.netty:reactor-netty-http
-GHSA-xpw8-rcwv-8f8p exp:2024-03-01
-CVE-2023-34054 exp:2024-03-01
-CVE-2023-34062 exp:2024-03-01
-
-# Reason: Access only allowed from within trusted network
-# Package: org.apache.tomcat.embed:tomcat-embed-core
-CVE-2023-46589 exp:2024-03-01
-
-# Reason: Access only allowed from within trusted network
-CVE-2025-68973 exp:2026-02-01
+# zlib: zlib: Arbitrary code execution via buffer overflow in untgz utility
+# Reason: Not using untgz utility
+# Package: zlib:1.3.1-r2
+CVE-2026-22184 exp:2026-05-01
+# libpng: LIBPNG has a heap buffer overflow in png_set_quantize
+# Reason: Not using libpng
+# Package: libpng:1.6.54-r0
+CVE-2026-25646 exp:2026-05-01
+# SiYuan: Authorization Bypass Allows Arbitrary SQL Execution via Search API
+# https://github.com/advisories/GHSA-j7wh-x834-p3r7
+# Reason: False positive - unrelated to libexpat
+# Package: libexpat:2.7.4-r0
+CVE-2026-32767 exp:2026-05-01

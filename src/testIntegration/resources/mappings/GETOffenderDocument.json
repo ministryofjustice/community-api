@@ -14,6 +14,7 @@
       "Accept-Ranges": "bytes",
       "Cache-Control": "max-age=0, must-revalidate",
       "Content-Disposition": "attachment",
+      "Content-Length": "20992",
       "Date": "Fri, 05 Jan 2018 09:50:45 GMT",
       "ETag": "1514985635950",
       "Last-Modified": "Wed, 03 Jan 2018 13:20:35 GMT",
