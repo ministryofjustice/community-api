@@ -54,6 +54,9 @@ public class LdapRepository {
     }
 
     public Optional<NDeliusUser> getDeliusUser(final String username) {
+        if (username == null) {
+            return Optional.empty();
+        }
         // this is a two step process:
         //   1. find the user matching the supplied username in the delius LDAP.
         //   2. find the roles associated with the matched user and add them to the user entity.
@@ -62,6 +65,9 @@ public class LdapRepository {
     }
 
     public Optional<NDeliusUser> getDeliusUserNoRoles(final String username) {
+        if (username == null) {
+            return Optional.empty();
+        }
         return authenticationTemplate.find(byUsername(username), NDeliusUser.class).stream().findAny();
     }
 
@@ -137,6 +143,9 @@ public class LdapRepository {
     }
 
     public String getEmail(final String username) {
+        if (username == null) {
+            return null;
+        }
         final var nDeliusUser = authenticationTemplate.find(byUsername(username), NDeliusUser.class).stream().findAny();
 
         return nDeliusUser.map(NDeliusUser::getMail).orElse(null);
