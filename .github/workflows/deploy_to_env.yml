@@ -1,0 +1,44 @@
+name: Deploy to env
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment
+        type: choice
+        required: true
+        options:
+          - test
+          - preprod
+          - prod
+      version:
+        description: version to be deployed to the environment
+        required: true
+        default: ''
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  _JAVA_OPTIONS: "-Xms512m -Xmx1224m"
+
+jobs:
+  helm_lint:
+    name: helm lint
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/test_helm_lint.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+    with:
+      environment: ${{ inputs.environment }}
+
+  deploy:
+    name: Deploy to environment
+    needs:
+      - helm_lint
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW VERSION
+    secrets: inherit
+    with:
+      environment: ${{ inputs.environment }}
+      app_version: ${{ inputs.version }}
+      helm_timeout: '5m'
