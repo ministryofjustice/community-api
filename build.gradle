@@ -1,5 +1,5 @@
 plugins {
-    id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.7"
+    id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.8"
     id 'groovy'
     id 'org.unbroken-dome.test-sets' version '4.1.0'
     id "com.google.cloud.tools.jib" version "3.5.4"
@@ -30,12 +30,12 @@ dependencies {
     implementation 'com.zaxxer:HikariCP'
     implementation 'io.jsonwebtoken:jjwt-impl:0.13.0'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.13.0'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1'
     implementation 'org.apache.commons:commons-lang3:3.20.0'
     implementation 'org.apache.commons:commons-text:1.15.0'
     implementation 'io.vavr:vavr:1.0.1'
     implementation 'com.github.java-json-tools:json-patch:1.13'
-    implementation(platform("io.sentry:sentry-bom:8.55.0"))
+    implementation(platform("io.sentry:sentry-bom:8.56.0"))
     implementation("io.sentry:sentry-spring-boot-4")
     implementation("io.sentry:sentry-logback")
 
@@ -44,8 +44,8 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     compileOnly 'org.projectlombok:lombok'
 
-    runtimeOnly 'com.h2database:h2:2.4.240'
-    testRuntimeOnly 'com.h2database:h2:2.4.240'
+    runtimeOnly 'com.h2database:h2:2.5.250'
+    testRuntimeOnly 'com.h2database:h2:2.5.250'
     testAnnotationProcessor 'org.projectlombok:lombok'
     testCompileOnly 'org.projectlombok:lombok'
 
