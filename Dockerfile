@@ -7,7 +7,7 @@ WORKDIR /app
 ADD . .
 RUN ./gradlew --no-daemon assemble
 
-FROM --platform=$BUILDPLATFORM eclipse-temurin:17-jre-jammy
+FROM --platform=$BUILDPLATFORM ghcr.io/ministryofjustice/hmpps-eclipse-temurin:17-jre-jammy
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
 ARG BUILD_NUMBER
