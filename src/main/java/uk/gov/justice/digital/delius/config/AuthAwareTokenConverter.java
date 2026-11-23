@@ -2,32 +2,19 @@ package uk.gov.justice.digital.delius.config;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import static uk.gov.justice.hmpps.kotlin.auth.AuthAwareTokenConverterKt.extractAuthorities;
 
 public class AuthAwareTokenConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
-    private final Converter<Jwt, Collection<GrantedAuthority>> jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+    private final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 
     @Override
     public AbstractAuthenticationToken convert(final Jwt jwt) {
         final var clientId = jwt.getClaims().get("client_id");
         final var clientOnly = jwt.getSubject().equals(clientId);
-        return new AuthAwareAuthenticationToken(jwt, clientOnly, extractAuthorities(jwt));
-    }
-
-    private Collection<GrantedAuthority> extractAuthorities(final Jwt jwt) {
-        final var authorities = new HashSet<>(this.jwtGrantedAuthoritiesConverter.convert(jwt));
-        if (jwt.getClaims().containsKey("authorities")) {
-            authorities.addAll(((Collection<String>) jwt.getClaims().get("authorities")).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet()));
-        }
-        return Set.copyOf(authorities);
+        return new AuthAwareAuthenticationToken(jwt, clientOnly, extractAuthorities(jwt, jwtGrantedAuthoritiesConverter));
     }
 }

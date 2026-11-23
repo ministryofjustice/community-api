@@ -14,8 +14,6 @@ spring:
       dev:
         - "dev-seed"
 
-  mvc.pathmatch.matching-strategy: ant-path-matcher
-
   jpa:
     hibernate:
       ddl-auto: none
