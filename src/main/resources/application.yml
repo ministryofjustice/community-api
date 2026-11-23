@@ -1,3 +1,4 @@
+info.productId: HMPPS518
 spring:
   application:
     name: community-api
