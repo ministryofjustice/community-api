@@ -3,23 +3,22 @@ package uk.gov.justice.digital.delius.service;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webclient.test.autoconfigure.AutoConfigureWebClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import uk.gov.justice.digital.delius.config.AlfrescoConfig;
 import uk.gov.justice.digital.delius.controller.wiremock.AlfrescoExtension;
 
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = {AlfrescoConfig.class, AlfrescoService.class},
-properties = {
-        "alfresco.X-DocRepository-Remote-User=any_remote_user",
-        "alfresco.X-DocRepository-Real-Remote-User=any_real_user"
-})
-@AutoConfigureWebClient
+@SpringBootTest(
+	webEnvironment = SpringBootTest.WebEnvironment.NONE,
+	properties = {
+			"alfresco.X-DocRepository-Remote-User=any_remote_user",
+			"alfresco.X-DocRepository-Real-Remote-User=any_real_user"
+	}
+)
 @ExtendWith(AlfrescoExtension.class)
 public class AlfrescoServiceTest {
 
