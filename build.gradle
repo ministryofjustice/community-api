@@ -22,6 +22,7 @@ dependencies {
     implementation 'uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.1.0'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-ldap'
+    implementation 'org.springframework.boot:spring-boot-starter-webclient'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'com.oracle.database.jdbc:ojdbc11'
     implementation 'com.unboundid:unboundid-ldapsdk'
@@ -54,7 +55,6 @@ dependencies {
     testIntegrationImplementation 'io.rest-assured:spring-mock-mvc:6.3.0'
     testIntegrationImplementation 'org.wiremock:wiremock-standalone:3.13.2'
     testIntegrationImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testIntegrationImplementation 'org.springframework.boot:spring-boot-starter-webclient-test'
     testIntegrationImplementation 'org.springframework.security:spring-security-test'
 }
 
